@@ -1,11 +1,11 @@
-﻿using MediaBrowser.Model.ApiClient;
-using MediaBrowser.Model.Devices;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Devices;
 
-namespace MediaBrowser.Mobile.Api
+namespace MediaBrowser.Mobile.Common.ApiClient
 {
     public class Device : IDevice
     {

@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using MediaBrowser.Mobile.Api;
+using MediaBrowser.Mobile.Common.Networking;
 
 namespace MediaBrowser.Mobile.Droid.Api
 {

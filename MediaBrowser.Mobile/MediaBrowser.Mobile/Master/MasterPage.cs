@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Mobile.Extensions;
+﻿using MediaBrowser.Mobile.Common.ViewModels;
+using MediaBrowser.Mobile.Home;
 using MediaBrowser.Mobile.Startup;
 using MediaBrowser.Model.ApiClient;
 using System.Threading;
@@ -11,12 +12,7 @@ namespace MediaBrowser.Mobile.Master
     {
         public MasterPage()
         {
-            Master = new ContentPage()
-            {
-                Title = "Media Browser",
-
-                Content = new Label { Text = "Please sign in"}
-            };
+            Master = new MasterMenu(new SessionViewModel());
 
             Detail = new ContentPage()
             {
@@ -55,11 +51,19 @@ namespace MediaBrowser.Mobile.Master
 
             if (result.State == ConnectionState.Unavailable)
             {
-                Detail = new NavigationPage(new WelcomePage());
+                Detail = new NavigationPage(new WelcomePage(this));
             }
-            else
+            else if (result.State == ConnectionState.ServerSelection)
             {
-                await this.ProcessConnectionResult(result);
+                Detail = new NavigationPage(new ServerSelectionPage());
+            }
+            else if (result.State == ConnectionState.ServerSignIn)
+            {
+                Detail = new NavigationPage(new ServerSignInPage(result.Servers[0], result.ApiClient, this));
+            }
+            else if (result.State == ConnectionState.SignedIn)
+            {
+                Detail = new NavigationPage(new HomePage());
             }
         }
     }

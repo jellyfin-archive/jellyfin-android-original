@@ -9,8 +9,10 @@ namespace MediaBrowser.Mobile.Startup
 {
     public class WelcomePage : ContentPage
     {
-        public WelcomePage()
+        private readonly MasterDetailPage _master;
+        public WelcomePage(MasterDetailPage master)
         {
+            _master = master;
             var stackLayout = new StackLayout
             {
                 Orientation = StackOrientation.Vertical,
@@ -53,7 +55,7 @@ namespace MediaBrowser.Mobile.Startup
 
         async void nextButton_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new ConnectPage());
+            await Navigation.PushAsync(new ConnectPage(_master));
         }
     }
 }

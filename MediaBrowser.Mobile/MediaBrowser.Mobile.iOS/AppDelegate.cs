@@ -1,5 +1,7 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Mobile.Api;
+using MediaBrowser.Mobile.Common.ApiClient;
+using MediaBrowser.Mobile.Common.Networking;
 using MediaBrowser.Mobile.iOS.Api;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
@@ -15,7 +17,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Labs;
 using Xamarin.Forms.Labs.iOS;
 using Xamarin.Forms.Labs.Services;
-using Device = MediaBrowser.Mobile.Api.Device;
+using Device = MediaBrowser.Mobile.Common.ApiClient.Device;
 using IDevice = Xamarin.Forms.Labs.IDevice;
 
 namespace MediaBrowser.Mobile.iOS

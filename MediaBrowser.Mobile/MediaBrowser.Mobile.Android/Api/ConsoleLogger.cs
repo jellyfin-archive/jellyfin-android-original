@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using MediaBrowser.Mobile.Api;
+using MediaBrowser.Mobile.Common.Logging;
 using MediaBrowser.Model.Logging;
 using Environment = System.Environment;
 

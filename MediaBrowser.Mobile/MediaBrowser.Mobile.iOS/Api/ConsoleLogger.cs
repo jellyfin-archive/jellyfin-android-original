@@ -1,4 +1,5 @@
 using MediaBrowser.Mobile.Api;
+using MediaBrowser.Mobile.Common.Logging;
 using MediaBrowser.Model.Logging;
 using System;
 using System.Text;

@@ -13,5 +13,9 @@ namespace MediaBrowser.Mobile.Home
 {
     public class HomePage : ContentPage
     {
+        public HomePage()
+        {
+            Title = "Media Browser";
+        }
     }
 }

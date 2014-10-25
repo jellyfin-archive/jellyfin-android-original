@@ -9,15 +9,19 @@ using Xamarin.Forms.Labs.Services;
 
 namespace MediaBrowser.Mobile.Startup
 {
-    public class ConnectPage : ContentPage
+    public class ServerSignInPage : ContentPage
     {
-        private  Entry _usernameEntry;
-        private  Entry _passwordEntry;
+        private Entry _usernameEntry;
+        private Entry _passwordEntry;
         private readonly View _layout;
+        private readonly ServerInfo _server;
+        private readonly IApiClient _apiClient;
         private readonly MasterDetailPage _master;
 
-        public ConnectPage(MasterDetailPage master)
+        public ServerSignInPage(ServerInfo server, IApiClient apiClient, MasterDetailPage master)
         {
+            _server = server;
+            _apiClient = apiClient;
             _master = master;
             Title = "Media Browser";
 
@@ -38,18 +42,13 @@ namespace MediaBrowser.Mobile.Startup
             stackLayout.Children.Add(new Label()
             {
                 Font = Font.SystemFontOfSize(NamedSize.Large),
-                Text = "Sign in with Media Browser Connect"
-            });
-
-            stackLayout.Children.Add(new Label()
-            {
-                Text = "With Media Browser Connect you can easily access your Media Browser Server wherever you are and share with your family and friends."
+                Text = "Sign in to " + _server.Name
             });
 
             _usernameEntry = new Entry
             {
                 HorizontalOptions = LayoutOptions.FillAndExpand,
-                Placeholder = "Username or email"
+                Placeholder = "Username"
             };
 
             stackLayout.Children.Add(_usernameEntry);
@@ -73,20 +72,6 @@ namespace MediaBrowser.Mobile.Startup
 
             stackLayout.Children.Add(nextButton);
 
-            var skipButton = new Button
-            {
-                Text = "Skip",
-                HorizontalOptions = LayoutOptions.FillAndExpand
-            };
-            skipButton.Clicked += skipButton_Clicked;
-            stackLayout.Children.Add(skipButton);
-
-            stackLayout.Children.Add(new Label()
-            {
-                Text = "Skip to connect to your server manually",
-                HorizontalOptions = LayoutOptions.Center
-            });
-
             return stackLayout;
         }
 
@@ -107,35 +92,6 @@ namespace MediaBrowser.Mobile.Startup
             };
         }
 
-        async void skipButton_Clicked(object sender, EventArgs e)
-        {
-            var connectionManager = Resolver.Resolve<IConnectionManager>();
-
-            Content = GetLoadingContent();
-
-            try
-            {
-                var result = await connectionManager.Connect(CancellationToken.None);
-
-                if (result.State == ConnectionState.Unavailable)
-                {
-                    await Navigation.PushAsync(new ServerEntryPage(_master));
-                }
-                else
-                {
-                    await this.ProcessConnectionResult(result, _master);
-                }
-            }
-            catch
-            {
-                this.ShowGeneralErrorMessage();
-            }
-            finally
-            {
-                Content = _layout;
-            }
-        }
-
         async void nextButton_Clicked(object sender, EventArgs e)
         {
             if (Validate())
@@ -146,11 +102,18 @@ namespace MediaBrowser.Mobile.Startup
 
                 try
                 {
-                    await connectionManager.LoginToConnect(_usernameEntry.Text, _passwordEntry.Text);
-                    
-                    var result = await connectionManager.Connect(CancellationToken.None);
+                    await _apiClient.AuthenticateUserAsync(_usernameEntry.Text, _passwordEntry.Text);
 
-                    await this.ProcessConnectionResult(result, _master);
+                    var result = await connectionManager.Connect(_server, CancellationToken.None);
+
+                    if (result.State == ConnectionState.SignedIn)
+                    {
+                        await this.ProcessConnectionResult(result, _master);
+                    }
+                    else
+                    {
+                        this.ShowUnauthorizedMessage();
+                    }
                 }
                 catch (HttpException ex)
                 {
@@ -179,12 +142,6 @@ namespace MediaBrowser.Mobile.Startup
             if (string.IsNullOrWhiteSpace(_usernameEntry.Text))
             {
                 _usernameEntry.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(_passwordEntry.Text))
-            {
-                _passwordEntry.Focus();
                 return false;
             }
 

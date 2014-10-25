@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.ApiInteraction;
+using MediaBrowser.Mobile.Api;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Serialization;
 using System;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Mobile.Api
+namespace MediaBrowser.Mobile.Common.Networking
 {
     public class ServerLocator : IServerLocator
     {

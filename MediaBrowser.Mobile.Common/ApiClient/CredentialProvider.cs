@@ -1,10 +1,10 @@
-﻿using MediaBrowser.ApiInteraction;
+﻿using System.Threading.Tasks;
+using MediaBrowser.ApiInteraction;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Serialization;
 using Refractored.Xam.Settings.Abstractions;
-using System.Threading.Tasks;
 
-namespace MediaBrowser.Mobile.Api
+namespace MediaBrowser.Mobile.Common.ApiClient
 {
     public class CredentialProvider : ICredentialProvider
     {

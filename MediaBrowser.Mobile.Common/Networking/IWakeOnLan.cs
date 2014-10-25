@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace MediaBrowser.Mobile.Api
+namespace MediaBrowser.Mobile.Common.Networking
 {
     public interface IWakeOnLan
     {

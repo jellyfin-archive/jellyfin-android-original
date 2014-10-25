@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.ApiInteraction;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Mobile.Common.Networking;
 using Xamarin.Forms.Labs;
 using NetworkStatus = MediaBrowser.ApiInteraction.NetworkStatus;
 

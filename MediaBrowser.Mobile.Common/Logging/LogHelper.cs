@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace MediaBrowser.Mobile.Api
+namespace MediaBrowser.Mobile.Common.Logging
 {
     public static class LogHelper
     {

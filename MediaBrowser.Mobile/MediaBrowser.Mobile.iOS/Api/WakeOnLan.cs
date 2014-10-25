@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Mobile.Api;
+using MediaBrowser.Mobile.Common.Networking;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 

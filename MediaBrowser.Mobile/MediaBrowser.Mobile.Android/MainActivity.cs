@@ -3,6 +3,8 @@ using Android.Content.PM;
 using Android.OS;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.Mobile.Api;
+using MediaBrowser.Mobile.Common.ApiClient;
+using MediaBrowser.Mobile.Common.Networking;
 using MediaBrowser.Mobile.Droid.Api;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;

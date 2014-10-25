@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Mobile.Api;
+using MediaBrowser.Mobile.Common.Networking;
 
 namespace MediaBrowser.Mobile.iOS.Api
 {
