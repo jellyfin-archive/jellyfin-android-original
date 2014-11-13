@@ -54,10 +54,10 @@
       <HintPath>..\..\packages\ExifLib.PCL.1.0.0\lib\portable-net45+sl50+win+WindowsPhoneApp81+wp80+MonoAndroid10+MonoTouch10\ExifLib.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.ApiInteraction.Portable">
-      <HintPath>..\..\packages\MediaBrowser.ApiClient.3.0.0.447\lib\portable-net45+sl4+wp71+win8+wpa81\MediaBrowser.ApiInteraction.Portable.dll</HintPath>
+      <HintPath>..\..\packages\MediaBrowser.ApiClient.3.0.0.465\lib\portable-net45+sl4+wp71+win8+wpa81\MediaBrowser.ApiInteraction.Portable.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Model">
-      <HintPath>..\..\packages\MediaBrowser.Common.3.0.499\lib\portable-net4+sl4+wp71+win8+wpa81\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\..\packages\MediaBrowser.Common.3.0.509\lib\portable-net4+sl4+wp71+win8+wpa81\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>

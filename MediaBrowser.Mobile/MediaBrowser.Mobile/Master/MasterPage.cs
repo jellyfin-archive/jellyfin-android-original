@@ -65,6 +65,10 @@ namespace MediaBrowser.Mobile.Master
             {
                 Detail = new NavigationPage(new HomePage());
             }
+            else if (result.State == ConnectionState.ConnectSignIn)
+            {
+                Detail = new NavigationPage(new ConnectPage(this));
+            }
         }
     }
 }

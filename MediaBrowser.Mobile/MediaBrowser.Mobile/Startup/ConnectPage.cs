@@ -117,6 +117,11 @@ namespace MediaBrowser.Mobile.Startup
             {
                 var result = await connectionManager.Connect(CancellationToken.None);
 
+                if (result.State == ConnectionState.ConnectSignIn)
+                {
+                    result.State = ConnectionState.ServerSelection;
+                }
+
                 if (result.State == ConnectionState.Unavailable)
                 {
                     await Navigation.PushAsync(new ServerEntryPage(_master));

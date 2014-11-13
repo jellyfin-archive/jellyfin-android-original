@@ -25,6 +25,10 @@ namespace MediaBrowser.Mobile.Extensions
             {
                 await page.Navigation.PushAsync(new ServerSelectionPage());
             }
+            else if (result.State == ConnectionState.ConnectSignIn)
+            {
+                await page.Navigation.PushAsync(new ConnectPage(master));
+            }
             else if (result.State == ConnectionState.ServerSignIn)
             {
                 await page.Navigation.PushAsync(new ServerSignInPage(result.Servers[0], result.ApiClient, master));

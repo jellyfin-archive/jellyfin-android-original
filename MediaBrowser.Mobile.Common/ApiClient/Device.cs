@@ -21,17 +21,17 @@ namespace MediaBrowser.Mobile.Common.ApiClient
 
         public string DeviceName { get; private set; }
 
-        public IEnumerable<LocalFileInfo> GetLocalPhotos()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<LocalFileInfo> GetLocalVideos()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task UploadFile(LocalFileInfo file, IApiClient apiClient, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<LocalFileInfo>> GetLocalPhotos()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<LocalFileInfo>> GetLocalVideos()
         {
             throw new NotImplementedException();
         }
