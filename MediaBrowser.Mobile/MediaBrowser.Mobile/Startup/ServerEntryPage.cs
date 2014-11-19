@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Mobile.Extensions;
+using MediaBrowser.Mobile.Master;
 using MediaBrowser.Model.ApiClient;
 using Xamarin.Forms;
 using Xamarin.Forms.Labs.Services;
@@ -16,9 +17,9 @@ namespace MediaBrowser.Mobile.Startup
         private Entry _addressEntry;
         private Entry _portEntry;
         private readonly View _layout;
-        private readonly MasterDetailPage _master;
+        private readonly MasterPage _master;
 
-        public ServerEntryPage(MasterDetailPage master)
+        public ServerEntryPage(MasterPage master)
         {
             _master = master;
             Title = "Media Browser";
@@ -69,7 +70,9 @@ namespace MediaBrowser.Mobile.Startup
             var nextButton = new Button
             {
                 Text = "Connect",
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
+                BackgroundColor = Color.FromHex("77D065")
             };
 
             nextButton.Clicked += nextButton_Clicked;

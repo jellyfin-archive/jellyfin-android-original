@@ -1,5 +1,4 @@
-﻿using MediaBrowser.Mobile.ViewModels;
-using MediaBrowser.Model.ApiClient;
+﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Connect;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Events;
@@ -13,12 +12,15 @@ namespace MediaBrowser.Mobile.Common.ViewModels
         private UserDto _localUser;
         private ConnectUser _connectUser;
 
-        private string username = string.Empty;
-        public const string UsernamePropertyName = "Username";
+        private string _username = string.Empty;
         public string Username
         {
-            get { return username; }
-            set { SetProperty(ref username, value, Username); }
+            get { return _username; }
+            set
+            {
+                _username = value;
+                OnPropertyChanged();
+            }
         }
 
         public SessionViewModel()

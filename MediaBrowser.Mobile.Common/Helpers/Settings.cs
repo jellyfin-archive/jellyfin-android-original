@@ -35,9 +35,7 @@ namespace MediaBrowser.Mobile.Common.Helpers
       }
       set
       {
-        //if value has changed then save it!
-        if (AppSettings.AddOrUpdateValue(SettingsKey, value))
-          AppSettings.Save();
+        AppSettings.AddOrUpdateValue(SettingsKey, value);
       }
     }
 

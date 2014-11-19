@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediaBrowser.Mobile.Extensions;
+using MediaBrowser.Mobile.Master;
 using Xamarin.Forms;
 
 namespace MediaBrowser.Mobile.Startup
 {
     public class WelcomePage : ContentPage
     {
-        private readonly MasterDetailPage _master;
-        public WelcomePage(MasterDetailPage master)
+        private readonly MasterPage _master;
+        public WelcomePage(MasterPage master)
         {
             _master = master;
             var stackLayout = new StackLayout
@@ -25,22 +27,22 @@ namespace MediaBrowser.Mobile.Startup
             stackLayout.Children.Add(new Label()
             {
                 Font = Font.SystemFontOfSize(NamedSize.Large),
-                Text = "Welcome to Media Browser"
+                Text = this.GetLocalizedString("HeaderWelcomeToMediaBrowser")
             });
 
             stackLayout.Children.Add(new Label()
             {
-                Text = "With Media Browser you can easily stream videos, music and photos to phone, tablet and other devices from your Media Browser Server."
+                Text = this.GetLocalizedString("WelcomePageBodyText")
             });
 
             stackLayout.Children.Add(new Label()
             {
-                Text = "To download and install Media Browser Server visit http://mediabrowser.tv"
+                Text = this.GetLocalizedString("ToDownloadAndInstallVisit")
             });
 
             var nextButton = new Button()
             {
-                Text = "Next",
+                Text = this.GetLocalizedString("ButtonNext"),
                 HorizontalOptions = LayoutOptions.End
             };
 
@@ -48,7 +50,7 @@ namespace MediaBrowser.Mobile.Startup
 
             stackLayout.Children.Add(nextButton);
 
-            Title = "Media Browser";
+            Title = this.GetLocalizedString("TitleMediaBrowser");
 
             Content = stackLayout;
         }

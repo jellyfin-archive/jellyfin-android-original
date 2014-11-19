@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Mobile.Common.ViewModels;
+using MediaBrowser.Mobile.Extensions;
 using MediaBrowser.Mobile.Home;
 using MediaBrowser.Mobile.Startup;
 using MediaBrowser.Model.ApiClient;
@@ -14,14 +15,13 @@ namespace MediaBrowser.Mobile.Master
         {
             Master = new MasterMenu(new SessionViewModel());
 
-            Detail = new ContentPage()
+            Detail = new NavigationPage(new HomePage())
             {
-                Title = "Media Browser"
+                Title = this.GetLocalizedString("TitleMediaBrowser")
             };
 
-            Title = "Media Browser";
+            Title = this.GetLocalizedString("TitleMediaBrowser");
         }
-
 
         protected override async void OnAppearing()
         {
@@ -32,8 +32,8 @@ namespace MediaBrowser.Mobile.Master
 
         private async void ShowStartupFlow()
         {
-            Detail = new SplashPage();
-
+            await Navigation.PushModalAsync(new NavigationPage(new SplashPage()));
+            return;
             var connectionManager = Resolver.Resolve<IConnectionManager>();
             ConnectionResult result;
 
@@ -51,24 +51,36 @@ namespace MediaBrowser.Mobile.Master
 
             if (result.State == ConnectionState.Unavailable)
             {
-                Detail = new NavigationPage(new WelcomePage(this));
+                await Detail.Navigation.PushAsync(new WelcomePage(this));
             }
             else if (result.State == ConnectionState.ServerSelection)
             {
-                Detail = new NavigationPage(new ServerSelectionPage());
+                if (result.Servers.Count == 0)
+                {
+                    Detail = new NavigationPage(new ServerEntryPage(this));
+                }
+                else
+                {
+                    Detail = new NavigationPage(new ServerSelectionPage(this));
+                }
             }
             else if (result.State == ConnectionState.ServerSignIn)
             {
-                Detail = new NavigationPage(new ServerSignInPage(result.Servers[0], result.ApiClient, this));
+                await Detail.Navigation.PushAsync(new ServerSignInPage(result.Servers[0], result.ApiClient, this));
             }
             else if (result.State == ConnectionState.SignedIn)
             {
-                Detail = new NavigationPage(new HomePage());
+                await Detail.Navigation.PushAsync(new HomePage());
             }
             else if (result.State == ConnectionState.ConnectSignIn)
             {
-                Detail = new NavigationPage(new ConnectPage(this));
+                await Detail.Navigation.PushAsync(new ConnectPage(this));
             }
+        }
+
+        public void OnStartupFlowComplete()
+        {
+
         }
     }
 }

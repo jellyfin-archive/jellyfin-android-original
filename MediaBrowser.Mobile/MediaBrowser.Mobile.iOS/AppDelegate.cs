@@ -1,11 +1,14 @@
 ﻿using MediaBrowser.ApiInteraction;
 using MediaBrowser.Mobile.Api;
 using MediaBrowser.Mobile.Common.ApiClient;
+using MediaBrowser.Mobile.Common.Localization;
 using MediaBrowser.Mobile.Common.Networking;
 using MediaBrowser.Mobile.iOS.Api;
+using MediaBrowser.Mobile.iOS.Localization;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
@@ -88,12 +91,18 @@ namespace MediaBrowser.Mobile.iOS
             
             Resolver.SetResolver(resolverContainer.GetResolver());
 
+            resolverContainer.Register(GetLocalizationManager());
             resolverContainer.Register(GetConnectionManager());
+        }
+
+        private ILocalizationManager GetLocalizationManager()
+        {
+            return new LocalizationManager(GetJsonSerializer());
         }
 
         private IConnectionManager GetConnectionManager()
         {
-            var jsonSerializer = new NewtonsoftJsonSerializer();
+            var jsonSerializer = GetJsonSerializer();
 
             var device = Resolver.Resolve<IDevice>();
             var settings = Resolver.Resolve<ISettings>();
@@ -114,6 +123,11 @@ namespace MediaBrowser.Mobile.iOS
             manager.JsonSerializer = jsonSerializer;
 
             return manager;
+        }
+
+        private IJsonSerializer GetJsonSerializer()
+        {
+            return new NewtonsoftJsonSerializer();
         }
 
         private ClientCapabilities GetCapabilities()

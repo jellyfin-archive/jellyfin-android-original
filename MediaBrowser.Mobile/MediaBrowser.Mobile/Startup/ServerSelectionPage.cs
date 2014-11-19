@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediaBrowser.Mobile.Master;
 using Xamarin.Forms;
 
 namespace MediaBrowser.Mobile.Startup
 {
     public class ServerSelectionPage : ContentPage
     {
-        public ServerSelectionPage()
+        private readonly MasterPage _master;
+
+        public ServerSelectionPage(MasterPage master)
         {
-            Title = "Media Browser";
+            _master = master;
+            Title = "Select Server";
 
             Content = GetLayout();
         }
@@ -27,16 +31,12 @@ namespace MediaBrowser.Mobile.Startup
                 Padding = 20
             };
 
-            stackLayout.Children.Add(new Label()
-            {
-                Font = Font.SystemFontOfSize(NamedSize.Large),
-                Text = "Select Server"
-            });
-
             var addButton = new Button
             {
-                Text = "Add",
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                Text = "New Server",
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
+                BackgroundColor = Color.FromHex("77D065")
             };
 
             addButton.Clicked += addButton_Clicked;
@@ -45,8 +45,9 @@ namespace MediaBrowser.Mobile.Startup
             return stackLayout;
         }
 
-        void addButton_Clicked(object sender, EventArgs e)
+        async void addButton_Clicked(object sender, EventArgs e)
         {
+            await Navigation.PushAsync(new ServerEntryPage(_master));
         }
     }
 }

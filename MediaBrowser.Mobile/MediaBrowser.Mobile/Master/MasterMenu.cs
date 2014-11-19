@@ -13,12 +13,10 @@ namespace MediaBrowser.Mobile.Master
         {
             Title = "Media Browser";
 
-            BindingContext = viewModel;
-
-            this.SetBinding(TitleProperty, SessionViewModel.UsernamePropertyName);
-
             _needsRefresh = true;
             _viewModel = viewModel;
+
+            Content = new Label {Text = "Menu"};
         }
 
         protected override async void OnAppearing()

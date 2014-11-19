@@ -4,11 +4,14 @@ using Android.OS;
 using MediaBrowser.ApiInteraction;
 using MediaBrowser.Mobile.Api;
 using MediaBrowser.Mobile.Common.ApiClient;
+using MediaBrowser.Mobile.Common.Localization;
 using MediaBrowser.Mobile.Common.Networking;
 using MediaBrowser.Mobile.Droid.Api;
+using MediaBrowser.Mobile.Droid.Localization;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Logging;
+using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Session;
 using Refractored.Xam.Settings;
 using Refractored.Xam.Settings.Abstractions;
@@ -67,15 +70,21 @@ namespace MediaBrowser.Mobile.Droid
                         new SQLite.Net.SQLiteConnectionString(pathToDatabase, true), t.Resolve<IJsonSerializer>()))*/;
 
             resolverContainer.RegisterSingle<ISettings, Settings>();
-            
-            Resolver.SetResolver(resolverContainer.GetResolver());
 
+            Resolver.SetResolver(resolverContainer.GetResolver());
+            
+            resolverContainer.Register(GetLocalizationManager());
             resolverContainer.Register(GetConnectionManager());
+        }
+
+        private ILocalizationManager GetLocalizationManager()
+        {
+            return new LocalizationManager(GetJsonSerializer());
         }
 
         private IConnectionManager GetConnectionManager()
         {
-            var jsonSerializer = new NewtonsoftJsonSerializer();
+            var jsonSerializer = GetJsonSerializer();
 
             var device = Resolver.Resolve<IDevice>();
             var settings = Resolver.Resolve<ISettings>();
@@ -96,6 +105,11 @@ namespace MediaBrowser.Mobile.Droid
             manager.JsonSerializer = jsonSerializer;
 
             return manager;
+        }
+
+        private IJsonSerializer GetJsonSerializer()
+        {
+            return new NewtonsoftJsonSerializer();
         }
 
         private ClientCapabilities GetCapabilities()

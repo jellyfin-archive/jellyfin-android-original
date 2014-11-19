@@ -1,9 +1,11 @@
 ﻿using MediaBrowser.Mobile.Extensions;
+using MediaBrowser.Mobile.Master;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Net;
 using System;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Labs.Services;
 
@@ -14,12 +16,14 @@ namespace MediaBrowser.Mobile.Startup
         private  Entry _usernameEntry;
         private  Entry _passwordEntry;
         private readonly View _layout;
-        private readonly MasterDetailPage _master;
+        private readonly MasterPage _master;
 
-        public ConnectPage(MasterDetailPage master)
+        public ConnectPage(MasterPage master)
         {
             _master = master;
-            Title = "Media Browser";
+            Title = this.GetLocalizedString("TitleMediaBrowser");
+
+            //BackgroundImage = "splashbackground.png";
 
             Content = _layout = GetLayout();
         }
@@ -66,7 +70,9 @@ namespace MediaBrowser.Mobile.Startup
             var nextButton = new Button
             {
                 Text = "Sign In",
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
+                BackgroundColor = Color.FromHex("77D065")
             };
 
             nextButton.Clicked += nextButton_Clicked;
@@ -76,14 +82,16 @@ namespace MediaBrowser.Mobile.Startup
             var skipButton = new Button
             {
                 Text = "Skip",
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
+                BackgroundColor = Color.FromHex("444444")
             };
             skipButton.Clicked += skipButton_Clicked;
             stackLayout.Children.Add(skipButton);
 
             stackLayout.Children.Add(new Label()
             {
-                Text = "Skip to connect to your server manually",
+                Text = "Skip to connect to server manually",
                 HorizontalOptions = LayoutOptions.Center
             });
 

@@ -1,4 +1,5 @@
 ﻿using MediaBrowser.Mobile.Extensions;
+using MediaBrowser.Mobile.Master;
 using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Net;
 using System;
@@ -16,9 +17,9 @@ namespace MediaBrowser.Mobile.Startup
         private readonly View _layout;
         private readonly ServerInfo _server;
         private readonly IApiClient _apiClient;
-        private readonly MasterDetailPage _master;
+        private readonly MasterPage _master;
 
-        public ServerSignInPage(ServerInfo server, IApiClient apiClient, MasterDetailPage master)
+        public ServerSignInPage(ServerInfo server, IApiClient apiClient, MasterPage master)
         {
             _server = server;
             _apiClient = apiClient;
