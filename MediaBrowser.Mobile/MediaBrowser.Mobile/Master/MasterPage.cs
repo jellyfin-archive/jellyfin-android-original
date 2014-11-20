@@ -3,84 +3,78 @@ using MediaBrowser.Mobile.Extensions;
 using MediaBrowser.Mobile.Home;
 using MediaBrowser.Mobile.Startup;
 using MediaBrowser.Model.ApiClient;
-using System.Threading;
 using Xamarin.Forms;
-using Xamarin.Forms.Labs.Services;
 
 namespace MediaBrowser.Mobile.Master
 {
     public class MasterPage : MasterDetailPage
     {
+        private readonly HomePage _homePage;
+
         public MasterPage()
         {
             Master = new MasterMenu(new SessionViewModel());
 
-            Detail = new NavigationPage(new HomePage())
+            _homePage = new HomePage();
+            Detail = new NavigationPage(_homePage)
             {
-                Title = this.GetLocalizedString("TitleMediaBrowser")
+                Title = this.GetLocalizedString("TitleAppName")
             };
 
-            Title = this.GetLocalizedString("TitleMediaBrowser");
+            Title = this.GetLocalizedString("TitleAppName");
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 
+            _homePage.ShowLoggedOut();
             ShowStartupFlow();
         }
 
         private async void ShowStartupFlow()
         {
-            await Navigation.PushModalAsync(new NavigationPage(new SplashPage()));
-            return;
-            var connectionManager = Resolver.Resolve<IConnectionManager>();
-            ConnectionResult result;
+            var splash = new SplashPage(this);
 
-            try
-            {
-                result = await connectionManager.Connect(CancellationToken.None);
-            }
-            catch
-            {
-                result = new ConnectionResult
-                {
-                    State = ConnectionState.Unavailable
-                };
-            }
+            await Detail.Navigation.PushModalAsync(splash);
+        }
 
+        public async void ProcessSplashResult(ConnectionResult result)
+        {
             if (result.State == ConnectionState.Unavailable)
             {
-                await Detail.Navigation.PushAsync(new WelcomePage(this));
+                await Detail.Navigation.PushModalAsync(new NavigationPage(new WelcomePage(this)));
             }
             else if (result.State == ConnectionState.ServerSelection)
             {
                 if (result.Servers.Count == 0)
                 {
-                    Detail = new NavigationPage(new ServerEntryPage(this));
+                    await Detail.Navigation.PushModalAsync(new NavigationPage(new ServerEntryPage(this)));
                 }
                 else
                 {
-                    Detail = new NavigationPage(new ServerSelectionPage(this));
+                    await Detail.Navigation.PushModalAsync(new NavigationPage(new ServerSelectionPage(this)));
                 }
             }
             else if (result.State == ConnectionState.ServerSignIn)
             {
-                await Detail.Navigation.PushAsync(new ServerSignInPage(result.Servers[0], result.ApiClient, this));
+                await Detail.Navigation.PushModalAsync(new NavigationPage(new ServerSignInPage(result.Servers[0], result.ApiClient, this)));
             }
             else if (result.State == ConnectionState.SignedIn)
             {
-                await Detail.Navigation.PushAsync(new HomePage());
+                OnStartupFlowComplete();
             }
             else if (result.State == ConnectionState.ConnectSignIn)
             {
-                await Detail.Navigation.PushAsync(new ConnectPage(this));
+                await Detail.Navigation.PushModalAsync(new NavigationPage(new ConnectPage(this)));
             }
         }
 
-        public void OnStartupFlowComplete()
+        public async void OnStartupFlowComplete()
         {
+            await Detail.Navigation.PopModalAsync();
 
+            _homePage.ShowLoggedIn();
         }
     }
 }

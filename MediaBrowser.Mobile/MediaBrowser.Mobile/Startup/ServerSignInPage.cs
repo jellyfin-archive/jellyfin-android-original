@@ -66,7 +66,9 @@ namespace MediaBrowser.Mobile.Startup
             var nextButton = new Button
             {
                 Text = "Sign In",
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
+                BackgroundColor = Color.FromHex("77D065")
             };
 
             nextButton.Clicked += nextButton_Clicked;

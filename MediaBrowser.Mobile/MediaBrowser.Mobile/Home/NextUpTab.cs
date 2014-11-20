@@ -9,5 +9,9 @@ namespace MediaBrowser.Mobile.Home
 {
     class NextUpTab : ContentPage
     {
+        public NextUpTab()
+        {
+            Title = "Next Up";
+        }
     }
 }

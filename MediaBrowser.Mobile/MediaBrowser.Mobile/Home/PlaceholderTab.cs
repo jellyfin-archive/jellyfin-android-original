@@ -7,11 +7,10 @@ using Xamarin.Forms;
 
 namespace MediaBrowser.Mobile.Home
 {
-    class FavoriteTab : ContentPage
+    /// <summary>
+    /// This will be an empty tab
+    /// </summary>
+    public class PlaceholderTab : ContentPage
     {
-        public FavoriteTab()
-        {
-            Title = "Favorites";
-        }
     }
 }

@@ -50,7 +50,7 @@ namespace MediaBrowser.Mobile.Startup
 
             stackLayout.Children.Add(nextButton);
 
-            Title = this.GetLocalizedString("TitleMediaBrowser");
+            Title = this.GetLocalizedString("TitleAppName");
 
             Content = stackLayout;
         }

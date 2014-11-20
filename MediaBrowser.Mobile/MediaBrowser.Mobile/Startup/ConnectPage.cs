@@ -21,7 +21,7 @@ namespace MediaBrowser.Mobile.Startup
         public ConnectPage(MasterPage master)
         {
             _master = master;
-            Title = this.GetLocalizedString("TitleMediaBrowser");
+            Title = this.GetLocalizedString("TitleAppName");
 
             //BackgroundImage = "splashbackground.png";
 

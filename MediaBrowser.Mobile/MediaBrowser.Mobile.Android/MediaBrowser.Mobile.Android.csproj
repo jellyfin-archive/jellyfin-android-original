@@ -55,13 +55,13 @@
     <Reference Include="FormsViewGroup">
       <HintPath>..\..\packages\Xamarin.Forms.1.2.3.6257\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.ApiInteraction.Portable, Version=3.0.5435.35567, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.ApiInteraction.Portable, Version=3.0.5436.1426, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MediaBrowser.ApiClient.3.0.0.468\lib\portable-net45+sl4+wp71+win8+wpa81\MediaBrowser.ApiInteraction.Portable.dll</HintPath>
+      <HintPath>..\..\packages\MediaBrowser.ApiClient.3.0.0.469\lib\portable-net45+sl4+wp71+win8+wpa81\MediaBrowser.ApiInteraction.Portable.dll</HintPath>
     </Reference>
-    <Reference Include="MediaBrowser.Model, Version=3.0.5429.34998, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MediaBrowser.Model, Version=3.0.5436.1346, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MediaBrowser.Common.3.0.509\lib\portable-net4+sl4+wp71+win8+wpa81\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\..\packages\MediaBrowser.Common.3.0.510\lib\portable-net4+sl4+wp71+win8+wpa81\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="Mono.Android.Export" />
@@ -76,13 +76,13 @@
     <Reference Include="PCLCrypto.Abstractions">
       <HintPath>..\..\packages\PCLCrypto.0.5.2.14286\lib\monoandroid\PCLCrypto.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Refractored.Xam.Settings, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Refractored.Xam.Settings, Version=1.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.0\lib\MonoAndroid10\Refractored.Xam.Settings.dll</HintPath>
+      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.1\lib\MonoAndroid10\Refractored.Xam.Settings.dll</HintPath>
     </Reference>
-    <Reference Include="Refractored.Xam.Settings.Abstractions, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Refractored.Xam.Settings.Abstractions, Version=1.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.0\lib\MonoAndroid10\Refractored.Xam.Settings.Abstractions.dll</HintPath>
+      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.1\lib\MonoAndroid10\Refractored.Xam.Settings.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector">
       <HintPath>..\..\packages\SimpleInjector.2.5.2\lib\portable-net4+sl4+wp8+win8\SimpleInjector.dll</HintPath>

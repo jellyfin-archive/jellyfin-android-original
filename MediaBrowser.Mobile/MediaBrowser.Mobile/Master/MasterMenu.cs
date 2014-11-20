@@ -1,37 +1,52 @@
-﻿using System.Threading.Tasks;
-using MediaBrowser.Mobile.Common.ViewModels;
+﻿using MediaBrowser.Mobile.Common.ViewModels;
+using MediaBrowser.Mobile.Extensions;
+using MediaBrowser.Model.ApiClient;
+using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Events;
+using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.Labs.Services;
 
 namespace MediaBrowser.Mobile.Master
 {
     public class MasterMenu : ContentPage
     {
-        private bool _needsRefresh;
-        private SessionViewModel _viewModel;
-
         public MasterMenu(SessionViewModel viewModel)
         {
-            Title = "Media Browser";
+            Title = this.GetLocalizedString("TitleAppName");
 
-            _needsRefresh = true;
-            _viewModel = viewModel;
+            BindingContext = viewModel;
 
-            Content = new Label {Text = "Menu"};
+            LoadAnonymousContent();
+
+            var connectionManager = Resolver.Resolve<IConnectionManager>();
+
+            connectionManager.LocalUserSignIn += connectionManager_LocalUserSignIn;
+            connectionManager.LocalUserSignOut += connectionManager_LocalUserSignOut;
         }
 
-        protected override async void OnAppearing()
+        void connectionManager_LocalUserSignOut(object sender, EventArgs e)
         {
-            base.OnAppearing();
+            Device.BeginInvokeOnMainThread(LoadAnonymousContent);
+        }
 
-            if (_needsRefresh)
+        void connectionManager_LocalUserSignIn(object sender, GenericEventArgs<UserDto> e)
+        {
+            Device.BeginInvokeOnMainThread(LoadUserContent);
+        }
+
+        private void LoadUserContent()
+        {
+            Content = new UserMenu();
+        }
+
+        private async void LoadAnonymousContent()
+        {
+            Content = new Label
             {
-                await RefreshContent();
-            }
-        }
-
-        private async Task RefreshContent()
-        {
-            
+                Text = this.GetLocalizedString("LabelPleaseSignIn")
+            };
         }
     }
 }

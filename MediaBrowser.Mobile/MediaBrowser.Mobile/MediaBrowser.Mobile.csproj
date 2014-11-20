@@ -41,10 +41,12 @@
     <Compile Include="Home\HomePage.cs" />
     <Compile Include="Home\HomeTab.cs" />
     <Compile Include="Home\NextUpTab.cs" />
+    <Compile Include="Home\PlaceholderTab.cs" />
     <Compile Include="Home\UpcomingTab.cs" />
     <Compile Include="Localization\LocalizationCommon.cs" />
     <Compile Include="Master\MasterMenu.cs" />
     <Compile Include="Master\MasterPage.cs" />
+    <Compile Include="Master\UserMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\SharedVersion.cs" />
     <Compile Include="Startup\ConnectPage.cs" />
@@ -59,19 +61,19 @@
       <HintPath>..\..\packages\ExifLib.PCL.1.0.0\lib\portable-net45+sl50+win+WindowsPhoneApp81+wp80+MonoAndroid10+MonoTouch10\ExifLib.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.ApiInteraction.Portable">
-      <HintPath>..\..\packages\MediaBrowser.ApiClient.3.0.0.468\lib\portable-net45+sl4+wp71+win8+wpa81\MediaBrowser.ApiInteraction.Portable.dll</HintPath>
+      <HintPath>..\..\packages\MediaBrowser.ApiClient.3.0.0.469\lib\portable-net45+sl4+wp71+win8+wpa81\MediaBrowser.ApiInteraction.Portable.dll</HintPath>
     </Reference>
     <Reference Include="MediaBrowser.Model">
-      <HintPath>..\..\packages\MediaBrowser.Common.3.0.509\lib\portable-net4+sl4+wp71+win8+wpa81\MediaBrowser.Model.dll</HintPath>
+      <HintPath>..\..\packages\MediaBrowser.Common.3.0.510\lib\portable-net4+sl4+wp71+win8+wpa81\MediaBrowser.Model.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.5\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Refractored.Xam.Settings">
-      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.0\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10\Refractored.Xam.Settings.dll</HintPath>
+      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.1\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10\Refractored.Xam.Settings.dll</HintPath>
     </Reference>
     <Reference Include="Refractored.Xam.Settings.Abstractions">
-      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.0\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10\Refractored.Xam.Settings.Abstractions.dll</HintPath>
+      <HintPath>..\..\packages\Xam.Plugins.Settings.1.4.0.1\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10\Refractored.Xam.Settings.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector">
       <HintPath>..\..\packages\SimpleInjector.2.5.2\lib\portable-net4+sl4+wp8+win8\SimpleInjector.dll</HintPath>

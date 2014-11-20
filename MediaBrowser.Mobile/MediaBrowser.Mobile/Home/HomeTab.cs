@@ -9,5 +9,9 @@ namespace MediaBrowser.Mobile.Home
 {
     class HomeTab : ContentPage
     {
+        public HomeTab()
+        {
+            Title = "Home";
+        }
     }
 }

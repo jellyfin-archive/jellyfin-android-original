@@ -1,4 +1,7 @@
-﻿using MediaBrowser.Model.ApiClient;
+﻿using System.Threading.Tasks;
+using MediaBrowser.Mobile.Extensions;
+using MediaBrowser.Mobile.Master;
+using MediaBrowser.Model.ApiClient;
 using System.Threading;
 using Xamarin.Forms;
 using Xamarin.Forms.Labs.Services;
@@ -7,9 +10,17 @@ namespace MediaBrowser.Mobile.Startup
 {
     public class SplashPage : ContentPage
     {
-        public ConnectionResult Result { get; set; }
+        public ConnectionResult ConnectionResult { get; private set; }
+        private readonly MasterPage _masterPage;
 
-        public SplashPage()
+        public SplashPage(MasterPage masterPage)
+        {
+            _masterPage = masterPage;
+            Title = this.GetLocalizedString("TitleAppName");
+            Content = GetSplashContent();
+        }
+
+        private View GetSplashContent()
         {
             var stackLayout = new StackLayout
             {
@@ -34,10 +45,40 @@ namespace MediaBrowser.Mobile.Startup
 
             stackLayout.Children.Add(loading);
 
-            Content = new Frame
+            return new Frame
             {
                 Content = stackLayout
             };
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            Connect();
+        }
+
+        private async void Connect()
+        {
+            var connectionManager = Resolver.Resolve<IConnectionManager>();
+
+            try
+            {
+                ConnectionResult = await connectionManager.Connect(CancellationToken.None);
+            }
+            catch
+            {
+                ConnectionResult = new ConnectionResult
+                {
+                    State = ConnectionState.Unavailable
+                };
+            }
+
+            await Task.Delay(1000);
+
+            await Navigation.PopModalAsync();
+
+            _masterPage.ProcessSplashResult(ConnectionResult);
         }
     }
 }

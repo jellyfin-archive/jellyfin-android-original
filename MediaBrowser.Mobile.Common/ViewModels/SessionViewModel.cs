@@ -1,8 +1,10 @@
 ﻿using MediaBrowser.Model.ApiClient;
 using MediaBrowser.Model.Connect;
 using MediaBrowser.Model.Dto;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
 using System;
+using Xamarin.Forms;
 using Xamarin.Forms.Labs.Services;
 
 namespace MediaBrowser.Mobile.Common.ViewModels
@@ -19,6 +21,17 @@ namespace MediaBrowser.Mobile.Common.ViewModels
             set
             {
                 _username = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _userImageUrl = string.Empty;
+        public string UserImageUrl
+        {
+            get { return _userImageUrl; }
+            set
+            {
+                _userImageUrl = value;
                 OnPropertyChanged();
             }
         }
@@ -61,9 +74,35 @@ namespace MediaBrowser.Mobile.Common.ViewModels
 
         private void UpdateValues()
         {
+            Device.BeginInvokeOnMainThread(UpdateValuesInternal);
+        }
+
+        private void UpdateValuesInternal()
+        {
             Username = _connectUser == null
-                ? (_localUser == null ? "ddd" : _localUser.Name)
+                ? (_localUser == null ? null : _localUser.Name)
                 : _connectUser.Name;
+
+            UserImageUrl = _connectUser == null
+                ? (_localUser == null ? null : GetLocalUserImageUrl(_localUser))
+                : _connectUser.ImageUrl;
+        }
+
+        private string GetLocalUserImageUrl(UserDto user)
+        {
+            var connectionManager = Resolver.Resolve<IConnectionManager>();
+
+            var apiClient = connectionManager.GetApiClient(user);
+
+            if (user.HasPrimaryImage)
+            {
+                return apiClient.GetUserImageUrl(user, new ImageOptions
+                {
+                    ImageType = ImageType.Primary
+                });
+            }
+
+            return null;
         }
     }
 }
