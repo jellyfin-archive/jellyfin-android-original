@@ -1,0 +1,36 @@
+<!--
+
+If this file is present, it is shown automatically when a new steroids.views.WebView is pushed to the layer stack.
+Once the new WebView has finished loading, the loading.html view will be hidden with a fast fade animation.
+Currently, loading.html is supported by iOS only.
+
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Loading...</title>
+
+  <link rel="stylesheet" href="/components/supersonic/css/supersonic.css" />
+
+  <style>
+  body, html {
+    height:100%;
+  }
+  .loading-box {
+    height:100%;
+    display: -webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+  }
+  .super-loading-c {
+    font-size:50px;
+  }
+  </style>
+</head>
+
+<body class="loading-box content">
+  <i class="super-loading-c"></i>
+</body>
+</html>

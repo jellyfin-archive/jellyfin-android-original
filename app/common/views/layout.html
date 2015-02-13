@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <title><%= yield.viewName %></title>
+
+  <link rel="stylesheet" href="/components/supersonic/css/supersonic.css" />
+  <link rel="stylesheet" href="/app/common/stylesheets/application.css" />
+  <link rel="import" href="/components/supersonic/components/import.html">
+
+  <script src="http://localhost/cordova.js"></script>
+  <script src="/components/steroids-js/steroids.js"></script>
+  <script src="/components/angular/angular.js"></script>
+  <script src="/components/supersonic/supersonic.js"></script>
+  <script src="/app/common/scripts/jquery.js"></script>
+  <script src="/components/webcomponentsjs/webcomponents.js"></script>
+  
+  <script src="/app/common/scripts/apiclient/md5.js"></script>
+  <script src="/app/common/scripts/apiclient/sha1.js"></script>
+  <script src="/app/common/scripts/apiclient/logger.js"></script>
+  <script src="/app/common/scripts/apiclient/store.js"></script>
+  <script src="/app/common/scripts/apiclient/network.js"></script>
+  <script src="/app/common/scripts/apiclient/credentials.js"></script>
+  <script src="/app/common/scripts/apiclient/mediabrowser.apiclient.js"></script>
+  <script src="/app/common/scripts/apiclient/connectservice.js"></script>
+  <script src="/app/common/scripts/apiclient/connectionmanager.js"></script>
+  <script src="/app/common/scripts/app.js"></script>
+
+  <% _.each(yield.modules, function(module) { %>
+  <script src="/app/<%= module %>.js"></script>
+  <% }); %>
+  
+</head>
+<body ng-app="<%= yield.moduleName %>">
+
+<%= yield.view %>
+
+</body>
+</html>
