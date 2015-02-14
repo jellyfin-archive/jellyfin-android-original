@@ -1,0 +1,24 @@
+<div class="padding" ng-controller="NewServerController">
+
+	<div class="padding">
+  
+		<div class="padding-top">
+			<h3>New Server</h3>
+		</div>
+		
+		<br/>
+		<label class="item item-input item-dark">
+			<input type="text" placeholder="Address (192.168.1.100 or http://myserver.com)" ng-model="address">
+		</label>
+		
+		<label class="item item-input item-dark">
+			<input type="number" placeholder="Port" ng-model="port">
+		</label>
+		
+		<button class="button button-block button-balanced icon-left super-checkmark-round" ng-click="connect()">
+		Connect
+		</button>
+		
+	</div>
+
+</div>

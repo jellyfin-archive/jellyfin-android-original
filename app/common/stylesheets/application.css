@@ -6,5 +6,33 @@
 
 body {
 	background-color: #111;
+}
+
+.clearBody{
+	background-color: transparent;
+}
+
+body, h1, h2, h3, .input-label {
+	color: #fff;
+}
+
+input[type="text"], input[type="password"], input[type="number"] {
+	color: #fff!important;
+}
+
+a {
+	color: #52B54B;
+}
+
+.centeredContent {
+	text-align: center;
+}
+
+.list .item{
+	background-color: transparent;
+}
+
+.item-stacked-label {
+	background-color: transparent!important;
 	color: #fff;
 }

@@ -1,9 +1,3 @@
-<super-navbar>
-  <super-navbar-title>
-    Media Browser
-  </super-navbar-title>
-</super-navbar>
-
 <div class="padding" ng-controller="InitialViewController">
 
 <!--   <p>Please use the mock log in button below to dismiss the Initial View and initialize the rest of your app1.</p>
@@ -11,7 +5,23 @@
   <button onclick="supersonic.ui.initialView.dismiss()" class="button button-block button-balanced">Log in</button>
  -->
  
-
+	<div class="padding">
+  
+		<div class="padding-top">
+			<h3>Welcome to Media Browser</h3>
+		</div>
+		
+		<br/>
+		<p>With Media Browser you can easily stream videos, music and photos to the iPhone, iPad and other devices from your Media Browser Server.</p>
+		
+		<br/>
+		<p>To download and install Media Browser Server visit <a href="http://mediabrowser.tv" target="_blank" onclick="steroids.openURL(this.href);return false;">http://mediabrowser.tv</a></p>
+		
+		<br/>
+		<button class="button button-block button-balanced icon-right super-arrow-right-a" ng-click="next()">
+		Next
+		</button>
+	</div>
 
 
 </div>

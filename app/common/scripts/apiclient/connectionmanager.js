@@ -66,7 +66,7 @@
             return $.ajax({
 
                 type: "GET",
-                url: url + "/mediabrowser/system/info/public",
+                url: url + "/system/info/public",
                 dataType: "json",
 
                 timeout: timeout || 15000
@@ -268,7 +268,7 @@
 
             var url = connectionMode == MediaBrowser.ConnectionMode.Local ? server.LocalAddress : server.RemoteAddress;
 
-            url += "/mediabrowser/Connect/Exchange?format=json&ConnectUserId=" + credentials.ConnectUserId;
+            url += "/Connect/Exchange?format=json&ConnectUserId=" + credentials.ConnectUserId;
 
             return $.ajax({
                 type: "GET",
@@ -299,7 +299,7 @@
             $.ajax({
 
                 type: "GET",
-                url: url + "/mediabrowser/system/info",
+                url: url + "/system/info",
                 dataType: "json",
                 headers: {
                     "X-MediaBrowser-Token": server.AccessToken
@@ -314,7 +314,7 @@
                     $.ajax({
 
                         type: "GET",
-                        url: url + "/mediabrowser/users/" + server.UserId,
+                        url: url + "/users/" + server.UserId,
                         dataType: "json",
                         headers: {
                             "X-MediaBrowser-Token": server.AccessToken
@@ -466,7 +466,7 @@
             var deferred = $.Deferred();
 
             if (!self.connectToken() || !self.connectUserId()) {
-				deferred.resolveWith(null, [[]]);
+                deferred.resolveWith(null, [[]]);
                 return deferred.promise();
             }
 
@@ -517,7 +517,7 @@
 
             getConnectServers().done(function (result) {
 
-				var newList = mergeServers(servers, result);
+                var newList = mergeServers(servers, result);
 
                 newList.sort(function (a, b) {
                     return b.DateLastAccessed - a.DateLastAccessed;
@@ -539,9 +539,9 @@
 
             var deferred = $.Deferred();
 
-			self.getServers().done(function (servers) {
+            self.getServers().done(function (servers) {
 
-				self.connectToServers(servers).done(function (result) {
+                self.connectToServers(servers).done(function (result) {
 
                     deferred.resolveWith(null, [result]);
 
@@ -553,8 +553,6 @@
 
         self.connectToServers = function (servers) {
 
-			logger.log('Begin connectToServers with '+servers.length+' servers');
-			
             var deferred = $.Deferred();
 
             if (servers.length == 1) {

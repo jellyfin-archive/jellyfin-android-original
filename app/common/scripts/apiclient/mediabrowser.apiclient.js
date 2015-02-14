@@ -47,11 +47,6 @@
             return serverAddress;
         };
 
-        self.apiPrefix = function () {
-
-            return "/mediabrowser";
-        };
-
         self.serverInfo = function (info) {
 
             serverInfo = info || serverInfo;
@@ -189,7 +184,7 @@
             $.ajax({
 
                 type: "GET",
-                url: url + "/mediabrowser/system/info/public",
+                url: url + "/system/info/public",
                 dataType: "json",
 
                 timeout: 15000
@@ -230,15 +225,9 @@
             return deferred.promise();
         }
 
-        function replaceServerAddress(url, newBaseUrl) {
+        function replaceServerAddress(url, oldBaseUrl, newBaseUrl) {
 
-            var index = url.toLowerCase().indexOf("/mediabrowser");
-
-            if (index != -1) {
-                return newBaseUrl + url.substring(index);
-            }
-
-            return url;
+            return url.replace(oldBaseUrl, newBaseUrl);
         }
 
         self.ajaxWithFailover = function (request, deferred, enableReconnection, replaceUrl) {
@@ -317,9 +306,7 @@
                 throw new Error("Url name cannot be empty");
             }
 
-            var url = serverAddress;
-
-            url += self.apiPrefix() + "/" + name;
+            var url = serverAddress + "/" + name;
 
             if (params) {
                 url += "?" + $.param(params);
@@ -347,9 +334,7 @@
 
         self.openWebSocket = function () {
 
-            var url = serverAddress + self.apiPrefix();
-
-            url = url.replace('http', 'ws');
+            var url = serverAddress.replace('http', 'ws');
 
             webSocket = new WebSocket(url);
 
@@ -1497,9 +1482,9 @@
         /**
          * Gets the virtual folder list
          */
-        self.getVirtualFolders = function (userId) {
+        self.getVirtualFolders = function () {
 
-            var url = userId ? "Users/" + userId + "/VirtualFolders" : "Library/VirtualFolders";
+            var url = "Library/VirtualFolders";
 
             url = self.getUrl(url);
 
@@ -2505,6 +2490,28 @@
         };
 
         /**
+         * Updates a user's easy password
+         * @param {String} userId
+         * @param {String} newPassword
+         */
+        self.updateEasyPassword = function (userId, newPassword) {
+
+            if (!userId) {
+                throw new Error("null userId");
+            }
+
+            var url = self.getUrl("Users/" + userId + "/EasyPassword");
+
+            return self.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    newPassword: CryptoJS.SHA1(newPassword).toString()
+                }
+            });
+        };
+
+        /**
         * Resets a user's password
         * @param {String} userId
         */
@@ -2515,6 +2522,27 @@
             }
 
             var url = self.getUrl("Users/" + userId + "/Password");
+
+            var postData = {
+
+            };
+
+            postData.resetPassword = true;
+
+            return self.ajax({
+                type: "POST",
+                url: url,
+                data: postData
+            });
+        };
+
+        self.resetEasyPassword = function (userId) {
+
+            if (!userId) {
+                throw new Error("null userId");
+            }
+
+            var url = self.getUrl("Users/" + userId + "/EasyPassword");
 
             var postData = {
 
@@ -2762,17 +2790,13 @@
          */
         self.getItems = function (userId, options) {
 
-            if (!userId) {
-                throw new Error("null userId");
-            }
-
             var url;
 
             if ((typeof userId).toString().toLowerCase() == 'string') {
                 url = self.getUrl("Users/" + userId + "/Items", options);
             } else {
-                options = userId;
-                url = self.getUrl("Items", options || {});
+
+                url = self.getUrl("Items", options);
             }
 
             return self.ajax({

@@ -22,6 +22,16 @@
 			
 			return manager;
         };
+		
+		self.setBackgroundImage = function(url) {
+			steroids.view.setBackgroundImage(url);
+			$('body').addClass('clearBody');
+		};
+		
+		self.clearBackgroundImage = function() {
+			steroids.view.setBackgroundImage(null);
+			$('body').removeClass('clearBody');
+		};
 
         return self;
     }();
