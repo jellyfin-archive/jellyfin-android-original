@@ -1,6 +1,6 @@
 angular
   .module('example')
-  .controller('InitialViewController', function($scope, supersonic) {
+  .controller('InitialViewController', function($scope, supersonic, $http) {
 	
 	$scope.next = function() {
 	
@@ -26,7 +26,7 @@ angular
 		steroids.view.displayLoading();
 	
 		steroids.logger.log('Calling App.connectionManager');
-		var connectionManager = App.connectionManager();
+		var connectionManager = App.connectionManager($http);
 
 		steroids.logger.log('Calling connectionManager.connect');
 		connectionManager.connect().done(function (result) {

@@ -10,12 +10,11 @@
 		
 		<div class="list">
 
-			<a class="item item-thumbnail-left item-dark" href="#">
-			  <img src="cover.jpg">
-			  <h2>Pretty Hate Machine</h2>
-			  <p>&nbsp;</p>
-			</a>
-
+				<a class="item item-thumbnail-left item-dark" href="#" ng-repeat="server in servers" ng-click="connectToServer({{ server }})">
+				  <img src="cover.jpg">
+				  <h2>{{ server.Name }}</h2>
+				  <p>&nbsp;</p>
+				</a>
 		</div>
 		
 		<button class="button button-block button-balanced icon-left super-plus-round" ng-click="newServer()">

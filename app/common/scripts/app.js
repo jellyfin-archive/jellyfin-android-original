@@ -13,24 +13,41 @@
 
             };
         };
+		
+        self.connectionManager = function($http) {
 
-        self.connectionManager = function() {
-
+			globalScope.$http = $http;
+			
             var credentialProvider = new MediaBrowser.CredentialProvider();
 
-			var manager = new MediaBrowser.ConnectionManager(jQuery, Logger, credentialProvider, self.appName, self.appVersion, "deviceName", "deviceId", self.capabilities());
+			var manager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, self.appName, self.appVersion, "deviceName", "deviceId", self.capabilities());
 			
 			return manager;
         };
 		
 		self.setBackgroundImage = function(url) {
 			steroids.view.setBackgroundImage(url);
-			$('body').addClass('clearBody');
+			self.addClass(document.body, 'clearBody');
 		};
 		
 		self.clearBackgroundImage = function() {
 			steroids.view.setBackgroundImage(null);
-			$('body').removeClass('clearBody');
+			self.removeClass(document.body, 'clearBody');
+		};
+		
+		self.addClass = function(elem, name) {
+		
+			var css = ' ' + (elem.className || '') + ' ';
+			
+			if (css.indexOf(' ' + name + ' ') == -1) {
+				elem.className = (css + name).trim();
+			}
+		};
+		
+		self.removeClass = function(elem, name) {
+		
+			var css = ' ' + (elem.className || '') + ' ';
+			elem.className = css.replace(' ' + name + ' ', '').trim();
 		};
 
         return self;
