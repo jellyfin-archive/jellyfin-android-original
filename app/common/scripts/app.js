@@ -14,11 +14,9 @@
             };
         };
 		
-        self.connectionManager = function($http) {
+        self.connectionManager = function() {
 
-			globalScope.$http = $http;
-			
-            var credentialProvider = new MediaBrowser.CredentialProvider();
+			var credentialProvider = new MediaBrowser.CredentialProvider();
 
 			var manager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, self.appName, self.appVersion, "deviceName", "deviceId", self.capabilities());
 			

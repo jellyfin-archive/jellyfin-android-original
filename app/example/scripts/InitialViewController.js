@@ -1,6 +1,6 @@
 angular
   .module('example')
-  .controller('InitialViewController', function($scope, supersonic, $http) {
+  .controller('InitialViewController', function($scope, supersonic) {
 	
 	$scope.next = function() {
 	
@@ -26,7 +26,7 @@ angular
 		steroids.view.displayLoading();
 	
 		steroids.logger.log('Calling App.connectionManager');
-		var connectionManager = App.connectionManager($http);
+		var connectionManager = App.connectionManager();
 
 		steroids.logger.log('Calling connectionManager.connect');
 		connectionManager.connect().done(function (result) {
@@ -38,7 +38,7 @@ angular
 			switch (result.State) {
 			
 				case MediaBrowser.ConnectionState.ConnectSignIn:
-					navigateToConnectSignIn();
+					//navigateToConnectSignIn();
 					break;
 				case MediaBrowser.ConnectionState.ServerSelection:
 					navigateToServerSelection();

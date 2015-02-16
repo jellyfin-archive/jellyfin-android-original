@@ -1,6 +1,6 @@
 angular
   .module('example')
-  .controller('NewServerController', function($scope, supersonic, $http) {
+  .controller('NewServerController', function($scope, supersonic) {
 
     App.setBackgroundImage("images/splash.jpg");
 	
@@ -18,7 +18,7 @@ angular
 	
 		steroids.logger.log('Calling App.connectionManager');
 		
-		var connectionManager = App.connectionManager($http);
+		var connectionManager = App.connectionManager();
 		
 		steroids.logger.log('Calling connectionManager.connectToAddress');
 		connectionManager.connectToAddress(address).done(function (result) {
