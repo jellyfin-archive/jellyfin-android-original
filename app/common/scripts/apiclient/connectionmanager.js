@@ -17,7 +17,7 @@
         Remote: 1
     };
 
-    globalScope.MediaBrowser.ConnectionManager = function ($, logger, credentialProvider, appName, appVersion, deviceName, deviceId, capabilities) {
+    globalScope.MediaBrowser.ConnectionManager = function (logger, credentialProvider, appName, appVersion, deviceName, deviceId, capabilities) {
 
         logger.log('Begin MediaBrowser.ConnectionManager constructor');
 
@@ -63,10 +63,14 @@
 
         function tryConnect(url, timeout) {
 
-            return $.ajax({
+            url += "/system/info/public";
+
+            logger.log('tryConnect url: ' + url);
+
+            return AjaxApi.ajax({
 
                 type: "GET",
-                url: url + "/system/info/public",
+                url: url,
                 dataType: "json",
 
                 timeout: timeout || 15000
@@ -116,7 +120,7 @@
                 updateServerInfo(server, systemInfo);
 
                 apiClient.serverInfo(server);
-                $(self).trigger('apiclientcreated', [apiClient]);
+                Events.trigger(self, 'apiclientcreated', [apiClient]);
 
                 if (enableAutomaticNetworking) {
                     self.connectToServer(server);
@@ -128,7 +132,7 @@
         function onConnectAuthenticated(user) {
 
             connectUser = user;
-            $(self).trigger('connectusersignedin', [user]);
+            Events.trigger(self, 'connectusersignedin', [user]);
         }
 
         function getOrAddApiClient(server, connectionMode) {
@@ -139,29 +143,30 @@
 
                 var url = connectionMode == MediaBrowser.ConnectionMode.Local ? server.LocalAddress : server.RemoteAddress;
 
-                apiClient = new MediaBrowser.ApiClient($, logger, url, appName, appVersion, deviceName, deviceId, capabilities);
+                apiClient = new MediaBrowser.ApiClient(logger, url, appName, appVersion, deviceName, deviceId, capabilities);
 
                 apiClients.push(apiClient);
 
                 apiClient.serverInfo(server);
 
-                $(apiClient).on('authenticated', function (e, result) {
+                Events.on(apiClient, 'authenticated', function (e, result) {
                     onLocalAuthenticated(this, result, true);
                 });
 
-                $(self).trigger('apiclientcreated', [apiClient]);
+                Events.trigger(self, 'apiclientcreated', [apiClient]);
 
             }
 
-            if (!server.AccessToken) {
-
-                apiClient.clearAuthenticationInfo();
-            }
-            else {
+            if (server.AccessToken) {
 
                 apiClient.setAuthenticationInfo(server.AccessToken, server.UserId);
             }
+            else {
 
+                apiClient.clearAuthenticationInfo();
+            }
+
+            logger.log('returning instance from getOrAddApiClient');
             return apiClient;
         }
 
@@ -197,18 +202,20 @@
         function ensureWebSocket(apiClient) {
 
             if (!apiClient.isWebSocketOpenOrConnecting && apiClient.isWebSocketSupported()) {
+                logger.log('calling apiClient.openWebSocket');
+
                 apiClient.openWebSocket();
             }
         }
 
         function onLocalUserSignIn(user) {
 
-            $(self).trigger('localusersignedin', [user]);
+            Events.trigger(self, 'localusersignedin', [user]);
         }
 
         function ensureConnectUser(credentials) {
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             if (connectUser && connectUser.Id == credentials.ConnectUserId) {
                 deferred.resolveWith(null, [[]]);
@@ -245,7 +252,7 @@
 
             var url = "https://connect.mediabrowser.tv/service/user?id=" + userId;
 
-            return $.ajax({
+            return AjaxApi.ajax({
                 type: "GET",
                 url: url,
                 dataType: "json",
@@ -270,7 +277,7 @@
 
             url += "/Connect/Exchange?format=json&ConnectUserId=" + credentials.ConnectUserId;
 
-            return $.ajax({
+            return AjaxApi.ajax({
                 type: "GET",
                 url: url,
                 dataType: "json",
@@ -292,11 +299,11 @@
 
         function validateAuthentication(server, connectionMode) {
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             var url = connectionMode == MediaBrowser.ConnectionMode.Local ? server.LocalAddress : server.RemoteAddress;
 
-            $.ajax({
+            AjaxApi.ajax({
 
                 type: "GET",
                 url: url + "/system/info",
@@ -311,7 +318,7 @@
 
                 if (server.UserId) {
 
-                    $.ajax({
+                    AjaxApi.ajax({
 
                         type: "GET",
                         url: url + "/users/" + server.UserId,
@@ -374,7 +381,7 @@
 
         self.user = function () {
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             var localUser;
 
@@ -433,7 +440,7 @@
                 }
             }
 
-            return $.when(promises).done(function () {
+            return Deferred.when(promises).done(function () {
 
                 var credentials = credentialProvider.credentials();
 
@@ -455,7 +462,7 @@
 
                 connectUser = null;
 
-                $(self).trigger('signedout');
+                Events.trigger(self, 'signedout');
             });
         };
 
@@ -463,7 +470,7 @@
 
             logger.log('Begin getConnectServers');
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             if (!self.connectToken() || !self.connectUserId()) {
                 deferred.resolveWith(null, [[]]);
@@ -472,7 +479,7 @@
 
             var url = "https://connect.mediabrowser.tv/service/servers?userId=" + self.connectUserId();
 
-            $.ajax({
+            AjaxApi.ajax({
                 type: "GET",
                 url: url,
                 dataType: "json",
@@ -513,7 +520,7 @@
             var credentials = credentialProvider.credentials();
             var servers = credentials.servers.slice(0);
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             getConnectServers().done(function (result) {
 
@@ -537,7 +544,7 @@
 
             logger.log('Begin connect');
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             self.getServers().done(function (servers) {
 
@@ -553,7 +560,9 @@
 
         self.connectToServers = function (servers) {
 
-            var deferred = $.Deferred();
+            logger.log('Begin connectToServers, with ' + servers.length + ' servers');
+
+            var deferred = Deferred.Deferred();
 
             if (servers.length == 1) {
 
@@ -566,6 +575,7 @@
                             MediaBrowser.ConnectionState.ServerSelection;
                     }
 
+                    logger.log('resolving connectToServers with result.State: ' + result.State);
                     deferred.resolveWith(null, [result]);
 
                 });
@@ -610,7 +620,7 @@
 
         self.connectToServer = function (server) {
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             function onLocalServerTokenValidationDone(connectionMode, credentials) {
 
@@ -638,14 +648,14 @@
 
                 deferred.resolveWith(null, [result]);
 
-                $(self).trigger('connected', [result]);
+                Events.trigger(self, 'connected', [result]);
             }
 
             function onExchangeTokenDone(connectionMode, credentials) {
 
                 if (server.AccessToken) {
-                    validateAuthentication(server, connectionMode).always(function() {
-                 
+                    validateAuthentication(server, connectionMode).always(function () {
+
                         onLocalServerTokenValidationDone(connectionMode, credentials);
                     });
                 } else {
@@ -657,8 +667,8 @@
 
                 if (credentials.ConnectUserId && credentials.ConnectAccessToken && server.ExchangeToken) {
 
-                    addAuthenticationInfoFromConnect(server, connectionMode, credentials).always(function() {
-                        
+                    addAuthenticationInfoFromConnect(server, connectionMode, credentials).always(function () {
+
                         onExchangeTokenDone(connectionMode, credentials);
                     });
 
@@ -680,7 +690,7 @@
                 var credentials = credentialProvider.credentials();
 
                 if (credentials.ConnectUserId && credentials.ConnectAccessToken) {
-                    ensureConnectUser(credentials).always(function() {
+                    ensureConnectUser(credentials).always(function () {
                         onEnsureConnectUserDone(connectionMode, credentials);
                     });
                 } else {
@@ -697,7 +707,7 @@
 
                         onRemoteTestDone(result, MediaBrowser.ConnectionMode.Remote);
 
-                    }).fail(function() {
+                    }).fail(function () {
                         onRemoteTestDone();
                     });
 
@@ -729,9 +739,11 @@
                 address = "http://" + address;
             }
 
-            var deferred = $.Deferred();
+            var deferred = Deferred.Deferred();
 
             tryConnect(address).done(function (publicInfo) {
+
+                logger.log('connectToAddress ' + address + ' succeeded');
 
                 var server = {};
                 updateServerInfo(server, publicInfo);
@@ -747,6 +759,7 @@
 
             }).fail(function () {
 
+                logger.log('connectToAddress ' + address + ' failed');
                 resolveWithFailure(deferred);
             });
 
@@ -764,7 +777,7 @@
 
             var md5 = self.getConnectPasswordHash(password);
 
-            return $.ajax({
+            return AjaxApi.ajax({
                 type: "POST",
                 url: "https://connect.mediabrowser.tv/service/user/authenticate",
                 data: {
@@ -825,7 +838,7 @@
 
             var url = "https://connect.mediabrowser.tv/service/servers?userId=" + self.connectUserId() + "&status=Waiting";
 
-            return $.ajax({
+            return AjaxApi.ajax({
                 type: "GET",
                 url: url,
                 dataType: "json",
@@ -851,7 +864,7 @@
 
             var url = "https://connect.mediabrowser.tv/service/serverAuthorizations?serverId=" + serverId + "&userId=" + self.connectUserId();
 
-            return $.ajax({
+            return AjaxApi.ajax({
                 type: "DELETE",
                 url: url,
                 headers: {
@@ -886,7 +899,7 @@
 
             var url = "https://connect.mediabrowser.tv/service/serverAuthorizations?serverId=" + serverId + "&userId=" + self.connectUserId();
 
-            return $.ajax({
+            return AjaxApi.ajax({
                 type: "DELETE",
                 url: url,
                 headers: {
@@ -911,7 +924,7 @@
 
             var url = "https://connect.mediabrowser.tv/service/ServerAuthorizations/accept?serverId=" + serverId + "&userId=" + self.connectUserId();
 
-            return $.ajax({
+            return AjaxApi.ajax({
                 type: "GET",
                 url: url,
                 headers: {
@@ -925,4 +938,4 @@
         return self;
     };
 
-})(window, window.jQuery, window.Logger);
+})(window, window.Logger);
