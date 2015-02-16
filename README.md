@@ -1,4 +1,4 @@
 MediaBrowser.Mobile
 ===================
 
-A Xamarin-based mobile app for Media Browser
+An Appgyver-based mobile app for Media Browser
