@@ -2,21 +2,28 @@
 
 	<div class="padding">
   
-		<div class="padding-top">
-			<h3>New Server</h3>
-		</div>
-		
+		<form ng-submit="connect()">
+			<div class="padding-top">
+				<h3>New Server</h3>
+			</div>
+			
+			<br/>
+			<label class="item item-input item-dark">
+				<input type="text" placeholder="Address (192.168.1.100 or http://myserver.com)" ng-model="address" required="required">
+			</label>
+			
+			<label class="item item-input item-dark">
+				<input type="number" placeholder="Port" ng-model="port">
+			</label>
+			
+			<button class="button button-block button-balanced icon-left super-checkmark-round" type="submit">
+			Connect
+			</button>
+		</form>
+
 		<br/>
-		<label class="item item-input item-dark">
-			<input type="text" placeholder="Address (192.168.1.100 or http://myserver.com)" ng-model="address">
-		</label>
-		
-		<label class="item item-input item-dark">
-			<input type="number" placeholder="Port" ng-model="port">
-		</label>
-		
-		<button class="button button-block button-balanced icon-left super-checkmark-round" ng-click="connect()">
-		Connect
+		<button class="button button-block button-dark icon-left super-close-round" ng-click="cancel()">
+			Cancel
 		</button>
 		
 	</div>

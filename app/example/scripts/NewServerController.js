@@ -30,21 +30,36 @@ angular
 			switch (result.State) {
 			
 				case MediaBrowser.ConnectionState.Unavailable:
-					alert('Unavailable');
-					break;
-				case MediaBrowser.ConnectionState.ServerSignIn:
-					alert('ServerSignIn');
+					supersonic.ui.dialog.alert("Connection Failure", {
+						message: "We're unable to reach this server. Please ensure it is running and try again."
+					});
 					break;
 				case MediaBrowser.ConnectionState.SignedIn:
-					alert('SignedIn');
+				case MediaBrowser.ConnectionState.ServerSignIn:
+					sendResultToParent(result);
 					break;
 				default:
 					steroids.logger.log('Unhandled ConnectionState: ' + result.State);
-					alert('Unhandled ConnectionState: ' + result.State);
 					break;
 			}
 			
 		});  
 	};
+	
+	$scope.cancel = function() {
+	
+		supersonic.ui.modal.hide({
+			animate: true
+		});
+	};
+	
+	function sendResultToParent(result) {
+	
+		supersonic.ui.modal.hide({
+			animate: true
+		});
+
+		supersonic.data.channel('newserverresult').publish(result);
+	}
 	
 });

@@ -732,14 +732,14 @@
 
             tryConnect(address, timeout).done(function (result) {
 
-				logger.log('calling onSuccessfulConnection with connection mode ' + mode + ' with server ' + server.Name);
+                logger.log('calling onSuccessfulConnection with connection mode ' + mode + ' with server ' + server.Name);
                 onSuccessfulConnection(server, result, mode, options, deferred);
 
             }).fail(function () {
 
                 logger.log('test failed for connection mode ' + mode + ' with server ' + server.Name);
-				
-				if (enableRetry) {
+
+                if (enableRetry) {
 
                     var sleepTime = 10000 - (new Date().getTime() - wakeOnLanSendTime);
 

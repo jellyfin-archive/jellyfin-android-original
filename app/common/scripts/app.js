@@ -47,6 +47,31 @@
 			var css = ' ' + (elem.className || '') + ' ';
 			elem.className = css.replace(' ' + name + ' ', '').trim();
 		};
+		
+		self.navigateToServerSelection = function() {
+		
+			supersonic.ui.layers.push(new supersonic.ui.View("example#selectserver"), {
+			  animate: true
+			});
+		};
+		
+		self.navigateToConnectSignIn = function() {
+		
+			supersonic.ui.layers.push(new supersonic.ui.View("example#connectsignin"), {
+			  animate: true
+			});
+		};
+		
+		self.handleServerSignInResult = function(result) {
+		
+			supersonic.ui.layers.push(new supersonic.ui.View("example#serversignin"), {
+			  animate: true
+			});
+		};
+		
+		self.handleSignedInResult = function(result) {
+		
+		};
 
         return self;
     }();

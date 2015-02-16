@@ -4,22 +4,8 @@ angular
 	
 	$scope.next = function() {
 	
-		navigateToConnectSignIn();
+		App.navigateToConnectSignIn();
 	};
-	
-	function navigateToConnectSignIn() {
-	
-		supersonic.ui.layers.push(new supersonic.ui.View("example#connectsignin"), {
-		  animate: true
-		});
-	}
-	
-	function navigateToServerSelection() {
-	
-		supersonic.ui.layers.push(new supersonic.ui.View("example#selectserver"), {
-		  animate: true
-		});
-	}
 	
 	function startConnectionProcess() {
 	
@@ -38,10 +24,16 @@ angular
 			switch (result.State) {
 			
 				case MediaBrowser.ConnectionState.ConnectSignIn:
-					//navigateToConnectSignIn();
+					//App.navigateToConnectSignIn();
+					break;
+				case MediaBrowser.ConnectionState.SignedIn:
+					App.handleSignedInResult(result);
+					break;
+				case MediaBrowser.ConnectionState.ServerSignIn:
+					App.handleServerSignInResult(result);
 					break;
 				case MediaBrowser.ConnectionState.ServerSelection:
-					navigateToServerSelection();
+					App.navigateToServerSelection();
 					break;
 				default:
 					steroids.logger.log('Unhandled ConnectionState');

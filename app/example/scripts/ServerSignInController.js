@@ -1,6 +1,6 @@
 angular
   .module('example')
-  .controller('ConnectSignInController', function($scope, supersonic) {
+  .controller('ServerSignInController', function($scope, supersonic) {
 
     App.setBackgroundImage("images/splash.jpg");
 	
@@ -53,11 +53,6 @@ angular
 	$scope.login = function() {
 	
 		login($scope.username, $scope.password);
-	};
-	
-	$scope.skip = function() {
-	
-		App.navigateToServerSelection();
 	};
 
 });
