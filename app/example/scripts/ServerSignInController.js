@@ -54,5 +54,16 @@ angular
 	
 		login($scope.username, $scope.password);
 	};
+	
+	$scope.changeServer = function() {
+		App.navigateToServerSelection();
+	};
+	
+	function loadServer(id) {
+	
+		
+	}
 
+	loadServer(supersonic.ui.views.current.params.id);
+	
 });

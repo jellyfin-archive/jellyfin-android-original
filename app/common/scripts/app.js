@@ -64,7 +64,11 @@
 		
 		self.handleServerSignInResult = function(result) {
 		
-			supersonic.ui.layers.push(new supersonic.ui.View("example#serversignin"), {
+			var server = result.Servers[0];
+			
+			console.log('handleServerSignInResult');
+			console.log('ServerId: ' + server.Id);
+			supersonic.ui.layers.push(new supersonic.ui.View("example#serversignin?id=" + server.Id), {
 			  animate: true
 			});
 		};

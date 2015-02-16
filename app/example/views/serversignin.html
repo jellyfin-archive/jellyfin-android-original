@@ -6,6 +6,19 @@
 			<h3>Please Sign In</h3>
 		</div>
 		
+		<div class="list">
+
+			<a class="item item-thumbnail-left item-dark" href="#" ng-repeat="user in users" ng-click="loginUser(user)">
+			  <img src="{{ user.ImageUrl }}">
+			  <h2>{{ user.Name }}</h2>
+			  <p>&nbsp;</p>
+			</a>
+		</div>
+		
+		<br/>
+		<button class="button button-block button-dark icon-left super-network" ng-click="changeServer()">
+			Change Server
+		</button>
 	</div>
 
 </div>
