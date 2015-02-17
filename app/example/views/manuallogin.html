@@ -1,23 +1,23 @@
-<div class="padding" ng-controller="NewServerController">
+<div class="padding" ng-controller="ManualLoginController">
 
 	<div class="padding">
   
-		<form ng-submit="connect()">
+		<form ng-submit="login()">
 			<div class="padding-top">
-				<h3>New Server</h3>
+				<h3>Sign In</h3>
 			</div>
 			
 			<br/>
 			<label class="item item-input item-dark">
-				<input type="text" placeholder="Address (192.168.1.100 or http://myserver.com)" ng-model="address" required="required" />
+				<input type="text" placeholder="Username" ng-model="username" required="required" />
 			</label>
 			
 			<label class="item item-input item-dark">
-				<input type="number" placeholder="Port" ng-model="port" />
+				<input type="password" placeholder="Password" ng-model="password" />
 			</label>
 			
 			<button class="button button-block button-balanced icon-left super-checkmark-round" type="submit">
-			Connect
+			Sign In
 			</button>
 		</form>
 

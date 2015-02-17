@@ -2,59 +2,50 @@ angular
   .module('example')
   .controller('ServerSignInController', function ($scope, supersonic) {
 
-      App.setBackgroundImage("images/splash.jpg");
-
       function login(username, password) {
 
-          steroids.view.displayLoading();
+          var serverId = $scope.serverId;
 
-          steroids.logger.log('Calling App.connectionManager');
           App.connectionManager().done(function (connectionManager) {
 
-              steroids.logger.log('Calling connectionManager.connectToServer');
-              connectionManager.loginToConnect(username, password).done(function () {
+              var apiClient = connectionManager.getOrCreateApiClient(serverId);
 
-                  steroids.logger.log('Connect authentication succeeded');
-
-                  connectionManager.connect().done(function (result) {
-
-                      steroids.logger.log('result.State: ' + result.State);
-                      steroids.view.removeLoading();
-
-                      switch (result.State) {
-
-                          case MediaBrowser.ConnectionState.ServerSelection:
-                              App.navigateToServerSelection();
-                              break;
-                          case MediaBrowser.ConnectionState.ServerSignIn:
-                              App.handleServerSignInResult(result);
-                              break;
-                          case MediaBrowser.ConnectionState.SignedIn:
-                              App.handleSignedInResult(result);
-                              break;
-                          default:
-                              steroids.logger.log('Unhandled ConnectionState');
-                              break;
-                      }
-                  });
-
-              }).fail(function () {
-
-                  steroids.logger.log('Connect authentication failed');
-                  steroids.view.removeLoading();
-
-                  supersonic.ui.dialog.alert("Sign In Error", {
-                      message: "Invalid username or password. Please try again."
-
-                  });
-              });
+              apiClient.authenticateUserByName(username, password)
+			  .done(function (result) {
+			      supersonic.ui.dialog.alert("OK!", {
+			          message: "OK!"
+			      });
+			  })
+			  .fail(function () {
+			      supersonic.ui.dialog.alert("Sign In Failure", {
+			          message: "Invalid username or password entered. Please try again."
+			      });
+			  });
 
           });
       }
 
-      $scope.login = function () {
+      $scope.showManualLogin = function (username) {
 
-          login($scope.username, $scope.password);
+          var url = "example#manuallogin?serverid=" + $scope.serverId;
+
+          if (username) {
+              url += "&username=" + username;
+          }
+
+          supersonic.ui.modal.show(new supersonic.ui.View(url), {
+              animate: true
+          });
+      };
+
+      $scope.loginUser = function (user) {
+
+          if (user.HasPassword) {
+              $scope.showManualLogin(user.Name);
+          }
+          else {
+              login(user.Name);
+          }
       };
 
       $scope.changeServer = function () {
@@ -62,6 +53,8 @@ angular
       };
 
       function loadServer(id) {
+
+          $scope.serverId = id;
 
           App.connectionManager().done(function (connectionManager) {
 
@@ -77,14 +70,24 @@ angular
       function renderUsers(apiClient, users) {
 
           $scope.$apply(function () {
-              
+
               $scope.users = users.map(function (u) {
 
-                  u.ImageUrl = "splash.png";
+                  if (u.PrimaryImageTag) {
+                      u.ImageUrl = apiClient.getUserImageUrl(u.Id, {
+                          type: 'Primary',
+                          tag: u.PrimaryImageTag
+                      });
+                  }
+                  else {
+                      u.ImageUrl = "/images/user.png";
+                  }
+
                   return u;
               });
           });
       }
 
+      App.setBackgroundImage("images/splash.jpg");
       loadServer(steroids.view.params.serverid);
   });

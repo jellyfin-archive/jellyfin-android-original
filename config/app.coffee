@@ -13,7 +13,7 @@ module.exports =
   webView:
     viewsIgnoreStatusBar: false
     enableDoubleTapToFocus: false
-    disableOverscroll: false
+    disableOverscroll: true
     enableViewportScale: false
     enablePopGestureRecognition: true
     allowInlineMediaPlayback: true
