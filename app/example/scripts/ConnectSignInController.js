@@ -6,6 +6,15 @@ angular
 	
 	function login(username, password) {
 	
+		if (!username) {
+			$('.txtUsername').focus();
+			return;
+		}
+		if (!password) {
+			$('.txtPassword').focus();
+			return;
+		}
+		
 		steroids.view.displayLoading();
 	
 		steroids.logger.log('Calling App.connectionManager');

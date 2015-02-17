@@ -10,7 +10,17 @@ angular
 
           var address = $scope.address;
 
-          if ($scope.port) {
+          if (!address) {
+			$('.txtAddress').focus();
+			return;
+		  }
+		
+		  if ($scope.port) {
+		  
+			  if (isNaN($scope.port)){
+				$('.txtPort').focus();
+				return;
+			  }
               address += ':' + $scope.port;
           }
 

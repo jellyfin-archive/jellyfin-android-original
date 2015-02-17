@@ -10,7 +10,12 @@ angular
           var username = $scope.username;
           var password = $scope.password;
 		  
-		  App.connectionManager().done(function (connectionManager) {
+		if (!username) {
+			$('.txtUsername').focus();
+			return;
+		}
+		
+		App.connectionManager().done(function (connectionManager) {
 
               var apiClient = connectionManager.getOrCreateApiClient(serverId);
 

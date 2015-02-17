@@ -6,23 +6,19 @@ angular
 
           var serverId = $scope.serverId;
 
-          App.connectionManager().done(function (connectionManager) {
+          var apiClient = $scope.apiClient;
 
-              var apiClient = connectionManager.getOrCreateApiClient(serverId);
-
-              apiClient.authenticateUserByName(username, password)
-			  .done(function (result) {
-			      supersonic.ui.dialog.alert("OK!", {
-			          message: "OK!"
-			      });
-			  })
-			  .fail(function () {
-			      supersonic.ui.dialog.alert("Sign In Failure", {
-			          message: "Invalid username or password entered. Please try again."
-			      });
+		  apiClient.authenticateUserByName(username, password)
+		  .done(function (result) {
+			  supersonic.ui.dialog.alert("OK!", {
+				  message: "OK!"
 			  });
-
-          });
+		  })
+		  .fail(function () {
+			  supersonic.ui.dialog.alert("Sign In Failure", {
+				  message: "Invalid username or password entered. Please try again."
+			  });
+		  });
       }
 
       $scope.showManualLogin = function (username) {
@@ -59,7 +55,8 @@ angular
           App.connectionManager().done(function (connectionManager) {
 
               var apiClient = connectionManager.getOrCreateApiClient(id);
-
+			  $scope.apiClient = apiClient;
+			  
               apiClient.getPublicUsers().done(function (users) {
                   renderUsers(apiClient, users);
               });
