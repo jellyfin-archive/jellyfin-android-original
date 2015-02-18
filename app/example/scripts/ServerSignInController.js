@@ -10,7 +10,7 @@ angular
 
 		  apiClient.authenticateUserByName(username, password)
 		  .done(function (result) {
-			  App.authenticationResult(result);
+			  App.handleAuthenticationResult(result);
 		  })
 		  .fail(function () {
 			  supersonic.ui.dialog.alert("Sign In Failure", {
