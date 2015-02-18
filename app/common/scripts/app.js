@@ -87,7 +87,11 @@
         };
 
         self.handleSignedInResult = function (result) {
+			//alert('signed in');
+        };
 
+        self.authenticationResult = function (result) {
+			//alert('signed in');
         };
 
         return self;

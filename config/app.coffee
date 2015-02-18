@@ -8,7 +8,7 @@ module.exports =
   network:
     extraResponseHeaders:
       "Access-Control-Allow-Origin": "*"
-      "Access-Control-Allow-Headers": "Content-Type, X-Requested-With, steroidsAppId, steroidsApiKey"
+      "Access-Control-Allow-Headers": "Content-Type, X-Requested-With, steroidsAppId, steroidsApiKey, Accept, Origin, Content-Length, Authorization, Range, X-MediaBrowser-Token"
 
   webView:
     viewsIgnoreStatusBar: false

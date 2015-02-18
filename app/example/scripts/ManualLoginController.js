@@ -21,9 +21,7 @@ angular
 
               apiClient.authenticateUserByName(username, password)
 			  .done(function(result){
-				supersonic.ui.dialog.alert("OK!", {
-                    message: "OK!"
-                });
+				App.authenticationResult(result);
 			  })
 			  .fail(function(){
 				supersonic.ui.dialog.alert("Sign In Failure", {
