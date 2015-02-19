@@ -13,14 +13,10 @@ angular
 
       function loadServers() {
 
-          steroids.logger.log('Calling App.connectionManager');
-          App.connectionManager().done(function (connectionManager) {
+          steroids.logger.log('Calling App.getAvailableServers');
+          App.getAvailableServers().done(function (result) {
 
-              steroids.logger.log('Calling connectionManager.getServers');
-              connectionManager.getAvailableServers().done(function (result) {
-
-                  $scope.servers = result;
-              });
+              $scope.servers = result;
           });
       }
 
@@ -30,6 +26,7 @@ angular
 
               case MediaBrowser.ConnectionState.Unavailable:
 
+                  steroids.view.removeLoading();
                   supersonic.ui.dialog.alert("Connection Failure", {
                       message: "We're unable to reach this server. Please ensure it is running and try again."
                   });
@@ -58,16 +55,12 @@ angular
 
           steroids.view.displayLoading();
 
-          steroids.logger.log('Calling App.connectionManager');
-          App.connectionManager().done(function (connectionManager) {
+          steroids.logger.log('Calling App.connectToServer');
+          App.connectToServer(server).done(function (result) {
 
-              steroids.logger.log('Calling connectionManager.connectToServer');
-              connectionManager.connectToServer(server).done(function (result) {
+              steroids.logger.log('result.State: ' + result.State);
 
-                  steroids.logger.log('result.State: ' + result.State);
-
-                  processConnectionResult(result);
-              });
+              processConnectionResult(result);
           });
 
       };

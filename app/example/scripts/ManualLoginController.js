@@ -9,31 +9,25 @@ angular
           var serverId = steroids.view.params.serverid;
           var username = $scope.username;
           var password = $scope.password;
-		  
-		if (!username) {
-			$('.txtUsername').focus();
-			return;
-		}
-		
-		App.connectionManager().done(function (connectionManager) {
 
-              var apiClient = connectionManager.getOrCreateApiClient(serverId);
+          if (!username) {
+              $('.txtUsername').focus();
+              return;
+          }
 
-              apiClient.authenticateUserByName(username, password)
-			  .done(function(result){
-			  
-				$scope.cancel();
-				
-				App.handleAuthenticationResult(result);
-			  })
-			  .fail(function(){
-				supersonic.ui.dialog.alert("Sign In Failure", {
-                    message: "Invalid username or password entered. Please try again."
-                });
-			  });
+          App.loginToServer(serverId, username, password)
+          .done(function (result) {
 
+              $scope.cancel();
+
+              App.handleAuthenticationResult(result);
+          })
+          .fail(function () {
+              supersonic.ui.dialog.alert("Sign In Failure", {
+                  message: "Invalid username or password entered. Please try again."
+              });
           });
-		
+
       };
 
       $scope.cancel = function () {
@@ -52,6 +46,6 @@ angular
           supersonic.data.channel('manualloginresult').publish(result);
       }
 
-	  $scope.username = steroids.view.params.username || '';
-	  
+      $scope.username = steroids.view.params.username || '';
+
   });

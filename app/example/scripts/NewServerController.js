@@ -28,31 +28,28 @@ angular
 
           steroids.logger.log('Calling App.connectionManager');
 
-          App.connectionManager().done(function (connectionManager) {
+          steroids.logger.log('Calling App.connectToAddress');
+          App.connectToAddress(address).done(function (result) {
 
-              steroids.logger.log('Calling connectionManager.connectToAddress');
-              connectionManager.connectToAddress(address).done(function (result) {
+              steroids.logger.log('newServer connectToAddress done');
+              steroids.logger.log('newServer result.State: ' + result.State);
+              steroids.view.removeLoading();
 
-                  steroids.logger.log('newServer connectToAddress done');
-                  steroids.logger.log('newServer result.State: ' + result.State);
-                  steroids.view.removeLoading();
+              switch (result.State) {
 
-                  switch (result.State) {
-
-                      case MediaBrowser.ConnectionState.Unavailable:
-                          supersonic.ui.dialog.alert("Connection Failure", {
-                              message: "We're unable to reach this server. Please ensure it is running and try again."
-                          });
-                          break;
-                      case MediaBrowser.ConnectionState.SignedIn:
-                      case MediaBrowser.ConnectionState.ServerSignIn:
-                          sendResultToParent(result);
-                          break;
-                      default:
-                          steroids.logger.log('Unhandled ConnectionState: ' + result.State);
-                          break;
-                  }
-              });
+                  case MediaBrowser.ConnectionState.Unavailable:
+                      supersonic.ui.dialog.alert("Connection Failure", {
+                          message: "We're unable to reach this server. Please ensure it is running and try again."
+                      });
+                      break;
+                  case MediaBrowser.ConnectionState.SignedIn:
+                  case MediaBrowser.ConnectionState.ServerSignIn:
+                      sendResultToParent(result);
+                      break;
+                  default:
+                      steroids.logger.log('Unhandled ConnectionState: ' + result.State);
+                      break;
+              }
           });
 
       };
