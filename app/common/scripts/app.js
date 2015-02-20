@@ -23,30 +23,8 @@
             return Math.random() + '';
         };
 
-        self.connectionManager = function () {
+        self.createApiClient = function (info) {
 
-            var deferred = DeferredBuilder.Deferred();
-
-            var requestId = Math.random() + '';
-
-            supersonic.data.channel('connectionmanagerresponse').subscribe(function (message) {
-
-                if (message.requestId == requestId) {
-
-                    deferred.resolveWith(null, [message.connectionManager]);
-                }
-            });
-
-            supersonic.data.channel('connectionmanagerrequest').publish({
-                requestId: requestId
-            });
-
-            return deferred.promise();
-        };
-
-        self.createApiClient = function (result) {
-
-            var info = result.ApiClient;
             var apiClient = new MediaBrowser.ApiClient(Logger, info.serverAddress, self.name(), self.version(), info.deviceName, info.deviceId);
 
             var serverInfo = info.serverInfo;
@@ -63,7 +41,7 @@
                 if (message.response && message.requestId == requestId) {
 
                     if (message.result.ApiClient) {
-                        message.result.ApiClient = self.createApiClient(message.result);
+                        message.result.ApiClient = self.createApiClient(message.result.ApiClient);
                     }
 
                     deferred.resolveWith(null, [message.result]);
@@ -189,6 +167,38 @@
             return deferred.promise();
         };
 
+        self.listenForApiClientResult = function (requestId, deferred) {
+
+            supersonic.data.channel('connectionmanager').subscribe(function (message) {
+
+                if (message.response && message.requestId == requestId) {
+
+                    if (message.error) {
+                        deferred.rejectWith(null, [message.result]);
+                    } else {
+                        deferred.resolveWith(null, [self.createApiClient(message.result)]);
+                    }
+                }
+            });
+        };
+
+        self.getApiClient = function (serverId) {
+
+            var deferred = DeferredBuilder.Deferred();
+
+            var requestId = self.newRequestId();
+
+            self.listenForApiClientResult(requestId, deferred);
+
+            supersonic.data.channel('connectionmanager').publish({
+                requestId: requestId,
+                type: "apiclient",
+                serverId: serverId
+            });
+
+            return deferred.promise();
+        };
+
         self.setBackgroundImage = function (url) {
             steroids.view.setBackgroundImage(url);
             self.addClass(document.body, 'clearBody');
@@ -217,25 +227,25 @@
         self.navigateToServerSelection = function () {
 
             supersonic.ui.layers.push(new supersonic.ui.View("example#selectserver"), {
-                animate: true
+                animation: 'fade'
             });
         };
 
         self.navigateToConnectSignIn = function () {
 
             supersonic.ui.layers.push(new supersonic.ui.View("example#connectsignin"), {
-                animate: true
+                animation: 'fade'
             });
         };
 
-        self.handleServerSignInResult = function (result) {
+        self.handleServerSignInResult = function (result, animate) {
 
             var server = result.Servers[0];
 
             console.log('handleServerSignInResult');
             console.log('ServerId: ' + server.Id);
             supersonic.ui.layers.push(new supersonic.ui.View("example#serversignin?serverid=" + server.Id), {
-                animate: true
+                animation: 'fade'
             });
         };
 

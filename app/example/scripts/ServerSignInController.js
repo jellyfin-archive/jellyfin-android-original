@@ -6,9 +6,7 @@ angular
 
           var serverId = $scope.serverId;
 
-          var apiClient = $scope.apiClient;
-
-		  apiClient.authenticateUserByName(username, password)
+          App.loginToServer(serverId, username, password)
 		  .done(function (result) {
 			  App.handleAuthenticationResult(result);
 		  })
@@ -50,11 +48,8 @@ angular
 
           $scope.serverId = id;
 
-          App.connectionManager().done(function (connectionManager) {
+          App.getApiClient(id).done(function (apiClient) {
 
-              var apiClient = connectionManager.getOrCreateApiClient(id);
-			  $scope.apiClient = apiClient;
-			  
               apiClient.getPublicUsers().done(function (users) {
                   renderUsers(apiClient, users);
               });

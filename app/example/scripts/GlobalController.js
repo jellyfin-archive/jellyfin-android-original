@@ -103,15 +103,33 @@ angular
           });
       };
 
+      function getApiClientInfo(apiClient) {
+          
+          return {
+              deviceName: apiClient.deviceName(),
+              deviceId: apiClient.deviceId(),
+              serverInfo: apiClient.serverInfo(),
+              serverAddress: apiClient.serverAddress()
+          };
+      }
+
+      self.processApiClientRequest = function (connectionManager, message) {
+
+          var apiClient = connectionManager.getOrCreateApiClient(message.serverId);
+
+          var result = getApiClientInfo(apiClient);
+
+          supersonic.data.channel('connectionmanager').publish({
+              requestId: message.requestId,
+              result: result,
+              response: true
+          });
+      };
+
       self.sendConnectionResult = function (result, originalMessage) {
 
           if (result.ApiClient) {
-              result.ApiClient = {
-                  deviceName: result.ApiClient.deviceName(),
-                  deviceId: result.ApiClient.deviceId(),
-                  serverInfo: result.ApiClient.serverInfo(),
-                  serverAddress: result.ApiClient.serverAddress()
-              };
+              result.ApiClient = getApiClientInfo(result.ApiClient);
           }
 
           supersonic.data.channel('connectionmanager').publish({
@@ -142,6 +160,9 @@ angular
               }
               else if (message.type == "logintoserver") {
                   self.processLoginToServerRequest(connectionManager, message);
+              }
+              else if (message.type == "apiclient") {
+                  self.processApiClientRequest(connectionManager, message);
               }
           });
 

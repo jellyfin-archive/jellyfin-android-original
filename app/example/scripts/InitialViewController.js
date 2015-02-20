@@ -7,8 +7,16 @@ angular
           App.navigateToConnectSignIn();
       };
 
+      function showWelcomeContent(visible) {
+
+          $scope.$apply(function () {
+              $scope.showWelcome = visible !== false;
+          });
+      }
+
       function showWelcome() {
 
+          showWelcomeContent();
           App.setBackgroundImage("images/splash.jpg");
           steroids.view.removeLoading();
       }
@@ -30,9 +38,11 @@ angular
                       App.handleSignedInResult(result);
                       break;
                   case MediaBrowser.ConnectionState.ServerSignIn:
+                      showWelcomeContent();
                       App.handleServerSignInResult(result);
                       break;
                   case MediaBrowser.ConnectionState.ServerSelection:
+                      showWelcomeContent();
                       App.navigateToServerSelection();
                       break;
                   default:
@@ -42,6 +52,7 @@ angular
           });
       }
 
+      showWelcomeContent(false);
       steroids.view.displayLoading();
 
       App.clearBackgroundImage();

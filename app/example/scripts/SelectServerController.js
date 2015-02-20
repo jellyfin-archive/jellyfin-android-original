@@ -16,7 +16,9 @@ angular
           steroids.logger.log('Calling App.getAvailableServers');
           App.getAvailableServers().done(function (result) {
 
-              $scope.servers = result;
+              $scope.$apply(function () {
+                  $scope.servers = result;
+              });
           });
       }
 
