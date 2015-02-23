@@ -117,7 +117,7 @@ angular
       };
 
       function getApiClientInfo(apiClient) {
-          
+
           return {
               deviceName: apiClient.deviceName(),
               deviceId: apiClient.deviceId(),
@@ -183,4 +183,34 @@ angular
           });
 
       });
+
+      function bindEvent(connectionManager, eventName) {
+
+          Events.on(connectionManager, eventName, function (e, data) {
+
+              steroids.logger.log('Publishing connection manager event: ' + eventName);
+
+              supersonic.data.channel('connectionmanagerevents').publish({
+                  type: eventName,
+                  data: data
+              });
+          });
+      }
+
+      function bindEvents(connectionManager) {
+
+          var events = ['localusersignedin', 'localusersignedout'];
+
+          for (var i = 0, length = events.length; i < length; i++) {
+
+              var eventName = events[i];
+              bindEvent(connectionManager, eventName);
+          }
+      }
+
+      self.connectionManager().done(function (connectionManager) {
+
+          bindEvents(connectionManager);
+      });
+
   });

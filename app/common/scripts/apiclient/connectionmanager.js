@@ -467,7 +467,7 @@
                 var apiClient = apiClients[i];
 
                 if (apiClient.accessToken()) {
-                    promises.push(apiClient.logout());
+                    promises.push(logoutOfServer(apiClient));
                 }
             }
 
@@ -506,6 +506,20 @@
                 }
             });
         };
+
+        function logoutOfServer(apiClient) {
+
+            var serverInfo = apiClient.serverInfo();
+
+            var logoutInfo = {
+                serverId: serverInfo.Id
+            };
+
+            return apiClient.logout().done(function () {
+
+                Events.trigger(self, 'localusersignedout', [logoutInfo]);
+            });
+        }
 
         function getConnectServers(credentials) {
 

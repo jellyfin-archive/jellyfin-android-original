@@ -61,6 +61,6 @@ angular
 
       supersonic.ui.views.start("example#global").then(function () {
           // https://github.com/AppGyver/steroids/issues/614
-          setTimeout(startConnectionProcess, 500);
+          setTimeout(startConnectionProcess, 1000);
       });
   });
