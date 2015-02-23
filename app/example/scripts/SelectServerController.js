@@ -2,8 +2,6 @@ angular
   .module('example')
   .controller('SelectServerController', function ($scope, supersonic) {
 
-      App.setBackgroundImage("images/splash.jpg");
-
       function navigateToNewServer() {
 
           supersonic.ui.modal.show(new supersonic.ui.View("example#newserver"), {
@@ -20,6 +18,25 @@ angular
                   $scope.servers = result;
               });
           });
+      }
+
+      function loadConnectInfo() {
+
+          App.isLoggedIntoConnect().done(function (result) {
+
+              $scope.$apply(function () {
+
+                  $scope.isNotLoggedIntoConnect = !result.isLoggedIntoConnect;
+              });
+          });
+      }
+
+      function loadPage() {
+
+          App.setBackgroundImage("images/splash.jpg");
+
+          loadServers();
+          loadConnectInfo();
       }
 
       function processConnectionResult(result) {
@@ -67,5 +84,10 @@ angular
 
       };
 
-      loadServers();
+      $scope.signInWithConnect = function () {
+
+          App.navigateToConnectSignIn();
+      };
+
+      loadPage();
   });

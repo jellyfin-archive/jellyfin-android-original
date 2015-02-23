@@ -36,7 +36,7 @@
 
         self.listenForConnectionResult = function (requestId, deferred) {
 
-            supersonic.data.channel('connectionmanager').subscribe(function (message) {
+            supersonic.data.channel('connectionmanager').subscribe(function(message) {
 
                 if (message.response && message.requestId == requestId) {
 
@@ -49,12 +49,15 @@
             });
         };
 
-        self.listenForResult = function (requestId, deferred) {
+        self.listenForResult = function (requestId, deferred, debugAlert) {
 
             supersonic.data.channel('connectionmanager').subscribe(function (message) {
 
                 if (message.response && message.requestId == requestId) {
 
+                    if (debugAlert) {
+                        alert(JSON.stringify(message));
+                    }
                     if (message.error) {
                         deferred.rejectWith(null, [message.result]);
                     } else {
@@ -143,6 +146,22 @@
                 type: "logintoconnect",
                 username: username,
                 password: password
+            });
+
+            return deferred.promise();
+        };
+
+        self.isLoggedIntoConnect = function () {
+
+            var deferred = DeferredBuilder.Deferred();
+
+            var requestId = self.newRequestId();
+
+            self.listenForResult(requestId, deferred);
+
+            supersonic.data.channel('connectionmanager').publish({
+                requestId: requestId,
+                type: "isloggedintoconnect"
             });
 
             return deferred.promise();
@@ -245,16 +264,57 @@
             console.log('handleServerSignInResult');
             console.log('ServerId: ' + server.Id);
             supersonic.ui.layers.push(new supersonic.ui.View("example#serversignin?serverid=" + server.Id), {
-                animation: 'fade'
             });
         };
 
         self.handleSignedInResult = function (result) {
             supersonic.ui.initialView.dismiss();
+            App.loadViewTabs('home');
         };
 
         self.handleAuthenticationResult = function (result) {
             supersonic.ui.initialView.dismiss();
+            App.loadViewTabs('home');
+
+        };
+
+        self.loadViewTabs = function (context) {
+
+            var css = 'tabs-' + context;
+
+            //supersonic.ui.tabs.setStyleClass(css);
+
+            supersonic.ui.tabs.show();
+            supersonic.ui.tabs.replace([
+                  {
+                      title: "Home",
+                      location: "example#home"
+                  },
+                  {
+                      title: "Favorites",
+                      location: "example#favorites"
+                  },
+                  {
+                      title: "Favorites",
+                      location: "example#favorites1"
+                  },
+                  {
+                      title: "Favorites",
+                      location: "example#favorites2"
+                  },
+                  {
+                      title: "Favorites",
+                      location: "example#favorites3"
+                  },
+                  {
+                      title: "Favorites",
+                      location: "example#favorites4"
+                  },
+                  {
+                      title: "Favorites",
+                      location: "example#favorites5"
+                  }
+            ]);
         };
 
         return self;

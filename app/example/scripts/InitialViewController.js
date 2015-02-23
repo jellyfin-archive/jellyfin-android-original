@@ -52,6 +52,7 @@ angular
           });
       }
 
+	  //localStorage.removeItem('servercredentials3');
       showWelcomeContent(false);
       steroids.view.displayLoading();
 

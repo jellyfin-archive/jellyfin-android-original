@@ -83,6 +83,19 @@ angular
           });
       };
 
+      self.processIsLoggedIntoConnectRequest = function (connectionManager, message) {
+
+          var messageResult = {
+              isLoggedIntoConnect: connectionManager.isLoggedIntoConnect()
+          };
+
+          supersonic.data.channel('connectionmanager').publish({
+              requestId: message.requestId,
+              result: messageResult,
+              response: true
+          });
+      };
+
       self.processLoginToServerRequest = function (connectionManager, message) {
 
           var apiClient = connectionManager.getOrCreateApiClient(message.serverId);
@@ -163,6 +176,9 @@ angular
               }
               else if (message.type == "apiclient") {
                   self.processApiClientRequest(connectionManager, message);
+              }
+              else if (message.type == "isloggedintoconnect") {
+                  self.processIsLoggedIntoConnectRequest(connectionManager, message);
               }
           });
 

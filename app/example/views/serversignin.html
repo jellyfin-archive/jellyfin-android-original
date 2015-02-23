@@ -23,6 +23,13 @@
 		<button class="button button-block button-dark icon-left super-network" ng-click="changeServer()">
 			Change Server
 		</button>
+		
+		<div ng-show="isNotLoggedIntoConnect">
+			<br/>
+			<button class="button button-block button-balanced icon-left super-unlocked" ng-click="signInWithConnect()">
+			Sign In with Media Browser Connect
+			</button>
+		</div>
 	</div>
 
 </div>

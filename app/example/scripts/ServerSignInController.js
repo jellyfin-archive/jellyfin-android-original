@@ -8,12 +8,12 @@ angular
 
           App.loginToServer(serverId, username, password)
 		  .done(function (result) {
-			  App.handleAuthenticationResult(result);
+		      App.handleAuthenticationResult(result);
 		  })
 		  .fail(function () {
-			  supersonic.ui.dialog.alert("Sign In Failure", {
-				  message: "Invalid username or password entered. Please try again."
-			  });
+		      supersonic.ui.dialog.alert("Sign In Failure", {
+		          message: "Invalid username or password entered. Please try again."
+		      });
 		  });
       }
 
@@ -42,6 +42,11 @@ angular
 
       $scope.changeServer = function () {
           App.navigateToServerSelection();
+      };
+
+      $scope.signInWithConnect = function () {
+
+          App.navigateToConnectSignIn();
       };
 
       function loadServer(id) {
@@ -78,6 +83,24 @@ angular
           });
       }
 
-      App.setBackgroundImage("images/splash.jpg");
-      loadServer(steroids.view.params.serverid);
+      function loadConnectInfo() {
+
+          App.isLoggedIntoConnect().done(function (result) {
+
+              $scope.$apply(function () {
+                  $scope.isNotLoggedIntoConnect = !result.isLoggedIntoConnect;
+              });
+          });
+      }
+
+      function loadPage() {
+
+          App.setBackgroundImage("images/splash.jpg");
+          loadServer(steroids.view.params.serverid);
+
+          loadConnectInfo();
+      }
+
+      loadPage();
+
   });
