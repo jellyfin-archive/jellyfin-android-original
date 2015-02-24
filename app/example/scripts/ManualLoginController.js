@@ -18,9 +18,7 @@ angular
           App.loginToServer(serverId, username, password)
           .done(function (result) {
 
-              $scope.cancel();
-
-              App.handleAuthenticationResult(result);
+              sendResultToParent(result);
           })
           .fail(function () {
               supersonic.ui.dialog.alert("Sign In Failure", {

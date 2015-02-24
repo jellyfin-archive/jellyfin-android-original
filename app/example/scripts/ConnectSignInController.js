@@ -65,5 +65,4 @@ angular
 
           App.navigateToServerSelection();
       };
-
   });

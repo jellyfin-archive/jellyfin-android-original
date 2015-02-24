@@ -36,7 +36,7 @@
 
         self.listenForConnectionResult = function (requestId, deferred) {
 
-            supersonic.data.channel('connectionmanager').subscribe(function(message) {
+            supersonic.data.channel('connectionmanager').subscribe(function (message) {
 
                 if (message.response && message.requestId == requestId) {
 
@@ -67,6 +67,12 @@
             });
         };
 
+        self.sendConnectionManagerRequest = function (request) {
+
+            steroids.logger.log('Sending connection manager request: ' + JSON.stringify(request));
+            supersonic.data.channel('connectionmanager').publish(request);
+        };
+
         self.connect = function () {
 
             var deferred = DeferredBuilder.Deferred();
@@ -75,7 +81,7 @@
 
             self.listenForConnectionResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "connect"
             });
@@ -91,7 +97,7 @@
 
             self.listenForConnectionResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "connecttoserver",
                 serverInfo: serverInfo
@@ -108,13 +114,39 @@
 
             self.listenForConnectionResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "connecttoaddress",
                 address: address
             });
 
             return deferred.promise();
+        };
+
+        self.user = function () {
+
+            var deferred = DeferredBuilder.Deferred();
+
+            var requestId = self.newRequestId();
+
+            self.listenForResult(requestId, deferred);
+
+            self.sendConnectionManagerRequest({
+                requestId: requestId,
+                type: "user"
+            });
+
+            return deferred.promise();
+        };
+
+        self.logout = function () {
+
+            var requestId = self.newRequestId();
+
+            self.sendConnectionManagerRequest({
+                requestId: requestId,
+                type: "logout"
+            });
         };
 
         self.getAvailableServers = function () {
@@ -125,7 +157,7 @@
 
             self.listenForResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "getavailableservers"
             });
@@ -141,7 +173,7 @@
 
             self.listenForResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "logintoconnect",
                 username: username,
@@ -159,7 +191,7 @@
 
             self.listenForResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "isloggedintoconnect"
             });
@@ -175,7 +207,7 @@
 
             self.listenForResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "logintoserver",
                 username: username,
@@ -209,7 +241,7 @@
 
             self.listenForApiClientResult(requestId, deferred);
 
-            supersonic.data.channel('connectionmanager').publish({
+            self.sendConnectionManagerRequest({
                 requestId: requestId,
                 type: "apiclient",
                 serverId: serverId
@@ -243,48 +275,35 @@
             elem.className = css.replace(' ' + name + ' ', '').trim();
         };
 
-        self.navigateToServerSelection = function () {
-
-            supersonic.ui.layers.push(new supersonic.ui.View("example#selectserver"), {
-                animation: 'fade'
-            });
-        };
-
         self.navigateToConnectSignIn = function () {
 
             supersonic.ui.layers.push(new supersonic.ui.View("example#connectsignin"), {
-                animation: 'fade'
-            });
-        };
-
-        self.handleServerSignInResult = function (result, animate) {
-
-            var server = result.Servers[0];
-
-            console.log('handleServerSignInResult');
-            console.log('ServerId: ' + server.Id);
-            supersonic.ui.layers.push(new supersonic.ui.View("example#serversignin?serverid=" + server.Id), {
+                keepLoading: false,
+                navigationBar: false,
+                tabBar: false
             });
         };
 
         self.handleSignedInResult = function (result) {
+
+            var loadHome = function () {
+                App.loadView('home');
+            };
+
+            var popAll = function () {
+                supersonic.ui.layers.popAll().then(loadHome, loadHome);
+            };
             supersonic.ui.initialView.dismiss();
-            App.loadViewTabs('home');
+            App.loadView('home');
         };
 
         self.handleAuthenticationResult = function (result) {
-            supersonic.ui.initialView.dismiss();
-            App.loadViewTabs('home');
 
+            self.handleSignedInResult();
         };
 
-        self.loadViewTabs = function (context) {
+        self.loadView = function (context) {
 
-            var css = 'tabs-' + context;
-
-            //supersonic.ui.tabs.setStyleClass(css);
-
-            supersonic.ui.tabs.show();
             supersonic.ui.tabs.replace([
                   {
                       title: "Home",
@@ -293,28 +312,15 @@
                   {
                       title: "Favorites",
                       location: "example#favorites"
-                  },
-                  {
-                      title: "Favorites",
-                      location: "example#favorites1"
-                  },
-                  {
-                      title: "Favorites",
-                      location: "example#favorites2"
-                  },
-                  {
-                      title: "Favorites",
-                      location: "example#favorites3"
-                  },
-                  {
-                      title: "Favorites",
-                      location: "example#favorites4"
-                  },
-                  {
-                      title: "Favorites",
-                      location: "example#favorites5"
                   }
             ]);
+            supersonic.ui.tabs.show();
+        };
+
+        self.hideTabs = function () {
+
+            supersonic.ui.tabs.hide();
+
         };
 
         return self;

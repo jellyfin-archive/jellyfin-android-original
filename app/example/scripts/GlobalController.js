@@ -65,6 +65,42 @@ angular
           });
       };
 
+      self.processUserRequest = function (connectionManager, message) {
+
+          connectionManager.user().done(function (result) {
+              supersonic.data.channel('connectionmanager').publish({
+                  requestId: message.requestId,
+                  result: result,
+                  response: true
+              });
+          });
+      };
+
+      self.processLogoutRequest = function (connectionManager, message) {
+
+          connectionManager.logout().done(function (result) {
+
+              var afterPopAll = function () {
+                  //supersonic.ui.initialView.show();
+                  App.hideTabs();
+                  steroids.view.displayLoading();
+
+                  var view = new supersonic.ui.View("example#initial-view");
+                  supersonic.ui.layers.push(view);
+                  //supersonic.ui.initialView.show();
+
+                  // Hack for now since connection manager event isn't firing
+                  supersonic.data.channel('connectionmanagerevents').publish({
+                      type: 'localusersignedout',
+                      data: {}
+                  });
+
+              };
+
+              supersonic.ui.layers.popAll().then(afterPopAll, afterPopAll);
+          });
+      };
+
       self.processLoginToConnectRequest = function (connectionManager, message) {
 
           connectionManager.loginToConnect(message.username, message.password).done(function (result) {
@@ -152,37 +188,51 @@ angular
           });
       };
 
-      supersonic.data.channel('connectionmanager').subscribe(function (message) {
+      function bindToChannel() {
 
-          self.connectionManager().done(function (connectionManager) {
+          steroids.logger.log('GlobalController subscribing to connectionmanager channel');
+          supersonic.data.channel('connectionmanager').subscribe(function (message) {
 
-              if (message.type == "connect") {
-                  self.processConnectRequest(connectionManager, message);
+              if (message.response) {
+                  return;
               }
-              else if (message.type == "connecttoserver") {
-                  self.processConnectToServerRequest(connectionManager, message);
+
+              if (!message.type) {
+                  steroids.logger.log('Invalid connection manager request: ' + JSON.stringify(message));
+                  return;
               }
-              else if (message.type == "connecttoaddress") {
-                  self.processConnectToAddressRequest(connectionManager, message);
-              }
-              else if (message.type == "getavailableservers") {
-                  self.processGetAvailableServersRequest(connectionManager, message);
-              }
-              else if (message.type == "logintoconnect") {
-                  self.processLoginToConnectRequest(connectionManager, message);
-              }
-              else if (message.type == "logintoserver") {
-                  self.processLoginToServerRequest(connectionManager, message);
-              }
-              else if (message.type == "apiclient") {
-                  self.processApiClientRequest(connectionManager, message);
-              }
-              else if (message.type == "isloggedintoconnect") {
-                  self.processIsLoggedIntoConnectRequest(connectionManager, message);
-              }
+
+              steroids.logger.log('Received connection manager request: ' + message.type);
+
+              self.connectionManager().done(function (connectionManager) {
+
+                  if (message.type == "connect") {
+                      self.processConnectRequest(connectionManager, message);
+                  } else if (message.type == "connecttoserver") {
+                      self.processConnectToServerRequest(connectionManager, message);
+                  } else if (message.type == "connecttoaddress") {
+                      self.processConnectToAddressRequest(connectionManager, message);
+                  } else if (message.type == "getavailableservers") {
+                      self.processGetAvailableServersRequest(connectionManager, message);
+                  } else if (message.type == "logintoconnect") {
+                      self.processLoginToConnectRequest(connectionManager, message);
+                  } else if (message.type == "logintoserver") {
+                      self.processLoginToServerRequest(connectionManager, message);
+                  } else if (message.type == "apiclient") {
+                      self.processApiClientRequest(connectionManager, message);
+                  } else if (message.type == "isloggedintoconnect") {
+                      self.processIsLoggedIntoConnectRequest(connectionManager, message);
+                  } else if (message.type == "user") {
+                      self.processUserRequest(connectionManager, message);
+                  } else if (message.type == "logout") {
+                      self.processLogoutRequest(connectionManager, message);
+                  }
+              });
+
           });
+      }
 
-      });
+      bindToChannel();
 
       function bindEvent(connectionManager, eventName) {
 
@@ -199,7 +249,7 @@ angular
 
       function bindEvents(connectionManager) {
 
-          var events = ['localusersignedin', 'localusersignedout'];
+          var events = ['localusersignedin', 'localusersignedout', 'connectusersignedin', 'connectusersignedout'];
 
           for (var i = 0, length = events.length; i < length; i++) {
 

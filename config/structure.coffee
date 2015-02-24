@@ -12,7 +12,10 @@ module.exports =
   ]  
 
   rootView:
-    location: "example#empty"
+    {
+      id: "empty"
+      location: "example#empty"
+    }
 
   preloads: [
   ]

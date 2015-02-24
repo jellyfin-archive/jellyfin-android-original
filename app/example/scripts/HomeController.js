@@ -3,10 +3,11 @@ angular
   .controller('HomeController', function ($scope, supersonic) {
 
       function loadContent() {
-          //App.loadViewTabs('home');
       }
 
       supersonic.ui.views.current.whenVisible(function () {
+
+          Header.load();
           loadContent();
       });
   });

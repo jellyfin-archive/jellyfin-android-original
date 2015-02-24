@@ -4,44 +4,44 @@
  ***********************************************************/
 
 navigation-bar {
-  background-color: #00B5FF;
-  color: #ffffff;
+    background-color: #000000;
+    color: #ffffff;
 }
 
-navigation-bar title {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 600;
-}
+    navigation-bar title {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+    }
 
-navigation-bar button, navigation-bar back-bar-button {
-  color: #ffffff;
-  font-weight: 300;
-}
+    navigation-bar button, navigation-bar back-bar-button {
+        color: #ffffff;
+        font-weight: 300;
+    }
 
 tab-bar {
-  background-color: #ffffff;
-  border-top: 1px #d8d8d8 solid;
+    background-color: #000000;
+    border-top: 1px #222 solid;
 }
 
-tab-bar tab-bar-item {
-  color: #b0b1b4;
-  font-family: "Avenir";
-  font-size: 12px;
-}
+    tab-bar tab-bar-item {
+        color: #fff;
+        font-family: "Avenir";
+        font-size: 15px;
+    }
 
-tab-bar tab-bar-item:selected {
-  color: #1596f7;
-}
+        tab-bar tab-bar-item:selected {
+            color: #2ad;
+        }
 
 tab-bar-item#settings {
-  background-image: url(icons/cog.svg);
+    background-image: url(icons/cog.svg);
 }
 
 tab-bar-item#index {
-  background-image: url(icons/home.svg);
+    background-image: url(icons/home.svg);
 }
 
 tab-bar-item#internet {
-  background-image: url(icons/search.svg);
+    background-image: url(icons/search.svg);
 }

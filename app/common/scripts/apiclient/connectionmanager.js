@@ -388,7 +388,7 @@
                     url: connectUser.ImageUrl
                 };
             }
-            if (localUser.PrimaryImageTag) {
+            if (localUser && localUser.PrimaryImageTag) {
 
                 var apiClient = self.getApiClient(localUser);
 
@@ -399,13 +399,13 @@
 
                 return {
                     url: url,
-                    supportsImageParams: true
+                    supportsParams: true
                 };
             }
 
             return {
                 url: null,
-                supportsImageParams: false
+                supportsParams: false
             };
         }
 
@@ -422,7 +422,7 @@
                 deferred.resolveWith(null, [
                 {
                     localUser: localUser,
-                    name: connectUser ? connectUser.Name : localUser.Name,
+                    name: connectUser ? connectUser.Name : (localUser ? localUser.Name : null),
                     canManageServer: localUser && localUser.Policy.IsAdministrator,
                     imageUrl: image.url,
                     supportsImageParams: image.supportsParams
@@ -515,7 +515,7 @@
                 serverId: serverInfo.Id
             };
 
-            return apiClient.logout().done(function () {
+            return apiClient.logout().always(function () {
 
                 Events.trigger(self, 'localusersignedout', [logoutInfo]);
             });
