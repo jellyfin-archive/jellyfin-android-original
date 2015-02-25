@@ -284,22 +284,24 @@
             });
         };
 
-        self.handleSignedInResult = function (result) {
+        self.handleSignedInResult = function (result, serverId) {
+
+            serverId = serverId || result.Servers[0].Id;
 
             var loadHome = function () {
-                App.loadView('home');
+                App.loadView('home', null, 'Home', serverId);
             };
 
             var popAll = function () {
                 supersonic.ui.layers.popAll().then(loadHome, loadHome);
             };
             supersonic.ui.initialView.dismiss();
-            App.loadView('home');
+            loadHome();
         };
 
         self.handleAuthenticationResult = function (result) {
 
-            self.handleSignedInResult();
+            self.handleSignedInResult(result, result.User.ServerId);
         };
 
         self.getTabs = function (viewType, parentId, name, serverId) {
@@ -308,6 +310,7 @@
 
             var tabs = [];
             var addServerId = true;
+            var addParentId = true;
 
             if (viewType == 'home') {
                 tabs.push({
@@ -318,6 +321,7 @@
                     title: "Favorites",
                     location: "example#favorites"
                 });
+                addParentId = false;
             }
             else if (viewType == 'movies') {
                 tabs.push({
@@ -344,20 +348,31 @@
             else {
                 tabs.push({
                     title: name,
-                    location: "example#movies-suggested"
+                    location: "example#items?mode=" + viewType
                 });
             }
 
-            if (addServerId) {
+            if (addServerId || addParentId) {
                 for (var i = 0, length = tabs.length; i < length; i++) {
 
                     var loc = tabs[i].location;
                     if (loc.indexOf('?') == -1) {
                         loc += '?';
                     } else {
-                        loc += '?';
+                        loc += '&';
                     }
-                    loc += 'serverid=' + serverId;
+
+                    if (addServerId) {
+                        loc += 'serverid=' + serverId;
+                    }
+
+                    if (addParentId) {
+                        if (addServerId) {
+                            loc += '&';
+                        }
+                        loc += 'parentid=' + parentId;
+                    }
+
                     tabs[i].location = loc;
                 }
             }

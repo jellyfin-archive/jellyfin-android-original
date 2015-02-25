@@ -1,7 +1,21 @@
 <div class="padding" ng-controller="HomeController">
     <div class="padding">
 
-        Home
+        <div ng-show="showResume">
+            <h3>Resume</h3>
+            <div>
+                <carditem ng-repeat="item in resumeItems">
+                </carditem>
+            </div>
+        </div>
+
+        <div>
+            <h3>Latest Media</h3>
+            <div class="latestItems">
+                <carditem ng-repeat="item in latestItems">
+                </carditem>
+            </div>
+        </div>
 
     </div>
 

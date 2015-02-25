@@ -53,9 +53,9 @@ angular
                   $scope.showResume = result.Items.length > 0;
                   $scope.resumeItems = LibraryBrowser.mapItemsForRepeat(result.Items, {
 
-                      preferBackdrop: true,
+                      preferThumb: true,
                       shape: 'backdrop',
-                      overlayText: true,
+                      overlayText: false,
                       showTitle: true,
                       lazy: false
 
@@ -68,7 +68,7 @@ angular
       function loadContent() {
 
           var serverId = steroids.view.params.serverid;
-          var parentId = null;
+          var parentId = steroids.view.params.parentid;
 
           App.getApiClient(serverId).then(function (apiClient) {
 
