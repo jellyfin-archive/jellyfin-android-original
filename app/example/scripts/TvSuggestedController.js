@@ -1,14 +1,16 @@
 angular
   .module('example')
-  .controller('HomeController', function ($scope, supersonic) {
+  .controller('TvSuggestedController', function ($scope, supersonic) {
 
-      function loadLatest(apiClient) {
+      function loadLatest(apiClient, parentId) {
 
           var userId = apiClient.getCurrentUserId();
           var options = {
 
+              IncludeItemTypes: "Episode",
               Limit: 24,
               Fields: "PrimaryImageAspectRatio,SyncInfo",
+              ParentId: parentId,
               ImageTypeLimit: 1,
               EnableImageTypes: "Primary,Backdrop,Banner,Thumb"
           };
@@ -19,11 +21,13 @@ angular
                   $scope.showLatest = items.length > 0;
                   $scope.latestItems = LibraryBrowser.mapItemsForRepeat(items, {
 
+                      shape: "backdrop",
                       preferThumb: true,
-                      shape: 'backdrop',
-                      context: 'home',
+                      inheritThumb: false,
+                      showParentTitle: false,
                       showUnplayedIndicator: false,
                       showChildCountIndicator: true,
+                      overlayText: true,
                       lazy: false
 
                   }, apiClient);
@@ -31,20 +35,54 @@ angular
           });
       }
 
-      function loadResume(apiClient) {
+      function loadNextUp(apiClient, parentId) {
+
+          var userId = apiClient.getCurrentUserId();
+          var query = {
+
+              Limit: 24,
+              Fields: "PrimaryImageAspectRatio,SeriesInfo,DateCreated,SyncInfo",
+              UserId: userId,
+              ExcludeLocationTypes: "Virtual",
+              ImageTypeLimit: 1,
+              EnableImageTypes: "Primary,Backdrop,Banner,Thumb"
+          };
+
+          query.ParentId = parentId;
+
+          apiClient.getNextUpEpisodes(query).done(function (result) {
+
+              $scope.$apply(function () {
+                  $scope.showNextUp = result.Items.length > 0;
+                  $scope.nextUpItems = LibraryBrowser.mapItemsForRepeat(result.Items, {
+
+                      shape: "backdrop",
+                      showTitle: true,
+                      showParentTitle: true,
+                      overlayText: false,
+                      lazy: false,
+                      preferThumb: true
+
+                  }, apiClient);
+              });
+          });
+
+      }
+
+      function loadResume(apiClient, parentId) {
 
           var userId = apiClient.getCurrentUserId();
           var options = {
 
               SortBy: "DatePlayed",
               SortOrder: "Descending",
-              MediaTypes: "Video",
+              IncludeItemTypes: "Episode",
               Filters: "IsResumable",
               Limit: 6,
               Recursive: true,
-              Fields: "PrimaryImageAspectRatio,SyncInfo",
-              CollapseBoxSetItems: false,
+              Fields: "PrimaryImageAspectRatio,SeriesInfo,UserData,SyncInfo",
               ExcludeLocationTypes: "Virtual",
+              ParentId: parentId,
               ImageTypeLimit: 1,
               EnableImageTypes: "Primary,Backdrop,Banner,Thumb"
           };
@@ -55,13 +93,12 @@ angular
                   $scope.showResume = result.Items.length > 0;
                   $scope.resumeItems = LibraryBrowser.mapItemsForRepeat(result.Items, {
 
-                      preferThumb: true,
-                      shape: 'backdrop',
-                      overlayText: false,
+                      shape: "backdrop",
                       showTitle: true,
                       showParentTitle: true,
-                      context: 'home',
-                      lazy: false
+                      overlayText: true,
+                      lazy: false,
+                      context: 'tv'
 
                   }, apiClient);
               });
@@ -72,12 +109,13 @@ angular
       function loadContent() {
 
           var serverId = steroids.view.params.serverid;
+          var parentId = steroids.view.params.parentid;
 
           App.getApiClient(serverId).then(function (apiClient) {
 
-              loadLatest(apiClient);
-              loadResume(apiClient);
-
+              loadResume(apiClient, parentId);
+              loadNextUp(apiClient, parentId);
+              loadLatest(apiClient, parentId);
           });
       }
 
@@ -86,4 +124,5 @@ angular
           Header.load();
           loadContent();
       });
+
   });

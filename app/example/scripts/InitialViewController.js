@@ -4,7 +4,7 @@ angular
 
       $scope.next = function () {
 
-          App.navigateToConnectSignIn();
+          showConnectSignIn();
       };
 
       function showWelcome() {
@@ -13,6 +13,7 @@ angular
               $scope.showWelcome = true;
               $scope.showServerSignIn = false;
               $scope.showServerSelection = false;
+              $scope.showConnectSignIn = false;
           });
           hideLoading();
       }
@@ -28,8 +29,7 @@ angular
               switch (result.State) {
 
                   case MediaBrowser.ConnectionState.ConnectSignIn:
-                      //showWelcome();
-                      showServerSelection();
+                      showWelcome();
                       break;
                   case MediaBrowser.ConnectionState.SignedIn:
                       App.handleSignedInResult(result);
@@ -87,7 +87,7 @@ angular
       }
 
       function hideLoading() {
-          
+
           steroids.view.removeLoading();
 
           // not sure if this is a bug but sometimes the header disappears after removing loading
@@ -98,10 +98,11 @@ angular
       function showServerSelection() {
 
           // Depending on where we're coming from, two different execution methods are needed
-          var applyScope = function() {
+          var applyScope = function () {
               $scope.showWelcome = false;
               $scope.showServerSignIn = false;
               $scope.showServerSelection = true;
+              $scope.showConnectSignIn = false;
           };
           $scope.$apply(applyScope);
           applyScope();
@@ -177,7 +178,7 @@ angular
 
       $scope.signInWithConnect = function () {
 
-          App.navigateToConnectSignIn();
+          showConnectSignIn();
       };
 
       /** Server Sign In */
@@ -207,6 +208,7 @@ angular
               $scope.showWelcome = false;
               $scope.showServerSignIn = true;
               $scope.showServerSelection = false;
+              $scope.showConnectSignIn = false;
           };
           $scope.$apply(applyScope);
           applyScope();
@@ -286,4 +288,84 @@ angular
               });
           });
       }
+
+      /** Connect Sign In */
+      function showConnectSignIn() {
+
+          // Depending on where we're coming from, two different execution methods are needed
+          var applyScope = function () {
+              $scope.showWelcome = false;
+              $scope.showServerSignIn = false;
+              $scope.showServerSelection = false;
+              $scope.showConnectSignIn = true;
+              $scope.username = '';
+              $scope.password = '';
+          };
+          $scope.$apply(applyScope);
+          applyScope();
+
+          hideLoading();
+      }
+
+      function loginToConnect(username, password) {
+
+          if (!username) {
+              $('.txtUsername').focus();
+              return;
+          }
+          if (!password) {
+              $('.txtPassword').focus();
+              return;
+          }
+
+          steroids.view.displayLoading();
+
+          steroids.logger.log('Calling App.loginToConnect');
+          App.loginToConnect(username, password).done(function () {
+
+              steroids.logger.log('Connect authentication succeeded');
+
+              steroids.logger.log('Calling App.connect');
+              App.connect().done(function (result) {
+
+                  steroids.logger.log('result.State: ' + result.State);
+
+                  switch (result.State) {
+
+                      case MediaBrowser.ConnectionState.ServerSelection:
+                          showServerSelection();
+                          break;
+                      case MediaBrowser.ConnectionState.ServerSignIn:
+                          App.handleServerSignInResult(result);
+                          break;
+                      case MediaBrowser.ConnectionState.SignedIn:
+                          App.handleSignedInResult(result);
+                          break;
+                      default:
+                          steroids.logger.log('Unhandled ConnectionState');
+                          break;
+                  }
+              });
+
+          }).fail(function () {
+
+              steroids.logger.log('Connect authentication failed');
+              steroids.view.removeLoading();
+
+              supersonic.ui.dialog.alert("Sign In Error", {
+                  message: "Invalid username or password. Please try again."
+
+              });
+          });
+      }
+
+      $scope.loginToConnect = function () {
+
+          loginToConnect($scope.username, $scope.password);
+      };
+
+      $scope.skipConnect = function () {
+
+          showServerSelection();
+      };
   });

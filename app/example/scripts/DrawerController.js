@@ -23,12 +23,6 @@ angular
           supersonic.ui.drawers.close();
       };
 
-      $scope.home = function () {
-
-          supersonic.ui.drawers.close();
-          App.loadView('home');
-      };
-
       $scope.logout = function () {
 
           supersonic.ui.drawers.close();
@@ -39,6 +33,8 @@ angular
 
           switch ((view.CollectionType || '').toLowerCase()) {
 
+              case 'home':
+                  return 'icon super-home';
               case 'channels':
                   return 'icon super-earth';
               case 'photos':
@@ -91,6 +87,16 @@ angular
                   } else {
                       $scope.showUserIcon = true;
                       $scope.showUserImage = false;
+                  }
+
+                  if ($scope.isLocalSignedIn) {
+                      result.Items.splice(0, 0, {
+                          
+                          ServerId: user.ServerId,
+                          Name: 'Home',
+                          Id: 'Home',
+                          CollectionType: 'Home'
+                      });
                   }
 
                   $scope.views = result.Items.map(mapUserView);

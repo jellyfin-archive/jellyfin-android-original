@@ -9,7 +9,6 @@
     </ul>
     <hr class="drawerDivider" />
     <ul class="list drawerList">
-        <li class="item item-dark" ng-click="home()" ng-show="isLocalSignedIn"><i class="icon super-home"></i>Home</li>
         <li class="item item-dark" ng-repeat="view in views" ng-click="showView(view)"><i ng-class="view.iconClassName"></i>{{ view.Name }}</li>
     </ul>
     <hr class="drawerDivider" />

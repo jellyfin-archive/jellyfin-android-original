@@ -74,4 +74,34 @@
         </div>
 
     </div>
+    
+    <div class="padding" ng-show="showConnectSignIn">
+
+        <form ng-submit="loginToConnect()">
+            <div class="padding-top">
+                <h3>Sign In with Media Browser Connect</h3>
+            </div>
+
+            <br />
+            <p>With <a href="http://mediabrowser.tv/connect" target="_blank" onclick="steroids.openURL(this.href);return false;">Media Browser Connect</a> you can easily access your Media Browser Server wherever you are and share with your family and friends.</p>
+            <br />
+            <label class="item item-input item-dark">
+                <input type="text" placeholder="Username or email" ng-model="username" class="txtUsername" required="required" />
+            </label>
+
+            <label class="item item-input item-dark">
+                <input type="password" placeholder="Password" ng-model="password" class="txtPassword" required="required" />
+            </label>
+
+            <button class="button button-block button-balanced icon-left super-checkmark-round" type="submit">
+                Sign In
+            </button>
+        </form>
+        <br />
+        <button class="button button-block button-dark icon-left super-close-round" ng-click="skipConnect()">
+            Skip
+        </button>
+        <p class="centeredContent">Connect to my server manually</p>
+    </div>
+
 </div>

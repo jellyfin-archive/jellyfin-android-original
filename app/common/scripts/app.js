@@ -275,15 +275,6 @@
             elem.className = css.replace(' ' + name + ' ', '').trim();
         };
 
-        self.navigateToConnectSignIn = function () {
-
-            supersonic.ui.layers.push(new supersonic.ui.View("example#connectsignin"), {
-                keepLoading: false,
-                navigationBar: false,
-                tabBar: false
-            });
-        };
-
         self.handleSignedInResult = function (result, serverId) {
 
             serverId = serverId || result.Servers[0].Id;
@@ -343,6 +334,46 @@
                 tabs.push({
                     title: "Genres",
                     location: "example#items?mode=genres"
+                });
+            }
+            else if (viewType == 'tvshows') {
+                tabs.push({
+                    title: "Suggested",
+                    location: "example#tv-suggested"
+                });
+                tabs.push({
+                    title: "Upcoming",
+                    location: "example#items?mode=upcoming"
+                });
+                tabs.push({
+                    title: "Shows",
+                    location: "example#items?mode=series"
+                });
+                tabs.push({
+                    title: "Genres",
+                    location: "example#items?mode=genres"
+                });
+            }
+            else if (viewType == 'music') {
+                tabs.push({
+                    title: "Suggested",
+                    location: "example#music-suggested"
+                });
+                tabs.push({
+                    title: "Album",
+                    location: "example#items?mode=musicalbums"
+                });
+                tabs.push({
+                    title: "Album Artists",
+                    location: "example#items?mode=albumartists"
+                });
+                tabs.push({
+                    title: "Artists",
+                    location: "example#items?mode=artists"
+                });
+                tabs.push({
+                    title: "Genres",
+                    location: "example#items?mode=musicgenres"
                 });
             }
             else {

@@ -18,6 +18,7 @@ angular
           apiClient.getJSON(apiClient.getUrl('Users/' + userId + '/Items/Latest', options)).done(function (items) {
 
               $scope.$apply(function () {
+                  $scope.showLatest = items.length > 0;
                   $scope.latestItems = LibraryBrowser.mapItemsForRepeat(items, {
 
                       lazy: false,
