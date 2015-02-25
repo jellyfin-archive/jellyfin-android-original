@@ -273,12 +273,12 @@
 
             if (item.LocationType == "Offline" || item.LocationType == "Virtual") {
                 if (options.showLocationTypeIndicator !== false) {
-                    //html += LibraryBrowser.getOfflineIndicatorHtml(item);
+                    html += self.getOfflineIndicatorHtml(item);
                 }
             } else if (options.showUnplayedIndicator !== false) {
-                //html += LibraryBrowser.getPlayedIndicatorHtml(item);
+                html += self.getPlayedIndicatorHtml(item);
             } else if (options.showChildCountIndicator) {
-                //html += LibraryBrowser.getGroupCountIndicator(item);
+                html += self.getGroupCountIndicator(item);
             }
 
             if (mediaSourceCount > 1) {
@@ -363,7 +363,7 @@
 
             if (options.showItemCounts) {
 
-                var itemCountHtml = LibraryBrowser.getItemCountsHtml(options, item);
+                var itemCountHtml = self.getItemCountsHtml(options, item);
 
                 lines.push(itemCountHtml);
             }
@@ -392,7 +392,7 @@
 
                 try {
 
-                    lines.push(LibraryBrowser.getPremiereDateText(item));
+                    lines.push(self.getPremiereDateText(item));
 
                 } catch (err) {
                     lines.push('');
@@ -431,6 +431,168 @@
             //cardFooter
             html += "</div>";
             return html;
+        };
+
+        self.getFutureDateText = function (date) {
+
+            var weekday = [];
+            weekday[0] = Globalize.translate('OptionSunday');
+            weekday[1] = Globalize.translate('OptionMonday');
+            weekday[2] = Globalize.translate('OptionTuesday');
+            weekday[3] = Globalize.translate('OptionWednesday');
+            weekday[4] = Globalize.translate('OptionThursday');
+            weekday[5] = Globalize.translate('OptionFriday');
+            weekday[6] = Globalize.translate('OptionSaturday');
+
+            var day = weekday[date.getDay()];
+            date = date.toLocaleDateString();
+
+            if (date.toLowerCase().indexOf(day.toLowerCase()) == -1) {
+                return day + " " + date;
+            }
+
+            return date;
+        };
+
+        self.getPremiereDateText = function (item, date) {
+
+            if (!date) {
+
+                var text = '';
+
+                if (item.AirTime) {
+                    text += item.AirTime;
+                }
+
+                if (item.SeriesStudio) {
+
+                    if (text) {
+                        text += " on " + item.SeriesStudio;
+                    } else {
+                        text += item.SeriesStudio;
+                    }
+                }
+
+                return text;
+            }
+
+            var day = self.getFutureDateText(date);
+
+            if (item.AirTime) {
+                day += " at " + item.AirTime;
+            }
+
+            if (item.SeriesStudio) {
+                day += " on " + item.SeriesStudio;
+            }
+
+            return day;
+        };
+
+        self.getItemCountsHtml = function (options, item) {
+
+            var counts = [];
+
+            var childText;
+
+            if (item.Type == 'Playlist') {
+
+                childText = '';
+
+                if (item.CumulativeRunTimeTicks) {
+
+                    var minutes = item.CumulativeRunTimeTicks / 600000000;
+
+                    minutes = minutes || 1;
+
+                    childText += Globalize.translate('ValueMinutes', Math.round(minutes));
+
+                } else {
+                    childText += Globalize.translate('ValueMinutes', 0);
+                }
+
+                //childText += item.ChildCount == 1 ? "1 item" : item.ChildCount + " items";
+
+                counts.push(childText);
+
+            }
+            else if (options.context == "movies") {
+
+                if (item.MovieCount) {
+
+                    childText = item.MovieCount == 1 ?
+					Globalize.translate('ValueOneMovie') :
+					Globalize.translate('ValueMovieCount', item.MovieCount);
+
+                    counts.push(childText);
+                }
+                if (item.TrailerCount) {
+
+                    childText = item.TrailerCount == 1 ?
+					Globalize.translate('ValueOneTrailer') :
+					Globalize.translate('ValueTrailerCount', item.TrailerCount);
+
+                    counts.push(childText);
+                }
+
+            } else if (options.context == "tv") {
+
+                if (item.SeriesCount) {
+
+                    childText = item.SeriesCount == 1 ?
+					Globalize.translate('ValueOneSeries') :
+					Globalize.translate('ValueSeriesCount', item.SeriesCount);
+
+                    counts.push(childText);
+                }
+                if (item.EpisodeCount) {
+
+                    childText = item.EpisodeCount == 1 ?
+					Globalize.translate('ValueOneEpisode') :
+					Globalize.translate('ValueEpisodeCount', item.EpisodeCount);
+
+                    counts.push(childText);
+                }
+
+            } else if (options.context == "games") {
+
+                if (item.GameCount) {
+
+                    childText = item.GameCount == 1 ?
+					Globalize.translate('ValueOneGame') :
+					Globalize.translate('ValueGameCount', item.GameCount);
+
+                    counts.push(childText);
+                }
+            } else if (options.context == "music") {
+
+                if (item.AlbumCount) {
+
+                    childText = item.AlbumCount == 1 ?
+					Globalize.translate('ValueOneAlbum') :
+					Globalize.translate('ValueAlbumCount', item.AlbumCount);
+
+                    counts.push(childText);
+                }
+                if (item.SongCount) {
+
+                    childText = item.SongCount == 1 ?
+					Globalize.translate('ValueOneSong') :
+					Globalize.translate('ValueSongCount', item.SongCount);
+
+                    counts.push(childText);
+                }
+                if (item.MusicVideoCount) {
+
+                    childText = item.MusicVideoCount == 1 ?
+					Globalize.translate('ValueOneMusicVideo') :
+					Globalize.translate('ValueMusicVideoCount', item.MusicVideoCount);
+
+                    counts.push(childText);
+                }
+            }
+
+            return counts.join(' • ');
         };
 
         self.getCardTextLines = function (lines, cssClass, forceLines) {
@@ -606,6 +768,55 @@
             //}
 
             return itemCommands;
+        };
+
+        self.getOfflineIndicatorHtml = function (item) {
+
+            if (item.LocationType == "Offline") {
+                return '<div class="posterRibbon offlinePosterRibbon">' + Globalize.translate('HeaderOffline') + '</div>';
+            }
+
+            try {
+
+                var date = parseISO8601Date(item.PremiereDate, { toLocal: true });
+
+                if (item.PremiereDate && (new Date().getTime() < date.getTime())) {
+                    return '<div class="posterRibbon unairedPosterRibbon">' + Globalize.translate('HeaderUnaired') + '</div>';
+                }
+            } catch (err) {
+
+            }
+
+            if (item.IsFolder) {
+                return '';
+            }
+            return '<div class="posterRibbon missingPosterRibbon">' + Globalize.translate('HeaderMissing') + '</div>';
+        };
+
+        self.getPlayedIndicatorHtml = function (item) {
+
+            if (item.Type == "Series" || item.Type == "Season" || item.Type == "BoxSet" || item.MediaType == "Video" || item.MediaType == "Game" || item.MediaType == "Book") {
+                if (item.UserData.UnplayedItemCount) {
+                    return '<div class="playedIndicator">' + item.UserData.UnplayedItemCount + '</div>';
+                }
+
+                if (item.Type != 'TvChannel') {
+                    if (item.UserData.PlayedPercentage && item.UserData.PlayedPercentage >= 100 || (item.UserData && item.UserData.Played)) {
+                        return '<div class="playedIndicator"><div class="ui-icon-check ui-btn-icon-notext"></div></div>';
+                    }
+                }
+            }
+
+            return '';
+        };
+
+        self.getGroupCountIndicator = function (item) {
+
+            if (item.ChildCount) {
+                return '<div class="playedIndicator">' + item.ChildCount + '</div>';
+            }
+
+            return '';
         };
 
         self.getAveragePrimaryImageAspectRatio = function (items) {
