@@ -294,8 +294,6 @@
 
         self.getTabs = function (viewType, parentId, name, serverId) {
 
-            viewType = (viewType || 'folders').toLowerCase();
-
             var tabs = [];
             var addServerId = true;
             var addParentId = true;
@@ -373,6 +371,22 @@
                     location: "example#items?mode=musicgenres"
                 });
             }
+            else if (viewType == 'settings') {
+                tabs.push({
+                    title: name,
+                    location: "example#settings"
+                });
+                addServerId = false;
+                addParentId = false;
+            }
+            else if (viewType == 'selectserver') {
+                tabs.push({
+                    title: name,
+                    location: "example#selectserver"
+                });
+                addServerId = false;
+                addParentId = false;
+            }
             else {
                 tabs.push({
                     title: name,
@@ -394,7 +408,7 @@
                         loc += 'serverid=' + serverId;
                     }
 
-                    if (addParentId) {
+                    if (addParentId && parentId) {
                         if (addServerId) {
                             loc += '&';
                         }
@@ -409,6 +423,19 @@
         };
 
         self.loadView = function (viewType, parentId, name, serverId) {
+
+            viewType = (viewType || 'folders').toLowerCase();
+
+            switch(viewType) {
+                case 'settings':
+                    name = Globalize.translate('TitleSettings');
+                    break;
+                case 'selectserver':
+                    name = Globalize.translate('TitleSelectServer');
+                    break;
+                default:
+                    break;
+            }
 
             store.setItem('viewName', (viewType == 'home' ? '' : name));
             var tabs = self.getTabs(viewType, parentId, name, serverId);

@@ -16,11 +16,13 @@ angular
       $scope.settings = function () {
 
           supersonic.ui.drawers.close();
+          App.loadView('Settings');
       };
 
       $scope.changeServer = function () {
 
           supersonic.ui.drawers.close();
+          App.loadView('SelectServer');
       };
 
       $scope.logout = function () {
