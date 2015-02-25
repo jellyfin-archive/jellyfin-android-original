@@ -1,0 +1,23 @@
+<div class="padding" ng-controller="MoviesSuggestedController">
+    <div class="padding">
+
+        <div ng-show="showResume">
+            <h3>Resume</h3>
+            <div>
+                <carditem ng-repeat="item in resumeItems">
+                </carditem>
+            </div>
+            <br/>
+        </div>
+
+        <div>
+            <h3>Latest Movies</h3>
+            <div class="latestItems">
+                <carditem ng-repeat="item in latestItems">
+                </carditem>
+            </div>
+        </div>
+
+    </div>
+
+</div>

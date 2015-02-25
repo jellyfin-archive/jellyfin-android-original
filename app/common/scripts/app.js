@@ -302,19 +302,81 @@
             self.handleSignedInResult();
         };
 
-        self.loadView = function (context) {
+        self.getTabs = function (viewType, parentId, name, serverId) {
 
-            supersonic.ui.tabs.replace([
-                  {
-                      title: "Home",
-                      location: "example#home"
-                  },
-                  {
-                      title: "Favorites",
-                      location: "example#favorites"
-                  }
-            ]);
-            supersonic.ui.tabs.show();
+            viewType = (viewType || 'folders').toLowerCase();
+
+            var tabs = [];
+            var addServerId = true;
+
+            if (viewType == 'home') {
+                tabs.push({
+                    title: "Home",
+                    location: "example#home"
+                });
+                tabs.push({
+                    title: "Favorites",
+                    location: "example#favorites"
+                });
+            }
+            else if (viewType == 'movies') {
+                tabs.push({
+                    title: "Suggested",
+                    location: "example#movies-suggested"
+                });
+                tabs.push({
+                    title: "Movies",
+                    location: "example#items?mode=movies"
+                });
+                tabs.push({
+                    title: "Trailers",
+                    location: "example#items?mode=trailers"
+                });
+                tabs.push({
+                    title: "Collections",
+                    location: "example#items?mode=collections"
+                });
+                tabs.push({
+                    title: "Genres",
+                    location: "example#items?mode=genres"
+                });
+            }
+            else {
+                tabs.push({
+                    title: name,
+                    location: "example#movies-suggested"
+                });
+            }
+
+            if (addServerId) {
+                for (var i = 0, length = tabs.length; i < length; i++) {
+
+                    var loc = tabs[i].location;
+                    if (loc.indexOf('?') == -1) {
+                        loc += '?';
+                    } else {
+                        loc += '?';
+                    }
+                    loc += 'serverid=' + serverId;
+                    tabs[i].location = loc;
+                }
+            }
+
+            return tabs;
+        };
+
+        self.loadView = function (viewType, parentId, name, serverId) {
+
+            var tabs = self.getTabs(viewType, parentId, name, serverId);
+
+            supersonic.ui.tabs.replace(tabs);
+
+            if (tabs.length) {
+                supersonic.ui.tabs.show();
+            } else {
+                supersonic.ui.tabs.hide();
+            }
+            Header.load();
         };
 
         self.hideTabs = function () {

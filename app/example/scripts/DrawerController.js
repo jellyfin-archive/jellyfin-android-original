@@ -5,6 +5,7 @@ angular
       $scope.showView = function (view) {
 
           supersonic.ui.drawers.close();
+          App.loadView(view.CollectionType, view.Id, view.Name, view.ServerId);
       };
 
       $scope.userProfile = function () {
@@ -68,12 +69,17 @@ angular
 
           apiClient.getUserViews(user.Id).done(function (result) {
 
-              $scope.$apply(function () {
+              var applyScope = function () {
 
                   $scope.isLocalSignedIn = true;
                   $scope.username = user.Name;
 
-                  var imgUrl = '';
+                  var imgUrl = user.PrimaryImageTag ?
+                      apiClient.getUserImageUrl(user.Id, {
+                          tag: user.PrimaryImageTag,
+                          type: "Primary"
+
+                      }) : null;
 
                   if (imgUrl) {
                       $scope.showUserIcon = false;
@@ -89,7 +95,9 @@ angular
 
                   $scope.views = result.Items.map(mapUserView);
                   $scope.isSignedIn = $scope.isLocalSignedIn || $scope.isConnectSignedIn;
-              });
+              };
+
+              $scope.$apply(applyScope);
           });
       }
 
@@ -122,7 +130,7 @@ angular
       }
 
       function onConnectUserSignedOut() {
-          
+
           $scope.$apply(function () {
 
               $scope.isConnectSignedIn = false;
