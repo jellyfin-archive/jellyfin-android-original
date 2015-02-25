@@ -697,8 +697,8 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     text-align: center;
     vertical-align: middle;
     width: 24px;
-    height: 19px;
-    padding-top: 3px;
+    height: 24px;
+    padding-top: 2px;
     border-radius: 50%;
     color: #fff;
     background: rgb(82, 181, 75);
@@ -716,13 +716,13 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     left: 5px;
     text-align: center;
     vertical-align: middle;
-    width: 22px;
-    height: 19px;
-    padding-top: 3px;
+    width: 24px;
+    height: 24px;
+    padding-top: 2px;
     border-radius: 50%;
     color: #fff;
     background: rgb(51, 136, 204);
-    background: rgba(51, 136, 204, .9);
+    background: rgba(51, 136, 204, .8);
 }
 
 .itemProgress {

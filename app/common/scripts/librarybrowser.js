@@ -285,7 +285,7 @@
                 html += '<div class="mediaSourceIndicator">' + mediaSourceCount + '</div>';
             }
             if (item.IsUnidentified) {
-                html += '<div class="unidentifiedIndicator"><div class="ui-icon-alert ui-btn-icon-notext"></div></div>';
+                //html += '<div class="unidentifiedIndicator"><div class="ui-icon-alert ui-btn-icon-notext"></div></div>';
             }
 
             var progressHtml = options.showProgress === false || item.IsFolder ? '' : self.getItemProgressBarHtml((item.Type == 'Recording' ? item : item.UserData));
@@ -802,7 +802,7 @@
 
                 if (item.Type != 'TvChannel') {
                     if (item.UserData.PlayedPercentage && item.UserData.PlayedPercentage >= 100 || (item.UserData && item.UserData.Played)) {
-                        return '<div class="playedIndicator"><div class="ui-icon-check ui-btn-icon-notext"></div></div>';
+                        return '<div class="playedIndicator"><i class="icon super-checkmark-round" /></div>';
                     }
                 }
             }

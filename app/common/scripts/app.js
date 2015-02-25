@@ -280,14 +280,11 @@
             serverId = serverId || result.Servers[0].Id;
 
             var loadHome = function () {
+                supersonic.ui.initialView.dismiss();
                 App.loadView('home', null, 'Home', serverId);
             };
 
-            var popAll = function () {
-                supersonic.ui.layers.popAll().then(loadHome, loadHome);
-            };
-            supersonic.ui.initialView.dismiss();
-            loadHome();
+            supersonic.ui.layers.popAll().then(loadHome, loadHome);
         };
 
         self.handleAuthenticationResult = function (result) {

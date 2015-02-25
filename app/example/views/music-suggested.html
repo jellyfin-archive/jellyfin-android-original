@@ -1,18 +1,26 @@
-<div class="padding" ng-controller="MoviesSuggestedController">
+<div class="padding" ng-controller="MusicSuggestedController">
     <div class="padding">
 
-        <div ng-show="showResume">
-            <h3>Resume</h3>
-            <div class="resumeItems">
-                <carditem ng-repeat="item in resumeItems">
+        <div ng-show="showLatest" class="itemListSection">
+            <h3>Latest Music</h3>
+            <div>
+                <carditem ng-repeat="item in latestItems">
                 </carditem>
             </div>
         </div>
 
-        <div>
-            <h3>Latest Movies</h3>
-            <div class="latestItems">
-                <carditem ng-repeat="item in latestItems">
+        <div ng-show="showRecentlyPlayed" class="itemListSection">
+            <h3>Recently Played</h3>
+            <div>
+                <carditem ng-repeat="item in recentlyPlayedItems">
+                </carditem>
+            </div>
+        </div>
+
+        <div ng-show="showFrequentlyPlayed" class="itemListSection">
+            <h3>Frequently Played</h3>
+            <div>
+                <carditem ng-repeat="item in frequentlyPlayedItems">
                 </carditem>
             </div>
         </div>
