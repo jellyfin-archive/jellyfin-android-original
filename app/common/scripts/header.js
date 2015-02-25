@@ -16,6 +16,11 @@
 
         }
 
+        function getTitle() {
+
+            return store.getItem('viewName') || "Media Browser";
+        }
+
         function loadMenu(isSignedIn) {
 
             var menuButton = new steroids.buttons.NavigationBarButton();
@@ -44,7 +49,7 @@
                     left: [menuButton],
                     right: right
                 },
-                title: "Media Browser"
+                title: getTitle()
             }, {
                 onSuccess: function () {
                     steroids.view.navigationBar.show();

@@ -413,6 +413,7 @@
 
         self.loadView = function (viewType, parentId, name, serverId) {
 
+            store.setItem('viewName', (viewType == 'home' ? '' : name));
             var tabs = self.getTabs(viewType, parentId, name, serverId);
 
             supersonic.ui.tabs.replace(tabs);

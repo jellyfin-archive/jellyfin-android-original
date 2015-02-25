@@ -737,18 +737,18 @@
                 itemCommands.push('shuffle');
             }
 
-            //if (PlaylistManager.supportsPlaylists(item)) {
+            if (PlaylistManager.supportsPlaylists(item)) {
 
-            //    if (options.showRemoveFromPlaylist) {
-            //        itemCommands.push('removefromplaylist');
-            //    } else {
-            //        itemCommands.push('playlist');
-            //    }
-            //}
+                if (options.showRemoveFromPlaylist) {
+                    itemCommands.push('removefromplaylist');
+                } else {
+                    itemCommands.push('playlist');
+                }
+            }
 
-            //if (BoxSetEditor.supportsAddingToCollection(item)) {
-            //    itemCommands.push('addtocollection');
-            //}
+            if (BoxSetEditor.supportsAddingToCollection(item)) {
+                itemCommands.push('addtocollection');
+            }
 
             if (options.playFromHere) {
                 itemCommands.push('playfromhere');
@@ -763,9 +763,9 @@
                 }
             }
 
-            //if (SyncManager.isAvailable(item)) {
-            //    itemCommands.push('sync');
-            //}
+            if (SyncManager.isAvailable(item)) {
+                itemCommands.push('sync');
+            }
 
             return itemCommands;
         };

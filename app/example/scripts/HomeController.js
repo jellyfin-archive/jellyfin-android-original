@@ -57,7 +57,7 @@ angular
 
                       preferThumb: true,
                       shape: 'backdrop',
-                      overlayText: false,
+                      overlayText: true,
                       showTitle: true,
                       showParentTitle: true,
                       context: 'home',
