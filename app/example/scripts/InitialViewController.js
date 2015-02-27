@@ -50,7 +50,7 @@ angular
       function startConnectionProcessWithDelay() {
 
           // https://github.com/AppGyver/steroids/issues/614
-          setTimeout(startConnectionProcess, 3000);
+          setTimeout(startConnectionProcess, 1000);
       }
 
       function startLeftDrawer() {

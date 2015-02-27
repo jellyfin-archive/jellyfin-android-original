@@ -7,7 +7,6 @@ angular.module('example', [
     return {
         restrict: "E",
         replace: true,
-        template: "<div></div>",
         link: function (scope, element, attrs) {
 
             var item = scope.item;
@@ -21,10 +20,7 @@ angular.module('example', [
             // normalize options
             // normalize aspect ratio
 
-            var el = document.createElement('div');
-            el.innerHTML = LibraryBrowser.getCardItemHtml(item, options, apiClient);
-
-            element.replaceWith(LibraryBrowser.getCardItemHtml(item, options, apiClient));
+            element.html(LibraryBrowser.getCardItemHtml(item, options, apiClient));
         }
     };
 });

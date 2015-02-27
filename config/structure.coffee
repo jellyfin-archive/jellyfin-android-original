@@ -18,6 +18,10 @@ module.exports =
     }
 
   preloads: [
+    {
+      id: "home"
+      location: "example#home"
+    }
   ]
 
   drawers:

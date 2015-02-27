@@ -3,7 +3,7 @@
 
         <div ng-show="showResume" class="itemListSection">
             <h3>Resume</h3>
-            <div>
+            <div class="itemsContainer">
                 <carditem ng-repeat="item in resumeItems">
                 </carditem>
             </div>
@@ -11,7 +11,7 @@
 
         <div ng-show="showLatest" class="itemListSection">
             <h3>Latest Media</h3>
-            <div class="latestItems">
+            <div class="itemsContainer">
                 <carditem ng-repeat="item in latestItems">
                 </carditem>
             </div>
