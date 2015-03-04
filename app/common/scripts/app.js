@@ -456,11 +456,6 @@
 
         };
 
-        self.navigateToItemId = function (id) {
-            var view = new supersonic.ui.View("example#itemdetails?id=" + id);
-            supersonic.ui.layers.push(view);
-        };
-
         return self;
     }();
 

@@ -160,6 +160,99 @@ angular
 
       }
 
+      function loadDefault(apiClient, userId, parentId) {
+
+          var options = {
+
+              SortBy: "SortName",
+              SortOrder: "Ascending",
+              Fields: "PrimaryImageAspectRatio,SortName,SyncInfo,CanDelete",
+              StartIndex: 0,
+              ImageTypeLimit: 1,
+              EnableImageTypes: "Primary,Backdrop,Banner,Thumb",
+              ParentId: parentId
+          };
+
+          apiClient.getItems(userId, options).done(function (result) {
+
+              $scope.$apply(function () {
+
+                  $scope.items = LibraryBrowser.mapItemsForRepeat(result.Items, {
+
+                      shape: "auto",
+                      showTitle: true,
+                      centerText: true,
+                      lazy: false
+
+                  }, apiClient);
+              });
+          });
+
+      }
+
+      function loadGenres(apiClient, userId, parentId) {
+
+          var options = {
+
+              SortBy: "SortName",
+              SortOrder: "Ascending",
+              Recursive: true,
+              Fields: "DateCreated,SyncInfo",
+              StartIndex: 0,
+              Filters: "IsNotFolder",
+              ParentId: parentId
+          };
+
+          apiClient.getGenres(userId, options).done(function (result) {
+
+              $scope.$apply(function () {
+
+                  $scope.items = LibraryBrowser.mapItemsForRepeat(result.Items, {
+
+                      shape: "backdrop",
+                      preferThumb: true,
+                      showItemCounts: false,
+                      centerText: true,
+                      lazy: false
+
+                  }, apiClient);
+              });
+          });
+
+      }
+
+      function loadMusicGenres(apiClient, userId, parentId) {
+
+          var options = {
+
+              SortBy: "SortName",
+              SortOrder: "Ascending",
+              IncludeItemTypes: "Audio,MusicVideo",
+              Recursive: true,
+              Fields: "DateCreated,SyncInfo",
+              StartIndex: 0,
+              ParentId: parentId
+          };
+
+          apiClient.getMusicGenres(userId, options).done(function (result) {
+
+              $scope.$apply(function () {
+
+                  $scope.items = LibraryBrowser.mapItemsForRepeat(result.Items, {
+
+                      shape: "backdrop",
+                      preferThumb: true,
+                      context: 'music',
+                      showItemCounts: true,
+                      centerText: true,
+                      lazy: false
+
+                  }, apiClient);
+              });
+          });
+
+      }
+
       function loadContent() {
           
           var serverId = steroids.view.params.serverid;
@@ -182,7 +275,7 @@ angular
                       loadCollections(apiClient, userId, parentId);
                       break;
                   case 'genres':
-                      loadMovies(apiClient, userId, parentId);
+                      loadGenres(apiClient, userId, parentId);
                       break;
                   case 'upcoming':
                       loadUpcoming(apiClient, userId, parentId);
@@ -200,9 +293,10 @@ angular
                       loadMovies(apiClient, userId, parentId);
                       break;
                   case 'musicgenres':
-                      loadMovies(apiClient, userId, parentId);
+                      loadMusicGenres(apiClient, userId, parentId);
                       break;
                   default:
+                      loadDefault(apiClient, userId, parentId);
                       break;
               }
           });

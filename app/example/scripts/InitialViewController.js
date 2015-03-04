@@ -79,6 +79,7 @@ angular
           })).then(startLeftDrawer, startLeftDrawer);
       }
 
+      store.removeItem('viewName');
       Header.load(false);
       beginView();
 

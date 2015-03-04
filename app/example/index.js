@@ -6,10 +6,15 @@ angular.module('example', [
 
     function onItemClick(e) {
 
-        var card = jQuery(this).parents('.cardItem');
-        var itemId = card[0].getAttribute('data-itemid');
+        var card = this;
+        while (!$(card).hasClass('cardItem')) {
+            card = card.parentNode;
+        }
 
-        App.navigateToItemId(itemId);
+        var href = card.getAttribute('data-href');
+
+        var view = new supersonic.ui.View(href);
+        supersonic.ui.layers.push(view);
     }
 
     return {
@@ -22,15 +27,11 @@ angular.module('example', [
             var options = item.options;
             var apiClient = item.apiClient;
 
-            // Todo: 
-            // set listIndex on each item
-            // put options somewhere
-            // normalize options
-            // normalize aspect ratio
-
             element.html(LibraryBrowser.getCardItemHtml(item, options, apiClient));
 
-            $('.cardAction', element).on('click', onItemClick);
+            var cardAction = element[0].getElementsByClassName('cardAction')[0];
+
+            $(cardAction).on('click', onItemClick);
         }
     };
 });

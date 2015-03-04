@@ -555,8 +555,6 @@
                     childText += Globalize.translate('ValueMinutes', 0);
                 }
 
-                //childText += item.ChildCount == 1 ? "1 item" : item.ChildCount + " items";
-
                 counts.push(childText);
 
             }
@@ -734,11 +732,15 @@
             var itemCommands = self.getItemCommands(item, options);
 
             atts.push('data-itemid="' + item.Id + '"');
+            atts.push('data-href="' + self.getHref(item) + '"');
             atts.push('data-commands="' + itemCommands.join(',') + '"');
             atts.push('data-context="' + (options.context || '') + '"');
             atts.push('data-itemtype="' + item.Type + '"');
             atts.push('data-mediatype="' + (item.MediaType || '') + '"');
-            atts.push('data-positionticks="' + (item.UserData.PlaybackPositionTicks || 0) + '"');
+
+            if (item.UserData.PlaybackPositionTicks) {
+                atts.push('data-positionticks="' + (item.UserData.PlaybackPositionTicks || 0) + '"');
+            }
 
             atts.push('data-playaccess="' + (item.PlayAccess || '') + '"');
             atts.push('data-locationtype="' + (item.LocationType || '') + '"');
@@ -755,6 +757,36 @@
             }
 
             return html;
+        };
+
+        self.getHref = function (item) {
+
+            var itemType = item.Type;
+            var isFolder = item.IsFolder;
+            var serverId = item.ServerId;
+            var id = item.Id;
+
+            var href;
+
+            switch (itemType) {
+
+                case 'Season':
+                case 'Series':
+                    href = "example#itemdetails?id=" + id;
+                    break;
+            }
+
+            if (!href) {
+                if (isFolder) {
+                    href = "example#items?parentid=" + id;
+                } else {
+                    href = "example#itemdetails?id=" + id;
+                }
+            }
+
+            href += "&serverid=" + serverId;
+
+            return href;
         };
 
         self.getItemCommands = function (item, options) {
