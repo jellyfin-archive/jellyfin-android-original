@@ -8,6 +8,28 @@
 
         self.mapItemsForRepeat = function (items, options, apiClient) {
 
+            if (options.shape == 'auto') {
+
+                var primaryImageAspectRatio = self.getAveragePrimaryImageAspectRatio(items);
+
+                if (primaryImageAspectRatio && Math.abs(primaryImageAspectRatio - 1.777777778) < .3) {
+                    options.shape = options.shape == 'auto' ? 'backdrop' : 'backdrop';
+                } else if (primaryImageAspectRatio && Math.abs(primaryImageAspectRatio - 1) < .33) {
+                    options.coverImage = true;
+                    options.shape = 'square';
+                } else if (primaryImageAspectRatio && Math.abs(primaryImageAspectRatio - 1.3333334) < .01) {
+                    options.coverImage = true;
+                    options.shape = 'square';
+                } else if (primaryImageAspectRatio && primaryImageAspectRatio > 1.9) {
+                    options.shape = 'banner';
+                    options.coverImage = true;
+                } else if (primaryImageAspectRatio && Math.abs(primaryImageAspectRatio - 0.6666667) < .2) {
+                    options.shape = options.shape == 'auto' ? 'portrait' : 'portrait';
+                } else {
+                    options.shape = options.defaultShape || (options.shape == 'auto' ? 'portrait' : 'portrait');
+                }
+            }
+
             for (var i = 0, length = items.length; i < length; i++) {
 
                 var item = items[i];
@@ -27,6 +49,30 @@
         self.getCardItemHtml = function (item, options, apiClient) {
 
             var html = '';
+
+            var futureDateText;
+
+            if (item.PremiereDate) {
+                try {
+
+                    futureDateText = LibraryBrowser.getFutureDateText(parseISO8601Date(item.PremiereDate, { toLocal: true }), true);
+
+                } catch (err) {
+
+                }
+            }
+
+            if (options.showPremiereDateIndex && futureDateText) {
+
+                var val = futureDateText || Globalize.translate('HeaderUnknownDate');
+
+                if (val != options.currentIndexValue) {
+
+                    html += '<h2 class="timelineHeader detailSectionHeader" style="text-align:center;">' + val + '</h2>';
+                    options.currentIndexValue = val;
+                }
+            }
+
             var imgUrl = null;
             var background = null;
             var width = null;
@@ -200,8 +246,6 @@
 
             var mediaSourceCount = item.MediaSourceCount || 1;
 
-            var href = '#';
-
             if (item.UserData) {
                 //cssClass += ' ' + self.getUserDataCssClass(item.UserData.Key);
             }
@@ -260,13 +304,13 @@
 
             html += '<div class="cardPadder"></div>';
 
-            var anchorCssClass = "cardContent";
+            var anchorCssClass = "cardAction cardContent";
 
             if (options.defaultAction) {
                 anchorCssClass += ' itemWithAction';
             }
 
-            html += '<a class="' + anchorCssClass + '" href="' + href + '"' + defaultActionAttribute + '>';
+            html += '<a class="' + anchorCssClass + '"' + defaultActionAttribute + '>';
             html += '<div class="' + imageCssClass + '" style="' + style + '"' + dataSrc + '></div>';
 
             html += '<div class="cardOverlayTarget"></div>';

@@ -355,7 +355,7 @@
                     location: "example#music-suggested"
                 });
                 tabs.push({
-                    title: "Album",
+                    title: "Albums",
                     location: "example#items?mode=musicalbums"
                 });
                 tabs.push({
@@ -426,7 +426,7 @@
 
             viewType = (viewType || 'folders').toLowerCase();
 
-            switch(viewType) {
+            switch (viewType) {
                 case 'settings':
                     name = Globalize.translate('TitleSettings');
                     break;
@@ -454,6 +454,11 @@
 
             supersonic.ui.tabs.hide();
 
+        };
+
+        self.navigateToItemId = function (id) {
+            var view = new supersonic.ui.View("example#itemdetails?id=" + id);
+            supersonic.ui.layers.push(view);
         };
 
         return self;
