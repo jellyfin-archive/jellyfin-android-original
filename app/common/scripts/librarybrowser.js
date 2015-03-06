@@ -949,6 +949,27 @@
             return result;
         };
 
+        function onCardActionClick(e) {
+
+            var card = this;
+            while (!$(card).hasClass('cardItem')) {
+                card = card.parentNode;
+            }
+
+            var href = card.getAttribute('data-href');
+
+            var view = new supersonic.ui.View(href);
+            supersonic.ui.layers.push(view);
+        }
+
+        self.bindListEvents = function (cssClass) {
+
+            var elem = document.getElementsByClassName(cssClass)[0];
+
+            Events.off(elem, 'click', '.cardAction', onCardActionClick);
+            Events.on(elem, 'click', '.cardAction', onCardActionClick);
+        };
+
         return self;
     }();
 

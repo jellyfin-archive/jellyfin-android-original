@@ -3,7 +3,7 @@
 
         <div ng-show="showLatest" class="itemListSection">
             <h3>Latest Music</h3>
-            <div>
+            <div class="itemsContainer latestItemsContainer">
                 <carditem ng-repeat="item in latestItems">
                 </carditem>
             </div>
@@ -11,7 +11,7 @@
 
         <div ng-show="showRecentlyPlayed" class="itemListSection">
             <h3>Recently Played</h3>
-            <div>
+            <div class="itemsContainer recentlyPlayedItemsContainer">
                 <carditem ng-repeat="item in recentlyPlayedItems">
                 </carditem>
             </div>
@@ -19,7 +19,7 @@
 
         <div ng-show="showFrequentlyPlayed" class="itemListSection">
             <h3>Frequently Played</h3>
-            <div>
+            <div class="itemsContainer frequentlyPlayedItemsContainer">
                 <carditem ng-repeat="item in frequentlyPlayedItems">
                 </carditem>
             </div>

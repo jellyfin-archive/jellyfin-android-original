@@ -31,6 +31,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
 
       }
@@ -62,6 +64,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
       }
 
@@ -93,6 +97,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
 
       }
@@ -124,6 +130,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
 
       }
@@ -156,6 +164,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
 
       }
@@ -186,6 +196,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
 
       }
@@ -217,6 +229,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
 
       }
@@ -249,6 +263,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('itemsContainer');
           });
 
       }

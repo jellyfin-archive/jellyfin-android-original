@@ -30,6 +30,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('latestItemsContainer');
           });
       }
 
@@ -65,6 +67,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('recentlyPlayedItemsContainer');
           });
       }
 
@@ -100,6 +104,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('frequentlyPlayedItemsContainer');
           });
       }
 

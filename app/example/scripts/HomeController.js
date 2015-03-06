@@ -28,6 +28,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('latestItemsContainer');
           });
       }
 
@@ -65,6 +67,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('resumeItemsContainer');
           });
 
       }

@@ -32,6 +32,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('latestItemsContainer');
           });
       }
 
@@ -65,6 +67,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('nextUpItemsContainer');
           });
 
       }
@@ -102,6 +106,8 @@ angular
 
                   }, apiClient);
               });
+
+              LibraryBrowser.bindListEvents('resumeItemsContainer');
           });
 
       }
