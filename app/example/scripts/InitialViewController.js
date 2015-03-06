@@ -311,11 +311,11 @@ angular
       function loginToConnect(username, password) {
 
           if (!username) {
-              $('.txtUsername').focus();
+              document.getElementsByClassName('txtUsername')[0].focus();
               return;
           }
           if (!password) {
-              $('.txtPassword').focus();
+              document.getElementsByClassName('txtPassword')[0].focus();
               return;
           }
 

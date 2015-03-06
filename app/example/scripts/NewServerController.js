@@ -11,14 +11,14 @@ angular
           var address = $scope.address;
 
           if (!address) {
-			$('.txtAddress').focus();
+			document.getElementsByClassName('txtAddress')[0].focus();
 			return;
 		  }
 		
 		  if ($scope.port) {
 		  
 			  if (isNaN($scope.port)){
-				$('.txtPort').focus();
+				document.getElementsByClassName('txtPort')[0].focus();
 				return;
 			  }
               address += ':' + $scope.port;

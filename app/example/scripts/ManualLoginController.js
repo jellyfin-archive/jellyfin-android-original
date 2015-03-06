@@ -11,7 +11,7 @@ angular
           var password = $scope.password;
 
           if (!username) {
-              $('.txtUsername').focus();
+              document.getElementsByClassName('txtUsername')[0].focus();
               return;
           }
 
