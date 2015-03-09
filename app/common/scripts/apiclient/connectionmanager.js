@@ -509,7 +509,7 @@
 
         function logoutOfServer(apiClient) {
 
-            var serverInfo = apiClient.serverInfo();
+            var serverInfo = apiClient.serverInfo() || {};
 
             var logoutInfo = {
                 serverId: serverInfo.Id
