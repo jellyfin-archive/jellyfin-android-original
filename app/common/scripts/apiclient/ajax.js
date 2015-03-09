@@ -3,12 +3,10 @@
     globalScope.AjaxApi = {
 
         param: function(params) {
-            return jQuery.param(params);
+            return serialize(params);
         },
 
         ajax: function(options) {
-            // return jQuery.ajax(options);
-
             var request = getAngularRequest(options),
                 defer = globalScope.DeferredBuilder.Deferred();
 
@@ -22,6 +20,20 @@
         }
 
     };
+
+    // Code from: http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
+    function serialize (obj, prefix) {
+      var str = [];
+      for(var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+          var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+          str.push(typeof v == "object" ?
+            serialize(v, k) :
+            encodeURIComponent(k) + "=" + encodeURIComponent(v));
+        }
+      }
+      return str.join("&");
+    }
 
     var $http = angular.injector(['ng']).get('$http');
 
