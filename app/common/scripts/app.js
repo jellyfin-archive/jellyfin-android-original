@@ -275,6 +275,12 @@
             elem.className = css.replace(' ' + name + ' ', '').trim();
         };
 
+        self.hasClass = function (elem, name) {
+
+            var css = ' ' + (elem.className || '') + ' ';
+            return css.indexOf(' ' + name + ' ') != -1;
+        };
+
         self.handleSignedInResult = function (result, serverId) {
 
             serverId = serverId || result.Servers[0].Id;

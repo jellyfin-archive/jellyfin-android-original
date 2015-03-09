@@ -951,8 +951,8 @@
 
         function onCardActionClick(e) {
 
-            var card = this;
-            while (!$(card).hasClass('cardItem')) {
+			var card = this;
+            while (!App.hasClass(card, 'cardItem')) {
                 card = card.parentNode;
             }
 
