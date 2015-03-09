@@ -15,8 +15,20 @@
         },
 
         trigger: function (obj, eventName, params) {
+
             Logger.log('event.trigger ' + eventName);
-            bean.fire(obj, eventName, params);
+
+            // Need to push an extra param to make the argument order consistent with jquery
+            var newParams = [];
+            newParams.push({});
+
+            if (params && params.length) {
+                for (var i = 0, length = params.length; i < length; i++) {
+                    newParams.push(params[i]);
+                }
+            }
+
+            bean.fire(obj, eventName, newParams);
         }
     };
 

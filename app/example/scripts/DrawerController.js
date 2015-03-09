@@ -85,7 +85,7 @@ angular
 
                       imgUrl += '&height=40';
 
-                      $('.userImageContainer').html('<img src="' + imgUrl + '" />');
+                      document.getElementsByClassName('userImageContainer')[0].innerHTML = '<img src="' + imgUrl + '" />';
                   } else {
                       $scope.showUserIcon = true;
                       $scope.showUserImage = false;
