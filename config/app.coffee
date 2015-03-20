@@ -2,7 +2,7 @@
 
 module.exports =
   app:
-    name: "Media Browser"
+    name: "Emby"
 
   # steroidsAppId and steroidsApiKey headers are required by Supersonic Data
   network:

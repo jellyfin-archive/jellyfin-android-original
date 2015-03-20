@@ -5,7 +5,7 @@
         var self = {};
 
         self.name = function () {
-            return "Media Browser";
+            return "Emby";
         };
 
         self.version = function () {

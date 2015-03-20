@@ -1,6 +1,6 @@
 The MIT License
 
-Copyright (c) Media Browser http://mediabrowser.tv
+Copyright (c) Emby http://emby.media
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

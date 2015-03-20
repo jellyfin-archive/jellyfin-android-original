@@ -1,4 +1,4 @@
-MediaBrowser.Mobile
+Emby.Mobile
 ===================
 
-An Appgyver-based mobile app for Media Browser
+An Appgyver-based mobile app for Emby

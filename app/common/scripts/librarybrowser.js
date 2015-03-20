@@ -289,7 +289,7 @@
 
             var dataSrc = "";
 
-            if (options.lazy) {
+            if (imgUrl && options.lazy) {
                 imageCssClass += " lazy";
                 dataSrc = ' data-src="' + imgUrl + '"';
             }

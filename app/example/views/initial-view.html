@@ -2,14 +2,14 @@
     <div class="padding" ng-show="showWelcome">
 
         <div class="padding-top">
-            <h3>Welcome to Media Browser</h3>
+            <h3>Welcome to Emby</h3>
         </div>
 
         <br />
-        <p>With Media Browser you can easily stream videos, music and photos to the iPhone, iPad and other devices from your Media Browser Server.</p>
+        <p>With Emby you can easily stream videos, music and photos to the iPhone, iPad and other devices from your Emby Server.</p>
 
         <br />
-        <p>To download and install Media Browser Server visit <a href="http://mediabrowser.tv" target="_blank" onclick="steroids.openURL(this.href);return false;">http://mediabrowser.tv</a></p>
+        <p>To download and install Emby Server visit <a href="http://emby.media" target="_blank" onclick="steroids.openURL(this.href);return false;">http://emby.media</a></p>
 
         <br />
         <button class="button button-block button-balanced icon-right super-arrow-right-a" ng-click="next()">
@@ -42,7 +42,7 @@
         <div ng-show="isNotLoggedIntoConnect">
             <br />
             <button class="button button-block button-balanced icon-left super-unlocked" ng-click="signInWithConnect()">
-                Sign In with Media Browser Connect
+                Sign In with Emby Connect
             </button>
         </div>
     </div>
@@ -69,7 +69,7 @@
         <div ng-show="isNotLoggedIntoConnect">
             <br />
             <button class="button button-block button-balanced icon-left super-unlocked" ng-click="signInWithConnect()">
-                Sign In with Media Browser Connect
+                Sign In with Emby Connect
             </button>
         </div>
 
@@ -79,11 +79,11 @@
 
         <form ng-submit="loginToConnect()">
             <div class="padding-top">
-                <h3>Sign In with Media Browser Connect</h3>
+                <h3>Sign In with Emby Connect</h3>
             </div>
 
             <br />
-            <p>With <a href="http://mediabrowser.tv/connect" target="_blank" onclick="steroids.openURL(this.href);return false;">Media Browser Connect</a> you can easily access your Media Browser Server wherever you are and share with your family and friends.</p>
+            <p>With <a href="http://emby.media/connect" target="_blank" onclick="steroids.openURL(this.href);return false;">Emby Connect</a> you can easily access your Emby Server wherever you are and share with your family and friends.</p>
             <br />
             <label class="item item-input item-dark">
                 <input type="text" placeholder="Username or email" ng-model="username" class="txtUsername" required="required" />
