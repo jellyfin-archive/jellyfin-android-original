@@ -44,7 +44,15 @@ var Dashboard = {
 
     isRunningInCordova: function () {
 
-        return window.appMode == 'cordova';
+        if (!window.device) {
+            return false;
+        }
+
+        if (!window.device.cordova) {
+            return false;
+        }
+
+        return true;
     },
 
     onRequestFail: function (e, data) {
@@ -476,7 +484,8 @@ var Dashboard = {
             return;
         }
 
-        if (Dashboard.isRunningInCordova()) {
+        // Cordova
+        if (navigator.notification && navigator.notification.alert) {
 
             navigator.notification.alert(options.message, options.callback || function () { }, options.title || Globalize.translate('HeaderAlert'));
 
@@ -487,9 +496,8 @@ var Dashboard = {
 
     confirm: function (message, title, callback) {
 
-        if (Dashboard.isRunningInCordova()) {
-
-            navigator.notification.alert(options.message, options.callback || function () { }, options.title || Globalize.translate('HeaderAlert'));
+        // Cordova
+        if (navigator.notification && navigator.notification.confirm) {
 
             var buttonLabels = [Globalize.translate('ButtonOk'), Globalize.translate('ButtonCancel')];
 
@@ -1374,7 +1382,8 @@ var Dashboard = {
     var deviceName;
     var deviceId;
 
-    if (Dashboard.isRunningInCordova()) {
+    // Cordova
+    if (window.device) {
 
         appName = "Emby Mobile";
         deviceName = device.model;
