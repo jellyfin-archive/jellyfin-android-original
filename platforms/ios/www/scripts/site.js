@@ -493,11 +493,11 @@ var Dashboard = {
 
             var buttonLabels = [Globalize.translate('ButtonOk'), Globalize.translate('ButtonCancel')];
 
-            navigator.notification.confirm(options.message, function (index) {
+            navigator.notification.confirm(message, function (index) {
 
-                options.callback(index == 1);
+                callback(index == 1);
 
-            }, options.title || Globalize.translate('HeaderAlert'), buttonLabels.join(','));
+            }, title || Globalize.translate('HeaderAlert'), buttonLabels.join(','));
 
         } else {
             Dashboard.confirmInternal(message, title, true, callback);
