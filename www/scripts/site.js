@@ -43,8 +43,16 @@ var Dashboard = {
     },
 
     isRunningInCordova: function () {
-        var isCordovaApp = !!window.cordova;
-        return isCordovaApp;
+
+        if (!window.device) {
+            return false;
+        }
+
+        if (!window.device.uuid) {
+            return false;
+        }
+
+        return true;
     },
 
     onRequestFail: function (e, data) {
