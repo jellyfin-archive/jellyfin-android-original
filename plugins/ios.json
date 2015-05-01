@@ -11,6 +11,36 @@
                         {
                             "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"StatusBar\"><param name=\"ios-package\" value=\"CDVStatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"StatusBarOverlaysWebView\" value=\"true\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
+                            "count": 1
+                        }
+                    ]
+                }
+            },
+            "framework": {
+                "parents": {
+                    "AudioToolbox.framework": [
+                        {
+                            "xml": true,
+                            "count": 1
                         }
                     ]
                 }
@@ -22,6 +52,15 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
