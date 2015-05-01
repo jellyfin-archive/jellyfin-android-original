@@ -923,14 +923,6 @@
 
         self.enableCustomVideoControls = function () {
 
-            if (Dashboard.isRunningInCordova()) {
-                return true;
-            }
-
-            if ($.browser.msie || $.browser.mobile) {
-                return false;
-            }
-
             return self.canAutoPlayVideo() && !$.browser.mobile;
         };
 
