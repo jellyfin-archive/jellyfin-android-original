@@ -910,6 +910,10 @@
 
         self.canAutoPlayVideo = function () {
 
+            if (Dashboard.isRunningInCordova()) {
+                return true;
+            }
+
             if ($.browser.msie || $.browser.mobile) {
                 return false;
             }
