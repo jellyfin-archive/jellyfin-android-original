@@ -44,15 +44,7 @@ var Dashboard = {
 
     isRunningInCordova: function () {
 
-        if (!window.device) {
-            return false;
-        }
-
-        if (!window.device.cordova) {
-            return false;
-        }
-
-        return true;
+        return window.appMode == 'cordova';
     },
 
     onRequestFail: function (e, data) {
