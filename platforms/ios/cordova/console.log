@@ -1,0 +1,28 @@
+2015-04-30 15:25:16.302 Emby[1888:39344] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/luke/Library/Developer/CoreSimulator/Devices/C03C2A66-B760-4E29-B797-EFF15FED17FC/data/Containers/Data/Application/078AB2ED-6F8D-415D-AD5E-87D460C231D1/Library/Cookies/Cookies.binarycookies
+2015-04-30 15:25:16.736 Emby[1888:39344] Apache Cordova native platform version 3.8.0 is starting.
+2015-04-30 15:25:16.737 Emby[1888:39344] Multi-tasking -> Device: YES, App: YES
+2015-04-30 15:25:16.768 Emby[1888:39344] Unlimited access to network resources
+2015-04-30 15:25:16.786 Emby[1888:39344] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-04-30 15:25:17.807 Emby[1888:39344] Resetting plugins due to page load.
+2015-04-30 15:25:17.997 Emby[1888:39344] Finished load of: file:///Users/luke/Library/Developer/CoreSimulator/Devices/C03C2A66-B760-4E29-B797-EFF15FED17FC/data/Containers/Bundle/Application/2016D72C-8818-470C-9D93-E2FBAFFEEF18/Emby.app/www/index.html
+2015-05-01 15:22:02.538 Emby[2906:58764] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/luke/Library/Developer/CoreSimulator/Devices/C03C2A66-B760-4E29-B797-EFF15FED17FC/data/Containers/Data/Application/CE8613D8-879F-47C3-A801-1B2DE02A8182/Library/Cookies/Cookies.binarycookies
+2015-05-01 15:22:02.756 Emby[2906:58764] Apache Cordova native platform version 3.8.0 is starting.
+2015-05-01 15:22:02.758 Emby[2906:58764] Multi-tasking -> Device: YES, App: YES
+2015-05-01 15:22:02.776 Emby[2906:58764] Unlimited access to network resources
+2015-05-01 15:22:02.784 Emby[2906:58764] 
+
+Started backup to iCloud! Please be careful.
+Your application might be rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines" at:
+https://developer.apple.com/icloud/documentation/data-storage/
+To disable web storage backup to iCloud, set the BackupWebStorage preference to "local" in the Cordova config.xml file
+
+2015-05-01 15:22:03.364 Emby[2906:58764] Resetting plugins due to page load.
+2015-05-01 15:22:03.551 Emby[2906:58764] Finished load of: file:///Users/luke/Library/Developer/CoreSimulator/Devices/C03C2A66-B760-4E29-B797-EFF15FED17FC/data/Containers/Bundle/Application/D5E91AE7-2668-4D2E-BD13-73DDEEF73421/Emby.app/www/index.html
