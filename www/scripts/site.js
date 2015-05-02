@@ -1397,12 +1397,14 @@ var Dashboard = {
             deviceName = generateDeviceName();
 
             var seed = [];
+            var keyName = 'randomId';
 
             if (Dashboard.isRunningInCordova()) {
                 seed.push('cordova');
+                keyName = 'cordovaDeviceId';
             }
 
-            deviceId = MediaBrowser.generateDeviceId(seed.join(','));
+            deviceId = MediaBrowser.generateDeviceId(keyName, seed.join(','));
         }
 
         return {
