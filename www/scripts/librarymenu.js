@@ -293,9 +293,9 @@
 
                 html += Globalize.translate('ButtonHome');
                 html += '</a>';
-
-                html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
             }
+
+            html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
 
             html += getViewsHtml();
             html += '</div>';
