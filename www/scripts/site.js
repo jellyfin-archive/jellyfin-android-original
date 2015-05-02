@@ -187,7 +187,6 @@ var Dashboard = {
 
     isConnectMode: function () {
 
-        return true;
         if (Dashboard.isRunningInCordova()) {
             return true;
         }
@@ -1386,20 +1385,18 @@ var Dashboard = {
         var deviceId;
 
         // Cordova
-        if (window.device) {
+        //if (window.device) {
 
-            deviceName = device.model;
-            deviceId = device.uuid;
+        //    deviceName = device.model;
+        //    deviceId = device.uuid;
 
-        } else {
+        //}
+        //else
+        {
 
             deviceName = generateDeviceName();
 
             var seed = [];
-
-            if (Dashboard.isConnectMode()) {
-                seed.push('standalone');
-            }
 
             if (Dashboard.isRunningInCordova()) {
                 seed.push('cordova');
@@ -1432,17 +1429,7 @@ var Dashboard = {
             .on('serveraddresschanged.dashboard', Dashboard.onApiClientServerAddressChanged);
     }
 
-    function validateApiClient(apiClient) {
-
-        ConnectionManager.validateApiClient(apiClient, true)
-            .done(function () {
-                Dashboard.importCss(apiClient.getUrl('Branding/Css'));
-
-            })
-            .fail(Dashboard.logout);
-    }
-
-    function createConnectionManager(validateServer) {
+    function createConnectionManager() {
 
         var appInfo = Dashboard.getAppInfo();
 
@@ -1469,7 +1456,7 @@ var Dashboard = {
 
                     initializeApiClient(ApiClient);
 
-                    ConnectionManager.addApiClient(ApiClient, validateServer, true).fail(Dashboard.logout);
+                    ConnectionManager.addApiClient(ApiClient, true, true).fail(Dashboard.logout);
 
                 } else {
 
@@ -1486,15 +1473,13 @@ var Dashboard = {
 
             initializeApiClient(ApiClient);
 
-            ConnectionManager.addApiClient(ApiClient, validateServer);
+            ConnectionManager.addApiClient(ApiClient, true);
         }
 
         if (window.ApiClient) {
             ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
 
-            if (validateServer) {
-                Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
-            }
+            Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
         }
     }
 
@@ -1614,27 +1599,11 @@ var Dashboard = {
         }
     }
 
-    function updateConnectionManagerDeviceId() {
-
-        var appInfo = Dashboard.getAppInfo();
-
-        ConnectionManager.deviceId(appInfo.deviceId);
-        ConnectionManager.deviceName(appInfo.deviceName);
-
-        if (window.ApiClient) {
-            ApiClient.deviceId(appInfo.deviceId);
-            ApiClient.deviceName(appInfo.deviceName);
-            validateApiClient(ApiClient);
-        }
-    }
-
     if (Dashboard.isRunningInCordova()) {
 
-        createConnectionManager(false);
+        createConnectionManager();
 
         document.addEventListener("deviceready", function () {
-
-            updateConnectionManagerDeviceId();
 
             $(onReady);
 
@@ -1642,7 +1611,7 @@ var Dashboard = {
 
     } else {
 
-        createConnectionManager(true);
+        createConnectionManager();
 
         $(onReady);
     }
