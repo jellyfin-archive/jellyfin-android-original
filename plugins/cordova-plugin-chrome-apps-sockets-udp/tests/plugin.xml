@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  Copyright (c) 2015 The Chromium Authors. All rights reserved.
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+<plugin xmlns="http://cordova.apache.org/ns/plugins/1.0"
+    id="cordova-plugin-chrome-apps-sockets-udp-tests"
+    version="1.2.2-dev">
+
+  <name>Chrome Apps Sockets UDP Tests</name>
+  <js-module src="tests.js" name="tests">
+    <runs/>
+  </js-module>
+</plugin>

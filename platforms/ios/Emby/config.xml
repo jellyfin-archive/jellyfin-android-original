@@ -28,6 +28,12 @@
     </feature>
     <preference name="StatusBarOverlaysWebView" value="true" />
     <preference name="StatusBarStyle" value="lightcontent" />
+    <feature name="IosSocketsCommon">
+        <param name="ios-package" value="IosSocketsCommon" />
+    </feature>
+    <feature name="ChromeSocketsUdp">
+        <param name="ios-package" value="ChromeSocketsUdp" />
+    </feature>
     <icon height="180" src="res/ios/icon-60@3x.png" width="180" />
     <icon height="60" src="res/ios/icon-60.png" width="60" />
     <icon height="120" src="res/ios/icon-60@2x.png" width="120" />
@@ -43,16 +49,16 @@
     <icon height="58" src="res/ios/icon-small@2x.png" width="58" />
     <icon height="50" src="res/ios/icon-50.png" width="50" />
     <icon height="100" src="res/ios/icon-50@2x.png" width="100" />
-    <splash height="480" src="res/screen/ios/splash~iphone.jpg" width="320" />
-    <splash height="960" src="res/screen/ios/splash@2x~iphone.jpg" width="640" />
-    <splash height="1024" src="res/screen/ios/splash-Portrait~ipad.jpg" width="768" />
-    <splash height="2048" src="res/screen/ios/splash-Portrait@2x~ipad.jpg" width="1536" />
-    <splash height="768" src="res/screen/ios/splash-Landscape~ipad.jpg" width="1024" />
-    <splash height="1536" src="res/screen/ios/splash-Landscape@2x~ipad.jpg" width="2048" />
-    <splash height="1136" src="res/screen/ios/splash-568h@2x~iphone.jpg" width="640" />
-    <splash height="1334" src="res/screen/ios/splash-667h.jpg" width="750" />
-    <splash height="2208" src="res/screen/ios/splash-736h.jpg" width="1242" />
-    <splash height="1242" src="res/screen/ios/splash-Landscape-736h.jpg" width="2208" />
+    <splash height="480" src="res/ios/splash~iphone.png" width="320" />
+    <splash height="960" src="res/ios/splash@2x~iphone.png" width="640" />
+    <splash height="1024" src="res/ios/splash-Portrait~ipad.png" width="768" />
+    <splash height="2048" src="res/ios/splash-Portrait@2x~ipad.png" width="1536" />
+    <splash height="768" src="res/ios/splash-Landscape~ipad.png" width="1024" />
+    <splash height="1536" src="res/ios/splash-Landscape@2x~ipad.png" width="2048" />
+    <splash height="1136" src="res/ios/splash-568h@2x~iphone.png" width="640" />
+    <splash height="1334" src="res/ios/splash-667h.png" width="750" />
+    <splash height="2208" src="res/ios/splash-736h.png" width="1242" />
+    <splash height="1242" src="res/ios/splash-Landscape-736h.png" width="2208" />
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
     <name>Emby</name>
