@@ -19,6 +19,7 @@
   <preference name="AllowInlineMediaPlayback" value="true" />
   <preference name="MediaPlaybackRequiresUserAction" value="false" />
   <preference name="UIWebViewBounce" value="false" />
+  <preference name="webviewbounce" value="false" />
   <preference name="StatusBarOverlaysWebView" value="false" />
   <icon src="res/icon.png" />
   <platform name="android">
