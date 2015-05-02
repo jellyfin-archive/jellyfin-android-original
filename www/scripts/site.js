@@ -1590,9 +1590,9 @@ var Dashboard = {
 
     if (Dashboard.isRunningInCordova()) {
 
-        document.addEventListener("deviceready", function () {
+        createConnectionManager();
 
-            createConnectionManager();
+        document.addEventListener("deviceready", function () {
 
             $(onReady);
 
