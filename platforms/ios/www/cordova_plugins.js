@@ -34,6 +34,32 @@ module.exports = [
         "clobbers": [
             "window.StatusBar"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-chrome-apps-sockets-udp/sockets.udp.js",
+        "id": "cordova-plugin-chrome-apps-sockets-udp.sockets.udp",
+        "clobbers": [
+            "chrome.sockets.udp"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
+        "id": "cordova-plugin-chrome-apps-common.events",
+        "clobbers": [
+            "chrome.Event"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-chrome-apps-common/errors.js",
+        "id": "cordova-plugin-chrome-apps-common.errors"
+    },
+    {
+        "file": "plugins/cordova-plugin-chrome-apps-common/stubs.js",
+        "id": "cordova-plugin-chrome-apps-common.stubs"
+    },
+    {
+        "file": "plugins/cordova-plugin-chrome-apps-common/helpers.js",
+        "id": "cordova-plugin-chrome-apps-common.helpers"
     }
 ];
 module.exports.metadata = 
@@ -43,7 +69,10 @@ module.exports.metadata =
     "cordova-plugin-device": "1.0.0",
     "cordova-plugin-console": "1.0.0",
     "cordova-plugin-dialogs": "1.0.0",
-    "cordova-plugin-statusbar": "1.0.0"
+    "cordova-plugin-statusbar": "1.0.0",
+    "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
+    "cordova-plugin-chrome-apps-common": "1.0.7",
+    "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2"
 }
 // BOTTOM OF METADATA
 });

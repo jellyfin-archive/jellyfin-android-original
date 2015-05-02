@@ -1,0 +1,31 @@
+{
+  "name": "cordova-plugin-chrome-apps-common",
+  "version": "1.0.7",
+  "description": "This plugin is a dependency for a few other chromium plugins.",
+  "cordova": {
+    "id": "cordova-plugin-chrome-apps-common",
+    "platforms": []
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-common.git"
+  },
+  "keywords": [
+    "chrome",
+    "common",
+    "util",
+    "ecosystem:cordova"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-common/issues"
+  },
+  "homepage": "https://github.com/MobileChromeApps/cordova-plugin-chrome-apps-common"
+}
