@@ -187,6 +187,7 @@ var Dashboard = {
 
     isConnectMode: function () {
 
+        return true;
         if (Dashboard.isRunningInCordova()) {
             return true;
         }
@@ -1377,7 +1378,10 @@ var Dashboard = {
         }
 
         var appVersion = window.dashboardVersion;
-        var appName = "Emby Mobile";
+        var appName = Dashboard.isConnectMode() ?
+            "Emby Mobile" :
+            "Emby Web Client";
+
         var deviceName;
         var deviceId;
 
@@ -1390,7 +1394,18 @@ var Dashboard = {
         } else {
 
             deviceName = generateDeviceName();
-            deviceId = MediaBrowser.generateDeviceId();
+
+            var seed = [];
+
+            if (Dashboard.isConnectMode()) {
+                seed.push('standalone');
+            }
+
+            if (Dashboard.isRunningInCordova()) {
+                seed.push('cordova');
+            }
+
+            deviceId = MediaBrowser.generateDeviceId(seed.join(','));
         }
 
         return {
@@ -1417,7 +1432,17 @@ var Dashboard = {
             .on('serveraddresschanged.dashboard', Dashboard.onApiClientServerAddressChanged);
     }
 
-    function createConnectionManager() {
+    function validateApiClient(apiClient) {
+
+        ConnectionManager.validateApiClient(apiClient, true)
+            .done(function () {
+                Dashboard.importCss(apiClient.getUrl('Branding/Css'));
+
+            })
+            .fail(Dashboard.logout);
+    }
+
+    function createConnectionManager(validateServer) {
 
         var appInfo = Dashboard.getAppInfo();
 
@@ -1444,7 +1469,8 @@ var Dashboard = {
 
                     initializeApiClient(ApiClient);
 
-                    ConnectionManager.addApiClient(ApiClient, true).fail(Dashboard.logout);
+                    ConnectionManager.addApiClient(ApiClient, validateServer, true).fail(Dashboard.logout);
+
                 } else {
 
                     Dashboard.logout();
@@ -1460,17 +1486,21 @@ var Dashboard = {
 
             initializeApiClient(ApiClient);
 
-            ConnectionManager.addApiClient(ApiClient);
+            ConnectionManager.addApiClient(ApiClient, validateServer);
         }
 
         if (window.ApiClient) {
-            Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
-
             ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
+
+            if (validateServer) {
+                Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
+            }
         }
     }
 
     function onReady() {
+
+        updateConnectionManagerDeviceId();
 
         var videoPlayerHtml = '<div id="mediaPlayer" data-theme="b" class="ui-bar-b" style="display: none;">';
 
@@ -1586,9 +1616,23 @@ var Dashboard = {
         }
     }
 
+    function updateConnectionManagerDeviceId() {
+
+        var appInfo = Dashboard.getAppInfo();
+
+        ConnectionManager.deviceId(appInfo.deviceId);
+        ConnectionManager.deviceName(appInfo.deviceName);
+
+        if (window.ApiClient) {
+            ApiClient.deviceId(appInfo.deviceId);
+            ApiClient.deviceName(appInfo.deviceName);
+            validateApiClient(ApiClient);
+        }
+    }
+
     if (Dashboard.isRunningInCordova()) {
 
-        createConnectionManager();
+        createConnectionManager(false);
 
         document.addEventListener("deviceready", function () {
 
@@ -1598,7 +1642,7 @@ var Dashboard = {
 
     } else {
 
-        createConnectionManager();
+        createConnectionManager(true);
 
         $(onReady);
     }
