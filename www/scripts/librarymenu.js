@@ -253,7 +253,9 @@
 
             html += '<div class="sidebarLinks librarySidebarLinks">';
 
-            if ($.browser.mobile) {
+            var showUserAtTop = $.browser.mobile;
+
+            if (showUserAtTop) {
 
                 var userHref = user.localUser && user.localUser.Policy.EnableUserPreferenceAccess ?
                     'mypreferencesdisplay.html?userId=' + user.localUser.Id :
@@ -282,14 +284,18 @@
 
             var homeHref = ConnectionManager.currentApiClient() ? 'index.html' : 'selectserver.html';
 
-            html += '<a class="lnkMediaFolder sidebarLink" style="margin-top:.5em;padding-left:1em;display:block;color:#fff;text-decoration:none;" href="' + homeHref + '">';
+            if (showUserAtTop) {
+                html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
+            } else {
+                html += '<a class="lnkMediaFolder sidebarLink" style="margin-top:.5em;padding-left:1em;display:block;color:#fff;text-decoration:none;" href="' + homeHref + '">';
 
-            html += '<img style="max-width:36px;vertical-align:middle;margin-right:1em;" src="css/images/mblogoicon.png" />';
+                html += '<img style="max-width:36px;vertical-align:middle;margin-right:1em;" src="css/images/mblogoicon.png" />';
 
-            html += Globalize.translate('ButtonHome');
-            html += '</a>';
+                html += Globalize.translate('ButtonHome');
+                html += '</a>';
 
-            html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
+                html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
+            }
 
             html += getViewsHtml();
             html += '</div>';

@@ -1377,20 +1377,18 @@ var Dashboard = {
         }
 
         var appVersion = window.dashboardVersion;
-        var appName;
+        var appName = "Emby Mobile";
         var deviceName;
         var deviceId;
 
         // Cordova
         if (window.device) {
 
-            appName = "Emby Mobile";
             deviceName = device.model;
             deviceId = device.uuid;
 
         } else {
 
-            appName = "Emby Web Client";
             deviceName = generateDeviceName();
             deviceId = MediaBrowser.generateDeviceId();
         }
