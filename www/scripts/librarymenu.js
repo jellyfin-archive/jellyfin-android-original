@@ -4,7 +4,7 @@
 
         var html = '<div class="viewMenuBar ui-bar-b">';
 
-        if ($.browser.safari && $.browser.mobile && window.navigator.standalone) {
+        if (($.browser.safari && $.browser.mobile && window.navigator.standalone) || Dashboard.isRunningInCordova()) {
             html += '<a data-rel="back" data-role="none" href="#" class="headerButton headerButtonLeft headerBackButton"><div class="fa fa-arrow-circle-o-left"></div></a>';
         }
 
@@ -253,29 +253,32 @@
 
             html += '<div class="sidebarLinks librarySidebarLinks">';
 
-            //var userHref = user.localUser && user.localUser.Policy.EnableUserPreferenceAccess ?
-            //    'mypreferencesdisplay.html?userId=' + user.localUser.Id :
-            //    (user.localUser ? 'index.html' : '#');
+            if ($.browser.mobile) {
 
-            //var paddingLeft = user.imageUrl ? 'padding-left:.7em;' : '';
-            //html += '<a style="margin-top:0;' + paddingLeft + 'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #000;" href="' + userHref + '">';
+                var userHref = user.localUser && user.localUser.Policy.EnableUserPreferenceAccess ?
+                    'mypreferencesdisplay.html?userId=' + user.localUser.Id :
+                    (user.localUser ? 'index.html' : '#');
 
-            //var imgWidth = 44;
+                var paddingLeft = user.imageUrl ? 'padding-left:.7em;' : '';
+                html += '<a style="margin-top:0;' + paddingLeft + 'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #000;" href="' + userHref + '">';
 
-            //if (user.imageUrl) {
-            //    var url = user.imageUrl;
+                var imgWidth = 44;
 
-            //    if (user.supportsImageParams) {
-            //        url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
-            //    }
+                if (user.imageUrl) {
+                    var url = user.imageUrl;
 
-            //    html += '<img style="max-width:' + imgWidth + 'px;vertical-align:middle;margin-right:.8em;border-radius: 50px;" src="' + url + '" />';
-            //} else {
-            //    html += '<span class="fa fa-user sidebarLinkIcon"></span>';
-            //}
+                    if (user.supportsImageParams) {
+                        url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
+                    }
 
-            //html += user.name;
-            //html += '</a>';
+                    html += '<img style="max-width:' + imgWidth + 'px;vertical-align:middle;margin-right:.8em;border-radius: 50px;" src="' + url + '" />';
+                } else {
+                    html += '<span class="fa fa-user sidebarLinkIcon"></span>';
+                }
+
+                html += user.name;
+                html += '</a>';
+            }
 
             var homeHref = ConnectionManager.currentApiClient() ? 'index.html' : 'selectserver.html';
 
