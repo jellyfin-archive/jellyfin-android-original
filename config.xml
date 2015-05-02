@@ -53,16 +53,16 @@
     <icon src="res/ios/icon-50.png" width="50" height="50" />
     <icon src="res/ios/icon-50@2x.png" width="100" height="100" />
     <!-- images are determined by width and height. The following are supported -->
-    <splash src="res/screen/ios/splash~iphone.jpg" width="320" height="480"/>
-    <splash src="res/screen/ios/splash@2x~iphone.jpg" width="640" height="960"/>
-    <splash src="res/screen/ios/splash-Portrait~ipad.jpg" width="768" height="1024"/>
-    <splash src="res/screen/ios/splash-Portrait@2x~ipad.jpg" width="1536" height="2048"/>
-    <splash src="res/screen/ios/splash-Landscape~ipad.jpg" width="1024" height="768"/>
-    <splash src="res/screen/ios/splash-Landscape@2x~ipad.jpg" width="2048" height="1536"/>
-    <splash src="res/screen/ios/splash-568h@2x~iphone.jpg" width="640" height="1136"/>
-    <splash src="res/screen/ios/splash-667h.jpg" width="750" height="1334"/>
-    <splash src="res/screen/ios/splash-736h.jpg" width="1242" height="2208"/>
-    <splash src="res/screen/ios/splash-Landscape-736h.jpg" width="2208" height="1242"/>
+    <splash src="res/ios/splash~iphone.jpg" width="320" height="480"/>
+    <splash src="res/ios/splash@2x~iphone.jpg" width="640" height="960"/>
+    <splash src="res/ios/splash-Portrait~ipad.jpg" width="768" height="1024"/>
+    <splash src="res/ios/splash-Portrait@2x~ipad.jpg" width="1536" height="2048"/>
+    <splash src="res/ios/splash-Landscape~ipad.jpg" width="1024" height="768"/>
+    <splash src="res/ios/splash-Landscape@2x~ipad.jpg" width="2048" height="1536"/>
+    <splash src="res/ios/splash-568h@2x~iphone.jpg" width="640" height="1136"/>
+    <splash src="res/ios/splash-667h.jpg" width="750" height="1334"/>
+    <splash src="res/ios/splash-736h.jpg" width="1242" height="2208"/>
+    <splash src="res/ios/splash-Landscape-736h.jpg" width="2208" height="1242"/>
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
   </platform>
