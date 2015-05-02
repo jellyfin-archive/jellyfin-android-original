@@ -1500,8 +1500,6 @@ var Dashboard = {
 
     function onReady() {
 
-        updateConnectionManagerDeviceId();
-
         var videoPlayerHtml = '<div id="mediaPlayer" data-theme="b" class="ui-bar-b" style="display: none;">';
 
         videoPlayerHtml += '<div class="videoBackdrop">';
@@ -1635,6 +1633,8 @@ var Dashboard = {
         createConnectionManager(false);
 
         document.addEventListener("deviceready", function () {
+
+            updateConnectionManagerDeviceId();
 
             $(onReady);
 
