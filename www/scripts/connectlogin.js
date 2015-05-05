@@ -28,6 +28,39 @@
 
     }
 
+    function handleConnectionResult(page, result) {
+
+        switch (result.State) {
+
+            case MediaBrowser.ConnectionState.SignedIn:
+                {
+                    var apiClient = result.ApiClient;
+
+                    Dashboard.serverAddress(apiClient.serverAddress());
+                    Dashboard.setCurrentUser(apiClient.getCurrentUserId(), apiClient.accessToken());
+                    window.location = 'index.html';
+                }
+                break;
+            case MediaBrowser.ConnectionState.ServerSignIn:
+                {
+                    window.location = 'login.html?serverid=' + result.Servers[0].Id;
+                }
+                break;
+            case MediaBrowser.ConnectionState.ServerSelection:
+                {
+                    onLoggedIn();
+                }
+                break;
+            case MediaBrowser.ConnectionState.ConnectSignIn:
+                {
+                    loadMode(page, 'welcome');
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     function loadAppConnection(page) {
 
         Dashboard.showLoadingMsg();
@@ -36,38 +69,9 @@
 
             Dashboard.hideLoadingMsg();
 
-            switch (result.State) {
-
-                case MediaBrowser.ConnectionState.SignedIn:
-                    {
-                        var apiClient = result.ApiClient;
-
-                        Dashboard.serverAddress(apiClient.serverAddress());
-                        Dashboard.setCurrentUser(apiClient.getCurrentUserId(), apiClient.accessToken());
-                        window.location = 'index.html';
-                    }
-                    break;
-                case MediaBrowser.ConnectionState.ServerSignIn:
-                    {
-                        alert('ServerSignIn');
-                    }
-                    break;
-                case MediaBrowser.ConnectionState.ServerSelection:
-                    {
-                        onLoggedIn();
-                    }
-                    break;
-                case MediaBrowser.ConnectionState.ConnectSignIn:
-                    {
-                        loadMode(page, 'welcome');
-                    }
-                    break;
-                default:
-                    break;
-            }
+            handleConnectionResult(page, result);
 
         });
-
     }
 
     function loadPage(page) {
@@ -90,9 +94,16 @@
         if (mode == 'welcome') {
             $('.connectLoginForm', page).hide();
             $('.welcomeContainer', page).show();
-
-        } else if (mode == 'connect') {
+            $('.manualServerForm', page).hide();
+        }
+        else if (mode == 'connect') {
             $('.connectLoginForm', page).show();
+            $('.welcomeContainer', page).hide();
+            $('.manualServerForm', page).hide();
+        }
+        else if (mode == 'manualserver') {
+            $('.manualServerForm', page).show();
+            $('.connectLoginForm', page).hide();
             $('.welcomeContainer', page).hide();
         }
     }
@@ -117,6 +128,26 @@
         }
     });
 
+    function submitManualServer(page) {
+
+        var host = $('#txtServerHost', page).val();
+        var port = $('#txtServerPort', page).val();
+
+        if (port) {
+            host += ':' + port;
+        }
+
+        Dashboard.showLoadingMsg();
+
+        ConnectionManager.connectToAddress(host).done(function (result) {
+
+            Dashboard.hideLoadingMsg();
+
+            handleConnectionResult(page, result);
+
+        });
+    }
+
     function submit(page) {
 
         var user = $('#txtManualName', page).val();
@@ -134,6 +165,15 @@
             submit(page);
 
             return false;
+        },
+
+        onManualServerSubmit: function () {
+            var page = $(this).parents('.page');
+
+            submitManualServer(page);
+
+            return false;
+
         }
     };
 

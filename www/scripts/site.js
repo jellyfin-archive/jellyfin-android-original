@@ -57,6 +57,7 @@ var Dashboard = {
 
     isRunningInCordova: function () {
 
+        return true;
         return window.appMode == 'cordova';
     },
 
@@ -1308,7 +1309,7 @@ var Dashboard = {
 
     isServerlessPage: function () {
         var url = getWindowUrl().toLowerCase();
-        return url.indexOf('connectlogin.html') != -1 || url.indexOf('selectserver.html') != -1;
+        return url.indexOf('connectlogin.html') != -1 || url.indexOf('selectserver.html') != -1 || url.indexOf('login.html') != -1 || url.indexOf('forgotpassword.html') != -1 || url.indexOf('forgotpasswordpin.html') != -1;
     },
 
     capabilities: function () {
