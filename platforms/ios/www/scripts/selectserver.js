@@ -64,20 +64,20 @@
         var href = "#";
         html += '<a class="cardContent lnkServer" data-serverid="' + server.Id + '" href="' + href + '">';
 
-        var imgUrl = '';
+        var imgUrl = server.Id == 'connect' ? 'css/images/logo536.png' : '';
 
         if (imgUrl) {
             html += '<div class="cardImage" style="background-image:url(\'' + imgUrl + '\');">';
         } else {
             html += '<div class="cardImage" style="text-align:center;">';
 
-            var icon = server.Id == 'new' ? 'plus' : 'globe';
+            var icon = server.Id == 'new' ? 'plus-circle' : 'globe';
             html += '<i class="fa fa-' + icon + '" style="color:#fff;vertical-align:middle;font-size:100px;margin-top:25%;"></i>';
         }
 
         html += "</div>";
 
-        // cardContent
+        // cardContent'
         html += "</a>";
 
         // cardScalable
@@ -85,7 +85,7 @@
 
         html += '<div class="cardFooter">';
 
-        if (server.Id != 'new') {
+        if (server.showOptions !== false) {
             html += '<div class="cardText" style="text-align:right; float:right;">';
 
             html += '<button class="btnServerMenu" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 2px 0 0;"></button>';
@@ -129,6 +129,11 @@
 
             if (id == 'new') {
                 window.location = 'connectlogin.html?mode=manualserver';
+                return;
+            }
+
+            if (id == 'connect') {
+                window.location = 'connectlogin.html?mode=connect';
                 return;
             }
 
@@ -369,10 +374,21 @@
 
         ConnectionManager.getAvailableServers().done(function (servers) {
 
+            servers = servers.slice(0);
+
             if (Dashboard.isRunningInCordova()) {
                 servers.push({
                     Name: Globalize.translate('ButtonNewServer'),
-                    Id: 'new'
+                    Id: 'new',
+                    showOptions: false
+                });
+            }
+
+            if (!ConnectionManager.isLoggedIntoConnect()) {
+                servers.push({
+                    Name: Globalize.translate('ButtonSignInWithConnect'),
+                    Id: 'connect',
+                    showOptions: false
                 });
             }
 
@@ -382,12 +398,6 @@
         });
 
         loadInvitations(page);
-
-        if (Dashboard.isRunningInCordova()) {
-            $('.connectLogin', page).show();
-        } else {
-            $('.connectLogin', page).hide();
-        }
     }
 
     $(document).on('pageshow', "#selectServerPage", function () {

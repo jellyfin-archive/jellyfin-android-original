@@ -35,6 +35,7 @@
                     LoginPage.showManualForm(page, false, false);
 
                 } else {
+
                     LoginPage.showVisualForm(page);
                     LoginPage.loadUserList(page, apiClient, users);
                 }
@@ -47,6 +48,12 @@
                 $('.disclaimer', page).html(options.LoginDisclaimer || '');
             });
         });
+
+        if (Dashboard.isConnectMode()) {
+            $('.connectButtons', page).show();
+        } else {
+            $('.connectButtons', page).hide();
+        }
     },
 
     cancelLogin: function () {
@@ -182,10 +189,14 @@
 
         $('a', elem).on('click', function () {
 
+            var id = this.getAttribute('data-userid');
             var name = this.getAttribute('data-username');
             var haspw = this.getAttribute('data-haspw');
 
-            if (haspw == 'false') {
+            if (id == 'manual') {
+                LoginPage.showManualForm(page, true);
+            }
+            else if (haspw == 'false') {
                 LoginPage.authenticateUserByName(apiClient, name, '');
             } else {
                 $('#txtManualName', page).val(name);
