@@ -41,12 +41,14 @@
     <icon height="152" src="res/ios/icon-76@2x.png" width="152" />
     <icon height="40" src="res/ios/icon-40.png" width="40" />
     <icon height="80" src="res/ios/icon-40@2x.png" width="80" />
+    <icon height="120" src="res/ios/icon-40@3x.png" width="120" />
     <icon height="57" src="res/ios/icon.png" width="57" />
     <icon height="114" src="res/ios/icon@2x.png" width="114" />
     <icon height="72" src="res/ios/icon-72.png" width="72" />
     <icon height="144" src="res/ios/icon-72@2x.png" width="144" />
     <icon height="29" src="res/ios/icon-small.png" width="29" />
     <icon height="58" src="res/ios/icon-small@2x.png" width="58" />
+    <icon height="87" src="res/ios/icon-small@3x.png" width="87" />
     <icon height="50" src="res/ios/icon-50.png" width="50" />
     <icon height="100" src="res/ios/icon-50@2x.png" width="100" />
     <splash height="480" src="res/ios/splash~iphone.png" width="320" />
