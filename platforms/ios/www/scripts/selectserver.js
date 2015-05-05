@@ -64,9 +64,16 @@
         var href = "#";
         html += '<a class="cardContent lnkServer" data-serverid="' + server.Id + '" href="' + href + '">';
 
-        var imgUrl = 'css/images/server.png';
+        var imgUrl = '';
 
-        html += '<div class="cardImage" style="background-image:url(\'' + imgUrl + '\');">';
+        if (imgUrl) {
+            html += '<div class="cardImage" style="background-image:url(\'' + imgUrl + '\');">';
+        } else {
+            html += '<div class="cardImage" style="text-align:center;">';
+
+            var icon = server.Id == 'new' ? 'plus' : 'globe';
+            html += '<i class="fa fa-' + icon + '" style="color:#fff;vertical-align:middle;font-size:100px;margin-top:25%;"></i>';
+        }
 
         html += "</div>";
 
@@ -78,11 +85,13 @@
 
         html += '<div class="cardFooter">';
 
-        html += '<div class="cardText" style="text-align:right; float:right;">';
+        if (server.Id != 'new') {
+            html += '<div class="cardText" style="text-align:right; float:right;">';
 
-        html += '<button class="btnServerMenu" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 2px 0 0;"></button>';
+            html += '<button class="btnServerMenu" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 2px 0 0;"></button>';
 
-        html += "</div>";
+            html += "</div>";
+        }
 
         html += '<div class="cardText" style="margin-right: 30px; padding: 11px 0 10px;">';
         html += server.Name;
@@ -117,6 +126,12 @@
         $('.lnkServer', elem).on('click', function () {
 
             var id = this.getAttribute('data-serverid');
+
+            if (id == 'new') {
+                window.location = 'connectlogin.html?mode=manualserver';
+                return;
+            }
+
             var server = servers.filter(function (s) {
                 return s.Id == id;
             })[0];
@@ -281,10 +296,8 @@
         var href = "#";
         html += '<a class="cardContent" href="' + href + '">';
 
-        var imgUrl = 'css/images/server.png';
-
-        html += '<div class="cardImage" style="background-image:url(\'' + imgUrl + '\');">';
-
+        html += '<div class="cardImage" style="text-align:center;">';
+        html += '<i class="fa fa-globe" style="color:#fff;vertical-align:middle;font-size:100px;margin-top:25%;"></i>';
         html += "</div>";
 
         // cardContent
@@ -356,6 +369,13 @@
 
         ConnectionManager.getAvailableServers().done(function (servers) {
 
+            if (Dashboard.isRunningInCordova()) {
+                servers.push({
+                    Name: Globalize.translate('ButtonNewServer'),
+                    Id: 'new'
+                });
+            }
+
             renderServers(page, servers);
 
             Dashboard.hideLoadingMsg();
@@ -364,10 +384,8 @@
         loadInvitations(page);
 
         if (Dashboard.isRunningInCordova()) {
-            $('.newServer', page).show();
             $('.connectLogin', page).show();
         } else {
-            $('.newServer', page).hide();
             $('.connectLogin', page).hide();
         }
     }
