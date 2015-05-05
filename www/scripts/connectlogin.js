@@ -28,6 +28,95 @@
 
     }
 
+    function loadAppConnection(page) {
+
+        Dashboard.showLoadingMsg();
+
+        ConnectionManager.connect().done(function (result) {
+
+            Dashboard.hideLoadingMsg();
+
+            switch (result.State) {
+
+                case MediaBrowser.ConnectionState.SignedIn:
+                    {
+                        var apiClient = result.ApiClient;
+
+                        Dashboard.serverAddress(apiClient.serverAddress());
+                        Dashboard.setCurrentUser(apiClient.getCurrentUserId(), apiClient.accessToken());
+                        window.location = 'index.html';
+                    }
+                    break;
+                case MediaBrowser.ConnectionState.ServerSignIn:
+                    {
+                        alert('ServerSignIn');
+                    }
+                    break;
+                case MediaBrowser.ConnectionState.ServerSelection:
+                    {
+                        onLoggedIn();
+                    }
+                    break;
+                case MediaBrowser.ConnectionState.ConnectSignIn:
+                    {
+                        loadMode(page, 'welcome');
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+        });
+
+    }
+
+    function loadPage(page) {
+
+        var mode = getParameterByName('mode');
+
+        if (!mode) {
+
+            if (Dashboard.isRunningInCordova()) {
+                loadAppConnection(page);
+                return;
+            }
+            mode = 'connect';
+        }
+
+        loadMode(page, mode);
+    }
+    function loadMode(page, mode) {
+
+        if (mode == 'welcome') {
+            $('.connectLoginForm', page).hide();
+            $('.welcomeContainer', page).show();
+
+        } else if (mode == 'connect') {
+            $('.connectLoginForm', page).show();
+            $('.welcomeContainer', page).hide();
+        }
+    }
+
+    $(document).on('pageshow', "#connectLoginPage", function () {
+
+        var page = this;
+
+        loadPage(page);
+
+        var link = '<a href="http://emby.media" target="_blank">http://emby.media</a>';
+        $('.embyIntroDownloadMessage', page).html(Globalize.translate('EmbyIntroDownloadMessage', link));
+
+        if (Dashboard.isRunningInCordova()) {
+            $('.newUsers', page).hide();
+            $('.forgotPassword', page).hide();
+            $('.skip', page).show();
+        } else {
+            $('.skip', page).hide();
+            $('.newUsers', page).show();
+            $('.forgotPassword', page).show();
+        }
+    });
+
     function submit(page) {
 
         var user = $('#txtManualName', page).val();

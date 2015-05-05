@@ -92,20 +92,11 @@
             accessToken = token;
         };
 
-        self.deviceName = function (val) {
-            if (val) {
-                deviceName = val;
-            }
-
+        self.deviceName = function () {
             return deviceName;
         };
 
-        self.deviceId = function (val) {
-
-            if (val) {
-                deviceId = val;
-            }
-
+        self.deviceId = function () {
             return deviceId;
         };
 

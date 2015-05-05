@@ -326,11 +326,19 @@
 
     function loadInvitations(page) {
 
-        ConnectionManager.getUserInvitations().done(function (list) {
+        if (ConnectionManager.isLoggedIntoConnect()) {
 
-            renderInvitations(page, list);
+            ConnectionManager.getUserInvitations().done(function (list) {
 
-        });
+                renderInvitations(page, list);
+
+            });
+
+        } else {
+            
+            renderInvitations(page, []);
+        }
+
     }
 
     function loadPage(page) {
