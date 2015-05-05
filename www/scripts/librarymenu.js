@@ -40,25 +40,28 @@
             html += '<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="visibility:hidden;"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';
 
         }
+        
+        if (user.name) {
+            
+            html += '<a class="headerButton headerButtonRight headerUserButton" href="#" onclick="Dashboard.showUserFlyout(this);">';
 
-        html += '<a class="headerButton headerButtonRight headerUserButton" href="#" onclick="Dashboard.showUserFlyout(this);">';
+            if (user.imageUrl) {
 
-        if (user.imageUrl) {
+                var userButtonHeight = 26;
 
-            var userButtonHeight = 26;
+                var url = user.imageUrl;
 
-            var url = user.imageUrl;
+                if (user.supportsImageParams) {
+                    url += "&height=" + (userButtonHeight * Math.max(devicePixelRatio || 1, 2));
+                }
 
-            if (user.supportsImageParams) {
-                url += "&height=" + (userButtonHeight * Math.max(devicePixelRatio || 1, 2));
+                html += '<img src="' + url + '" style="border-radius: 1000px; height:' + userButtonHeight + 'px;" />';
+            } else {
+                html += '<div class="fa fa-user"></div>';
             }
 
-            html += '<img src="' + url + '" style="border-radius: 1000px; height:' + userButtonHeight + 'px;" />';
-        } else {
-            html += '<div class="fa fa-user"></div>';
+            html += '</a>';
         }
-
-        html += '</a>';
 
         if (user.canManageServer) {
             html += '<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton"><div class="fa fa-cog"></div></a>';
@@ -90,6 +93,13 @@
             $('.libraryMenuButton').createHoverTouch().on('hovertouch', showLibraryMenu);
             $('.dashboardMenuButton').createHoverTouch().on('hovertouch', showDashboardMenu);
         }
+
+        // grab an element
+        var viewMenuBar = document.getElementsByClassName("viewMenuBar")[0];
+        // construct an instance of Headroom, passing the element
+        var headroom = new Headroom(viewMenuBar);
+        // initialise
+        headroom.init();
     }
 
     function getItemHref(item, context) {
@@ -280,12 +290,15 @@
 
                 html += user.name;
                 html += '</a>';
+
+                html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
             }
 
             var homeHref = ConnectionManager.currentApiClient() ? 'index.html' : 'selectserver.html';
 
             if (showUserAtTop) {
                 html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
+
             } else {
                 html += '<a class="lnkMediaFolder sidebarLink" style="margin-top:.5em;padding-left:1em;display:block;color:#fff;text-decoration:none;" href="' + homeHref + '">';
 
@@ -293,9 +306,9 @@
 
                 html += Globalize.translate('ButtonHome');
                 html += '</a>';
-            }
 
-            html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
+                html += '<div class="libraryMenuDivider"></div>';
+            }
 
             html += getViewsHtml();
             html += '</div>';
@@ -531,6 +544,15 @@
             // Scroll back up so in case vertical scroll was messed with
             $(document).scrollTop(0);
         }
+
+        $('.libraryViewNav', page).each(function() {
+            
+            // construct an instance of Headroom, passing the element
+            var headroom = new Headroom(this);
+            // initialise
+            headroom.init();
+
+        });
     });
 
     function initializeApiClient(apiClient) {
