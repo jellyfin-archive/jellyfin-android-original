@@ -21,6 +21,8 @@
   <preference name="UIWebViewBounce" value="false" />
   <preference name="webviewbounce" value="false" />
   <preference name="StatusBarOverlaysWebView" value="false" />
+  <preference name="BackgroundColor" value="0xff222222" />
+  <preference name="BackupWebStorage" value="local" />
   <icon src="res/icon.png" />
   <platform name="android">
     <allow-intent href="market:*" />
