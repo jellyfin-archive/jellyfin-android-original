@@ -87,20 +87,8 @@
             return appVersion;
         };
 
-        self.deviceId = function (val) {
-            if (val) {
-                deviceId = val;
-            }
-
+        self.deviceId = function () {
             return deviceId;
-        };
-
-        self.deviceName = function (val) {
-            if (val) {
-                deviceName = val;
-            }
-
-            return deviceName;
         };
 
         self.currentApiClient = function () {
@@ -117,23 +105,7 @@
             return credentialProvider.credentials().ConnectAccessToken;
         };
 
-        self.addApiClient = function (apiClient, validateServer, enableAutomaticNetworking) {
-
-            apiClients.push(apiClient);
-
-            if (validateServer) {
-
-                return self.validateApiClient(apiClient, enableAutomaticNetworking);
-
-            } else {
-
-                var deferred = DeferredBuilder.Deferred();
-                deferred.resolveWith(null, [[]]);
-                return deferred.promise();
-            }
-        };
-
-        self.validateApiClient = function (apiClient, enableAutomaticNetworking) {
+        self.addApiClient = function (apiClient, enableAutomaticNetworking) {
 
             apiClients.push(apiClient);
 

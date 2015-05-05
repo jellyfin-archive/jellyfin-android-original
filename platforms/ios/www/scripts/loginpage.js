@@ -1,33 +1,51 @@
 ﻿var LoginPage = {
 
+    getApiClient: function () {
+
+        var serverId = getParameterByName('serverid');
+        var deferred = DeferredBuilder.Deferred();
+
+        if (serverId) {
+            deferred.resolveWith(null, [ConnectionManager.getOrCreateApiClient(serverId)]);
+
+        } else {
+            deferred.resolveWith(null, [ApiClient]);
+        }
+
+        return deferred.promise();
+    },
+
     onPageShow: function () {
 
         Dashboard.showLoadingMsg();
 
         var page = this;
 
-        // Show all users on localhost
-        var promise1 = ApiClient.getPublicUsers();
+        LoginPage.getApiClient().done(function (apiClient) {
 
-        promise1.done(function (users) {
+            // Show all users on localhost
+            var promise1 = apiClient.getPublicUsers();
 
-            var showManualForm = !users.length;
+            promise1.done(function (users) {
 
-            if (showManualForm) {
+                var showManualForm = !users.length;
 
-                LoginPage.showManualForm(page, false, false);
+                if (showManualForm) {
 
-            } else {
-                LoginPage.showVisualForm(page);
-                LoginPage.loadUserList(users);
-            }
+                    LoginPage.showManualForm(page, false, false);
 
-            Dashboard.hideLoadingMsg();
-        });
+                } else {
+                    LoginPage.showVisualForm(page);
+                    LoginPage.loadUserList(page, apiClient, users);
+                }
 
-        ApiClient.getJSON(ApiClient.getUrl('Branding/Configuration')).done(function (options) {
+                Dashboard.hideLoadingMsg();
+            });
 
-            $('.disclaimer', page).html(options.LoginDisclaimer || '');
+            apiClient.getJSON(apiClient.getUrl('Branding/Configuration')).done(function (options) {
+
+                $('.disclaimer', page).html(options.LoginDisclaimer || '');
+            });
         });
     },
 
@@ -67,30 +85,24 @@
         return "Last seen " + humane_date(lastActivityDate);
     },
 
-    getImagePath: function (user) {
-
-        if (!user.PrimaryImageTag) {
-            return "css/images/logindefault.png";
-        }
-
-        return ApiClient.getUserImageUrl(user.Id, {
-            width: 240,
-            tag: user.PrimaryImageTag,
-            type: "Primary"
-        });
-    },
-
-    authenticateUserByName: function (username, password) {
+    authenticateUserByName: function (apiClient, username, password) {
 
         Dashboard.showLoadingMsg();
 
-        ApiClient.authenticateUserByName(username, password).done(function (result) {
+        apiClient.authenticateUserByName(username, password).done(function (result) {
 
             var user = result.User;
 
+            var serverId = getParameterByName('serverid');
+
+            // In a multi-server supported app, set the server address
+            if (serverId) {
+                Dashboard.serverAddress(apiClient.serverAddress());
+            }
+
             Dashboard.setCurrentUser(user.Id, result.AccessToken);
 
-            if (user.Policy.IsAdministrator) {
+            if (user.Policy.IsAdministrator && !serverId) {
                 window.location = "dashboard.html?u=" + user.Id + '&t=' + result.AccessToken;
             } else {
                 window.location = "index.html?u=" + user.Id + '&t=' + result.AccessToken;
@@ -111,10 +123,8 @@
 
     },
 
-    loadUserList: function (users) {
+    loadUserList: function (page, apiClient, users) {
         var html = "";
-
-        var page = $.mobile.activePage;
 
         for (var i = 0, length = users.length; i < length; i++) {
             var user = users[i];
@@ -130,7 +140,7 @@
 
             if (user.PrimaryImageTag) {
 
-                imgUrl = ApiClient.getUserImageUrl(user.Id, {
+                imgUrl = apiClient.getUserImageUrl(user.Id, {
                     width: 300,
                     tag: user.PrimaryImageTag,
                     type: "Primary"
@@ -176,7 +186,7 @@
             var haspw = this.getAttribute('data-haspw');
 
             if (haspw == 'false') {
-                LoginPage.authenticateUserByName(name, '');
+                LoginPage.authenticateUserByName(apiClient, name, '');
             } else {
                 $('#txtManualName', page).val(name);
                 $('#txtManualPassword', '#loginPage').val('');
@@ -187,7 +197,9 @@
 
     onManualSubmit: function () {
 
-        LoginPage.authenticateUserByName($('#txtManualName', '#loginPage').val(), $('#txtManualPassword', '#loginPage').val());
+        LoginPage.getApiClient().done(function (apiClient) {
+            LoginPage.authenticateUserByName(apiClient, $('#txtManualName', '#loginPage').val(), $('#txtManualPassword', '#loginPage').val());
+        });
 
         // Disable default form submission
         return false;
