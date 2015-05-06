@@ -32,7 +32,6 @@
                 return deferred.promise();
             }
 
-            var data = stringToArrayBuffer('who is EmbyServer?');
             var isTimedOut = false;
             var socketId;
 
@@ -52,11 +51,11 @@
 
             function onReceive(info) {
 
+                console.log('ServerDiscovery message received');
+
                 console.log(info);
 
                 if (info.socketId == socketId) {
-
-                    console.log('ServerDiscovery message received');
 
                     var json = arrayBufferToString(info.data);
 
@@ -78,6 +77,9 @@
                 socketId = createInfo.socketId;
 
                 chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', port, function (result) {
+
+                    var data = stringToArrayBuffer('who is EmbyServer?');
+
                     chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (result) {
                         if (result < 0) {
                             console.log('send fail: ' + result);
