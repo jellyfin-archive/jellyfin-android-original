@@ -119,7 +119,16 @@
         }
     }
 
-    $(document).on('pageshow', "#connectLoginPage", function () {
+    $(document).on('pageinit', "#connectLoginPage", function () {
+
+        var page = this;
+
+        $('.btnSkipConnect', page).on('click', function() {
+            
+            window.location = 'selectserver.html';
+        });
+
+    }).on('pageshow', "#connectLoginPage", function () {
 
         var page = this;
 
