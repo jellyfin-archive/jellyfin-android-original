@@ -1418,11 +1418,6 @@ var Dashboard = {
 
 (function () {
 
-    if (!window.WebSocket) {
-
-        alert(Globalize.translate('MessageBrowserDoesNotSupportWebSockets'));
-    }
-
     function initializeApiClient(apiClient) {
 
         $(apiClient).off('.dashboard')
