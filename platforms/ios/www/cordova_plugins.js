@@ -43,6 +43,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
+        "id": "com.telerik.plugins.wkwebview.wkwebview",
+        "clobbers": [
+            "wkwebview"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -71,6 +78,7 @@ module.exports.metadata =
     "cordova-plugin-dialogs": "1.0.0",
     "cordova-plugin-statusbar": "1.0.0",
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
+    "com.telerik.plugins.wkwebview": "0.3.7",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2"
 }

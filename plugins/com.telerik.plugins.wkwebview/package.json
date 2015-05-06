@@ -1,0 +1,25 @@
+{
+    "version": "0.3.7",
+    "name": "com.telerik.plugins.wkwebview",
+    "cordova_name": "WKWebView Polyfill",
+    "description": "\n    A drop-in replacement of UIWebView for boosted performance and enhanced HTML5 support\n  ",
+    "license": "MIT",
+    "repo": "https://github.com/Telerik-Verified-Plugins/WKWebView.git",
+    "issue": "https://github.com/Telerik-Verified-Plugins/WKWebView/issues",
+    "keywords": [
+        "Webkit",
+        " Webkit webview",
+        " WKWebView Polyfill",
+        " WKWebView",
+        " WebView+"
+    ],
+    "platforms": [
+        "ios"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=3.0.0"
+        }
+    ]
+}
