@@ -62,5 +62,13 @@
         },
         "is_top_level": false,
         "variables": {}
+    },
+    "com.telerik.plugins.wkwebview": {
+        "source": {
+            "type": "registry",
+            "id": "com.telerik.plugins.wkwebview"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
