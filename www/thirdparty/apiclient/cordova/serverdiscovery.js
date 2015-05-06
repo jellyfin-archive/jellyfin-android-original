@@ -10,6 +10,10 @@
         return buf;
     }
 
+    function arrayBufferToString(buf) {
+        return String.fromCharCode.apply(null, new Uint16Array(buf));
+    }
+
     globalScope.ServerDiscovery = {
 
         findServers: function (timeoutMs) {
@@ -40,17 +44,31 @@
                 if (socketId) {
                     chrome.sockets.udp.onReceive.removeListener(onReceive);
                     chrome.sockets.udp.close(socketId);
+
+
                 }
 
             }, timeoutMs);
 
             function onReceive(info) {
 
+                console.log(info);
+
                 if (info.socketId == socketId) {
 
-                    //expect(info.remotePort).toBeTruthy();
-                    //expect(info.remoteAddress).toBeTruthy();
-                    //expect(info).toBeValidUdpReadResultEqualTo(data);
+                    console.log('ServerDiscovery message received');
+
+                    var json = arrayBufferToString(info.data);
+
+                    var server = JSON.parse(json);
+
+                    server.RemoteAddress = info.remoteAddress;
+
+                    if (info.remotePort) {
+                        server.RemoteAddress += ':' + info.remotePort;
+                    }
+
+                    servers.push(server);
                 }
             }
 
