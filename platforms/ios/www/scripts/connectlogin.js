@@ -76,9 +76,9 @@
 
     function loadPage(page) {
 
-        var mode = getParameterByName('mode');
+        var mode = getParameterByName('mode') || 'auto';
 
-        if (!mode) {
+        if (mode == 'auto') {
 
             if (Dashboard.isRunningInCordova()) {
                 loadAppConnection(page);
