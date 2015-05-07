@@ -71,11 +71,25 @@
 
         html += '</div>';
 
+        html = normalizeLinksHtml(html);
+
         $(document.body).prepend(html);
         $('.viewMenuBar').trigger('create');
 
         $(document).trigger('headercreated');
         bindMenuEvents();
+    }
+
+    function replaceAll(str, find, replace) {
+        return str.replace(new RegExp(find, 'g'), replace);
+    }
+
+    function normalizeLinksHtml(html) {
+
+        if (AppInfo.resetOnLibraryChange) {
+            html = replaceAll(html, '<a ', '<a data-ajax="false"');
+        }
+        return html;
     }
 
     function bindMenuEvents() {
@@ -114,7 +128,7 @@
         html += '<div class="libraryMenuDivider"></div>';
         html += '<div class="adminMenuOptions">';
 
-        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" href="dashboard.html"><span class="fa fa-cog sidebarLinkIcon"></span>' + Globalize.translate('ButtonDashboard') + '</a>';
+        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" data-rel="none" href="dashboard.html"><span class="fa fa-cog sidebarLinkIcon"></span>' + Globalize.translate('ButtonDashboard') + '</a>';
         html += '<a class="sidebarLink lnkMediaFolder editorViewMenu" data-itemid="editor" href="edititemmetadata.html"><span class="fa fa-edit sidebarLinkIcon"></span>' + Globalize.translate('ButtonMetadataManager') + '</a>';
         html += '<a class="sidebarLink lnkMediaFolder" data-itemid="reports" href="reports.html"><span class="fa fa-bar-chart sidebarLinkIcon"></span>' + Globalize.translate('ButtonReports') + '</a>';
         html += '</div>';
@@ -218,6 +232,8 @@
 
             }).join('');
 
+            html = normalizeLinksHtml(html);
+
             var elem = $('.libraryMenuOptions').html(html);
 
             $('.sidebarLink', elem).on('click', function () {
@@ -308,6 +324,7 @@
             }
 
             html += getViewsHtml();
+            html = normalizeLinksHtml(html);
             html += '</div>';
 
             html += '</div>';
