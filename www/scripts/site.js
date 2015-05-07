@@ -376,7 +376,7 @@ var Dashboard = {
 
         options.id = options.id || "notification" + new Date().getTime() + parseInt(Math.random());
 
-        var footer = $("#footer").css("top", "initial").show();
+        var footer = $(".footer").css("top", "initial").show();
 
         var parentElem = $('#footerNotifications', footer);
 
@@ -1480,6 +1480,10 @@ var AppInfo = {};
             if ($.browser.mobile) {
                 AppInfo.hasLowImageBandwidth = true;
             }
+
+            if (Dashboard.isRunningInCordova()) {
+                AppInfo.enableBottomTabs = true;
+            }
         }
         else {
 
@@ -1557,7 +1561,9 @@ var AppInfo = {};
         if (window.ApiClient) {
             ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
 
-            Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
+            if (!Dashboard.isRunningInCordova()) {
+                Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
+            }
         }
     }
 
@@ -1674,14 +1680,14 @@ var AppInfo = {};
         var mediaPlayerElem = $('#mediaPlayer', document.body);
         mediaPlayerElem.trigger('create');
 
-        var footerHtml = '<div id="footer" data-theme="b" class="ui-bar-b">';
+        var footerHtml = '<div id="footer" class="footer" data-theme="b" class="ui-bar-b">';
 
         footerHtml += '<div id="footerNotifications"></div>';
         footerHtml += '</div>';
 
         $(document.body).append(footerHtml);
 
-        var footerElem = $('#footer', document.body);
+        var footerElem = $('.footer', document.body);
         footerElem.trigger('create');
 
         $(window).on("beforeunload", function () {
