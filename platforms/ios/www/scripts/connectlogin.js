@@ -125,7 +125,8 @@
 
         $('.btnSkipConnect', page).on('click', function() {
             
-            window.location = 'selectserver.html';
+            //window.location = 'selectserver.html';
+            window.location = 'connectlogin.html?mode=manualserver';
         });
 
     }).on('pageshow', "#connectLoginPage", function () {
