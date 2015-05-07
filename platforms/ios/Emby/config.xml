@@ -31,6 +31,11 @@
     <feature name="WKWebViewPolyfill">
         <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
+    <feature name="BackgroundColor">
+        <param name="ios-package" value="CDVBackgroundColor" />
+        <param name="onload" value="true" />
+    </feature>
+    <preference name="BackgroundColor" value="0xff000000" />
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -84,6 +89,7 @@
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="UIWebViewBounce" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
     <preference name="webviewbounce" value="false" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="BackgroundColor" value="0xff222222" />

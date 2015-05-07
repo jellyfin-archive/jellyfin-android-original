@@ -70,5 +70,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "com.crewmeister.cordova-ios-backgroundcolor": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/crewmeister/cordova.ios-backgroundcolor",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

@@ -35,6 +35,14 @@
                         {
                             "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"BackgroundColor\"><param name=\"ios-package\" value=\"CDVBackgroundColor\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"BackgroundColor\" value=\"0xff000000\" />",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -105,6 +113,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

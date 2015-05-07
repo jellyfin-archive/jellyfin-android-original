@@ -860,7 +860,10 @@
 
             var deviceProfile = self.getDeviceProfile();
 
-            Dashboard.showLoadingMsg();
+            if (item.MediaType === "Video") {
+
+                Dashboard.showModalLoadingMsg();
+            }
 
             getPlaybackInfo(item.Id, deviceProfile, startPosition).done(function (playbackInfoResult) {
 
@@ -883,7 +886,7 @@
                             playInternalPostMediaSourceSelection(item, mediaSource, startPosition, callback);
                         }
                     } else {
-                        Dashboard.hideLoadingMsg();
+                        Dashboard.hideModalLoadingMsg();
                         showPlaybackInfoErrorMessage('NoCompatibleStream');
                     }
                 }
@@ -893,7 +896,7 @@
 
         function playInternalPostMediaSourceSelection(item, mediaSource, startPosition, callback) {
 
-            Dashboard.hideLoadingMsg();
+            Dashboard.hideModalLoadingMsg();
 
             self.currentMediaSource = mediaSource;
             self.currentItem = item;

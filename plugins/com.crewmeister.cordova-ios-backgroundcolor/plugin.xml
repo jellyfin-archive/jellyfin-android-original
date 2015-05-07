@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com.crewmeister.cordova-ios-backgroundcolor"
+        version="0.0.1">
+    <name>iOS BackgroundColor</name>
+    <description>BackgroundColor plugin for iOS</description>
+    <author>Gregor Schmidt - crewmeister.com</author>
+
+    <license>Apache 2.0</license>
+    <keywords>cordova,ios,backgroundcolor</keywords>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="BackgroundColor">
+                <param name="ios-package" value="CDVBackgroundColor" />
+                <param name="onload" value="true" />
+            </feature>
+
+            <preference name="BackgroundColor" value="0xff000000" />
+        </config-file>
+
+        <header-file src="src/ios/CDVBackgroundColor.h" />
+        <source-file src="src/ios/CDVBackgroundColor.m" />
+    </platform>
+</plugin>

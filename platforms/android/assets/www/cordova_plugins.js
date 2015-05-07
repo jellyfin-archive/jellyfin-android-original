@@ -70,6 +70,7 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "1.0.0",
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
     "com.telerik.plugins.wkwebview": "0.3.7",
+    "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7"
 }
 // BOTTOM OF METADATA

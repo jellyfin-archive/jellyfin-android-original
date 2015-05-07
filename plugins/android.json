@@ -56,6 +56,9 @@
         },
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.crewmeister.cordova-ios-backgroundcolor": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {
