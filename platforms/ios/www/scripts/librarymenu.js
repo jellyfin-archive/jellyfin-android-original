@@ -519,14 +519,20 @@
             $(document.body).removeClass('dashboardDocument').removeClass('libraryDocument');
         }
 
-    }).on('pagebeforeshow', ".page", function () {
+    }).on('pagebeforeshow', ".libraryPage", function () {
 
         var page = this;
 
-        if ($(page).hasClass('standalonePage')) {
-            $('.viewMenuBar').hide();
+        if (AppInfo.enableBottomTabs) {
+            $('.libraryViewNav', page).addClass('bottomLibraryViewNav');
+            $(page).addClass('noSecondaryNavPage');
         } else {
-            $('.viewMenuBar').show();
+            
+            $('.libraryViewNav', page).each(function () {
+
+                initHeadRoom(this);
+            });
+
         }
 
     }).on('pageshow', ".libraryPage", function () {
@@ -541,12 +547,6 @@
             // Scroll back up so in case vertical scroll was messed with
             $(document).scrollTop(0);
         }
-
-        $('.libraryViewNav', page).each(function () {
-
-            initHeadRoom(this);
-
-        });
     });
 
     function initHeadRoom(elem) {
