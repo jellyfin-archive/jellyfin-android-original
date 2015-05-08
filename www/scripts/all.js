@@ -8179,6 +8179,848 @@ if(this._resizeData){if(a.x===this._resizeData.windowCoordinates.x&&a.y===this._
 	}
 }(jQuery));
 }));
+;(function () {
+	'use strict';
+
+	/**
+	 * @preserve FastClick: polyfill to remove click delays on browsers with touch UIs.
+	 *
+	 * @codingstandard ftlabs-jsv2
+	 * @copyright The Financial Times Limited [All Rights Reserved]
+	 * @license MIT License (see LICENSE.txt)
+	 */
+
+	/*jslint browser:true, node:true*/
+	/*global define, Event, Node*/
+
+
+	/**
+	 * Instantiate fast-clicking listeners on the specified layer.
+	 *
+	 * @constructor
+	 * @param {Element} layer The layer to listen on
+	 * @param {Object} [options={}] The options to override the defaults
+	 */
+	function FastClick(layer, options) {
+		var oldOnClick;
+
+		options = options || {};
+
+		/**
+		 * Whether a click is currently being tracked.
+		 *
+		 * @type boolean
+		 */
+		this.trackingClick = false;
+
+
+		/**
+		 * Timestamp for when click tracking started.
+		 *
+		 * @type number
+		 */
+		this.trackingClickStart = 0;
+
+
+		/**
+		 * The element being tracked for a click.
+		 *
+		 * @type EventTarget
+		 */
+		this.targetElement = null;
+
+
+		/**
+		 * X-coordinate of touch start event.
+		 *
+		 * @type number
+		 */
+		this.touchStartX = 0;
+
+
+		/**
+		 * Y-coordinate of touch start event.
+		 *
+		 * @type number
+		 */
+		this.touchStartY = 0;
+
+
+		/**
+		 * ID of the last touch, retrieved from Touch.identifier.
+		 *
+		 * @type number
+		 */
+		this.lastTouchIdentifier = 0;
+
+
+		/**
+		 * Touchmove boundary, beyond which a click will be cancelled.
+		 *
+		 * @type number
+		 */
+		this.touchBoundary = options.touchBoundary || 10;
+
+
+		/**
+		 * The FastClick layer.
+		 *
+		 * @type Element
+		 */
+		this.layer = layer;
+
+		/**
+		 * The minimum time between tap(touchstart and touchend) events
+		 *
+		 * @type number
+		 */
+		this.tapDelay = options.tapDelay || 200;
+
+		/**
+		 * The maximum time for a tap
+		 *
+		 * @type number
+		 */
+		this.tapTimeout = options.tapTimeout || 700;
+
+		if (FastClick.notNeeded(layer)) {
+			return;
+		}
+
+		// Some old versions of Android don't have Function.prototype.bind
+		function bind(method, context) {
+			return function() { return method.apply(context, arguments); };
+		}
+
+
+		var methods = ['onMouse', 'onClick', 'onTouchStart', 'onTouchMove', 'onTouchEnd', 'onTouchCancel'];
+		var context = this;
+		for (var i = 0, l = methods.length; i < l; i++) {
+			context[methods[i]] = bind(context[methods[i]], context);
+		}
+
+		// Set up event handlers as required
+		if (deviceIsAndroid) {
+			layer.addEventListener('mouseover', this.onMouse, true);
+			layer.addEventListener('mousedown', this.onMouse, true);
+			layer.addEventListener('mouseup', this.onMouse, true);
+		}
+
+		layer.addEventListener('click', this.onClick, true);
+		layer.addEventListener('touchstart', this.onTouchStart, false);
+		layer.addEventListener('touchmove', this.onTouchMove, false);
+		layer.addEventListener('touchend', this.onTouchEnd, false);
+		layer.addEventListener('touchcancel', this.onTouchCancel, false);
+
+		// Hack is required for browsers that don't support Event#stopImmediatePropagation (e.g. Android 2)
+		// which is how FastClick normally stops click events bubbling to callbacks registered on the FastClick
+		// layer when they are cancelled.
+		if (!Event.prototype.stopImmediatePropagation) {
+			layer.removeEventListener = function(type, callback, capture) {
+				var rmv = Node.prototype.removeEventListener;
+				if (type === 'click') {
+					rmv.call(layer, type, callback.hijacked || callback, capture);
+				} else {
+					rmv.call(layer, type, callback, capture);
+				}
+			};
+
+			layer.addEventListener = function(type, callback, capture) {
+				var adv = Node.prototype.addEventListener;
+				if (type === 'click') {
+					adv.call(layer, type, callback.hijacked || (callback.hijacked = function(event) {
+						if (!event.propagationStopped) {
+							callback(event);
+						}
+					}), capture);
+				} else {
+					adv.call(layer, type, callback, capture);
+				}
+			};
+		}
+
+		// If a handler is already declared in the element's onclick attribute, it will be fired before
+		// FastClick's onClick handler. Fix this by pulling out the user-defined handler function and
+		// adding it as listener.
+		if (typeof layer.onclick === 'function') {
+
+			// Android browser on at least 3.2 requires a new reference to the function in layer.onclick
+			// - the old one won't work if passed to addEventListener directly.
+			oldOnClick = layer.onclick;
+			layer.addEventListener('click', function(event) {
+				oldOnClick(event);
+			}, false);
+			layer.onclick = null;
+		}
+	}
+
+	/**
+	* Windows Phone 8.1 fakes user agent string to look like Android and iPhone.
+	*
+	* @type boolean
+	*/
+	var deviceIsWindowsPhone = navigator.userAgent.indexOf("Windows Phone") >= 0;
+
+	/**
+	 * Android requires exceptions.
+	 *
+	 * @type boolean
+	 */
+	var deviceIsAndroid = navigator.userAgent.indexOf('Android') > 0 && !deviceIsWindowsPhone;
+
+
+	/**
+	 * iOS requires exceptions.
+	 *
+	 * @type boolean
+	 */
+	var deviceIsIOS = /iP(ad|hone|od)/.test(navigator.userAgent) && !deviceIsWindowsPhone;
+
+
+	/**
+	 * iOS 4 requires an exception for select elements.
+	 *
+	 * @type boolean
+	 */
+	var deviceIsIOS4 = deviceIsIOS && (/OS 4_\d(_\d)?/).test(navigator.userAgent);
+
+
+	/**
+	 * iOS 6.0-7.* requires the target element to be manually derived
+	 *
+	 * @type boolean
+	 */
+	var deviceIsIOSWithBadTarget = deviceIsIOS && (/OS [6-7]_\d/).test(navigator.userAgent);
+
+	/**
+	 * BlackBerry requires exceptions.
+	 *
+	 * @type boolean
+	 */
+	var deviceIsBlackBerry10 = navigator.userAgent.indexOf('BB10') > 0;
+
+	/**
+	 * Determine whether a given element requires a native click.
+	 *
+	 * @param {EventTarget|Element} target Target DOM element
+	 * @returns {boolean} Returns true if the element needs a native click
+	 */
+	FastClick.prototype.needsClick = function(target) {
+		switch (target.nodeName.toLowerCase()) {
+
+		// Don't send a synthetic click to disabled inputs (issue #62)
+		case 'button':
+		case 'select':
+		case 'textarea':
+			if (target.disabled) {
+				return true;
+			}
+
+			break;
+		case 'input':
+
+			// File inputs need real clicks on iOS 6 due to a browser bug (issue #68)
+			if ((deviceIsIOS && target.type === 'file') || target.disabled) {
+				return true;
+			}
+
+			break;
+		case 'label':
+		case 'iframe': // iOS8 homescreen apps can prevent events bubbling into frames
+		case 'video':
+			return true;
+		}
+
+		return (/\bneedsclick\b/).test(target.className);
+	};
+
+
+	/**
+	 * Determine whether a given element requires a call to focus to simulate click into element.
+	 *
+	 * @param {EventTarget|Element} target Target DOM element
+	 * @returns {boolean} Returns true if the element requires a call to focus to simulate native click.
+	 */
+	FastClick.prototype.needsFocus = function(target) {
+		switch (target.nodeName.toLowerCase()) {
+		case 'textarea':
+			return true;
+		case 'select':
+			return !deviceIsAndroid;
+		case 'input':
+			switch (target.type) {
+			case 'button':
+			case 'checkbox':
+			case 'file':
+			case 'image':
+			case 'radio':
+			case 'submit':
+				return false;
+			}
+
+			// No point in attempting to focus disabled inputs
+			return !target.disabled && !target.readOnly;
+		default:
+			return (/\bneedsfocus\b/).test(target.className);
+		}
+	};
+
+
+	/**
+	 * Send a click event to the specified element.
+	 *
+	 * @param {EventTarget|Element} targetElement
+	 * @param {Event} event
+	 */
+	FastClick.prototype.sendClick = function(targetElement, event) {
+		var clickEvent, touch;
+
+		// On some Android devices activeElement needs to be blurred otherwise the synthetic click will have no effect (#24)
+		if (document.activeElement && document.activeElement !== targetElement) {
+			document.activeElement.blur();
+		}
+
+		touch = event.changedTouches[0];
+
+		// Synthesise a click event, with an extra attribute so it can be tracked
+		clickEvent = document.createEvent('MouseEvents');
+		clickEvent.initMouseEvent(this.determineEventType(targetElement), true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, false, false, false, false, 0, null);
+		clickEvent.forwardedTouchEvent = true;
+		targetElement.dispatchEvent(clickEvent);
+	};
+
+	FastClick.prototype.determineEventType = function(targetElement) {
+
+		//Issue #159: Android Chrome Select Box does not open with a synthetic click event
+		if (deviceIsAndroid && targetElement.tagName.toLowerCase() === 'select') {
+			return 'mousedown';
+		}
+
+		return 'click';
+	};
+
+
+	/**
+	 * @param {EventTarget|Element} targetElement
+	 */
+	FastClick.prototype.focus = function(targetElement) {
+		var length;
+
+		// Issue #160: on iOS 7, some input elements (e.g. date datetime month) throw a vague TypeError on setSelectionRange. These elements don't have an integer value for the selectionStart and selectionEnd properties, but unfortunately that can't be used for detection because accessing the properties also throws a TypeError. Just check the type instead. Filed as Apple bug #15122724.
+		if (deviceIsIOS && targetElement.setSelectionRange && targetElement.type.indexOf('date') !== 0 && targetElement.type !== 'time' && targetElement.type !== 'month') {
+			length = targetElement.value.length;
+			targetElement.setSelectionRange(length, length);
+		} else {
+			targetElement.focus();
+		}
+	};
+
+
+	/**
+	 * Check whether the given target element is a child of a scrollable layer and if so, set a flag on it.
+	 *
+	 * @param {EventTarget|Element} targetElement
+	 */
+	FastClick.prototype.updateScrollParent = function(targetElement) {
+		var scrollParent, parentElement;
+
+		scrollParent = targetElement.fastClickScrollParent;
+
+		// Attempt to discover whether the target element is contained within a scrollable layer. Re-check if the
+		// target element was moved to another parent.
+		if (!scrollParent || !scrollParent.contains(targetElement)) {
+			parentElement = targetElement;
+			do {
+				if (parentElement.scrollHeight > parentElement.offsetHeight) {
+					scrollParent = parentElement;
+					targetElement.fastClickScrollParent = parentElement;
+					break;
+				}
+
+				parentElement = parentElement.parentElement;
+			} while (parentElement);
+		}
+
+		// Always update the scroll top tracker if possible.
+		if (scrollParent) {
+			scrollParent.fastClickLastScrollTop = scrollParent.scrollTop;
+		}
+	};
+
+
+	/**
+	 * @param {EventTarget} targetElement
+	 * @returns {Element|EventTarget}
+	 */
+	FastClick.prototype.getTargetElementFromEventTarget = function(eventTarget) {
+
+		// On some older browsers (notably Safari on iOS 4.1 - see issue #56) the event target may be a text node.
+		if (eventTarget.nodeType === Node.TEXT_NODE) {
+			return eventTarget.parentNode;
+		}
+
+		return eventTarget;
+	};
+
+
+	/**
+	 * On touch start, record the position and scroll offset.
+	 *
+	 * @param {Event} event
+	 * @returns {boolean}
+	 */
+	FastClick.prototype.onTouchStart = function(event) {
+		var targetElement, touch, selection;
+
+		// Ignore multiple touches, otherwise pinch-to-zoom is prevented if both fingers are on the FastClick element (issue #111).
+		if (event.targetTouches.length > 1) {
+			return true;
+		}
+
+		targetElement = this.getTargetElementFromEventTarget(event.target);
+		touch = event.targetTouches[0];
+
+		if (deviceIsIOS) {
+
+			// Only trusted events will deselect text on iOS (issue #49)
+			selection = window.getSelection();
+			if (selection.rangeCount && !selection.isCollapsed) {
+				return true;
+			}
+
+			if (!deviceIsIOS4) {
+
+				// Weird things happen on iOS when an alert or confirm dialog is opened from a click event callback (issue #23):
+				// when the user next taps anywhere else on the page, new touchstart and touchend events are dispatched
+				// with the same identifier as the touch event that previously triggered the click that triggered the alert.
+				// Sadly, there is an issue on iOS 4 that causes some normal touch events to have the same identifier as an
+				// immediately preceeding touch event (issue #52), so this fix is unavailable on that platform.
+				// Issue 120: touch.identifier is 0 when Chrome dev tools 'Emulate touch events' is set with an iOS device UA string,
+				// which causes all touch events to be ignored. As this block only applies to iOS, and iOS identifiers are always long,
+				// random integers, it's safe to to continue if the identifier is 0 here.
+				if (touch.identifier && touch.identifier === this.lastTouchIdentifier) {
+					event.preventDefault();
+					return false;
+				}
+
+				this.lastTouchIdentifier = touch.identifier;
+
+				// If the target element is a child of a scrollable layer (using -webkit-overflow-scrolling: touch) and:
+				// 1) the user does a fling scroll on the scrollable layer
+				// 2) the user stops the fling scroll with another tap
+				// then the event.target of the last 'touchend' event will be the element that was under the user's finger
+				// when the fling scroll was started, causing FastClick to send a click event to that layer - unless a check
+				// is made to ensure that a parent layer was not scrolled before sending a synthetic click (issue #42).
+				this.updateScrollParent(targetElement);
+			}
+		}
+
+		this.trackingClick = true;
+		this.trackingClickStart = event.timeStamp;
+		this.targetElement = targetElement;
+
+		this.touchStartX = touch.pageX;
+		this.touchStartY = touch.pageY;
+
+		// Prevent phantom clicks on fast double-tap (issue #36)
+		if ((event.timeStamp - this.lastClickTime) < this.tapDelay) {
+			event.preventDefault();
+		}
+
+		return true;
+	};
+
+
+	/**
+	 * Based on a touchmove event object, check whether the touch has moved past a boundary since it started.
+	 *
+	 * @param {Event} event
+	 * @returns {boolean}
+	 */
+	FastClick.prototype.touchHasMoved = function(event) {
+		var touch = event.changedTouches[0], boundary = this.touchBoundary;
+
+		if (Math.abs(touch.pageX - this.touchStartX) > boundary || Math.abs(touch.pageY - this.touchStartY) > boundary) {
+			return true;
+		}
+
+		return false;
+	};
+
+
+	/**
+	 * Update the last position.
+	 *
+	 * @param {Event} event
+	 * @returns {boolean}
+	 */
+	FastClick.prototype.onTouchMove = function(event) {
+		if (!this.trackingClick) {
+			return true;
+		}
+
+		// If the touch has moved, cancel the click tracking
+		if (this.targetElement !== this.getTargetElementFromEventTarget(event.target) || this.touchHasMoved(event)) {
+			this.trackingClick = false;
+			this.targetElement = null;
+		}
+
+		return true;
+	};
+
+
+	/**
+	 * Attempt to find the labelled control for the given label element.
+	 *
+	 * @param {EventTarget|HTMLLabelElement} labelElement
+	 * @returns {Element|null}
+	 */
+	FastClick.prototype.findControl = function(labelElement) {
+
+		// Fast path for newer browsers supporting the HTML5 control attribute
+		if (labelElement.control !== undefined) {
+			return labelElement.control;
+		}
+
+		// All browsers under test that support touch events also support the HTML5 htmlFor attribute
+		if (labelElement.htmlFor) {
+			return document.getElementById(labelElement.htmlFor);
+		}
+
+		// If no for attribute exists, attempt to retrieve the first labellable descendant element
+		// the list of which is defined here: http://www.w3.org/TR/html5/forms.html#category-label
+		return labelElement.querySelector('button, input:not([type=hidden]), keygen, meter, output, progress, select, textarea');
+	};
+
+
+	/**
+	 * On touch end, determine whether to send a click event at once.
+	 *
+	 * @param {Event} event
+	 * @returns {boolean}
+	 */
+	FastClick.prototype.onTouchEnd = function(event) {
+		var forElement, trackingClickStart, targetTagName, scrollParent, touch, targetElement = this.targetElement;
+
+		if (!this.trackingClick) {
+			return true;
+		}
+
+		// Prevent phantom clicks on fast double-tap (issue #36)
+		if ((event.timeStamp - this.lastClickTime) < this.tapDelay) {
+			this.cancelNextClick = true;
+			return true;
+		}
+
+		if ((event.timeStamp - this.trackingClickStart) > this.tapTimeout) {
+			return true;
+		}
+
+		// Reset to prevent wrong click cancel on input (issue #156).
+		this.cancelNextClick = false;
+
+		this.lastClickTime = event.timeStamp;
+
+		trackingClickStart = this.trackingClickStart;
+		this.trackingClick = false;
+		this.trackingClickStart = 0;
+
+		// On some iOS devices, the targetElement supplied with the event is invalid if the layer
+		// is performing a transition or scroll, and has to be re-detected manually. Note that
+		// for this to function correctly, it must be called *after* the event target is checked!
+		// See issue #57; also filed as rdar://13048589 .
+		if (deviceIsIOSWithBadTarget) {
+			touch = event.changedTouches[0];
+
+			// In certain cases arguments of elementFromPoint can be negative, so prevent setting targetElement to null
+			targetElement = document.elementFromPoint(touch.pageX - window.pageXOffset, touch.pageY - window.pageYOffset) || targetElement;
+			targetElement.fastClickScrollParent = this.targetElement.fastClickScrollParent;
+		}
+
+		targetTagName = targetElement.tagName.toLowerCase();
+		if (targetTagName === 'label') {
+			forElement = this.findControl(targetElement);
+			if (forElement) {
+				this.focus(targetElement);
+				if (deviceIsAndroid) {
+					return false;
+				}
+
+				targetElement = forElement;
+			}
+		} else if (this.needsFocus(targetElement)) {
+
+			// Case 1: If the touch started a while ago (best guess is 100ms based on tests for issue #36) then focus will be triggered anyway. Return early and unset the target element reference so that the subsequent click will be allowed through.
+			// Case 2: Without this exception for input elements tapped when the document is contained in an iframe, then any inputted text won't be visible even though the value attribute is updated as the user types (issue #37).
+			if ((event.timeStamp - trackingClickStart) > 100 || (deviceIsIOS && window.top !== window && targetTagName === 'input')) {
+				this.targetElement = null;
+				return false;
+			}
+
+			this.focus(targetElement);
+			this.sendClick(targetElement, event);
+
+			// Select elements need the event to go through on iOS 4, otherwise the selector menu won't open.
+			// Also this breaks opening selects when VoiceOver is active on iOS6, iOS7 (and possibly others)
+			if (!deviceIsIOS || targetTagName !== 'select') {
+				this.targetElement = null;
+				event.preventDefault();
+			}
+
+			return false;
+		}
+
+		if (deviceIsIOS && !deviceIsIOS4) {
+
+			// Don't send a synthetic click event if the target element is contained within a parent layer that was scrolled
+			// and this tap is being used to stop the scrolling (usually initiated by a fling - issue #42).
+			scrollParent = targetElement.fastClickScrollParent;
+			if (scrollParent && scrollParent.fastClickLastScrollTop !== scrollParent.scrollTop) {
+				return true;
+			}
+		}
+
+		// Prevent the actual click from going though - unless the target node is marked as requiring
+		// real clicks or if it is in the whitelist in which case only non-programmatic clicks are permitted.
+		if (!this.needsClick(targetElement)) {
+			event.preventDefault();
+			this.sendClick(targetElement, event);
+		}
+
+		return false;
+	};
+
+
+	/**
+	 * On touch cancel, stop tracking the click.
+	 *
+	 * @returns {void}
+	 */
+	FastClick.prototype.onTouchCancel = function() {
+		this.trackingClick = false;
+		this.targetElement = null;
+	};
+
+
+	/**
+	 * Determine mouse events which should be permitted.
+	 *
+	 * @param {Event} event
+	 * @returns {boolean}
+	 */
+	FastClick.prototype.onMouse = function(event) {
+
+		// If a target element was never set (because a touch event was never fired) allow the event
+		if (!this.targetElement) {
+			return true;
+		}
+
+		if (event.forwardedTouchEvent) {
+			return true;
+		}
+
+		// Programmatically generated events targeting a specific element should be permitted
+		if (!event.cancelable) {
+			return true;
+		}
+
+		// Derive and check the target element to see whether the mouse event needs to be permitted;
+		// unless explicitly enabled, prevent non-touch click events from triggering actions,
+		// to prevent ghost/doubleclicks.
+		if (!this.needsClick(this.targetElement) || this.cancelNextClick) {
+
+			// Prevent any user-added listeners declared on FastClick element from being fired.
+			if (event.stopImmediatePropagation) {
+				event.stopImmediatePropagation();
+			} else {
+
+				// Part of the hack for browsers that don't support Event#stopImmediatePropagation (e.g. Android 2)
+				event.propagationStopped = true;
+			}
+
+			// Cancel the event
+			event.stopPropagation();
+			event.preventDefault();
+
+			return false;
+		}
+
+		// If the mouse event is permitted, return true for the action to go through.
+		return true;
+	};
+
+
+	/**
+	 * On actual clicks, determine whether this is a touch-generated click, a click action occurring
+	 * naturally after a delay after a touch (which needs to be cancelled to avoid duplication), or
+	 * an actual click which should be permitted.
+	 *
+	 * @param {Event} event
+	 * @returns {boolean}
+	 */
+	FastClick.prototype.onClick = function(event) {
+		var permitted;
+
+		// It's possible for another FastClick-like library delivered with third-party code to fire a click event before FastClick does (issue #44). In that case, set the click-tracking flag back to false and return early. This will cause onTouchEnd to return early.
+		if (this.trackingClick) {
+			this.targetElement = null;
+			this.trackingClick = false;
+			return true;
+		}
+
+		// Very odd behaviour on iOS (issue #18): if a submit element is present inside a form and the user hits enter in the iOS simulator or clicks the Go button on the pop-up OS keyboard the a kind of 'fake' click event will be triggered with the submit-type input element as the target.
+		if (event.target.type === 'submit' && event.detail === 0) {
+			return true;
+		}
+
+		permitted = this.onMouse(event);
+
+		// Only unset targetElement if the click is not permitted. This will ensure that the check for !targetElement in onMouse fails and the browser's click doesn't go through.
+		if (!permitted) {
+			this.targetElement = null;
+		}
+
+		// If clicks are permitted, return true for the action to go through.
+		return permitted;
+	};
+
+
+	/**
+	 * Remove all FastClick's event listeners.
+	 *
+	 * @returns {void}
+	 */
+	FastClick.prototype.destroy = function() {
+		var layer = this.layer;
+
+		if (deviceIsAndroid) {
+			layer.removeEventListener('mouseover', this.onMouse, true);
+			layer.removeEventListener('mousedown', this.onMouse, true);
+			layer.removeEventListener('mouseup', this.onMouse, true);
+		}
+
+		layer.removeEventListener('click', this.onClick, true);
+		layer.removeEventListener('touchstart', this.onTouchStart, false);
+		layer.removeEventListener('touchmove', this.onTouchMove, false);
+		layer.removeEventListener('touchend', this.onTouchEnd, false);
+		layer.removeEventListener('touchcancel', this.onTouchCancel, false);
+	};
+
+
+	/**
+	 * Check whether FastClick is needed.
+	 *
+	 * @param {Element} layer The layer to listen on
+	 */
+	FastClick.notNeeded = function(layer) {
+		var metaViewport;
+		var chromeVersion;
+		var blackberryVersion;
+		var firefoxVersion;
+
+		// Devices that don't support touch don't need FastClick
+		if (typeof window.ontouchstart === 'undefined') {
+			return true;
+		}
+
+		// Chrome version - zero for other browsers
+		chromeVersion = +(/Chrome\/([0-9]+)/.exec(navigator.userAgent) || [,0])[1];
+
+		if (chromeVersion) {
+
+			if (deviceIsAndroid) {
+				metaViewport = document.querySelector('meta[name=viewport]');
+
+				if (metaViewport) {
+					// Chrome on Android with user-scalable="no" doesn't need FastClick (issue #89)
+					if (metaViewport.content.indexOf('user-scalable=no') !== -1) {
+						return true;
+					}
+					// Chrome 32 and above with width=device-width or less don't need FastClick
+					if (chromeVersion > 31 && document.documentElement.scrollWidth <= window.outerWidth) {
+						return true;
+					}
+				}
+
+			// Chrome desktop doesn't need FastClick (issue #15)
+			} else {
+				return true;
+			}
+		}
+
+		if (deviceIsBlackBerry10) {
+			blackberryVersion = navigator.userAgent.match(/Version\/([0-9]*)\.([0-9]*)/);
+
+			// BlackBerry 10.3+ does not require Fastclick library.
+			// https://github.com/ftlabs/fastclick/issues/251
+			if (blackberryVersion[1] >= 10 && blackberryVersion[2] >= 3) {
+				metaViewport = document.querySelector('meta[name=viewport]');
+
+				if (metaViewport) {
+					// user-scalable=no eliminates click delay.
+					if (metaViewport.content.indexOf('user-scalable=no') !== -1) {
+						return true;
+					}
+					// width=device-width (or less than device-width) eliminates click delay.
+					if (document.documentElement.scrollWidth <= window.outerWidth) {
+						return true;
+					}
+				}
+			}
+		}
+
+		// IE10 with -ms-touch-action: none or manipulation, which disables double-tap-to-zoom (issue #97)
+		if (layer.style.msTouchAction === 'none' || layer.style.touchAction === 'manipulation') {
+			return true;
+		}
+
+		// Firefox version - zero for other browsers
+		firefoxVersion = +(/Firefox\/([0-9]+)/.exec(navigator.userAgent) || [,0])[1];
+
+		if (firefoxVersion >= 27) {
+			// Firefox 27+ does not have tap delay if the content is not zoomable - https://bugzilla.mozilla.org/show_bug.cgi?id=922896
+
+			metaViewport = document.querySelector('meta[name=viewport]');
+			if (metaViewport && (metaViewport.content.indexOf('user-scalable=no') !== -1 || document.documentElement.scrollWidth <= window.outerWidth)) {
+				return true;
+			}
+		}
+
+		// IE11: prefixed -ms-touch-action is no longer supported and it's recomended to use non-prefixed version
+		// http://msdn.microsoft.com/en-us/library/windows/apps/Hh767313.aspx
+		if (layer.style.touchAction === 'none' || layer.style.touchAction === 'manipulation') {
+			return true;
+		}
+
+		return false;
+	};
+
+
+	/**
+	 * Factory method for creating a FastClick object
+	 *
+	 * @param {Element} layer The layer to listen on
+	 * @param {Object} [options={}] The options to override the defaults
+	 */
+	FastClick.attach = function(layer, options) {
+		return new FastClick(layer, options);
+	};
+
+
+	if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+
+		// AMD. Register as an anonymous module.
+		define(function() {
+			return FastClick;
+		});
+	} else if (typeof module !== 'undefined' && module.exports) {
+		module.exports = FastClick.attach;
+		module.exports.FastClick = FastClick;
+	} else {
+		window.FastClick = FastClick;
+	}
+}());
+
 /*!
  * headroom.js v0.7.0 - Give your page some headroom. Hide your header until you need it
  * Copyright (c) 2014 Nick Williams - http://wicky.nillia.ms/headroom.js
@@ -8569,8 +9411,8 @@ if(this._resizeData){if(a.x===this._resizeData.windowCoordinates.x&&a.y===this._
   window.Headroom = Headroom;
 
 }(window, document));
-window.localizationGlossary={"SettingsSaved":"Settings saved.","AddUser":"Add User","Users":"Users","Delete":"Delete","Administrator":"Administrator","Password":"Password","DeleteImage":"Delete Image","MessageThankYouForSupporting":"Thank you for supporting Emby.","MessagePleaseSupportProject":"Please support Emby.","DeleteImageConfirmation":"Are you sure you wish to delete this image?","FileReadCancelled":"The file read has been canceled.","FileNotFound":"File not found.","FileReadError":"An error occurred while reading the file.","DeleteUser":"Delete User","DeleteUserConfirmation":"Are you sure you wish to delete this user?","PasswordResetHeader":"Reset Password","PasswordResetComplete":"The password has been reset.","PinCodeResetComplete":"The pin code has been reset.","PasswordResetConfirmation":"Are you sure you wish to reset the password?","PinCodeResetConfirmation":"Are you sure you wish to reset the pin code?","HeaderPinCodeReset":"Reset Pin Code","PasswordSaved":"Password saved.","PasswordMatchError":"Password and password confirmation must match.","OptionRelease":"Official Release","OptionBeta":"Beta","OptionDev":"Dev (Unstable)","UninstallPluginHeader":"Uninstall Plugin","UninstallPluginConfirmation":"Are you sure you wish to uninstall {0}?","NoPluginConfigurationMessage":"This plugin has nothing to configure.","NoPluginsInstalledMessage":"You have no plugins installed.","BrowsePluginCatalogMessage":"Browse our plugin catalog to view available plugins.","MessageKeyEmailedTo":"Key emailed to {0}.","MessageKeysLinked":"Keys linked.","HeaderConfirmation":"Confirmation","MessageKeyUpdated":"Thank you. Your supporter key has been updated.","MessageKeyRemoved":"Thank you. Your supporter key has been removed.","HeaderSupportTheTeam":"Support the Emby Team","TextEnjoyBonusFeatures":"Enjoy Bonus Features","TitleLiveTV":"Live TV","TitleSync":"Sync","ButtonDonate":"Donate","HeaderMyMedia":"My Media","TitleNotifications":"Notifications","ErrorLaunchingChromecast":"There was an error launching chromecast. Please ensure your device is connected to your wireless network.","MessageErrorLoadingSupporterInfo":"There was an error loading supporter information. Please try again later.","MessageLinkYourSupporterKey":"Link your supporter key with up to {0} Emby Connect members to enjoy free access to the following apps:","HeaderConfirmRemoveUser":"Remove User","MessageSwipeDownOnRemoteControl":"Welcome to remote control. Swipe down anywhere on this screen to go back to where you came from.","MessageConfirmRemoveConnectSupporter":"Are you sure you wish to remove additional supporter benefits from this user?","ValueTimeLimitSingleHour":"Time limit: 1 hour","ValueTimeLimitMultiHour":"Time limit: {0} hours","HeaderUsers":"Users","PluginCategoryGeneral":"General","PluginCategoryContentProvider":"Content Providers","PluginCategoryScreenSaver":"Screen Savers","PluginCategoryTheme":"Themes","PluginCategorySync":"Sync","PluginCategorySocialIntegration":"Social Networks","PluginCategoryNotifications":"Notifications","PluginCategoryMetadata":"Metadata","PluginCategoryLiveTV":"Live TV","PluginCategoryChannel":"Channels","HeaderSearch":"Search","ValueDateCreated":"Date created: {0}","LabelArtist":"Artist","LabelMovie":"Movie","LabelMusicVideo":"Music Video","LabelEpisode":"Episode","LabelSeries":"Series","LabelStopping":"Stopping","LabelCancelled":"(cancelled)","LabelFailed":"(failed)","ButtonHelp":"Help","ButtonSave":"Save","ButtonDownload":"Download","SyncJobStatusQueued":"Queued","SyncJobStatusConverting":"Converting","SyncJobStatusFailed":"Failed","SyncJobStatusCancelled":"Cancelled","SyncJobStatusCompleted":"Synced","SyncJobStatusReadyToTransfer":"Ready to Transfer","SyncJobStatusTransferring":"Transferring","SyncJobStatusCompletedWithError":"Synced with errors","SyncJobItemStatusReadyToTransfer":"Ready to Transfer","LabelCollection":"Collection","HeaderAddToCollection":"Add to Collection","NewCollectionNameExample":"Example: Star Wars Collection","OptionSearchForInternetMetadata":"Search the internet for artwork and metadata","LabelSelectCollection":"Select collection:","HeaderDevices":"Devices","ButtonScheduledTasks":"Scheduled tasks","MessageItemsAdded":"Items added","ButtonAddToCollection":"Add to collection","HeaderSelectCertificatePath":"Select Certificate Path","ConfirmMessageScheduledTaskButton":"This operation normally runs automatically as a scheduled task. It can also be run manually here. To configure the scheduled task, see:","HeaderSupporterBenefit":"A supporter membership provides additional benefits such as access to sync, premium plugins, internet channel content, and more. {0}Learn more{1}.","LabelSyncNoTargetsHelp":"It looks like you don't currently have any apps that support sync.","HeaderWelcomeToProjectServerDashboard":"Welcome to the Emby Server Dashboard","HeaderWelcomeToProjectWebClient":"Welcome to the Emby Web Client","ButtonTakeTheTour":"Take the tour","HeaderWelcomeBack":"Welcome back!","TitlePlugins":"Plugins","ButtonTakeTheTourToSeeWhatsNew":"Take the tour to see what's new","MessageNoSyncJobsFound":"No sync jobs found. Create sync jobs using the Sync buttons found throughout the web interface.","HeaderLibraryAccess":"Library Access","HeaderChannelAccess":"Channel Access","HeaderDeviceAccess":"Device Access","HeaderSelectDevices":"Select Devices","ButtonCancelItem":"Cancel item","ButtonQueueForRetry":"Queue for retry","ButtonReenable":"Re-enable","ButtonLearnMore":"Learn more","SyncJobItemStatusSyncedMarkForRemoval":"Marked for removal","LabelAbortedByServerShutdown":"(Aborted by server shutdown)","LabelScheduledTaskLastRan":"Last ran {0}, taking {1}.","HeaderDeleteTaskTrigger":"Delete Task Trigger","HeaderTaskTriggers":"Task Triggers","MessageDeleteTaskTrigger":"Are you sure you wish to delete this task trigger?","MessageNoPluginsInstalled":"You have no plugins installed.","LabelVersionInstalled":"{0} installed","LabelNumberReviews":"{0} Reviews","LabelFree":"Free","HeaderPlaybackError":"Playback Error","MessagePlaybackErrorNotAllowed":"You're currently not authorized to play this content. Please contact your system administrator for details.","MessagePlaybackErrorNoCompatibleStream":"No compatible streams are currently available. Please try again later or contact your system administrator for details.","MessagePlaybackErrorRateLimitExceeded":"Your playback rate limit has been exceeded. Please contact your system administrator for details.","MessagePlaybackErrorPlaceHolder":"The content chosen is not playable from this device.","HeaderSelectAudio":"Select Audio","HeaderSelectSubtitles":"Select Subtitles","ButtonMarkForRemoval":"Remove from device","ButtonUnmarkForRemoval":"Cancel removal from device","LabelDefaultStream":"(Default)","LabelForcedStream":"(Forced)","LabelDefaultForcedStream":"(Default/Forced)","LabelUnknownLanguage":"Unknown language","MessageConfirmSyncJobItemCancellation":"Are you sure you wish to cancel this item?","ButtonMute":"Mute","ButtonUnmute":"Unmute","ButtonStop":"Stop","ButtonNextTrack":"Next Track","ButtonPause":"Pause","ButtonPlay":"Play","ButtonEdit":"Edit","ButtonQueue":"Queue","ButtonPlayTrailer":"Play trailer","ButtonPlaylist":"Playlist","ButtonPreviousTrack":"Previous Track","LabelEnabled":"Enabled","LabelDisabled":"Disabled","ButtonMoreInformation":"More Information","LabelNoUnreadNotifications":"No unread notifications.","ButtonViewNotifications":"View notifications","ButtonMarkTheseRead":"Mark these read","ButtonClose":"Close","LabelAllPlaysSentToPlayer":"All plays will be sent to the selected player.","MessageInvalidUser":"Invalid username or password. Please try again.","HeaderLoginFailure":"Login Failure","HeaderAllRecordings":"All Recordings","RecommendationBecauseYouLike":"Because you like {0}","RecommendationBecauseYouWatched":"Because you watched {0}","RecommendationDirectedBy":"Directed by {0}","RecommendationStarring":"Starring {0}","HeaderConfirmRecordingCancellation":"Confirm Recording Cancellation","MessageConfirmRecordingCancellation":"Are you sure you wish to cancel this recording?","MessageRecordingCancelled":"Recording cancelled.","HeaderConfirmSeriesCancellation":"Confirm Series Cancellation","MessageConfirmSeriesCancellation":"Are you sure you wish to cancel this series?","MessageSeriesCancelled":"Series cancelled.","HeaderConfirmRecordingDeletion":"Confirm Recording Deletion","MessageConfirmRecordingDeletion":"Are you sure you wish to delete this recording?","MessageRecordingDeleted":"Recording deleted.","ButonCancelRecording":"Cancel Recording","MessageRecordingSaved":"Recording saved.","OptionSunday":"Sunday","OptionMonday":"Monday","OptionTuesday":"Tuesday","OptionWednesday":"Wednesday","OptionThursday":"Thursday","OptionFriday":"Friday","OptionSaturday":"Saturday","OptionEveryday":"Every day","OptionWeekend":"Weekends","OptionWeekday":"Weekdays","HeaderConfirmDeletion":"Confirm Deletion","MessageConfirmPathSubstitutionDeletion":"Are you sure you wish to delete this path substitution?","LiveTvUpdateAvailable":"(Update available)","LabelVersionUpToDate":"Up to date!","ButtonResetTuner":"Reset tuner","HeaderResetTuner":"Reset Tuner","MessageConfirmResetTuner":"Are you sure you wish to reset this tuner? Any active players or recordings will be abruptly stopped.","ButtonCancelSeries":"Cancel Series","HeaderSeriesRecordings":"Series Recordings","LabelAnytime":"Any time","StatusRecording":"Recording","StatusWatching":"Watching","StatusRecordingProgram":"Recording {0}","StatusWatchingProgram":"Watching {0}","HeaderSplitMedia":"Split Media Apart","MessageConfirmSplitMedia":"Are you sure you wish to split the media sources into separate items?","HeaderError":"Error","MessageChromecastConnectionError":"Your Chromecast receiver is unable to connect to your Emby Server. Please check their connections and try again.","MessagePleaseSelectOneItem":"Please select at least one item.","MessagePleaseSelectTwoItems":"Please select at least two items.","MessageTheFollowingItemsWillBeGrouped":"The following titles will be grouped into one item:","MessageConfirmItemGrouping":"Emby apps will automatically choose the optimal version to play based on device and network performance. Are you sure you wish to continue?","HeaderResume":"Resume","HeaderMyViews":"My Views","HeaderLibraryFolders":"Media Folders","HeaderLatestMedia":"Latest Media","ButtonMoreItems":"More...","ButtonMore":"More","HeaderFavoriteMovies":"Favorite Movies","HeaderFavoriteShows":"Favorite Shows","HeaderFavoriteEpisodes":"Favorite Episodes","HeaderFavoriteGames":"Favorite Games","HeaderRatingsDownloads":"Rating / Downloads","HeaderConfirmProfileDeletion":"Confirm Profile Deletion","MessageConfirmProfileDeletion":"Are you sure you wish to delete this profile?","HeaderSelectServerCachePath":"Select Server Cache Path","HeaderSelectTranscodingPath":"Select Transcoding Temporary Path","HeaderSelectImagesByNamePath":"Select Images By Name Path","HeaderSelectMetadataPath":"Select Metadata Path","HeaderSelectServerCachePathHelp":"Browse or enter the path to use for server cache files. The folder must be writeable.","HeaderSelectTranscodingPathHelp":"Browse or enter the path to use for transcoding temporary files. The folder must be writeable.","HeaderSelectImagesByNamePathHelp":"Browse or enter the path to your items by name folder. The folder must be writeable.","HeaderSelectMetadataPathHelp":"Browse or enter the path you'd like to store metadata within. The folder must be writeable.","HeaderSelectChannelDownloadPath":"Select Channel Download Path","HeaderSelectChannelDownloadPathHelp":"Browse or enter the path to use for storing channel cache files. The folder must be writeable.","OptionNewCollection":"New...","ButtonAdd":"Add","ButtonRemove":"Remove","LabelChapterDownloaders":"Chapter downloaders:","LabelChapterDownloadersHelp":"Enable and rank your preferred chapter downloaders in order of priority. Lower priority downloaders will only be used to fill in missing information.","HeaderFavoriteAlbums":"Favorite Albums","HeaderLatestChannelMedia":"Latest Channel Items","ButtonOrganizeFile":"Organize File","ButtonDeleteFile":"Delete File","HeaderOrganizeFile":"Organize File","HeaderDeleteFile":"Delete File","StatusSkipped":"Skipped","StatusFailed":"Failed","StatusSuccess":"Success","MessageFileWillBeDeleted":"The following file will be deleted:","MessageSureYouWishToProceed":"Are you sure you wish to proceed?","MessageDuplicatesWillBeDeleted":"In addition the following dupliates will be deleted:","MessageFollowingFileWillBeMovedFrom":"The following file will be moved from:","MessageDestinationTo":"to:","HeaderSelectWatchFolder":"Select Watch Folder","HeaderSelectWatchFolderHelp":"Browse or enter the path to your watch folder. The folder must be writeable.","OrganizePatternResult":"Result: {0}","HeaderRestart":"Restart","HeaderShutdown":"Shutdown","MessageConfirmRestart":"Are you sure you wish to restart Emby Server?","MessageConfirmShutdown":"Are you sure you wish to shutdown Emby Server?","ButtonUpdateNow":"Update Now","ValueItemCount":"{0} item","ValueItemCountPlural":"{0} items","NewVersionOfSomethingAvailable":"A new version of {0} is available!","VersionXIsAvailableForDownload":"Version {0} is now available for download.","LabelVersionNumber":"Version {0}","LabelPlayMethodTranscoding":"Transcoding","LabelPlayMethodDirectStream":"Direct Streaming","LabelPlayMethodDirectPlay":"Direct Playing","LabelAudioCodec":"Audio: {0}","LabelVideoCodec":"Video: {0}","LabelLocalAccessUrl":"Local access: {0}","LabelRemoteAccessUrl":"Remote access: {0}","LabelRunningOnPort":"Running on http port {0}.","LabelRunningOnPorts":"Running on http port {0}, and https port {1}.","HeaderLatestFromChannel":"Latest from {0}","LabelUnknownLanaguage":"Unknown language","HeaderCurrentSubtitles":"Current Subtitles","MessageDownloadQueued":"The download has been queued.","MessageAreYouSureDeleteSubtitles":"Are you sure you wish to delete this subtitle file?","ButtonRemoteControl":"Remote Control","HeaderLatestTvRecordings":"Latest Recordings","ButtonOk":"Ok","ButtonCancel":"Cancel","ButtonRefresh":"Refresh","LabelCurrentPath":"Current path:","HeaderSelectMediaPath":"Select Media Path","HeaderSelectPath":"Select Path","ButtonNetwork":"Network","MessageDirectoryPickerInstruction":"Network paths can be entered manually in the event the Network button fails to locate your devices. For example, {0} or {1}.","HeaderMenu":"Menu","ButtonOpen":"Open","ButtonOpenInNewTab":"Open in new tab","ButtonShuffle":"Shuffle","ButtonInstantMix":"Instant mix","ButtonResume":"Resume","HeaderScenes":"Scenes","HeaderAudioTracks":"Audio Tracks","HeaderLibraries":"Libraries","HeaderSubtitles":"Subtitles","HeaderVideoQuality":"Video Quality","MessageErrorPlayingVideo":"There was an error playing the video.","MessageEnsureOpenTuner":"Please ensure there is an open tuner availalble.","ButtonHome":"Home","ButtonDashboard":"Dashboard","ButtonReports":"Reports","ButtonMetadataManager":"Metadata Manager","HeaderTime":"Time","HeaderName":"Name","HeaderAlbum":"Album","HeaderAlbumArtist":"Album Artist","HeaderArtist":"Artist","LabelAddedOnDate":"Added {0}","ButtonStart":"Start","HeaderChannels":"Channels","HeaderMediaFolders":"Media Folders","HeaderBlockItemsWithNoRating":"Block content with no rating information:","OptionBlockOthers":"Others","OptionBlockTvShows":"TV Shows","OptionBlockTrailers":"Trailers","OptionBlockMusic":"Music","OptionBlockMovies":"Movies","OptionBlockBooks":"Books","OptionBlockGames":"Games","OptionBlockLiveTvPrograms":"Live TV Programs","OptionBlockLiveTvChannels":"Live TV Channels","OptionBlockChannelContent":"Internet Channel Content","ButtonRevoke":"Revoke","MessageConfirmRevokeApiKey":"Are you sure you wish to revoke this api key? The application's connection to Emby Server will be abruptly terminated.","HeaderConfirmRevokeApiKey":"Revoke Api Key","ValueContainer":"Container: {0}","ValueAudioCodec":"Audio Codec: {0}","ValueVideoCodec":"Video Codec: {0}","ValueCodec":"Codec: {0}","ValueConditions":"Conditions: {0}","LabelAll":"All","HeaderDeleteImage":"Delete Image","MessageFileNotFound":"File not found.","MessageFileReadError":"An error occurred reading this file.","ButtonNextPage":"Next Page","ButtonPreviousPage":"Previous Page","ButtonMoveLeft":"Move left","ButtonMoveRight":"Move right","ButtonBrowseOnlineImages":"Browse online images","HeaderDeleteItem":"Delete Item","ConfirmDeleteItem":"Deleting this item will delete it from both the file system and your media library. Are you sure you wish to continue?","MessagePleaseEnterNameOrId":"Please enter a name or an external Id.","MessageValueNotCorrect":"The value entered is not correct. Please try again.","MessageItemSaved":"Item saved.","MessagePleaseAcceptTermsOfServiceBeforeContinuing":"Please accept the terms of service before continuing.","OptionEnded":"Ended","OptionContinuing":"Continuing","OptionOff":"Off","OptionOn":"On","ButtonSettings":"Settings","ButtonUninstall":"Uninstall","HeaderFields":"Fields","HeaderFieldsHelp":"Slide a field to 'off' to lock it and prevent it's data from being changed.","HeaderLiveTV":"Live TV","MissingLocalTrailer":"Missing local trailer.","MissingPrimaryImage":"Missing primary image.","MissingBackdropImage":"Missing backdrop image.","MissingLogoImage":"Missing logo image.","MissingEpisode":"Missing episode.","OptionScreenshots":"Screenshots","OptionBackdrops":"Backdrops","OptionImages":"Images","OptionKeywords":"Keywords","OptionTags":"Tags","OptionStudios":"Studios","OptionName":"Name","OptionOverview":"Overview","OptionGenres":"Genres","OptionParentalRating":"Parental Rating","OptionPeople":"People","OptionRuntime":"Runtime","OptionProductionLocations":"Production Locations","OptionBirthLocation":"Birth Location","LabelAllChannels":"All channels","LabelLiveProgram":"LIVE","LabelNewProgram":"NEW","LabelPremiereProgram":"PREMIERE","LabelHDProgram":"HD","HeaderChangeFolderType":"Change Content Type","HeaderChangeFolderTypeHelp":"To change the type, please remove and rebuild the folder with the new type.","HeaderAlert":"Alert","MessagePleaseRestart":"Please restart to finish updating.","ButtonRestart":"Restart","MessagePleaseRefreshPage":"Please refresh this page to receive new updates from the server.","ButtonHide":"Hide","MessageSettingsSaved":"Settings saved.","ButtonSignOut":"Sign Out","ButtonMyProfile":"My Profile","ButtonMyPreferences":"My Preferences","MessageBrowserDoesNotSupportWebSockets":"This browser does not support web sockets. For a better experience, try a newer browser such as Chrome, Firefox, IE10+, Safari (iOS) or Opera.","LabelInstallingPackage":"Installing {0}","LabelPackageInstallCompleted":"{0} installation completed.","LabelPackageInstallFailed":"{0} installation failed.","LabelPackageInstallCancelled":"{0} installation cancelled.","TabServer":"Server","TabUsers":"Users","TabLibrary":"Library","TabMetadata":"Metadata","TabDLNA":"DLNA","TabLiveTV":"Live TV","TabAutoOrganize":"Auto-Organize","TabPlugins":"Plugins","TabAdvanced":"Advanced","TabHelp":"Help","TabScheduledTasks":"Scheduled Tasks","ButtonFullscreen":"Fullscreen","ButtonAudioTracks":"Audio Tracks","ButtonSubtitles":"Subtitles","ButtonScenes":"Scenes","ButtonQuality":"Quality","HeaderNotifications":"Notifications","HeaderSelectPlayer":"Select Player:","ButtonSelect":"Select","ButtonNew":"New","MessageInternetExplorerWebm":"For best results with Internet Explorer please install the WebM playback plugin.","HeaderVideoError":"Video Error","ButtonAddToPlaylist":"Add to playlist","HeaderAddToPlaylist":"Add to Playlist","LabelName":"Name:","ButtonSubmit":"Submit","LabelSelectPlaylist":"Playlist:","OptionNewPlaylist":"New playlist...","MessageAddedToPlaylistSuccess":"Ok","ButtonView":"View","ButtonViewSeriesRecording":"View series recording","ValueOriginalAirDate":"Original air date: {0}","ButtonRemoveFromPlaylist":"Remove from playlist","HeaderSpecials":"Specials","HeaderTrailers":"Trailers","HeaderAudio":"Audio","HeaderResolution":"Resolution","HeaderVideo":"Video","HeaderRuntime":"Runtime","HeaderCommunityRating":"Community rating","HeaderPasswordReset":"Password Reset","HeaderParentalRating":"Parental rating","HeaderReleaseDate":"Release date","HeaderDateAdded":"Date added","HeaderSeries":"Series","HeaderSeason":"Season","HeaderSeasonNumber":"Season number","HeaderNetwork":"Network","HeaderYear":"Year","HeaderGameSystem":"Game system","HeaderPlayers":"Players","HeaderEmbeddedImage":"Embedded image","HeaderTrack":"Track","HeaderDisc":"Disc","OptionMovies":"Movies","OptionCollections":"Collections","OptionSeries":"Series","OptionSeasons":"Seasons","OptionEpisodes":"Episodes","OptionGames":"Games","OptionGameSystems":"Game systems","OptionMusicArtists":"Music artists","OptionMusicAlbums":"Music albums","OptionMusicVideos":"Music videos","OptionSongs":"Songs","OptionHomeVideos":"Home videos","OptionBooks":"Books","OptionAdultVideos":"Adult videos","ButtonUp":"Up","ButtonDown":"Down","LabelMetadataReaders":"Metadata readers:","LabelMetadataReadersHelp":"Rank your preferred local metadata sources in order of priority. The first file found will be read.","LabelMetadataDownloaders":"Metadata downloaders:","LabelMetadataDownloadersHelp":"Enable and rank your preferred metadata downloaders in order of priority. Lower priority downloaders will only be used to fill in missing information.","LabelMetadataSavers":"Metadata savers:","LabelMetadataSaversHelp":"Choose the file formats to save your metadata to.","LabelImageFetchers":"Image fetchers:","LabelImageFetchersHelp":"Enable and rank your preferred image fetchers in order of priority.","ButtonQueueAllFromHere":"Queue all from here","ButtonPlayAllFromHere":"Play all from here","LabelDynamicExternalId":"{0} Id:","HeaderIdentify":"Identify Item","PersonTypePerson":"Person","LabelTitleDisplayOrder":"Title display order:","OptionSortName":"Sort name","OptionReleaseDate":"Release date","LabelSeasonNumber":"Season number:","LabelDiscNumber":"Disc number","LabelParentNumber":"Parent number","LabelEpisodeNumber":"Episode number:","LabelTrackNumber":"Track number:","LabelNumber":"Number:","LabelReleaseDate":"Release date:","LabelEndDate":"End date:","LabelYear":"Year:","LabelDateOfBirth":"Date of birth:","LabelBirthYear":"Birth year:","LabelBirthDate":"Birth date:","LabelDeathDate":"Death date:","HeaderRemoveMediaLocation":"Remove Media Location","MessageConfirmRemoveMediaLocation":"Are you sure you wish to remove this location?","HeaderRenameMediaFolder":"Rename Media Folder","LabelNewName":"New name:","HeaderAddMediaFolder":"Add Media Folder","HeaderAddMediaFolderHelp":"Name (Movies, Music, TV, etc):","HeaderRemoveMediaFolder":"Remove Media Folder","MessageTheFollowingLocationWillBeRemovedFromLibrary":"The following media locations will be removed from your library:","MessageAreYouSureYouWishToRemoveMediaFolder":"Are you sure you wish to remove this media folder?","ButtonRename":"Rename","ButtonChangeType":"Change type","HeaderMediaLocations":"Media Locations","LabelContentTypeValue":"Content type: {0}","LabelPathSubstitutionHelp":"Optional: Path substitution can map server paths to network shares that clients can access for direct playback.","FolderTypeUnset":"Unset (mixed content)","FolderTypeMovies":"Movies","FolderTypeMusic":"Music","FolderTypeAdultVideos":"Adult videos","FolderTypePhotos":"Photos","FolderTypeMusicVideos":"Music videos","FolderTypeHomeVideos":"Home videos","FolderTypeGames":"Games","FolderTypeBooks":"Books","FolderTypeTvShows":"TV","TabMovies":"Movies","TabSeries":"Series","TabEpisodes":"Episodes","TabTrailers":"Trailers","TabGames":"Games","TabAlbums":"Albums","TabSongs":"Songs","TabMusicVideos":"Music Videos","BirthPlaceValue":"Birth place: {0}","DeathDateValue":"Died: {0}","BirthDateValue":"Born: {0}","HeaderLatestReviews":"Latest Reviews","HeaderPluginInstallation":"Plugin Installation","MessageAlreadyInstalled":"This version is already installed.","ValueReviewCount":"{0} Reviews","MessageYouHaveVersionInstalled":"You currently have version {0} installed.","MessageTrialExpired":"The trial period for this feature has expired","MessageTrialWillExpireIn":"The trial period for this feature will expire in {0} day(s)","MessageInstallPluginFromApp":"This plugin must be installed from with in the app you intend to use it in.","ValuePriceUSD":"Price: {0} (USD)","MessageFeatureIncludedWithSupporter":"You are registered for this feature, and will be able to continue using it with an active supporter membership.","MessageChangeRecurringPlanConfirm":"After completing this transaction you will need to cancel your previous recurring donation from within your PayPal account. Thank you for supporting Emby.","MessageSupporterMembershipExpiredOn":"Your supporter membership expired on {0}.","MessageYouHaveALifetimeMembership":"You have a lifetime supporter membership. You can provide additional donations on a one-time or recurring basis using the options below. Thank you for supporting Emby.","MessageYouHaveAnActiveRecurringMembership":"You have an active {0} membership. You can upgrade your plan using the options below.","ButtonDelete":"Delete","HeaderEmbyAccountAdded":"Emby Account Added","MessageEmbyAccountAdded":"The Emby account has been added to this user.","MessagePendingEmbyAccountAdded":"The Emby account has been added to this user. An email will be sent to the owner of the account. The invitation will need to be confirmed by clicking a link within the email.","HeaderEmbyAccountRemoved":"Emby Account Removed","MessageEmbyAccontRemoved":"The Emby account has been removed from this user.","TooltipLinkedToEmbyConnect":"Linked to Emby Connect","HeaderUnrated":"Unrated","ValueDiscNumber":"Disc {0}","HeaderUnknownDate":"Unknown Date","HeaderUnknownYear":"Unknown Year","ValueMinutes":"{0} min","ButtonPlayExternalPlayer":"Play with external player","HeaderSelectExternalPlayer":"Select External Player","HeaderExternalPlayerPlayback":"External Player Playback","ButtonImDone":"I'm Done","OptionWatched":"Watched","OptionUnwatched":"Unwatched","ExternalPlayerPlaystateOptionsHelp":"Specify how you would like to resume playing this video next time.","LabelMarkAs":"Mark as:","OptionInProgress":"In-Progress","LabelResumePoint":"Resume point:","ValueOneMovie":"1 movie","ValueMovieCount":"{0} movies","ValueOneTrailer":"1 trailer","ValueTrailerCount":"{0} trailers","ValueOneSeries":"1 series","ValueSeriesCount":"{0} series","ValueOneEpisode":"1 episode","ValueEpisodeCount":"{0} episodes","ValueOneGame":"1 game","ValueGameCount":"{0} games","ValueOneAlbum":"1 album","ValueAlbumCount":"{0} albums","ValueOneSong":"1 song","ValueSongCount":"{0} songs","ValueOneMusicVideo":"1 music video","ValueMusicVideoCount":"{0} music videos","HeaderOffline":"Offline","HeaderUnaired":"Unaired","HeaderMissing":"Missing","ButtonWebsite":"Website","TooltipFavorite":"Favorite","TooltipLike":"Like","TooltipDislike":"Dislike","TooltipPlayed":"Played","ValueSeriesYearToPresent":"{0}-Present","ValueAwards":"Awards: {0}","ValueBudget":"Budget: {0}","ValueRevenue":"Revenue: {0}","ValuePremiered":"Premiered {0}","ValuePremieres":"Premieres {0}","ValueStudio":"Studio: {0}","ValueStudios":"Studios: {0}","ValueStatus":"Status: {0}","ValueSpecialEpisodeName":"Special - {0}","LabelLimit":"Limit:","ValueLinks":"Links: {0}","HeaderPeople":"People","HeaderCastAndCrew":"Cast & Crew","ValueArtist":"Artist: {0}","ValueArtists":"Artists: {0}","HeaderTags":"Tags","MediaInfoCameraMake":"Camera make","MediaInfoCameraModel":"Camera model","MediaInfoAltitude":"Altitude","MediaInfoAperture":"Aperture","MediaInfoExposureTime":"Exposure time","MediaInfoFocalLength":"Focal length","MediaInfoOrientation":"Orientation","MediaInfoIsoSpeedRating":"Iso speed rating","MediaInfoLatitude":"Latitude","MediaInfoLongitude":"Longitude","MediaInfoShutterSpeed":"Shutter speed","MediaInfoSoftware":"Software","HeaderIfYouLikeCheckTheseOut":"If you like {0}, check these out...","HeaderPlotKeywords":"Plot Keywords","HeaderMovies":"Movies","HeaderAlbums":"Albums","HeaderGames":"Games","HeaderBooks":"Books","HeaderEpisodes":"Episodes","HeaderSeasons":"Seasons","HeaderTracks":"Tracks","HeaderItems":"Items","HeaderOtherItems":"Other Items","ButtonFullReview":"Full review","ValueAsRole":"as {0}","ValueGuestStar":"Guest star","MediaInfoSize":"Size","MediaInfoPath":"Path","MediaInfoFormat":"Format","MediaInfoContainer":"Container","MediaInfoDefault":"Default","MediaInfoForced":"Forced","MediaInfoExternal":"External","MediaInfoTimestamp":"Timestamp","MediaInfoPixelFormat":"Pixel format","MediaInfoBitDepth":"Bit depth","MediaInfoSampleRate":"Sample rate","MediaInfoBitrate":"Bitrate","MediaInfoChannels":"Channels","MediaInfoLayout":"Layout","MediaInfoLanguage":"Language","MediaInfoCodec":"Codec","MediaInfoProfile":"Profile","MediaInfoLevel":"Level","MediaInfoAspectRatio":"Aspect ratio","MediaInfoResolution":"Resolution","MediaInfoAnamorphic":"Anamorphic","MediaInfoInterlaced":"Interlaced","MediaInfoFramerate":"Framerate","MediaInfoStreamTypeAudio":"Audio","MediaInfoStreamTypeData":"Data","MediaInfoStreamTypeVideo":"Video","MediaInfoStreamTypeSubtitle":"Subtitle","MediaInfoStreamTypeEmbeddedImage":"Embedded Image","MediaInfoRefFrames":"Ref frames","TabPlayback":"Playback","TabNotifications":"Notifications","TabExpert":"Expert","HeaderSelectCustomIntrosPath":"Select Custom Intros Path","HeaderRateAndReview":"Rate and Review","HeaderThankYou":"Thank You","MessageThankYouForYourReview":"Thank you for your review.","LabelYourRating":"Your rating:","LabelFullReview":"Full review:","LabelShortRatingDescription":"Short rating summary:","OptionIRecommendThisItem":"I recommend this item","WebClientTourContent":"View your recently added media, next episodes, and more. The green circles indicate how many unplayed items you have.","WebClientTourMovies":"Play movies, trailers and more from any device with a web browser","WebClientTourMouseOver":"Hold the mouse over any poster for quick access to important information","WebClientTourTapHold":"Tap and hold or right click any poster for a context menu","WebClientTourMetadataManager":"Click edit to open the metadata manager","WebClientTourPlaylists":"Easily create playlists and instant mixes, and play them on any device","WebClientTourCollections":"Create movie collections to group box sets together","WebClientTourUserPreferences1":"User preferences allow you to customize the way your library is presented in all of your Emby apps","WebClientTourUserPreferences2":"Configure your audio and subtitle language settings once, for every Emby app","WebClientTourUserPreferences3":"Design the web client home page to your liking","WebClientTourUserPreferences4":"Configure backdrops, theme songs and external players","WebClientTourMobile1":"The web client works great on smartphones and tablets...","WebClientTourMobile2":"and easily controls other devices and Emby apps","WebClientTourMySync":"Sync your personal media to your devices for offline viewing.","MessageEnjoyYourStay":"Enjoy your stay","DashboardTourDashboard":"The server dashboard allows you to monitor your server and your users. You'll always know who is doing what and where they are.","DashboardTourHelp":"In-app help provides easy buttons to open wiki pages relating to the on-screen content.","DashboardTourUsers":"Easily create user accounts for your friends and family, each with their own permissions, library access, parental controls and more.","DashboardTourCinemaMode":"Cinema mode brings the theater experience straight to your living room with the ability to play trailers and custom intros before the main feature.","DashboardTourChapters":"Enable chapter image generation for your videos for a more pleasing presentation while viewing.","DashboardTourSubtitles":"Automatically download subtitles for your videos in any language.","DashboardTourPlugins":"Install plugins such as internet video channels, live tv, metadata scanners, and more.","DashboardTourNotifications":"Automatically send notifications of server events to your mobile device, email and more.","DashboardTourScheduledTasks":"Easily manage long running operations with scheduled tasks. Decide when they run, and how often.","DashboardTourMobile":"The Emby Server dashboard works great on smartphones and tablets. Manage your server from the palm of your hand anytime, anywhere.","DashboardTourSync":"Sync your personal media to your devices for offline viewing.","MessageRefreshQueued":"Refresh queued","TabDevices":"Devices","TabExtras":"Extras","DeviceLastUsedByUserName":"Last used by {0}","HeaderDeleteDevice":"Delete Device","DeleteDeviceConfirmation":"Are you sure you wish to delete this device? It will reappear the next time a user signs in with it.","LabelEnableCameraUploadFor":"Enable camera upload for:","HeaderSelectUploadPath":"Select Upload Path","LabelEnableCameraUploadForHelp":"Uploads will occur automatically in the background when signed into Emby.","ErrorMessageStartHourGreaterThanEnd":"End time must be greater than the start time.","ButtonLibraryAccess":"Library access","ButtonParentalControl":"Parental control","HeaderInvitationSent":"Invitation Sent","MessageInvitationSentToUser":"An email has been sent to {0}, inviting them to accept your sharing invitation.","MessageInvitationSentToNewUser":"An email has been sent to {0} inviting them to sign up with Emby.","HeaderConnectionFailure":"Connection Failure","MessageUnableToConnectToServer":"We're unable to connect to the selected server right now. Please ensure it is running and try again.","ButtonSelectServer":"Select server","MessagePluginConfigurationRequiresLocalAccess":"To configure this plugin please sign in to your local server directly.","MessageLoggedOutParentalControl":"Access is currently restricted. Please try again later.","DefaultErrorMessage":"There was an error processing the request. Please try again later.","ButtonAccept":"Accept","ButtonReject":"Reject","HeaderForgotPassword":"Forgot Password","MessageContactAdminToResetPassword":"Please contact your system administrator to reset your password.","MessageForgotPasswordInNetworkRequired":"Please try again within your home network to initiate the password reset process.","MessageForgotPasswordFileCreated":"The following file has been created on your server and contains instructions on how to proceed:","MessageForgotPasswordFileExpiration":"The reset pin will expire at {0}.","MessageInvalidForgotPasswordPin":"An invalid or expired pin was entered. Please try again.","MessagePasswordResetForUsers":"Passwords have been removed for the following users:","HeaderInviteGuest":"Invite Guest","ButtonLinkMyEmbyAccount":"Link my account now","MessageConnectAccountRequiredToInviteGuest":"In order to invite guests you need to first link your Emby account to this server.","ButtonSync":"Sync","SyncMedia":"Sync Media","HeaderCancelSyncJob":"Cancel Sync","CancelSyncJobConfirmation":"Cancelling the sync job will remove synced media from the device during the next sync process. Are you sure you wish to proceed?","TabSync":"Sync","MessagePleaseSelectDeviceToSyncTo":"Please select a device to sync to.","MessageSyncJobCreated":"Sync job created.","LabelSyncTo":"Sync to:","LabelSyncJobName":"Sync job name:","LabelQuality":"Quality:","HeaderSettings":"Settings","OptionAutomaticallySyncNewContent":"Automatically sync new content","OptionAutomaticallySyncNewContentHelp":"New content added to this category will be automatically synced to the device.","OptionSyncUnwatchedVideosOnly":"Sync unwatched videos only","OptionSyncUnwatchedVideosOnlyHelp":"Only unwatched videos will be synced, and videos will be removed from the device as they are watched.","LabelItemLimit":"Item limit:","LabelItemLimitHelp":"Optional. Set a limit to the number of items that will be synced.","MessageBookPluginRequired":"Requires installation of the Bookshelf plugin","MessageGamePluginRequired":"Requires installation of the GameBrowser plugin","MessageUnsetContentHelp":"Content will be displayed as plain folders. For best results use the metadata manager to set the content types of sub-folders.","SyncJobItemStatusQueued":"Queued","SyncJobItemStatusConverting":"Converting","SyncJobItemStatusTransferring":"Transferring","SyncJobItemStatusSynced":"Synced","SyncJobItemStatusFailed":"Failed","SyncJobItemStatusRemovedFromDevice":"Removed from device","SyncJobItemStatusCancelled":"Cancelled","LabelProfile":"Profile:","LabelBitrateMbps":"Bitrate (Mbps):","EmbyIntroDownloadMessage":"To download and install Emby Server visit {0}.","ButtonNewServer":"New Server","ButtonSignInWithConnect":"Sign in with Emby Connect","HeaderNewServer":"New Server","MyDevice":"My Device"}
-window.appMode='cordova';window.dashboardVersion='635666176970427193';
+window.localizationGlossary={"SettingsSaved":"Settings saved.","AddUser":"Add User","Users":"Users","Delete":"Delete","Administrator":"Administrator","Password":"Password","DeleteImage":"Delete Image","MessageThankYouForSupporting":"Thank you for supporting Emby.","MessagePleaseSupportProject":"Please support Emby.","DeleteImageConfirmation":"Are you sure you wish to delete this image?","FileReadCancelled":"The file read has been canceled.","FileNotFound":"File not found.","FileReadError":"An error occurred while reading the file.","DeleteUser":"Delete User","DeleteUserConfirmation":"Are you sure you wish to delete this user?","PasswordResetHeader":"Reset Password","PasswordResetComplete":"The password has been reset.","PinCodeResetComplete":"The pin code has been reset.","PasswordResetConfirmation":"Are you sure you wish to reset the password?","PinCodeResetConfirmation":"Are you sure you wish to reset the pin code?","HeaderPinCodeReset":"Reset Pin Code","PasswordSaved":"Password saved.","PasswordMatchError":"Password and password confirmation must match.","OptionRelease":"Official Release","OptionBeta":"Beta","OptionDev":"Dev (Unstable)","UninstallPluginHeader":"Uninstall Plugin","UninstallPluginConfirmation":"Are you sure you wish to uninstall {0}?","NoPluginConfigurationMessage":"This plugin has nothing to configure.","NoPluginsInstalledMessage":"You have no plugins installed.","BrowsePluginCatalogMessage":"Browse our plugin catalog to view available plugins.","MessageKeyEmailedTo":"Key emailed to {0}.","MessageKeysLinked":"Keys linked.","HeaderConfirmation":"Confirmation","MessageKeyUpdated":"Thank you. Your supporter key has been updated.","MessageKeyRemoved":"Thank you. Your supporter key has been removed.","HeaderSupportTheTeam":"Support the Emby Team","TextEnjoyBonusFeatures":"Enjoy Bonus Features","TitleLiveTV":"Live TV","TitleSync":"Sync","ButtonDonate":"Donate","HeaderMyMedia":"My Media","TitleNotifications":"Notifications","ErrorLaunchingChromecast":"There was an error launching chromecast. Please ensure your device is connected to your wireless network.","MessageErrorLoadingSupporterInfo":"There was an error loading supporter information. Please try again later.","MessageLinkYourSupporterKey":"Link your supporter key with up to {0} Emby Connect members to enjoy free access to the following apps:","HeaderConfirmRemoveUser":"Remove User","MessageSwipeDownOnRemoteControl":"Welcome to remote control. Swipe down anywhere on this screen to go back to where you came from.","MessageConfirmRemoveConnectSupporter":"Are you sure you wish to remove additional supporter benefits from this user?","ValueTimeLimitSingleHour":"Time limit: 1 hour","ValueTimeLimitMultiHour":"Time limit: {0} hours","HeaderUsers":"Users","PluginCategoryGeneral":"General","PluginCategoryContentProvider":"Content Providers","PluginCategoryScreenSaver":"Screen Savers","PluginCategoryTheme":"Themes","PluginCategorySync":"Sync","PluginCategorySocialIntegration":"Social Networks","PluginCategoryNotifications":"Notifications","PluginCategoryMetadata":"Metadata","PluginCategoryLiveTV":"Live TV","PluginCategoryChannel":"Channels","HeaderSearch":"Search","ValueDateCreated":"Date created: {0}","LabelArtist":"Artist","LabelMovie":"Movie","LabelMusicVideo":"Music Video","LabelEpisode":"Episode","LabelSeries":"Series","LabelStopping":"Stopping","LabelCancelled":"(cancelled)","LabelFailed":"(failed)","ButtonHelp":"Help","ButtonSave":"Save","ButtonDownload":"Download","SyncJobStatusQueued":"Queued","SyncJobStatusConverting":"Converting","SyncJobStatusFailed":"Failed","SyncJobStatusCancelled":"Cancelled","SyncJobStatusCompleted":"Synced","SyncJobStatusReadyToTransfer":"Ready to Transfer","SyncJobStatusTransferring":"Transferring","SyncJobStatusCompletedWithError":"Synced with errors","SyncJobItemStatusReadyToTransfer":"Ready to Transfer","LabelCollection":"Collection","HeaderAddToCollection":"Add to Collection","NewCollectionNameExample":"Example: Star Wars Collection","OptionSearchForInternetMetadata":"Search the internet for artwork and metadata","LabelSelectCollection":"Select collection:","HeaderDevices":"Devices","ButtonScheduledTasks":"Scheduled tasks","MessageItemsAdded":"Items added","ButtonAddToCollection":"Add to collection","HeaderSelectCertificatePath":"Select Certificate Path","ConfirmMessageScheduledTaskButton":"This operation normally runs automatically as a scheduled task. It can also be run manually here. To configure the scheduled task, see:","HeaderSupporterBenefit":"A supporter membership provides additional benefits such as access to sync, premium plugins, internet channel content, and more. {0}Learn more{1}.","LabelSyncNoTargetsHelp":"It looks like you don't currently have any apps that support sync.","HeaderWelcomeToProjectServerDashboard":"Welcome to the Emby Server Dashboard","HeaderWelcomeToProjectWebClient":"Welcome to the Emby Web Client","ButtonTakeTheTour":"Take the tour","HeaderWelcomeBack":"Welcome back!","TitlePlugins":"Plugins","ButtonTakeTheTourToSeeWhatsNew":"Take the tour to see what's new","MessageNoSyncJobsFound":"No sync jobs found. Create sync jobs using the Sync buttons found throughout the web interface.","HeaderLibraryAccess":"Library Access","HeaderChannelAccess":"Channel Access","HeaderDeviceAccess":"Device Access","HeaderSelectDevices":"Select Devices","ButtonCancelItem":"Cancel item","ButtonQueueForRetry":"Queue for retry","ButtonReenable":"Re-enable","ButtonLearnMore":"Learn more","SyncJobItemStatusSyncedMarkForRemoval":"Marked for removal","LabelAbortedByServerShutdown":"(Aborted by server shutdown)","LabelScheduledTaskLastRan":"Last ran {0}, taking {1}.","HeaderDeleteTaskTrigger":"Delete Task Trigger","HeaderTaskTriggers":"Task Triggers","MessageDeleteTaskTrigger":"Are you sure you wish to delete this task trigger?","MessageNoPluginsInstalled":"You have no plugins installed.","LabelVersionInstalled":"{0} installed","LabelNumberReviews":"{0} Reviews","LabelFree":"Free","HeaderPlaybackError":"Playback Error","MessagePlaybackErrorNotAllowed":"You're currently not authorized to play this content. Please contact your system administrator for details.","MessagePlaybackErrorNoCompatibleStream":"No compatible streams are currently available. Please try again later or contact your system administrator for details.","MessagePlaybackErrorRateLimitExceeded":"Your playback rate limit has been exceeded. Please contact your system administrator for details.","MessagePlaybackErrorPlaceHolder":"The content chosen is not playable from this device.","HeaderSelectAudio":"Select Audio","HeaderSelectSubtitles":"Select Subtitles","ButtonMarkForRemoval":"Remove from device","ButtonUnmarkForRemoval":"Cancel removal from device","LabelDefaultStream":"(Default)","LabelForcedStream":"(Forced)","LabelDefaultForcedStream":"(Default/Forced)","LabelUnknownLanguage":"Unknown language","MessageConfirmSyncJobItemCancellation":"Are you sure you wish to cancel this item?","ButtonMute":"Mute","ButtonUnmute":"Unmute","ButtonStop":"Stop","ButtonNextTrack":"Next Track","ButtonPause":"Pause","ButtonPlay":"Play","ButtonEdit":"Edit","ButtonQueue":"Queue","ButtonPlayTrailer":"Play trailer","ButtonPlaylist":"Playlist","ButtonPreviousTrack":"Previous Track","LabelEnabled":"Enabled","LabelDisabled":"Disabled","ButtonMoreInformation":"More Information","LabelNoUnreadNotifications":"No unread notifications.","ButtonViewNotifications":"View notifications","ButtonMarkTheseRead":"Mark these read","ButtonClose":"Close","LabelAllPlaysSentToPlayer":"All plays will be sent to the selected player.","MessageInvalidUser":"Invalid username or password. Please try again.","HeaderLoginFailure":"Login Failure","HeaderAllRecordings":"All Recordings","RecommendationBecauseYouLike":"Because you like {0}","RecommendationBecauseYouWatched":"Because you watched {0}","RecommendationDirectedBy":"Directed by {0}","RecommendationStarring":"Starring {0}","HeaderConfirmRecordingCancellation":"Confirm Recording Cancellation","MessageConfirmRecordingCancellation":"Are you sure you wish to cancel this recording?","MessageRecordingCancelled":"Recording cancelled.","HeaderConfirmSeriesCancellation":"Confirm Series Cancellation","MessageConfirmSeriesCancellation":"Are you sure you wish to cancel this series?","MessageSeriesCancelled":"Series cancelled.","HeaderConfirmRecordingDeletion":"Confirm Recording Deletion","MessageConfirmRecordingDeletion":"Are you sure you wish to delete this recording?","MessageRecordingDeleted":"Recording deleted.","ButonCancelRecording":"Cancel Recording","MessageRecordingSaved":"Recording saved.","OptionSunday":"Sunday","OptionMonday":"Monday","OptionTuesday":"Tuesday","OptionWednesday":"Wednesday","OptionThursday":"Thursday","OptionFriday":"Friday","OptionSaturday":"Saturday","OptionEveryday":"Every day","OptionWeekend":"Weekends","OptionWeekday":"Weekdays","HeaderConfirmDeletion":"Confirm Deletion","MessageConfirmPathSubstitutionDeletion":"Are you sure you wish to delete this path substitution?","LiveTvUpdateAvailable":"(Update available)","LabelVersionUpToDate":"Up to date!","ButtonResetTuner":"Reset tuner","HeaderResetTuner":"Reset Tuner","MessageConfirmResetTuner":"Are you sure you wish to reset this tuner? Any active players or recordings will be abruptly stopped.","ButtonCancelSeries":"Cancel Series","HeaderSeriesRecordings":"Series Recordings","LabelAnytime":"Any time","StatusRecording":"Recording","StatusWatching":"Watching","StatusRecordingProgram":"Recording {0}","StatusWatchingProgram":"Watching {0}","HeaderSplitMedia":"Split Media Apart","MessageConfirmSplitMedia":"Are you sure you wish to split the media sources into separate items?","HeaderError":"Error","MessageChromecastConnectionError":"Your Chromecast receiver is unable to connect to your Emby Server. Please check their connections and try again.","MessagePleaseSelectOneItem":"Please select at least one item.","MessagePleaseSelectTwoItems":"Please select at least two items.","MessageTheFollowingItemsWillBeGrouped":"The following titles will be grouped into one item:","MessageConfirmItemGrouping":"Emby apps will automatically choose the optimal version to play based on device and network performance. Are you sure you wish to continue?","HeaderResume":"Resume","HeaderMyViews":"My Views","HeaderLibraryFolders":"Media Folders","HeaderLatestMedia":"Latest Media","ButtonMoreItems":"More...","ButtonMore":"More","HeaderFavoriteMovies":"Favorite Movies","HeaderFavoriteShows":"Favorite Shows","HeaderFavoriteEpisodes":"Favorite Episodes","HeaderFavoriteGames":"Favorite Games","HeaderRatingsDownloads":"Rating / Downloads","HeaderConfirmProfileDeletion":"Confirm Profile Deletion","MessageConfirmProfileDeletion":"Are you sure you wish to delete this profile?","HeaderSelectServerCachePath":"Select Server Cache Path","HeaderSelectTranscodingPath":"Select Transcoding Temporary Path","HeaderSelectImagesByNamePath":"Select Images By Name Path","HeaderSelectMetadataPath":"Select Metadata Path","HeaderSelectServerCachePathHelp":"Browse or enter the path to use for server cache files. The folder must be writeable.","HeaderSelectTranscodingPathHelp":"Browse or enter the path to use for transcoding temporary files. The folder must be writeable.","HeaderSelectImagesByNamePathHelp":"Browse or enter the path to your items by name folder. The folder must be writeable.","HeaderSelectMetadataPathHelp":"Browse or enter the path you'd like to store metadata within. The folder must be writeable.","HeaderSelectChannelDownloadPath":"Select Channel Download Path","HeaderSelectChannelDownloadPathHelp":"Browse or enter the path to use for storing channel cache files. The folder must be writeable.","OptionNewCollection":"New...","ButtonAdd":"Add","ButtonRemove":"Remove","LabelChapterDownloaders":"Chapter downloaders:","LabelChapterDownloadersHelp":"Enable and rank your preferred chapter downloaders in order of priority. Lower priority downloaders will only be used to fill in missing information.","HeaderFavoriteAlbums":"Favorite Albums","HeaderLatestChannelMedia":"Latest Channel Items","ButtonOrganizeFile":"Organize File","ButtonDeleteFile":"Delete File","HeaderOrganizeFile":"Organize File","HeaderDeleteFile":"Delete File","StatusSkipped":"Skipped","StatusFailed":"Failed","StatusSuccess":"Success","MessageFileWillBeDeleted":"The following file will be deleted:","MessageSureYouWishToProceed":"Are you sure you wish to proceed?","MessageDuplicatesWillBeDeleted":"In addition the following dupliates will be deleted:","MessageFollowingFileWillBeMovedFrom":"The following file will be moved from:","MessageDestinationTo":"to:","HeaderSelectWatchFolder":"Select Watch Folder","HeaderSelectWatchFolderHelp":"Browse or enter the path to your watch folder. The folder must be writeable.","OrganizePatternResult":"Result: {0}","HeaderRestart":"Restart","HeaderShutdown":"Shutdown","MessageConfirmRestart":"Are you sure you wish to restart Emby Server?","MessageConfirmShutdown":"Are you sure you wish to shutdown Emby Server?","ButtonUpdateNow":"Update Now","ValueItemCount":"{0} item","ValueItemCountPlural":"{0} items","NewVersionOfSomethingAvailable":"A new version of {0} is available!","VersionXIsAvailableForDownload":"Version {0} is now available for download.","LabelVersionNumber":"Version {0}","LabelPlayMethodTranscoding":"Transcoding","LabelPlayMethodDirectStream":"Direct Streaming","LabelPlayMethodDirectPlay":"Direct Playing","LabelAudioCodec":"Audio: {0}","LabelVideoCodec":"Video: {0}","LabelLocalAccessUrl":"Local access: {0}","LabelRemoteAccessUrl":"Remote access: {0}","LabelRunningOnPort":"Running on http port {0}.","LabelRunningOnPorts":"Running on http port {0}, and https port {1}.","HeaderLatestFromChannel":"Latest from {0}","LabelUnknownLanaguage":"Unknown language","HeaderCurrentSubtitles":"Current Subtitles","MessageDownloadQueued":"The download has been queued.","MessageAreYouSureDeleteSubtitles":"Are you sure you wish to delete this subtitle file?","ButtonRemoteControl":"Remote Control","HeaderLatestTvRecordings":"Latest Recordings","ButtonOk":"Ok","ButtonCancel":"Cancel","ButtonRefresh":"Refresh","LabelCurrentPath":"Current path:","HeaderSelectMediaPath":"Select Media Path","HeaderSelectPath":"Select Path","ButtonNetwork":"Network","MessageDirectoryPickerInstruction":"Network paths can be entered manually in the event the Network button fails to locate your devices. For example, {0} or {1}.","HeaderMenu":"Menu","ButtonOpen":"Open","ButtonOpenInNewTab":"Open in new tab","ButtonShuffle":"Shuffle","ButtonInstantMix":"Instant mix","ButtonResume":"Resume","HeaderScenes":"Scenes","HeaderAudioTracks":"Audio Tracks","HeaderLibraries":"Libraries","HeaderSubtitles":"Subtitles","HeaderVideoQuality":"Video Quality","MessageErrorPlayingVideo":"There was an error playing the video.","MessageEnsureOpenTuner":"Please ensure there is an open tuner availalble.","ButtonHome":"Home","ButtonDashboard":"Dashboard","ButtonReports":"Reports","ButtonMetadataManager":"Metadata Manager","HeaderTime":"Time","HeaderName":"Name","HeaderAlbum":"Album","HeaderAlbumArtist":"Album Artist","HeaderArtist":"Artist","LabelAddedOnDate":"Added {0}","ButtonStart":"Start","HeaderChannels":"Channels","HeaderMediaFolders":"Media Folders","HeaderBlockItemsWithNoRating":"Block content with no rating information:","OptionBlockOthers":"Others","OptionBlockTvShows":"TV Shows","OptionBlockTrailers":"Trailers","OptionBlockMusic":"Music","OptionBlockMovies":"Movies","OptionBlockBooks":"Books","OptionBlockGames":"Games","OptionBlockLiveTvPrograms":"Live TV Programs","OptionBlockLiveTvChannels":"Live TV Channels","OptionBlockChannelContent":"Internet Channel Content","ButtonRevoke":"Revoke","MessageConfirmRevokeApiKey":"Are you sure you wish to revoke this api key? The application's connection to Emby Server will be abruptly terminated.","HeaderConfirmRevokeApiKey":"Revoke Api Key","ValueContainer":"Container: {0}","ValueAudioCodec":"Audio Codec: {0}","ValueVideoCodec":"Video Codec: {0}","ValueCodec":"Codec: {0}","ValueConditions":"Conditions: {0}","LabelAll":"All","HeaderDeleteImage":"Delete Image","MessageFileNotFound":"File not found.","MessageFileReadError":"An error occurred reading this file.","ButtonNextPage":"Next Page","ButtonPreviousPage":"Previous Page","ButtonMoveLeft":"Move left","ButtonMoveRight":"Move right","ButtonBrowseOnlineImages":"Browse online images","HeaderDeleteItem":"Delete Item","ConfirmDeleteItem":"Deleting this item will delete it from both the file system and your media library. Are you sure you wish to continue?","MessagePleaseEnterNameOrId":"Please enter a name or an external Id.","MessageValueNotCorrect":"The value entered is not correct. Please try again.","MessageItemSaved":"Item saved.","MessagePleaseAcceptTermsOfServiceBeforeContinuing":"Please accept the terms of service before continuing.","OptionEnded":"Ended","OptionContinuing":"Continuing","OptionOff":"Off","OptionOn":"On","ButtonSettings":"Settings","ButtonUninstall":"Uninstall","HeaderFields":"Fields","HeaderFieldsHelp":"Slide a field to 'off' to lock it and prevent it's data from being changed.","HeaderLiveTV":"Live TV","MissingLocalTrailer":"Missing local trailer.","MissingPrimaryImage":"Missing primary image.","MissingBackdropImage":"Missing backdrop image.","MissingLogoImage":"Missing logo image.","MissingEpisode":"Missing episode.","OptionScreenshots":"Screenshots","OptionBackdrops":"Backdrops","OptionImages":"Images","OptionKeywords":"Keywords","OptionTags":"Tags","OptionStudios":"Studios","OptionName":"Name","OptionOverview":"Overview","OptionGenres":"Genres","OptionParentalRating":"Parental Rating","OptionPeople":"People","OptionRuntime":"Runtime","OptionProductionLocations":"Production Locations","OptionBirthLocation":"Birth Location","LabelAllChannels":"All channels","LabelLiveProgram":"LIVE","LabelNewProgram":"NEW","LabelPremiereProgram":"PREMIERE","LabelHDProgram":"HD","HeaderChangeFolderType":"Change Content Type","HeaderChangeFolderTypeHelp":"To change the type, please remove and rebuild the folder with the new type.","HeaderAlert":"Alert","MessagePleaseRestart":"Please restart to finish updating.","ButtonRestart":"Restart","MessagePleaseRefreshPage":"Please refresh this page to receive new updates from the server.","ButtonHide":"Hide","MessageSettingsSaved":"Settings saved.","ButtonSignOut":"Sign Out","ButtonMyProfile":"My Profile","ButtonMyPreferences":"My Preferences","MessageBrowserDoesNotSupportWebSockets":"This browser does not support web sockets. For a better experience, try a newer browser such as Chrome, Firefox, IE10+, Safari (iOS) or Opera.","LabelInstallingPackage":"Installing {0}","LabelPackageInstallCompleted":"{0} installation completed.","LabelPackageInstallFailed":"{0} installation failed.","LabelPackageInstallCancelled":"{0} installation cancelled.","TabServer":"Server","TabUsers":"Users","TabLibrary":"Library","TabMetadata":"Metadata","TabDLNA":"DLNA","TabLiveTV":"Live TV","TabAutoOrganize":"Auto-Organize","TabPlugins":"Plugins","TabAdvanced":"Advanced","TabHelp":"Help","TabScheduledTasks":"Scheduled Tasks","ButtonFullscreen":"Fullscreen","ButtonAudioTracks":"Audio Tracks","ButtonSubtitles":"Subtitles","ButtonScenes":"Scenes","ButtonQuality":"Quality","HeaderNotifications":"Notifications","HeaderSelectPlayer":"Select Player:","ButtonSelect":"Select","ButtonNew":"New","MessageInternetExplorerWebm":"For best results with Internet Explorer please install the WebM playback plugin.","HeaderVideoError":"Video Error","ButtonAddToPlaylist":"Add to playlist","HeaderAddToPlaylist":"Add to Playlist","LabelName":"Name:","ButtonSubmit":"Submit","LabelSelectPlaylist":"Playlist:","OptionNewPlaylist":"New playlist...","MessageAddedToPlaylistSuccess":"Ok","ButtonView":"View","ButtonViewSeriesRecording":"View series recording","ValueOriginalAirDate":"Original air date: {0}","ButtonRemoveFromPlaylist":"Remove from playlist","HeaderSpecials":"Specials","HeaderTrailers":"Trailers","HeaderAudio":"Audio","HeaderResolution":"Resolution","HeaderVideo":"Video","HeaderRuntime":"Runtime","HeaderCommunityRating":"Community rating","HeaderPasswordReset":"Password Reset","HeaderParentalRating":"Parental rating","HeaderReleaseDate":"Release date","HeaderDateAdded":"Date added","HeaderSeries":"Series","HeaderSeason":"Season","HeaderSeasonNumber":"Season number","HeaderNetwork":"Network","HeaderYear":"Year","HeaderGameSystem":"Game system","HeaderPlayers":"Players","HeaderEmbeddedImage":"Embedded image","HeaderTrack":"Track","HeaderDisc":"Disc","OptionMovies":"Movies","OptionCollections":"Collections","OptionSeries":"Series","OptionSeasons":"Seasons","OptionEpisodes":"Episodes","OptionGames":"Games","OptionGameSystems":"Game systems","OptionMusicArtists":"Music artists","OptionMusicAlbums":"Music albums","OptionMusicVideos":"Music videos","OptionSongs":"Songs","OptionHomeVideos":"Home videos","OptionBooks":"Books","OptionAdultVideos":"Adult videos","ButtonUp":"Up","ButtonDown":"Down","LabelMetadataReaders":"Metadata readers:","LabelMetadataReadersHelp":"Rank your preferred local metadata sources in order of priority. The first file found will be read.","LabelMetadataDownloaders":"Metadata downloaders:","LabelMetadataDownloadersHelp":"Enable and rank your preferred metadata downloaders in order of priority. Lower priority downloaders will only be used to fill in missing information.","LabelMetadataSavers":"Metadata savers:","LabelMetadataSaversHelp":"Choose the file formats to save your metadata to.","LabelImageFetchers":"Image fetchers:","LabelImageFetchersHelp":"Enable and rank your preferred image fetchers in order of priority.","ButtonQueueAllFromHere":"Queue all from here","ButtonPlayAllFromHere":"Play all from here","LabelDynamicExternalId":"{0} Id:","HeaderIdentify":"Identify Item","PersonTypePerson":"Person","LabelTitleDisplayOrder":"Title display order:","OptionSortName":"Sort name","OptionReleaseDate":"Release date","LabelSeasonNumber":"Season number:","LabelDiscNumber":"Disc number","LabelParentNumber":"Parent number","LabelEpisodeNumber":"Episode number:","LabelTrackNumber":"Track number:","LabelNumber":"Number:","LabelReleaseDate":"Release date:","LabelEndDate":"End date:","LabelYear":"Year:","LabelDateOfBirth":"Date of birth:","LabelBirthYear":"Birth year:","LabelBirthDate":"Birth date:","LabelDeathDate":"Death date:","HeaderRemoveMediaLocation":"Remove Media Location","MessageConfirmRemoveMediaLocation":"Are you sure you wish to remove this location?","HeaderRenameMediaFolder":"Rename Media Folder","LabelNewName":"New name:","HeaderAddMediaFolder":"Add Media Folder","HeaderAddMediaFolderHelp":"Name (Movies, Music, TV, etc):","HeaderRemoveMediaFolder":"Remove Media Folder","MessageTheFollowingLocationWillBeRemovedFromLibrary":"The following media locations will be removed from your library:","MessageAreYouSureYouWishToRemoveMediaFolder":"Are you sure you wish to remove this media folder?","ButtonRename":"Rename","ButtonChangeType":"Change type","HeaderMediaLocations":"Media Locations","LabelContentTypeValue":"Content type: {0}","LabelPathSubstitutionHelp":"Optional: Path substitution can map server paths to network shares that clients can access for direct playback.","FolderTypeUnset":"Unset (mixed content)","FolderTypeMovies":"Movies","FolderTypeMusic":"Music","FolderTypeAdultVideos":"Adult videos","FolderTypePhotos":"Photos","FolderTypeMusicVideos":"Music videos","FolderTypeHomeVideos":"Home videos","FolderTypeGames":"Games","FolderTypeBooks":"Books","FolderTypeTvShows":"TV","TabMovies":"Movies","TabSeries":"Series","TabEpisodes":"Episodes","TabTrailers":"Trailers","TabGames":"Games","TabAlbums":"Albums","TabSongs":"Songs","TabMusicVideos":"Music Videos","BirthPlaceValue":"Birth place: {0}","DeathDateValue":"Died: {0}","BirthDateValue":"Born: {0}","HeaderLatestReviews":"Latest Reviews","HeaderPluginInstallation":"Plugin Installation","MessageAlreadyInstalled":"This version is already installed.","ValueReviewCount":"{0} Reviews","MessageYouHaveVersionInstalled":"You currently have version {0} installed.","MessageTrialExpired":"The trial period for this feature has expired","MessageTrialWillExpireIn":"The trial period for this feature will expire in {0} day(s)","MessageInstallPluginFromApp":"This plugin must be installed from with in the app you intend to use it in.","ValuePriceUSD":"Price: {0} (USD)","MessageFeatureIncludedWithSupporter":"You are registered for this feature, and will be able to continue using it with an active supporter membership.","MessageChangeRecurringPlanConfirm":"After completing this transaction you will need to cancel your previous recurring donation from within your PayPal account. Thank you for supporting Emby.","MessageSupporterMembershipExpiredOn":"Your supporter membership expired on {0}.","MessageYouHaveALifetimeMembership":"You have a lifetime supporter membership. You can provide additional donations on a one-time or recurring basis using the options below. Thank you for supporting Emby.","MessageYouHaveAnActiveRecurringMembership":"You have an active {0} membership. You can upgrade your plan using the options below.","ButtonDelete":"Delete","HeaderEmbyAccountAdded":"Emby Account Added","MessageEmbyAccountAdded":"The Emby account has been added to this user.","MessagePendingEmbyAccountAdded":"The Emby account has been added to this user. An email will be sent to the owner of the account. The invitation will need to be confirmed by clicking a link within the email.","HeaderEmbyAccountRemoved":"Emby Account Removed","MessageEmbyAccontRemoved":"The Emby account has been removed from this user.","TooltipLinkedToEmbyConnect":"Linked to Emby Connect","HeaderUnrated":"Unrated","ValueDiscNumber":"Disc {0}","HeaderUnknownDate":"Unknown Date","HeaderUnknownYear":"Unknown Year","ValueMinutes":"{0} min","ButtonPlayExternalPlayer":"Play with external player","HeaderSelectExternalPlayer":"Select External Player","HeaderExternalPlayerPlayback":"External Player Playback","ButtonImDone":"I'm Done","OptionWatched":"Watched","OptionUnwatched":"Unwatched","ExternalPlayerPlaystateOptionsHelp":"Specify how you would like to resume playing this video next time.","LabelMarkAs":"Mark as:","OptionInProgress":"In-Progress","LabelResumePoint":"Resume point:","ValueOneMovie":"1 movie","ValueMovieCount":"{0} movies","ValueOneTrailer":"1 trailer","ValueTrailerCount":"{0} trailers","ValueOneSeries":"1 series","ValueSeriesCount":"{0} series","ValueOneEpisode":"1 episode","ValueEpisodeCount":"{0} episodes","ValueOneGame":"1 game","ValueGameCount":"{0} games","ValueOneAlbum":"1 album","ValueAlbumCount":"{0} albums","ValueOneSong":"1 song","ValueSongCount":"{0} songs","ValueOneMusicVideo":"1 music video","ValueMusicVideoCount":"{0} music videos","HeaderOffline":"Offline","HeaderUnaired":"Unaired","HeaderMissing":"Missing","ButtonWebsite":"Website","TooltipFavorite":"Favorite","TooltipLike":"Like","TooltipDislike":"Dislike","TooltipPlayed":"Played","ValueSeriesYearToPresent":"{0}-Present","ValueAwards":"Awards: {0}","ValueBudget":"Budget: {0}","ValueRevenue":"Revenue: {0}","ValuePremiered":"Premiered {0}","ValuePremieres":"Premieres {0}","ValueStudio":"Studio: {0}","ValueStudios":"Studios: {0}","ValueStatus":"Status: {0}","ValueSpecialEpisodeName":"Special - {0}","LabelLimit":"Limit:","ValueLinks":"Links: {0}","HeaderPeople":"People","HeaderCastAndCrew":"Cast & Crew","ValueArtist":"Artist: {0}","ValueArtists":"Artists: {0}","HeaderTags":"Tags","MediaInfoCameraMake":"Camera make","MediaInfoCameraModel":"Camera model","MediaInfoAltitude":"Altitude","MediaInfoAperture":"Aperture","MediaInfoExposureTime":"Exposure time","MediaInfoFocalLength":"Focal length","MediaInfoOrientation":"Orientation","MediaInfoIsoSpeedRating":"Iso speed rating","MediaInfoLatitude":"Latitude","MediaInfoLongitude":"Longitude","MediaInfoShutterSpeed":"Shutter speed","MediaInfoSoftware":"Software","HeaderIfYouLikeCheckTheseOut":"If you like {0}, check these out...","HeaderPlotKeywords":"Plot Keywords","HeaderMovies":"Movies","HeaderAlbums":"Albums","HeaderGames":"Games","HeaderBooks":"Books","HeaderEpisodes":"Episodes","HeaderSeasons":"Seasons","HeaderTracks":"Tracks","HeaderItems":"Items","HeaderOtherItems":"Other Items","ButtonFullReview":"Full review","ValueAsRole":"as {0}","ValueGuestStar":"Guest star","MediaInfoSize":"Size","MediaInfoPath":"Path","MediaInfoFormat":"Format","MediaInfoContainer":"Container","MediaInfoDefault":"Default","MediaInfoForced":"Forced","MediaInfoExternal":"External","MediaInfoTimestamp":"Timestamp","MediaInfoPixelFormat":"Pixel format","MediaInfoBitDepth":"Bit depth","MediaInfoSampleRate":"Sample rate","MediaInfoBitrate":"Bitrate","MediaInfoChannels":"Channels","MediaInfoLayout":"Layout","MediaInfoLanguage":"Language","MediaInfoCodec":"Codec","MediaInfoProfile":"Profile","MediaInfoLevel":"Level","MediaInfoAspectRatio":"Aspect ratio","MediaInfoResolution":"Resolution","MediaInfoAnamorphic":"Anamorphic","MediaInfoInterlaced":"Interlaced","MediaInfoFramerate":"Framerate","MediaInfoStreamTypeAudio":"Audio","MediaInfoStreamTypeData":"Data","MediaInfoStreamTypeVideo":"Video","MediaInfoStreamTypeSubtitle":"Subtitle","MediaInfoStreamTypeEmbeddedImage":"Embedded Image","MediaInfoRefFrames":"Ref frames","TabPlayback":"Playback","TabNotifications":"Notifications","TabExpert":"Expert","HeaderSelectCustomIntrosPath":"Select Custom Intros Path","HeaderRateAndReview":"Rate and Review","HeaderThankYou":"Thank You","MessageThankYouForYourReview":"Thank you for your review.","LabelYourRating":"Your rating:","LabelFullReview":"Full review:","LabelShortRatingDescription":"Short rating summary:","OptionIRecommendThisItem":"I recommend this item","WebClientTourContent":"View your recently added media, next episodes, and more. The green circles indicate how many unplayed items you have.","WebClientTourMovies":"Play movies, trailers and more from any device with a web browser","WebClientTourMouseOver":"Hold the mouse over any poster for quick access to important information","WebClientTourTapHold":"Tap and hold or right click any poster for a context menu","WebClientTourMetadataManager":"Click edit to open the metadata manager","WebClientTourPlaylists":"Easily create playlists and instant mixes, and play them on any device","WebClientTourCollections":"Create movie collections to group box sets together","WebClientTourUserPreferences1":"User preferences allow you to customize the way your library is presented in all of your Emby apps","WebClientTourUserPreferences2":"Configure your audio and subtitle language settings once, for every Emby app","WebClientTourUserPreferences3":"Design the web client home page to your liking","WebClientTourUserPreferences4":"Configure backdrops, theme songs and external players","WebClientTourMobile1":"The web client works great on smartphones and tablets...","WebClientTourMobile2":"and easily controls other devices and Emby apps","WebClientTourMySync":"Sync your personal media to your devices for offline viewing.","MessageEnjoyYourStay":"Enjoy your stay","DashboardTourDashboard":"The server dashboard allows you to monitor your server and your users. You'll always know who is doing what and where they are.","DashboardTourHelp":"In-app help provides easy buttons to open wiki pages relating to the on-screen content.","DashboardTourUsers":"Easily create user accounts for your friends and family, each with their own permissions, library access, parental controls and more.","DashboardTourCinemaMode":"Cinema mode brings the theater experience straight to your living room with the ability to play trailers and custom intros before the main feature.","DashboardTourChapters":"Enable chapter image generation for your videos for a more pleasing presentation while viewing.","DashboardTourSubtitles":"Automatically download subtitles for your videos in any language.","DashboardTourPlugins":"Install plugins such as internet video channels, live tv, metadata scanners, and more.","DashboardTourNotifications":"Automatically send notifications of server events to your mobile device, email and more.","DashboardTourScheduledTasks":"Easily manage long running operations with scheduled tasks. Decide when they run, and how often.","DashboardTourMobile":"The Emby Server dashboard works great on smartphones and tablets. Manage your server from the palm of your hand anytime, anywhere.","DashboardTourSync":"Sync your personal media to your devices for offline viewing.","MessageRefreshQueued":"Refresh queued","TabDevices":"Devices","TabExtras":"Extras","DeviceLastUsedByUserName":"Last used by {0}","HeaderDeleteDevice":"Delete Device","DeleteDeviceConfirmation":"Are you sure you wish to delete this device? It will reappear the next time a user signs in with it.","LabelEnableCameraUploadFor":"Enable camera upload for:","HeaderSelectUploadPath":"Select Upload Path","LabelEnableCameraUploadForHelp":"Uploads will occur automatically in the background when signed into Emby.","ErrorMessageStartHourGreaterThanEnd":"End time must be greater than the start time.","ButtonLibraryAccess":"Library access","ButtonParentalControl":"Parental control","HeaderInvitationSent":"Invitation Sent","MessageInvitationSentToUser":"An email has been sent to {0}, inviting them to accept your sharing invitation.","MessageInvitationSentToNewUser":"An email has been sent to {0} inviting them to sign up with Emby.","HeaderConnectionFailure":"Connection Failure","MessageUnableToConnectToServer":"We're unable to connect to the selected server right now. Please ensure it is running and try again.","ButtonSelectServer":"Select server","MessagePluginConfigurationRequiresLocalAccess":"To configure this plugin please sign in to your local server directly.","MessageLoggedOutParentalControl":"Access is currently restricted. Please try again later.","DefaultErrorMessage":"There was an error processing the request. Please try again later.","ButtonAccept":"Accept","ButtonReject":"Reject","HeaderForgotPassword":"Forgot Password","MessageContactAdminToResetPassword":"Please contact your system administrator to reset your password.","MessageForgotPasswordInNetworkRequired":"Please try again within your home network to initiate the password reset process.","MessageForgotPasswordFileCreated":"The following file has been created on your server and contains instructions on how to proceed:","MessageForgotPasswordFileExpiration":"The reset pin will expire at {0}.","MessageInvalidForgotPasswordPin":"An invalid or expired pin was entered. Please try again.","MessagePasswordResetForUsers":"Passwords have been removed for the following users:","HeaderInviteGuest":"Invite Guest","ButtonLinkMyEmbyAccount":"Link my account now","MessageConnectAccountRequiredToInviteGuest":"In order to invite guests you need to first link your Emby account to this server.","ButtonSync":"Sync","SyncMedia":"Sync Media","HeaderCancelSyncJob":"Cancel Sync","CancelSyncJobConfirmation":"Cancelling the sync job will remove synced media from the device during the next sync process. Are you sure you wish to proceed?","TabSync":"Sync","MessagePleaseSelectDeviceToSyncTo":"Please select a device to sync to.","MessageSyncJobCreated":"Sync job created.","LabelSyncTo":"Sync to:","LabelSyncJobName":"Sync job name:","LabelQuality":"Quality:","HeaderSettings":"Settings","OptionAutomaticallySyncNewContent":"Automatically sync new content","OptionAutomaticallySyncNewContentHelp":"New content added to this category will be automatically synced to the device.","OptionSyncUnwatchedVideosOnly":"Sync unwatched videos only","OptionSyncUnwatchedVideosOnlyHelp":"Only unwatched videos will be synced, and videos will be removed from the device as they are watched.","LabelItemLimit":"Item limit:","LabelItemLimitHelp":"Optional. Set a limit to the number of items that will be synced.","MessageBookPluginRequired":"Requires installation of the Bookshelf plugin","MessageGamePluginRequired":"Requires installation of the GameBrowser plugin","MessageUnsetContentHelp":"Content will be displayed as plain folders. For best results use the metadata manager to set the content types of sub-folders.","SyncJobItemStatusQueued":"Queued","SyncJobItemStatusConverting":"Converting","SyncJobItemStatusTransferring":"Transferring","SyncJobItemStatusSynced":"Synced","SyncJobItemStatusFailed":"Failed","SyncJobItemStatusRemovedFromDevice":"Removed from device","SyncJobItemStatusCancelled":"Cancelled","LabelProfile":"Profile:","LabelBitrateMbps":"Bitrate (Mbps):","EmbyIntroDownloadMessage":"To download and install Emby Server visit {0}.","ButtonNewServer":"New Server","ButtonSignInWithConnect":"Sign in with Emby Connect","HeaderNewServer":"New Server","MyDevice":"My Device","ButtonRemote":"Remote"}
+window.appMode='cordova';window.dashboardVersion='635667077686927166';
 var Logger={log:function(str){console.log(str);}};var CryptoJS=CryptoJS||function(s,p){var m={},l=m.lib={},n=function(){},r=l.Base={extend:function(b){n.prototype=this;var h=new n;b&&h.mixIn(b);h.hasOwnProperty("init")||(h.init=function(){h.$super.init.apply(this,arguments)});h.init.prototype=h;h.$super=this;return h},create:function(){var b=this.extend();b.init.apply(b,arguments);return b},init:function(){},mixIn:function(b){for(var h in b)b.hasOwnProperty(h)&&(this[h]=b[h]);b.hasOwnProperty("toString")&&(this.toString=b.toString)},clone:function(){return this.init.prototype.extend(this)}},q=l.WordArray=r.extend({init:function(b,h){b=this.words=b||[];this.sigBytes=h!=p?h:4*b.length},toString:function(b){return(b||t).stringify(this)},concat:function(b){var h=this.words,a=b.words,j=this.sigBytes;b=b.sigBytes;this.clamp();if(j%4)for(var g=0;g<b;g++)h[j+g>>>2]|=(a[g>>>2]>>>24-8*(g%4)&255)<<24-8*((j+g)%4);else if(65535<a.length)for(g=0;g<b;g+=4)h[j+g>>>2]=a[g>>>2];else h.push.apply(h,a);this.sigBytes+=b;return this},clamp:function(){var b=this.words,h=this.sigBytes;b[h>>>2]&=4294967295<<32-8*(h%4);b.length=s.ceil(h/4)},clone:function(){var b=r.clone.call(this);b.words=this.words.slice(0);return b},random:function(b){for(var h=[],a=0;a<b;a+=4)h.push(4294967296*s.random()|0);return new q.init(h,b)}}),v=m.enc={},t=v.Hex={stringify:function(b){var a=b.words;b=b.sigBytes;for(var g=[],j=0;j<b;j++){var k=a[j>>>2]>>>24-8*(j%4)&255;g.push((k>>>4).toString(16));g.push((k&15).toString(16))}return g.join("")},parse:function(b){for(var a=b.length,g=[],j=0;j<a;j+=2)g[j>>>3]|=parseInt(b.substr(j,2),16)<<24-4*(j%8);return new q.init(g,a/2)}},a=v.Latin1={stringify:function(b){var a=b.words;b=b.sigBytes;for(var g=[],j=0;j<b;j++)g.push(String.fromCharCode(a[j>>>2]>>>24-8*(j%4)&255));return g.join("")},parse:function(b){for(var a=b.length,g=[],j=0;j<a;j++)g[j>>>2]|=(b.charCodeAt(j)&255)<<24-8*(j%4);return new q.init(g,a)}},u=v.Utf8={stringify:function(b){try{return decodeURIComponent(escape(a.stringify(b)))}catch(g){throw Error("Malformed UTF-8 data");}},parse:function(b){return a.parse(unescape(encodeURIComponent(b)))}},g=l.BufferedBlockAlgorithm=r.extend({reset:function(){this._data=new q.init;this._nDataBytes=0},_append:function(b){"string"==typeof b&&(b=u.parse(b));this._data.concat(b);this._nDataBytes+=b.sigBytes},_process:function(b){var a=this._data,g=a.words,j=a.sigBytes,k=this.blockSize,m=j/(4*k),m=b?s.ceil(m):s.max((m|0)-this._minBufferSize,0);b=m*k;j=s.min(4*b,j);if(b){for(var l=0;l<b;l+=k)this._doProcessBlock(g,l);l=g.splice(0,b);a.sigBytes-=j}return new q.init(l,j)},clone:function(){var b=r.clone.call(this);b._data=this._data.clone();return b},_minBufferSize:0});l.Hasher=g.extend({cfg:r.extend(),init:function(b){this.cfg=this.cfg.extend(b);this.reset()},reset:function(){g.reset.call(this);this._doReset()},update:function(b){this._append(b);this._process();return this},finalize:function(b){b&&this._append(b);return this._doFinalize()},blockSize:16,_createHelper:function(b){return function(a,g){return(new b.init(g)).finalize(a)}},_createHmacHelper:function(b){return function(a,g){return(new k.HMAC.init(b,g)).finalize(a)}}});var k=m.algo={};return m}(Math);(function(s){function p(a,k,b,h,l,j,m){a=a+(k&b|~k&h)+l+m;return(a<<j|a>>>32-j)+k}function m(a,k,b,h,l,j,m){a=a+(k&h|b&~h)+l+m;return(a<<j|a>>>32-j)+k}function l(a,k,b,h,l,j,m){a=a+(k^b^h)+l+m;return(a<<j|a>>>32-j)+k}function n(a,k,b,h,l,j,m){a=a+(b^(k|~h))+l+m;return(a<<j|a>>>32-j)+k}for(var r=CryptoJS,q=r.lib,v=q.WordArray,t=q.Hasher,q=r.algo,a=[],u=0;64>u;u++)a[u]=4294967296*s.abs(s.sin(u+1))|0;q=q.MD5=t.extend({_doReset:function(){this._hash=new v.init([1732584193,4023233417,2562383102,271733878])},_doProcessBlock:function(g,k){for(var b=0;16>b;b++){var h=k+b,w=g[h];g[h]=(w<<8|w>>>24)&16711935|(w<<24|w>>>8)&4278255360}var b=this._hash.words,h=g[k+0],w=g[k+1],j=g[k+2],q=g[k+3],r=g[k+4],s=g[k+5],t=g[k+6],u=g[k+7],v=g[k+8],x=g[k+9],y=g[k+10],z=g[k+11],A=g[k+12],B=g[k+13],C=g[k+14],D=g[k+15],c=b[0],d=b[1],e=b[2],f=b[3],c=p(c,d,e,f,h,7,a[0]),f=p(f,c,d,e,w,12,a[1]),e=p(e,f,c,d,j,17,a[2]),d=p(d,e,f,c,q,22,a[3]),c=p(c,d,e,f,r,7,a[4]),f=p(f,c,d,e,s,12,a[5]),e=p(e,f,c,d,t,17,a[6]),d=p(d,e,f,c,u,22,a[7]),c=p(c,d,e,f,v,7,a[8]),f=p(f,c,d,e,x,12,a[9]),e=p(e,f,c,d,y,17,a[10]),d=p(d,e,f,c,z,22,a[11]),c=p(c,d,e,f,A,7,a[12]),f=p(f,c,d,e,B,12,a[13]),e=p(e,f,c,d,C,17,a[14]),d=p(d,e,f,c,D,22,a[15]),c=m(c,d,e,f,w,5,a[16]),f=m(f,c,d,e,t,9,a[17]),e=m(e,f,c,d,z,14,a[18]),d=m(d,e,f,c,h,20,a[19]),c=m(c,d,e,f,s,5,a[20]),f=m(f,c,d,e,y,9,a[21]),e=m(e,f,c,d,D,14,a[22]),d=m(d,e,f,c,r,20,a[23]),c=m(c,d,e,f,x,5,a[24]),f=m(f,c,d,e,C,9,a[25]),e=m(e,f,c,d,q,14,a[26]),d=m(d,e,f,c,v,20,a[27]),c=m(c,d,e,f,B,5,a[28]),f=m(f,c,d,e,j,9,a[29]),e=m(e,f,c,d,u,14,a[30]),d=m(d,e,f,c,A,20,a[31]),c=l(c,d,e,f,s,4,a[32]),f=l(f,c,d,e,v,11,a[33]),e=l(e,f,c,d,z,16,a[34]),d=l(d,e,f,c,C,23,a[35]),c=l(c,d,e,f,w,4,a[36]),f=l(f,c,d,e,r,11,a[37]),e=l(e,f,c,d,u,16,a[38]),d=l(d,e,f,c,y,23,a[39]),c=l(c,d,e,f,B,4,a[40]),f=l(f,c,d,e,h,11,a[41]),e=l(e,f,c,d,q,16,a[42]),d=l(d,e,f,c,t,23,a[43]),c=l(c,d,e,f,x,4,a[44]),f=l(f,c,d,e,A,11,a[45]),e=l(e,f,c,d,D,16,a[46]),d=l(d,e,f,c,j,23,a[47]),c=n(c,d,e,f,h,6,a[48]),f=n(f,c,d,e,u,10,a[49]),e=n(e,f,c,d,C,15,a[50]),d=n(d,e,f,c,s,21,a[51]),c=n(c,d,e,f,A,6,a[52]),f=n(f,c,d,e,q,10,a[53]),e=n(e,f,c,d,y,15,a[54]),d=n(d,e,f,c,w,21,a[55]),c=n(c,d,e,f,v,6,a[56]),f=n(f,c,d,e,D,10,a[57]),e=n(e,f,c,d,t,15,a[58]),d=n(d,e,f,c,B,21,a[59]),c=n(c,d,e,f,r,6,a[60]),f=n(f,c,d,e,z,10,a[61]),e=n(e,f,c,d,j,15,a[62]),d=n(d,e,f,c,x,21,a[63]);b[0]=b[0]+c|0;b[1]=b[1]+d|0;b[2]=b[2]+e|0;b[3]=b[3]+f|0},_doFinalize:function(){var a=this._data,k=a.words,b=8*this._nDataBytes,h=8*a.sigBytes;k[h>>>5]|=128<<24-h%32;var l=s.floor(b/4294967296);k[(h+64>>>9<<4)+15]=(l<<8|l>>>24)&16711935|(l<<24|l>>>8)&4278255360;k[(h+64>>>9<<4)+14]=(b<<8|b>>>24)&16711935|(b<<24|b>>>8)&4278255360;a.sigBytes=4*(k.length+1);this._process();a=this._hash;k=a.words;for(b=0;4>b;b++)h=k[b],k[b]=(h<<8|h>>>24)&16711935|(h<<24|h>>>8)&4278255360;return a},clone:function(){var a=t.clone.call(this);a._hash=this._hash.clone();return a}});r.MD5=t._createHelper(q);r.HmacMD5=t._createHmacHelper(q)})(Math);var CryptoJS=CryptoJS||function(e,m){var p={},j=p.lib={},l=function(){},f=j.Base={extend:function(a){l.prototype=this;var c=new l;a&&c.mixIn(a);c.hasOwnProperty("init")||(c.init=function(){c.$super.init.apply(this,arguments)});c.init.prototype=c;c.$super=this;return c},create:function(){var a=this.extend();a.init.apply(a,arguments);return a},init:function(){},mixIn:function(a){for(var c in a)a.hasOwnProperty(c)&&(this[c]=a[c]);a.hasOwnProperty("toString")&&(this.toString=a.toString)},clone:function(){return this.init.prototype.extend(this)}},n=j.WordArray=f.extend({init:function(a,c){a=this.words=a||[];this.sigBytes=c!=m?c:4*a.length},toString:function(a){return(a||h).stringify(this)},concat:function(a){var c=this.words,q=a.words,d=this.sigBytes;a=a.sigBytes;this.clamp();if(d%4)for(var b=0;b<a;b++)c[d+b>>>2]|=(q[b>>>2]>>>24-8*(b%4)&255)<<24-8*((d+b)%4);else if(65535<q.length)for(b=0;b<a;b+=4)c[d+b>>>2]=q[b>>>2];else c.push.apply(c,q);this.sigBytes+=a;return this},clamp:function(){var a=this.words,c=this.sigBytes;a[c>>>2]&=4294967295<<32-8*(c%4);a.length=e.ceil(c/4)},clone:function(){var a=f.clone.call(this);a.words=this.words.slice(0);return a},random:function(a){for(var c=[],b=0;b<a;b+=4)c.push(4294967296*e.random()|0);return new n.init(c,a)}}),b=p.enc={},h=b.Hex={stringify:function(a){var c=a.words;a=a.sigBytes;for(var b=[],d=0;d<a;d++){var f=c[d>>>2]>>>24-8*(d%4)&255;b.push((f>>>4).toString(16));b.push((f&15).toString(16))}return b.join("")},parse:function(a){for(var c=a.length,b=[],d=0;d<c;d+=2)b[d>>>3]|=parseInt(a.substr(d,2),16)<<24-4*(d%8);return new n.init(b,c/2)}},g=b.Latin1={stringify:function(a){var c=a.words;a=a.sigBytes;for(var b=[],d=0;d<a;d++)b.push(String.fromCharCode(c[d>>>2]>>>24-8*(d%4)&255));return b.join("")},parse:function(a){for(var c=a.length,b=[],d=0;d<c;d++)b[d>>>2]|=(a.charCodeAt(d)&255)<<24-8*(d%4);return new n.init(b,c)}},r=b.Utf8={stringify:function(a){try{return decodeURIComponent(escape(g.stringify(a)))}catch(c){throw Error("Malformed UTF-8 data");}},parse:function(a){return g.parse(unescape(encodeURIComponent(a)))}},k=j.BufferedBlockAlgorithm=f.extend({reset:function(){this._data=new n.init;this._nDataBytes=0},_append:function(a){"string"==typeof a&&(a=r.parse(a));this._data.concat(a);this._nDataBytes+=a.sigBytes},_process:function(a){var c=this._data,b=c.words,d=c.sigBytes,f=this.blockSize,h=d/(4*f),h=a?e.ceil(h):e.max((h|0)-this._minBufferSize,0);a=h*f;d=e.min(4*a,d);if(a){for(var g=0;g<a;g+=f)this._doProcessBlock(b,g);g=b.splice(0,a);c.sigBytes-=d}return new n.init(g,d)},clone:function(){var a=f.clone.call(this);a._data=this._data.clone();return a},_minBufferSize:0});j.Hasher=k.extend({cfg:f.extend(),init:function(a){this.cfg=this.cfg.extend(a);this.reset()},reset:function(){k.reset.call(this);this._doReset()},update:function(a){this._append(a);this._process();return this},finalize:function(a){a&&this._append(a);return this._doFinalize()},blockSize:16,_createHelper:function(a){return function(c,b){return(new a.init(b)).finalize(c)}},_createHmacHelper:function(a){return function(b,f){return(new s.HMAC.init(a,f)).finalize(b)}}});var s=p.algo={};return p}(Math);(function(){var e=CryptoJS,m=e.lib,p=m.WordArray,j=m.Hasher,l=[],m=e.algo.SHA1=j.extend({_doReset:function(){this._hash=new p.init([1732584193,4023233417,2562383102,271733878,3285377520])},_doProcessBlock:function(f,n){for(var b=this._hash.words,h=b[0],g=b[1],e=b[2],k=b[3],j=b[4],a=0;80>a;a++){if(16>a)l[a]=f[n+a]|0;else{var c=l[a-3]^l[a-8]^l[a-14]^l[a-16];l[a]=c<<1|c>>>31}c=(h<<5|h>>>27)+j+l[a];c=20>a?c+((g&e|~g&k)+1518500249):40>a?c+((g^e^k)+1859775393):60>a?c+((g&e|g&k|e&k)-1894007588):c+((g^e^k)-899497514);j=k;k=e;e=g<<30|g>>>2;g=h;h=c}b[0]=b[0]+h|0;b[1]=b[1]+g|0;b[2]=b[2]+e|0;b[3]=b[3]+k|0;b[4]=b[4]+j|0},_doFinalize:function(){var f=this._data,e=f.words,b=8*this._nDataBytes,h=8*f.sigBytes;e[h>>>5]|=128<<24-h%32;e[(h+64>>>9<<4)+14]=Math.floor(b/4294967296);e[(h+64>>>9<<4)+15]=b;f.sigBytes=4*e.length;this._process();return this._hash},clone:function(){var e=j.clone.call(this);e._hash=this._hash.clone();return e}});e.SHA1=j._createHelper(m);e.HmacSHA1=j._createHmacHelper(m)})();(function(globalScope,localStorage,sessionStorage){function myStore(defaultObject){var self=this;self.localData={};var isDefaultAvailable;if(defaultObject){try{defaultObject.setItem('_test','0');isDefaultAvailable=true;}catch(e){}}
 self.setItem=function(name,value){if(isDefaultAvailable){defaultObject.setItem(name,value);}else{self.localData[name]=value;}};self.getItem=function(name){if(isDefaultAvailable){return defaultObject.getItem(name);}
 return self.localData[name];};self.removeItem=function(name){if(isDefaultAvailable){defaultObject.removeItem(name);}else{self.localData[name]=null;}};}
@@ -8943,7 +9785,7 @@ $.mobile.changePage(url);},showLoadingMsg:function(){$.mobile.loading("show");},
 return elem;},showModalLoadingMsg:function(){Dashboard.showLoadingMsg();Dashboard.getModalLoadingMsg().show();},hideModalLoadingMsg:function(){Dashboard.getModalLoadingMsg().hide();Dashboard.hideLoadingMsg();},processPluginConfigurationUpdateResult:function(){Dashboard.hideLoadingMsg();Dashboard.alert("Settings saved.");},defaultErrorMessage:Globalize.translate('DefaultErrorMessage'),processServerConfigurationUpdateResult:function(result){Dashboard.hideLoadingMsg();Dashboard.alert(Globalize.translate('MessageSettingsSaved'));},alert:function(options){if(typeof options=="string"){var message=options;$.mobile.loading('show',{text:message,textonly:true,textVisible:true});setTimeout(function(){$.mobile.loading('hide');},3000);return;}
 if(navigator.notification&&navigator.notification.alert&&options.message.indexOf('<')==-1){navigator.notification.alert(options.message,options.callback||function(){},options.title||Globalize.translate('HeaderAlert'));}else{Dashboard.confirmInternal(options.message,options.title||Globalize.translate('HeaderAlert'),false,options.callback);}},confirm:function(message,title,callback){if(navigator.notification&&navigator.notification.alert&&message.indexOf('<')==-1){var buttonLabels=[Globalize.translate('ButtonOk'),Globalize.translate('ButtonCancel')];navigator.notification.confirm(message,function(index){callback(index==1);},title||Globalize.translate('HeaderAlert'),buttonLabels.join(','));}else{Dashboard.confirmInternal(message,title,true,callback);}},confirmInternal:function(message,title,showCancel,callback){$('.confirmFlyout').popup("close").remove();var html='<div data-role="popup" class="confirmFlyout" style="max-width:500px;" data-theme="a">';html+='<div class="ui-bar-a" style="text-align:center;">';html+='<h3 style="padding: 0 1em;">'+title+'</h3>';html+='</div>';html+='<div style="padding: 1em;">';html+='<div style="padding: 1em .25em;margin: 0;">';html+=message;html+='</div>';html+='<p><button type="button" data-icon="check" onclick="$(\'.confirmFlyout\')[0].confirm=true;$(\'.confirmFlyout\').popup(\'close\');" data-theme="b">'+Globalize.translate('ButtonOk')+'</button></p>';if(showCancel){html+='<p><button type="button" data-icon="delete" onclick="$(\'.confirmFlyout\').popup(\'close\');" data-theme="a">'+Globalize.translate('ButtonCancel')+'</button></p>';}
 html+='</div>';html+='</div>';$(document.body).append(html);$('.confirmFlyout').popup({history:false}).trigger('create').popup("open").on("popupafterclose",function(){if(callback){callback(this.confirm==true);}
-$(this).off("popupafterclose").remove();});},refreshSystemInfoFromServer:function(){if(Dashboard.getAccessToken()){if(AppInfo.enableFooterNotifications){ApiClient.getSystemInfo().done(function(info){Dashboard.updateSystemInfo(info);});}else{Dashboard.ensureWebSocket();}}},restartServer:function(){Dashboard.suppressAjaxErrors=true;Dashboard.showLoadingMsg();ApiClient.restartServer().done(function(){setTimeout(function(){Dashboard.reloadPageWhenServerAvailable();},250);}).fail(function(){Dashboard.suppressAjaxErrors=false;});},reloadPageWhenServerAvailable:function(retryCount){ApiClient.getJSON(ApiClient.getUrl("System/Info")).done(function(info){if(!info.HasPendingRestart){Dashboard.reloadPage();}else{Dashboard.retryReload(retryCount);}}).fail(function(){Dashboard.retryReload(retryCount);});},retryReload:function(retryCount){setTimeout(function(){retryCount=retryCount||0;retryCount++;if(retryCount<10){Dashboard.reloadPageWhenServerAvailable(retryCount);}else{Dashboard.suppressAjaxErrors=false;}},500);},showUserFlyout:function(context){ConnectionManager.user().done(function(user){var html='<div data-role="panel" data-position="right" data-display="overlay" id="userFlyout" data-position-fixed="true" data-theme="a">';html+='<h3>';var imgWidth=48;if(user.imageUrl){var url=user.imageUrl;if(user.supportsImageParams){url+="&width="+(imgWidth*Math.max(window.devicePixelRatio||1,2));}
+$(this).off("popupafterclose").remove();});},refreshSystemInfoFromServer:function(){if(Dashboard.getAccessToken()){if(AppInfo.enableFooterNotifications){ApiClient.getSystemInfo().done(function(info){Dashboard.updateSystemInfo(info);});}else{Dashboard.ensureWebSocket();}}},restartServer:function(){Dashboard.suppressAjaxErrors=true;Dashboard.showLoadingMsg();ApiClient.restartServer().done(function(){setTimeout(function(){Dashboard.reloadPageWhenServerAvailable();},250);}).fail(function(){Dashboard.suppressAjaxErrors=false;});},reloadPageWhenServerAvailable:function(retryCount){ApiClient.getJSON(ApiClient.getUrl("System/Info")).done(function(info){if(!info.HasPendingRestart){Dashboard.reloadPage();}else{Dashboard.retryReload(retryCount);}}).fail(function(){Dashboard.retryReload(retryCount);});},retryReload:function(retryCount){setTimeout(function(){retryCount=retryCount||0;retryCount++;if(retryCount<10){Dashboard.reloadPageWhenServerAvailable(retryCount);}else{Dashboard.suppressAjaxErrors=false;}},500);},showUserFlyout:function(context){ConnectionManager.user().done(function(user){var html='<div data-role="panel" data-position="right" data-display="overlay" id="userFlyout" data-position-fixed="true" data-theme="a">';html+='<h3>';var imgWidth=48;if(user.imageUrl&&AppInfo.enableUserImage){var url=user.imageUrl;if(user.supportsImageParams){url+="&width="+(imgWidth*Math.max(window.devicePixelRatio||1,2));}
 html+='<img style="max-width:'+imgWidth+'px;vertical-align:middle;margin-right:.5em;border-radius: 50px;" src="'+url+'" />';}
 html+=user.name;html+='</h3>';html+='<form>';var isConnectMode=Dashboard.isConnectMode();if(user.localUser&&user.localUser.Policy.EnableUserPreferenceAccess){html+='<p><a data-mini="true" data-role="button" href="mypreferencesdisplay.html?userId='+user.localUser.Id+'" data-icon="gear">'+Globalize.translate('ButtonMyPreferences')+'</button></a>';}
 if(isConnectMode){html+='<p><a data-mini="true" data-role="button" href="selectserver.html" data-icon="cloud" data-ajax="false">'+Globalize.translate('ButtonSelectServer')+'</button></a>';}
@@ -8997,7 +9839,7 @@ parts.push(minutes);var seconds=ticks/ticksPerSecond;seconds=Math.floor(seconds)
 parts.push(seconds);return parts.join(':');},populateLanguages:function(select,languages){var html="";html+="<option value=''></option>";for(var i=0,length=languages.length;i<length;i++){var culture=languages[i];html+="<option value='"+culture.TwoLetterISOLanguageName+"'>"+culture.DisplayName+"</option>";}
 $(select).html(html).selectmenu("refresh");},populateCountries:function(select,allCountries){var html="";html+="<option value=''></option>";for(var i=0,length=allCountries.length;i<length;i++){var culture=allCountries[i];html+="<option value='"+culture.TwoLetterISORegionName+"'>"+culture.DisplayName+"</option>";}
 $(select).html(html).selectmenu("refresh");},getSupportedRemoteCommands:function(){return["GoHome","GoToSettings","VolumeUp","VolumeDown","Mute","Unmute","ToggleMute","SetVolume","SetAudioStreamIndex","SetSubtitleStreamIndex","DisplayContent","GoToSearch","DisplayMessage"];},isServerlessPage:function(){var url=getWindowUrl().toLowerCase();return url.indexOf('connectlogin.html')!=-1||url.indexOf('selectserver.html')!=-1||url.indexOf('login.html')!=-1||url.indexOf('forgotpassword.html')!=-1||url.indexOf('forgotpasswordpin.html')!=-1;},capabilities:function(){return{PlayableMediaTypes:"Audio,Video",SupportedCommands:Dashboard.getSupportedRemoteCommands().join(','),SupportsPersistentIdentifier:Dashboard.isRunningInCordova(),SupportsMediaControl:true,SupportedLiveMediaTypes:['Audio','Video']};},getDefaultImageQuality:function(imageType){var quality=90;var isBackdrop=imageType.toLowerCase()=='backdrop';if(isBackdrop){quality-=10;}
-if(AppInfo.hasLowImageBandwidth){quality-=15;if(isBackdrop){quality-=10;}}
+if(AppInfo.hasLowImageBandwidth){quality-=20;if(isBackdrop){quality-=10;}}
 return quality;},getAppInfo:function(){function generateDeviceName(){var name="Web Browser";if($.browser.chrome){name="Chrome";}else if($.browser.safari){name="Safari";}else if($.browser.webkit){name="WebKit";}else if($.browser.msie){name="Internet Explorer";}else if($.browser.opera){name="Opera";}else if($.browser.firefox||$.browser.mozilla){name="Firefox";}
 if($.browser.version){name+=" "+$.browser.version;}
 if($.browser.ipad){name+=" Ipad";}else if($.browser.iphone){name+=" Iphone";}else if($.browser.android){name+=" Android";}
@@ -9007,15 +9849,18 @@ deviceName=deviceName||generateDeviceName();{var seed=[];var keyName='randomId';
 deviceId=MediaBrowser.generateDeviceId(keyName,seed.join(','));}
 return{appName:appName,appVersion:appVersion,deviceName:deviceName,deviceId:deviceId};}};var AppInfo={};(function(){function isTouchDevice(){return(('ontouchstart'in window)||(navigator.MaxTouchPoints>0)||(navigator.msMaxTouchPoints>0));}
 function setAppInfo(){if(isTouchDevice()){AppInfo.isTouchPreferred=true;}
-if($.browser.safari){if($.browser.mobile){AppInfo.hasLowImageBandwidth=true;}
-if(Dashboard.isRunningInCordova()){AppInfo.enableBottomTabs=true;AppInfo.resetOnLibraryChange=true;}}
+var isCordova=Dashboard.isRunningInCordova();if($.browser.safari){if($.browser.mobile){AppInfo.hasLowImageBandwidth=true;}
+if(isCordova){AppInfo.enableBottomTabs=true;AppInfo.resetOnLibraryChange=true;}}
 else{if(!$.browser.tv){AppInfo.enableHeadRoom=true;}}
 if(!AppInfo.hasLowImageBandwidth){AppInfo.enableLatestChannelItems=true;AppInfo.enableStudioTabs=true;AppInfo.enablePeopleTabs=true;AppInfo.enableTvEpisodesTab=true;AppInfo.enableMusicSongsTab=true;AppInfo.enableMusicArtistsTab=true;AppInfo.enableHomeLatestTab=true;AppInfo.enableMovieTrailersTab=true;}
-if(!Dashboard.isRunningInCordova()){AppInfo.enableFooterNotifications=true;}}
+if(!isCordova){AppInfo.enableFooterNotifications=true;}
+AppInfo.enableUserImage=!AppInfo.hasLowImageBandwidth||!isCordova;AppInfo.enableHeaderImages=AppInfo.enableUserImage;}
 function initializeApiClient(apiClient){$(apiClient).off('.dashboard').on("websocketmessage.dashboard",Dashboard.onWebSocketMessageReceived).on('requestfail.dashboard',Dashboard.onRequestFail).on('serveraddresschanged.dashboard',Dashboard.onApiClientServerAddressChanged);}
 function createConnectionManager(){var appInfo=Dashboard.getAppInfo();var credentialProvider=new MediaBrowser.CredentialProvider();var capabilities=Dashboard.capabilities();window.ConnectionManager=new MediaBrowser.ConnectionManager(Logger,credentialProvider,appInfo.appName,appInfo.appVersion,appInfo.deviceName,appInfo.deviceId,capabilities);if(Dashboard.isConnectMode()){$(ConnectionManager).on('apiclientcreated',function(e,apiClient){initializeApiClient(apiClient);});if(!Dashboard.isServerlessPage()){if(Dashboard.serverAddress()&&Dashboard.getCurrentUserId()&&Dashboard.getAccessToken()){window.ApiClient=new MediaBrowser.ApiClient(Logger,Dashboard.serverAddress(),appInfo.appName,appInfo.appVersion,appInfo.deviceName,appInfo.deviceId);ApiClient.setCurrentUserId(Dashboard.getCurrentUserId(),Dashboard.getAccessToken());initializeApiClient(ApiClient);ConnectionManager.addApiClient(ApiClient,true).fail(Dashboard.logout);}else{Dashboard.logout();return;}}}else{window.ApiClient=new MediaBrowser.ApiClient(Logger,Dashboard.serverAddress(),appInfo.appName,appInfo.appVersion,appInfo.deviceName,appInfo.deviceId);ApiClient.setCurrentUserId(Dashboard.getCurrentUserId(),Dashboard.getAccessToken());initializeApiClient(ApiClient);ConnectionManager.addApiClient(ApiClient);}
 if(window.ApiClient){ApiClient.getDefaultImageQuality=Dashboard.getDefaultImageQuality;if(!Dashboard.isRunningInCordova()){Dashboard.importCss(ApiClient.getUrl('Branding/Css'));}}}
-function onReady(){if(AppInfo.hasLowImageBandwidth){$(document.body).addClass('largeCardMargin');}
+function initFastClick(){FastClick.attach(document.body);$(document.body).on('touchstart','.ui-panel-dismiss',function(){$(this).trigger('click');});}
+function onReady(){if($.browser.safari&&$.browser.mobile){initFastClick();}
+if(AppInfo.hasLowImageBandwidth){$(document.body).addClass('largeCardMargin');}
 if(!AppInfo.enableLatestChannelItems){$(document.body).addClass('latestChannelItemsDisabled');}
 if(!AppInfo.enableStudioTabs){$(document.body).addClass('studioTabDisabled');}
 if(!AppInfo.enablePeopleTabs){$(document.body).addClass('peopleTabDisabled');}
@@ -9153,40 +9998,42 @@ return{defaultThumb:defaultThumb,smallThumbWidth:Math.round(smallThumbWidth),thu
 var posterInfo=LibraryBrowser.getPosterViewInfo();var thumbWidth=posterInfo.thumbWidth;var posterWidth=posterInfo.posterWidth;var squareSize=posterInfo.squareSize;var bannerWidth=posterInfo.bannerWidth;if(options.shape=='backdrop'&&posterInfo.defaultThumb=='smallBackdrop'){options.shape='smallBackdrop';thumbWidth=posterInfo.smallThumbWidth;}
 else if(options.shape=='portrait'&&posterInfo.defaultPortait=='smallPortrait'){options.shape='smallPortrait';posterWidth=posterInfo.smallPosterWidth;}
 else if(options.shape=='square'&&posterInfo.defaultSquare=='smallSquare'){options.shape='smallSquare';squareSize=posterInfo.smallSquareSize;}
-for(var i=0,length=items.length;i<length;i++){var item=items[i];primaryImageAspectRatio=LibraryBrowser.getAveragePrimaryImageAspectRatio([item]);if(options.showPremiereDateIndex){var futureDateText;if(item.PremiereDate){try{futureDateText=LibraryBrowser.getFutureDateText(parseISO8601Date(item.PremiereDate,{toLocal:true}),true);}catch(err){}}
-var val=futureDateText||Globalize.translate('HeaderUnknownDate');if(val!=currentIndexValue){html+='<h2 class="timelineHeader detailSectionHeader" style="text-align:center;">'+val+'</h2>';currentIndexValue=val;}}
-else if(options.showStartDateIndex){var futureDateText;if(item.StartDate){try{futureDateText=LibraryBrowser.getFutureDateText(parseISO8601Date(item.StartDate,{toLocal:true}),true);}catch(err){}}
-var val=futureDateText||Globalize.translate('HeaderUnknownDate');if(val!=currentIndexValue){html+='<h2 class="timelineHeader detailSectionHeader" style="text-align:center;">'+val+'</h2>';currentIndexValue=val;}}else if(options.timeline){var year=item.ProductionYear||Globalize.translate('HeaderUnknownYear');if(year!=currentIndexValue){html+='<h2 class="timelineHeader detailSectionHeader">'+year+'</h2>';currentIndexValue=year;}}
-var imgUrl=null;var background=null;var width=null;var height=null;var forceName=false;var enableImageEnhancers=options.enableImageEnhancers!==false;if(options.autoThumb&&item.ImageTags&&item.ImageTags.Primary&&item.PrimaryImageAspectRatio&&item.PrimaryImageAspectRatio>=1.5){width=posterWidth;height=primaryImageAspectRatio?Math.round(posterWidth/primaryImageAspectRatio):null;imgUrl=ApiClient.getImageUrl(item.Id,{type:"Primary",height:height,width:width,tag:item.ImageTags.Primary,enableImageEnhancers:enableImageEnhancers});}else if(options.autoThumb&&item.ImageTags&&item.ImageTags.Thumb){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Thumb",maxWidth:thumbWidth,tag:item.ImageTags.Thumb,enableImageEnhancers:enableImageEnhancers});}else if(options.preferBackdrop&&item.BackdropImageTags&&item.BackdropImageTags.length){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Backdrop",maxWidth:thumbWidth,tag:item.BackdropImageTags[0],enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.ImageTags&&item.ImageTags.Thumb){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Thumb",maxWidth:thumbWidth,tag:item.ImageTags.Thumb,enableImageEnhancers:enableImageEnhancers});}else if(options.preferBanner&&item.ImageTags&&item.ImageTags.Banner){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Banner",maxWidth:bannerWidth,tag:item.ImageTags.Banner,enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.SeriesThumbImageTag&&options.inheritThumb!==false){imgUrl=ApiClient.getScaledImageUrl(item.SeriesId,{type:"Thumb",maxWidth:thumbWidth,tag:item.SeriesThumbImageTag,enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.ParentThumbItemId&&options.inheritThumb!==false){imgUrl=ApiClient.getThumbImageUrl(item.ParentThumbItemId,{type:"Thumb",maxWidth:thumbWidth,enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.BackdropImageTags&&item.BackdropImageTags.length){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Backdrop",maxWidth:thumbWidth,tag:item.BackdropImageTags[0],enableImageEnhancers:enableImageEnhancers});forceName=true;}else if(item.ImageTags&&item.ImageTags.Primary){width=posterWidth;height=primaryImageAspectRatio?Math.round(posterWidth/primaryImageAspectRatio):null;imgUrl=ApiClient.getImageUrl(item.Id,{type:"Primary",height:height,width:width,tag:item.ImageTags.Primary,enableImageEnhancers:enableImageEnhancers});}
+var dateText;for(var i=0,length=items.length;i<length;i++){var item=items[i];dateText=null;primaryImageAspectRatio=LibraryBrowser.getAveragePrimaryImageAspectRatio([item]);if(options.showPremiereDateIndex){if(item.PremiereDate){try{dateText=LibraryBrowser.getFutureDateText(parseISO8601Date(item.PremiereDate,{toLocal:true}),true);}catch(err){}}
+var newIndexValue=dateText||Globalize.translate('HeaderUnknownDate');if(newIndexValue!=currentIndexValue){html+='<h2 class="timelineHeader detailSectionHeader" style="text-align:center;">'+newIndexValue+'</h2>';currentIndexValue=newIndexValue;}}
+else if(options.showStartDateIndex){if(item.StartDate){try{dateText=LibraryBrowser.getFutureDateText(parseISO8601Date(item.StartDate,{toLocal:true}),true);}catch(err){}}
+var newIndexValue=dateText||Globalize.translate('HeaderUnknownDate');if(newIndexValue!=currentIndexValue){html+='<h2 class="timelineHeader detailSectionHeader" style="text-align:center;">'+newIndexValue+'</h2>';currentIndexValue=newIndexValue;}}else if(options.timeline){var year=item.ProductionYear||Globalize.translate('HeaderUnknownYear');if(year!=currentIndexValue){html+='<h2 class="timelineHeader detailSectionHeader">'+year+'</h2>';currentIndexValue=year;}}
+html+=LibraryBrowser.getPosterViewItemHtml(item,i,options,primaryImageAspectRatio,thumbWidth,posterWidth,squareSize,bannerWidth);}
+return html;},getPosterViewItemHtml:function(item,index,options,primaryImageAspectRatio,thumbWidth,posterWidth,squareSize,bannerWidth){var html='';var imgUrl=null;var icon;var background=null;var width=null;var height=null;var forceName=false;var enableImageEnhancers=options.enableImageEnhancers!==false;if(options.autoThumb&&item.ImageTags&&item.ImageTags.Primary&&item.PrimaryImageAspectRatio&&item.PrimaryImageAspectRatio>=1.5){width=posterWidth;height=primaryImageAspectRatio?Math.round(posterWidth/primaryImageAspectRatio):null;imgUrl=ApiClient.getImageUrl(item.Id,{type:"Primary",height:height,width:width,tag:item.ImageTags.Primary,enableImageEnhancers:enableImageEnhancers});}else if(options.autoThumb&&item.ImageTags&&item.ImageTags.Thumb){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Thumb",maxWidth:thumbWidth,tag:item.ImageTags.Thumb,enableImageEnhancers:enableImageEnhancers});}else if(options.preferBackdrop&&item.BackdropImageTags&&item.BackdropImageTags.length){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Backdrop",maxWidth:thumbWidth,tag:item.BackdropImageTags[0],enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.ImageTags&&item.ImageTags.Thumb){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Thumb",maxWidth:thumbWidth,tag:item.ImageTags.Thumb,enableImageEnhancers:enableImageEnhancers});}else if(options.preferBanner&&item.ImageTags&&item.ImageTags.Banner){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Banner",maxWidth:bannerWidth,tag:item.ImageTags.Banner,enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.SeriesThumbImageTag&&options.inheritThumb!==false){imgUrl=ApiClient.getScaledImageUrl(item.SeriesId,{type:"Thumb",maxWidth:thumbWidth,tag:item.SeriesThumbImageTag,enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.ParentThumbItemId&&options.inheritThumb!==false){imgUrl=ApiClient.getThumbImageUrl(item.ParentThumbItemId,{type:"Thumb",maxWidth:thumbWidth,enableImageEnhancers:enableImageEnhancers});}else if(options.preferThumb&&item.BackdropImageTags&&item.BackdropImageTags.length){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Backdrop",maxWidth:thumbWidth,tag:item.BackdropImageTags[0],enableImageEnhancers:enableImageEnhancers});forceName=true;}else if(item.ImageTags&&item.ImageTags.Primary){width=posterWidth;height=primaryImageAspectRatio?Math.round(posterWidth/primaryImageAspectRatio):null;imgUrl=ApiClient.getImageUrl(item.Id,{type:"Primary",height:height,width:width,tag:item.ImageTags.Primary,enableImageEnhancers:enableImageEnhancers});}
 else if(item.ParentPrimaryImageTag){imgUrl=ApiClient.getImageUrl(item.ParentPrimaryImageItemId,{type:"Primary",width:posterWidth,tag:item.ParentPrimaryImageTag,enableImageEnhancers:enableImageEnhancers});}
 else if(item.AlbumId&&item.AlbumPrimaryImageTag){height=squareSize;width=primaryImageAspectRatio?Math.round(height*primaryImageAspectRatio):null;imgUrl=ApiClient.getScaledImageUrl(item.AlbumId,{type:"Primary",height:height,width:width,tag:item.AlbumPrimaryImageTag,enableImageEnhancers:enableImageEnhancers});}
 else if(item.Type=='Season'&&item.ImageTags&&item.ImageTags.Thumb){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Thumb",maxWidth:thumbWidth,tag:item.ImageTags.Thumb,enableImageEnhancers:enableImageEnhancers});}
-else if(item.BackdropImageTags&&item.BackdropImageTags.length){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Backdrop",maxWidth:thumbWidth,tag:item.BackdropImageTags[0],enableImageEnhancers:enableImageEnhancers});}else if(item.ImageTags&&item.ImageTags.Thumb){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Thumb",maxWidth:thumbWidth,tag:item.ImageTags.Thumb,enableImageEnhancers:enableImageEnhancers});}else if(item.SeriesThumbImageTag){imgUrl=ApiClient.getScaledImageUrl(item.SeriesId,{type:"Thumb",maxWidth:thumbWidth,tag:item.SeriesThumbImageTag,enableImageEnhancers:enableImageEnhancers});}else if(item.ParentThumbItemId){imgUrl=ApiClient.getThumbImageUrl(item,{type:"Thumb",maxWidth:thumbWidth,enableImageEnhancers:enableImageEnhancers});}else if(item.MediaType=="Audio"||item.Type=="MusicAlbum"||item.Type=="MusicArtist"){if(item.Name&&options.showTitle){imgUrl='css/images/items/list/audio.png';}
-background=defaultBackground;}else if(item.Type=="Recording"||item.Type=="Program"||item.Type=="TvChannel"){if(item.Name&&options.showTitle){imgUrl='css/images/items/list/collection.png';}
-background=defaultBackground;}else if(item.MediaType=="Video"||item.Type=="Season"||item.Type=="Series"){if(item.Name&&options.showTitle){imgUrl='css/images/items/list/video.png';}
-background=defaultBackground;}else if(item.Type=="Person"){if(item.Name&&options.showTitle){imgUrl='css/images/items/list/person.png';}
-background=defaultBackground;}else{if(item.Name&&options.showTitle){imgUrl='css/images/items/list/collection.png';}
+else if(item.BackdropImageTags&&item.BackdropImageTags.length){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Backdrop",maxWidth:thumbWidth,tag:item.BackdropImageTags[0],enableImageEnhancers:enableImageEnhancers});}else if(item.ImageTags&&item.ImageTags.Thumb){imgUrl=ApiClient.getScaledImageUrl(item.Id,{type:"Thumb",maxWidth:thumbWidth,tag:item.ImageTags.Thumb,enableImageEnhancers:enableImageEnhancers});}else if(item.SeriesThumbImageTag){imgUrl=ApiClient.getScaledImageUrl(item.SeriesId,{type:"Thumb",maxWidth:thumbWidth,tag:item.SeriesThumbImageTag,enableImageEnhancers:enableImageEnhancers});}else if(item.ParentThumbItemId){imgUrl=ApiClient.getThumbImageUrl(item,{type:"Thumb",maxWidth:thumbWidth,enableImageEnhancers:enableImageEnhancers});}else if(item.MediaType=="Audio"||item.Type=="MusicAlbum"||item.Type=="MusicArtist"){if(item.Name&&options.showTitle){icon='fa-music';}
+background=defaultBackground;}else if(item.Type=="Recording"||item.Type=="Program"||item.Type=="TvChannel"){if(item.Name&&options.showTitle){icon='fa-folder-open';}
+background=defaultBackground;}else if(item.MediaType=="Video"||item.Type=="Season"||item.Type=="Series"){if(item.Name&&options.showTitle){icon='fa-video-camera';}
+background=defaultBackground;}else if(item.Type=="Person"){if(item.Name&&options.showTitle){icon='fa-user';}
+background=defaultBackground;}else{if(item.Name&&options.showTitle){icon='fa-folder-open';}
 background=defaultBackground;}
 var cssClass="card";if(options.transparent!==false){cssClass+=" transparentCard";}
 cssClass+=' '+options.shape+'Card';var mediaSourceCount=item.MediaSourceCount||1;var href=options.linkItem===false?'#':LibraryBrowser.getHref(item,options.context);if(item.UserData){cssClass+=' '+LibraryBrowser.getUserDataCssClass(item.UserData.Key);}
 if(options.showChildCountIndicator&&item.ChildCount){cssClass+=' groupedCard';}
 if(options.showTitle&&!options.overlayText){cssClass+=' bottomPaddedCard';}
-var dataAttributes=LibraryBrowser.getItemDataAttributes(item,options,i);var defaultAction=options.defaultAction;if(defaultAction=='play'||defaultAction=='playallfromhere'){if(item.PlayAccess!='Full'){defaultAction=null;}}
+var dataAttributes=LibraryBrowser.getItemDataAttributes(item,options,index);var defaultAction=options.defaultAction;if(defaultAction=='play'||defaultAction=='playallfromhere'){if(item.PlayAccess!='Full'){defaultAction=null;}}
 var defaultActionAttribute=defaultAction?(' data-action="'+defaultAction+'"'):'';html+='<div'+dataAttributes+' class="'+cssClass+'">';var style="";if(imgUrl&&!options.lazy){style+='background-image:url(\''+imgUrl+'\');';}
 if(background){style+="background-color:"+background+";";}
-var imageCssClass='cardImage';if(options.coverImage){imageCssClass+=" coveredCardImage";}
+var imageCssClass='cardImage';if(icon){imageCssClass+=" iconCardImage";}
+if(options.coverImage){imageCssClass+=" coveredCardImage";}
 if(options.centerImage){imageCssClass+=" centeredCardImage";}
 var dataSrc="";if(options.lazy&&imgUrl){imageCssClass+=" lazy";dataSrc=' data-src="'+imgUrl+'"';}
 var cardboxCssClass='cardBox';if(options.cardLayout){cardboxCssClass+=' visualCardBox';}
 html+='<div class="'+cardboxCssClass+'">';html+='<div class="cardScalable">';html+='<div class="cardPadder"></div>';var anchorCssClass="cardContent";if(options.defaultAction){anchorCssClass+=' itemWithAction';}
-html+='<a class="'+anchorCssClass+'" href="'+href+'"'+defaultActionAttribute+'>';html+='<div class="'+imageCssClass+'" style="'+style+'"'+dataSrc+'></div>';html+='<div class="cardOverlayTarget"></div>';if(item.LocationType=="Offline"||item.LocationType=="Virtual"){if(options.showLocationTypeIndicator!==false){html+=LibraryBrowser.getOfflineIndicatorHtml(item);}}else if(options.showUnplayedIndicator!==false){html+=LibraryBrowser.getPlayedIndicatorHtml(item);}else if(options.showChildCountIndicator){html+=LibraryBrowser.getGroupCountIndicator(item);}
+html+='<a class="'+anchorCssClass+'" href="'+href+'"'+defaultActionAttribute+'>';html+='<div class="'+imageCssClass+'" style="'+style+'"'+dataSrc+'>';if(icon){html+='<i class="fa '+icon+'"></i>';}
+html+='</div>';html+='<div class="cardOverlayTarget"></div>';if(item.LocationType=="Offline"||item.LocationType=="Virtual"){if(options.showLocationTypeIndicator!==false){html+=LibraryBrowser.getOfflineIndicatorHtml(item);}}else if(options.showUnplayedIndicator!==false){html+=LibraryBrowser.getPlayedIndicatorHtml(item);}else if(options.showChildCountIndicator){html+=LibraryBrowser.getGroupCountIndicator(item);}
 if(mediaSourceCount>1){html+='<div class="mediaSourceIndicator">'+mediaSourceCount+'</div>';}
 if(item.IsUnidentified){html+='<div class="unidentifiedIndicator"><div class="ui-icon-alert ui-btn-icon-notext"></div></div>';}
 var progressHtml=options.showProgress===false||item.IsFolder?'':LibraryBrowser.getItemProgressBarHtml((item.Type=='Recording'?item:item.UserData));var footerOverlayed=false;if(options.overlayText||(forceName&&!options.showTitle)){html+=LibraryBrowser.getCardFooterText(item,options,imgUrl,forceName,'cardFooter',progressHtml);footerOverlayed=true;}
 else if(progressHtml){html+='<div class="cardFooter">';html+="<div class='cardProgress cardText'>";html+=progressHtml;html+="</div>";html+="</div>";progressHtml='';}
 html+='</a>';html+='</div>';if(!options.overlayText&&!footerOverlayed){html+=LibraryBrowser.getCardFooterText(item,options,imgUrl,forceName,'cardFooter outerCardFooter',progressHtml);}
-html+='</div>';html+="</div>";}
-return html;},getCardFooterText:function(item,options,imgUrl,forceName,footerClass,progressHtml){var html='';html+='<div class="'+footerClass+'">';if(options.cardLayout){html+='<div class="cardText" style="text-align:right; float:right;">';html+='<button class="listviewMenuButton ui-btn ui-icon-ellipsis-v ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 4px 0 0;"></button>';html+="</div>";}
+html+='</div>';html+="</div>";return html;},getCardFooterText:function(item,options,imgUrl,forceName,footerClass,progressHtml){var html='';html+='<div class="'+footerClass+'">';if(options.cardLayout){html+='<div class="cardText" style="text-align:right; float:right;">';html+='<button class="listviewMenuButton ui-btn ui-icon-ellipsis-v ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 4px 0 0;"></button>';html+="</div>";}
 var name=LibraryBrowser.getPosterViewDisplayName(item,options.displayAsSpecial);if(!imgUrl&&!options.showTitle){html+="<div class='cardDefaultText'>";html+=htmlEncode(name);html+="</div>";}
 var cssClass=options.centerText?"cardText cardTextCentered":"cardText";var lines=[];if(options.showParentTitle){lines.push(item.EpisodeTitle?item.Name:(item.SeriesName||item.Album||item.AlbumArtist||item.GameSystem||""));}
 if(options.showTitle||forceName){lines.push(htmlEncode(name));}
@@ -9440,17 +10287,16 @@ if(currentItemId){return ApiClient.getItem(Dashboard.getCurrentUserId(),currentI
 return ApiClient.getRootFolder(Dashboard.getCurrentUserId());};self.getEditQueryString=function(item){var query="id="+item.Id;var context=getParameterByName('context');if(context){query+="&context="+context;}
 return query;};ensureInitialValues();}})(jQuery,document,window);(function(window,document,$,devicePixelRatio){function renderHeader(user){var html='<div class="viewMenuBar ui-bar-b">';if(($.browser.safari&&window.navigator.standalone)||Dashboard.isRunningInCordova()){html+='<a data-rel="back" data-role="none" href="#" class="headerButton headerButtonLeft headerBackButton"><div class="fa fa-arrow-circle-o-left"></div></a>';}
 html+='<button type="button" data-role="none" title="Menu" class="headerButton dashboardMenuButton barsMenuButton headerButtonLeft">';html+='<div class="barMenuInner fa fa-bars">';html+='</div>';html+='</button>';html+='<button type="button" data-role="none" title="Menu" class="headerButton libraryMenuButton barsMenuButton headerButtonLeft">';html+='<div class="barMenuInner fa fa-bars">';html+='</div>';html+='</button>';html+='<div class="libraryMenuButtonText headerButton"><span>EMBY</span></div>';if(user.localUser){html+='<div class="viewMenuSearch"><form class="viewMenuSearchForm">';html+='<input type="text" data-role="none" data-type="search" class="headerSearchInput" autocomplete="off" spellcheck="off" />';html+='<div class="searchInputIcon fa fa-search"></div>';html+='<button data-role="none" type="button" data-iconpos="notext" class="imageButton btnCloseSearch" style="display:none;"><i class="fa fa-close"></i></button>';html+='</form></div>';}
-html+='<div class="viewMenuSecondary">';if(user.localUser){html+='<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';html+='<button onclick="Search.showSearchPanel($.mobile.activePage);" type="button" data-role="none" class="headerButton headerButtonRight headerSearchButton"><div class="fa fa-search" style="font-size:21px;"></div></button>';}else{html+='<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="visibility:hidden;"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';}
-if(user.name){html+='<a class="headerButton headerButtonRight headerUserButton" href="#" onclick="Dashboard.showUserFlyout(this);">';if(user.imageUrl){var userButtonHeight=26;var url=user.imageUrl;if(user.supportsImageParams){url+="&height="+(userButtonHeight*Math.max(devicePixelRatio||1,2));}
+html+='<div class="viewMenuSecondary">';var btnCastVisible=user.localUser?'':'visibility:hidden;';if(!AppInfo.enableHeaderImages){html+='<button id="btnCast" class="btnCast btnCastIcon btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="'+btnCastVisible+'">';html+='<div class="headerSelectedPlayer"></div><i class="fa fa-wifi"></i>';html+='</button>';}else{html+='<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="'+btnCastVisible+'"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';}
+if(user.localUser){html+='<button onclick="Search.showSearchPanel($.mobile.activePage);" type="button" data-role="none" class="headerButton headerButtonRight headerSearchButton"><div class="fa fa-search" style="font-size:21px;"></div></button>';}
+if(user.name){html+='<a class="headerButton headerButtonRight headerUserButton" href="#" onclick="Dashboard.showUserFlyout(this);">';if(user.imageUrl&&AppInfo.enableUserImage){var userButtonHeight=26;var url=user.imageUrl;if(user.supportsImageParams){url+="&height="+(userButtonHeight*Math.max(devicePixelRatio||1,2));}
 html+='<img src="'+url+'" style="border-radius: 1000px; height:'+userButtonHeight+'px;" />';}else{html+='<div class="fa fa-user"></div>';}
 html+='</a>';}
 if(user.canManageServer){html+='<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton"><div class="fa fa-cog"></div></a>';}
-html+='</div>';html+='</div>';html=normalizeLinksHtml(html);$(document.body).prepend(html);$('.viewMenuBar').trigger('create');$(document).trigger('headercreated');bindMenuEvents();}
-function replaceAll(str,find,replace){return str.replace(new RegExp(find,'g'),replace);}
-function normalizeLinksHtml(html){if(AppInfo.resetOnLibraryChange){html=replaceAll(html,'<a ','<a data-ajax="false"');}
-return html;}
+html+='</div>';html+='</div>';$(document.body).prepend(html);$('.viewMenuBar').trigger('create');$(document).trigger('headercreated');bindMenuEvents();}
 function bindMenuEvents(){if(AppInfo.isTouchPreferred){$('.libraryMenuButton').on('click',function(){showLibraryMenu(false);});$('.dashboardMenuButton').on('click',function(){showDashboardMenu(false);});}else{$('.libraryMenuButton').createHoverTouch().on('hovertouch',showLibraryMenu);$('.dashboardMenuButton').createHoverTouch().on('hovertouch',showDashboardMenu);}
 var viewMenuBar=document.getElementsByClassName("viewMenuBar")[0];initHeadRoom(viewMenuBar);}
+function updateViewMenuBarHeadroom(page,viewMenuBar){if($(page).hasClass('libraryPage')){viewMenuBar.removeClass('headroomDisabled');}else{viewMenuBar.addClass('headroomDisabled');}}
 function getItemHref(item,context){return LibraryBrowser.getHref(item,context);}
 function getViewsHtml(){var html='';html+='<div class="libraryMenuOptions">';html+='</div>';html+='<div class="libraryMenuDivider"></div>';html+='<div class="adminMenuOptions">';html+='<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" data-rel="none" href="dashboard.html"><span class="fa fa-cog sidebarLinkIcon"></span>'+Globalize.translate('ButtonDashboard')+'</a>';html+='<a class="sidebarLink lnkMediaFolder editorViewMenu" data-itemid="editor" href="edititemmetadata.html"><span class="fa fa-edit sidebarLinkIcon"></span>'+Globalize.translate('ButtonMetadataManager')+'</a>';html+='<a class="sidebarLink lnkMediaFolder" data-itemid="reports" href="reports.html"><span class="fa fa-bar-chart sidebarLinkIcon"></span>'+Globalize.translate('ButtonReports')+'</a>';html+='</div>';html+='<a class="sidebarLink lnkMediaFolder syncViewMenu" data-itemid="mysync" href="mysync.html"><span class="fa fa-cloud sidebarLinkIcon"></span>'+Globalize.translate('ButtonSync')+'</a>';return html;}
 function showLibraryMenu(){var page=$.mobile.activePage;var panel;ConnectionManager.user().done(function(user){panel=getLibraryMenu(user);updateLibraryNavLinks(page);$(panel).panel('toggle').off('mouseleave.librarymenu').on('mouseleave.librarymenu',function(){$(this).panel("close");});});}
@@ -9468,13 +10314,13 @@ else if(i.CollectionType=="movies"){iconCssClass+=' fa-film';}
 else if(i.CollectionType=="channels"||i.Type=='Channel'){iconCssClass+=' fa-globe';}
 else if(i.CollectionType=="tvshows"||i.CollectionType=="livetv"){iconCssClass+=' fa-video-camera';}
 else{iconCssClass+=' fa-folder-open-o';}
-return'<a data-itemid="'+itemId+'" class="lnkMediaFolder sidebarLink" href="'+getItemHref(i,i.CollectionType)+'"><span class="'+iconCssClass+' sidebarLinkIcon"></span><span class="sectionName">'+i.Name+'</span></a>';}).join('');html=normalizeLinksHtml(html);var elem=$('.libraryMenuOptions').html(html);$('.sidebarLink',elem).on('click',function(){var section=$('.sectionName',this)[0];var text=section?section.innerHTML:this.innerHTML;$('.libraryMenuButtonText').html(text);});});Dashboard.getCurrentUser().done(function(user){if(user.Policy.IsAdministrator){$('.adminMenuOptions').show();}else{$('.adminMenuOptions').hide();}
+return'<a data-itemid="'+itemId+'" class="lnkMediaFolder sidebarLink" href="'+getItemHref(i,i.CollectionType)+'"><span class="'+iconCssClass+' sidebarLinkIcon"></span><span class="sectionName">'+i.Name+'</span></a>';}).join('');var elem=$('.libraryMenuOptions').html(html);$('.sidebarLink',elem).on('click',function(){var section=$('.sectionName',this)[0];var text=section?section.innerHTML:this.innerHTML;$('.libraryMenuButtonText').html(text);});});Dashboard.getCurrentUser().done(function(user){if(user.Policy.IsAdministrator){$('.adminMenuOptions').show();}else{$('.adminMenuOptions').hide();}
 if(user.Policy.EnableSync){$('.syncViewMenu').show();}else{$('.syncViewMenu').hide();}});}
-var requiresLibraryMenuRefresh=false;function getLibraryMenu(user){var panel=$('#libraryPanel');if(!panel.length){var html='';html+='<div data-role="panel" id="libraryPanel" class="libraryPanel" data-position="left" data-display="overlay" data-position-fixed="true" data-theme="b">';html+='<div class="sidebarLinks librarySidebarLinks">';var showUserAtTop=AppInfo.isTouchPreferred;if(showUserAtTop){var userHref=user.localUser&&user.localUser.Policy.EnableUserPreferenceAccess?'mypreferencesdisplay.html?userId='+user.localUser.Id:(user.localUser?'index.html':'#');var paddingLeft=user.imageUrl?'padding-left:.7em;':'';html+='<a style="margin-top:0;'+paddingLeft+'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #000;" href="'+userHref+'">';var imgWidth=44;if(user.imageUrl){var url=user.imageUrl;if(user.supportsImageParams){url+="&width="+(imgWidth*Math.max(devicePixelRatio||1,2));}
+var requiresLibraryMenuRefresh=false;function getLibraryMenu(user){var panel=$('#libraryPanel');if(!panel.length){var html='';html+='<div data-role="panel" id="libraryPanel" class="libraryPanel" data-position="left" data-display="overlay" data-position-fixed="true" data-theme="b">';html+='<div class="sidebarLinks librarySidebarLinks">';var showUserAtTop=AppInfo.isTouchPreferred;if(showUserAtTop){var userHref=user.localUser&&user.localUser.Policy.EnableUserPreferenceAccess?'mypreferencesdisplay.html?userId='+user.localUser.Id:(user.localUser?'index.html':'#');var hasUserImage=user.imageUrl&&AppInfo.enableUserImage;var paddingLeft=hasUserImage?'padding-left:.7em;':'';html+='<a style="margin-top:0;'+paddingLeft+'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #000;" href="'+userHref+'">';var imgWidth=44;if(hasUserImage){var url=user.imageUrl;if(user.supportsImageParams){url+="&width="+(imgWidth*Math.max(devicePixelRatio||1,2));}
 html+='<img style="max-width:'+imgWidth+'px;vertical-align:middle;margin-right:.8em;border-radius: 50px;" src="'+url+'" />';}else{html+='<span class="fa fa-user sidebarLinkIcon"></span>';}
 html+=user.name;html+='</a>';html+='<div class="libraryMenuDivider" style="margin-top:0;"></div>';}
-var homeHref=ConnectionManager.currentApiClient()?'index.html':'selectserver.html';if(showUserAtTop){html+='<a class="lnkMediaFolder sidebarLink" href="'+homeHref+'"><span class="fa fa-home sidebarLinkIcon"></span><span>'+Globalize.translate('ButtonHome')+'</span></a>';}else{html+='<a class="lnkMediaFolder sidebarLink" style="margin-top:.5em;padding-left:1em;display:block;color:#fff;text-decoration:none;" href="'+homeHref+'">';html+='<img style="max-width:36px;vertical-align:middle;margin-right:1em;" src="css/images/mblogoicon.png" />';html+=Globalize.translate('ButtonHome');html+='</a>';html+='<div class="libraryMenuDivider"></div>';}
-html+=getViewsHtml();html=normalizeLinksHtml(html);html+='</div>';html+='</div>';$(document.body).append(html);panel=$('#libraryPanel').panel({}).trigger('create');updateLibraryMenu();}
+var homeHref=ConnectionManager.currentApiClient()?'index.html':'selectserver.html';if(showUserAtTop){html+='<a class="lnkMediaFolder sidebarLink" href="'+homeHref+'"><span class="fa fa-home sidebarLinkIcon"></span><span>'+Globalize.translate('ButtonHome')+'</span></a>';}else{html+='<a class="lnkMediaFolder sidebarLink" style="margin-top:.5em;padding-left:1em;display:block;color:#fff;text-decoration:none;" href="'+homeHref+'">';html+='<img style="max-width:36px;vertical-align:middle;margin-right:1em;" src="css/images/mblogoicon.png" />';html+=Globalize.translate('ButtonHome');html+='</a>';}
+html+='<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" data-rel="none" href="nowplaying.html"><span class="fa fa-tablet sidebarLinkIcon"></span>'+Globalize.translate('ButtonRemote')+'</a>';html+='<div class="libraryMenuDivider"></div>';html+=getViewsHtml();html+='</div>';html+='</div>';$(document.body).append(html);panel=$('#libraryPanel').panel({}).trigger('create');updateLibraryMenu();}
 else if(requiresLibraryMenuRefresh){updateLibraryMenu();requiresLibraryMenuRefresh=false;}
 return panel;}
 function getDashboardMenu(page){var panel=$('#dashboardPanel',page);if(!panel.length){var html='';html+='<div data-role="panel" id="dashboardPanel" class="dashboardPanel" data-position="left" data-display="overlay" data-position-fixed="true" data-theme="b">';html+='<div style="margin: 0 -1em;">';html+='</div>';html+='</div>';$(document.body).append(html);panel=$('#dashboardPanel').panel({}).trigger('create');}
@@ -9493,7 +10339,7 @@ src=replaceQueryString(src,'topParentId',id);this.href=src;});}}
 function updateContextText(page){var name=page.getAttribute('data-contextname');if(name){$('.libraryMenuButtonText').html('<span>'+name+'</span>');}
 else if($(page).hasClass('allLibraryPage')||$(page).hasClass('type-interior')){$('.libraryMenuButtonText').html('<span class="logoLibraryMenuButtonText">EMBY</span>');}}
 function onWebSocketMessage(e,data){var msg=data;if(msg.MessageType==="UserConfigurationUpdated"){if(msg.Data.Id==Dashboard.getCurrentUserId()){requiresLibraryMenuRefresh=true;}}}
-$(document).on('pageinit',".page",function(){var page=this;$('.libraryViewNav',page).wrapInner('<div class="libraryViewNavInner"></div>');$('.libraryViewNav a',page).each(function(){this.innerHTML='<span class="libraryViewNavLinkContent">'+this.innerHTML+'</span>';});}).on('pagebeforeshow',".page:not(.standalonePage)",function(){var page=this;if(!$('.viewMenuBar').length){ConnectionManager.user().done(function(user){renderHeader(user);updateCastIcon();updateLibraryNavLinks(page);updateContextText(page);});}else{updateContextText(page);updateLibraryNavLinks(page);}
+$(document).on('pageinit',".page",function(){var page=this;$('.libraryViewNav',page).wrapInner('<div class="libraryViewNavInner"></div>');$('.libraryViewNav a',page).each(function(){this.innerHTML='<span class="libraryViewNavLinkContent">'+this.innerHTML+'</span>';});}).on('pagebeforeshow',".page:not(.standalonePage)",function(){var page=this;var viewMenuBar=$('.viewMenuBar');if(!$('.viewMenuBar').length){ConnectionManager.user().done(function(user){renderHeader(user);updateViewMenuBarHeadroom(page,$('.viewMenuBar'));updateCastIcon();updateLibraryNavLinks(page);updateContextText(page);});}else{updateContextText(page);updateLibraryNavLinks(page);updateViewMenuBarHeadroom(page,viewMenuBar);}
 var jpage=$(page);if(jpage.hasClass('libraryPage')){$(document.body).addClass('libraryDocument').removeClass('dashboardDocument');}
 else if(jpage.hasClass('type-interior')){$(document.body).addClass('dashboardDocument').removeClass('libraryDocument');}else{$(document.body).removeClass('dashboardDocument').removeClass('libraryDocument');}}).on('pagebeforeshow',".libraryPage",function(){var page=this;if(AppInfo.enableBottomTabs){$('.libraryViewNav',page).addClass('bottomLibraryViewNav');$(page).addClass('noSecondaryNavPage');}else{$('.libraryViewNav',page).each(function(){initHeadRoom(this);});}}).on('pageshow',".libraryPage",function(){var page=this;var elem=$('.libraryViewNavInner .ui-btn-active:visible',page);if(elem.length){elem[0].scrollIntoView();$(document).scrollTop(0);}});function initHeadRoom(elem){if(!AppInfo.enableHeadRoom){return;}
 var headroom=new Headroom(elem);headroom.init();}
@@ -9914,7 +10760,7 @@ function updateSupportedCommands(page,commands){$('.btnCommand',page).each(funct
 function releaseCurrentPlayer(){if(currentPlayer){$(currentPlayer).off('.nowplayingpage');currentPlayer.endPlayerUpdates();currentPlayer=null;}}
 function bindToPlayer(page,player){releaseCurrentPlayer();currentPlayer=player;player.getPlayerState().done(function(state){if(state.NowPlayingItem){player.beginPlayerUpdates();}
 onStateChanged.call(player,{type:'init'},state);});$(player).on('playbackstart.nowplayingpage',onPlaybackStart).on('playbackstop.nowplayingpage',onPlaybackStopped).on('volumechange.nowplayingpage',onStateChanged).on('playstatechange.nowplayingpage',onStateChanged).on('positionchange.nowplayingpage',onStateChanged);var playerInfo=MediaController.getPlayerInfo();var supportedCommands=playerInfo.supportedCommands;updateSupportedCommands(page,supportedCommands);}
-function showIntro(){if(store.getItem('remotecontrolswipedown')!='1'){Dashboard.alert({message:Globalize.translate('MessageSwipeDownOnRemoteControl'),title:Globalize.translate('HeaderAlert')});store.setItem('remotecontrolswipedown','1');}}
+function showIntro(){var expected='2';if(store.getItem('remotecontrolswipedown')!=expected){Dashboard.alert({message:Globalize.translate('MessageSwipeDownOnRemoteControl'),title:Globalize.translate('HeaderAlert')});store.setItem('remotecontrolswipedown',expected);}}
 function loadPlaylist(page){var html='';html+=LibraryBrowser.getListViewHtml({items:MediaController.playlist(),smallIcon:true,defaultAction:'play'});$(".playlist",page).html(html).trigger('create').lazyChildren();}
 $(document).on('pageinit',"#nowPlayingPage",function(){var page=this;bindEvents(page);}).on('pageshow',"#nowPlayingPage",function(){var page=this;var tab=getParameterByName('tab');if(tab){$('.tabButton'+tab,page).trigger('click');}else{$('.tabButton:first',page).trigger('click');}
 $(function(){$(MediaController).on('playerchange.nowplayingpage',function(){bindToPlayer(page,MediaController.getCurrentPlayer());});bindToPlayer(page,MediaController.getCurrentPlayer());});showIntro();loadPlaylist(page);}).on('pagehide',"#nowPlayingPage",function(){releaseCurrentPlayer();$(MediaController).off('playerchange.nowplayingpage');lastPlayerState=null;});window.NowPlayingPage={onMessageSubmit:function(){var form=this;MediaController.sendCommand({Name:'DisplayMessage',Arguments:{Header:$('#txtMessageTitle',form).val(),Text:$('#txtMessageText',form).val()}},currentPlayer);$('input',form).val('');Dashboard.alert('Message sent.');return false;},onSendStringSubmit:function(){var form=this;MediaController.sendCommand({Name:'SendString',Arguments:{String:$('#txtTypeText',form).val()}},currentPlayer);$('input',form).val('');Dashboard.alert('Text sent.');return false;}};})(window,document,jQuery,setTimeout,clearTimeout);$.fn.taskButton=function(options){function pollTasks(button){ApiClient.getScheduledTasks({IsEnabled:true}).done(function(tasks){updateTasks(button,tasks);});}
@@ -11344,7 +12190,7 @@ function updateFilterControls(page){$('.radioSortBy',page).each(function(){this.
 var filtersLoaded;function reloadFiltersIfNeeded(page){if(!filtersLoaded){filtersLoaded=true;QueryFilters.loadFilters(page,Dashboard.getCurrentUserId(),query,function(){reloadItems(page);});}}
 $(document).on('pageinit',"#musicVideosPage",function(){var page=this;$('.viewPanel',page).on('panelopen',function(){reloadFiltersIfNeeded(page);});$('.radioSortBy',this).on('click',function(){query.StartIndex=0;query.SortBy=this.getAttribute('data-sortby');reloadItems(page);});$('.radioSortOrder',this).on('click',function(){query.StartIndex=0;query.SortOrder=this.getAttribute('data-sortorder');reloadItems(page);});$('.chkStandardFilter',this).on('change',function(){var filterName=this.getAttribute('data-filter');var filters=query.Filters||"";filters=(','+filters).replace(','+filterName,'').substring(1);if(this.checked){filters=filters?(filters+','+filterName):filterName;}
 query.StartIndex=0;query.Filters=filters;reloadItems(page);});$('.alphabetPicker',this).on('alphaselect',function(e,character){query.NameStartsWithOrGreater=character;query.StartIndex=0;reloadItems(page);}).on('alphaclear',function(e){query.NameStartsWithOrGreater='';reloadItems(page);});$('#selectPageSize',page).on('change',function(){query.Limit=parseInt(this.value);query.StartIndex=0;reloadItems(page);});}).on('pagebeforeshow',"#musicVideosPage",function(){var page=this;query.ParentId=LibraryMenu.getTopParentId();var limit=LibraryBrowser.getDefaultPageSize();if(limit!=query.Limit){query.Limit=limit;query.StartIndex=0;}
-LibraryBrowser.loadSavedQueryValues(getSavedQueryKey(),query);QueryFilters.onPageShow(page,query);reloadItems(page);}).on('pageshow',"#musicVideosPage",function(){updateFilterControls(this);});})(jQuery,document);(function($,window,document){function renderViews(page,user,result){var folderHtml='';folderHtml+='<div data-role="controlgroup">';folderHtml+=result.Items.map(function(i){var currentHtml='';var id='chkGroupFolder'+i.Id;currentHtml+='<label for="'+id+'">'+i.Name+'</label>';var isChecked=user.Configuration.ExcludeFoldersFromGrouping.indexOf(i.Id)==-1;var checkedHtml=isChecked?' checked="checked"':'';currentHtml+='<input class="chkGroupFolder" data-folderid="'+i.Id+'" type="checkbox" id="'+id+'"'+checkedHtml+' />';return currentHtml;}).join('');folderHtml+='</div>';$('.folderGroupList',page).html(folderHtml).trigger('create');}
+LibraryBrowser.loadSavedQueryValues(getSavedQueryKey(),query);QueryFilters.onPageShow(page,query);reloadItems(page);}).on('pageshow',"#musicVideosPage",function(){updateFilterControls(this);});})(jQuery,document);(function($,window,document){function renderViews(page,user,result){var folderHtml='';folderHtml+='<div data-role="controlgroup">';folderHtml+=result.Items.map(function(i){var currentHtml='';var id='chkGroupFolder'+i.Id;currentHtml+='<label for="'+id+'">'+i.Name+'</label>';var isChecked=(user.Configuration.ExcludeFoldersFromGrouping!=null&&user.Configuration.ExcludeFoldersFromGrouping.indexOf(i.Id)==-1)||user.Configuration.GroupedFolders.indexOf(i.Id)!=-1;var checkedHtml=isChecked?' checked="checked"':'';currentHtml+='<input class="chkGroupFolder" data-folderid="'+i.Id+'" type="checkbox" id="'+id+'"'+checkedHtml+' />';return currentHtml;}).join('');folderHtml+='</div>';$('.folderGroupList',page).html(folderHtml).trigger('create');}
 function renderViewStyles(page,user,result){var folderHtml='';folderHtml+='<div data-role="controlgroup">';folderHtml+=result.map(function(i){var currentHtml='';var id='chkPlainFolder'+i.Id;currentHtml+='<label for="'+id+'">'+i.Name+'</label>';var isChecked=user.Configuration.PlainFolderViews.indexOf(i.Id)==-1;var checkedHtml=isChecked?' checked="checked"':'';currentHtml+='<input class="chkPlainFolder" data-folderid="'+i.Id+'" type="checkbox" id="'+id+'"'+checkedHtml+' />';return currentHtml;}).join('');folderHtml+='</div>';$('.viewStylesList',page).html(folderHtml).trigger('create');if(result.length){$('.viewStylesSection',page).show();}else{$('.viewStylesSection',page).hide();}}
 function renderLatestItems(page,user,result){var folderHtml='';folderHtml+='<div data-role="controlgroup">';folderHtml+=result.Items.map(function(i){var currentHtml='';var id='chkIncludeInLatest'+i.Id;currentHtml+='<label for="'+id+'">'+i.Name+'</label>';var isChecked=user.Configuration.LatestItemsExcludes.indexOf(i.Id)==-1;var checkedHtml=isChecked?' checked="checked"':'';currentHtml+='<input class="chkIncludeInLatest" data-folderid="'+i.Id+'" type="checkbox" id="'+id+'"'+checkedHtml+' />';return currentHtml;}).join('');folderHtml+='</div>';$('.latestItemsList',page).html(folderHtml).trigger('create');}
 function renderChannels(page,user,result){var folderHtml='';folderHtml+='<div data-role="controlgroup">';folderHtml+=result.Items.map(function(i){var currentHtml='';var id='chkGroupChannel'+i.Id;currentHtml+='<label for="'+id+'">'+i.Name+'</label>';var isChecked=user.Configuration.DisplayChannelsWithinViews.indexOf(i.Id)!=-1;var checkedHtml=isChecked?' checked="checked"':'';currentHtml+='<input class="chkGroupChannel" data-channelid="'+i.Id+'" type="checkbox" id="'+id+'"'+checkedHtml+' />';return currentHtml;}).join('');folderHtml+='</div>';$('.channelGroupList',page).html(folderHtml).trigger('create');}
@@ -11353,7 +12199,7 @@ else if(result.Items.length>1){currentHtml+='<a href="#">'+view.Name+'</a>';curr
 else{currentHtml+=view.Name;}
 html+='</li>';index++;return currentHtml;}).join('');html+='</ul>';$('.viewOrderList',page).html(html).trigger('create');}
 function loadForm(page,user,hideMsg){$('#chkDisplayMissingEpisodes',page).checked(user.Configuration.DisplayMissingEpisodes||false).checkboxradio("refresh");$('#chkDisplayUnairedEpisodes',page).checked(user.Configuration.DisplayUnairedEpisodes||false).checkboxradio("refresh");$('#chkDisplayTrailersWithinMovieSuggestions',page).checked(user.Configuration.IncludeTrailersInSuggestions||false).checkboxradio("refresh");$('#chkGroupMoviesIntoCollections',page).checked(user.Configuration.GroupMoviesIntoBoxSets||false).checkboxradio("refresh");$('#chkDisplayCollectionView',page).checked(user.Configuration.DisplayCollectionsView||false).checkboxradio("refresh");$('#chkDisplayFolderView',page).checked(user.Configuration.DisplayFoldersView||false).checkboxradio("refresh");$('#chkHidePlayedFromLatest',page).checked(user.Configuration.HidePlayedInLatest||false).checkboxradio("refresh");var promise1=ApiClient.getItems(user.Id,{sortBy:"SortName"});var promise2=ApiClient.getJSON(ApiClient.getUrl("Channels",{UserId:user.Id}));var promise3=ApiClient.getUserViews(user.Id);var promise4=ApiClient.getJSON(ApiClient.getUrl("Users/"+user.Id+"/SpecialViewOptions"));$.when(promise1,promise2,promise3,promise4).done(function(r1,r2,r3,r4){renderViews(page,user,r1[0]);renderLatestItems(page,user,r1[0]);renderChannels(page,user,r2[0]);renderViewOrder(page,user,r3[0]);renderViewStyles(page,user,r4[0]);if(hideMsg!==false){Dashboard.hideLoadingMsg();}});}
-function saveUser(page,user){user.Configuration.DisplayMissingEpisodes=$('#chkDisplayMissingEpisodes',page).checked();user.Configuration.DisplayUnairedEpisodes=$('#chkDisplayUnairedEpisodes',page).checked();user.Configuration.GroupMoviesIntoBoxSets=$('#chkGroupMoviesIntoCollections',page).checked();user.Configuration.DisplayCollectionsView=$('#chkDisplayCollectionView',page).checked();user.Configuration.DisplayFoldersView=$('#chkDisplayFolderView',page).checked();user.Configuration.HidePlayedInLatest=$('#chkHidePlayedFromLatest',page).checked();user.Configuration.IncludeTrailersInSuggestions=$('#chkDisplayTrailersWithinMovieSuggestions',page).checked();user.Configuration.LatestItemsExcludes=$(".chkIncludeInLatest:not(:checked)",page).get().map(function(i){return i.getAttribute('data-folderid');});user.Configuration.ExcludeFoldersFromGrouping=$(".chkGroupFolder:not(:checked)",page).get().map(function(i){return i.getAttribute('data-folderid');});user.Configuration.PlainFolderViews=$(".chkPlainFolder:not(:checked)",page).get().map(function(i){return i.getAttribute('data-folderid');});user.Configuration.DisplayChannelsWithinViews=$(".chkGroupChannel:checked",page).get().map(function(i){return i.getAttribute('data-channelid');});user.Configuration.OrderedViews=$(".viewItem",page).get().map(function(i){return i.getAttribute('data-viewid');});ApiClient.updateUserConfiguration(user.Id,user.Configuration).done(function(){Dashboard.alert(Globalize.translate('SettingsSaved'));loadForm(page,user,false);});}
+function saveUser(page,user){user.Configuration.DisplayMissingEpisodes=$('#chkDisplayMissingEpisodes',page).checked();user.Configuration.DisplayUnairedEpisodes=$('#chkDisplayUnairedEpisodes',page).checked();user.Configuration.GroupMoviesIntoBoxSets=$('#chkGroupMoviesIntoCollections',page).checked();user.Configuration.DisplayCollectionsView=$('#chkDisplayCollectionView',page).checked();user.Configuration.DisplayFoldersView=$('#chkDisplayFolderView',page).checked();user.Configuration.HidePlayedInLatest=$('#chkHidePlayedFromLatest',page).checked();user.Configuration.IncludeTrailersInSuggestions=$('#chkDisplayTrailersWithinMovieSuggestions',page).checked();user.Configuration.LatestItemsExcludes=$(".chkIncludeInLatest:not(:checked)",page).get().map(function(i){return i.getAttribute('data-folderid');});user.Configuration.ExcludeFoldersFromGrouping=null;user.Configuration.GroupedFolders=$(".chkGroupFolder:checked",page).get().map(function(i){return i.getAttribute('data-folderid');});user.Configuration.PlainFolderViews=$(".chkPlainFolder:not(:checked)",page).get().map(function(i){return i.getAttribute('data-folderid');});user.Configuration.DisplayChannelsWithinViews=$(".chkGroupChannel:checked",page).get().map(function(i){return i.getAttribute('data-channelid');});user.Configuration.OrderedViews=$(".viewItem",page).get().map(function(i){return i.getAttribute('data-viewid');});ApiClient.updateUserConfiguration(user.Id,user.Configuration).done(function(){Dashboard.alert(Globalize.translate('SettingsSaved'));loadForm(page,user,false);});}
 function onSubmit(){var page=$(this).parents('.page');Dashboard.showLoadingMsg();var userId=getParameterByName('userId')||Dashboard.getCurrentUserId();ApiClient.getUser(userId).done(function(user){saveUser(page,user);});return false;}
 $(document).on('pageinit',"#displayPreferencesPage",function(){var page=this;$('.viewOrderList',page).on('click','.btnViewItemMove',function(){var li=$(this).parents('.viewItem');var ul=li.parents('ul');if($(this).hasClass('btnViewItemDown')){var next=li.next();li.remove().insertAfter(next);}else{var prev=li.prev();li.remove().insertBefore(prev);}
 $('.viewItem',ul).each(function(){if($(this).prev('.viewItem').length){$('.btnViewItemMove',this).addClass('btnViewItemUp').removeClass('btnViewItemDown').attr('data-icon','arrow-u').removeClass('ui-icon-arrow-d').addClass('ui-icon-arrow-u');}else{$('.btnViewItemMove',this).addClass('btnViewItemDown').removeClass('btnViewItemUp').attr('data-icon','arrow-d').removeClass('ui-icon-arrow-u').addClass('ui-icon-arrow-d');}});ul.listview('destroy').listview({});});}).on('pageshow',"#displayPreferencesPage",function(){var page=this;Dashboard.showLoadingMsg();var userId=getParameterByName('userId')||Dashboard.getCurrentUserId();ApiClient.getUser(userId).done(function(user){loadForm(page,user);});}).on('pageshow',".userPreferencesPage",function(){var page=this;var userId=getParameterByName('userId')||Dashboard.getCurrentUserId();$('.lnkDisplayPreferences',page).attr('href','mypreferencesdisplay.html?userId='+userId);$('.lnkLanguagePreferences',page).attr('href','mypreferenceslanguages.html?userId='+userId);$('.lnkWebClientPreferences',page).attr('href','mypreferenceswebclient.html?userId='+userId);$('.lnkMyProfile',page).attr('href','myprofile.html?userId='+userId);});window.DisplayPreferencesPage={onSubmit:onSubmit};})(jQuery,window,document);(function($,window,document){function populateLanguages(select,languages){var html="";html+="<option value=''></option>";for(var i=0,length=languages.length;i<length;i++){var culture=languages[i];html+="<option value='"+culture.ThreeLetterISOLanguageName+"'>"+culture.DisplayName+"</option>";}

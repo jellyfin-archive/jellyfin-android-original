@@ -638,7 +638,7 @@ var Dashboard = {
 
             var imgWidth = 48;
 
-            if (user.imageUrl) {
+            if (user.imageUrl && AppInfo.enableUserImage) {
                 var url = user.imageUrl;
 
                 if (user.supportsImageParams) {
@@ -1363,7 +1363,7 @@ var Dashboard = {
 
         if (AppInfo.hasLowImageBandwidth) {
 
-            quality -= 15;
+            quality -= 20;
 
             if (isBackdrop) {
                 quality -= 10;
@@ -1479,13 +1479,15 @@ var AppInfo = {};
             AppInfo.isTouchPreferred = true;
         }
 
+        var isCordova = Dashboard.isRunningInCordova();
+
         if ($.browser.safari) {
 
             if ($.browser.mobile) {
                 AppInfo.hasLowImageBandwidth = true;
             }
 
-            if (Dashboard.isRunningInCordova()) {
+            if (isCordova) {
                 AppInfo.enableBottomTabs = true;
                 AppInfo.resetOnLibraryChange = true;
             }
@@ -1508,9 +1510,12 @@ var AppInfo = {};
             AppInfo.enableMovieTrailersTab = true;
         }
 
-        if (!Dashboard.isRunningInCordova()) {
+        if (!isCordova) {
             AppInfo.enableFooterNotifications = true;
         }
+
+        AppInfo.enableUserImage = !AppInfo.hasLowImageBandwidth || !isCordova;
+        AppInfo.enableHeaderImages = AppInfo.enableUserImage;
     }
 
     function initializeApiClient(apiClient) {
@@ -1577,9 +1582,21 @@ var AppInfo = {};
         }
     }
 
+    function initFastClick() {
+
+        FastClick.attach(document.body);
+
+        // Have to work around this issue of fast click breaking the panel dismiss
+        $(document.body).on('touchstart', '.ui-panel-dismiss', function () {
+            $(this).trigger('click');
+        });
+    }
+
     function onReady() {
 
-        //FastClick.attach(document.body);
+        if ($.browser.safari && $.browser.mobile) {
+            initFastClick();
+        }
 
         if (AppInfo.hasLowImageBandwidth) {
             $(document.body).addClass('largeCardMargin');
