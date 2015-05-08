@@ -176,7 +176,7 @@ h1 a:hover {
     transform: translateY(0%);
 }
 
-.headroom--unpinned {
+.headroom--unpinned:not(.headroomDisabled) {
     -webkit-transform: translateY(-100%);
     transform: translateY(-100%);
 }
