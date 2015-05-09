@@ -137,13 +137,11 @@
         query.ParentId = getParameterByName('parentId') || LibraryMenu.getTopParentId();
     }
 
-    function startSlideshow(page, index) {
-
-        index += (query.StartIndex || 0);
+    function startSlideshow(page, itemQuery, startItemId) {
 
         var userId = Dashboard.getCurrentUserId();
 
-        var localQuery = $.extend({}, query);
+        var localQuery = $.extend({}, itemQuery);
         localQuery.StartIndex = 0;
         localQuery.Limit = null;
         localQuery.MediaTypes = "Photo";
@@ -152,11 +150,11 @@
 
         ApiClient.getItems(userId, localQuery).done(function (result) {
 
-            showSlideshow(page, result.Items, index);
+            showSlideshow(page, result.Items, startItemId);
         });
     }
 
-    function showSlideshow(page, items, index) {
+    function showSlideshow(page, items, startItemId) {
 
         var slideshowItems = items.map(function (item) {
 
@@ -173,11 +171,21 @@
             };
         });
 
-        index = Math.max(index || 0, 0);
+        var index = items.map(function (i) {
+            return i.Id;
 
-        $.swipebox(slideshowItems, {
-            initialIndexOnArray: index,
-            hideBarsDelay: 30000
+        }).indexOf(startItemId);
+
+        if (index == -1) {
+            index = 0;
+        }
+
+        Dashboard.loadSwipebox().done(function() {
+            
+            $.swipebox(slideshowItems, {
+                initialIndexOnArray: index,
+                hideBarsDelay: 30000
+            });
         });
     }
 
@@ -244,8 +252,8 @@
             reloadItems(page);
         });
 
-        $('.itemsContainer', page).on('photoslideshow', function (e, index) {
-            startSlideshow(page, index);
+        $('.itemsContainer', page).on('photoslideshow', function (e, startItemId) {
+            Photos.startSlideshow(page, query, startItemId);
         });
 
     }).on('pagebeforeshow', "#photosPage", function () {
@@ -280,5 +288,9 @@
 
         updateFilterControls(this);
     });
+
+    window.Photos = {
+        startSlideshow: startSlideshow
+    };
 
 })(jQuery, document);
