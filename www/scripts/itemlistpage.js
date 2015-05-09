@@ -27,7 +27,7 @@
 
         var itemsPromise = ApiClient.getItems(userId, query);
 
-        $.when(parentItemPromise, itemsPromise).done(function(r1, r2) {
+        $.when(parentItemPromise, itemsPromise).done(function (r1, r2) {
 
             var item = r1[0];
             currentItem = item;
@@ -158,50 +158,6 @@
         $('#selectPageSize', page).val(query.Limit).selectmenu('refresh');
     }
 
-    function startSlideshow(page, index) {
-
-        index += (query.StartIndex || 0);
-
-        var userId = Dashboard.getCurrentUserId();
-
-        var localQuery = $.extend({}, query);
-        localQuery.StartIndex = 0;
-        localQuery.Limit = null;
-        localQuery.MediaTypes = "Photo";
-        localQuery.Recursive = true;
-        localQuery.Filters = "IsNotFolder";
-
-        ApiClient.getItems(userId, localQuery).done(function(result) {
-
-            showSlideshow(page, result.Items, index);
-        });
-    }
-
-    function showSlideshow(page, items, index) {
-
-        var slideshowItems = items.map(function (item) {
-
-            var imgUrl = ApiClient.getScaledImageUrl(item.Id, {
-                
-                tag: item.ImageTags.Primary,
-                type: 'Primary'
-
-            });
-
-            return {
-                title: item.Name,
-                href: imgUrl
-            };
-        });
-
-        index = Math.max(index || 0, 0);
-
-        $.swipebox(slideshowItems, {
-            initialIndexOnArray: index,
-            hideBarsDelay: 30000
-        });
-    }
-
     $(document).on('pageinit', "#itemListPage", function () {
 
         var page = this;
@@ -269,8 +225,8 @@
             reloadItems(page);
         });
 
-        $('.itemsContainer', page).on('photoslideshow', function (e, index) {
-            startSlideshow(page, index);
+        $('.itemsContainer', page).on('photoslideshow', function (e, startItemId) {
+            Photos.startSlideshow(page, query, startItemId);
         });
 
     }).on('pageshow', "#itemListPage", function () {

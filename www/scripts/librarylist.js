@@ -902,11 +902,10 @@
             }
 
             itemsContainer = $(elem).parents('.itemsContainer');
-            index = $('.card', itemsContainer).get().indexOf(elem);
-
+            itemId = elem.getAttribute('data-itemid');
             closeContextMenu();
 
-            itemsContainer.trigger('photoslideshow', [index]);
+            itemsContainer.trigger('photoslideshow', [itemId]);
         }
 
         return false;
