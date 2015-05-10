@@ -55,8 +55,6 @@
                 context = 'folders';
             }
 
-            var defaultAction = currentItem.Type == 'PhotoAlbum' ? 'photoslideshow' : null;
-
             if (view == "Backdrop") {
 
                 html = LibraryBrowser.getPosterViewHtml({
@@ -65,8 +63,7 @@
                     showTitle: true,
                     centerText: true,
                     preferBackdrop: true,
-                    context: context,
-                    defaultAction: defaultAction
+                    context: context
                 });
             }
             else if (view == "Poster") {
@@ -75,8 +72,7 @@
                     shape: "auto",
                     showTitle: true,
                     centerText: true,
-                    context: context,
-                    defaultAction: defaultAction
+                    context: context
                 });
             }
 
@@ -158,6 +154,17 @@
         $('#selectPageSize', page).val(query.Limit).selectmenu('refresh');
     }
 
+    function onListItemClick(e) {
+
+        var page = $(this).parents('.page');
+        var info = LibraryBrowser.getListItemInfo(this);
+
+        if (info.mediaType == 'Photo') {
+            Photos.startSlideshow(page, query, info.id);
+            return false;
+        }
+    }
+
     $(document).on('pageinit', "#itemListPage", function () {
 
         var page = this;
@@ -225,9 +232,7 @@
             reloadItems(page);
         });
 
-        $('.itemsContainer', page).on('photoslideshow', function (e, startItemId) {
-            Photos.startSlideshow(page, query, startItemId);
-        });
+        $(page).on('click', '.mediaItem', onListItemClick);
 
     }).on('pageshow', "#itemListPage", function () {
 

@@ -10,6 +10,8 @@
 
 (function ($) {
 
+    var unveilId = 0;
+
     $.fn.unveil = function (threshold, callback) {
 
         var $w = $(window),
@@ -17,6 +19,9 @@
             attrib = "data-src",
             images = this,
             loaded;
+
+        unveilId++;
+        var eventNamespace = 'unveil' + unveilId;
 
         this.one("unveil", function () {
             var elem = this;
@@ -30,8 +35,8 @@
         function unveil() {
             var inview = images.filter(function () {
                 var $e = $(this);
-                if ($e.is(":hidden")) return;
 
+                if ($e.is(":hidden")) return;
                 var wt = $w.scrollTop(),
                     wb = wt + $w.height(),
                     et = $e.offset().top,
@@ -42,10 +47,15 @@
 
             loaded = inview.trigger("unveil");
             images = images.not(loaded);
+
+            if (!images.length) {
+                $w.off('scroll.' + eventNamespace);
+                $w.off('resize.' + eventNamespace);
+            }
         }
 
-        $w.on('scroll.unveil', unveil);
-        $w.on('resize.unveil', unveil);
+        $w.on('scroll.' + eventNamespace, unveil);
+        $w.on('resize.' + eventNamespace, unveil);
 
         unveil();
 
@@ -55,8 +65,18 @@
 
     $.fn.lazyChildren = function () {
 
-        $(".lazy", this).unveil(0);
+        var lazyItems = $(".lazy", this);
+
+        if (lazyItems.length) {
+            lazyItems.unveil(0);
+        }
+
         return this;
+    };
+
+    $.fn.lazyImage = function (url) {
+
+        return this.attr('data-src', url).unveil(0);
     };
 
 })(window.jQuery || window.Zepto);
@@ -216,6 +236,7 @@
         self.downloadImage = function (url, key) {
 
             var deferred = DeferredBuilder.Deferred();
+
             console.log('downloadImage:' + url);
 
             // Create XHR
@@ -230,22 +251,26 @@
                 if (xhr.status === 200) {
                     console.log("Image retrieved");
 
-                    var arr = new Uint8Array(this.response);
+                    try {
 
+                        var arr = new Uint8Array(this.response);
 
-                    // Convert the int array to a binary string
-                    // We have to use apply() as we are converting an *array*
-                    // and String.fromCharCode() takes one or more single values, not
-                    // an array.
-                    var raw = String.fromCharCode.apply(null, arr);
+                        // Convert the int array to a binary string
+                        // We have to use apply() as we are converting an *array*
+                        // and String.fromCharCode() takes one or more single values, not
+                        // an array.
+                        var raw = String.fromCharCode.apply(null, arr);
 
-                    // This works!!!
-                    var b64 = btoa(raw);
-                    var dataURL = "data:image/jpeg;base64," + b64;
+                        // This works!!!
+                        var b64 = btoa(raw);
+                        var dataURL = "data:image/jpeg;base64," + b64;
 
-                    // Put the received blob into IndexedDB
-                    self.addImageToDatabase(dataURL, key);
-                    deferred.resolve();
+                        // Put the received blob into IndexedDB
+                        self.addImageToDatabase(dataURL, key);
+                        deferred.resolve();
+                    } catch (err) {
+                        deferred.reject();
+                    }
                 }
             }, false);
 
@@ -279,6 +304,8 @@
                         elem.setAttribute("src", localUrl);
                     }
 
+                }).fail(function() {
+                    new simpleImageStore().setImageInto(elem, url);
                 });
 
             });
