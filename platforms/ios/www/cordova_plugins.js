@@ -50,6 +50,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.rd11.remote-controls/www/RemoteControls.js",
+        "id": "com.rd11.remote-controls.RemoteControls",
+        "clobbers": [
+            "window.remoteControls"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -80,6 +87,7 @@ module.exports.metadata =
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
     "com.telerik.plugins.wkwebview": "0.3.7",
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
+    "com.rd11.remote-controls": "1.0.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2"
 }
