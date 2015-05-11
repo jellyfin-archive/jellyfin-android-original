@@ -26,6 +26,7 @@
 //
 
 #import "MainViewController.h"
+#import "RemoteControls.h"
 
 @implementation MainViewController
 
@@ -61,6 +62,28 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    // Do any additional setup after loading the view from its nib.
+    [[RemoteControls remoteControls] setWebView:self.webView];
+}
+
+- (void)viewDidUnload
+{
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
+    // Turn off remote control event delivery
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+}
+
+//add this function
+- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
+    [[RemoteControls remoteControls] receiveRemoteEvent:receivedEvent];
+}
+
 #pragma mark View lifecycle
 
 - (void)viewWillAppear:(BOOL)animated
@@ -69,19 +92,6 @@
     // you can do so here.
 
     [super viewWillAppear:animated];
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

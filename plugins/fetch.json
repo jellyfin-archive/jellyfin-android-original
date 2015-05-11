@@ -79,5 +79,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "com.rd11.remote-controls": {
+        "source": {
+            "type": "registry",
+            "id": "com.rd11.remote-controls"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
