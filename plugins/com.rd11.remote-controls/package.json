@@ -1,0 +1,19 @@
+{
+    "version": "1.0.0",
+    "name": "com.rd11.remote-controls",
+    "cordova_name": "RemoteControls",
+    "description": "iOS  lock-screen remote-controls and now playing display.",
+    "license": "MIT License",
+    "keywords": [
+        "lockscreen",
+        "media",
+        "now",
+        "playing"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=3.0.0"
+        }
+    ]
+}
