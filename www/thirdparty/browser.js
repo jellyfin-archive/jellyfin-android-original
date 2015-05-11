@@ -955,11 +955,16 @@
 
     var md = new MobileDetect(userAgent);
 
-    browser.mobile = md.mobile();
+    if (md.mobile()) {
+        browser.mobile = true;
+    } else {
+        browser.mobile = null;
+    }
 
     if (browser.msie && !browser.mobile && userAgent.toLowerCase().indexOf("xbox") != -1) {
         browser.tv = true;
     }
+
     jQuery.browser = browser;
 
 })(jQuery, window);
