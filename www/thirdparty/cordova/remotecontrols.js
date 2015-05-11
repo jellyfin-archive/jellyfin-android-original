@@ -123,7 +123,7 @@
     }
 
     function onUpdateMetasFail(fail) {
-        
+
         console.log(fail);
     }
 
@@ -132,6 +132,10 @@
         releaseCurrentPlayer();
 
         currentPlayer = player;
+
+        if (!player.isLocalPlayer) {
+            return;
+        }
 
         player.getPlayerState().done(function (state) {
 
