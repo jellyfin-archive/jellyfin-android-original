@@ -1407,7 +1407,7 @@
                 cssClass += ' ' + LibraryBrowser.getUserDataCssClass(item.UserData.Key);
             }
 
-            if (options.showChildCountIndicator && item.ChildCount) {
+            if (options.showChildCountIndicator && item.ChildCount && options.showLatestItemsPopup !== false) {
                 cssClass += ' groupedCard';
             }
 
