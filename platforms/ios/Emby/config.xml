@@ -95,4 +95,7 @@
     <preference name="BackgroundColor" value="0xff222222" />
     <preference name="BackupWebStorage" value="local" />
     <icon src="res/icon.png" />
+    <feature name="RemoteControls">
+        <param name="ios-package" value="RemoteControls" />
+    </feature>
 </widget>

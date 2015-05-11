@@ -59,6 +59,9 @@
         },
         "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.rd11.remote-controls": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {
