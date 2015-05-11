@@ -123,7 +123,7 @@
     }
 
     function onUpdateMetasFail(fail) {
-        
+
         console.log(fail);
     }
 
@@ -132,6 +132,10 @@
         releaseCurrentPlayer();
 
         currentPlayer = player;
+
+        if (!player.isLocalPlayer) {
+            return;
+        }
 
         player.getPlayerState().done(function (state) {
 
@@ -148,14 +152,18 @@
             .on('positionchange.cordovaremote', onStateChanged);
     }
 
-    $(function () {
+    document.addEventListener("deviceready", function () {
 
-        $(MediaController).on('playerchange', function () {
+        $(function () {
+
+            $(MediaController).on('playerchange', function () {
+
+                bindToPlayer(MediaController.getCurrentPlayer());
+            });
 
             bindToPlayer(MediaController.getCurrentPlayer());
         });
 
-        bindToPlayer(MediaController.getCurrentPlayer());
-    });
+    }, false);
 
 })();
