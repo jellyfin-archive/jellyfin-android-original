@@ -152,14 +152,18 @@
             .on('positionchange.cordovaremote', onStateChanged);
     }
 
-    $(function () {
+    document.addEventListener("deviceready", function () {
 
-        $(MediaController).on('playerchange', function () {
+        $(function () {
+
+            $(MediaController).on('playerchange', function () {
+
+                bindToPlayer(MediaController.getCurrentPlayer());
+            });
 
             bindToPlayer(MediaController.getCurrentPlayer());
         });
 
-        bindToPlayer(MediaController.getCurrentPlayer());
-    });
+    }, false);
 
 })();
