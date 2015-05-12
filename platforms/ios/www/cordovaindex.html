@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
@@ -17,15 +17,33 @@
     <link rel="shortcut icon" href="css/images/favicon.ico" />
     <script src="cordova.js"></script>
     <title>Emby</title>
+    <style>
+        body, html {
+            background: #222;
+        }
+    </style>
 </head>
 <body>
     <script type="text/javascript">
         document.addEventListener("deviceready", function () {
 
-            localStorage.setItem('cordovaDeviceName', device.model);
-            localStorage.setItem('cordovaDeviceId', device.uuid);
+            function setDeviceId(deviceId) {
 
-            window.location.replace('index.html');
+                localStorage.setItem('cordovaDeviceName', device.model);
+                localStorage.setItem('cordovaDeviceId', deviceId);
+
+                window.location.replace('index.html');
+            }
+
+            window.plugins.uniqueDeviceID.get(function (uuid) {
+
+                setDeviceId(uuid);
+
+            }, function () {
+
+                // Failure. Use cordova uuid
+                setDeviceId(device.uuid);
+            });
 
         }, false);
     </script>
