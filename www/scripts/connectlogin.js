@@ -139,12 +139,10 @@
 
         if (Dashboard.isRunningInCordova()) {
             $('.newUsers', page).hide();
-            $('.forgotPassword', page).hide();
             $('.skip', page).show();
         } else {
             $('.skip', page).hide();
             $('.newUsers', page).show();
-            $('.forgotPassword', page).show();
         }
     });
 
