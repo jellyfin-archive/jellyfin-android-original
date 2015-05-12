@@ -160,9 +160,10 @@
 
         var self = this;
 
-        var openPromise = openDb().done(function (db) {
+        openDb().done(function (db) {
 
             self._db = db;
+            window.ImageStore = self;
         });
 
         self.addImageToDatabase = function (blob, key) {
@@ -283,6 +284,7 @@
                         self.addImageToDatabase(dataURL, key);
                         deferred.resolve();
                     } catch (err) {
+                        console.log("Error adding image to database");
                         deferred.reject();
                     }
                 } else {
@@ -301,13 +303,9 @@
                 setImageIntoElement(elem, url);
             }
 
-            openPromise.done(function () {
+            self.getImageUrl(url).done(function (localUrl) {
 
-                self.getImageUrl(url).done(function (localUrl) {
-
-                    setImageIntoElement(elem, localUrl);
-
-                }).fail(onFail);
+                setImageIntoElement(elem, localUrl);
 
             }).fail(onFail);
 
@@ -318,9 +316,10 @@
 
         var self = this;
 
-        var openPromise = openDb().done(function (db) {
+        openDb().done(function (db) {
 
             self._db = db;
+            window.ImageStore = self;
         });
 
         self.addImageToDatabase = function (blob, key) {
@@ -437,6 +436,7 @@
                         self.addImageToDatabase(blob, key);
                         deferred.resolve();
                     } catch (err) {
+                        console.log("Error adding blob to database");
                         deferred.reject();
                     }
                 } else {
@@ -455,16 +455,11 @@
                 setImageIntoElement(elem, url);
             }
 
-            openPromise.done(function () {
+            self.getImageUrl(url).done(function (localUrl) {
 
-                self.getImageUrl(url).done(function (localUrl) {
-
-                    setImageIntoElement(elem, localUrl);
-
-                }).fail(onFail);
+                setImageIntoElement(elem, localUrl);
 
             }).fail(onFail);
-
         };
     }
 
@@ -475,17 +470,16 @@
         self.setImageInto = setImageIntoElement;
     }
 
+    console.log('creating simpleImageStore');
+    window.ImageStore = new simpleImageStore();
+
     if ($.browser.safari && indexedDB && window.Blob) {
         console.log('creating indexedDbBlobImageStore');
-        window.ImageStore = new indexedDbBlobImageStore();
+        new indexedDbBlobImageStore();
     }
     else if ($.browser.safari && indexedDB) {
         console.log('creating indexedDbImageStore');
-        window.ImageStore = new indexedDbImageStore();
-    }
-    else {
-        console.log('creating simpleImageStore');
-        window.ImageStore = new simpleImageStore();
+        new indexedDbImageStore();
     }
 
 })();
