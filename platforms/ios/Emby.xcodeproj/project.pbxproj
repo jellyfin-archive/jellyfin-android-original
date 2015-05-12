@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		10848650B90945DC8C725005 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E118860990849448ACC9FCC /* GCDWebServer.framework */; };
@@ -64,6 +63,8 @@
 		D83D6E96CF0F467C9E35181C /* CDVNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 319F2BF3E5194EC1846EC119 /* CDVNotification.m */; };
 		E93A4F32A2E9440DB873DBA2 /* RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFF6733D58F458C9DBB45AE /* RemoteControls.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		D6B315FC7BC54470BB3D8A8C /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 72A2F848A81D461F88B5CBB1 /* UICKeyChainStore.m */; };
+		EA05CC7F3E874F23A868BBEB /* CDVUniqueDeviceID.m in Sources */ = {isa = PBXBuildFile; fileRef = E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -163,6 +164,10 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F56589A630DC417D9D78FCD1 /* CFNetwork.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = Emby/config.xml; sourceTree = "<group>"; };
+		72A2F848A81D461F88B5CBB1 /* UICKeyChainStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UICKeyChainStore.m"; path = "hu.dpal.phonegap.plugins.UniqueDeviceID/UICKeyChainStore.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVUniqueDeviceID.m"; path = "hu.dpal.phonegap.plugins.UniqueDeviceID/CDVUniqueDeviceID.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		C07D974A9E5E406C93B4321C /* UICKeyChainStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UICKeyChainStore.h"; path = "hu.dpal.phonegap.plugins.UniqueDeviceID/UICKeyChainStore.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		5A7965E610FC48EAB359C687 /* CDVUniqueDeviceID.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVUniqueDeviceID.h"; path = "hu.dpal.phonegap.plugins.UniqueDeviceID/CDVUniqueDeviceID.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -304,6 +309,10 @@
 				72E6F2B18B0B44BBB237A2D5 /* CDVBackgroundColor.h */,
 				3AFF6733D58F458C9DBB45AE /* RemoteControls.m */,
 				10E02A6832274788A3FA62CD /* RemoteControls.h */,
+				72A2F848A81D461F88B5CBB1 /* UICKeyChainStore.m */,
+				E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */,
+				C07D974A9E5E406C93B4321C /* UICKeyChainStore.h */,
+				5A7965E610FC48EAB359C687 /* CDVUniqueDeviceID.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -515,6 +524,8 @@
 				9596D411A2E9438D8136CE32 /* CDVWebViewUIDelegate.m in Sources */,
 				1BF80882DE9540D7BCEC5950 /* CDVBackgroundColor.m in Sources */,
 				E93A4F32A2E9440DB873DBA2 /* RemoteControls.m in Sources */,
+				D6B315FC7BC54470BB3D8A8C /* UICKeyChainStore.m in Sources */,
+				EA05CC7F3E874F23A868BBEB /* CDVUniqueDeviceID.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

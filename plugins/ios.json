@@ -47,6 +47,10 @@
                         {
                             "xml": "<feature name=\"RemoteControls\"><param name=\"ios-package\" value=\"RemoteControls\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"UniqueDeviceID\"><param name=\"ios-package\" value=\"CDVUniqueDeviceID\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -72,7 +76,7 @@
                     "Security.framework": [
                         {
                             "xml": false,
-                            "count": 1
+                            "count": 2
                         }
                     ],
                     "CFNetwork.framework": [
@@ -129,6 +133,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.rd11.remote-controls": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "hu.dpal.phonegap.plugins.UniqueDeviceID": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
