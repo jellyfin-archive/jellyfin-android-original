@@ -120,11 +120,12 @@
 
     function onUpdateMetasSuccess() {
 
+        console.log('onUpdateMetasSuccess');
     }
 
     function onUpdateMetasFail(fail) {
 
-        console.log(fail);
+        console.log('onUpdateMetasFail' + fail);
     }
 
     function bindToPlayer(player) {
