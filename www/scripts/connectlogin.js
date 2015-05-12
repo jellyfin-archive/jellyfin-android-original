@@ -1,13 +1,16 @@
 ﻿(function () {
 
+    var skipUrl;
+
     function onLoggedIn() {
 
+        Dashboard.hideModalLoadingMsg();
         Dashboard.navigate('selectserver.html');
     }
 
     function login(page, username, password) {
 
-        Dashboard.showLoadingMsg();
+        Dashboard.showModalLoadingMsg();
 
         ConnectionManager.loginToConnect(username, password).done(function () {
 
@@ -29,6 +32,8 @@
     }
 
     function handleConnectionResult(page, result) {
+
+        Dashboard.hideLoadingMsg();
 
         switch (result.State) {
 
@@ -71,11 +76,15 @@
 
     function loadAppConnection(page) {
 
-        Dashboard.showLoadingMsg();
+        Dashboard.showModalLoadingMsg();
+
+        skipUrl = 'connectlogin.html?mode=manualserver';
 
         ConnectionManager.connect().done(function (result) {
 
-            Dashboard.hideLoadingMsg();
+            if (result.Servers && result.Servers.length) {
+                skipUrl = 'selectserver.html';
+            }
 
             handleConnectionResult(page, result);
 
@@ -99,8 +108,7 @@
     }
     function loadMode(page, mode) {
 
-        $(document.body).prepend('<div class="backdropContainer" style="background-image:url(css/images/splash.jpg);top:0;"></div>');
-        $(page).addClass('backdropPage staticBackdropPage');
+        Backdrops.setDefault(page);
 
         if (mode == 'welcome') {
             $('.connectLoginForm', page).hide();
@@ -123,9 +131,9 @@
 
         var page = this;
 
-        $('.btnSkipConnect', page).on('click', function() {
+        $('.btnSkipConnect', page).on('click', function () {
 
-            Dashboard.navigate('connectlogin.html?mode=manualserver');
+            Dashboard.navigate(skipUrl);
         });
 
     }).on('pageshow', "#connectLoginPage", function () {
@@ -138,11 +146,9 @@
         $('.embyIntroDownloadMessage', page).html(Globalize.translate('EmbyIntroDownloadMessage', link));
 
         if (Dashboard.isRunningInCordova()) {
-            $('.newUsers', page).hide();
             $('.skip', page).show();
         } else {
             $('.skip', page).hide();
-            $('.newUsers', page).show();
         }
     });
 
@@ -155,17 +161,13 @@
             host += ':' + port;
         }
 
-        Dashboard.showLoadingMsg();
+        Dashboard.showModalLoadingMsg();
 
         ConnectionManager.connectToAddress(host).done(function (result) {
-
-            Dashboard.hideLoadingMsg();
 
             handleConnectionResult(page, result);
 
         }).fail(function () {
-
-            Dashboard.hideLoadingMsg();
 
             handleConnectionResult(page, {
                 State: MediaBrowser.ConnectionState.Unavailable

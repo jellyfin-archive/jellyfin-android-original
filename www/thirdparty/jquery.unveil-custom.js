@@ -437,6 +437,7 @@
                         deferred.resolve();
                     } catch (err) {
                         console.log("Error adding blob to database");
+                        alert("Error adding blob to database");
                         deferred.reject();
                     }
                 } else {
@@ -473,13 +474,13 @@
     console.log('creating simpleImageStore');
     window.ImageStore = new simpleImageStore();
 
-    if ($.browser.safari && indexedDB && window.Blob) {
-        console.log('creating indexedDbBlobImageStore');
-        new indexedDbBlobImageStore();
-    }
-    else if ($.browser.safari && indexedDB) {
-        console.log('creating indexedDbImageStore');
-        new indexedDbImageStore();
-    }
+    //if ($.browser.safari && indexedDB && window.Blob) {
+    //    console.log('creating indexedDbBlobImageStore');
+    //    new indexedDbBlobImageStore();
+    //}
+    //else if ($.browser.safari && indexedDB) {
+    //    console.log('creating indexedDbImageStore');
+    //    new indexedDbImageStore();
+    //}
 
 })();
