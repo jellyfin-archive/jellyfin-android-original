@@ -87,7 +87,7 @@ var Dashboard = {
         }
         Dashboard.hideLoadingMsg();
 
-        if (!Dashboard.suppressAjaxErrors) {
+        if (!Dashboard.suppressAjaxErrors && data.type != 'GET') {
 
             setTimeout(function () {
 
