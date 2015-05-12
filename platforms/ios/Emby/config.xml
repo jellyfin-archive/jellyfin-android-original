@@ -39,6 +39,10 @@
     <feature name="RemoteControls">
         <param name="ios-package" value="RemoteControls" />
     </feature>
+    <feature name="UniqueDeviceID">
+        <param name="ios-package" value="CDVUniqueDeviceID" />
+        <param name="onload" value="true" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -81,7 +85,7 @@
     <author email="apps@emby.media" href="http://emby.media">
     Emby
   </author>
-    <content src="index.html" />
+    <content src="cordovaindex.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

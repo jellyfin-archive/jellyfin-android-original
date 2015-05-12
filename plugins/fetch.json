@@ -87,5 +87,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "hu.dpal.phonegap.plugins.UniqueDeviceID": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Paldom/UniqueDeviceID.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

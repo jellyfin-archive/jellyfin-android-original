@@ -54,4 +54,7 @@
     <preference name="BackgroundColor" value="0xff222222" />
     <preference name="BackupWebStorage" value="local" />
     <icon src="res/icon.png" />
+    <feature name="UniqueDeviceID">
+        <param name="android-package" value="hu.dpal.phonegap.plugins.UniqueDeviceID" />
+    </feature>
 </widget>

@@ -48,6 +48,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/hu.dpal.phonegap.plugins.UniqueDeviceID/www/uniqueid.js",
+        "id": "hu.dpal.phonegap.plugins.UniqueDeviceID.UniqueDeviceID",
+        "merges": [
+            "window.plugins.uniqueDeviceID"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -79,6 +86,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.3.7",
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "com.rd11.remote-controls": "1.0.0",
+    "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
     "cordova-plugin-chrome-apps-common": "1.0.7"
 }
 // BOTTOM OF METADATA
