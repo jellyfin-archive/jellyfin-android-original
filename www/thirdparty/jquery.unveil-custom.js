@@ -285,6 +285,8 @@
                     } catch (err) {
                         deferred.reject();
                     }
+                } else {
+                    deferred.reject();
                 }
             }, false);
 
@@ -429,8 +431,7 @@
                     console.log("Image retrieved");
 
                     try {
-
-                        var blob = new Blob([this.response], { type: "image/jpeg" });
+                        var blob = new Blob([this.response], { type: this.getResponseHeader('content-type') });
 
                         // Put the received blob into IndexedDB
                         self.addImageToDatabase(blob, key);
@@ -438,6 +439,8 @@
                     } catch (err) {
                         deferred.reject();
                     }
+                } else {
+                    deferred.reject();
                 }
             }, false);
 
