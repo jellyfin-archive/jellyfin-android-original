@@ -1,7 +1,5 @@
 ﻿(function () {
 
-    var skipUrl;
-
     function onLoggedIn() {
 
         Dashboard.hideModalLoadingMsg();
@@ -78,13 +76,7 @@
 
         Dashboard.showModalLoadingMsg();
 
-        skipUrl = 'connectlogin.html?mode=manualserver';
-
         ConnectionManager.connect().done(function (result) {
-
-            if (result.Servers && result.Servers.length) {
-                skipUrl = 'selectserver.html';
-            }
 
             handleConnectionResult(page, result);
 
@@ -127,13 +119,17 @@
         }
     }
 
+    function skip() {
+
+        Dashboard.navigate('selectserver.html');
+    }
+
     $(document).on('pageinit', "#connectLoginPage", function () {
 
         var page = this;
 
         $('.btnSkipConnect', page).on('click', function () {
-
-            Dashboard.navigate(skipUrl);
+            skip();
         });
 
     }).on('pageshow', "#connectLoginPage", function () {
