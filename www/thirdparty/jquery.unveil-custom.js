@@ -12,13 +12,23 @@
 
     var unveilId = 0;
 
-    // Test search before setting to 0
-    var threshold = 100;
+
+    function getThreshold() {
+
+        var threshold = 100;
+
+        if (window.AppInfo && AppInfo.hasLowImageBandwidth) {
+            return 0;
+        }
+
+        // Test search before setting to 0
+        return 100;
+    }
 
     $.fn.unveil = function () {
 
         var $w = $(window),
-            th = threshold || 0,
+            th = getThreshold(),
             attrib = "data-src",
             images = this,
             loaded;

@@ -31,19 +31,23 @@
         }
 
         var isTimedOut = false;
+        var timeout;
         var socketId;
 
-        var timeout = setTimeout(function () {
+        function startTimer() {
 
-            isTimedOut = true;
-            deferred.resolveWith(null, [servers]);
+            timeout = setTimeout(function () {
 
-            if (socketId) {
-                chrome.sockets.udp.onReceive.removeListener(onReceive);
-                chrome.sockets.udp.close(socketId);
-            }
+                isTimedOut = true;
+                deferred.resolveWith(null, [servers]);
 
-        }, timeoutMs);
+                if (socketId) {
+                    chrome.sockets.udp.onReceive.removeListener(onReceive);
+                    chrome.sockets.udp.close(socketId);
+                }
+
+            }, timeoutMs);
+        }
 
         function onReceive(info) {
 
@@ -79,7 +83,7 @@
 
             console.log('chrome.sockets.udp.bind');
 
-            chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', 0, function (result) {
+            chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', port, function (result) {
 
                 var data = stringToArrayBuffer('who is EmbyServer?');
 
@@ -88,15 +92,15 @@
 
                     if (result < 0) {
                         console.log('send fail: ' + result);
+                        deferred.resolveWith(null, [servers]);
                         chrome.sockets.udp.close(createInfo.socketId);
 
                     } else {
 
                         console.log('sendTo: success ' + port);
 
-                        if (!isTimedOut) {
-                            chrome.sockets.udp.onReceive.addListener(onReceive);
-                        }
+                        startTimer();
+                        chrome.sockets.udp.onReceive.addListener(onReceive);
                     }
                 });
             });

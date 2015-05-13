@@ -57,17 +57,14 @@
         }
 
         var params = [artist, title, album, url, duration, elapsedTime];
-        window.remoteControls.updateMetas(onUpdateMetasSuccess, onUpdateMetasFail, params);
+        try {
+            window.remoteControls.updateMetas(onUpdateMetasSuccess, onUpdateMetasFail, params);
+        } catch (err) {
+            onUpdateMetasFail(err);
+        }
     }
 
     function onStateChanged(e, state) {
-
-        //console.log('nowplaying event: ' + e.type);
-        var player = this;
-
-        if (player.isDefaultPlayer && state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video') {
-            return;
-        }
 
         updatePlayerState(state);
     }
@@ -115,7 +112,12 @@
         var elapsedTime = 0;
 
         var params = [artist, title, album, image, duration, elapsedTime];
-        window.remoteControls.updateMetas(onUpdateMetasSuccess, onUpdateMetasFail, params);
+
+        try {
+            window.remoteControls.updateMetas(onUpdateMetasSuccess, onUpdateMetasFail, params);
+        } catch (err) {
+            onUpdateMetasFail(err);
+        }
     }
 
     function onUpdateMetasSuccess() {
@@ -125,7 +127,7 @@
 
     function onUpdateMetasFail(fail) {
 
-        console.log('onUpdateMetasFail' + fail);
+        console.log('onUpdateMetasFail: ' + fail);
     }
 
     function bindToPlayer(player) {
@@ -154,6 +156,8 @@
             .on('playstatechange.cordovaremote', onStateChanged)
             .on('positionchange.cordovaremote', onStateChanged);
     }
+
+    console.log('binding remotecontrols to MediaController');
 
     document.addEventListener("deviceready", function () {
 
