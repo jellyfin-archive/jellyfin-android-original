@@ -57,29 +57,37 @@
 
                 if (info.socketId == socketId) {
 
-                    var json = arrayBufferToString(info.data);
-                    console.log('Server discovery json: ' + json);
-                    var server = JSON.parse(json);
+                    try {
+                        var json = arrayBufferToString(info.data);
+                        console.log('Server discovery json: ' + json);
+                        var server = JSON.parse(json);
 
-                    server.RemoteAddress = info.remoteAddress;
+                        server.RemoteAddress = info.remoteAddress;
 
-                    if (info.remotePort) {
-                        server.RemoteAddress += ':' + info.remotePort;
+                        if (info.remotePort) {
+                            server.RemoteAddress += ':' + info.remotePort;
+                        }
+
+                        servers.push(server);
+                    } catch (err) {
+                        console.log('Error receiving server info: ' + err);
                     }
-
-                    servers.push(server);
                 }
             }
 
             var port = 7359;
+            console.log('chrome.sockets.udp.create');
             chrome.sockets.udp.create(function (createInfo) {
 
                 socketId = createInfo.socketId;
+
+                console.log('chrome.sockets.udp.bind');
 
                 chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', port, function (result) {
 
                     var data = stringToArrayBuffer('who is EmbyServer?');
 
+                    console.log('chrome.sockets.udp.send');
                     chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (result) {
                         if (result < 0) {
                             console.log('send fail: ' + result);
