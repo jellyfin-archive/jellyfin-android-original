@@ -1425,6 +1425,8 @@ var Dashboard = {
 
         if (Dashboard.isRunningInCordova()) {
 
+            appName = "Emby Mobile";
+
             deviceName = store.getItem('cordovaDeviceName');
             deviceId = store.getItem('cordovaDeviceId');
         }

@@ -550,10 +550,10 @@
 
     function dismissWelcome(page, userId) {
 
-        getDisplayPreferences('home', userId, 'webclient').done(function (result) {
+        getDisplayPreferences('home', userId).done(function (result) {
 
             result.CustomPrefs[homePageTourKey] = homePageDismissValue;
-            ApiClient.updateDisplayPreferences('home', result, userId, 'webclient');
+            ApiClient.updateDisplayPreferences('home', result, userId, getDisplayPreferencesAppName());
         });
     }
 
@@ -643,7 +643,7 @@
 
         var userId = Dashboard.getCurrentUserId();
 
-        getDisplayPreferences('home', userId, 'webclient').done(function (result) {
+        getDisplayPreferences('home', userId).done(function (result) {
 
             Dashboard.getCurrentUser().done(function (user) {
 
@@ -656,13 +656,18 @@
 
     });
 
-    function getDisplayPreferences(key, userId, app) {
-
+    function getDisplayPreferencesAppName() {
+        
         if (Dashboard.isRunningInCordova()) {
-            app = 'Emby Mobile';
+            return 'Emby Mobile';
         }
 
-        return ApiClient.getDisplayPreferences(key, userId, app).done(function(result) {
+        return 'webclient';
+    }
+
+    function getDisplayPreferences(key, userId) {
+
+        return ApiClient.getDisplayPreferences(key, userId, getDisplayPreferencesAppName()).done(function (result) {
             
         });
     }
