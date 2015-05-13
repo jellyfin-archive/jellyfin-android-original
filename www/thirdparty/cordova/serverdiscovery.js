@@ -58,7 +58,7 @@
                 if (info.socketId == socketId) {
 
                     var json = arrayBufferToString(info.data);
-
+                    console.log('Server discovery json: ' + json);
                     var server = JSON.parse(json);
 
                     server.RemoteAddress = info.remoteAddress;
