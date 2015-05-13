@@ -14,51 +14,48 @@
         return String.fromCharCode.apply(null, new Uint16Array(buf));
     }
 
-    globalScope.ServerDiscovery = {
+    function findServersInternal(timeoutMs) {
 
-        findServers: function (timeoutMs) {
+        var deferred = DeferredBuilder.Deferred();
 
-            var deferred = DeferredBuilder.Deferred();
+        var servers = [];
 
-            var servers = [];
+        // Expected server properties
+        // Name, Id, Address, EndpointAddress (optional)
 
-            // Expected server properties
-            // Name, Id, Address, EndpointAddress (optional)
+        var chrome = globalScope.chrome;
 
-            var chrome = globalScope.chrome;
+        if (!chrome) {
+            deferred.resolveWith(null, [servers]);
+            return deferred.promise();
+        }
 
-            if (!chrome) {
-                deferred.resolveWith(null, [servers]);
-                return deferred.promise();
+        var isTimedOut = false;
+        var socketId;
+
+        var timeout = setTimeout(function () {
+
+            isTimedOut = true;
+            deferred.resolveWith(null, [servers]);
+
+            if (socketId) {
+                chrome.sockets.udp.onReceive.removeListener(onReceive);
+                chrome.sockets.udp.close(socketId);
             }
 
-            var isTimedOut = false;
-            var socketId;
+        }, timeoutMs);
 
-            var timeout = setTimeout(function () {
+        function onReceive(info) {
 
-                isTimedOut = true;
-                deferred.resolveWith(null, [servers]);
+            console.log('ServerDiscovery message received');
 
-                if (socketId) {
-                    chrome.sockets.udp.onReceive.removeListener(onReceive);
-                    chrome.sockets.udp.close(socketId);
+            console.log(info);
 
+            if (info.socketId == socketId) {
 
-                }
-
-            }, timeoutMs);
-
-            function onReceive(info) {
-
-                console.log('ServerDiscovery message received');
-
-                console.log(info);
-
-                if (info.socketId == socketId) {
-
+                try {
                     var json = arrayBufferToString(info.data);
-
+                    console.log('Server discovery json: ' + json);
                     var server = JSON.parse(json);
 
                     server.RemoteAddress = info.remoteAddress;
@@ -68,42 +65,76 @@
                     }
 
                     servers.push(server);
+                } catch (err) {
+                    console.log('Error receiving server info: ' + err);
                 }
             }
+        }
 
-            var port = 7359;
-            chrome.sockets.udp.create(function (createInfo) {
+        var port = 7359;
+        console.log('chrome.sockets.udp.create');
+        chrome.sockets.udp.create(function (createInfo) {
 
-                socketId = createInfo.socketId;
+            socketId = createInfo.socketId;
 
-                chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', port, function (result) {
+            console.log('chrome.sockets.udp.bind');
 
-                    var data = stringToArrayBuffer('who is EmbyServer?');
+            chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', 0, function (result) {
 
-                    chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (result) {
-                        if (result < 0) {
-                            console.log('send fail: ' + result);
-                            chrome.sockets.udp.close(createInfo.socketId);
+                var data = stringToArrayBuffer('who is EmbyServer?');
 
-                            if (!isTimedOut) {
-                                clearTimeout(timeout);
-                                deferred.resolveWith(null, [servers]);
-                            }
+                console.log('chrome.sockets.udp.send');
+                chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (result) {
 
-                        } else {
+                    if (result < 0) {
+                        console.log('send fail: ' + result);
+                        chrome.sockets.udp.close(createInfo.socketId);
 
-                            console.log('sendTo: success ' + port);
+                    } else {
 
-                            if (!isTimedOut) {
-                                chrome.sockets.udp.onReceive.addListener(onReceive);
-                            }
+                        console.log('sendTo: success ' + port);
+
+                        if (!isTimedOut) {
+                            chrome.sockets.udp.onReceive.addListener(onReceive);
                         }
-                    });
+                    }
+                });
+            });
+        });
+
+        return deferred.promise();
+    }
+
+    globalScope.ServerDiscovery = {
+
+        findServers: function (timeoutMs) {
+
+            var deferred = DeferredBuilder.Deferred();
+
+            deviceReadyPromise.done(function () {
+
+                findServersInternal(timeoutMs).done(function (result) {
+
+                    deferred.resolveWith(null, [result]);
+
+                }).fail(function () {
+
+                    deferred.reject();
                 });
             });
 
             return deferred.promise();
         }
     };
+
+    var deviceReadyDeferred = DeferredBuilder.Deferred();
+    var deviceReadyPromise = deviceReadyDeferred.promise();
+
+    document.addEventListener("deviceready", function () {
+
+        deviceReadyDeferred.resolve();
+
+    }, false);
+
 
 })(window);
