@@ -138,6 +138,8 @@
             return;
         }
 
+        console.log('binding remotecontrols to MediaPlayer');
+
         player.getPlayerState().done(function (state) {
 
             if (state.NowPlayingItem) {
@@ -154,6 +156,8 @@
     }
 
     document.addEventListener("deviceready", function () {
+
+        console.log('binding remotecontrols to MediaController');
 
         $(function () {
 
