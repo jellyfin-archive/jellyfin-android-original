@@ -148,7 +148,8 @@
                 showTitle: true,
                 coverImage: true,
                 cardLayout: true,
-                showYear: true
+                showYear: true,
+                lazy: true
             });
 
             var elem = $('#items', page).html(html).lazyChildren();
