@@ -55,6 +55,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/io.litehelpers.cordova.sqlite/www/SQLitePlugin.js",
+        "id": "io.litehelpers.cordova.sqlite.SQLitePlugin",
+        "clobbers": [
+            "SQLitePlugin"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -87,6 +94,7 @@ module.exports.metadata =
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "com.rd11.remote-controls": "1.0.0",
     "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
+    "io.litehelpers.cordova.sqlite": "0.7.7",
     "cordova-plugin-chrome-apps-common": "1.0.7"
 }
 // BOTTOM OF METADATA
