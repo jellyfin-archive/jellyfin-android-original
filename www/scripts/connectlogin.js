@@ -16,7 +16,7 @@
 
         }).fail(function () {
 
-            Dashboard.hideLoadingMsg();
+            Dashboard.hideModalLoadingMsg();
 
             Dashboard.alert({
                 message: Globalize.translate('MessageInvalidUser'),
@@ -31,7 +31,7 @@
 
     function handleConnectionResult(page, result) {
 
-        Dashboard.hideLoadingMsg();
+        Dashboard.hideModalLoadingMsg();
 
         switch (result.State) {
 
