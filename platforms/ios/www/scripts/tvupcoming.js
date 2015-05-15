@@ -5,7 +5,7 @@
         var page = this;
 
         var limit = AppInfo.hasLowImageBandwidth ?
-         20 :
+         18 :
          40;
 
         var query = {
@@ -52,6 +52,7 @@
                 preferThumb: true,
                 context: context || 'home-upcoming',
                 lazy: true,
+                showDetailsMenu: true
 
             })).lazyChildren();
         });

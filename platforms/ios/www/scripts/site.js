@@ -1367,10 +1367,10 @@ var Dashboard = {
 
         if (AppInfo.hasLowImageBandwidth) {
 
-            quality -= 20;
+            quality -= 50;
 
             if (isBackdrop) {
-                quality -= 20;
+                //quality -= 20;
             }
         }
 
@@ -1691,7 +1691,7 @@ var AppInfo = {};
 
         videoPlayerHtml += '<div class="nowPlayingInfo hiddenOnIdle">';
         videoPlayerHtml += '<div class="nowPlayingImage"></div>';
-        videoPlayerHtml += '<div class="nowPlayingText"></div>';
+        videoPlayerHtml += '<div class="nowPlayingTabs"></div>';
         videoPlayerHtml += '</div>'; // nowPlayingInfo
 
         videoPlayerHtml += '<button id="video-previousTrackButton" class="mediaButton previousTrackButton videoTrackControl imageButton" title="Previous Track" type="button" onclick="MediaPlayer.previousTrack();" data-role="none"><i class="fa fa-step-backward"></i></button>';
@@ -1801,22 +1801,59 @@ $(document).on('pagecreate', ".page", function () {
     var page = $(this);
 
     var current = page.data('theme');
-    if (current) {
-        return;
+    if (!current) {
+
+        var newTheme;
+
+        if (page.hasClass('libraryPage')) {
+            newTheme = 'b';
+        } else {
+            newTheme = 'a';
+        }
+
+        current = page.page("option", "theme");
+
+        if (current && current != newTheme) {
+            page.page("option", "theme", newTheme);
+        }
+
+        current = newTheme;
     }
 
-    var newTheme;
-
-    if (page.hasClass('libraryPage')) {
-        newTheme = 'b';
+    if (current == 'b') {
+        $(document.body).addClass('darkScrollbars');
     } else {
-        newTheme = 'a';
+        $(document.body).removeClass('darkScrollbars');
     }
 
-    current = page.page("option", "theme");
+}).on('pageinit', ".page", function () {
 
-    if (current && current != newTheme) {
-        page.page("option", "theme", newTheme);
+    var page = this;
+
+    var require = this.getAttribute('data-require');
+
+    if (require) {
+        requirejs([require], function () {
+
+            $(page).trigger('pageinitdepends');
+        });
+    } else {
+        $(page).trigger('pageinitdepends');
+    }
+
+}).on('pageshow', ".page", function () {
+
+    var page = this;
+
+    var require = this.getAttribute('data-require');
+
+    if (require) {
+        requirejs([require], function () {
+
+            $(page).trigger('pageshown');
+        });
+    } else {
+        $(page).trigger('pageshown');
     }
 
 }).on('pagebeforeshow', ".page", function () {
