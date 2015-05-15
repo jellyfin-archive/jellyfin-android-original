@@ -594,7 +594,7 @@
 
             var background = 'none';
 
-            if (!AppInfo.hasLowImageBandwidth) {
+            if (AppInfo.enableDetailsMenuImages) {
                 var backdropUrl;
                 var screenWidth = $(window).width();
                 var backdropWidth = Math.min(screenWidth, 800);
@@ -627,7 +627,7 @@
 
             var headerHtml = LibraryBrowser.getPosterViewDisplayName(item);
             $('.detailsMenuHeader', elem).removeClass('detailsMenuHeaderWithLogo');
-            if (!AppInfo.hasLowImageBandwidth) {
+            if (AppInfo.enableDetailsMenuImages) {
 
                 var logoUrl;
 
