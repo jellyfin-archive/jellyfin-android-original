@@ -1372,10 +1372,18 @@ var Dashboard = {
 
         if (AppInfo.hasLowImageBandwidth) {
 
-            quality -= 50;
+            // The native app can handle a little bit more than safari
+            if (Dashboard.isRunningInCordova()) {
 
-            if (isBackdrop) {
-                //quality -= 20;
+                quality -= 30;
+
+                if (isBackdrop) {
+                    quality -= 10;
+                }
+
+            } else {
+
+                quality -= 50;
             }
         }
 
@@ -1498,15 +1506,18 @@ var AppInfo = {};
 
             if ($.browser.mobile) {
                 AppInfo.hasLowImageBandwidth = true;
-
+                AppInfo.enableDetailsMenuImages = false;
                 AppInfo.forcedImageFormat = 'jpg';
             }
 
             if (isCordova) {
                 AppInfo.enableBottomTabs = true;
+                AppInfo.enableDetailsMenuImages = true;
             }
         }
         else {
+
+            AppInfo.enableDetailsMenuImages = true;
 
             if (!$.browser.tv) {
                 AppInfo.enableHeadRoom = true;
@@ -1780,7 +1791,8 @@ var AppInfo = {};
             '*': {
                 'css': 'thirdparty/requirecss' // or whatever the path to require-css is
             }
-        }
+        },
+        urlArgs: "v=" + window.dashboardVersion
     });
 
     // Required since jQuery is loaded before requireJs
