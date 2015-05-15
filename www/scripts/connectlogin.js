@@ -46,7 +46,7 @@
                 break;
             case MediaBrowser.ConnectionState.ServerSignIn:
                 {
-                    window.location = 'login.html?serverid=' + result.Servers[0].Id;
+                    Dashboard.navigate('login.html?serverid=' + result.Servers[0].Id);
                 }
                 break;
             case MediaBrowser.ConnectionState.ServerSelection:
