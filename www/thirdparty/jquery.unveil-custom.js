@@ -98,15 +98,6 @@
     var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.OIndexedDB || window.msIndexedDB,
         dbVersion = 1.0;
 
-    var dbName = "emby4";
-    var imagesStoreName = "images";
-
-    function createObjectStore(dataBase) {
-        // Create an objectStore
-        console.log("Creating objectStore");
-        dataBase.createObjectStore(imagesStoreName);
-    }
-
     function setImageIntoElement(elem, url) {
 
         if (elem.tagName === "DIV") {
@@ -118,71 +109,51 @@
         }
     }
 
-    function openDb() {
+    function onDbOpened(imageStore, db) {
 
-        var deferred = $.Deferred();
+        imageStore._db = db;
+        window.ImageStore = imageStore;
+    }
+
+    function onOpenError() {
+        console.log("Error creating/accessing IndexedDB database");
+    }
+
+    function openDb(imageStore) {
 
         // Create/open database
-        var request = indexedDB.open(dbName, dbVersion);
+        var db = window.sqlitePlugin.openDatabase({ name: "my.db" });
 
-        request.onerror = function (event) {
+        db.transaction(function (tx) {
 
-            console.log("Error creating/accessing IndexedDB database");
-            deferred.reject();
-        };
+            tx.executeSql('CREATE TABLE IF NOT EXISTS images (id text primary key, data text)');
+            tx.executeSql('create index if not exists idx_images on images(id)');
 
-        request.onsuccess = function (event) {
-            console.log("Success creating/accessing IndexedDB database");
-
-            var db = request.result || event.target.result;
-
-            db.onerror = function (event) {
-                console.log("Error creating/accessing IndexedDB database");
-            };
-
-            // Interim solution for Google Chrome to create an objectStore. Will be deprecated
-            if (db.setVersion) {
-                if (db.version != dbVersion) {
-                    var setVersion = db.setVersion(dbVersion);
-                    setVersion.onsuccess = function () {
-                        createObjectStore(db);
-                        deferred.resolveWith(null, [db]);
-                    };
-                } else {
-                    deferred.resolveWith(null, [db]);
-                }
-            } else {
-                deferred.resolveWith(null, [db]);
-            }
-        }
-
-        // For future use. Currently only in latest Firefox versions
-        request.onupgradeneeded = function (event) {
-            createObjectStore(event.target.result);
-        };
-
-        return deferred.promise();
+            onDbOpened(imageStore, db);
+        });
     }
 
     function indexedDbImageStore() {
 
         var self = this;
 
-        openDb().done(function (db) {
-
-            self._db = db;
-            window.ImageStore = self;
-        });
-
         self.addImageToDatabase = function (blob, key) {
+
+            var deferred = DeferredBuilder.Deferred();
 
             console.log("addImageToDatabase");
 
-            // Open a transaction to the database
-            var transaction = self.db().transaction([imagesStoreName], "readwrite");
+            self.db().transaction(function (tx) {
 
-            // Put the blob into the dabase
-            var put = transaction.objectStore(imagesStoreName).put(blob, key);
+                tx.executeSql("INSERT INTO images (id, data) VALUES (?,?)", [key, blob], function (tx, res) {
+                    
+                    deferred.resolve();
+                }, function (e) {
+                    deferred.reject();
+                });
+            });
+
+            return deferred.promise();
         };
 
         self.db = function () {
@@ -194,25 +165,20 @@
 
             var deferred = DeferredBuilder.Deferred();
 
-            var transaction = self.db().transaction([imagesStoreName], "readonly");
+            self.db().transaction(function (tx) {
 
-            // Open a transaction to the database
-            var getRequest = transaction.objectStore(imagesStoreName).get(key);
+                tx.executeSql("SELECT data from images where id=?", [key], function (tx, res) {
 
-            getRequest.onsuccess = function (event) {
+                    if (res.rows.length) {
 
-                var imgFile = event.target.result;
-
-                if (imgFile) {
-                    deferred.resolveWith(null, [imgFile]);
-                } else {
+                        deferred.resolveWith(null, [res.rows.item(0).data]);
+                    } else {
+                        deferred.reject();
+                    }
+                }, function (e) {
                     deferred.reject();
-                }
-            };
-
-            getRequest.onerror = function () {
-                deferred.reject();
-            };
+                });
+            });
 
             return deferred.promise();
         };
@@ -282,8 +248,11 @@
                         var dataURL = "data:image/jpeg;base64," + b64;
 
                         // Put the received blob into IndexedDB
-                        self.addImageToDatabase(dataURL, key);
-                        deferred.resolve();
+                        self.addImageToDatabase(dataURL, key).done(function () {
+                            deferred.resolve();
+                        }).fail(function () {
+                            deferred.reject();
+                        });
                     } catch (err) {
                         console.log("Error adding image to database");
                         deferred.reject();
@@ -305,156 +274,29 @@
             }
 
             self.getImageUrl(url).done(function (localUrl) {
-
                 setImageIntoElement(elem, localUrl);
 
             }).fail(onFail);
         };
+
+        openDb(self);
     }
 
-    function indexedDbBlobImageStore() {
+    window.IndexedDbImageStore = indexedDbImageStore;
 
-        var self = this;
+})();
 
-        openDb().done(function (db) {
+(function () {
 
-            self._db = db;
-            window.ImageStore = self;
-        });
+    function setImageIntoElement(elem, url) {
 
-        self.addImageToDatabase = function (blob, key) {
+        if (elem.tagName === "DIV") {
 
-            console.log("addImageToDatabase");
+            elem.style.backgroundImage = "url('" + url + "')";
 
-            // Open a transaction to the database
-            var transaction = self.db().transaction([imagesStoreName], "readwrite");
-
-            // Put the blob into the dabase
-            var put = transaction.objectStore(imagesStoreName).put(blob, key);
-        };
-
-        self.db = function () {
-
-            return self._db;
-        };
-
-        self.get = function (key) {
-
-            var deferred = DeferredBuilder.Deferred();
-
-            var transaction = self.db().transaction([imagesStoreName], "readonly");
-
-            // Open a transaction to the database
-            var getRequest = transaction.objectStore(imagesStoreName).get(key);
-
-            getRequest.onsuccess = function (event) {
-
-                var imgFile = event.target.result;
-
-                if (imgFile) {
-
-                    // Get window.URL object
-                    var URL = window.URL || window.webkitURL;
-
-                    // Create and revoke ObjectURL
-                    var imgUrl = URL.createObjectURL(imgFile);
-
-                    deferred.resolveWith(null, [imgUrl]);
-                } else {
-                    deferred.reject();
-                }
-            };
-
-            getRequest.onerror = function () {
-                deferred.reject();
-            };
-
-            return deferred.promise();
-        };
-
-        self.getImageUrl = function (originalUrl) {
-
-            console.log('getImageUrl:' + originalUrl);
-
-            var key = CryptoJS.SHA1(originalUrl + "1").toString();
-
-            var deferred = DeferredBuilder.Deferred();
-
-            self.get(key).done(function (url) {
-
-                deferred.resolveWith(null, [url]);
-
-            }).fail(function () {
-
-                self.downloadImage(originalUrl, key).done(function () {
-                    self.get(key).done(function (url) {
-
-                        deferred.resolveWith(null, [url]);
-
-                    }).fail(function () {
-
-                        deferred.reject();
-                    });
-                }).fail(function () {
-
-                    deferred.reject();
-                });
-            });
-
-            return deferred.promise();
-        };
-
-        self.downloadImage = function (url, key) {
-
-            var deferred = DeferredBuilder.Deferred();
-
-            console.log('downloadImage:' + url);
-
-            // Create XHR
-            var xhr = new XMLHttpRequest();
-
-            xhr.open("GET", url, true);
-            // Set the responseType to blob
-            xhr.responseType = "arraybuffer";
-
-            xhr.addEventListener("load", function () {
-
-                if (xhr.status === 200) {
-                    console.log("Image retrieved");
-
-                    try {
-                        var blob = new Blob([this.response], { type: this.getResponseHeader('content-type') });
-
-                        // Put the received blob into IndexedDB
-                        self.addImageToDatabase(blob, key);
-                        deferred.resolve();
-                    } catch (err) {
-                        console.log("Error adding blob to database");
-                        alert("Error adding blob to database");
-                        deferred.reject();
-                    }
-                } else {
-                    deferred.reject();
-                }
-            }, false);
-
-            // Send XHR
-            xhr.send();
-            return deferred.promise();
-        };
-
-        self.setImageInto = function (elem, url) {
-
-            function onFail() {
-                setImageIntoElement(elem, url);
-            }
-
-            self.getImageUrl(url).done(function (localUrl) {
-
-                setImageIntoElement(elem, localUrl);
-
-            }).fail(onFail);
-        };
+        } else {
+            elem.setAttribute("src", url);
+        }
     }
 
     function simpleImageStore() {
@@ -467,13 +309,10 @@
     console.log('creating simpleImageStore');
     window.ImageStore = new simpleImageStore();
 
-    //if ($.browser.safari && indexedDB && window.Blob) {
-    //    console.log('creating indexedDbBlobImageStore');
-    //    new indexedDbBlobImageStore();
-    //}
-    //else if ($.browser.safari && indexedDB) {
-    //    console.log('creating indexedDbImageStore');
-    //    new indexedDbImageStore();
-    //}
+    document.addEventListener("deviceready", function () {
+
+        new IndexedDbImageStore();
+
+    }, false);
 
 })();
