@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		10848650B90945DC8C725005 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E118860990849448ACC9FCC /* GCDWebServer.framework */; };
@@ -66,6 +65,8 @@
 		E93A4F32A2E9440DB873DBA2 /* RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFF6733D58F458C9DBB45AE /* RemoteControls.m */; };
 		EA05CC7F3E874F23A868BBEB /* CDVUniqueDeviceID.m in Sources */ = {isa = PBXBuildFile; fileRef = E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		7D7A666923DC4C908BA5094E /* SQLitePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 1259561DA06141A0874765FE /* SQLitePlugin.m */; };
+		9768F064C50B4537AA2D8BDF /* sqlite3.c in Resources */ = {isa = PBXBuildFile; fileRef = D2DB7B133B344DBAA07EA098 /* sqlite3.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +170,10 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F56589A630DC417D9D78FCD1 /* CFNetwork.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = Emby/config.xml; sourceTree = "<group>"; };
+		1259561DA06141A0874765FE /* SQLitePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SQLitePlugin.m"; path = "io.litehelpers.cordova.sqlite/SQLitePlugin.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		D2DB7B133B344DBAA07EA098 /* sqlite3.c */ = {isa = PBXFileReference; lastKnownFileType = unknown; name = "sqlite3.c"; path = "io.litehelpers.cordova.sqlite/sqlite3.c"; sourceTree = "<group>"; fileEncoding = 4; };
+		9CE8FB8349CF44059C00A8E0 /* SQLitePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SQLitePlugin.h"; path = "io.litehelpers.cordova.sqlite/SQLitePlugin.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		4F1F495CDF2E41249CABCA5F /* sqlite3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "sqlite3.h"; path = "io.litehelpers.cordova.sqlite/sqlite3.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -314,6 +319,10 @@
 				E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */,
 				C07D974A9E5E406C93B4321C /* UICKeyChainStore.h */,
 				5A7965E610FC48EAB359C687 /* CDVUniqueDeviceID.h */,
+				1259561DA06141A0874765FE /* SQLitePlugin.m */,
+				D2DB7B133B344DBAA07EA098 /* sqlite3.c */,
+				9CE8FB8349CF44059C00A8E0 /* SQLitePlugin.h */,
+				4F1F495CDF2E41249CABCA5F /* sqlite3.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -527,6 +536,8 @@
 				E93A4F32A2E9440DB873DBA2 /* RemoteControls.m in Sources */,
 				D6B315FC7BC54470BB3D8A8C /* UICKeyChainStore.m in Sources */,
 				EA05CC7F3E874F23A868BBEB /* CDVUniqueDeviceID.m in Sources */,
+				7D7A666923DC4C908BA5094E /* SQLitePlugin.m in Sources */,
+				9768F064C50B4537AA2D8BDF /* sqlite3.c in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

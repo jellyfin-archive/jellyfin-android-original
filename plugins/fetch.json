@@ -96,5 +96,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "io.litehelpers.cordova.sqlite": {
+        "source": {
+            "type": "registry",
+            "id": "io.litehelpers.cordova.sqlite"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="io.litehelpers.cordova.sqlite"
+    version="0.7.7">
+
+    <name>Cordova sqlite storage plugin</name>
+
+    <license>MIT</license>
+
+    <description>Native interface to SQLite for PhoneGap/Cordova. Allows you to use more storage and provides more flexibility than the standard Web SQL database (window.openDatabase).</description>
+    <author>litehelpers (various)</author>
+
+    <engines>
+        <engine name="cordova" version=">=3.3.0" />
+    </engines>
+
+    <js-module src="www/SQLitePlugin.js" name="SQLitePlugin">
+        <clobbers target="SQLitePlugin" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <!-- NOTE: AndroidManifest.xml should be specified per-application!
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name="org.pgsqlite.SQLitePlugin"
+                      android:label="@string/app_name">
+            </activity>
+        </config-file>
+          -->
+
+        <!-- Cordova >= 3.0.0 -->
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SQLitePlugin">
+                <param name="android-package" value="io.liteglue.SQLitePlugin"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/io/liteglue/SQLitePlugin.java" target-dir="src/io/liteglue"/>
+        <source-file src="src/android/io/liteglue/SQLiteAndroidDatabase.java" target-dir="src/io/liteglue"/>
+
+        <!-- sqlite4java distribution for Android: -->
+        <source-file src="src/android/sqlite4java/libs/sqlite4java.jar" target-dir="libs"/>
+        <source-file src="src/android/sqlite4java/libs/armeabi/libsqlite4java-android-armv5tejl.so" target-dir="libs/armeabi"/>
+        <source-file src="src/android/sqlite4java/libs/armeabi-v7a/libsqlite4java-android-armv7l.so" target-dir="libs/armeabi-v7a"/>
+        <source-file src="src/android/sqlite4java/libs/x86/libsqlite4java-android-i686.so" target-dir="libs/x86"/>
+        <!-- 64-bit version(s): -->
+        <source-file src="src/android/sqlite4java/libs/arm64-v8a/libsqlite4java-android-aarch64.so" target-dir="libs/arm64-v8a"/>
+        <!-- NOT TESTED: -->
+        <source-file src="src/android/sqlite4java/libs/x86_64/libsqlite4java-android-x86_64.so" target-dir="libs/x86_64"/>
+
+    </platform>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SQLitePlugin">
+                <param name="ios-package" value="SQLitePlugin" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/SQLitePlugin.h" />
+        <source-file src="src/ios/SQLitePlugin.m" />
+
+        <header-file src="src/common/sqlite3.h" />
+        <source-file src="src/common/sqlite3.c" />
+
+    </platform>
+
+    <!-- windows -->
+    <platform name="windows">
+        <js-module src="src/windows/SQLiteProxy.js" name="SQLiteProxy">
+            <merges target="" />
+        </js-module>
+
+        <!-- SQLite3 JS module from SQLite3-WinRT/SQLite3JS: -->
+        <js-module src="src/windows/SQLite3-WinRT/SQLite3JS/js/SQLite3.js" name="SQLite3">
+            <merges target="" />
+        </js-module>
+
+        <!-- Thanks to AllJoyn-Cordova / cordova-plugin-alljoyn: -->
+        <framework src="src/windows/SQLite3-WinRT/SQLite3/SQLite3.Windows.vcxproj" custom="true" type="projectReference" target="windows" />
+        <framework src="src/windows/SQLite3-WinRT/SQLite3/SQLite3.WindowsPhone.vcxproj" custom="true" type="projectReference" target="phone" />
+         <!-- old:
+        <framework src="src/windows/SQLite3-WinRT/SQLite3/SQLite3-Windows8.1.vcxproj" custom="true" type="projectReference" target="windows" />
+          -->
+
+    </platform>
+
+    <!-- wp8 using dlls [should work but not tested on wp7]
+         NOTE: SQLiteWPNative.dll includes the classes from SQLite.cs
+         (which is not desired).
+    <platform name="wp8">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SQLitePlugin">
+                <param name="wp-package" value="SQLitePlugin" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/wp/SQLitePlugin.cs" />
+        <framework src="src/wp/cs-sqlite-dll/SQLiteWPNative.dll" custom="true" />
+
+    </platform>
+    -->
+
+    <platform name="wp8">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SQLitePlugin">
+                <param name="wp-package" value="SQLitePlugin" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/wp/SQLitePlugin.cs" />
+        <source-file src="src/wp/SQLite.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/_Custom.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/BtreeInt_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Btree_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Delegates.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Hash_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/VdbeInt_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Vdbe_h.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/alter_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/analyze_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/attach_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/auth_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/backup_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/bitvec_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/btmutex_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/btree_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/build_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/callback_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/complete_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/crypto.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/ctime_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/date_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/delete_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/expr_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/fault_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/fkey_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/func_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/global_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/hash_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/hwtime_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/insert_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/journal_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/keywordhash_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/legacy_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/loadext_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/main_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/malloc_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/mem_Pool.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/memjournal_c.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/mutex_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/mutex_noop_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/notify_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/opcodes_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/opcodes_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_common_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_win_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pager_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pager_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/parse_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/parse_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pcache1_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pcache_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pcache_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pragma_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/prepare_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/printf_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/random_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/resolve_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/rowset_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/select_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/sqlite3_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/sqliteInt_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/sqliteLimit_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/status_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/table_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/tokenize_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/trigger_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/update_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/utf_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/util_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vacuum_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbe_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbeapi_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbeaux_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbeblob_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbemem_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbetrace_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vtab_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/wal_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/wal_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/walker_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/where_c.cs" />
+
+    </platform>
+
+    <platform name="wp7">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SQLitePlugin">
+                <param name="wp-package" value="SQLitePlugin" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/wp/SQLitePlugin.cs" />
+        <source-file src="src/wp/SQLite.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/_Custom.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/BtreeInt_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Btree_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Delegates.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Hash_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/VdbeInt_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/Vdbe_h.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/alter_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/analyze_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/attach_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/auth_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/backup_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/bitvec_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/btmutex_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/btree_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/build_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/callback_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/complete_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/crypto.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/ctime_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/date_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/delete_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/expr_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/fault_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/fkey_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/func_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/global_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/hash_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/hwtime_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/insert_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/journal_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/keywordhash_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/legacy_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/loadext_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/main_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/malloc_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/mem_Pool.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/memjournal_c.cs" />
+
+        <source-file src="src/wp/csharp-sqlite-src/mutex_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/mutex_noop_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/notify_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/opcodes_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/opcodes_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_common_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/os_win_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pager_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pager_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/parse_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/parse_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pcache1_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pcache_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pcache_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/pragma_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/prepare_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/printf_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/random_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/resolve_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/rowset_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/select_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/sqlite3_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/sqliteInt_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/sqliteLimit_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/status_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/table_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/tokenize_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/trigger_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/update_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/utf_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/util_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vacuum_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbe_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbeapi_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbeaux_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbeblob_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbemem_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vdbetrace_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/vtab_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/wal_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/wal_h.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/walker_c.cs" />
+        <source-file src="src/wp/csharp-sqlite-src/where_c.cs" />
+
+    </platform>
+
+    <!-- amazon-fireos -->
+    <platform name="amazon-fireos">
+        <!-- NOTE: Amazon Fire OS version still using (old) org.pgsqlite prefix for now -->
+
+        <!-- Cordova >= 3.0.0 -->
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SQLitePlugin">
+                <param name="android-package" value="org.pgsqlite.SQLitePlugin"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android-classic/org/pgsqlite/SQLitePlugin.java" target-dir="src/org/pgsqlite"/>
+    </platform>
+
+</plugin>
+
+<!-- vim: set expandtab : -->
