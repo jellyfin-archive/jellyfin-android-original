@@ -87,7 +87,7 @@
 
                 if (result != 0) {
                     console.log('bind fail: ' + result);
-                    deferred.resolveWith(null, []);
+                    deferred.resolveWith(null, [servers]);
                     chrome.sockets.udp.close(createInfo.socketId);
                     return;
                 }
@@ -99,7 +99,7 @@
 
                     if (result != 0) {
                         console.log('send fail: ' + result);
-                        deferred.resolveWith(null, []);
+                        deferred.resolveWith(null, [servers]);
                         chrome.sockets.udp.close(createInfo.socketId);
 
                     } else {
