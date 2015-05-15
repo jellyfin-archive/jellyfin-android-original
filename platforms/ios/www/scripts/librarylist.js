@@ -535,7 +535,7 @@
         html += '</div>';
 
         html += '<div class="detailsMenuContent" style="background-position:center center;background-repeat:no-repeat;background-size:cover;">';
-        html += '<div style="padding:.5em 1em 1em;background:rgba(0,0,0,.80);" class="detailsMenuContentInner">';
+        html += '<div style="padding:.5em 1em 1em;background:rgba(10,10,10,.80);" class="detailsMenuContentInner">';
         html += '</div>';
         html += '</div>';
 

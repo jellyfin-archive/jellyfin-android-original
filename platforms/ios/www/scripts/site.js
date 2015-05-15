@@ -1783,6 +1783,10 @@ var AppInfo = {};
 
         document.addEventListener("deviceready", function () {
 
+            if ($.browser.safari) {
+                requirejs(['thirdparty/cordova/imagestore.js']);
+            }
+
             $(onReady);
 
         }, false);
