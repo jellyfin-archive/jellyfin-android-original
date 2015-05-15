@@ -85,6 +85,13 @@
 
             chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', port, function (result) {
 
+                if (result < 0) {
+                    console.log('bind fail: ' + result);
+                    deferred.resolveWith(null, []);
+                    chrome.sockets.udp.close(createInfo.socketId);
+                    return;
+                }
+
                 var data = stringToArrayBuffer('who is EmbyServer?');
 
                 console.log('chrome.sockets.udp.send');
@@ -92,7 +99,7 @@
 
                     if (result < 0) {
                         console.log('send fail: ' + result);
-                        deferred.resolveWith(null, [servers]);
+                        deferred.resolveWith(null, []);
                         chrome.sockets.udp.close(createInfo.socketId);
 
                     } else {
