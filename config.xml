@@ -72,6 +72,8 @@
     <allow-intent href="itms-apps:*" />
   </platform>
   <platform name="android">
+	<preference name="android-minSdkVersion" value="14" />
+	<preference name="android-targetSdkVersion" value="21" />
     <icon src="res/android/ldpi/icon.png" density="ldpi" />
     <icon src="res/android/mdpi/icon.png" density="mdpi" />
     <icon src="res/android/hdpi/icon.png" density="hdpi" />
