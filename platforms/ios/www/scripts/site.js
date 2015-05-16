@@ -211,10 +211,10 @@ var Dashboard = {
             'connectlogin.html';
 
         if (logoutWithServer === false) {
-            window.location = loginPage;
+            window.location.href = loginPage;
         } else {
             ConnectionManager.logout().done(function () {
-                window.location = loginPage;
+                window.location.href = loginPage;
             });
 
         }
@@ -1375,7 +1375,7 @@ var Dashboard = {
             // The native app can handle a little bit more than safari
             if (Dashboard.isRunningInCordova()) {
 
-                quality -= 15;
+                quality -= 10;
 
                 if (isBackdrop) {
                     quality -= 20;
