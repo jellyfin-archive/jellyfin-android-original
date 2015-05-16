@@ -1507,6 +1507,9 @@ var AppInfo = {};
         AppInfo.enableHeaderImages = true;
         AppInfo.enableMovieHomeSuggestions = true;
 
+
+        AppInfo.enableAppStorePolicy = isCordova;
+
         if ($.browser.safari) {
 
             if ($.browser.mobile) {
@@ -1536,7 +1539,6 @@ var AppInfo = {};
             AppInfo.enableLatestChannelItems = true;
             AppInfo.enableStudioTabs = true;
             AppInfo.enablePeopleTabs = true;
-            AppInfo.enableHomeFavoritesTab = true;
             AppInfo.enableTvEpisodesTab = true;
             AppInfo.enableMusicArtistsTab = true;
             AppInfo.enableHomeLatestTab = true;
@@ -1551,6 +1553,8 @@ var AppInfo = {};
     }
 
     function initializeApiClient(apiClient) {
+
+        apiClient.enableAppStorePolicy = AppInfo.enableAppStorePolicy;
 
         $(apiClient).off('.dashboard')
             .on("websocketmessage.dashboard", Dashboard.onWebSocketMessageReceived)
@@ -1653,10 +1657,6 @@ var AppInfo = {};
 
         if (!AppInfo.enablePeopleTabs) {
             $(document.body).addClass('peopleTabDisabled');
-        }
-
-        if (!AppInfo.enableHomeFavoritesTab) {
-            $(document.body).addClass('homeFavoritesTabDisabled');
         }
 
         if (!AppInfo.enableTvEpisodesTab) {
