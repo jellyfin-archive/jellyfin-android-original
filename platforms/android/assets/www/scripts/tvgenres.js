@@ -1,6 +1,6 @@
 ﻿(function ($, document) {
 
-    var view = LibraryBrowser.getDefaultItemsView('Thumb', 'Thumb');
+    var view = LibraryBrowser.getDefaultItemsView('Thumb', 'ThumbCard');
 
     // The base query options
     var query = {
@@ -39,6 +39,15 @@
 
             updateFilterControls(page);
 
+            if (AppInfo.hasLowImageBandwidth) {
+                if (view == 'Thumb') {
+                    view = 'ThumbCard';
+                }
+                else if (view == 'Poster') {
+                    view = 'PosterCard';
+                }
+            }
+
             if (view == "Thumb") {
                 html = LibraryBrowser.getPosterViewHtml({
                     items: result.Items,
@@ -61,6 +70,17 @@
                     cardLayout: true,
                     showTitle: true,
                     lazy: true
+                });
+            }
+            else if (view == "PosterCard") {
+                html = LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "portrait",
+                    context: 'tv',
+                    showItemCounts: true,
+                    lazy: true,
+                    cardLayout: true,
+                    showTitle: true
                 });
             }
             else if (view == "Poster") {
@@ -113,7 +133,7 @@
         $('#selectView', page).val(view).selectmenu('refresh');
     }
 
-    $(document).on('pageinit', "#tvGenresPage", function () {
+    $(document).on('pageinitdepends', "#tvGenresPage", function () {
 
         var page = this;
 
@@ -158,7 +178,7 @@
             LibraryBrowser.saveViewSetting(getSavedQueryKey(), view);
         });
 
-    }).on('pagebeforeshow', "#tvGenresPage", function () {
+    }).on('pageshown', "#tvGenresPage", function () {
 
         query.ParentId = LibraryMenu.getTopParentId();
         var page = this;
@@ -182,8 +202,6 @@
                 reloadItems(page);
             }
         });
-
-    }).on('pageshow', "#tvGenresPage", function () {
 
         updateFilterControls(this);
     });

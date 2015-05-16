@@ -289,12 +289,14 @@
             var state = self.getPlayerStateInternal(self.currentMediaElement, item, self.currentMediaSource);
 
             var url = "";
+            var imageWidth = 400;
+            var imageHeight = 300;
 
             if (state.NowPlayingItem.PrimaryImageTag) {
 
                 url = ApiClient.getScaledImageUrl(state.NowPlayingItem.PrimaryImageItemId, {
                     type: "Primary",
-                    width: 150,
+                    width: imageWidth,
                     tag: state.NowPlayingItem.PrimaryImageTag
                 });
             }
@@ -302,7 +304,7 @@
 
                 url = ApiClient.getScaledImageUrl(state.NowPlayingItem.PrimaryImageItemId, {
                     type: "Primary",
-                    width: 150,
+                    width: imageWidth,
                     tag: state.NowPlayingItem.PrimaryImageTag
                 });
             }
@@ -310,7 +312,7 @@
 
                 url = ApiClient.getScaledImageUrl(state.NowPlayingItem.BackdropItemId, {
                     type: "Backdrop",
-                    height: 300,
+                    height: imageHeight,
                     tag: state.NowPlayingItem.BackdropImageTag,
                     index: 0
                 });
@@ -320,18 +322,9 @@
 
                 url = ApiClient.getScaledImageUrl(state.NowPlayingItem.ThumbImageItemId, {
                     type: "Thumb",
-                    height: 300,
+                    height: imageHeight,
                     tag: state.NowPlayingItem.ThumbImageTag
                 });
-            }
-
-            var nowPlayingTextElement = $('.nowPlayingText', mediaControls);
-            var nameHtml = self.getNowPlayingNameHtml(state);
-
-            if (nameHtml.indexOf('<br/>') != -1) {
-                nowPlayingTextElement.addClass('nowPlayingDoubleText');
-            } else {
-                nowPlayingTextElement.removeClass('nowPlayingDoubleText');
             }
 
             if (url) {
@@ -353,8 +346,170 @@
                 $('.videoTopControlsLogo', mediaControls).html('');
             }
 
-            nowPlayingTextElement.html(nameHtml);
+            var elem = $('.nowPlayingTabs', mediaControls).html(getNowPlayingTabsHtml(item)).lazyChildren();
+
+            $('.nowPlayingTabButton', elem).on('click', function () {
+
+                if (!$(this).hasClass('selectedNowPlayingTabButton')) {
+                    $('.selectedNowPlayingTabButton').removeClass('selectedNowPlayingTabButton');
+                    $(this).addClass('selectedNowPlayingTabButton');
+                    $('.nowPlayingTab').hide();
+                    $('.' + this.getAttribute('data-tab')).show().trigger('scroll');
+                }
+            });
+
+            $('.chapterCard', elem).on('click', function () {
+
+                self.seek(parseInt(this.getAttribute('data-position')));
+            });
         };
+
+        function getNowPlayingTabsHtml(item) {
+
+            var html = '';
+
+            html += '<div class="nowPlayingTabButtons">';
+
+            html += '<a href="#" class="nowPlayingTabButton selectedNowPlayingTabButton" data-tab="tabInfo">' + Globalize.translate('TabInfo') + '</a>';
+
+            if (item.Chapters && item.Chapters.length) {
+                html += '<a href="#" class="nowPlayingTabButton" data-tab="tabScenes">' + Globalize.translate('TabScenes') + '</a>';
+            }
+
+            if (item.People && item.People.length) {
+                html += '<a href="#" class="nowPlayingTabButton" data-tab="tabCast">' + Globalize.translate('TabCast') + '</a>';
+            }
+
+            html += '</div>';
+
+            html += '<div class="tabInfo nowPlayingTab">';
+            var nameHtml = MediaController.getNowPlayingNameHtml(item, false);
+            nameHtml = '<div class="videoNowPlayingName">' + nameHtml + '</div>';
+
+            var miscInfo = LibraryBrowser.getMiscInfoHtml(item);
+            if (miscInfo) {
+
+                nameHtml += '<div class="videoNowPlayingRating">' + miscInfo + '</div>';
+            }
+
+            var ratingHtml = LibraryBrowser.getRatingHtml(item);
+            if (ratingHtml) {
+
+                nameHtml += '<div class="videoNowPlayingRating">' + ratingHtml + '</div>';
+            }
+
+            if (item.Overview) {
+
+                nameHtml += '<div class="videoNowPlayingOverview">' + item.Overview + '</div>';
+            }
+
+            html += nameHtml;
+            html += '</div>';
+
+            if (item.Chapters && item.Chapters.length) {
+                html += '<div class="tabScenes nowPlayingTab" style="display:none;white-space:nowrap;margin-bottom:2em;">';
+                var chapterIndex = 0;
+                html += item.Chapters.map(function (c) {
+
+                    var width = 360;
+                    var chapterHtml = '<a class="card backdropCard chapterCard" href="#" style="margin-right:1em;width:' + width + 'px;" data-position="' + c.StartPositionTicks + '">';
+                    chapterHtml += '<div class="cardBox">';
+                    chapterHtml += '<div class="cardScalable">';
+                    chapterHtml += '<div class="cardPadder"></div>';
+
+                    chapterHtml += '<div class="cardContent">';
+
+                    if (c.ImageTag) {
+
+                        var chapterImageUrl = ApiClient.getScaledImageUrl(item.Id, {
+                            width: width,
+                            tag: c.ImageTag,
+                            type: "Chapter",
+                            index: chapterIndex
+                        });
+                        chapterHtml += '<div class="cardImage lazy" data-src="' + chapterImageUrl + '"></div>';
+
+                    } else {
+                        chapterHtml += '<div class="cardImage" style="background:#444;"></div>';
+                    }
+
+                    chapterHtml += '<div class="cardFooter">';
+                    if (c.Name) {
+                        chapterHtml += '<div class="cardText">' + c.Name + '</div>';
+                    }
+                    chapterHtml += '<div class="cardText">' + Dashboard.getDisplayTime(c.StartPositionTicks) + '</div>';
+                    chapterHtml += '</div>';
+                    chapterHtml += '</div>';
+
+                    chapterHtml += '</div>';
+                    chapterHtml += '</div>';
+                    chapterHtml += '</a>';
+
+                    chapterIndex++;
+
+                    return chapterHtml;
+
+                }).join('');
+                html += '</div>';
+            }
+
+            if (item.People && item.People.length) {
+                html += '<div class="tabCast nowPlayingTab" style="display:none;white-space:nowrap;">';
+                html += item.People.map(function (cast) {
+
+                    var personHtml = '<div class="tileItem smallPosterTileItem" style="width:300px;">';
+
+                    var imgUrl;
+
+                    if (cast.PrimaryImageTag) {
+
+                        imgUrl = ApiClient.getScaledImageUrl(cast.Id, {
+                            height: 160,
+                            tag: cast.PrimaryImageTag,
+                            type: "primary",
+                            minScale: 2
+                        });
+
+                    } else {
+
+                        imgUrl = "css/images/items/list/person.png";
+                    }
+
+                    personHtml += '<div class="tileImage lazy" data-src="' + imgUrl + '" style="height:160px;"></div>';
+
+
+
+                    personHtml += '<div class="tileContent">';
+
+                    personHtml += '<p>' + cast.Name + '</p>';
+
+                    var role = cast.Role ? Globalize.translate('ValueAsRole', cast.Role) : cast.Type;
+
+                    if (role == "GuestStar") {
+                        role = Globalize.translate('ValueGuestStar');
+                    }
+
+                    role = role || "";
+
+                    var maxlength = 40;
+
+                    if (role.length > maxlength) {
+                        role = role.substring(0, maxlength - 3) + '...';
+                    }
+
+                    personHtml += '<p>' + role + '</p>';
+
+                    personHtml += '</div>';
+
+                    personHtml += '</div>';
+                    return personHtml;
+
+                }).join('');
+                html += '</div>';
+            }
+
+            return html;
+        }
 
         function onPositionSliderChange() {
 
@@ -504,7 +659,7 @@
                 idleState = true;
                 $('.hiddenOnIdle').addClass("inactive");
                 $('#videoPlayer').addClass('idlePlayer');
-            }, 4000);
+            }, 5000);
         }
 
         function updateVolumeButtons(vol) {
@@ -889,7 +1044,7 @@
             });
 
             if (hideElementsOnIdle) {
-                $(document.body).on("mousemove.videplayer", "#itemVideo", function () {
+                $(document.body).on("mousemove.videoplayer", function () {
 
                     idleHandler(this);
                 });
@@ -903,7 +1058,7 @@
             // Stop playback on browser back button nav
             $(window).off("popstate.videoplayer");
 
-            $(document.body).off("mousemove.videplayer");
+            $(document.body).off("mousemove.videoplayer");
 
             $('.itemVideo').off('mousemove.videoplayer keydown.videoplayer scroll.videoplayer');
         }
@@ -914,7 +1069,7 @@
                 return true;
             }
 
-            if ($.browser.msie || $.browser.mobile) {
+            if ($.browser.mobile) {
                 return false;
             }
 
@@ -975,31 +1130,8 @@
                 return s.Type == 'Subtitle';
             });
 
-            // Get Video Poster (Code from librarybrowser.js)
-            var screenWidth = Math.max(screen.height, screen.width);
-            var posterCode = '';
-
-            if (item.BackdropImageTags && item.BackdropImageTags.length) {
-
-                posterCode = ' poster="' + ApiClient.getScaledImageUrl(item.Id, {
-                    type: "Backdrop",
-                    index: 0,
-                    maxWidth: screenWidth,
-                    tag: item.BackdropImageTags[0]
-                }) + '"';
-
-            }
-            else if (item.ParentBackdropItemId && item.ParentBackdropImageTags && item.ParentBackdropImageTags.length) {
-
-                posterCode = ' poster="' + ApiClient.getScaledImageUrl(item.ParentBackdropItemId, {
-                    type: 'Backdrop',
-                    index: 0,
-                    maxWidth: screenWidth,
-                    tag: item.ParentBackdropImageTags[0]
-                }) + '"';
-
-            }
-
+            var posterCode = self.getPosterUrl(item);
+            posterCode = posterCode ? (' poster="' + posterCode + '"') : '';
             //======================================================================================>
 
             // Create video player
@@ -1099,7 +1231,14 @@
             volumeSlider.val(initialVolume).slider('refresh');
             updateVolumeButtons(initialVolume);
 
-            video.one("playing.mediaplayerevent", function (e) {
+            video.one("loadedmetadata.mediaplayerevent", function (e) {
+
+                // The IE video player won't autoplay without this
+                if ($.browser.msie) {
+                    this.play();
+                }
+
+            }).one("playing.mediaplayerevent", function (e) {
 
                 // TODO: This is not working in chrome. Is it too early?
 

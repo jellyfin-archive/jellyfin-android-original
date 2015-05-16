@@ -34,7 +34,12 @@ var Dashboard = {
 
         //$.mobile.popup.prototype.options.theme = "c";
         $.mobile.popup.prototype.options.transition = "fade";
-        $.mobile.defaultPageTransition = "none";
+
+        if ($.browser.mobile) {
+            $.mobile.defaultPageTransition = "slide";
+        } else {
+            $.mobile.defaultPageTransition = "none";
+        }
         //$.mobile.collapsible.prototype.options.contentTheme = "a";
 
         // Make panels a little larger than the defaults
@@ -87,7 +92,7 @@ var Dashboard = {
         }
         Dashboard.hideLoadingMsg();
 
-        if (!Dashboard.suppressAjaxErrors) {
+        if (!Dashboard.suppressAjaxErrors && data.type != 'GET') {
 
             setTimeout(function () {
 
@@ -108,9 +113,7 @@ var Dashboard = {
 
         if (!Dashboard.getUserPromise) {
 
-            var userId = Dashboard.getCurrentUserId();
-
-            Dashboard.getUserPromise = ConnectionManager.currentApiClient().getUser(userId).fail(Dashboard.logout);
+            Dashboard.getUserPromise = ConnectionManager.currentApiClient().getCurrentUser().fail(Dashboard.logout);
         }
 
         return Dashboard.getUserPromise;
@@ -368,11 +371,15 @@ var Dashboard = {
 
     showFooterNotification: function (options) {
 
+        if (!AppInfo.enableFooterNotifications) {
+            return;
+        }
+
         var removeOnHide = !options.id;
 
         options.id = options.id || "notification" + new Date().getTime() + parseInt(Math.random());
 
-        var footer = $("#footer").css("top", "initial").show();
+        var footer = $(".footer").css("top", "initial").show();
 
         var parentElem = $('#footerNotifications', footer);
 
@@ -426,6 +433,10 @@ var Dashboard = {
 
     navigate: function (url, preserveQueryString) {
 
+        if (!url) {
+            throw new Error('url cannot be null or empty');
+        }
+
         var queryString = getWindowLocationSearch();
         if (preserveQueryString && queryString) {
             url += queryString;
@@ -439,6 +450,29 @@ var Dashboard = {
 
     hideLoadingMsg: function () {
         $.mobile.loading("hide");
+    },
+
+    getModalLoadingMsg: function () {
+
+        var elem = $('.modalLoading');
+
+        if (!elem.length) {
+
+            elem = $('<div class="modalLoading"></div>').appendTo(document.body);
+
+        }
+
+        return elem;
+    },
+
+    showModalLoadingMsg: function () {
+        Dashboard.showLoadingMsg();
+        Dashboard.getModalLoadingMsg().show();
+    },
+
+    hideModalLoadingMsg: function () {
+        Dashboard.getModalLoadingMsg().hide();
+        Dashboard.hideLoadingMsg();
     },
 
     processPluginConfigurationUpdateResult: function () {
@@ -545,10 +579,14 @@ var Dashboard = {
     refreshSystemInfoFromServer: function () {
 
         if (Dashboard.getAccessToken()) {
-            ApiClient.getSystemInfo().done(function (info) {
+            if (AppInfo.enableFooterNotifications) {
+                ApiClient.getSystemInfo().done(function (info) {
 
-                Dashboard.updateSystemInfo(info);
-            });
+                    Dashboard.updateSystemInfo(info);
+                });
+            } else {
+                Dashboard.ensureWebSocket();
+            }
         }
     },
 
@@ -609,14 +647,14 @@ var Dashboard = {
 
             var imgWidth = 48;
 
-            if (user.imageUrl) {
+            if (user.imageUrl && AppInfo.enableUserImage) {
                 var url = user.imageUrl;
 
                 if (user.supportsImageParams) {
-                    url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
+                    url += "&width=" + (imgWidth * Math.max(window.devicePixelRatio || 1, 2));
                 }
 
-                html += '<img style="max-width:' + imgWidth + 'px;vertical-align:middle;margin-right:.5em;border-radius: 50px;" src="' + url + '" />';
+                html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
             }
             html += user.name;
             html += '</h3>';
@@ -640,7 +678,7 @@ var Dashboard = {
 
             $(document.body).append(html);
 
-            var elem = $('#userFlyout').panel({}).trigger('create').panel("open").on("panelclose", function () {
+            var elem = $('#userFlyout').panel({}).lazyChildren().trigger('create').panel("open").on("panelclose", function () {
 
                 $(this).off("panelclose").remove();
             });
@@ -675,7 +713,6 @@ var Dashboard = {
 
     resetPluginSecurityInfo: function () {
         Dashboard.getPluginSecurityInfoPromise = null;
-        Dashboard.validateCurrentUser();
     },
 
     ensureHeader: function (page) {
@@ -744,7 +781,7 @@ var Dashboard = {
                     if (item.selected) {
                         menuHtml += '<a class="sidebarLink selectedSidebarLink" href="' + item.href + '">';
                     } else {
-                        menuHtml += '<a class="sidebarLink" href="' + item.href + '">';
+                        menuHtml += '<a data-transition="none" class="sidebarLink" href="' + item.href + '">';
                     }
 
                     menuHtml += '<span class="fa ' + item.icon + ' sidebarLinkIcon"' + style + '></span>';
@@ -770,7 +807,7 @@ var Dashboard = {
 
             html += '<div data-role="panel" id="dashboardPanel" class="dashboardPanel" data-position="left" data-display="overlay" data-position-fixed="true" data-theme="a">';
 
-            html += '<p class="libraryPanelHeader" style="margin: 15px 0 15px 15px;"><a href="index.html" class="imageLink"><img src="css/images/mblogoicon.png" /><span style="color:#333;">EMBY</span></a></p>';
+            html += '<p class="libraryPanelHeader" style="margin: 15px 0 15px 15px;"><a href="index.html" data-transition="none" class="imageLink"><img src="css/images/mblogoicon.png" /><span style="color:#333;">EMBY</span></a></p>';
 
             html += '<div class="sidebarLinks">';
             html += menuHtml;
@@ -895,7 +932,10 @@ var Dashboard = {
         }
 
         ApiClient.openWebSocket();
-        ApiClient.reportCapabilities(Dashboard.capabilities());
+
+        if (!Dashboard.isConnectMode()) {
+            ApiClient.reportCapabilities(Dashboard.capabilities());
+        }
     },
 
     processGeneralCommand: function (cmd) {
@@ -1327,19 +1367,40 @@ var Dashboard = {
         var isBackdrop = imageType.toLowerCase() == 'backdrop';
 
         if (isBackdrop) {
-            quality -= 15;
+            quality -= 10;
         }
 
-        if ($.browser.safari && $.browser.mobile) {
+        if (AppInfo.hasLowImageBandwidth) {
 
-            quality -= 10;
+            // The native app can handle a little bit more than safari
+            if (Dashboard.isRunningInCordova()) {
 
-            if (isBackdrop) {
-                quality -= 10;
+                quality -= 20;
+
+                if (isBackdrop) {
+                    quality -= 20;
+                }
+
+            } else {
+
+                quality -= 50;
             }
         }
 
         return quality;
+    },
+
+    normalizeImageOptions: function (options) {
+
+        if (AppInfo.hasLowImageBandwidth) {
+
+            options.enableImageEnhancers = false;
+        }
+
+        if (AppInfo.forcedImageFormat && options.type != 'Logo') {
+            options.format = AppInfo.forcedImageFormat;
+            options.backgroundColor = '#1f1f1f';
+        }
     },
 
     getAppInfo: function () {
@@ -1352,13 +1413,11 @@ var Dashboard = {
                 name = "Chrome";
             } else if ($.browser.safari) {
                 name = "Safari";
-            } else if ($.browser.webkit) {
-                name = "WebKit";
             } else if ($.browser.msie) {
                 name = "Internet Explorer";
             } else if ($.browser.opera) {
                 name = "Opera";
-            } else if ($.browser.firefox || $.browser.mozilla) {
+            } else if ($.browser.mozilla) {
                 name = "Firefox";
             }
 
@@ -1377,35 +1436,30 @@ var Dashboard = {
         }
 
         var appVersion = window.dashboardVersion;
-        var appName = Dashboard.isConnectMode() ?
-            "Emby Mobile" :
-            "Emby Web Client";
+        var appName = "Emby Web Client";
 
         var deviceName;
         var deviceId;
 
-        // Cordova
-        //if (window.device) {
+        if (Dashboard.isRunningInCordova()) {
 
-        //    deviceName = device.model;
-        //    deviceId = device.uuid;
+            appName = "Emby Mobile";
 
-        //}
-        //else
-        {
-
-            deviceName = generateDeviceName();
-
-            var seed = [];
-            var keyName = 'randomId';
-
-            if (Dashboard.isRunningInCordova()) {
-                seed.push('cordova');
-                keyName = 'cordovaDeviceId';
-            }
-
-            deviceId = MediaBrowser.generateDeviceId(keyName, seed.join(','));
+            deviceName = store.getItem('cordovaDeviceName');
+            deviceId = store.getItem('cordovaDeviceId');
         }
+
+        deviceName = deviceName || generateDeviceName();
+
+        var seed = [];
+        var keyName = 'randomId';
+
+        if (Dashboard.isRunningInCordova()) {
+            seed.push('cordova');
+            keyName = 'cordovaDeviceId';
+        }
+
+        deviceId = deviceId || MediaBrowser.generateDeviceId(keyName, seed.join(','));
 
         return {
             appName: appName,
@@ -1413,14 +1467,83 @@ var Dashboard = {
             deviceName: deviceName,
             deviceId: deviceId
         };
+    },
+
+    loadSwipebox: function () {
+
+        var deferred = DeferredBuilder.Deferred();
+
+        require([
+            'thirdparty/swipebox-master/js/jquery.swipebox.min',
+            'css!thirdparty/swipebox-master/css/swipebox.min'
+        ], function () {
+
+            deferred.resolve();
+        });
+        return deferred.promise();
     }
 };
 
+var AppInfo = {};
+
 (function () {
 
-    if (!window.WebSocket) {
+    function isTouchDevice() {
+        return (('ontouchstart' in window)
+             || (navigator.MaxTouchPoints > 0)
+             || (navigator.msMaxTouchPoints > 0));
+    }
 
-        alert(Globalize.translate('MessageBrowserDoesNotSupportWebSockets'));
+    function setAppInfo() {
+
+        if (isTouchDevice()) {
+            AppInfo.isTouchPreferred = true;
+        }
+
+        var isCordova = Dashboard.isRunningInCordova();
+
+        if ($.browser.safari) {
+
+            if ($.browser.mobile) {
+                AppInfo.hasLowImageBandwidth = true;
+                AppInfo.enableDetailsMenuImages = false;
+                AppInfo.forcedImageFormat = 'jpg';
+            }
+
+            if (isCordova) {
+                AppInfo.enableBottomTabs = true;
+                AppInfo.enableDetailsMenuImages = true;
+            }
+        }
+        else {
+
+            AppInfo.enableDetailsMenuImages = true;
+
+            if (!$.browser.tv) {
+                AppInfo.enableHeadRoom = true;
+            }
+        }
+
+        AppInfo.enableMusicSongsTab = true;
+
+        if (!AppInfo.hasLowImageBandwidth) {
+            AppInfo.enableLatestChannelItems = true;
+            AppInfo.enableStudioTabs = true;
+            AppInfo.enablePeopleTabs = true;
+            AppInfo.enableHomeFavoritesTab = true;
+            AppInfo.enableTvEpisodesTab = true;
+            AppInfo.enableMusicArtistsTab = true;
+            AppInfo.enableHomeLatestTab = true;
+            AppInfo.enableMovieTrailersTab = true;
+        }
+
+        if (!isCordova) {
+            AppInfo.enableFooterNotifications = true;
+        }
+
+        //AppInfo.enableUserImage = !AppInfo.hasLowImageBandwidth || !isCordova;
+        AppInfo.enableUserImage = true;
+        AppInfo.enableHeaderImages = !AppInfo.hasLowImageBandwidth || !isCordova;
     }
 
     function initializeApiClient(apiClient) {
@@ -1480,12 +1603,77 @@ var Dashboard = {
 
         if (window.ApiClient) {
             ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
+            ApiClient.normalizeImageOptions = Dashboard.normalizeImageOptions;
 
-            Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
+            if (!Dashboard.isRunningInCordova()) {
+                Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
+            }
         }
     }
 
+    function initFastClick() {
+
+        requirejs(["thirdparty/fastclick"], function (FastClick) {
+
+            FastClick.attach(document.body);
+
+            // Have to work around this issue of fast click breaking the panel dismiss
+            $(document.body).on('touchstart', '.ui-panel-dismiss', function () {
+                $(this).trigger('click');
+            });
+        });
+
+    }
+
     function onReady() {
+
+        if ($.browser.safari && $.browser.mobile) {
+            initFastClick();
+        }
+
+        if (AppInfo.hasLowImageBandwidth) {
+            $(document.body).addClass('largeCardMargin');
+        }
+
+        if (!AppInfo.enableLatestChannelItems) {
+            $(document.body).addClass('latestChannelItemsDisabled');
+        }
+
+        if (!AppInfo.enableStudioTabs) {
+            $(document.body).addClass('studioTabDisabled');
+        }
+
+        if (!AppInfo.enablePeopleTabs) {
+            $(document.body).addClass('peopleTabDisabled');
+        }
+
+        if (!AppInfo.enableHomeFavoritesTab) {
+            $(document.body).addClass('homeFavoritesTabDisabled');
+        }
+
+        if (!AppInfo.enableTvEpisodesTab) {
+            $(document.body).addClass('tvEpisodesTabDisabled');
+        }
+
+        if (!AppInfo.enableMusicSongsTab) {
+            $(document.body).addClass('musicSongsTabDisabled');
+        }
+
+        if (!AppInfo.enableMusicArtistsTab) {
+            $(document.body).addClass('musicArtistsTabDisabled');
+        }
+
+        if (!AppInfo.enableHomeLatestTab) {
+            $(document.body).addClass('homeLatestTabDisabled');
+        }
+
+        if (!AppInfo.enableMovieTrailersTab) {
+            $(document.body).addClass('movieTrailersTabDisabled');
+        }
+
+        if (Dashboard.isRunningInCordova()) {
+            $(document).addClass('nativeApp');
+        }
 
         var videoPlayerHtml = '<div id="mediaPlayer" data-theme="b" class="ui-bar-b" style="display: none;">';
 
@@ -1526,7 +1714,7 @@ var Dashboard = {
 
         videoPlayerHtml += '<div class="nowPlayingInfo hiddenOnIdle">';
         videoPlayerHtml += '<div class="nowPlayingImage"></div>';
-        videoPlayerHtml += '<div class="nowPlayingText"></div>';
+        videoPlayerHtml += '<div class="nowPlayingTabs"></div>';
         videoPlayerHtml += '</div>'; // nowPlayingInfo
 
         videoPlayerHtml += '<button id="video-previousTrackButton" class="mediaButton previousTrackButton videoTrackControl imageButton" title="Previous Track" type="button" onclick="MediaPlayer.previousTrack();" data-role="none"><i class="fa fa-step-backward"></i></button>';
@@ -1560,14 +1748,14 @@ var Dashboard = {
         var mediaPlayerElem = $('#mediaPlayer', document.body);
         mediaPlayerElem.trigger('create');
 
-        var footerHtml = '<div id="footer" data-theme="b" class="ui-bar-b">';
+        var footerHtml = '<div id="footer" class="footer" data-theme="b" class="ui-bar-b">';
 
         footerHtml += '<div id="footerNotifications"></div>';
         footerHtml += '</div>';
 
         $(document.body).append(footerHtml);
 
-        var footerElem = $('#footer', document.body);
+        var footerElem = $('.footer', document.body);
         footerElem.trigger('create');
 
         $(window).on("beforeunload", function () {
@@ -1575,10 +1763,17 @@ var Dashboard = {
             var apiClient = ConnectionManager.currentApiClient();
 
             // Close the connection gracefully when possible
-            if (apiClient && apiClient.isWebSocketOpen() && !MediaPlayer.isPlaying()) {
+            if (apiClient && apiClient.isWebSocketOpen()) {
 
-                console.log('Sending close web socket command');
-                apiClient.closeWebSocket();
+                var localActivePlayers = MediaController.getPlayers().filter(function (p) {
+
+                    return p.isLocalPlayer && p.isPlaying();
+                });
+
+                if (!localActivePlayers.length) {
+                    console.log('Sending close web socket command');
+                    apiClient.closeWebSocket();
+                }
             }
         });
 
@@ -1589,23 +1784,32 @@ var Dashboard = {
             e.preventDefault();
             return false;
         });
-
-        function isTouchDevice() {
-            return (('ontouchstart' in window)
-                 || (navigator.MaxTouchPoints > 0)
-                 || (navigator.msMaxTouchPoints > 0));
-        }
-
-        if (isTouchDevice()) {
-            $(document.body).addClass('touch');
-        }
     }
+
+    requirejs.config({
+        map: {
+            '*': {
+                'css': 'thirdparty/requirecss' // or whatever the path to require-css is
+            }
+        },
+        urlArgs: "v=" + window.dashboardVersion
+    });
+
+    // Required since jQuery is loaded before requireJs
+    define('jquery', [], function () {
+        return jQuery;
+    });
+
+    setAppInfo();
+    createConnectionManager();
 
     if (Dashboard.isRunningInCordova()) {
 
-        createConnectionManager();
-
         document.addEventListener("deviceready", function () {
+
+            if ($.browser.safari) {
+                requirejs(['thirdparty/cordova/imagestore.js']);
+            }
 
             $(onReady);
 
@@ -1613,10 +1817,9 @@ var Dashboard = {
 
     } else {
 
-        createConnectionManager();
-
         $(onReady);
     }
+
 })();
 
 Dashboard.jQueryMobileInit();
@@ -1626,22 +1829,61 @@ $(document).on('pagecreate', ".page", function () {
     var page = $(this);
 
     var current = page.data('theme');
-    if (current) {
-        return;
+    if (!current) {
+
+        var newTheme;
+
+        if (page.hasClass('libraryPage')) {
+            newTheme = 'b';
+        } else {
+            newTheme = 'a';
+        }
+
+        current = page.page("option", "theme");
+
+        if (current && current != newTheme) {
+            page.page("option", "theme", newTheme);
+        }
+
+        current = newTheme;
     }
 
-    var newTheme;
-
-    if (page.hasClass('libraryPage')) {
-        newTheme = 'b';
+    if (current == 'b') {
+        $(document.body).addClass('darkScrollbars');
     } else {
-        newTheme = 'a';
+        $(document.body).removeClass('darkScrollbars');
     }
 
-    current = page.page("option", "theme");
+}).on('pageinit', ".page", function () {
 
-    if (current && current != newTheme) {
-        page.page("option", "theme", newTheme);
+    var page = this;
+
+    var require = this.getAttribute('data-require');
+
+    if (require) {
+        requirejs([require], function () {
+
+            $(page).trigger('pageinitdepends');
+        });
+    } else {
+        $(page).trigger('pageinitdepends');
+    }
+
+    $('.localnav a, .libraryViewNav a').attr('data-transition', 'none');
+
+}).on('pageshow', ".page", function () {
+
+    var page = this;
+
+    var require = this.getAttribute('data-require');
+
+    if (require) {
+        requirejs([require], function () {
+
+            $(page).trigger('pageshown');
+        });
+    } else {
+        $(page).trigger('pageshown');
     }
 
 }).on('pagebeforeshow', ".page", function () {
@@ -1677,13 +1919,13 @@ $(document).on('pagecreate', ".page", function () {
         var isConnectMode = Dashboard.isConnectMode();
 
         if (isConnectMode) {
-            
+
             if (!Dashboard.isServerlessPage()) {
                 Dashboard.logout();
                 return;
             }
         }
-        
+
         if (this.id !== "loginPage" && !page.hasClass('forgotPasswordPage') && !page.hasClass('wizardPage') && !isConnectMode) {
 
             console.log('Not logged into server. Redirecting to login.');

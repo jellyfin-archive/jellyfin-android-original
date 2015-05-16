@@ -208,7 +208,6 @@
     display: inline-block;
     background-size: cover;
     vertical-align: top;
-    cursor: pointer;
 }
 
 .starRating {
@@ -1474,10 +1473,6 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     display: none !important;
 }
 
-.homeFavoritesTabDisabled .homeFavoritesTab {
-    display: none !important;
-}
-
 .detailsMenu {
     width: 280px;
 }
@@ -1574,6 +1569,10 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     }
 
 .detailsMenu h3 {
+    padding: .7em 30px;
+}
+
+.detailsMenuHeaderWithLogo h3 {
     padding: 0 30px;
 }
 

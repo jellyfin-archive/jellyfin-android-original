@@ -1,21 +1,28 @@
 ﻿(function ($, document) {
 
+    function getView() {
+
+        if (AppInfo.hasLowImageBandwidth) {
+            return 'ThumbCard';
+        }
+
+        return 'Thumb';
+    }
+
+    function getResumeView() {
+
+        if (AppInfo.hasLowImageBandwidth) {
+            return 'PosterCard';
+        }
+
+        return 'Poster';
+    }
+
     function reload(page) {
 
-        var query = {
-
-            Limit: 24,
-            Fields: "PrimaryImageAspectRatio,SeriesInfo,DateCreated,SyncInfo",
-            UserId: Dashboard.getCurrentUserId(),
-            ExcludeLocationTypes: "Virtual",
-            ImageTypeLimit: 1,
-            EnableImageTypes: "Primary,Backdrop,Banner,Thumb"
-        };
-
-        query.ParentId = LibraryMenu.getTopParentId();
         var context = '';
 
-        if (query.ParentId) {
+        if (LibraryMenu.getTopParentId()) {
 
             $('.scopedLibraryViewNav', page).show();
             $('.globalNav', page).hide();
@@ -37,9 +44,13 @@
 
     function loadNextUp(page, context) {
 
+        var limit = AppInfo.hasLowImageBandwidth ?
+         16 :
+         24;
+
         var query = {
 
-            Limit: 24,
+            Limit: limit,
             Fields: "PrimaryImageAspectRatio,SeriesInfo,DateCreated,SyncInfo",
             UserId: Dashboard.getCurrentUserId(),
             ExcludeLocationTypes: "Virtual",
@@ -57,17 +68,39 @@
                 $('.noNextUpItems', page).show();
             }
 
-            $('#nextUpItems', page).html(LibraryBrowser.getPosterViewHtml({
-                items: result.Items,
-                shape: "backdrop",
-                showTitle: true,
-                showParentTitle: true,
-                overlayText: false,
-                context: context,
-                lazy: true,
-                preferThumb: true
+            var view = getView();
+            var html = '';
 
-            })).lazyChildren();
+            if (view == 'ThumbCard') {
+
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "backdrop",
+                    showTitle: true,
+                    preferThumb: true,
+                    showParentTitle: true,
+                    lazy: true,
+                    cardLayout: true,
+                    context: 'tv',
+                    showDetailsMenu: true
+                });
+
+            } else if (view == 'Thumb') {
+
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "backdrop",
+                    showTitle: true,
+                    showParentTitle: true,
+                    overlayText: false,
+                    context: context,
+                    lazy: true,
+                    preferThumb: true,
+                    showDetailsMenu: true
+                });
+            }
+
+            $('#nextUpItems', page).html(html).lazyChildren();
 
         });
     }
@@ -76,13 +109,19 @@
 
         var parentId = LibraryMenu.getTopParentId();
 
+        var screenWidth = $(window).width();
+
+        var limit = AppInfo.hasLowImageBandwidth ?
+         4 :
+         6;
+
         var options = {
 
             SortBy: "DatePlayed",
             SortOrder: "Descending",
             IncludeItemTypes: "Episode",
             Filters: "IsResumable",
-            Limit: 6,
+            Limit: limit,
             Recursive: true,
             Fields: "PrimaryImageAspectRatio,SeriesInfo,UserData,SyncInfo",
             ExcludeLocationTypes: "Virtual",
@@ -100,21 +139,42 @@
                 $('.nextUpHeader', page).addClass('firstListHeader');
             }
 
-            $('#resumableItems', page).html(LibraryBrowser.getPosterViewHtml({
-                items: result.Items,
-                shape: "backdrop",
-                showTitle: true,
-                showParentTitle: true,
-                overlayText: true,
-                lazy: true,
-                context: 'tv'
+            var view = getResumeView();
+            var html = '';
 
-            })).lazyChildren();
+            if (view == 'PosterCard') {
+
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "backdrop",
+                    showTitle: true,
+                    showParentTitle: true,
+                    lazy: true,
+                    cardLayout: true,
+                    context: 'tv',
+                    showDetailsMenu: true
+                });
+
+            } else if (view == 'Poster') {
+
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "backdrop",
+                    showTitle: true,
+                    showParentTitle: true,
+                    overlayText: screenWidth >= 800 && !AppInfo.hasLowImageBandwidth,
+                    lazy: true,
+                    context: 'tv',
+                    showDetailsMenu: true
+                });
+            }
+
+            $('#resumableItems', page).html(html).lazyChildren();
 
         });
     }
 
-    $(document).on('pagebeforeshow', "#tvRecommendedPage", function () {
+    $(document).on('pageshown', "#tvRecommendedPage", function () {
 
         var page = this;
 

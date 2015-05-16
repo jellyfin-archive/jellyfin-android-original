@@ -71,8 +71,8 @@
         } else {
             html += '<div class="cardImage" style="text-align:center;">';
 
-            var icon = server.Id == 'new' ? 'plus-circle' : 'globe';
-            html += '<i class="fa fa-' + icon + '" style="color:#fff;vertical-align:middle;font-size:100px;margin-top:25%;"></i>';
+            var icon = server.Id == 'new' ? 'plus-circle' : 'server';
+            html += '<i class="fa fa-' + icon + '" style="color:#fff;vertical-align:middle;font-size:100px;"></i>';
         }
 
         html += "</div>";
@@ -128,12 +128,12 @@
             var id = this.getAttribute('data-serverid');
 
             if (id == 'new') {
-                window.location = 'connectlogin.html?mode=manualserver';
+                Dashboard.navigate('connectlogin.html?mode=manualserver');
                 return;
             }
 
             if (id == 'connect') {
-                window.location = 'connectlogin.html?mode=connect';
+                Dashboard.navigate('connectlogin.html?mode=connect');
                 return;
             }
 
@@ -154,7 +154,7 @@
         // Need the timeout because jquery mobile will not show a popup if there's currently already one in the process of closing
         setTimeout(function () {
 
-            Dashboard.hideLoadingMsg();
+            Dashboard.hideModalLoadingMsg();
             Dashboard.alert({
                 message: Globalize.translate('DefaultErrorMessage')
             });
@@ -164,12 +164,12 @@
 
     function acceptInvitation(page, id) {
 
-        Dashboard.showLoadingMsg();
+        Dashboard.showModalLoadingMsg();
 
         // Add/Update connect info
         ConnectionManager.acceptServer(id).done(function () {
 
-            Dashboard.hideLoadingMsg();
+            Dashboard.hideModalLoadingMsg();
             loadPage(page);
 
         }).fail(function () {
@@ -180,12 +180,12 @@
 
     function deleteServer(page, id) {
 
-        Dashboard.showLoadingMsg();
+        Dashboard.showModalLoadingMsg();
 
         // Add/Update connect info
         ConnectionManager.deleteServer(id).done(function () {
 
-            Dashboard.hideLoadingMsg();
+            Dashboard.hideModalLoadingMsg();
             loadPage(page);
 
         }).fail(function () {
@@ -197,12 +197,12 @@
 
     function rejectInvitation(page, id) {
 
-        Dashboard.showLoadingMsg();
+        Dashboard.showModalLoadingMsg();
 
         // Add/Update connect info
         ConnectionManager.rejectServer(id).done(function () {
 
-            Dashboard.hideLoadingMsg();
+            Dashboard.hideModalLoadingMsg();
             loadPage(page);
 
         }).fail(function () {
@@ -302,7 +302,7 @@
         html += '<a class="cardContent" href="' + href + '">';
 
         html += '<div class="cardImage" style="text-align:center;">';
-        html += '<i class="fa fa-globe" style="color:#fff;vertical-align:middle;font-size:100px;margin-top:25%;"></i>';
+        html += '<i class="fa fa-globe" style="color:#fff;vertical-align:middle;font-size:100px;"></i>';
         html += "</div>";
 
         // cardContent
@@ -372,6 +372,8 @@
 
         Dashboard.showLoadingMsg();
 
+        Backdrops.setDefault(page);
+
         ConnectionManager.getAvailableServers().done(function (servers) {
 
             servers = servers.slice(0);
@@ -400,7 +402,17 @@
         loadInvitations(page);
     }
 
-    $(document).on('pageshow', "#selectServerPage", function () {
+    $(document).on('pagebeforecreate', "#selectServerPage", function () {
+
+        var page = this;
+
+        if (ConnectionManager.isLoggedIntoConnect()) {
+            $(page).addClass('libraryPage').addClass(' noSecondaryNavPage').removeClass('standalonePage');
+        } else {
+            $(page).removeClass('libraryPage').removeClass(' noSecondaryNavPage').addClass('standalonePage');
+        }
+
+    }).on('pagebeforeshow', "#selectServerPage", function () {
 
         var page = this;
 

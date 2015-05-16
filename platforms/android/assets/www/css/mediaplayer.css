@@ -1,7 +1,7 @@
 ﻿/* Now playing bar */
 .nowPlayingBar {
     padding: 16px 0 16px 0;
-    border-top: 2px solid green;
+    border-top: 1px solid #444;
     text-align: center;
 }
 
@@ -39,7 +39,7 @@
     vertical-align: middle;
     text-align: left;
     font-size: 15px;
-    max-width: 200px;
+    max-width: 170px;
 }
 
 @media (min-width: 800px) {

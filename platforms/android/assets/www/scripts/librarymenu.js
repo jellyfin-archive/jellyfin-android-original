@@ -1,11 +1,11 @@
-﻿(function (window, document, $) {
+﻿(function (window, document, $, devicePixelRatio) {
 
     function renderHeader(user) {
 
         var html = '<div class="viewMenuBar ui-bar-b">';
 
-        if (($.browser.safari && $.browser.mobile && window.navigator.standalone) || Dashboard.isRunningInCordova()) {
-            html += '<a data-rel="back" data-role="none" href="#" class="headerButton headerButtonLeft headerBackButton"><div class="fa fa-arrow-circle-o-left"></div></a>';
+        if (($.browser.safari && window.navigator.standalone) || Dashboard.isRunningInCordova()) {
+            html += '<button type="button" data-role="none" onclick="history.back();" class="headerButton headerButtonLeft headerBackButton"><div class="fa fa-arrow-left"></div></button>';
         }
 
         html += '<button type="button" data-role="none" title="Menu" class="headerButton dashboardMenuButton barsMenuButton headerButtonLeft">';
@@ -20,32 +20,33 @@
 
         html += '<div class="libraryMenuButtonText headerButton"><span>EMBY</span></div>';
 
-        if (user.localUser) {
+        html += '<div class="viewMenuSecondary">';
 
-            html += '<div class="viewMenuSearch"><form class="viewMenuSearchForm">';
+        var btnCastVisible = user.localUser ? '' : 'visibility:hidden;';
+
+        if (!AppInfo.enableHeaderImages) {
+            html += '<button id="btnCast" class="btnCast btnCastIcon btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="' + btnCastVisible + '">';
+            html += '<div class="headerSelectedPlayer"></div><i class="fa fa-wifi"></i>';
+            html += '</button>';
+        } else {
+            html += '<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="' + btnCastVisible + '"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';
+        }
+
+        if (user.localUser) {
+            html += '<button onclick="Search.showSearchPanel($.mobile.activePage);" type="button" data-role="none" class="headerButton headerButtonRight headerSearchButton"><div class="fa fa-search" style="font-size:21px;"></div></button>';
+
+            html += '<div class="viewMenuSearch hide"><form class="viewMenuSearchForm">';
             html += '<input type="text" data-role="none" data-type="search" class="headerSearchInput" autocomplete="off" spellcheck="off" />';
             html += '<div class="searchInputIcon fa fa-search"></div>';
-            html += '<button data-role="none" type="button" data-iconpos="notext" class="imageButton btnCloseSearch" style="display:none;"><i class="fa fa-close"></i></button>';
+            html += '<button data-role="none" type="button" data-iconpos="notext" class="imageButton btnCloseSearch"><i class="fa fa-close"></i></button>';
             html += '</form></div>';
         }
 
-        html += '<div class="viewMenuSecondary">';
-
-        if (user.localUser) {
-
-            html += '<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';
-
-            html += '<button onclick="Search.showSearchPanel($.mobile.activePage);" type="button" data-role="none" class="headerButton headerButtonRight headerSearchButton"><div class="fa fa-search" style="font-size:21px;"></div></button>';
-        } else {
-            html += '<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="visibility:hidden;"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';
-
-        }
-        
         if (user.name) {
-            
-            html += '<a class="headerButton headerButtonRight headerUserButton" href="#" onclick="Dashboard.showUserFlyout(this);">';
 
-            if (user.imageUrl) {
+            html += '<button class="headerButton headerButtonRight headerUserButton" type="button" data-role="none" onclick="Dashboard.showUserFlyout(this);">';
+
+            if (user.imageUrl && AppInfo.enableUserImage) {
 
                 var userButtonHeight = 26;
 
@@ -55,12 +56,12 @@
                     url += "&height=" + (userButtonHeight * Math.max(devicePixelRatio || 1, 2));
                 }
 
-                html += '<img src="' + url + '" style="border-radius: 1000px; height:' + userButtonHeight + 'px;" />';
+                html += '<div class="lazy headerUserImage" data-src="' + url + '" style="width:' + userButtonHeight + 'px;height:' + userButtonHeight + 'px;"></div>';
             } else {
                 html += '<div class="fa fa-user"></div>';
             }
 
-            html += '</a>';
+            html += '</button>';
         }
 
         if (user.canManageServer) {
@@ -72,7 +73,7 @@
         html += '</div>';
 
         $(document.body).prepend(html);
-        $('.viewMenuBar').trigger('create');
+        $('.viewMenuBar').trigger('create').lazyChildren();
 
         $(document).trigger('headercreated');
         bindMenuEvents();
@@ -80,12 +81,12 @@
 
     function bindMenuEvents() {
 
-        if ($.browser.mobile) {
+        if (AppInfo.isTouchPreferred) {
 
-            $('.libraryMenuButton').on('mousedown', function () {
+            $('.libraryMenuButton').on('click', function () {
                 showLibraryMenu(false);
             });
-            $('.dashboardMenuButton').on('mousedown', function () {
+            $('.dashboardMenuButton').on('click', function () {
                 showDashboardMenu(false);
             });
 
@@ -96,10 +97,16 @@
 
         // grab an element
         var viewMenuBar = document.getElementsByClassName("viewMenuBar")[0];
-        // construct an instance of Headroom, passing the element
-        var headroom = new Headroom(viewMenuBar);
-        // initialise
-        headroom.init();
+        initHeadRoom(viewMenuBar);
+    }
+
+    function updateViewMenuBarHeadroom(page, viewMenuBar) {
+
+        if ($(page).hasClass('libraryPage')) {
+            viewMenuBar.removeClass('headroomDisabled');
+        } else {
+            viewMenuBar.addClass('headroomDisabled');
+        }
     }
 
     function getItemHref(item, context) {
@@ -117,7 +124,7 @@
         html += '<div class="libraryMenuDivider"></div>';
         html += '<div class="adminMenuOptions">';
 
-        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" href="dashboard.html"><span class="fa fa-cog sidebarLinkIcon"></span>' + Globalize.translate('ButtonDashboard') + '</a>';
+        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" data-rel="none" href="dashboard.html"><span class="fa fa-cog sidebarLinkIcon"></span>' + Globalize.translate('ButtonDashboard') + '</a>';
         html += '<a class="sidebarLink lnkMediaFolder editorViewMenu" data-itemid="editor" href="edititemmetadata.html"><span class="fa fa-edit sidebarLinkIcon"></span>' + Globalize.translate('ButtonMetadataManager') + '</a>';
         html += '<a class="sidebarLink lnkMediaFolder" data-itemid="reports" href="reports.html"><span class="fa fa-bar-chart sidebarLinkIcon"></span>' + Globalize.translate('ButtonReports') + '</a>';
         html += '</div>';
@@ -263,7 +270,7 @@
 
             html += '<div class="sidebarLinks librarySidebarLinks">';
 
-            var showUserAtTop = $.browser.mobile;
+            var showUserAtTop = AppInfo.isTouchPreferred;
 
             if (showUserAtTop) {
 
@@ -271,19 +278,20 @@
                     'mypreferencesdisplay.html?userId=' + user.localUser.Id :
                     (user.localUser ? 'index.html' : '#');
 
-                var paddingLeft = user.imageUrl ? 'padding-left:.7em;' : '';
+                var hasUserImage = user.imageUrl && AppInfo.enableUserImage;
+                var paddingLeft = hasUserImage ? 'padding-left:.7em;' : '';
                 html += '<a style="margin-top:0;' + paddingLeft + 'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #000;" href="' + userHref + '">';
 
                 var imgWidth = 44;
 
-                if (user.imageUrl) {
+                if (hasUserImage) {
                     var url = user.imageUrl;
 
                     if (user.supportsImageParams) {
                         url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
                     }
 
-                    html += '<img style="max-width:' + imgWidth + 'px;vertical-align:middle;margin-right:.8em;border-radius: 50px;" src="' + url + '" />';
+                    html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
                 } else {
                     html += '<span class="fa fa-user sidebarLinkIcon"></span>';
                 }
@@ -306,9 +314,11 @@
 
                 html += Globalize.translate('ButtonHome');
                 html += '</a>';
-
-                html += '<div class="libraryMenuDivider"></div>';
             }
+
+            html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" data-rel="none" href="nowplaying.html"><span class="fa fa-tablet sidebarLinkIcon"></span>' + Globalize.translate('ButtonRemote') + '</a>';
+
+            html += '<div class="libraryMenuDivider"></div>';
 
             html += getViewsHtml();
             html += '</div>';
@@ -317,7 +327,7 @@
 
             $(document.body).append(html);
 
-            panel = $('#libraryPanel').panel({}).trigger('create');
+            panel = $('#libraryPanel').panel({}).lazyChildren().trigger('create');
 
             updateLibraryMenu();
         }
@@ -495,11 +505,13 @@
     }).on('pagebeforeshow', ".page:not(.standalonePage)", function () {
 
         var page = this;
+        var viewMenuBar = $('.viewMenuBar');
         if (!$('.viewMenuBar').length) {
 
             ConnectionManager.user().done(function (user) {
 
                 renderHeader(user);
+                updateViewMenuBarHeadroom(page, $('.viewMenuBar'));
 
                 updateCastIcon();
 
@@ -509,6 +521,7 @@
         } else {
             updateContextText(page);
             updateLibraryNavLinks(page);
+            updateViewMenuBarHeadroom(page, viewMenuBar);
         }
 
         var jpage = $(page);
@@ -522,14 +535,25 @@
             $(document.body).removeClass('dashboardDocument').removeClass('libraryDocument');
         }
 
-    }).on('pagebeforeshow', ".page", function () {
+    }).on('pagebeforeshow', ".libraryPage", function () {
 
         var page = this;
 
-        if ($(page).hasClass('standalonePage')) {
-            $('.viewMenuBar').hide();
+        if (AppInfo.enableBottomTabs) {
+            $('.libraryViewNav', page).addClass('bottomLibraryViewNav');
+            $(page).addClass('noSecondaryNavPage');
+
+            $(function () {
+
+                $('.footer').addClass('footerOverBottomTabs');
+            });
+
         } else {
-            $('.viewMenuBar').show();
+
+            $('.libraryViewNav', page).each(function () {
+
+                initHeadRoom(this);
+            });
         }
 
     }).on('pageshow', ".libraryPage", function () {
@@ -544,16 +568,22 @@
             // Scroll back up so in case vertical scroll was messed with
             $(document).scrollTop(0);
         }
+    });
 
-        $('.libraryViewNav', page).each(function() {
-            
+    function initHeadRoom(elem) {
+
+        if (!AppInfo.enableHeadRoom) {
+            return;
+        }
+
+        requirejs(["thirdparty/headroom"], function () {
+
             // construct an instance of Headroom, passing the element
-            var headroom = new Headroom(this);
+            var headroom = new Headroom(elem);
             // initialise
             headroom.init();
-
         });
-    });
+    }
 
     function initializeApiClient(apiClient) {
 
@@ -573,7 +603,7 @@
 
     });
 
-})(window, document, jQuery);
+})(window, document, jQuery, window.devicePixelRatio);
 
 $.fn.createHoverTouch = function () {
 

@@ -1,12 +1,16 @@
 ﻿(function ($, document) {
 
-    $(document).on('pagebeforeshow', "#tvUpcomingPage", function () {
+    $(document).on('pageshown', "#tvUpcomingPage", function () {
 
         var page = this;
 
+        var limit = AppInfo.hasLowImageBandwidth ?
+         18 :
+         40;
+
         var query = {
 
-            Limit: 40,
+            Limit: limit,
             Fields: "AirTime,UserData,SeriesStudio,SyncInfo",
             UserId: Dashboard.getCurrentUserId(),
             ImageTypeLimit: 1,
@@ -48,6 +52,7 @@
                 preferThumb: true,
                 context: context || 'home-upcoming',
                 lazy: true,
+                showDetailsMenu: true
 
             })).lazyChildren();
         });
