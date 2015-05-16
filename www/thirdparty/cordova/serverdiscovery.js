@@ -14,6 +14,15 @@
         return String.fromCharCode.apply(null, new Uint16Array(buf));
     }
 
+    function getResultCode(result) {
+
+        if (result != null && result.resultCode != null) {
+            return result.resultCode;
+        }
+
+        return result;
+    }
+
     function findServersInternal(timeoutMs) {
 
         var deferred = DeferredBuilder.Deferred();
@@ -85,7 +94,7 @@
 
             chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', port, function (result) {
 
-                if (result != 0) {
+                if (getResultCode(result) != 0) {
                     console.log('bind fail: ' + result);
                     deferred.resolveWith(null, [servers]);
                     chrome.sockets.udp.close(createInfo.socketId);
@@ -97,7 +106,7 @@
                 console.log('chrome.sockets.udp.send');
                 chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (result) {
 
-                    if (result != 0) {
+                    if (getResultCode(result) != 0) {
                         console.log('send fail: ' + result);
                         deferred.resolveWith(null, [servers]);
                         chrome.sockets.udp.close(createInfo.socketId);
