@@ -165,7 +165,7 @@
         });
     }
 
-    $(document).on('pagebeforeshow', "#musicRecommendedPage", function () {
+    $(document).on('pageshown', "#musicRecommendedPage", function () {
 
         var parentId = LibraryMenu.getTopParentId();
 
