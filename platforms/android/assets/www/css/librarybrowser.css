@@ -20,6 +20,10 @@
         background-color: rgba(240, 240,240, .94) !important;
     }
 
+.ui-page-theme-b {
+    background-color: #1f1f1f;
+}
+
 .backdropPage.ui-page-theme-b {
     background-color: rgba(20, 20,20, .86) !important;
 }
@@ -91,6 +95,13 @@
 @media all and (max-width: 800px) {
 
     .hiddenSectionOnMobile {
+        display: none;
+    }
+}
+
+@media all and (min-width: 800px) {
+
+    .hiddenSectionOnNonMobile {
         display: none;
     }
 }
@@ -612,28 +623,28 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     display: none;
 }
 
-.libraryPage ::-webkit-scrollbar {
+.darkScrollbars ::-webkit-scrollbar {
     width: 12px;
     height: 12px;
 }
 
-.libraryPage ::-webkit-scrollbar-button:start:decrement,
-.libraryPage ::-webkit-scrollbar-button:end:increment {
+.darkScrollbars ::-webkit-scrollbar-button:start:decrement,
+.darkScrollbars ::-webkit-scrollbar-button:end:increment {
     display: none;
 }
 
-.libraryPage ::-webkit-scrollbar-track-piece {
+.darkScrollbars ::-webkit-scrollbar-track-piece {
     background-color: #3b3b3b;
 }
 
-.libraryPage ::-webkit-scrollbar-thumb:vertical, .libraryPage ::-webkit-scrollbar-thumb:horizontal {
+.darkScrollbars ::-webkit-scrollbar-thumb:vertical, .darkScrollbars ::-webkit-scrollbar-thumb:horizontal {
     -webkit-border-radius: 2px;
     background: #888 no-repeat center;
 }
 
 .detailSection {
     vertical-align: top;
-    margin-bottom: 2.5em;
+    margin-bottom: 3em;
 }
 
 .detailCollapsibleSection:not(.hide) + .detailCollapsibleSection {
@@ -933,6 +944,7 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     color: #fff;
     background: rgb(51, 136, 204);
     background: rgba(51, 136, 204, .9);
+    line-height: 1.2;
 }
 
 .unidentifiedIndicator {
@@ -1048,6 +1060,7 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 
 .timelineHeader {
     margin-bottom: .25em;
+    line-height: 1.25em;
     line-height: initial;
 }
 
@@ -1274,56 +1287,6 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
         text-decoration: none;
     }
 
-.groupingMenuScroller {
-    max-height: 200px;
-    min-width: 240px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding-right: 8px;
-}
-
-@media all and (min-width: 400px) {
-
-    .groupingMenuScroller {
-        min-width: 300px;
-    }
-}
-
-@media all and (min-width: 500px) {
-
-    .groupingMenuScroller {
-        min-width: 400px;
-    }
-}
-
-@media all and (min-width: 600px) {
-
-    .groupingMenuScroller {
-        min-width: 500px;
-    }
-}
-
-@media all and (min-height: 400px) {
-
-    .groupingMenuScroller {
-        max-height: 300px;
-    }
-}
-
-@media all and (min-height: 500px) {
-
-    .groupingMenuScroller {
-        max-height: 400px;
-    }
-}
-
-@media all and (min-height: 600px) {
-
-    .groupingMenuScroller {
-        max-height: 500px;
-    }
-}
-
 
 .itemsContainer:not(.fullWidthItemsContainer) .itemsListview {
     max-width: 800px;
@@ -1370,6 +1333,14 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
+}
+
+.listViewMoreButton {
+    position: absolute;
+    right: 0;
+    top: 10%;
+    padding: 15px 20px;
+    font-size: 20px;
 }
 
 .ui-li-has-icon > .ui-btn {
@@ -1436,14 +1407,14 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 }
 
     .userProfileSettingsForm .detailSectionContent {
-        padding: 0 1em;
+        padding: 0 .5em;
     }
 
 @media all and (max-width: 700px) {
 
     .userProfileSettingsForm .detailSection {
-        margin-left: 1em;
-        margin-right: 1em;
+        margin-left: .5em;
+        margin-right: .5em;
     }
 }
 
@@ -1468,5 +1439,177 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 
     .smallDetailImageContainer {
         padding-left: 1em;
+    }
+}
+
+.latestChannelItemsDisabled .latestChannelItemsTab {
+    display: none !important;
+}
+
+.studioTabDisabled .tvStudiosTab, .studioTabDisabled .movieStudiosTab {
+    display: none !important;
+}
+
+.peopleTabDisabled .tvPeopleTab, .peopleTabDisabled .moviePeopleTab {
+    display: none !important;
+}
+
+.tvEpisodesTabDisabled .tvEpisodesTab {
+    display: none !important;
+}
+
+.musicSongsTabDisabled .musicSongsTab {
+    display: none !important;
+}
+
+.musicArtistsTabDisabled .musicArtistsTab {
+    display: none !important;
+}
+
+.homeLatestTabDisabled .homeLatestTab {
+    display: none !important;
+}
+
+.movieTrailersTabDisabled .movieTrailersTab {
+    display: none !important;
+}
+
+.homeFavoritesTabDisabled .homeFavoritesTab {
+    display: none !important;
+}
+
+.detailsMenu {
+    width: 280px;
+}
+
+@media all and (min-width: 360px) {
+
+    .detailsMenu {
+        width: 320px;
+    }
+}
+
+@media all and (min-width: 400px) {
+
+    .detailsMenu {
+        width: 340px;
+    }
+}
+
+@media all and (min-width: 500px) {
+
+    .detailsMenu {
+        width: 440px;
+    }
+}
+
+@media all and (min-width: 600px) {
+
+    .detailsMenu {
+        width: 540px;
+    }
+}
+
+@media all and (min-width: 700px) {
+
+    .detailsMenu {
+        width: 640px;
+    }
+}
+
+@media all and (min-width:800px) {
+
+    .detailsMenu {
+        width: 740px;
+    }
+}
+
+.detailsMenuLeftButton {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 23px 15px;
+}
+
+.detailsMenuRightButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 23px 15px;
+}
+
+.detailsMenuHeaderWithLogo .detailsMenuLeftButton, .detailsMenuHeaderWithLogo .detailsMenuRightButton {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.detailsMenuContentInner {
+    height: 200px;
+}
+
+.detailsMenuOverview {
+    max-height: 30px;
+    text-overflow: ellipsis;
+    overflow-y: hidden;
+}
+
+.detailsMenuButtons {
+    padding: 1em 0 .5em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+    .detailsMenuButtons .btn {
+        font-size: 14px;
+    }
+
+.detailsMenuButtonContainer {
+    display: inline-block;
+    margin-left: .5em;
+    margin-right: .5em;
+}
+
+    .detailsMenuButtonContainer span {
+        padding-left: 1em;
+    }
+
+.detailsMenu h3 {
+    padding: .7em 30px;
+}
+
+.detailsMenuHeaderWithLogo h3 {
+    padding: 0 30px;
+}
+
+@media all and (min-height:500px) {
+
+    .detailsMenuContentInner {
+        height: 300px;
+    }
+
+    .detailsMenuOverview {
+        max-height: 60px;
+    }
+}
+
+@media all and (min-height:540px) {
+
+    .detailsMenuContentInner {
+        height: 340px;
+    }
+
+    .detailsMenuOverview {
+        max-height: 100px;
+    }
+}
+
+@media all and (min-height:600px) {
+
+    .detailsMenuContentInner {
+        height: 400px;
+    }
+
+    .detailsMenuOverview {
+        max-height: 160px;
     }
 }

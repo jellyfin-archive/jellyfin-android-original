@@ -1,6 +1,6 @@
 ﻿(function ($, document) {
 
-    var view = LibraryBrowser.getDefaultItemsView('Poster', 'Poster');
+    var view = LibraryBrowser.getDefaultItemsView('Poster', 'PosterCard');
 
     // The base query options
     var query = {
@@ -48,6 +48,15 @@
             updateFilterControls(page);
             var trigger = false;
 
+            if (AppInfo.hasLowImageBandwidth) {
+                if (view == 'Thumb') {
+                    view = 'ThumbCard';
+                }
+                else if (view == 'Poster') {
+                    view = 'PosterCard';
+                }
+            }
+
             if (view == "Thumb") {
                 html = LibraryBrowser.getPosterViewHtml({
                     items: result.Items,
@@ -56,7 +65,7 @@
                     context: 'movies',
                     lazy: true,
                     overlayText: true,
-                    showTitle: false
+                    showDetailsMenu: true
                 });
             }
             else if (view == "ThumbCard") {
@@ -69,7 +78,8 @@
                     lazy: true,
                     showTitle: true,
                     cardLayout: true,
-                    showYear: true
+                    showYear: true,
+                    showDetailsMenu: true
                 });
             }
             else if (view == "Banner") {
@@ -79,7 +89,8 @@
                     shape: "banner",
                     preferBanner: true,
                     context: 'movies',
-                    lazy: true
+                    lazy: true,
+                    showDetailsMenu: true
                 });
             }
             else if (view == "List") {
@@ -96,10 +107,10 @@
                     items: result.Items,
                     shape: "portrait",
                     context: 'movies',
-                    showTitle: false,
                     centerText: true,
                     lazy: true,
-                    overlayText: true
+                    overlayText: true,
+                    showDetailsMenu: true
                 });
             }
             else if (view == "PosterCard") {
@@ -110,7 +121,8 @@
                     showTitle: true,
                     showYear: true,
                     lazy: true,
-                    cardLayout: true
+                    cardLayout: true,
+                    showDetailsMenu: true
                 });
             }
             else if (view == "Timeline") {
@@ -121,7 +133,8 @@
                     showTitle: true,
                     timeline: true,
                     centerText: true,
-                    lazy: true
+                    lazy: true,
+                    showDetailsMenu: true
                 });
             }
 

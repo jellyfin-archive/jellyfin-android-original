@@ -1,6 +1,6 @@
 ﻿(function ($, document) {
 
-    var view = LibraryBrowser.getDefaultItemsView('Poster', 'Poster');
+    var view = LibraryBrowser.getDefaultItemsView('Poster', 'PosterCard');
 
     // The base query options
     var query = {
@@ -46,6 +46,12 @@
             updateFilterControls();
             var trigger = false;
 
+            if (AppInfo.hasLowImageBandwidth) {
+                if (view == 'Poster') {
+                    view = 'PosterCard';
+                }
+            }
+
             if (view == "List") {
 
                 html = LibraryBrowser.getListViewHtml({
@@ -63,7 +69,8 @@
                     showParentTitle: true,
                     overlayText: true,
                     lazy: true,
-                    context: 'tv'
+                    context: 'tv',
+                    showDetailsMenu: true
                 });
             }
             else if (view == "PosterCard") {
@@ -74,7 +81,8 @@
                     showParentTitle: true,
                     lazy: true,
                     context: 'tv',
-                    cardLayout: true
+                    cardLayout: true,
+                    showDetailsMenu: true
                 });
             }
 
@@ -154,7 +162,7 @@
         $('#selectPageSize', page).val(query.Limit).selectmenu('refresh');
     }
 
-    $(document).on('pageinit', "#episodesPage", function () {
+    $(document).on('pageinitdepends', "#episodesPage", function () {
 
         var page = this;
 
@@ -319,7 +327,7 @@
             reloadItems(page);
         });
 
-    }).on('pagebeforeshow', "#episodesPage", function () {
+    }).on('pageshown', "#episodesPage", function () {
 
         var page = this;
         query.ParentId = LibraryMenu.getTopParentId();
@@ -360,9 +368,8 @@
             }
         });
 
-    }).on('pageshow', "#episodesPage", function () {
-
         updateFilterControls(this);
+
     });
 
 })(jQuery, document);

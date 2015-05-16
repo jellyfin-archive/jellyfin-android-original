@@ -1,9 +1,9 @@
 ﻿.libraryPage {
-    padding-top: 49px !important;
+    padding-top: 50px !important;
 }
 
     .libraryPage:not(.metadataEditorPage):not(.noSecondaryNavPage) {
-        padding-top: 99px !important;
+        padding-top: 98px !important;
     }
 
 .libraryMenuDivider {
@@ -13,15 +13,22 @@
 }
 
 .headerBackButton {
-    padding-right: 0 !important;
+    padding-right: 5px !important;
 }
 
-.viewMenuBar, .barsMenuButton, .libraryMenuButtonText, .btnCast {
+.headerButton {
     height: 50px;
+    line-height: 50px;
+    display: inline-block;
 }
 
-.barsMenuButton, .libraryMenuButtonText, .btnCast {
-    line-height: 50px;
+.headerUserImage {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border-radius: 1000px;
+    vertical-align: middle;
+    display: inline-block;
 }
 
 .viewMenuBar .fa {
@@ -32,7 +39,6 @@
 
 .headerButton {
     margin: 0;
-    padding: 0;
     background-color: transparent;
     top: 0;
     bottom: 0;
@@ -49,17 +55,9 @@
         vertical-align: middle;
     }
 
-.headerSearchButton img {
-    height: 18px;
-}
-
 .headerButtonLeft {
     padding: 0 15px;
 }
-
-    .headerButtonLeft:first-child {
-        padding-left: 10px;
-    }
 
 .menuArrow {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAbklEQ…yGDxkLaBtENI9kPMk0gaoW0Dyj0aWowFLYNYzWB6MWMAAAq1H3+Mhu2hQAAAAASUVORK5CYII=);
@@ -118,9 +116,7 @@
     left: 0;
     z-index: 999;
     top: 0;
-    border-top: 0;
-    border-left: 0;
-    border-right: 0;
+    border: 0;
 }
 
 .libraryViewNav {
@@ -133,12 +129,20 @@
     z-index: 999;
     text-align: center;
     font-size: 14px;
+    text-transform: uppercase;
     white-space: nowrap;
     padding: 0 0 0;
     overflow-x: scroll;
     -ms-overflow-style: none;
     overflow: -moz-scrollbars-none;
     -webkit-overflow-scrolling: touch;
+}
+
+.bottomLibraryViewNav {
+    top: initial;
+    bottom: 0;
+    border-top: 1px solid #444;
+    height: 51px;
 }
 
 .viewMenuBar {
@@ -188,7 +192,7 @@
 
     .librarySidebarLinks a {
         font-weight: 300 !important;
-        padding: .7em 20px .7em 0;
+        padding: .8em 20px .8em 0;
     }
 
         .librarySidebarLinks a:hover {
@@ -232,9 +236,13 @@
     border-bottom: 5px solid transparent;
 }
 
-    .libraryViewNav a:not(.ui-btn-active):hover {
-        color: #2ad !important;
-    }
+.bottomLibraryViewNav a {
+    padding: 12px 0 12px;
+}
+
+.libraryViewNav a:not(.ui-btn-active):hover {
+    color: #2ad !important;
+}
 
 .libraryViewNavLinkContent {
     display: inline-block;

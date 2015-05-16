@@ -492,8 +492,6 @@
 
     function onGroupedCardClick(e) {
 
-        var target = $(e.target);
-
         var card = this;
         var itemId = card.getAttribute('data-itemid');
         var context = card.getAttribute('data-context');
@@ -501,8 +499,6 @@
         $(card).addClass('hasContextMenu');
 
         var userId = Dashboard.getCurrentUserId();
-
-        var promise1 = ApiClient.getItem(userId, itemId);
 
         var options = {
 
@@ -512,91 +508,15 @@
             GroupItems: false
         };
 
-        var promise2 = ApiClient.getJSON(ApiClient.getUrl('Users/' + userId + '/Items/Latest', options));
+        ApiClient.getJSON(ApiClient.getUrl('Users/' + userId + '/Items/Latest', options)).done(function (items) {
 
-        $.when(promise1, promise2).done(function (response1, response2) {
+            var ids = items.map(function (i) {
+                return i.Id;
+            });
 
-            var item = response1[0];
-            var latestItems = response2[0];
-
-            if (latestItems.length == 1) {
-
-                if (!target.is('a,button')) {
-                    var first = latestItems[0];
-                    Dashboard.navigate(LibraryBrowser.getHref(first, context));
-                    return;
-                }
-            }
-
-            var html = '<div data-role="popup" class="groupingMenu" data-theme="a">';
-
-            html += '<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>';
-            html += '<div>';
-            html += '<ul data-role="listview">';
-
-            var href = card.href || LibraryBrowser.getHref(item, context);
-            var header = Globalize.translate('HeaderLatestFromChannel').replace('{0}', '<a href="' + href + '">' + item.Name + '</a>');
-            html += '<li data-role="list-divider">' + header + '</li>';
-
-            html += '</ul>';
-
-            html += '<div class="groupingMenuScroller">';
-            html += '<ul data-role="listview">';
-
-            html += latestItems.map(function (latestItem) {
-
-                var itemHtml = '';
-
-                href = LibraryBrowser.getHref(latestItem, context);
-                itemHtml += '<li class="ui-li-has-thumb"><a href="' + href + '">';
-
-                var imgUrl;
-
-                if (latestItem.ImageTags.Primary) {
-
-                    // Scaling 400w episode images to 80 doesn't turn out very well
-                    var width = latestItem.Type == 'Episode' ? 160 : 80;
-                    imgUrl = ApiClient.getScaledImageUrl(latestItem.Id, {
-                        width: width,
-                        tag: latestItem.ImageTags.Primary,
-                        type: "Primary",
-                        index: 0
-                    });
-
-                }
-                if (imgUrl) {
-                    itemHtml += '<div class="listviewImage ui-li-thumb" style="background-image:url(\'' + imgUrl + '\');"></div>';
-                }
-
-                itemHtml += '<h3>';
-                itemHtml += LibraryBrowser.getPosterViewDisplayName(latestItem);
-                itemHtml += '</h3>';
-
-                var date = parseISO8601Date(latestItem.DateCreated, { toLocal: true });
-
-                itemHtml += '<p>';
-                itemHtml += Globalize.translate('LabelAddedOnDate').replace('{0}', date.toLocaleDateString());
-                itemHtml += '</p>';
-
-                itemHtml += '</a></li>';
-
-                return itemHtml;
-
-            }).join('');
-
-            html += '</ul>';
-            html += '</div>';
-
-            html += '</div>';
-            html += '</div>';
-
-            $($.mobile.activePage).append(html);
-
-            $('.groupingMenu').popup().trigger('create').popup("open").on("popupafterclose", function () {
-
-                $(this).off("popupafterclose").remove();
-                $(card).removeClass('hasContextMenu');
-
+            showItemsOverlay({
+                ids: ids,
+                context: context
             });
         });
 
@@ -604,8 +524,271 @@
         return false;
     }
 
+    function getItemsOverlay(ids, context) {
 
-    $.fn.createCardMenus = function () {
+        $('.detailsMenu').remove();
+
+        var html = '<div data-role="popup" class="detailsMenu" data-transition="slidedown" style="border:0;padding:0;" data-ids="' + ids.join(',') + '" data-context="' + (context || '') + '">';
+
+        html += '<div style="padding:1em 1em;background:rgba(20,20,20,1);margin:0;text-align:center;" class="detailsMenuHeader">';
+        html += '<button type="button" class="imageButton detailsMenuLeftButton" data-role="none"><i class="fa fa-arrow-left"></i></button>';
+        html += '<h3 style="font-weight:400;margin:.5em 0;line-height:0;"></h3>';
+        html += '<button type="button" class="imageButton detailsMenuRightButton" data-role="none"><i class="fa fa-arrow-right"></i></button>';
+        html += '</div>';
+
+        html += '<div class="detailsMenuContent" style="background-position:center center;background-repeat:no-repeat;background-size:cover;">';
+        html += '<div style="padding:.5em 1em 1em;background:rgba(10,10,10,.80);" class="detailsMenuContentInner">';
+        html += '</div>';
+        html += '</div>';
+
+        html += '</div>';
+
+        $($.mobile.activePage).append(html);
+
+        var elem = $('.detailsMenu').popup().trigger('create').popup("open").on("popupafterclose", function () {
+
+            $(this).off("popupafterclose").remove();
+        });
+
+        $('.detailsMenuLeftButton', elem).on('click', function () {
+
+            var overlay = $(this).parents('.detailsMenu');
+            setItemIntoOverlay(overlay, parseInt(overlay.attr('data-index')) - 1, context);
+        });
+
+        $('.detailsMenuRightButton', elem).on('click', function () {
+
+            var overlay = $(this).parents('.detailsMenu');
+            setItemIntoOverlay(overlay, parseInt(overlay.attr('data-index')) + 1, context);
+        });
+
+        return elem;
+    }
+
+    function setItemIntoOverlay(elem, index) {
+
+        var ids = elem.attr('data-ids').split(',');
+        var itemId = ids[index];
+        var userId = Dashboard.getCurrentUserId();
+        var context = elem.attr('data-context');
+
+        elem.attr('data-index', index);
+
+        if (index > 0) {
+            $('.detailsMenuLeftButton', elem).show();
+        } else {
+            $('.detailsMenuLeftButton', elem).hide();
+        }
+
+        if (index < ids.length - 1) {
+            $('.detailsMenuRightButton', elem).show();
+        } else {
+            $('.detailsMenuRightButton', elem).hide();
+        }
+
+        var promise1 = ApiClient.getItem(userId, itemId);
+        var promise2 = Dashboard.getCurrentUser();
+
+        $.when(promise1, promise2).done(function (response1, response2) {
+
+            var item = response1[0];
+            var user = response2[0];
+
+            var background = 'none';
+
+            if (AppInfo.enableDetailsMenuImages) {
+                var backdropUrl;
+                var screenWidth = $(window).width();
+                var backdropWidth = Math.min(screenWidth, 800);
+
+                if (item.BackdropImageTags && item.BackdropImageTags.length) {
+
+                    backdropUrl = ApiClient.getScaledImageUrl(item.Id, {
+                        type: "Backdrop",
+                        index: 0,
+                        maxWidth: backdropWidth,
+                        tag: item.BackdropImageTags[0]
+                    });
+                }
+                else if (item.ParentBackdropItemId && item.ParentBackdropImageTags && item.ParentBackdropImageTags.length) {
+
+                    backdropUrl = ApiClient.getScaledImageUrl(item.ParentBackdropItemId, {
+                        type: 'Backdrop',
+                        index: 0,
+                        tag: item.ParentBackdropImageTags[0],
+                        maxWidth: backdropWidth
+                    });
+                }
+
+                if (backdropUrl) {
+                    background = 'url(' + backdropUrl + ')';
+                }
+            }
+
+            $('.detailsMenuContent', elem).css('backgroundImage', background);
+
+            var headerHtml = LibraryBrowser.getPosterViewDisplayName(item);
+            $('.detailsMenuHeader', elem).removeClass('detailsMenuHeaderWithLogo');
+            if (AppInfo.enableDetailsMenuImages) {
+
+                var logoUrl;
+
+                var logoHeight = 30;
+                if (item.ImageTags && item.ImageTags.Logo) {
+
+                    logoUrl = ApiClient.getScaledImageUrl(item.Id, {
+                        type: "Logo",
+                        index: 0,
+                        height: logoHeight,
+                        tag: item.ImageTags.Logo
+                    });
+                }
+
+                if (logoUrl) {
+                    headerHtml = '<img src="' + logoUrl + '" style="height:' + logoHeight + 'px;" />';
+                    $('.detailsMenuHeader', elem).addClass('detailsMenuHeaderWithLogo');
+                }
+            }
+
+            $('h3', elem).html(headerHtml);
+
+            var contentHtml = '';
+
+            var miscInfo = LibraryBrowser.getMiscInfoHtml(item);
+            if (miscInfo) {
+
+                contentHtml += '<p>' + miscInfo + '</p>';
+            }
+
+            var userData = LibraryBrowser.getUserDataIconsHtml(item);
+            if (userData) {
+
+                contentHtml += '<p>' + userData + '</p>';
+            }
+
+            var ratingHtml = LibraryBrowser.getRatingHtml(item);
+            if (ratingHtml) {
+
+                contentHtml += '<p>' + ratingHtml + '</p>';
+            }
+
+            if (item.Overview) {
+                contentHtml += '<p class="detailsMenuOverview">' + item.Overview + '</p>';
+            }
+
+            contentHtml += '<div class="detailsMenuButtons">';
+
+            if (MediaController.canPlay(item)) {
+                if (item.MediaType == 'Video' && !item.IsFolder && item.UserData && item.UserData.PlaybackPositionTicks) {
+                    contentHtml += '<div class="detailsMenuButtonContainer">';
+                    contentHtml += '<a href="#" class="btn btnAltAction btnResume">';
+                    contentHtml += '<i class="fa fa-play"></i>';
+                    contentHtml += '<span>' + Globalize.translate('ButtonResume') + '</span>';
+                    contentHtml += '</a>';
+                    contentHtml += '</div>';
+                }
+
+                contentHtml += '<div class="detailsMenuButtonContainer">';
+                contentHtml += '<a href="#" class="btn btnActionAccent btnPlay">';
+                contentHtml += '<i class="fa fa-play"></i>';
+                contentHtml += '<span>' + Globalize.translate('ButtonPlay') + '</span>';
+                contentHtml += '</a>';
+                contentHtml += '</div>';
+
+            }
+
+            contentHtml += '<div class="detailsMenuButtonContainer">';
+            contentHtml += '<a href="' + LibraryBrowser.getHref(item, context) + '" class="btn" style="background-color: #673AB7;">';
+            contentHtml += '<i class="fa fa-folder-open"></i>';
+            contentHtml += '<span>' + Globalize.translate('ButtonOpen') + '</span>';
+            contentHtml += '</a>';
+            contentHtml += '</div>';
+
+            if (SyncManager.isAvailable(item, user)) {
+                contentHtml += '<div class="detailsMenuButtonContainer">';
+                contentHtml += '<a href="#" class="btn btnSync">';
+                contentHtml += '<i class="fa fa-cloud"></i>';
+                contentHtml += '<span>' + Globalize.translate('ButtonSync') + '</span>';
+                contentHtml += '</a>';
+                contentHtml += '</div>';
+            }
+
+            contentHtml += '</div>';
+
+            $('.detailsMenuContentInner', elem).html(contentHtml).trigger('create');
+
+            $('.btnSync', elem).on('click', function () {
+
+                elem.popup('close');
+
+                SyncManager.showMenu({
+                    items: [item]
+                });
+            });
+
+            $('.btnPlay', elem).on('click', function () {
+
+                elem.popup('close');
+
+                MediaController.play({
+                    items: [item]
+                });
+            });
+
+            $('.btnResume', elem).on('click', function () {
+
+                elem.popup('close');
+
+                MediaController.play({
+                    items: [item],
+                    startPositionTicks: item.UserData.PlaybackPositionTicks
+                });
+            });
+        });
+    }
+
+    function showItemsOverlay(options) {
+
+        var context = options.context;
+
+        var elem = getItemsOverlay(options.ids, context);
+
+        setItemIntoOverlay(elem, 0);
+    }
+
+    function onCardClick() {
+
+        var info = LibraryBrowser.getListItemInfo(this);
+        var itemId = info.id;
+        var context = info.context;
+
+        var card = $(this);
+
+        if (card.hasClass('itemWithAction')) {
+            return;
+        }
+
+        if (!card.hasClass('card')) {
+            card = $(card).parents('.card');
+        }
+
+        if (card.hasClass('groupedCard')) {
+            return;
+        }
+
+        if (card.attr('data-detailsmenu') != 'true') {
+            return;
+        }
+
+        showItemsOverlay({
+            ids: [itemId],
+            context: context
+        });
+
+        return false;
+    }
+
+    $.fn.createCardMenus = function (options) {
 
         var preventHover = false;
 
@@ -684,8 +867,7 @@
             preventHover = true;
         }
 
-        return this
-            .off('.cardMenu')
+        this.off('.cardMenu')
             .on('contextmenu.cardMenu', '.card', onCardTapHold)
             .off('.latestgroupings')
             .on('click.latestgroupings', '.groupedCard', onGroupedCardClick)
@@ -695,6 +877,10 @@
             .on('mouseenter.cardHoverMenu', '.card:not(.bannerCard)', onHoverIn)
             .on('mouseleave.cardHoverMenu', '.card:not(.bannerCard)', onHoverOut)
             .on("touchstart.cardHoverMenu", '.card:not(.bannerCard)', preventTouchHover);
+
+        this.off('.mediaDetails').on('click.mediaDetails', '.mediaItem', onCardClick);
+
+        return this;
     };
 
     function toggleSelections(page) {
@@ -887,29 +1073,13 @@
 
             itemsContainer.trigger('playallfromhere', [index]);
         }
-        else if (action == 'setplaylistindex') {
-
-            index = elemWithAttributes.getAttribute('data-index');
-
-            closeContextMenu();
-
-            MediaController.currentPlaylistIndex(index);
-        }
-        else if (action == 'photoslideshow') {
-
-            if (!$(elem).hasClass('card')) {
-                elem = $(elem).parents('.card')[0];
-            }
-
-            itemsContainer = $(elem).parents('.itemsContainer');
-            index = $('.card', itemsContainer).get().indexOf(elem);
-
-            closeContextMenu();
-
-            itemsContainer.trigger('photoslideshow', [index]);
-        }
 
         return false;
+    }
+
+    function resetImages(page) {
+
+        $('cardImage', page).remove();
     }
 
     $(document).on('pageinit', ".libraryPage", function () {
@@ -964,6 +1134,11 @@
         hideSelections(page);
 
         $('.viewTabButton:first', page).trigger('click');
+
+    }).on('pagebeforehide', ".libraryPage", function () {
+
+        var page = this;
+        resetImages(page);
     });
 
     function renderUserDataChanges(card, userData) {

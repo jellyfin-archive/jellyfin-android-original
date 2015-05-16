@@ -1,11 +1,34 @@
 ﻿(function ($, document) {
 
+    function getView() {
+        
+        if (AppInfo.hasLowImageBandwidth) {
+            return 'PosterCard';
+        }
+
+        return 'PosterCard';
+    }
+
+    function getResumeView() {
+
+        if (AppInfo.hasLowImageBandwidth) {
+            return 'ThumbCard';
+        }
+
+        return 'ThumbCard';
+    }
+
     function loadLatest(page, userId, parentId) {
+
+        var limit = 18;
+        if (AppInfo.hasLowImageBandwidth) {
+            limit = 10;
+        }
 
         var options = {
 
             IncludeItemTypes: "Movie",
-            Limit: 18,
+            Limit: limit,
             Fields: "PrimaryImageAspectRatio,MediaSourceCount,SyncInfo",
             ParentId: parentId,
             ImageTypeLimit: 1,
@@ -14,13 +37,97 @@
 
         ApiClient.getJSON(ApiClient.getUrl('Users/' + userId + '/Items/Latest', options)).done(function (items) {
 
-            $('#recentlyAddedItems', page).html(LibraryBrowser.getPosterViewHtml({
-                items: items,
-                lazy: true,
-                shape: 'portrait',
-                overlayText: false
+            var view = getView();
+            var html = '';
 
-            })).lazyChildren().trigger('create');
+            if (view == 'PosterCard') {
+
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: items,
+                    lazy: true,
+                    shape: 'portrait',
+                    overlayText: false,
+                    showTitle: true,
+                    showYear: true,
+                    cardLayout: true,
+                    showDetailsMenu: true
+
+                });
+
+            } else if (view == 'Poster') {
+                
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: items,
+                    shape: "portrait",
+                    centerText: true,
+                    lazy: true,
+                    overlayText: true
+                });
+            }
+
+            $('#recentlyAddedItems', page).html(html).lazyChildren().trigger('create');
+        });
+    }
+
+    function loadResume(page, userId, parentId) {
+
+        var screenWidth = $(window).width();
+
+        var options = {
+
+            SortBy: "DatePlayed",
+            SortOrder: "Descending",
+            IncludeItemTypes: "Movie",
+            Filters: "IsResumable",
+            Limit: screenWidth >= 1920 ? 6 : (screenWidth >= 1600 ? 4 : 3),
+            Recursive: true,
+            Fields: "PrimaryImageAspectRatio,MediaSourceCount,SyncInfo",
+            CollapseBoxSetItems: false,
+            ParentId: parentId,
+            ImageTypeLimit: 1,
+            EnableImageTypes: "Primary,Backdrop,Banner,Thumb"
+        };
+
+        ApiClient.getItems(userId, options).done(function (result) {
+
+            if (result.Items.length) {
+                $('#resumableSection', page).show();
+            } else {
+                $('#resumableSection', page).hide();
+            }
+
+            var view = getResumeView();
+            var html = '';
+
+            if (view == 'ThumbCard') {
+
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    preferThumb: true,
+                    shape: 'backdrop',
+                    showTitle: true,
+                    showYear: true,
+                    lazy: true,
+                    cardLayout: true,
+                    showDetailsMenu: true
+
+                });
+
+            } else if (view == 'Thumb') {
+
+                html += LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    preferThumb: true,
+                    shape: 'backdrop',
+                    overlayText: true,
+                    showTitle: true,
+                    lazy: true,
+                    showDetailsMenu: true
+                });
+            }
+
+            $('#resumableItems', page).html(html).lazyChildren().trigger('create');
+
         });
     }
 
@@ -51,68 +158,42 @@
         html += '<h1 class="listHeader">' + title + '</h1>';
 
         html += '<div>';
-        html += LibraryBrowser.getPosterViewHtml({
-            items: recommendation.Items,
-            lazy: true,
-            shape: 'portrait',
-            overlayText: true
-        });
+
+        var view = getView();
+
+        if (view == 'PosterCard') {
+
+            html += LibraryBrowser.getPosterViewHtml({
+                items: recommendation.Items,
+                lazy: true,
+                shape: 'portrait',
+                overlayText: false,
+                showTitle: true,
+                showYear: true,
+                cardLayout: true,
+                showDetailsMenu: true
+
+            });
+
+        } else if (view == 'Poster') {
+
+            html += LibraryBrowser.getPosterViewHtml({
+                items: recommendation.Items,
+                shape: "portrait",
+                centerText: true,
+                lazy: true,
+                overlayText: true,
+                showDetailsMenu: true
+            });
+        }
         html += '</div>';
 
         return html;
     }
 
-    $(document).on('pageinit', "#moviesRecommendedPage", function () {
-
-        var page = this;
-
-        $('.recommendations', page).createCardMenus();
-
-    }).on('pagebeforeshow', "#moviesRecommendedPage", function () {
-
-        var parentId = LibraryMenu.getTopParentId();
+    function loadSuggestions(page, userId, parentId) {
 
         var screenWidth = $(window).width();
-
-        var page = this;
-        var userId = Dashboard.getCurrentUserId();
-
-        var options = {
-
-            SortBy: "DatePlayed",
-            SortOrder: "Descending",
-            IncludeItemTypes: "Movie",
-            Filters: "IsResumable",
-            Limit: screenWidth >= 1920 ? 6 : (screenWidth >= 1600 ? 4 : 3),
-            Recursive: true,
-            Fields: "PrimaryImageAspectRatio,MediaSourceCount,SyncInfo",
-            CollapseBoxSetItems: false,
-            ParentId: parentId,
-            ImageTypeLimit: 1,
-            EnableImageTypes: "Primary,Backdrop,Banner,Thumb"
-        };
-
-        ApiClient.getItems(userId, options).done(function (result) {
-
-            if (result.Items.length) {
-                $('#resumableSection', page).show();
-            } else {
-                $('#resumableSection', page).hide();
-            }
-
-            $('#resumableItems', page).html(LibraryBrowser.getPosterViewHtml({
-                items: result.Items,
-                preferThumb: true,
-                shape: 'backdrop',
-                overlayText: true,
-                showTitle: true,
-                lazy: true
-
-            })).lazyChildren().trigger('create');
-
-        });
-
-        loadLatest(page, userId, parentId);
 
         var url = ApiClient.getUrl("Movies/Recommendations", {
 
@@ -138,6 +219,27 @@
             $('.noItemsMessage', page).hide();
             $('.recommendations', page).html(html).lazyChildren();
         });
+    }
+
+    $(document).on('pageinitdepends', "#moviesRecommendedPage", function () {
+
+        var page = this;
+
+        $('.recommendations', page).createCardMenus();
+
+    }).on('pageshown', "#moviesRecommendedPage", function () {
+
+        var parentId = LibraryMenu.getTopParentId();
+
+        var page = this;
+        var userId = Dashboard.getCurrentUserId();
+
+        loadResume(page, userId, parentId);
+        loadLatest(page, userId, parentId);
+
+        if (!AppInfo.hasLowImageBandwidth) {
+            loadSuggestions(page, userId, parentId);
+        }
 
     });
 

@@ -37,13 +37,39 @@
 
             updateFilterControls(page);
 
-            html = LibraryBrowser.getPosterViewHtml({
-                items: result.Items,
-                shape: "square",
-                context: 'music',
-                showTitle: true,
-                centerText: true
-            });
+            var view = 'Poster';
+
+            if (AppInfo.hasLowImageBandwidth) {
+                if (view == 'Poster') {
+                    view = 'PosterCard';
+                }
+            }
+
+            if (view == "Poster") {
+                html = LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "square",
+                    context: 'music',
+                    showTitle: true,
+                    lazy: true,
+                    centerText: true,
+                    showDetailsMenu: true
+                });
+            }
+            else if (view == "PosterCard") {
+
+                html = LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "square",
+                    context: 'music',
+                    showTitle: true,
+                    centerText: true,
+                    cardLayout: true,
+                    lazy: true,
+                    showParentTitle: true,
+                    showDetailsMenu: true
+                });
+            }
 
             $('#items', page).html(html).trigger('create');
 
@@ -105,7 +131,7 @@
         }
     }
 
-    $(document).on('pageinit', "#musicVideosPage", function () {
+    $(document).on('pageinitdepends', "#musicVideosPage", function () {
 
         var page = this;
 
@@ -163,7 +189,7 @@
             reloadItems(page);
         });
 
-    }).on('pagebeforeshow', "#musicVideosPage", function () {
+    }).on('pageshown', "#musicVideosPage", function () {
 
         var page = this;
 
@@ -181,8 +207,6 @@
         QueryFilters.onPageShow(page, query);
 
         reloadItems(page);
-
-    }).on('pageshow', "#musicVideosPage", function () {
 
         updateFilterControls(this);
     });

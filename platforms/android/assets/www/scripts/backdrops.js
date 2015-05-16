@@ -59,6 +59,11 @@
         return deferred.promise();
     }
 
+    function setBackdropImage(elem, url) {
+
+        elem.lazyImage(url);
+    }
+
     function showBackdrop(type, parentId) {
 
         var apiClient = ConnectionManager.currentApiClient();
@@ -83,7 +88,7 @@
                     quality: 80
                 });
 
-                getElement().css('backgroundImage', 'url(\'' + imgUrl + '\')');
+                setBackdropImage(getElement(), imgUrl);
 
             } else {
 
@@ -92,9 +97,44 @@
         });
     }
 
+    function setDefault(page) {
+        
+        var backdropContainer = $('.backdropContainer');
+
+        if (backdropContainer.length) {
+            backdropContainer.css('backgroundImage', 'url(css/images/splash.jpg)');
+        } else {
+            $(document.body).prepend('<div class="backdropContainer" style="background-image:url(css/images/splash.jpg);top:0;"></div>');
+        }
+
+        $(page).addClass('backdropPage staticBackdropPage');
+    }
+
     function clearBackdrop() {
 
         $('.backdropContainer').css('backgroundImage', '');
+    }
+
+    function isEnabledByDefault() {
+
+        if (AppInfo.hasLowImageBandwidth) {
+
+            return false;
+        }
+
+        // It flickers too much in IE
+        if ($.browser.msie) {
+
+            return false;
+        }
+
+        if (!$.browser.mobile) {
+            return true;
+        }
+
+        var screenWidth = $(window).width();
+
+        return screenWidth >= 600;
     }
 
     function enabled() {
@@ -104,7 +144,7 @@
         var val = store.getItem('enableBackdrops-' + userId);
 
         // For bandwidth
-        return val == '1' || (val != '0' && !$.browser.mobile);
+        return val == '1' || (val != '0' && isEnabledByDefault());
     }
 
     function setBackdrops(page, items) {
@@ -135,10 +175,23 @@
                 quality: 80
             });
 
-            getElement().css('backgroundImage', 'url(\'' + imgUrl + '\')');
+            setBackdropImage(getElement(), imgUrl);
 
         } else {
             $(page).removeClass('backdropPage');
+        }
+    }
+    
+    function setBackdropUrl(page, url) {
+
+        if (url) {
+            $(page).addClass('backdropPage');
+
+            setBackdropImage(getElement(), url);
+
+        } else {
+            $(page).removeClass('backdropPage');
+            clearBackdrop();
         }
     }
 
@@ -172,7 +225,9 @@
 
     window.Backdrops = {
 
-        setBackdrops: setBackdrops
+        setBackdrops: setBackdrops,
+        setBackdropUrl: setBackdropUrl,
+        setDefault: setDefault
     };
 
 })(jQuery, document);

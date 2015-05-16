@@ -26,6 +26,13 @@
             $(document).scrollTop(0);
 
             var html = '';
+            var view = 'Thumb';
+
+            if (AppInfo.hasLowImageBandwidth) {
+                if (view == 'Thumb') {
+                    view = 'ThumbCard';
+                }
+            }
 
             $('.listTopPaging', page).html(LibraryBrowser.getQueryPagingHtml({
                 startIndex: query.StartIndex,
@@ -38,15 +45,30 @@
 
             updateFilterControls(page);
             
-            html = LibraryBrowser.getPosterViewHtml({
-                items: result.Items,
-                shape: "backdrop",
-                preferThumb: true,
-                context: 'music',
-                showItemCounts: true,
-                centerText: true,
-                lazy: true
-            });
+            if (view == "Thumb") {
+                html = LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "backdrop",
+                    preferThumb: true,
+                    context: 'music',
+                    showItemCounts: true,
+                    centerText: true,
+                    lazy: true
+                });
+            }
+            else if (view == "ThumbCard") {
+
+                html = LibraryBrowser.getPosterViewHtml({
+                    items: result.Items,
+                    shape: "backdrop",
+                    preferThumb: true,
+                    context: 'music',
+                    showItemCounts: true,
+                    cardLayout: true,
+                    lazy: true,
+                    showTitle: true
+                });
+            }
 
             $('#items', page).html(html).lazyChildren();
 
@@ -71,7 +93,7 @@
         $('#selectPageSize', page).val(query.Limit).selectmenu('refresh');
     }
 
-    $(document).on('pageinit', "#musicGenresPage", function () {
+    $(document).on('pageinitdepends', "#musicGenresPage", function () {
 
         var page = this;
 
@@ -98,7 +120,7 @@
             reloadItems(page);
         });
 
-    }).on('pagebeforeshow', "#musicGenresPage", function () {
+    }).on('pageshown', "#musicGenresPage", function () {
 
         query.ParentId = LibraryMenu.getTopParentId();
 
@@ -113,8 +135,6 @@
         LibraryBrowser.loadSavedQueryValues(getSavedQueryKey(), query);
 
         reloadItems(this);
-
-    }).on('pageshow', "#musicGenresPage", function () {
 
         updateFilterControls(this);
     });
