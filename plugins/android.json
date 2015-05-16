@@ -7,11 +7,13 @@
         "files": {
             "res/xml/config.xml": {
                 "parents": {
-                    "/*": [
+                    "/widget": [
                         {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "xml": "<feature name=\"ChromeSocketsUdp\"><param name=\"android-package\" value=\"org.chromium.ChromeSocketsUdp\" /></feature>",
                             "count": 1
-                        },
+                        }
+                    ],
+                    "/*": [
                         {
                             "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
                             "count": 1
@@ -25,17 +27,15 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"UniqueDeviceID\"><param name=\"android-package\" value=\"hu.dpal.phonegap.plugins.UniqueDeviceID\" /></feature>",
                             "count": 1
                         },
                         {
                             "xml": "<feature name=\"SQLitePlugin\"><param name=\"android-package\" value=\"io.liteglue.SQLitePlugin\" /></feature>",
-                            "count": 1
-                        }
-                    ],
-                    "/widget": [
-                        {
-                            "xml": "<feature name=\"ChromeSocketsUdp\"><param name=\"android-package\" value=\"org.chromium.ChromeSocketsUdp\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -54,13 +54,28 @@
         }
     },
     "installed_plugins": {
-        "cordova-plugin-whitelist": {
+        "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-device": {
+        "com.rd11.remote-controls": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-chrome-apps-common": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-chrome-apps-iossocketscommon": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-console": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-device": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-dialogs": {
@@ -69,16 +84,7 @@
         "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-chrome-apps-sockets-udp": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "com.crewmeister.cordova-ios-backgroundcolor": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "com.rd11.remote-controls": {
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "hu.dpal.phonegap.plugins.UniqueDeviceID": {
@@ -88,9 +94,5 @@
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
-    "dependent_plugins": {
-        "cordova-plugin-chrome-apps-common": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        }
-    }
+    "dependent_plugins": {}
 }
