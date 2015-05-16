@@ -211,10 +211,10 @@ var Dashboard = {
             'connectlogin.html';
 
         if (logoutWithServer === false) {
-            window.location = loginPage;
+            window.location.href = loginPage;
         } else {
             ConnectionManager.logout().done(function () {
-                window.location = loginPage;
+                window.location.href = loginPage;
             });
 
         }

@@ -45,6 +45,8 @@
 
         function startTimer() {
 
+            console.log('starting udp receive timer with timeout ms: ' + timeoutMs);
+
             timeout = setTimeout(function () {
 
                 isTimedOut = true;
@@ -92,7 +94,7 @@
 
             console.log('chrome.sockets.udp.bind');
 
-            chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', port, function (result) {
+            chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', 0, function (result) {
 
                 if (getResultCode(result) != 0) {
                     console.log('bind fail: ' + result);
