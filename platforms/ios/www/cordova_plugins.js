@@ -71,6 +71,14 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
+        "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
+        "merges": [
+            "navigator.ConnectSDK",
+            "ConnectSDK"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -104,6 +112,7 @@ module.exports.metadata =
     "com.rd11.remote-controls": "1.0.0",
     "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
     "io.litehelpers.cordova.sqlite": "0.7.7",
+    "com.connectsdk.cordovaplugin": "1.2.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2"
 }
