@@ -10,6 +10,12 @@
 	<string>Emby</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>11E76B4A8B249084BFAB339B1C0AB3F9B9875C19</key>
+		<string>https://github.com/ConnectSDK/Connect-SDK-iOS-Core.git</string>
+		<key>17F782690A81D001A6DE548E24007364647BAAA3</key>
+		<string>https://github.com/ConnectSDK/Connect-SDK-iOS-Google-Cast.git</string>
+		<key>75793EFA09A162BA4F1A17844A987CDF3B180B54</key>
+		<string>https://github.com/ConnectSDK/Connect-SDK-iOS</string>
 		<key>A66AB07D00310EEAA22A90A63D173413E2D6C6BC</key>
 		<string>https://github.com/MediaBrowser/MediaBrowser.Mobile.git</string>
 	</dict>
@@ -17,6 +23,12 @@
 	<string>platforms/ios/Emby.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>11E76B4A8B249084BFAB339B1C0AB3F9B9875C19</key>
+		<string>../../../../../Connect-SDK-iOS/core</string>
+		<key>17F782690A81D001A6DE548E24007364647BAAA3</key>
+		<string>../../../../../Connect-SDK-iOS/modules/google-cast</string>
+		<key>75793EFA09A162BA4F1A17844A987CDF3B180B54</key>
+		<string>../../../../../Connect-SDK-iOS</string>
 		<key>A66AB07D00310EEAA22A90A63D173413E2D6C6BC</key>
 		<string>../../../..</string>
 	</dict>
@@ -28,6 +40,30 @@
 	<string>A66AB07D00310EEAA22A90A63D173413E2D6C6BC</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>75793EFA09A162BA4F1A17844A987CDF3B180B54</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Connect-SDK-iOS</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>11E76B4A8B249084BFAB339B1C0AB3F9B9875C19</string>
+			<key>IDESourceControlWCCName</key>
+			<string>core</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>17F782690A81D001A6DE548E24007364647BAAA3</string>
+			<key>IDESourceControlWCCName</key>
+			<string>google-cast</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
