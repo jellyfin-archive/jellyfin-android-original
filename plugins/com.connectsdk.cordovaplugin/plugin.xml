@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="com.connectsdk.cordovaplugin" version="1.2.0">
+	
+    <name>Connect SDK</name>
+    <description>Connect SDK allows discovery and communication with LG TVs and other smart devices on the local network.</description>
+    <license>Apache 2.0</license>
+    <keywords>LG, second screen, TV, Connect SDK, remote control, DLNA, DIAL, cast</keywords>
+    <author>LG Electronics, Inc.</author>
+
+    <engines>
+        <engine name="cordova-ios" version=">=3.0.0" />
+        <engine name="cordova-android" version=">=3.0.0" />
+    </engines>
+
+    <js-module src="www/ConnectSDK.js" name="ConnectSDK.js">
+        <merges target="navigator.ConnectSDK" />
+        <merges target="ConnectSDK" />
+    </js-module>
+
+    <platform name="ios">
+        
+        <config-file target="config.xml" parent="/*">
+            <feature name="ConnectSDK">
+                <param name="ios-package" value="ConnectSDKCordova"/>
+            </feature>
+        </config-file>
+        
+        <header-file src="src/ios/ConnectSDKCordova.h" />
+        <source-file src="src/ios/ConnectSDKCordova.m" />
+        <header-file src="src/ios/ConnectSDKCordovaDispatcher.h" />
+        <source-file src="src/ios/ConnectSDKCordovaDispatcher.m" />
+        <header-file src="src/ios/ConnectSDKCordovaObjects.h" />
+        <source-file src="src/ios/ConnectSDKCordovaObjects.m" />
+
+        <framework src="libicucore.dylib" />
+
+        <info>
+    Next, you will need to add the Connect SDK iOS library and dependent framworks.
+    Run "cordova prepare ios" and open the Xcode project in platforms/ios
+    Then follow the directions at https://github.com/ConnectSDK/Connect-SDK-iOS
+        </info>
+
+    </platform>
+
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="ConnectSDK">
+                <param name="android-package" value="com.connectsdk.cordova.ConnectSDKCordova"/>
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+            <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        </config-file>
+
+        <source-file src="src/android/ConnectSDKCordova.java" target-dir="src/com/connectsdk/cordova" />
+        <source-file src="src/android/ConnectableDeviceWrapper.java" target-dir="src/com/connectsdk/cordova" />
+        <source-file src="src/android/DiscoveryManagerWrapper.java" target-dir="src/com/connectsdk/cordova" />
+        <source-file src="src/android/JSCommand.java" target-dir="src/com/connectsdk/cordova" />
+        <source-file src="src/android/JSCommandDispatcher.java" target-dir="src/com/connectsdk/cordova" />
+        <source-file src="src/android/JSObjectWrapper.java" target-dir="src/com/connectsdk/cordova" />
+        <source-file src="src/android/WebAppSessionWrapper.java" target-dir="src/com/connectsdk/cordova" />
+        <source-file src="src/android/MediaControlWrapper.java" target-dir="src/com/connectsdk/cordova" />
+
+        <info>
+    Next, you will need to add the Connect SDK Android project and dependencies to your project.
+    Run "cordova prepare android" and open the Eclipse project in platforms/android
+    Then follow the directions at https://github.com/ConnectSDK/Connect-SDK-Android
+        </info>
+    </platform>
+</plugin>
