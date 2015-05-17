@@ -244,6 +244,7 @@ android {
 }
 
 dependencies {
+	compile 'com.connectsdk:connect-sdk-android:1.4.+'
     compile fileTree(dir: 'libs', include: '*.jar')
     // SUB-PROJECT DEPENDENCIES START
     debugCompile project(path: ":CordovaLib", configuration: "debug")
