@@ -668,7 +668,8 @@ var Dashboard = {
             }
 
             if (isConnectMode) {
-                html += '<p><a data-mini="true" data-role="button" href="selectserver.html" data-icon="cloud">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
+                // Use onclick instead of data-ajax = false to avoid cordova crash
+                html += '<p><a data-mini="true" data-role="button" href="#" data-icon="cloud" onclick="window.location.href=\'selectserver.html\';">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
             }
 
             html += '<p><button data-mini="true" type="button" onclick="Dashboard.logout();" data-icon="lock">' + Globalize.translate('ButtonSignOut') + '</button></p>';
@@ -1375,7 +1376,7 @@ var Dashboard = {
             // The native app can handle a little bit more than safari
             if (Dashboard.isRunningInCordova()) {
 
-                quality -= 10;
+                quality -= 15;
 
                 if (isBackdrop) {
                     quality -= 20;
