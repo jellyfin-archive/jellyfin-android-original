@@ -109,7 +109,7 @@
         $('#selectView', page).val(view).selectmenu('refresh');
     }
 
-    $(document).on('pageinit', "#movieGenresPage", function () {
+    $(document).on('pageinitdepends', "#movieGenresPage", function () {
 
         var page = this;
 
@@ -154,7 +154,7 @@
             LibraryBrowser.saveViewSetting(getSavedQueryKey(), view);
         });
 
-    }).on('pagebeforeshow', "#movieGenresPage", function () {
+    }).on('pageshown', "#movieGenresPage", function () {
 
         var page = this;
         query.ParentId = LibraryMenu.getTopParentId();
@@ -179,8 +179,6 @@
                 reloadItems(page);
             }
         });
-
-    }).on('pageshow', "#movieGenresPage", function () {
 
         updateFilterControls(this);
     });
