@@ -55,6 +55,10 @@
                         {
                             "xml": "<feature name=\"SQLitePlugin\"><param name=\"ios-package\" value=\"SQLitePlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ConnectSDK\"><param name=\"ios-package\" value=\"ConnectSDKCordova\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -106,6 +110,12 @@
                             "xml": false,
                             "count": 1
                         }
+                    ],
+                    "libicucore.dylib": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
                     ]
                 }
             }
@@ -143,6 +153,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "io.litehelpers.cordova.sqlite": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.connectsdk.cordovaplugin": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

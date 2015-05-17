@@ -46,6 +46,9 @@
     <feature name="SQLitePlugin">
         <param name="ios-package" value="SQLitePlugin" />
     </feature>
+    <feature name="ConnectSDK">
+        <param name="ios-package" value="ConnectSDKCordova" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>

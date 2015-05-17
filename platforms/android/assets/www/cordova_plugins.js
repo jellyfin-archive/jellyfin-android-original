@@ -79,6 +79,14 @@ module.exports = [
         "clobbers": [
             "SQLitePlugin"
         ]
+    },
+    {
+        "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
+        "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
+        "merges": [
+            "navigator.ConnectSDK",
+            "ConnectSDK"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -96,7 +104,8 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "1.0.0",
     "cordova-plugin-whitelist": "1.0.1-dev",
     "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
-    "io.litehelpers.cordova.sqlite": "0.7.7"
+    "io.litehelpers.cordova.sqlite": "0.7.7",
+    "com.connectsdk.cordovaplugin": "1.2.0"
 }
 // BOTTOM OF METADATA
 });

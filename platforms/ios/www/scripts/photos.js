@@ -40,12 +40,6 @@
 
             updateFilterControls(page);
 
-            if (AppInfo.hasLowImageBandwidth) {
-                if (view == 'Poster') {
-                    view = 'PosterCard';
-                }
-            }
-
             if (view == "Poster") {
                 // Poster
                 html = LibraryBrowser.getPosterViewHtml({
