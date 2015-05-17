@@ -212,7 +212,7 @@
         }
     }
 
-    $(document).on('pageinit', "#photosPage", function () {
+    $(document).on('pageinitdepends', "#photosPage", function () {
 
         var page = this;
 
@@ -277,7 +277,7 @@
             reloadItems(page);
         });
 
-    }).on('pagebeforeshow', "#photosPage", function () {
+    }).on('pageshown', "#photosPage", function () {
 
         var page = this;
 
@@ -304,8 +304,6 @@
                 reloadItems(page);
             }
         });
-
-    }).on('pageshow', "#photosPage", function () {
 
         updateFilterControls(this);
     });
