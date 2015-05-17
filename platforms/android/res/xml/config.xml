@@ -63,4 +63,7 @@
     <preference name="BackgroundColor" value="0xff222222" />
     <preference name="BackupWebStorage" value="local" />
     <icon src="res/icon.png" />
+    <feature name="ConnectSDK">
+        <param name="android-package" value="com.connectsdk.cordova.ConnectSDKCordova" />
+    </feature>
 </widget>
