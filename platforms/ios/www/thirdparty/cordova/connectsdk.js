@@ -1,12 +1,14 @@
 ﻿(function () {
 
 
-    function onDeviceFound() {
+    function onDeviceFound(e) {
 
+        console.log('device found');
     }
 
-    function onDeviceLost() {
+    function onDeviceLost(e) {
 
+        console.log('device lost');
     }
 
     function initSdk() {
@@ -17,12 +19,16 @@
         manager.setAirPlayServiceMode(ConnectSDK.AirPlayServiceMode.Media);
 
         // Show devices that support playing videos and pausing
-        manager.setCapabilityFilters([
-            new ConnectSDK.CapabilityFilter(["MediaPlayer.Display.Video", "MediaControl.Pause"])
-        ]);
+        //manager.setCapabilityFilters([
+          //  new ConnectSDK.CapabilityFilter(["MediaPlayer.Display.Video", "MediaControl.Pause"])
+        //]);
 
         manager.addListener('devicefound', onDeviceFound);
         manager.addListener('devicelost', onDeviceLost);
+ 
+        manager.startDiscovery();
+ 
+        manager.pickDevice();
 
         requirejs(['thirdparty/cordova/chromecast']);
     }
