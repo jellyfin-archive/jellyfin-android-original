@@ -475,14 +475,18 @@
                 console.log("session disconnected");
 
                 if (currentPairedDeviceId == device.getId()) {
-                    currentWebAppSession = null;
-                    currentPairedDeviceId = null;
-                    currentDeviceFriendlyName = null;
+                    onDisconnected();
                     MediaController.removeActivePlayer(PlayerName);
                 }
 
             });
 
+        }
+        
+        function onDisconnected() {
+            currentWebAppSession = null;
+            currentPairedDeviceId = null;
+            currentDeviceFriendlyName = null;
         }
 
         function launchWebApp(device) {
@@ -572,6 +576,16 @@
 
             return deferred.promise();
         };
+
+        $(MediaController).on('playerchange', function () {
+
+            if (MediaController.getPlayerInfo().name != PlayerName) {
+                if (currentWebAppSession) {
+                    currentWebAppSession.disconnect();
+                    onDisconnected();
+                }
+            }
+        });
     }
 
     function initSdk() {
