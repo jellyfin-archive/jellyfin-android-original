@@ -220,7 +220,14 @@
 
             var manager = ConnectSDK.discoveryManager;
 
-            return manager.getDeviceList().map(convertDeviceToTarget);
+ return manager.getDeviceList().filter(function(d){
+                                      
+                                       console.log(d.getFriendlyName());
+                                       console.log(d.getModelName());
+                                       
+                                      return d.getModelName().toLowerCase().indexOf('chromecast') != -1 || d.getFriendlyName().toLowerCase().indexOf('chromecast') != -1;
+                                      
+                                      }).map(convertDeviceToTarget);
         };
 
         self.seek = function (position) {
