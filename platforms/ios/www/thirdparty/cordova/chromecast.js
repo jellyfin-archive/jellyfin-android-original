@@ -2,7 +2,9 @@
 
     var PlayerName = "Chromecast";
     var ApplicationID = "F4EB2E8E";
-    var currentDevice;
+    var currentDeviceId;
+    var currentDeviceFriendlyName;
+    var currentWebAppSession;
 
     function chromecastPlayer() {
 
@@ -34,8 +36,6 @@
 
             console.log('cc: playbackstart');
 
-            castPlayer.initializeCastPlayer();
-
             var state = self.getPlayerStateInternal(data);
             $(self).trigger("playbackstart", [state]);
         });
@@ -58,6 +58,54 @@
 
             $(self).trigger("positionchange", [state]);
         });
+
+        var endpointInfo;
+        function getEndpointInfo() {
+
+            if (endpointInfo) {
+
+                var deferred = $.Deferred();
+                deferred.resolveWith(null, [endpointInfo]);
+                return deferred.promise();
+            }
+
+            return ApiClient.getJSON(ApiClient.getUrl('System/Endpoint')).done(function (info) {
+
+                endpointInfo = info;
+            });
+        }
+
+        function sendMessageToDevice(message) {
+
+            var bitrateSetting = AppSettings.maxChromecastBitrate();
+
+            message = $.extend(message, {
+                userId: Dashboard.getCurrentUserId(),
+                deviceId: ApiClient.deviceId(),
+                accessToken: ApiClient.accessToken(),
+                serverAddress: ApiClient.serverAddress(),
+                maxBitrate: bitrateSetting,
+                receiverName: currentDeviceFriendlyName
+            });
+
+            getEndpointInfo().done(function (endpoint) {
+
+                if (endpoint.IsLocal || endpoint.IsInNetwork) {
+                    ApiClient.getSystemInfo().done(function (info) {
+
+                        message.serverAddress = info.LocalAddress;
+                        sendMessageInternal(message);
+                    });
+                } else {
+                    sendMessageInternal(message);
+                }
+            });
+
+        }
+
+        function sendMessageInternal(message) {
+            currentWebAppSession.sendText(JSON.stringify(message));
+        }
 
         self.play = function (options) {
 
@@ -97,15 +145,34 @@
                 return;
             }
 
-            castPlayer.loadMedia(options, command);
+            // Convert the items to smaller stubs to send the minimal amount of information
+            options.items = options.items.map(function (i) {
+
+                return {
+                    Id: i.Id,
+                    Name: i.Name,
+                    Type: i.Type,
+                    MediaType: i.MediaType,
+                    IsFolder: i.IsFolder
+                };
+            });
+
+            sendMessageToDevice({
+                options: options,
+                command: command
+            });
         };
 
         self.unpause = function () {
-            castPlayer.playMedia();
+            sendMessageToDevice({
+                command: 'unpause'
+            });
         };
 
         self.pause = function () {
-            castPlayer.pauseMedia();
+            sendMessageToDevice({
+                command: 'pause'
+            });
         };
 
         self.shuffle = function (id) {
@@ -153,19 +220,23 @@
         };
 
         self.stop = function () {
-            castPlayer.stopMedia();
+            sendMessageToDevice({
+                command: 'stop'
+            });
         };
 
         self.displayContent = function (options) {
 
-            castPlayer.sendMessage({
+            sendMessageToDevice({
                 options: options,
                 command: 'DisplayContent'
             });
         };
 
         self.mute = function () {
-            castPlayer.mute();
+            sendMessageToDevice({
+                command: 'mute'
+            });
         };
 
         self.unMute = function () {
@@ -216,26 +287,39 @@
             return target;
         }
 
+        function isChromecast(name) {
+
+            var validTokens = ['nexusplayer', 'chromecast', 'eurekadongle'];
+
+            return validTokens.filter(function (t) {
+
+                return name.toLowerCase().replace(' ', '').indexOf(t) != -1;
+
+            }).length > 0;
+        }
+
         self.getTargets = function () {
 
             var manager = ConnectSDK.discoveryManager;
 
- return manager.getDeviceList().filter(function(d){
-                                      
-                                       console.log(d.getFriendlyName());
-                                       console.log(d.getModelName());
-                                       
-                                      return d.getModelName().toLowerCase().indexOf('chromecast') != -1 || d.getFriendlyName().toLowerCase().indexOf('chromecast') != -1;
-                                      
-                                      }).map(convertDeviceToTarget);
+            return manager.getDeviceList().filter(function (d) {
+
+                return isChromecast(d.getModelName()) || isChromecast(d.getFriendlyName());
+
+            }).map(convertDeviceToTarget);
         };
 
         self.seek = function (position) {
-            castPlayer.seekMedia(position);
+            sendMessageToDevice({
+                options: {
+                    position: position
+                },
+                command: 'Seek'
+            });
         };
 
         self.setAudioStreamIndex = function (index) {
-            castPlayer.sendMessage({
+            sendMessageToDevice({
                 options: {
                     index: index
                 },
@@ -244,7 +328,7 @@
         };
 
         self.setSubtitleStreamIndex = function (index) {
-            castPlayer.sendMessage({
+            sendMessageToDevice({
                 options: {
                     index: index
                 },
@@ -253,14 +337,14 @@
         };
 
         self.nextTrack = function () {
-            castPlayer.sendMessage({
+            sendMessageToDevice({
                 options: {},
                 command: 'NextTrack'
             });
         };
 
         self.previousTrack = function () {
-            castPlayer.sendMessage({
+            sendMessageToDevice({
                 options: {},
                 command: 'PreviousTrack'
             });
@@ -296,7 +380,12 @@
             vol = Math.min(vol, 100);
             vol = Math.max(vol, 0);
 
-            castPlayer.setReceiverVolume(false, (vol / 100));
+            sendMessageToDevice({
+                options: {
+                    volume: (vol / 100)
+                },
+                command: 'SetVolume'
+            });
         };
 
         self.getPlayerState = function () {
@@ -321,33 +410,116 @@
             return data;
         };
 
+        function onMessage(message) {
+
+            if (message.type == 'playbackerror') {
+
+                var errorCode = message.data;
+
+                setTimeout(function () {
+                    Dashboard.alert({
+                        message: Globalize.translate('MessagePlaybackError' + errorCode),
+                        title: Globalize.translate('HeaderPlaybackError')
+                    });
+                }, 300);
+
+            }
+            else if (message.type == 'connectionerror') {
+
+                setTimeout(function () {
+                    Dashboard.alert({
+                        message: Globalize.translate('MessageChromecastConnectionError'),
+                        title: Globalize.translate('HeaderError')
+                    });
+                }, 300);
+
+            }
+            else if (message.type && message.type.indexOf('playback') == 0) {
+                $(castPlayer).trigger(message.type, [message.data]);
+            }
+        }
+
+        function onDeviceReady(device) {
+
+            if (currentDeviceId != device.getId()) {
+                return;
+            }
+
+            device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
+
+                // hold on to a reference
+                currentWebAppSession = session.acquire();
+
+                session.connect().success(function () {
+
+                    $(castPlayer).trigger('connect');
+
+                    sendMessageToDevice({
+                        options: {},
+                        command: 'Identify'
+                    });
+                });
+
+                session.on('message', function (message) {
+                    // message could be either a string or an object
+                    if (typeof message === 'string') {
+                        onMessage(JSON.parse(message));
+                    } else {
+                        onMessage(message);
+                    }
+                });
+
+                session.on('disconnect', function () {
+                    console.log("session disconnected");
+
+                    if (currentDeviceId == device.getId()) {
+                        currentWebAppSession = null;
+                        MediaController.removeActivePlayer(PlayerName);
+                    }
+
+                });
+
+            });
+        }
+
         self.tryPair = function (target) {
 
             var deferred = $.Deferred();
-            deferred.resolve();
+
+            var manager = ConnectSDK.discoveryManager;
+
+            var device = manager.getDeviceList().filter(function (d) {
+
+                return d.getId() == target.id;
+            })[0];
+
+            if (device) {
+
+                if (device.isReady()) {
+                    onDeviceReady(device);
+                } else {
+
+                    device.on("ready", function () {
+                        onDeviceReady(device);
+                    });
+
+                    device.connect();
+                }
+
+                currentDeviceId = device.getId();
+                currentDeviceFriendlyName = device.getFriendlyName();
+                deferred.resolve();
+            } else {
+                deferred.reject();
+            }
+
             return deferred.promise();
         };
     }
 
-    function onDeviceLost() {
-
-    }
-
     function initSdk() {
 
-        var manager = ConnectSDK.discoveryManager;
-
-        manager.addListener('devicelost', onDeviceLost);
-
         MediaController.registerPlayer(new chromecastPlayer());
-
-        $(MediaController).on('playerchange', function () {
-
-            if (MediaController.getPlayerInfo().name == PlayerName) {
-
-                // launch app if needed
-            }
-        });
     }
 
     initSdk();
