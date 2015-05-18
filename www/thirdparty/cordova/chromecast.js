@@ -58,8 +58,8 @@
             $(self).trigger("positionchange", [state]);
         });
 
-        function sendMessageToDevice() {
-
+        function sendMessageToDevice(msg) {
+            currentWebAppSession.sendJSON(msg);
         }
 
         self.play = function (options) {
@@ -248,7 +248,7 @@
 
             return validTokens.filter(function (t) {
 
-                return name.toLowerCase().indexOf(t) != -1;
+                return name.toLowerCase().replace(' ', '').indexOf(t) != -1;
 
             }).length > 0;
         }
@@ -365,6 +365,37 @@
             return data;
         };
 
+        function onMessage(message) {
+
+            message = JSON.parse(message);
+
+            if (message.type == 'playbackerror') {
+
+                var errorCode = message.data;
+
+                setTimeout(function () {
+                    Dashboard.alert({
+                        message: Globalize.translate('MessagePlaybackError' + errorCode),
+                        title: Globalize.translate('HeaderPlaybackError')
+                    });
+                }, 300);
+
+            }
+            else if (message.type == 'connectionerror') {
+
+                setTimeout(function () {
+                    Dashboard.alert({
+                        message: Globalize.translate('MessageChromecastConnectionError'),
+                        title: Globalize.translate('HeaderError')
+                    });
+                }, 300);
+
+            }
+            else if (message.type && message.type.indexOf('playback') == 0) {
+                $(castPlayer).trigger(message.type, [message.data]);
+            }
+        }
+
         var readyHandlers = [];
 
         function onDeviceReady(device) {
@@ -378,15 +409,14 @@
                 currentWebAppSession = session.acquire(); // hold on to a reference
 
                 session.connect().success(function () {
-                    //session.sendText("Hello world");
                 });
 
                 session.on('message', function (message) {
                     // message could be either a string or an object
                     if (typeof message === 'string') {
-                        console.log("received string message: " + message);
+                        onMessage(JSON.parse(message));
                     } else {
-                        console.log("received object message: " + JSON.stringify(message));
+                        onMessage(message);
                     }
                 });
 
@@ -411,7 +441,7 @@
 
             var device = manager.getDeviceList().filter(function (d) {
 
-                return g.getId() == target.id;
+                return d.getId() == target.id;
             })[0];
 
             if (device) {
