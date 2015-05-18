@@ -599,7 +599,7 @@
 
             });
 
-            $('.radioSelectPlayerTarget', elem).on('change', function () {
+            $('.radioSelectPlayerTarget', elem).off('change').on('change', function () {
 
                 var supportsMirror = this.getAttribute('data-mirror') == 'true';
 
@@ -608,14 +608,6 @@
                 } else {
                     $('.fldMirrorMode', elem).hide();
                 }
-
-            }).each(function () {
-
-                if (this.checked) {
-                    $(this).trigger('change');
-                }
-
-            }).on('change', function () {
 
                 var playerName = this.getAttribute('data-playername');
                 var targetId = this.getAttribute('data-targetid');
@@ -639,6 +631,12 @@
                 }
 
             });
+
+            if ($('.radioSelectPlayerTarget:checked', elem).attr('data-mirror') == 'true') {
+                $('.fldMirrorMode', elem).show();
+            } else {
+                $('.fldMirrorMode', elem).hide();
+            }
         });
     }
 
