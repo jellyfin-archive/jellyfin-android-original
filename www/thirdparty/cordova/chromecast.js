@@ -104,7 +104,7 @@
         }
 
         function sendMessageInternal(message) {
-            currentWebAppSession.sendJSON(message);
+            currentWebAppSession.sendText(JSON.stringify(message));
         }
 
         self.play = function (options) {
@@ -412,8 +412,6 @@
 
         function onMessage(message) {
 
-            message = JSON.parse(message);
-
             if (message.type == 'playbackerror') {
 
                 var errorCode = message.data;
@@ -449,7 +447,8 @@
 
             device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
-                currentWebAppSession = session.acquire(); // hold on to a reference
+                // hold on to a reference
+                currentWebAppSession = session.acquire();
 
                 session.connect().success(function () {
 
