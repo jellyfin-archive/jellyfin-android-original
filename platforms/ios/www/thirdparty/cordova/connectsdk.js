@@ -20,15 +20,13 @@
 
         // Show devices that support playing videos and pausing
         //manager.setCapabilityFilters([
-          //  new ConnectSDK.CapabilityFilter(["MediaPlayer.Display.Video", "MediaControl.Pause"])
+        //  new ConnectSDK.CapabilityFilter(["MediaPlayer.Display.Video", "MediaControl.Pause"])
         //]);
 
         manager.addListener('devicefound', onDeviceFound);
         manager.addListener('devicelost', onDeviceLost);
- 
+
         manager.startDiscovery();
- 
-        manager.pickDevice();
 
         requirejs(['thirdparty/cordova/chromecast']);
     }
