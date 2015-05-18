@@ -218,7 +218,7 @@
 
         self.getTargets = function () {
 
-            var manager = discoveryManager;
+            var manager = ConnectSDK.discoveryManager;
 
             return manager.getDeviceList().map(convertDeviceToTarget);
         };
