@@ -3,6 +3,7 @@
     var PlayerName = "Chromecast";
     var ApplicationID = "F4EB2E8E";
     var currentDeviceId;
+    var currentDeviceFriendlyName;
     var currentWebAppSession;
 
     function chromecastPlayer() {
@@ -58,8 +59,52 @@
             $(self).trigger("positionchange", [state]);
         });
 
-        function sendMessageToDevice(msg) {
-            currentWebAppSession.sendJSON(msg);
+        var endpointInfo;
+        function getEndpointInfo() {
+
+            if (endpointInfo) {
+
+                var deferred = $.Deferred();
+                deferred.resolveWith(null, [endpointInfo]);
+                return deferred.promise();
+            }
+
+            return ApiClient.getJSON(ApiClient.getUrl('System/Endpoint')).done(function (info) {
+
+                endpointInfo = info;
+            });
+        }
+
+        function sendMessageToDevice(message) {
+
+            var bitrateSetting = AppSettings.maxChromecastBitrate();
+
+            message = $.extend(message, {
+                userId: Dashboard.getCurrentUserId(),
+                deviceId: ApiClient.deviceId(),
+                accessToken: ApiClient.accessToken(),
+                serverAddress: ApiClient.serverAddress(),
+                maxBitrate: bitrateSetting,
+                receiverName: currentDeviceFriendlyName
+            });
+
+            getEndpointInfo().done(function (endpoint) {
+
+                if (endpoint.IsLocal || endpoint.IsInNetwork) {
+                    ApiClient.getSystemInfo().done(function (info) {
+
+                        message.serverAddress = info.LocalAddress;
+                        sendMessageInternal(message);
+                    });
+                } else {
+                    sendMessageInternal(message);
+                }
+            });
+
+        }
+
+        function sendMessageInternal(message) {
+            currentWebAppSession.sendJSON(message);
         }
 
         self.play = function (options) {
@@ -396,8 +441,6 @@
             }
         }
 
-        var readyHandlers = [];
-
         function onDeviceReady(device) {
 
             if (currentDeviceId != device.getId()) {
@@ -409,6 +452,13 @@
                 currentWebAppSession = session.acquire(); // hold on to a reference
 
                 session.connect().success(function () {
+
+                    $(castPlayer).trigger('connect');
+
+                    sendMessageToDevice({
+                        options: {},
+                        command: 'Identify'
+                    });
                 });
 
                 session.on('message', function (message) {
@@ -450,20 +500,15 @@
                     onDeviceReady(device);
                 } else {
 
-                    var deviceId = device.getId();
-
-                    if (readyHandlers.indexOf(deviceId) == -1) {
-                        readyHandlers.push(deviceId);
-
-                        device.on("ready", function () {
-                            onDeviceReady(device);
-                        });
-                    }
+                    device.on("ready", function () {
+                        onDeviceReady(device);
+                    });
 
                     device.connect();
                 }
 
                 currentDeviceId = device.getId();
+                currentDeviceFriendlyName = device.getFriendlyName();
                 deferred.resolve();
             } else {
                 deferred.reject();
