@@ -1,12 +1,14 @@
 ﻿(function () {
 
 
-    function onDeviceFound() {
+    function onDeviceFound(e) {
 
+        console.log('device found');
     }
 
-    function onDeviceLost() {
+    function onDeviceLost(e) {
 
+        console.log('device lost');
     }
 
     function initSdk() {
