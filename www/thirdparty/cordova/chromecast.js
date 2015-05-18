@@ -447,6 +447,8 @@
 
             session.connect().success(function () {
 
+                console.log('session.connect succeeded');
+
                 MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
                 currentDeviceFriendlyName = device.getFriendlyName();
                 currentPairedDeviceId = device.getId();
@@ -469,6 +471,7 @@
             });
 
             session.on('disconnect', function () {
+
                 console.log("session disconnected");
 
                 if (currentPairedDeviceId == device.getId()) {
@@ -485,17 +488,32 @@
         function onDeviceReady(device) {
 
             if (currentPairingDeviceId != device.getId()) {
+                console.log('device ready fired for a different device. ignoring.');
                 return;
             }
 
+            console.log('calling launchWebApp');
+
             device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
+                console.log('launchWebApp success. calling onSessionConnected');
                 onSessionConnected(device, session);
-            });
 
-            device.getWebAppLauncher().joinWebApp(ApplicationID).success(function (session) {
+            }).error(function () {
 
-                onSessionConnected(device, session);
+                console.log('launchWebApp error. calling joinWebApp');
+
+                device.getWebAppLauncher().joinWebApp(ApplicationID).success(function (session) {
+
+                    console.log('joinWebApp success. calling onSessionConnected');
+                    onSessionConnected(device, session);
+
+                }).error(function () {
+
+                    console.log('joinWebApp error.');
+
+                });
+
             });
         }
 
@@ -514,14 +532,21 @@
 
                 currentPairingDeviceId = device.getId();
 
+                console.log('Will attempt to connect to Chromecast');
+
                 if (device.isReady()) {
+                    console.log('Device is already ready, calling onDeviceReady');
                     onDeviceReady(device);
                 } else {
 
+                    console.log('Binding device ready handler');
+
                     device.on("ready", function () {
+                        console.log('device.ready fired');
                         onDeviceReady(device);
                     });
 
+                    console.log('Calling device.connect');
                     device.connect();
                 }
                 //deferred.resolve();
