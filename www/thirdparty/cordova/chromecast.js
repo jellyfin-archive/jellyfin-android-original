@@ -2,7 +2,8 @@
 
     var PlayerName = "Chromecast";
     var ApplicationID = "F4EB2E8E";
-    var currentDeviceId;
+    var currentPairingDeviceId;
+    var currentPairedDeviceId;
     var currentDeviceFriendlyName;
     var currentWebAppSession;
 
@@ -441,7 +442,7 @@
 
         function onDeviceReady(device) {
 
-            if (currentDeviceId != device.getId()) {
+            if (currentPairingDeviceId != device.getId()) {
                 return;
             }
 
@@ -451,6 +452,10 @@
                 currentWebAppSession = session.acquire();
 
                 session.connect().success(function () {
+
+                    MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
+                    currentDeviceFriendlyName = device.getFriendlyName();
+                    currentPairedDeviceId = device.getId();
 
                     $(castPlayer).trigger('connect');
 
@@ -472,8 +477,10 @@
                 session.on('disconnect', function () {
                     console.log("session disconnected");
 
-                    if (currentDeviceId == device.getId()) {
+                    if (currentPairedDeviceId == device.getId()) {
                         currentWebAppSession = null;
+                        currentPairedDeviceId = null;
+                        currentDeviceFriendlyName = null;
                         MediaController.removeActivePlayer(PlayerName);
                     }
 
@@ -495,6 +502,8 @@
 
             if (device) {
 
+                currentPairingDeviceId = device.getId();
+
                 if (device.isReady()) {
                     onDeviceReady(device);
                 } else {
@@ -505,10 +514,8 @@
 
                     device.connect();
                 }
+                //deferred.resolve();
 
-                currentDeviceId = device.getId();
-                currentDeviceFriendlyName = device.getFriendlyName();
-                deferred.resolve();
             } else {
                 deferred.reject();
             }
