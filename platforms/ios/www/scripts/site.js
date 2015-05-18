@@ -206,17 +206,19 @@ var Dashboard = {
         store.removeItem("token");
         store.removeItem("serverAddress");
 
-        var loginPage = !Dashboard.isConnectMode() ?
-            'login.html' :
-            'connectlogin.html';
+        function onLogoutDone() {
+
+            var loginPage = !Dashboard.isConnectMode() ?
+                'login.html' :
+                'connectlogin.html';
+
+            window.location.href = loginPage;
+        }
 
         if (logoutWithServer === false) {
-            window.location.href = loginPage;
+            onLogoutDone();
         } else {
-            ConnectionManager.logout().done(function () {
-                window.location.href = loginPage;
-            });
-
+            ConnectionManager.logout().done(onLogoutDone);
         }
     },
 
@@ -354,14 +356,17 @@ var Dashboard = {
     reloadPage: function () {
 
         var currentUrl = getWindowUrl().toLowerCase();
+        var newUrl;
 
         // If they're on a plugin config page just go back to the dashboard
         // The plugin may not have been loaded yet, or could have been uninstalled
         if (currentUrl.indexOf('configurationpage') != -1) {
-            window.location.href = "dashboard.html";
+            newUrl = "dashboard.html";
         } else {
-            window.location.href = getWindowUrl();
+            newUrl = getWindowUrl();
         }
+
+        window.location.href = newUrl;
     },
 
     hideDashboardVersionWarning: function () {
@@ -668,8 +673,7 @@ var Dashboard = {
             }
 
             if (isConnectMode) {
-                // Use onclick instead of data-ajax = false to avoid cordova crash
-                html += '<p><a data-mini="true" data-role="button" href="#" data-icon="cloud" onclick="window.location.href=\'selectserver.html\';">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
+                html += '<p><a data-mini="true" data-role="button" href="selectserver.html" data-icon="cloud">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
             }
 
             html += '<p><button data-mini="true" type="button" onclick="Dashboard.logout();" data-icon="lock">' + Globalize.translate('ButtonSignOut') + '</button></p>';
@@ -1482,6 +1486,16 @@ var Dashboard = {
             deferred.resolve();
         });
         return deferred.promise();
+    },
+
+    onLoggedIn: function(serverAddress, userId, accessToken, apiClient) {
+        
+        if (Dashboard.isConnectMode()) {
+            Dashboard.serverAddress(serverAddress);
+        }
+
+        Dashboard.setCurrentUser(userId, accessToken);
+        window.ApiClient = apiClient;
     }
 };
 
