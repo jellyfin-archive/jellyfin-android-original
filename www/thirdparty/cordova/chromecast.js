@@ -440,6 +440,48 @@
             }
         }
 
+        function onSessionConnected(device, session) {
+
+            // hold on to a reference
+            currentWebAppSession = session.acquire();
+
+            session.connect().success(function () {
+
+                MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
+                currentDeviceFriendlyName = device.getFriendlyName();
+                currentPairedDeviceId = device.getId();
+
+                $(castPlayer).trigger('connect');
+
+                sendMessageToDevice({
+                    options: {},
+                    command: 'Identify'
+                });
+            });
+
+            session.on('message', function (message) {
+                // message could be either a string or an object
+                if (typeof message === 'string') {
+                    onMessage(JSON.parse(message));
+                } else {
+                    onMessage(message);
+                }
+            });
+
+            session.on('disconnect', function () {
+                console.log("session disconnected");
+
+                if (currentPairedDeviceId == device.getId()) {
+                    currentWebAppSession = null;
+                    currentPairedDeviceId = null;
+                    currentDeviceFriendlyName = null;
+                    MediaController.removeActivePlayer(PlayerName);
+                }
+
+            });
+
+        }
+
         function onDeviceReady(device) {
 
             if (currentPairingDeviceId != device.getId()) {
@@ -448,44 +490,12 @@
 
             device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
-                // hold on to a reference
-                currentWebAppSession = session.acquire();
+                onSessionConnected(device, session);
+            });
 
-                session.connect().success(function () {
+            device.getWebAppLauncher().joinWebApp(ApplicationID).success(function (session) {
 
-                    MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
-                    currentDeviceFriendlyName = device.getFriendlyName();
-                    currentPairedDeviceId = device.getId();
-
-                    $(castPlayer).trigger('connect');
-
-                    sendMessageToDevice({
-                        options: {},
-                        command: 'Identify'
-                    });
-                });
-
-                session.on('message', function (message) {
-                    // message could be either a string or an object
-                    if (typeof message === 'string') {
-                        onMessage(JSON.parse(message));
-                    } else {
-                        onMessage(message);
-                    }
-                });
-
-                session.on('disconnect', function () {
-                    console.log("session disconnected");
-
-                    if (currentPairedDeviceId == device.getId()) {
-                        currentWebAppSession = null;
-                        currentPairedDeviceId = null;
-                        currentDeviceFriendlyName = null;
-                        MediaController.removeActivePlayer(PlayerName);
-                    }
-
-                });
-
+                onSessionConnected(device, session);
             });
         }
 
