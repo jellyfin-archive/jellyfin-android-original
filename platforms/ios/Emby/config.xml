@@ -82,7 +82,6 @@
     <splash height="1334" src="res/ios/splash-667h.png" width="750" />
     <splash height="2208" src="res/ios/splash-736h.png" width="1242" />
     <splash height="1242" src="res/ios/splash-Landscape-736h.png" width="2208" />
-    <preference name="EnableViewportScale" value="true" />
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
     <name>Emby</name>
