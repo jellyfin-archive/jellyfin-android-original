@@ -491,18 +491,18 @@
                 console.log('launchWebApp success. calling onSessionConnected');
                 onSessionConnected(device, session);
 
-            }).error(function () {
+            }).error(function (err) {
 
-                console.log('launchWebApp error. calling joinWebApp');
+                console.log('launchWebApp error: ' + JSON.stringify(err) + '. calling joinWebApp');
 
                 device.getWebAppLauncher().joinWebApp(ApplicationID).success(function (session) {
 
                     console.log('joinWebApp success. calling onSessionConnected');
                     onSessionConnected(device, session);
 
-                }).error(function () {
+                }).error(function (err1) {
 
-                    console.log('joinWebApp error.');
+                    console.log('joinWebApp error:' + JSON.stringify(err1));
 
                 });
 
