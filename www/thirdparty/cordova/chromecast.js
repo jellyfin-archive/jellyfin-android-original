@@ -328,7 +328,7 @@
 
     function initSdk() {
 
-        var manager = discoveryManager;
+        var manager = ConnectSDK.discoveryManager;
 
         manager.addListener('devicelost', onDeviceLost);
 
