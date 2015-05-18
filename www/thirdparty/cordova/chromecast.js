@@ -485,15 +485,7 @@
 
         }
 
-        function onDeviceReady(device) {
-
-            if (currentPairingDeviceId != device.getId()) {
-                console.log('device ready fired for a different device. ignoring.');
-                return;
-            }
-
-            console.log('calling launchWebApp');
-
+        function launchWebApp(device) {
             device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
                 console.log('launchWebApp success. calling onSessionConnected');
@@ -517,6 +509,24 @@
             });
         }
 
+        function onDeviceReady(device) {
+
+            if (currentPairingDeviceId != device.getId()) {
+                console.log('device ready fired for a different device. ignoring.');
+                return;
+            }
+
+            console.log('calling launchWebApp');
+
+            setTimeout(function () {
+
+                launchWebApp(device);
+
+            }, 0);
+        }
+
+        var boundHandlers = [];
+
         self.tryPair = function (target) {
 
             var deferred = $.Deferred();
@@ -530,7 +540,8 @@
 
             if (device) {
 
-                currentPairingDeviceId = device.getId();
+                var deviceId = device.getId();
+                currentPairingDeviceId = deviceId;
 
                 console.log('Will attempt to connect to Chromecast');
 
@@ -541,10 +552,14 @@
 
                     console.log('Binding device ready handler');
 
-                    device.on("ready", function () {
-                        console.log('device.ready fired');
-                        onDeviceReady(device);
-                    });
+                    if (boundHandlers.indexOf(deviceId) == -1) {
+
+                        boundHandlers.push(deviceId);
+                        device.on("ready", function () {
+                            console.log('device.ready fired');
+                            onDeviceReady(device);
+                        });
+                    }
 
                     console.log('Calling device.connect');
                     device.connect();
