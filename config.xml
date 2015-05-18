@@ -68,7 +68,6 @@
     <splash src="res/ios/splash-667h.png" width="750" height="1334"/>
     <splash src="res/ios/splash-736h.png" width="1242" height="2208"/>
     <splash src="res/ios/splash-Landscape-736h.png" width="2208" height="1242"/>
-    <preference name="EnableViewportScale" value="true" />
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
   </platform>
