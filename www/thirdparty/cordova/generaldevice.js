@@ -3,12 +3,14 @@
     var currentPairingDeviceId;
     var currentDevice;
 
+    var PlayerName = "ConnectSDK";
+
     function connectPlayer() {
 
         var self = this;
 
         // MediaController needs this
-        self.name = "ConnectSDK";
+        self.name = PlayerName;
 
         self.getItemsForPlayback = function (query) {
 
@@ -377,7 +379,8 @@
 
             var target = getBaseTargetInfo();
 
-            target.playerName = target.appName = target.name = target.deviceName = device.getFriendlyName();
+            target.appName = target.name = target.deviceName = device.getFriendlyName();
+            target.playerName = PlayerName;
             target.id = device.getId();
 
             return target;
@@ -490,6 +493,7 @@
             }
 
             currentDevice = device;
+            MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
         }
 
         var boundHandlers = [];
