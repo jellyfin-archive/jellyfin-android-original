@@ -207,7 +207,9 @@
 
     onWebSocketOpen: function () {
 
-        DashboardPage.startInterval();
+        var apiClient = this;
+
+        DashboardPage.startInterval(apiClient);
     },
 
     pollForInfo: function (page, forceUpdate) {

@@ -570,12 +570,12 @@
                 return self.ajax({
                     type: "POST",
                     url: url
-                }).done(done);
+                }).always(done);
             }
 
             var deferred = DeferredBuilder.Deferred();
             deferred.resolveWith(null, []);
-            return deferred.promise().done(done);
+            return deferred.promise().always(done);
         };
 
         function getRemoteImagePrefix(options) {
