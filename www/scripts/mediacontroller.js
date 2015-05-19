@@ -105,6 +105,11 @@
             };
         };
 
+        function triggerPlayerChange(newPlayer, newTarget) {
+            
+            $(self).trigger('playerchange', [newPlayer, newTarget]);
+        }
+
         self.setActivePlayer = function (player, targetInfo) {
 
             if (typeof (player) === 'string') {
@@ -122,7 +127,7 @@
 
             console.log('Active player: ' + JSON.stringify(currentTargetInfo));
 
-            $(self).trigger('playerchange');
+            triggerPlayerChange(player, targetInfo);
         };
 
         self.trySetActivePlayer = function (player, targetInfo) {
@@ -144,7 +149,7 @@
 
                 console.log('Active player: ' + JSON.stringify(currentTargetInfo));
 
-                $(self).trigger('playerchange');
+                triggerPlayerChange(player, targetInfo);
             });
         };
 

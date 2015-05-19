@@ -49,6 +49,7 @@ var Dashboard = {
 
     isConnectMode: function () {
 
+        return true;
         if (Dashboard.isRunningInCordova()) {
             return true;
         }
@@ -208,11 +209,16 @@ var Dashboard = {
 
         function onLogoutDone() {
 
-            var loginPage = !Dashboard.isConnectMode() ?
-                'login.html' :
-                'connectlogin.html';
+            var loginPage = 'login.html';
 
-            window.location.href = loginPage;
+            if (Dashboard.isConnectMode()) {
+                loginPage = 'connectlogin.html';
+                window.ApiClient = null;
+            } else {
+                
+            }
+
+            Dashboard.navigate(loginPage);
         }
 
         if (logoutWithServer === false) {
@@ -692,14 +698,23 @@ var Dashboard = {
 
     getPluginSecurityInfo: function () {
 
+        var apiClient = ApiClient;
+
+        if (!apiClient) {
+            
+            var deferred = $.Deferred();
+            deferred.reject();
+            return deferred.promise();
+        }
+
         if (!Dashboard.getPluginSecurityInfoPromise) {
 
             var deferred = $.Deferred();
 
             // Don't let this blow up the dashboard when it fails
-            ApiClient.ajax({
+            apiClient.ajax({
                 type: "GET",
-                url: ApiClient.getUrl("Plugins/SecurityInfo"),
+                url: apiClient.getUrl("Plugins/SecurityInfo"),
                 dataType: 'json',
 
                 error: function () {
@@ -1511,7 +1526,7 @@ var AppInfo = {};
 
     function setAppInfo() {
 
-        if (isTouchDevice()) {
+        if (isTouchDevice() && $.browser.mobile) {
             AppInfo.isTouchPreferred = true;
         }
 
