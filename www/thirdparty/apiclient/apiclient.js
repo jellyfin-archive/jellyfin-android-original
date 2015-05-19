@@ -345,7 +345,7 @@
             return url;
         };
 
-        self.enableAutomaticNetworking = function (server, connectionMode) {
+        self.enableAutomaticNetworking = function (server, connectionMode, serverUrl) {
 
             logger.log('Begin enableAutomaticNetworking');
 
@@ -353,12 +353,8 @@
             self.connectionMode = connectionMode;
             self.enableAutomaticNetwork = true;
 
-            var url = connectionMode == MediaBrowser.ConnectionMode.Local ?
-                self.serverInfo().LocalAddress :
-                self.serverInfo().RemoteAddress;
-
-            logger.log('Setting server address to ' + url);
-            self.serverAddress(url);
+            logger.log('Setting server address to ' + serverUrl);
+            self.serverAddress(serverUrl);
         };
 
         self.isWebSocketSupported = function () {

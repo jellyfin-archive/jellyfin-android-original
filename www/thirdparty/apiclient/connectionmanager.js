@@ -903,7 +903,7 @@
                 MediaBrowser.ConnectionState.ServerSignIn;
 
             result.Servers.push(server);
-            result.ApiClient.enableAutomaticNetworking(server, connectionMode);
+            result.ApiClient.enableAutomaticNetworking(server, connectionMode, self.getServerAddress(server, connectionMode));
 
             if (result.State == MediaBrowser.ConnectionState.SignedIn) {
                 afterConnected(result.ApiClient, options);
