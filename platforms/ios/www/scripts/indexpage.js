@@ -636,28 +636,28 @@
 
         var page = this;
 
-        var userId = Dashboard.getCurrentUserId();
-
         $('.btnTakeTour', page).on('click', function () {
-            takeTour(page, userId);
+            takeTour(page, Dashboard.getCurrentUserId());
         });
 
     }).on('pagebeforeshow', "#indexPage", function () {
 
         var page = this;
 
-        var userId = Dashboard.getCurrentUserId();
+        if (window.ApiClient) {
+            var userId = Dashboard.getCurrentUserId();
 
-        getDisplayPreferences('home', userId).done(function (result) {
+            getDisplayPreferences('home', userId).done(function (result) {
 
-            Dashboard.getCurrentUser().done(function (user) {
+                Dashboard.getCurrentUser().done(function (user) {
 
-                loadSections(page, user, result).done(function () {
-                    showWelcomeIfNeeded(page, result);
+                    loadSections(page, user, result).done(function () {
+                        showWelcomeIfNeeded(page, result);
+                    });
+
                 });
-
             });
-        });
+        }
 
     });
 

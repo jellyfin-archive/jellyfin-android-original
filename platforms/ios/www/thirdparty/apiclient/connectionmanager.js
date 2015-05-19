@@ -479,6 +479,7 @@
                 for (var j = 0, numServers = servers.length; j < numServers; j++) {
 
                     var server = servers[j];
+
                     server.UserId = null;
                     server.AccessToken = null;
                     server.ExchangeToken = null;
@@ -902,7 +903,7 @@
                 MediaBrowser.ConnectionState.ServerSignIn;
 
             result.Servers.push(server);
-            result.ApiClient.enableAutomaticNetworking(server, connectionMode);
+            result.ApiClient.enableAutomaticNetworking(server, connectionMode, self.getServerAddress(server, connectionMode));
 
             if (result.State == MediaBrowser.ConnectionState.SignedIn) {
                 afterConnected(result.ApiClient, options);

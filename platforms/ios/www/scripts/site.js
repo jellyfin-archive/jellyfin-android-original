@@ -106,7 +106,9 @@ var Dashboard = {
 
     onApiClientServerAddressChanged: function () {
 
-        Dashboard.serverAddress(ApiClient.serverAddress());
+        var apiClient = this;
+
+        Dashboard.serverAddress(apiClient.serverAddress());
     },
 
     getCurrentUser: function () {
@@ -200,7 +202,7 @@ var Dashboard = {
         Dashboard.getUserPromise = null;
     },
 
-    logout: function (logoutWithServer) {
+    logout: function (logoutWithServer, forceReload) {
 
         store.removeItem("userId");
         store.removeItem("token");
@@ -208,11 +210,20 @@ var Dashboard = {
 
         function onLogoutDone() {
 
-            var loginPage = !Dashboard.isConnectMode() ?
-                'login.html' :
-                'connectlogin.html';
+            var loginPage;
 
-            window.location.href = loginPage;
+            if (Dashboard.isConnectMode()) {
+                loginPage = 'connectlogin.html';
+                window.ApiClient = null;
+            } else {
+                loginPage = 'login.html';
+            }
+
+            if (forceReload) {
+                window.location.href = loginPage;
+            } else {
+                Dashboard.navigate(loginPage);
+            }
         }
 
         if (logoutWithServer === false) {
@@ -692,14 +703,23 @@ var Dashboard = {
 
     getPluginSecurityInfo: function () {
 
+        var apiClient = ApiClient;
+
+        if (!apiClient) {
+
+            var deferred = $.Deferred();
+            deferred.reject();
+            return deferred.promise();
+        }
+
         if (!Dashboard.getPluginSecurityInfoPromise) {
 
             var deferred = $.Deferred();
 
             // Don't let this blow up the dashboard when it fails
-            ApiClient.ajax({
+            apiClient.ajax({
                 type: "GET",
-                url: ApiClient.getUrl("Plugins/SecurityInfo"),
+                url: apiClient.getUrl("Plugins/SecurityInfo"),
                 dataType: 'json',
 
                 error: function () {
@@ -1388,7 +1408,7 @@ var Dashboard = {
 
             } else {
 
-                quality -= 50;
+                quality -= 40;
             }
         }
 
@@ -1511,7 +1531,7 @@ var AppInfo = {};
 
     function setAppInfo() {
 
-        if (isTouchDevice()) {
+        if (isTouchDevice() && $.browser.mobile) {
             AppInfo.isTouchPreferred = true;
         }
 
@@ -1909,7 +1929,6 @@ $(document).on('pagecreate', ".page", function () {
 }).on('pageshow', ".page", function () {
 
     var page = this;
-
     var require = this.getAttribute('data-require');
 
     if (require) {
@@ -1956,7 +1975,7 @@ $(document).on('pagecreate', ".page", function () {
         if (isConnectMode) {
 
             if (!Dashboard.isServerlessPage()) {
-                Dashboard.logout();
+                Dashboard.logout(true, true);
                 return;
             }
         }
@@ -1964,7 +1983,7 @@ $(document).on('pagecreate', ".page", function () {
         if (this.id !== "loginPage" && !page.hasClass('forgotPasswordPage') && !page.hasClass('wizardPage') && !isConnectMode) {
 
             console.log('Not logged into server. Redirecting to login.');
-            Dashboard.logout();
+            Dashboard.logout(true, true);
             return;
         }
 
