@@ -1502,14 +1502,19 @@ var Dashboard = {
         Dashboard.setCurrentUser(userId, accessToken);
     },
 
-    firePageEvent: function (page, name) {
-
+    ready: function(fn) {
+        
         if (Dashboard.initPromiseDone) {
-            $(page).trigger(name);
+            fn();
             return;
         }
 
-        Dashboard.initPromise.done(function () {
+        Dashboard.initPromise.done(fn);
+    },
+
+    firePageEvent: function (page, name) {
+
+        Dashboard.ready(function () {
             $(page).trigger(name);
         });
     }

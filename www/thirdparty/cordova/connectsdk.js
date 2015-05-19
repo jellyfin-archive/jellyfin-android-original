@@ -31,11 +31,7 @@
         requirejs(['thirdparty/cordova/chromecast', 'thirdparty/cordova/generaldevice']);
     }
 
-    document.addEventListener("deviceready", function () {
-
-        initSdk();
-
-    }, false);
+    Dashboard.ready(initSdk);
 
 
 })();
