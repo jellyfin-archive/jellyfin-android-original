@@ -1611,7 +1611,8 @@ var address=store.getItem('serverAddress');if(!address&&!Dashboard.isConnectMode
 if(index!=-1){address=urlLower.substring(0,index);return address;}
 var loc=window.location;address=loc.protocol+'//'+loc.hostname;if(loc.port){address+=':'+loc.port;}}
 return address;},getCurrentUserId:function(){var autoLoginUserId=getParameterByName('u');var storedUserId=store.getItem("userId");if(autoLoginUserId&&autoLoginUserId!=storedUserId){var token=getParameterByName('t');Dashboard.setCurrentUser(autoLoginUserId,token);}
-return autoLoginUserId||storedUserId;},setCurrentUser:function(userId,token,apiClient){store.setItem("userId",userId);store.setItem("token",token);apiClient=apiClient||window.ApiClient;if(apiClient){apiClient.setCurrentUserId(userId,token);}
+return autoLoginUserId||storedUserId;},setCurrentUser:function(userId,token,apiClient){apiClient=apiClient||window.ApiClient;if(!userId||!token){store.removeItem("userId");store.removeItem("token");return;}
+store.setItem("userId",userId);store.setItem("token",token);if(apiClient){apiClient.setCurrentUserId(userId,token);}
 Dashboard.getUserPromise=null;},logout:function(logoutWithServer,forceReload){store.removeItem("userId");store.removeItem("token");store.removeItem("serverAddress");function onLogoutDone(){var loginPage;if(Dashboard.isConnectMode()){loginPage='connectlogin.html';window.ApiClient=null;}else{loginPage='login.html';}
 if(forceReload){window.location.href=loginPage;}else{Dashboard.navigate(loginPage);}}
 if(logoutWithServer===false){onLogoutDone();}else{ConnectionManager.logout().done(onLogoutDone);}},importCss:function(url){if(document.createStyleSheet){document.createStyleSheet(url);}
