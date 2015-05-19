@@ -106,7 +106,9 @@ var Dashboard = {
 
     onApiClientServerAddressChanged: function () {
 
-        Dashboard.serverAddress(ApiClient.serverAddress());
+        var apiClient = this;
+
+        Dashboard.serverAddress(apiClient.serverAddress());
     },
 
     getCurrentUser: function () {
