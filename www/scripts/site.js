@@ -191,12 +191,12 @@ var Dashboard = {
         return autoLoginUserId || storedUserId;
     },
 
-    setCurrentUser: function (userId, token) {
+    setCurrentUser: function (userId, token, apiClient) {
 
         store.setItem("userId", userId);
         store.setItem("token", token);
 
-        var apiClient = window.ApiClient;
+        apiClient = apiClient || window.ApiClient;
 
         if (apiClient) {
             apiClient.setCurrentUserId(userId, token);
@@ -1501,11 +1501,11 @@ var Dashboard = {
             Dashboard.serverAddress(serverAddress);
         }
 
-        Dashboard.setCurrentUser(userId, accessToken);
+        Dashboard.setCurrentUser(userId, accessToken, apiClient);
     },
 
-    ready: function(fn) {
-        
+    ready: function (fn) {
+
         if (Dashboard.initPromiseDone) {
             fn();
             return;
