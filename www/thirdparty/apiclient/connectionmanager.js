@@ -479,6 +479,7 @@
                 for (var j = 0, numServers = servers.length; j < numServers; j++) {
 
                     var server = servers[j];
+
                     server.UserId = null;
                     server.AccessToken = null;
                     server.ExchangeToken = null;

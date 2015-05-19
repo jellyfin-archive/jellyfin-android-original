@@ -49,7 +49,6 @@ var Dashboard = {
 
     isConnectMode: function () {
 
-        return true;
         if (Dashboard.isRunningInCordova()) {
             return true;
         }
@@ -201,7 +200,7 @@ var Dashboard = {
         Dashboard.getUserPromise = null;
     },
 
-    logout: function (logoutWithServer) {
+    logout: function (logoutWithServer, forceReload) {
 
         store.removeItem("userId");
         store.removeItem("token");
@@ -209,16 +208,20 @@ var Dashboard = {
 
         function onLogoutDone() {
 
-            var loginPage = 'login.html';
+            var loginPage;
 
             if (Dashboard.isConnectMode()) {
                 loginPage = 'connectlogin.html';
                 window.ApiClient = null;
             } else {
-                
+                loginPage = 'login.html';
             }
 
-            Dashboard.navigate(loginPage);
+            if (forceReload) {
+                window.location.href = loginPage;
+            } else {
+                Dashboard.navigate(loginPage);
+            }
         }
 
         if (logoutWithServer === false) {
@@ -701,7 +704,7 @@ var Dashboard = {
         var apiClient = ApiClient;
 
         if (!apiClient) {
-            
+
             var deferred = $.Deferred();
             deferred.reject();
             return deferred.promise();
@@ -1924,7 +1927,6 @@ $(document).on('pagecreate', ".page", function () {
 }).on('pageshow', ".page", function () {
 
     var page = this;
-
     var require = this.getAttribute('data-require');
 
     if (require) {
@@ -1971,7 +1973,7 @@ $(document).on('pagecreate', ".page", function () {
         if (isConnectMode) {
 
             if (!Dashboard.isServerlessPage()) {
-                Dashboard.logout();
+                Dashboard.logout(true, true);
                 return;
             }
         }
@@ -1979,7 +1981,7 @@ $(document).on('pagecreate', ".page", function () {
         if (this.id !== "loginPage" && !page.hasClass('forgotPasswordPage') && !page.hasClass('wizardPage') && !isConnectMode) {
 
             console.log('Not logged into server. Redirecting to login.');
-            Dashboard.logout();
+            Dashboard.logout(true, true);
             return;
         }
 
