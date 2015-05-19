@@ -457,6 +457,20 @@
 
             return bottomText ? topText + '<br/>' + bottomText : topText;
         };
+
+        self.showPlaybackInfoErrorMessage = function(errorCode) {
+
+            // This timeout is messy, but if jqm is in the act of hiding a popup, it will not show a new one
+            // If we're coming from the popup play menu, this will be a problem
+
+            setTimeout(function() {
+                Dashboard.alert({
+                    message: Globalize.translate('MessagePlaybackError' + errorCode),
+                    title: Globalize.translate('HeaderPlaybackError')
+                });
+            }, 300);
+
+        };
     }
 
     window.MediaController = new mediaController();
