@@ -1007,7 +1007,7 @@
     }
 };
 
-$(document).on('pagebeforeshow', "#dashboardPage", DashboardPage.onPageShow)
+$(document).on('pagebeforeshowready', "#dashboardPage", DashboardPage.onPageShow)
     .on('pagehide', "#dashboardPage", DashboardPage.onPageHide);
 
 (function ($, document, window) {
@@ -1356,7 +1356,7 @@ $(document).on('pagebeforeshow', "#dashboardPage", DashboardPage.onPageShow)
         });
     }
 
-    $(document).on('pageinit', "#dashboardPage", function () {
+    $(document).on('pageinitdepends', "#dashboardPage", function () {
 
         var page = this;
 
@@ -1364,7 +1364,7 @@ $(document).on('pagebeforeshow', "#dashboardPage", DashboardPage.onPageShow)
             takeTour(page, Dashboard.getCurrentUserId());
         });
 
-    }).on('pagebeforeshow.checktour', "#dashboardPage", function () {
+    }).on('pagebeforeshowready.checktour', "#dashboardPage", function () {
 
         var page = this;
 
@@ -1380,7 +1380,7 @@ $(document).on('pagebeforeshow', "#dashboardPage", DashboardPage.onPageShow)
 
 (function () {
 
-    $(document).on('pagebeforeshow', ".type-interior", function () {
+    $(document).on('pagebeforeshowready', ".type-interior", function () {
 
         var page = this;
 
