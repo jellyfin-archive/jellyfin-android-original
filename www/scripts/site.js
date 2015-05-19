@@ -1974,7 +1974,7 @@ $(document).on('pagecreate', ".page", function () {
         Dashboard.firePageEvent(page, 'pagebeforeshowready');
     }
 
-}).on('pagebeforeshow', ".page", function () {
+}).on('pagebeforeshowready', ".page", function () {
 
     var page = $(this);
 
