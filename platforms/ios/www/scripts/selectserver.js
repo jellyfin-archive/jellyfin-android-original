@@ -84,18 +84,20 @@
         // cardScalable
         html += "</div>";
 
-        html += '<div class="cardFooter">';
+        html += '<div class="cardFooter outerCardFooter">';
 
         if (server.showOptions !== false) {
             html += '<div class="cardText" style="text-align:right; float:right;">';
-
-            html += '<button class="btnServerMenu" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 2px 0 0;"></button>';
-
+            html += '<button class="listviewMenuButton imageButton btnCardOptions btnServerMenu" type="button" data-role="none" style="margin: 4px 0 0;"><i class="fa fa-ellipsis-v"></i></button>';
             html += "</div>";
         }
 
-        html += '<div class="cardText" style="margin-right: 30px; padding: 11px 0 10px;">';
+        html += '<div class="cardText">';
         html += server.Name;
+        html += "</div>";
+
+        html += '<div class="cardText">';
+        html += '&nbsp;';
         html += "</div>";
 
         // cardFooter
@@ -312,15 +314,18 @@
         // cardScalable
         html += "</div>";
 
-        html += '<div class="cardFooter">';
+        html += '<div class="cardFooter outerCardFooter">';
 
         html += '<div class="cardText" style="text-align:right; float:right;">';
-
-        html += '<button class="btnInviteMenu" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 2px 0 0;"></button>';
+        html += '<button class="listviewMenuButton imageButton btnCardOptions btnInviteMenu" type="button" data-role="none" style="margin: 4px 0 0;"><i class="fa fa-ellipsis-v"></i></button>';
         html += "</div>";
 
-        html += '<div class="cardText" style="margin-right: 30px; padding: 11px 0 10px;">';
+        html += '<div class="cardText">';
         html += invite.Name;
+        html += "</div>";
+
+        html += '<div class="cardText">';
+        html += '&nbsp;';
         html += "</div>";
 
         // cardFooter
@@ -387,24 +392,22 @@
                 });
             }
 
-            if (!ConnectionManager.isLoggedIntoConnect()) {
-                servers.push({
-                    Name: Globalize.translate('ButtonSignInWithConnect'),
-                    Id: 'connect',
-                    showOptions: false
-                });
-            }
-
             renderServers(page, servers);
 
             Dashboard.hideLoadingMsg();
         });
 
         loadInvitations(page);
+
+        if (ConnectionManager.isLoggedIntoConnect()) {
+            $('.connectLogin', page).hide();
+        } else {
+            $('.connectLogin', page).show();
+        }
     }
 
     function updatePageStyle(page) {
-        
+
         if (ConnectionManager.isLoggedIntoConnect()) {
             $(page).addClass('libraryPage').addClass('noSecondaryNavPage').removeClass('standalonePage');
         } else {

@@ -2,7 +2,8 @@
 
     var PlayerName = "Chromecast";
     var ApplicationID = "F4EB2E8E";
-    var currentDeviceId;
+    var currentPairingDeviceId;
+    var currentPairedDeviceId;
     var currentDeviceFriendlyName;
     var currentWebAppSession;
 
@@ -165,13 +166,13 @@
 
         self.unpause = function () {
             sendMessageToDevice({
-                command: 'unpause'
+                command: 'Unpause'
             });
         };
 
         self.pause = function () {
             sendMessageToDevice({
-                command: 'pause'
+                command: 'Pause'
             });
         };
 
@@ -221,7 +222,7 @@
 
         self.stop = function () {
             sendMessageToDevice({
-                command: 'stop'
+                command: 'Stop'
             });
         };
 
@@ -235,7 +236,7 @@
 
         self.mute = function () {
             sendMessageToDevice({
-                command: 'mute'
+                command: 'Mute'
             });
         };
 
@@ -382,7 +383,7 @@
 
             sendMessageToDevice({
                 options: {
-                    volume: (vol / 100)
+                    volume: vol
                 },
                 command: 'SetVolume'
             });
@@ -439,48 +440,96 @@
             }
         }
 
-        function onDeviceReady(device) {
+        function onSessionConnected(device, session) {
 
-            if (currentDeviceId != device.getId()) {
-                return;
-            }
+            // hold on to a reference
+            currentWebAppSession = session.acquire();
 
+            session.connect().success(function () {
+
+                console.log('session.connect succeeded');
+
+                MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
+                currentDeviceFriendlyName = device.getFriendlyName();
+                currentPairedDeviceId = device.getId();
+
+                $(castPlayer).trigger('connect');
+
+                sendMessageToDevice({
+                    options: {},
+                    command: 'Identify'
+                });
+            });
+
+            session.on('message', function (message) {
+                // message could be either a string or an object
+                if (typeof message === 'string') {
+                    onMessage(JSON.parse(message));
+                } else {
+                    onMessage(message);
+                }
+            });
+
+            session.on('disconnect', function () {
+
+                console.log("session disconnected");
+
+                if (currentPairedDeviceId == device.getId()) {
+                    onDisconnected();
+                    MediaController.removeActivePlayer(PlayerName);
+                }
+
+            });
+
+        }
+        
+        function onDisconnected() {
+            currentWebAppSession = null;
+            currentPairedDeviceId = null;
+            currentDeviceFriendlyName = null;
+        }
+
+        function launchWebApp(device) {
             device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
-                // hold on to a reference
-                currentWebAppSession = session.acquire();
+                console.log('launchWebApp success. calling onSessionConnected');
+                onSessionConnected(device, session);
 
-                session.connect().success(function () {
+            }).error(function (err) {
 
-                    $(castPlayer).trigger('connect');
+                console.log('launchWebApp error: ' + JSON.stringify(err) + '. calling joinWebApp');
 
-                    sendMessageToDevice({
-                        options: {},
-                        command: 'Identify'
-                    });
-                });
+                device.getWebAppLauncher().joinWebApp(ApplicationID).success(function (session) {
 
-                session.on('message', function (message) {
-                    // message could be either a string or an object
-                    if (typeof message === 'string') {
-                        onMessage(JSON.parse(message));
-                    } else {
-                        onMessage(message);
-                    }
-                });
+                    console.log('joinWebApp success. calling onSessionConnected');
+                    onSessionConnected(device, session);
 
-                session.on('disconnect', function () {
-                    console.log("session disconnected");
+                }).error(function (err1) {
 
-                    if (currentDeviceId == device.getId()) {
-                        currentWebAppSession = null;
-                        MediaController.removeActivePlayer(PlayerName);
-                    }
+                    console.log('joinWebApp error:' + JSON.stringify(err1));
 
                 });
 
             });
         }
+
+        function onDeviceReady(device) {
+
+            if (currentPairingDeviceId != device.getId()) {
+                console.log('device ready fired for a different device. ignoring.');
+                return;
+            }
+
+            console.log('calling launchWebApp');
+
+            setTimeout(function () {
+
+                launchWebApp(device);
+
+            }, 0);
+        }
+
+        var boundHandlers = [];
 
         self.tryPair = function (target) {
 
@@ -495,26 +544,48 @@
 
             if (device) {
 
+                var deviceId = device.getId();
+                currentPairingDeviceId = deviceId;
+
+                console.log('Will attempt to connect to Chromecast');
+
                 if (device.isReady()) {
+                    console.log('Device is already ready, calling onDeviceReady');
                     onDeviceReady(device);
                 } else {
 
-                    device.on("ready", function () {
-                        onDeviceReady(device);
-                    });
+                    console.log('Binding device ready handler');
 
+                    if (boundHandlers.indexOf(deviceId) == -1) {
+
+                        boundHandlers.push(deviceId);
+                        device.on("ready", function () {
+                            console.log('device.ready fired');
+                            onDeviceReady(device);
+                        });
+                    }
+
+                    console.log('Calling device.connect');
                     device.connect();
                 }
+                //deferred.resolve();
 
-                currentDeviceId = device.getId();
-                currentDeviceFriendlyName = device.getFriendlyName();
-                deferred.resolve();
             } else {
                 deferred.reject();
             }
 
             return deferred.promise();
         };
+
+        $(MediaController).on('playerchange', function (e, newPlayer, newTarget) {
+
+            if (newPlayer.name != PlayerName || newTarget.id != currentPairedDeviceId) {
+                if (currentWebAppSession) {
+                    currentWebAppSession.disconnect();
+                    onDisconnected();
+                }
+            }
+        });
     }
 
     function initSdk() {
