@@ -91,7 +91,7 @@
     <author email="apps@emby.media" href="http://emby.media">
     Emby
   </author>
-    <content src="cordovaindex.html" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

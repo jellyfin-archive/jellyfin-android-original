@@ -62,7 +62,7 @@
 
         html += '<div class="cardPadder"></div>';
 
-        var href = "#";
+        var href = server.href || "#";
         html += '<a class="cardContent lnkServer" data-serverid="' + server.Id + '" href="' + href + '">';
 
         var imgUrl = server.Id == 'connect' ? 'css/images/logo536.png' : '';
@@ -130,21 +130,15 @@
 
             var id = this.getAttribute('data-serverid');
 
-            if (id == 'new') {
-                Dashboard.navigate('connectlogin.html?mode=manualserver');
-                return;
+            if (id != 'new' && id != 'connect') {
+
+                var server = servers.filter(function (s) {
+                    return s.Id == id;
+                })[0];
+
+                connectToServer(page, server);
             }
 
-            if (id == 'connect') {
-                Dashboard.navigate('connectlogin.html?mode=connect');
-                return;
-            }
-
-            var server = servers.filter(function (s) {
-                return s.Id == id;
-            })[0];
-
-            connectToServer(page, server);
         });
 
         $('.btnServerMenu', elem).on('click', function () {
@@ -388,7 +382,8 @@
                 servers.push({
                     Name: Globalize.translate('ButtonNewServer'),
                     Id: 'new',
-                    showOptions: false
+                    showOptions: false,
+                    href: 'connectlogin.html?mode=manualserver'
                 });
             }
 
@@ -415,34 +410,17 @@
         }
     }
 
-    $(document).on('pagebeforecreate pageinit pagebeforeshow', "#selectServerPage", function () {
+    $(document).on('pageinitdepends pagebeforeshowready', "#selectServerPage", function () {
 
         var page = this;
         updatePageStyle(page);
 
-    }).on('pagebeforeshow', "#selectServerPage", function () {
+    }).on('pageshowready', "#selectServerPage", function () {
 
         var page = this;
 
         loadPage(page);
 
     });
-
-    window.SelectServerPage = {
-
-        onServerAddressEntrySubmit: function () {
-
-            Dashboard.showLoadingMsg();
-
-            var form = this;
-            var page = $(form).parents('.page');
-
-
-            // Disable default form submission
-            return false;
-
-        }
-
-    };
 
 })();

@@ -142,6 +142,8 @@ var Dashboard = {
             console.log('Setting server address to: ' + val);
 
             store.setItem('serverAddress', val);
+
+            return val;
         }
 
         var address = store.getItem('serverAddress');
@@ -189,12 +191,18 @@ var Dashboard = {
         return autoLoginUserId || storedUserId;
     },
 
-    setCurrentUser: function (userId, token) {
+    setCurrentUser: function (userId, token, apiClient) {
+
+        apiClient = apiClient || window.ApiClient;
+
+        if (!userId || !token) {
+            store.removeItem("userId");
+            store.removeItem("token");
+            return;
+        }
 
         store.setItem("userId", userId);
         store.setItem("token", token);
-
-        var apiClient = window.ApiClient;
 
         if (apiClient) {
             apiClient.setCurrentUserId(userId, token);
@@ -1428,7 +1436,7 @@ var Dashboard = {
         }
     },
 
-    getAppInfo: function () {
+    getAppInfo: function (appName, deviceId, deviceName) {
 
         function generateDeviceName() {
 
@@ -1461,28 +1469,12 @@ var Dashboard = {
         }
 
         var appVersion = window.dashboardVersion;
-        var appName = "Emby Web Client";
-
-        var deviceName;
-        var deviceId;
-
-        if (Dashboard.isRunningInCordova()) {
-
-            appName = "Emby Mobile";
-
-            deviceName = store.getItem('cordovaDeviceName');
-            deviceId = store.getItem('cordovaDeviceId');
-        }
+        appName = appName || "Emby Web Client";
 
         deviceName = deviceName || generateDeviceName();
 
         var seed = [];
         var keyName = 'randomId';
-
-        if (Dashboard.isRunningInCordova()) {
-            seed.push('cordova');
-            keyName = 'cordovaDeviceId';
-        }
 
         deviceId = deviceId || MediaBrowser.generateDeviceId(keyName, seed.join(','));
 
@@ -1515,7 +1507,24 @@ var Dashboard = {
             Dashboard.serverAddress(serverAddress);
         }
 
-        Dashboard.setCurrentUser(userId, accessToken);
+        Dashboard.setCurrentUser(userId, accessToken, apiClient);
+    },
+
+    ready: function (fn) {
+
+        if (Dashboard.initPromiseDone) {
+            fn();
+            return;
+        }
+
+        Dashboard.initPromise.done(fn);
+    },
+
+    firePageEvent: function (page, name) {
+
+        Dashboard.ready(function () {
+            $(page).trigger(name);
+        });
     }
 };
 
@@ -1576,7 +1585,6 @@ var AppInfo = {};
             AppInfo.enablePeopleTabs = true;
             AppInfo.enableTvEpisodesTab = true;
             AppInfo.enableMusicArtistsTab = true;
-            AppInfo.enableHomeLatestTab = true;
             AppInfo.enableMovieTrailersTab = true;
         }
 
@@ -1597,9 +1605,7 @@ var AppInfo = {};
             .on('serveraddresschanged.dashboard', Dashboard.onApiClientServerAddressChanged);
     }
 
-    function createConnectionManager() {
-
-        var appInfo = Dashboard.getAppInfo();
+    function createConnectionManager(appInfo) {
 
         var credentialProvider = new MediaBrowser.CredentialProvider();
 
@@ -1668,7 +1674,7 @@ var AppInfo = {};
 
     }
 
-    function onReady() {
+    function onDocumentReady() {
 
         if (AppInfo.isTouchPreferred) {
             $(document.body).addClass('touch');
@@ -1704,10 +1710,6 @@ var AppInfo = {};
 
         if (!AppInfo.enableMusicArtistsTab) {
             $(document.body).addClass('musicArtistsTabDisabled');
-        }
-
-        if (!AppInfo.enableHomeLatestTab) {
-            $(document.body).addClass('homeLatestTabDisabled');
         }
 
         if (!AppInfo.enableMovieTrailersTab) {
@@ -1833,7 +1835,7 @@ var AppInfo = {};
         });
 
         if (Dashboard.isRunningInCordova()) {
-            requirejs(['thirdparty/cordova/connectsdk']);
+            requirejs(['thirdparty/cordova/connectsdk', 'thirdparty/cordova/remotecontrols']);
         } else {
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
@@ -1841,38 +1843,64 @@ var AppInfo = {};
         }
     }
 
-    requirejs.config({
-        map: {
-            '*': {
-                'css': 'thirdparty/requirecss' // or whatever the path to require-css is
-            }
-        },
-        urlArgs: "v=" + window.dashboardVersion
-    });
+    function init(deferred, appName, deviceId, deviceName) {
 
-    // Required since jQuery is loaded before requireJs
-    define('jquery', [], function () {
-        return jQuery;
-    });
+        requirejs.config({
+            map: {
+                '*': {
+                    'css': 'thirdparty/requirecss' // or whatever the path to require-css is
+                }
+            },
+            urlArgs: "v=" + window.dashboardVersion
+        });
 
-    setAppInfo();
-    createConnectionManager();
+        // Required since jQuery is loaded before requireJs
+        define('jquery', [], function () {
+            return jQuery;
+        });
 
-    if (Dashboard.isRunningInCordova()) {
+        setAppInfo();
+
+        var appInfo = Dashboard.getAppInfo(appName, deviceId, deviceName);
+
+        createConnectionManager(appInfo);
+
+        Dashboard.initPromiseDone = true;
+        deferred.resolve();
+        $(onDocumentReady);
+    }
+
+    function initCordovaWithDeviceId(deferred, deviceId) {
+        if ($.browser.safari) {
+            requirejs(['thirdparty/cordova/imagestore.js']);
+        }
+
+        init(deferred, "Emby Mobile", deviceId, device.model);
+    }
+
+    function initCordova(deferred) {
 
         document.addEventListener("deviceready", function () {
 
-            if ($.browser.safari) {
-                requirejs(['thirdparty/cordova/imagestore.js']);
-            }
+            window.plugins.uniqueDeviceID.get(function (uuid) {
 
-            $(onReady);
+                initCordovaWithDeviceId(deferred, uuid);
 
+            }, function () {
+
+                // Failure. Use cordova uuid
+                initCordovaWithDeviceId(deferred, device.uuid);
+            });
         }, false);
+    }
 
+    var initDeferred = $.Deferred();
+    Dashboard.initPromise = initDeferred.promise();
+
+    if (Dashboard.isRunningInCordova()) {
+        initCordova(initDeferred);
     } else {
-
-        $(onReady);
+        init(initDeferred);
     }
 
 })();
@@ -1918,10 +1946,10 @@ $(document).on('pagecreate', ".page", function () {
     if (require) {
         requirejs(require.split(','), function () {
 
-            $(page).trigger('pageinitdepends');
+            Dashboard.firePageEvent(page, 'pageinitdepends');
         });
     } else {
-        $(page).trigger('pageinitdepends');
+        Dashboard.firePageEvent(page, 'pageinitdepends');
     }
 
     $('.localnav a, .libraryViewNav a').attr('data-transition', 'none');
@@ -1934,13 +1962,27 @@ $(document).on('pagecreate', ".page", function () {
     if (require) {
         requirejs(require.split(','), function () {
 
-            $(page).trigger('pageshown');
+            Dashboard.firePageEvent(page, 'pageshowready');
         });
     } else {
-        $(page).trigger('pageshown');
+        Dashboard.firePageEvent(page, 'pageshowready');
     }
 
 }).on('pagebeforeshow', ".page", function () {
+
+    var page = this;
+    var require = this.getAttribute('data-require');
+
+    if (require) {
+        requirejs(require.split(','), function () {
+
+            Dashboard.firePageEvent(page, 'pagebeforeshowready');
+        });
+    } else {
+        Dashboard.firePageEvent(page, 'pagebeforeshowready');
+    }
+
+}).on('pagebeforeshowready', ".page", function () {
 
     var page = $(this);
 
