@@ -1827,7 +1827,7 @@ var AppInfo = {};
         });
 
         if (Dashboard.isRunningInCordova()) {
-            requirejs(['thirdparty/cordova/connectsdk']);
+            requirejs(['thirdparty/cordova/connectsdk', 'thirdparty/cordova/remotecontrols']);
         } else {
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
