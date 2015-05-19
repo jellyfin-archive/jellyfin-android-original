@@ -490,7 +490,7 @@
         }
     }
 
-    $(document).on('pageinitdepends', ".page", function () {
+    $(document).on('pageinit', ".page", function () {
 
         var page = this;
 
@@ -556,7 +556,7 @@
             });
         }
 
-    }).on('pageshowready', ".libraryPage", function () {
+    }).on('pageshow', ".libraryPage", function () {
 
         var page = this;
 

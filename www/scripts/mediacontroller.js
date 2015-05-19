@@ -533,8 +533,6 @@
         }
     }
 
-
-
     function initializeApiClient(apiClient) {
         $(apiClient).off("websocketmessage", onWebSocketMessageReceived).on("websocketmessage", onWebSocketMessageReceived);
     }
@@ -732,9 +730,8 @@
 
             showPlayerSelection($.mobile.activePage);
         });
-    });
 
-    $(document).on('pagebeforeshow', ".page", function () {
+    }).on('pagebeforeshow', ".page", function () {
 
         var page = this;
 
