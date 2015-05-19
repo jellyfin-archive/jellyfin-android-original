@@ -169,6 +169,13 @@
 
         };
 
+        self.removeActiveTarget = function (id) {
+
+            if (self.getPlayerInfo().id == id) {
+                self.setDefaultPlayerActive();
+            }
+        };
+
         self.getPlayers = function() {
             return players;
         };
