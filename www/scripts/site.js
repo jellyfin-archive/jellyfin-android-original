@@ -1408,7 +1408,7 @@ var Dashboard = {
 
             } else {
 
-                quality -= 50;
+                quality -= 40;
             }
         }
 
