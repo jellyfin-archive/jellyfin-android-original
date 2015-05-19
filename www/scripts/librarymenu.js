@@ -544,34 +544,32 @@
 
         var jpage = $(page);
 
-        if (jpage.hasClass('libraryPage')) {
+        var isLibraryPage = jpage.hasClass('libraryPage');
+
+        if (isLibraryPage) {
             $(document.body).addClass('libraryDocument').removeClass('dashboardDocument');
+
+            if (AppInfo.enableBottomTabs) {
+                $('.libraryViewNav', page).addClass('bottomLibraryViewNav');
+                $(page).addClass('noSecondaryNavPage');
+
+                $(function () {
+
+                    $('.footer').addClass('footerOverBottomTabs');
+                });
+
+            } else {
+
+                $('.libraryViewNav', page).each(function () {
+
+                    initHeadRoom(this);
+                });
+            }
         }
         else if (jpage.hasClass('type-interior')) {
             $(document.body).addClass('dashboardDocument').removeClass('libraryDocument');
         } else {
             $(document.body).removeClass('dashboardDocument').removeClass('libraryDocument');
-        }
-
-    }).on('pageshowready', ".libraryPage", function () {
-
-        var page = this;
-
-        if (AppInfo.enableBottomTabs) {
-            $('.libraryViewNav', page).addClass('bottomLibraryViewNav');
-            $(page).addClass('noSecondaryNavPage');
-
-            $(function () {
-
-                $('.footer').addClass('footerOverBottomTabs');
-            });
-
-        } else {
-
-            $('.libraryViewNav', page).each(function () {
-
-                initHeadRoom(this);
-            });
         }
 
     }).on('pageshow', ".libraryPage", function () {
