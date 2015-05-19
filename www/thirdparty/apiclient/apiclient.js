@@ -37,6 +37,10 @@
 
             if (val != null) {
 
+                if (val.toLowerCase().indexOf('http') != 0) {
+                    throw new Error('Invalid url: ' + val);
+                }
+
                 var changed = val != serverAddress;
 
                 serverAddress = val;
@@ -332,6 +336,10 @@
 
             var url = serverAddress;
 
+            if (!url) {
+                throw new Error("serverAddress is yet not set");
+            }
+
             if (name.charAt(0) != '/') {
                 url += '/';
             }
@@ -417,7 +425,7 @@
         };
 
         function onWebSocketMessage(msg) {
-            
+
             if (msg.MessageType === "UserDeleted") {
                 currentUserPromise = null;
             }
