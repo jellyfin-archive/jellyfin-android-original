@@ -1531,7 +1531,7 @@ var AppInfo = {};
 
     function setAppInfo() {
 
-        if (isTouchDevice() && $.browser.mobile) {
+        if (isTouchDevice()) {
             AppInfo.isTouchPreferred = true;
         }
 

@@ -948,6 +948,11 @@
 
             address = normalizeAddress(address);
 
+            function onFail() {
+                logger.log('connectToAddress ' + address + ' failed');
+                resolveWithFailure(deferred);
+            }
+
             tryConnect(address, 15000).done(function (publicInfo) {
 
                 logger.log('connectToAddress ' + address + ' succeeded');
@@ -962,13 +967,9 @@
 
                     deferred.resolveWith(null, [result]);
 
-                });
+                }).fail(onFail);
 
-            }).fail(function () {
-
-                logger.log('connectToAddress ' + address + ' failed');
-                resolveWithFailure(deferred);
-            });
+            }).fail(onFail);
 
             return deferred.promise();
         };
