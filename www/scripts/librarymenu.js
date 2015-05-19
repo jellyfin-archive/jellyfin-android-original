@@ -587,18 +587,23 @@
 
     function initializeApiClient(apiClient) {
 
+        requiresLibraryMenuRefresh = true;
         $(apiClient).off('websocketmessage.librarymenu', onWebSocketMessage).on('websocketmessage.librarymenu', onWebSocketMessage);
     }
 
-    $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+    Dashboard.ready(function () {
 
-        requiresLibraryMenuRefresh = true;
-        initializeApiClient(apiClient);
+        if (window.ApiClient) {
+            initializeApiClient(window.ApiClient);
+        }
 
-    }).on('localusersignedin localusersignedout', function () {
-        $('.viewMenuBar').remove();
-        requiresLibraryMenuRefresh = true;
+        $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+            initializeApiClient(apiClient);
 
+        }).on('localusersignedin localusersignedout', function () {
+            $('.viewMenuBar').remove();
+            requiresLibraryMenuRefresh = true;
+        });
     });
 
     $(function () {
