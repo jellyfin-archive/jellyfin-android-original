@@ -193,10 +193,16 @@ var Dashboard = {
 
     setCurrentUser: function (userId, token, apiClient) {
 
+        apiClient = apiClient || window.ApiClient;
+
+        if (!userId || !token) {
+            store.removeItem("userId");
+            store.removeItem("token");
+            return;
+        }
+
         store.setItem("userId", userId);
         store.setItem("token", token);
-
-        apiClient = apiClient || window.ApiClient;
 
         if (apiClient) {
             apiClient.setCurrentUserId(userId, token);

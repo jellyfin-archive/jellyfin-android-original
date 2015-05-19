@@ -1,18 +1,13 @@
 ﻿(function () {
 
-    function onLoggedIn() {
-
-        Dashboard.hideModalLoadingMsg();
-        Dashboard.navigate('selectserver.html');
-    }
-
     function login(page, username, password) {
 
         Dashboard.showModalLoadingMsg();
 
         ConnectionManager.loginToConnect(username, password).done(function () {
 
-            onLoggedIn();
+            Dashboard.hideModalLoadingMsg();
+            Dashboard.navigate('selectserver.html');
 
         }).fail(function () {
 
@@ -50,7 +45,7 @@
                 break;
             case MediaBrowser.ConnectionState.ServerSelection:
                 {
-                    onLoggedIn();
+                    Dashboard.navigate('selectserver.html');
                 }
                 break;
             case MediaBrowser.ConnectionState.ConnectSignIn:
