@@ -257,6 +257,7 @@
     }
 
     var requiresLibraryMenuRefresh = false;
+    var requiresViewMenuRefresh = false;
 
     function getLibraryMenu(user) {
 
@@ -460,7 +461,7 @@
 
     function updateContextText(page) {
 
-        var name = page.getAttribute('data-contextname');
+        var name = $(page)[0].getAttribute('data-contextname');
 
         if (name) {
 
@@ -490,21 +491,17 @@
         }
     }
 
-    $(document).on('pageinit', ".page", function () {
+    function buildViewMenuBar(page) {
 
-        var page = this;
+        if ($(page).hasClass('standalonePage')) {
+            $('.viewMenuBar').remove();
+            return;
+        }
 
-        $('.libraryViewNav', page).wrapInner('<div class="libraryViewNavInner"></div>');
+        if (requiresViewMenuRefresh) {
+            $('.viewMenuBar').remove();
+        }
 
-        $('.libraryViewNav a', page).each(function () {
-
-            this.innerHTML = '<span class="libraryViewNavLinkContent">' + this.innerHTML + '</span>';
-
-        });
-
-    }).on('pagebeforeshowready', ".page:not(.standalonePage)", function () {
-
-        var page = this;
         var viewMenuBar = $('.viewMenuBar');
         if (!$('.viewMenuBar').length) {
 
@@ -517,12 +514,33 @@
 
                 updateLibraryNavLinks(page);
                 updateContextText(page);
+                requiresViewMenuRefresh = false;
             });
         } else {
             updateContextText(page);
             updateLibraryNavLinks(page);
             updateViewMenuBarHeadroom(page, viewMenuBar);
+            requiresViewMenuRefresh = false;
         }
+
+    }
+
+    $(document).on('pageinit', ".page", function () {
+
+        var page = this;
+
+        $('.libraryViewNav', page).wrapInner('<div class="libraryViewNavInner"></div>');
+
+        $('.libraryViewNav a', page).each(function () {
+
+            this.innerHTML = '<span class="libraryViewNavLinkContent">' + this.innerHTML + '</span>';
+
+        });
+
+    }).on('pagebeforeshowready', ".page", function () {
+
+        var page = this;
+        buildViewMenuBar(page);
 
         var jpage = $(page);
 
@@ -535,7 +553,7 @@
             $(document.body).removeClass('dashboardDocument').removeClass('libraryDocument');
         }
 
-    }).on('pagebeforeshowready', ".libraryPage", function () {
+    }).on('pageshowready', ".libraryPage", function () {
 
         var page = this;
 
@@ -601,8 +619,8 @@
             initializeApiClient(apiClient);
 
         }).on('localusersignedin localusersignedout', function () {
-            $('.viewMenuBar').remove();
             requiresLibraryMenuRefresh = true;
+            requiresViewMenuRefresh = true;
         });
     });
 

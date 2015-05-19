@@ -142,6 +142,8 @@ var Dashboard = {
             console.log('Setting server address to: ' + val);
 
             store.setItem('serverAddress', val);
+
+            return val;
         }
 
         var address = store.getItem('serverAddress');

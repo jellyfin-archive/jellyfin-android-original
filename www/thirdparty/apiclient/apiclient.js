@@ -347,6 +347,18 @@
 
         self.enableAutomaticNetworking = function (server, connectionMode, serverUrl) {
 
+            if (server == null) {
+                throw new Error('server cannot be null');
+            }
+
+            if (connectionMode == null) {
+                throw new Error('connectionMode cannot be null');
+            }
+
+            if (!serverUrl) {
+                throw new Error('serverUrl cannot be null or empty');
+            }
+
             logger.log('Begin enableAutomaticNetworking');
 
             self.serverInfo(server);
