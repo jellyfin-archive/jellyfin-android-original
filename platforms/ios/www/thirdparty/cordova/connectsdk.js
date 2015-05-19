@@ -28,7 +28,7 @@
 
         manager.startDiscovery();
 
-        requirejs(['thirdparty/cordova/chromecast']);
+        requirejs(['thirdparty/cordova/chromecast', 'thirdparty/cordova/generaldevice']);
     }
 
     document.addEventListener("deviceready", function () {
