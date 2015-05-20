@@ -123,22 +123,6 @@ var Dashboard = {
         }
     },
 
-    getAccessToken: function () {
-
-        if (Dashboard.isConnectMode()) {
-
-            var apiClient = window.ApiClient;
-
-            if (apiClient) {
-                return apiClient.accessToken();
-            }
-
-            return null;
-        }
-
-        return store.getItem("token");
-    },
-
     serverAddress: function () {
 
         if (Dashboard.isConnectMode()) {
@@ -177,18 +161,13 @@ var Dashboard = {
 
     getCurrentUserId: function () {
 
-        if (Dashboard.isConnectMode()) {
+        var apiClient = window.ApiClient;
 
-            var apiClient = window.ApiClient;
-
-            if (apiClient) {
-                return apiClient.getCurrentUserId();
-            }
-
-            return null;
+        if (apiClient) {
+            return apiClient.getCurrentUserId();
         }
 
-        return store.getItem("userId");
+        return null;
     },
 
     onServerChanged: function (userId, accessToken, apiClient) {
@@ -197,32 +176,10 @@ var Dashboard = {
 
         window.ApiClient = apiClient;
 
-        var isMultiServerMode = Dashboard.isConnectMode();
-
-        if (!isMultiServerMode) {
-
-            if (apiClient) {
-                apiClient.setAuthenticationInfo(accessToken, userId);
-            }
-
-            if (!userId || !accessToken) {
-                store.removeItem("userId");
-                store.removeItem("token");
-                return;
-            }
-
-            store.setItem("userId", userId);
-            store.setItem("token", accessToken);
-        }
-
         Dashboard.getUserPromise = null;
     },
 
     logout: function (logoutWithServer, forceReload) {
-
-        store.removeItem("userId");
-        store.removeItem("token");
-        store.removeItem("serverAddress");
 
         function onLogoutDone() {
 
@@ -1612,16 +1569,16 @@ var AppInfo = {};
 
         window.ConnectionManager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities);
 
+        $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+
+            initializeApiClient(apiClient);
+        });
+
+        var lastApiClient = ConnectionManager.getLastUsedApiClient();
+
         if (Dashboard.isConnectMode()) {
 
-            $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
-
-                initializeApiClient(apiClient);
-            });
-
             if (!Dashboard.isServerlessPage()) {
-
-                var lastApiClient = ConnectionManager.getLastUsedApiClient();
 
                 if (lastApiClient && lastApiClient.serverAddress() && lastApiClient.getCurrentUserId() && lastApiClient.accessToken()) {
 
@@ -1640,13 +1597,12 @@ var AppInfo = {};
 
         } else {
 
-            window.ApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+            if (!lastApiClient) {
+                lastApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+                ConnectionManager.addApiClient(lastApiClient);
+            }
 
-            ApiClient.setAuthenticationInfo(Dashboard.getAccessToken(), Dashboard.getCurrentUserId());
-
-            initializeApiClient(ApiClient);
-
-            ConnectionManager.addApiClient(ApiClient);
+            window.ApiClient = lastApiClient;
         }
 
         if (window.ApiClient) {

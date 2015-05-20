@@ -122,6 +122,12 @@
 
             apiClients.push(apiClient);
 
+            Events.on(apiClient, 'authenticated', function (e, result) {
+                onAuthenticated(this, result, {}, true);
+            });
+
+            Events.trigger(self, 'apiclientcreated', [apiClient]);
+
             return apiClient.getPublicSystemInfo().done(function (systemInfo) {
 
                 var server = credentialProvider.credentials().servers.filter(function (s) {
@@ -133,9 +139,7 @@
                 updateServerInfo(server, systemInfo);
 
                 apiClient.serverInfo(server);
-                Events.trigger(self, 'apiclientcreated', [apiClient]);
             });
-
         };
 
         function onConnectUserSignIn(user) {

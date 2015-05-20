@@ -1280,7 +1280,11 @@ $(document).on('pagebeforeshowready', "#dashboardPage", DashboardPage.onPageShow
             createList(this);
         }
 
-        startListening(ApiClient);
+        var apiClient = ApiClient;
+
+        if (apiClient) {
+            startListening(apiClient);
+        }
 
         return this;
     };
