@@ -943,6 +943,11 @@
 
         self.getPosterUrl = function (item) {
 
+            // Safari often shows the poster under the video, which doesn't look good
+            if ($.browser.safari) {
+                return null;
+            }
+
             var screenWidth = Math.max(screen.height, screen.width);
 
             if (item.BackdropImageTags && item.BackdropImageTags.length) {
@@ -1740,4 +1745,4 @@
     });
 
 
-})(document, setTimeout, clearTimeout, screen, window.store, $, setInterval, window);
+})(document, setTimeout, clearTimeout, screen, window.appStorage, $, setInterval, window);
