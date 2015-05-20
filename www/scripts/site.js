@@ -49,6 +49,7 @@ var Dashboard = {
 
     isConnectMode: function () {
 
+        return true;
         if (Dashboard.isRunningInCordova()) {
             return true;
         }
@@ -104,13 +105,6 @@ var Dashboard = {
         }
     },
 
-    onApiClientServerAddressChanged: function () {
-
-        var apiClient = this;
-
-        Dashboard.serverAddress(apiClient.serverAddress());
-    },
-
     getCurrentUser: function () {
 
         if (!Dashboard.getUserPromise) {
@@ -132,45 +126,51 @@ var Dashboard = {
 
     getAccessToken: function () {
 
-        return store.getItem('token');
-    },
+        if (Dashboard.isConnectMode()) {
 
-    serverAddress: function (val) {
+            var apiClient = window.ApiClient;
 
-        if (val != null) {
+            if (apiClient) {
+                return apiClient.accessToken();
+            }
 
-            console.log('Setting server address to: ' + val);
-
-            store.setItem('serverAddress', val);
-
-            return val;
+            return null;
         }
 
-        var address = store.getItem('serverAddress');
+        return store.getItem("token");
+    },
 
-        if (!address && !Dashboard.isConnectMode()) {
+    serverAddress: function () {
 
-            // Try to get the server address from the browser url
-            // This will preserve protocol, hostname, port and subdirectory
-            var urlLower = getWindowUrl().toLowerCase();
-            var index = urlLower.indexOf('/web');
-            if (index == -1) {
-                index = urlLower.indexOf('/dashboard');
+        if (Dashboard.isConnectMode()) {
+            var apiClient = window.ApiClient;
+
+            if (apiClient) {
+                return apiClient.serverAddress();
             }
 
-            if (index != -1) {
-                address = urlLower.substring(0, index);
-                return address;
-            }
+            return null;
+        }
 
-            // If the above failed, just piece it together manually
-            var loc = window.location;
+        // Try to get the server address from the browser url
+        // This will preserve protocol, hostname, port and subdirectory
+        var urlLower = getWindowUrl().toLowerCase();
+        var index = urlLower.indexOf('/web');
+        if (index == -1) {
+            index = urlLower.indexOf('/dashboard');
+        }
 
-            address = loc.protocol + '//' + loc.hostname;
+        if (index != -1) {
+            return urlLower.substring(0, index);
+        }
 
-            if (loc.port) {
-                address += ':' + loc.port;
-            }
+        // If the above failed, just piece it together manually
+        var loc = window.location;
+
+        var address = loc.protocol + '//' + loc.hostname;
+
+        if (loc.port) {
+            address += ':' + loc.port;
         }
 
         return address;
@@ -178,35 +178,44 @@ var Dashboard = {
 
     getCurrentUserId: function () {
 
-        var autoLoginUserId = getParameterByName('u');
+        if (Dashboard.isConnectMode()) {
 
-        var storedUserId = store.getItem("userId");
+            var apiClient = window.ApiClient;
 
-        if (autoLoginUserId && autoLoginUserId != storedUserId) {
+            if (apiClient) {
+                return apiClient.getCurrentUserId();
+            }
 
-            var token = getParameterByName('t');
-            Dashboard.setCurrentUser(autoLoginUserId, token);
+            return null;
         }
 
-        return autoLoginUserId || storedUserId;
+        return store.getItem("userId");
     },
 
-    setCurrentUser: function (userId, token, apiClient) {
+    onServerChanged: function (userId, accessToken, apiClient) {
+
+        window.ApiClient = apiClient;
+
+        var isMultiServerMode = Dashboard.isConnectMode();
 
         apiClient = apiClient || window.ApiClient;
 
-        if (!userId || !token) {
-            store.removeItem("userId");
-            store.removeItem("token");
-            return;
-        }
-
-        store.setItem("userId", userId);
-        store.setItem("token", token);
-
         if (apiClient) {
-            apiClient.setCurrentUserId(userId, token);
+            apiClient.setAuthenticationInfo(accessToken, userId);
         }
+
+        if (!isMultiServerMode) {
+
+            if (!userId || !accessToken) {
+                store.removeItem("userId");
+                store.removeItem("token");
+                return;
+            }
+
+            store.setItem("userId", userId);
+            store.setItem("token", accessToken);
+        }
+
         Dashboard.getUserPromise = null;
     },
 
@@ -602,9 +611,11 @@ var Dashboard = {
 
     refreshSystemInfoFromServer: function () {
 
-        if (Dashboard.getAccessToken()) {
-            if (AppInfo.enableFooterNotifications) {
-                ApiClient.getSystemInfo().done(function (info) {
+        var apiClient = ApiClient;
+
+        if (apiClient.accessToken()) {
+            if (apiClient.enableFooterNotifications) {
+                apiClient.getSystemInfo().done(function (info) {
 
                     Dashboard.updateSystemInfo(info);
                 });
@@ -1048,14 +1059,14 @@ var Dashboard = {
             Dashboard.updateSystemInfo(msg.Data);
         }
         else if (msg.MessageType === "UserUpdated" || msg.MessageType === "UserConfigurationUpdated") {
-            Dashboard.validateCurrentUser();
-
             var user = msg.Data;
 
             if (user.Id == Dashboard.getCurrentUserId()) {
 
+                Dashboard.validateCurrentUser();
                 $('.currentUsername').html(user.Name);
             }
+
         }
         else if (msg.MessageType === "PackageInstallationCompleted") {
             Dashboard.getCurrentUser().done(function (currentUser) {
@@ -1500,16 +1511,6 @@ var Dashboard = {
         return deferred.promise();
     },
 
-    onServerChanged: function (serverAddress, userId, accessToken, apiClient) {
-
-        window.ApiClient = apiClient;
-        if (Dashboard.isConnectMode()) {
-            Dashboard.serverAddress(serverAddress);
-        }
-
-        Dashboard.setCurrentUser(userId, accessToken, apiClient);
-    },
-
     ready: function (fn) {
 
         if (Dashboard.initPromiseDone) {
@@ -1601,8 +1602,7 @@ var AppInfo = {};
 
         $(apiClient).off('.dashboard')
             .on("websocketmessage.dashboard", Dashboard.onWebSocketMessageReceived)
-            .on('requestfail.dashboard', Dashboard.onRequestFail)
-            .on('serveraddresschanged.dashboard', Dashboard.onApiClientServerAddressChanged);
+            .on('requestfail.dashboard', Dashboard.onRequestFail);
     }
 
     function createConnectionManager(appInfo) {
@@ -1622,15 +1622,15 @@ var AppInfo = {};
 
             if (!Dashboard.isServerlessPage()) {
 
-                if (Dashboard.serverAddress() && Dashboard.getCurrentUserId() && Dashboard.getAccessToken()) {
+                var lastApiClient = ConnectionManager.getLastUsedApiClient();
 
-                    window.ApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+                if (lastApiClient && lastApiClient.serverAddress() && lastApiClient.getCurrentUserId() && lastApiClient.accessToken()) {
 
-                    ApiClient.setCurrentUserId(Dashboard.getCurrentUserId(), Dashboard.getAccessToken());
+                    window.ApiClient = lastApiClient;
 
-                    initializeApiClient(ApiClient);
+                    initializeApiClient(lastApiClient);
 
-                    ConnectionManager.addApiClient(ApiClient, true).fail(Dashboard.logout);
+                    //ConnectionManager.addApiClient(lastApiClient, true).fail(Dashboard.logout);
 
                 } else {
 
@@ -1643,7 +1643,7 @@ var AppInfo = {};
 
             window.ApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
 
-            ApiClient.setCurrentUserId(Dashboard.getCurrentUserId(), Dashboard.getAccessToken());
+            ApiClient.setAuthenticationInfo(Dashboard.getAccessToken(), Dashboard.getCurrentUserId());
 
             initializeApiClient(ApiClient);
 
@@ -1988,23 +1988,21 @@ $(document).on('pagecreate', ".page", function () {
 
     var apiClient = window.ApiClient;
 
-    if (Dashboard.getAccessToken() && Dashboard.getCurrentUserId()) {
+    if (apiClient && apiClient.accessToken() && Dashboard.getCurrentUserId()) {
 
-        if (apiClient) {
-            Dashboard.getCurrentUser().done(function (user) {
+        Dashboard.getCurrentUser().done(function (user) {
 
-                var isSettingsPage = page.hasClass('type-interior');
+            var isSettingsPage = page.hasClass('type-interior');
 
-                if (!user.Policy.IsAdministrator && isSettingsPage) {
-                    window.location.replace("index.html");
-                    return;
-                }
+            if (!user.Policy.IsAdministrator && isSettingsPage) {
+                window.location.replace("index.html");
+                return;
+            }
 
-                if (isSettingsPage) {
-                    Dashboard.ensureToolsMenu(page, user);
-                }
-            });
-        }
+            if (isSettingsPage) {
+                Dashboard.ensureToolsMenu(page, user);
+            }
+        });
 
         Dashboard.ensureHeader(page);
         Dashboard.ensurePageTitle(page);

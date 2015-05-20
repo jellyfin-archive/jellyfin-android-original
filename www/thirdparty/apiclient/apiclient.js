@@ -92,13 +92,6 @@
             return accessToken;
         };
 
-        self.setCurrentUserId = function (userId, token) {
-
-            currentUserId = userId;
-            currentUserPromise = null;
-            accessToken = token;
-        };
-
         self.deviceName = function () {
             return deviceName;
         };
@@ -115,6 +108,7 @@
         self.setAuthenticationInfo = function (accessKey, userId) {
             accessToken = accessKey;
             currentUserId = userId;
+            currentUserPromise = null;
         };
 
         self.encodeName = function (name) {
@@ -577,7 +571,7 @@
             self.closeWebSocket();
 
             var done = function () {
-                self.setCurrentUserId(null, null);
+                self.setAuthenticationInfo(null, null);
             };
 
             if (accessToken) {

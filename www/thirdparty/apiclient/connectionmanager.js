@@ -24,6 +24,7 @@
 
         var self = this;
         var apiClients = [];
+        var defaultTimeout = 15000;
 
         function mergeServers(list1, list2) {
 
@@ -73,7 +74,7 @@
                 url: url,
                 dataType: "json",
 
-                timeout: timeout || 15000
+                timeout: timeout || defaultTimeout
 
             });
         }
@@ -100,7 +101,24 @@
             return credentialProvider.credentials().ConnectAccessToken;
         };
 
-        self.addApiClient = function (apiClient, enableAutomaticNetworking) {
+        self.getLastUsedApiClient = function() {
+
+            var servers = credentialProvider.credentials().servers;
+
+            servers.sort(function (a, b) {
+                return b.DateLastAccessed - a.DateLastAccessed;
+            });
+
+            var server = servers[0];
+
+            if (!server) {
+                return null;
+            }
+
+            return getOrAddApiClient(server, server.LastConnectionMode);
+        };
+
+        self.addApiClient = function (apiClient) {
 
             apiClients.push(apiClient);
 
@@ -116,10 +134,6 @@
 
                 apiClient.serverInfo(server);
                 Events.trigger(self, 'apiclientcreated', [apiClient]);
-
-                if (enableAutomaticNetworking) {
-                    self.connectToServer(server);
-                }
             });
 
         };
@@ -151,7 +165,7 @@
                 Events.trigger(self, 'apiclientcreated', [apiClient]);
             }
 
-            if (server.AccessToken) {
+            if (server.AccessToken && server.UserId) {
 
                 apiClient.setAuthenticationInfo(server.AccessToken, server.UserId);
             }
@@ -799,7 +813,7 @@
             var address = self.getServerAddress(server, mode);
             var enableRetry = false;
             var skipTest = false;
-            var timeout = 15000;
+            var timeout = defaultTimeout;
 
             if (mode == MediaBrowser.ConnectionMode.Local) {
 
@@ -807,7 +821,7 @@
                     skipTest = true;
                 }
                 enableRetry = true;
-                timeout = 5000;
+                timeout = 7000;
             }
 
             else if (mode == MediaBrowser.ConnectionMode.Manual) {
@@ -953,7 +967,7 @@
                 resolveWithFailure(deferred);
             }
 
-            tryConnect(address, 15000).done(function (publicInfo) {
+            tryConnect(address, defaultTimeout).done(function (publicInfo) {
 
                 logger.log('connectToAddress ' + address + ' succeeded');
 
