@@ -550,7 +550,6 @@
             $(document.body).addClass('libraryDocument').removeClass('dashboardDocument');
 
             if (AppInfo.enableBottomTabs) {
-                $('.libraryViewNav', page).addClass('bottomLibraryViewNav');
                 $(page).addClass('noSecondaryNavPage');
 
                 $(function () {
