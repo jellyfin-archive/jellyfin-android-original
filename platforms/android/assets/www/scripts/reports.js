@@ -478,7 +478,7 @@
 
     }
 
-    $(document).on('pageinit', "#libraryReportManagerPage", function () {
+    $(document).on('pageinitdepends', "#libraryReportManagerPage", function () {
 
         var page = this;
 
@@ -781,20 +781,15 @@
             reloadItems(page);
         });
     })
-	.on('pagebeforeshow', "#libraryReportManagerPage", function () {
+	.on('pageshowready', "#libraryReportManagerPage", function () {
 
 	    query.UserId = Dashboard.getCurrentUserId();
 	    var page = this;
 	    query.SortOrder = "Ascending";
 
-	    QueryFilters.onPageShow(page, query);
-
+	    QueryReportFilters.onPageShow(page, query);
+	    QueryReportColumns.onPageShow(page, query);
 	    $('#selectView', page).val(query.IncludeItemTypes).selectmenu('refresh').trigger('change');
-
-	})
-	.on('pageshow', "#libraryReportManagerPage", function () {
-
-	    var page = this;
 
 	    updateFilterControls(page);
 

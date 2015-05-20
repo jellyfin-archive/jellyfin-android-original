@@ -2,18 +2,10 @@
 
     function getView() {
 
-        if (AppInfo.hasLowImageBandwidth) {
-            return 'PosterCard';
-        }
-
         return 'PosterCard';
     }
 
     function getResumeView() {
-
-        if (AppInfo.hasLowImageBandwidth) {
-            return 'ThumbCard';
-        }
 
         return 'ThumbCard';
     }
@@ -33,9 +25,6 @@
     function loadLatest(page, userId, parentId) {
 
         var limit = 18;
-        if (AppInfo.hasLowImageBandwidth) {
-            limit = 10;
-        }
 
         var options = {
 
@@ -245,7 +234,7 @@
 
         $('.recommendations', page).createCardMenus();
 
-    }).on('pageshown', "#moviesRecommendedPage", function () {
+    }).on('pageshowready', "#moviesRecommendedPage", function () {
 
         var parentId = LibraryMenu.getTopParentId();
 

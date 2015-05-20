@@ -46,12 +46,6 @@
             updateFilterControls(page);
             var trigger = false;
 
-            if (AppInfo.hasLowImageBandwidth) {
-                if (view == 'Poster') {
-                    view = 'PosterCard';
-                }
-            }
-
             if (view == "List") {
 
                 html = LibraryBrowser.getListViewHtml({
@@ -196,7 +190,7 @@
             reloadItems(page);
         });
 
-    }).on('pageshown', "#musicAlbumArtistsPage", function () {
+    }).on('pageshowready', "#musicAlbumArtistsPage", function () {
 
         var page = this;
         query.ParentId = LibraryMenu.getTopParentId();

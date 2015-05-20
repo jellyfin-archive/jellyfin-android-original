@@ -532,7 +532,7 @@
 
         html += '<div style="padding:1em 1em;background:rgba(20,20,20,1);margin:0;text-align:center;" class="detailsMenuHeader">';
         html += '<button type="button" class="imageButton detailsMenuLeftButton" data-role="none"><i class="fa fa-arrow-left"></i></button>';
-        html += '<h3 style="font-weight:400;margin:.5em 0;line-height:0;"></h3>';
+        html += '<h3 style="font-weight:400;margin:.5em 0;"></h3>';
         html += '<button type="button" class="imageButton detailsMenuRightButton" data-role="none"><i class="fa fa-arrow-right"></i></button>';
         html += '</div>';
 
@@ -807,7 +807,7 @@
             var innerElem = $('.cardOverlayTarget', elem);
 
             var dataElement = elem;
-            while (!dataElement.getAttribute('data-itemid')) {
+            while (dataElement && !dataElement.getAttribute('data-itemid')) {
                 dataElement = dataElement.parentNode;
             }
 
@@ -1082,7 +1082,7 @@
         $('cardImage', page).remove();
     }
 
-    $(document).on('pageinit', ".libraryPage", function () {
+    $(document).on('pageinitdepends', ".libraryPage", function () {
 
         var page = this;
 
@@ -1127,7 +1127,7 @@
 
         $('.itemsContainer', page).createCardMenus();
 
-    }).on('pagebeforeshow', ".libraryPage", function () {
+    }).on('pagebeforeshowready', ".libraryPage", function () {
 
         var page = this;
 
@@ -1212,9 +1212,15 @@
         $(apiClient).off('websocketmessage.librarylist', onWebSocketMessage).on('websocketmessage.librarylist', onWebSocketMessage);
     }
 
-    $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+    Dashboard.ready(function () {
 
-        initializeApiClient(apiClient);
+        if (window.ApiClient) {
+            initializeApiClient(window.ApiClient);
+        }
+
+        $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+            initializeApiClient(apiClient);
+        });
     });
 
 })(jQuery, document, window);

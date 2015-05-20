@@ -28,7 +28,7 @@
 
     var PlayerName = 'Chromecast';
 
-    var messageNamespace = 'urn:x-cast:com.google.cast.mediabrowser.v3';
+    var messageNamespace = 'urn:x-cast:com.connectsdk';
 
     var CastPlayer = function () {
 
@@ -228,8 +228,6 @@
         this.session.addUpdateListener(this.sessionUpdateListener.bind(this));
 
         $(this).trigger('connect');
-
-        MediaController.setActivePlayer(PlayerName);
 
         this.sendMessage({
             options: {},
@@ -548,6 +546,8 @@
 
         $(castPlayer).on("connect", function (e) {
 
+            MediaController.setActivePlayer(PlayerName, self.getCurrentTargetInfo());
+
             console.log('cc: connect');
             // Reset this so the next query doesn't make it appear like content is playing.
             self.lastPlayerData = {};
@@ -837,6 +837,13 @@
             console.log(JSON.stringify(data));
             return data;
         };
+
+        self.tryPair = function (target) {
+
+            var deferred = $.Deferred();
+            deferred.resolve();
+            return deferred.promise();
+        };
     }
 
     function initializeChromecast() {
@@ -845,9 +852,8 @@
 
         MediaController.registerPlayer(new chromecastPlayer());
 
-        $(MediaController).on('playerchange', function () {
-
-            if (MediaController.getPlayerInfo().name == PlayerName) {
+        $(MediaController).on('playerchange', function (e, newPlayer, newTarget) {
+            if (newPlayer.name == PlayerName) {
                 if (castPlayer.deviceState != DEVICE_STATE.ACTIVE && castPlayer.isInitialized) {
                     castPlayer.launchApp();
                 }

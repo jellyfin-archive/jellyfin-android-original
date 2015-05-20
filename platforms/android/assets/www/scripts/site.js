@@ -104,16 +104,11 @@ var Dashboard = {
         }
     },
 
-    onApiClientServerAddressChanged: function () {
-
-        Dashboard.serverAddress(ApiClient.serverAddress());
-    },
-
     getCurrentUser: function () {
 
         if (!Dashboard.getUserPromise) {
 
-            Dashboard.getUserPromise = ConnectionManager.currentApiClient().getCurrentUser().fail(Dashboard.logout);
+            Dashboard.getUserPromise = window.ApiClient.getCurrentUser().fail(Dashboard.logout);
         }
 
         return Dashboard.getUserPromise;
@@ -128,45 +123,37 @@ var Dashboard = {
         }
     },
 
-    getAccessToken: function () {
+    serverAddress: function () {
 
-        return store.getItem('token');
-    },
+        if (Dashboard.isConnectMode()) {
+            var apiClient = window.ApiClient;
 
-    serverAddress: function (val) {
+            if (apiClient) {
+                return apiClient.serverAddress();
+            }
 
-        if (val != null) {
-
-            console.log('Setting server address to: ' + val);
-
-            store.setItem('serverAddress', val);
+            return null;
         }
 
-        var address = store.getItem('serverAddress');
+        // Try to get the server address from the browser url
+        // This will preserve protocol, hostname, port and subdirectory
+        var urlLower = getWindowUrl().toLowerCase();
+        var index = urlLower.indexOf('/web');
+        if (index == -1) {
+            index = urlLower.indexOf('/dashboard');
+        }
 
-        if (!address && !Dashboard.isConnectMode()) {
+        if (index != -1) {
+            return urlLower.substring(0, index);
+        }
 
-            // Try to get the server address from the browser url
-            // This will preserve protocol, hostname, port and subdirectory
-            var urlLower = getWindowUrl().toLowerCase();
-            var index = urlLower.indexOf('/web');
-            if (index == -1) {
-                index = urlLower.indexOf('/dashboard');
-            }
+        // If the above failed, just piece it together manually
+        var loc = window.location;
 
-            if (index != -1) {
-                address = urlLower.substring(0, index);
-                return address;
-            }
+        var address = loc.protocol + '//' + loc.hostname;
 
-            // If the above failed, just piece it together manually
-            var loc = window.location;
-
-            address = loc.protocol + '//' + loc.hostname;
-
-            if (loc.port) {
-                address += ':' + loc.port;
-            }
+        if (loc.port) {
+            address += ':' + loc.port;
         }
 
         return address;
@@ -174,49 +161,44 @@ var Dashboard = {
 
     getCurrentUserId: function () {
 
-        var autoLoginUserId = getParameterByName('u');
-
-        var storedUserId = store.getItem("userId");
-
-        if (autoLoginUserId && autoLoginUserId != storedUserId) {
-
-            var token = getParameterByName('t');
-            Dashboard.setCurrentUser(autoLoginUserId, token);
-        }
-
-        return autoLoginUserId || storedUserId;
-    },
-
-    setCurrentUser: function (userId, token) {
-
-        store.setItem("userId", userId);
-        store.setItem("token", token);
-
-        var apiClient = ConnectionManager.currentApiClient();
+        var apiClient = window.ApiClient;
 
         if (apiClient) {
-            apiClient.setCurrentUserId(userId, token);
+            return apiClient.getCurrentUserId();
         }
+
+        return null;
+    },
+
+    onServerChanged: function (userId, accessToken, apiClient) {
+
+        apiClient = apiClient || window.ApiClient;
+
+        window.ApiClient = apiClient;
+
         Dashboard.getUserPromise = null;
     },
 
     logout: function (logoutWithServer) {
 
-        store.removeItem("userId");
-        store.removeItem("token");
-        store.removeItem("serverAddress");
+        function onLogoutDone() {
 
-        var loginPage = !Dashboard.isConnectMode() ?
-            'login.html' :
-            'connectlogin.html';
+            var loginPage;
+
+            if (Dashboard.isConnectMode()) {
+                loginPage = 'connectlogin.html';
+                window.ApiClient = null;
+            } else {
+                loginPage = 'login.html';
+            }
+
+            Dashboard.navigate(loginPage);
+        }
 
         if (logoutWithServer === false) {
-            window.location.href = loginPage;
+            onLogoutDone();
         } else {
-            ConnectionManager.logout().done(function () {
-                window.location.href = loginPage;
-            });
-
+            ConnectionManager.logout().done(onLogoutDone);
         }
     },
 
@@ -354,14 +336,17 @@ var Dashboard = {
     reloadPage: function () {
 
         var currentUrl = getWindowUrl().toLowerCase();
+        var newUrl;
 
         // If they're on a plugin config page just go back to the dashboard
         // The plugin may not have been loaded yet, or could have been uninstalled
         if (currentUrl.indexOf('configurationpage') != -1) {
-            window.location.href = "dashboard.html";
+            newUrl = "dashboard.html";
         } else {
-            window.location.href = getWindowUrl();
+            newUrl = getWindowUrl();
         }
+
+        window.location.href = newUrl;
     },
 
     hideDashboardVersionWarning: function () {
@@ -431,7 +416,7 @@ var Dashboard = {
         return "ConfigurationPage?name=" + encodeURIComponent(name);
     },
 
-    navigate: function (url, preserveQueryString) {
+    navigate: function (url, preserveQueryString, transition) {
 
         if (!url) {
             throw new Error('url cannot be null or empty');
@@ -441,7 +426,14 @@ var Dashboard = {
         if (preserveQueryString && queryString) {
             url += queryString;
         }
-        $.mobile.changePage(url);
+
+        var options = {};
+
+        if (transition) {
+            options.transition = transition;
+        }
+
+        $.mobile.changePage(url, options);
     },
 
     showLoadingMsg: function () {
@@ -578,9 +570,11 @@ var Dashboard = {
 
     refreshSystemInfoFromServer: function () {
 
-        if (Dashboard.getAccessToken()) {
-            if (AppInfo.enableFooterNotifications) {
-                ApiClient.getSystemInfo().done(function (info) {
+        var apiClient = ApiClient;
+
+        if (apiClient && apiClient.accessToken()) {
+            if (apiClient.enableFooterNotifications) {
+                apiClient.getSystemInfo().done(function (info) {
 
                     Dashboard.updateSystemInfo(info);
                 });
@@ -639,7 +633,7 @@ var Dashboard = {
 
     showUserFlyout: function (context) {
 
-        ConnectionManager.user().done(function (user) {
+        ConnectionManager.user(window.ApiClient).done(function (user) {
 
             var html = '<div data-role="panel" data-position="right" data-display="overlay" id="userFlyout" data-position-fixed="true" data-theme="a">';
 
@@ -668,7 +662,7 @@ var Dashboard = {
             }
 
             if (isConnectMode) {
-                html += '<p><a data-mini="true" data-role="button" href="selectserver.html" data-icon="cloud" data-ajax="false">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
+                html += '<p><a data-mini="true" data-role="button" href="selectserver.html" data-icon="cloud">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
             }
 
             html += '<p><button data-mini="true" type="button" onclick="Dashboard.logout();" data-icon="lock">' + Globalize.translate('ButtonSignOut') + '</button></p>';
@@ -687,14 +681,23 @@ var Dashboard = {
 
     getPluginSecurityInfo: function () {
 
+        var apiClient = ApiClient;
+
+        if (!apiClient) {
+
+            var deferred = $.Deferred();
+            deferred.reject();
+            return deferred.promise();
+        }
+
         if (!Dashboard.getPluginSecurityInfoPromise) {
 
             var deferred = $.Deferred();
 
             // Don't let this blow up the dashboard when it fails
-            ApiClient.ajax({
+            apiClient.ajax({
                 type: "GET",
-                url: ApiClient.getUrl("Plugins/SecurityInfo"),
+                url: apiClient.getUrl("Plugins/SecurityInfo"),
                 dataType: 'json',
 
                 error: function () {
@@ -961,17 +964,11 @@ var Dashboard = {
                 {
                     var args = cmd.Arguments;
 
-                    if (args.TimeoutMs && WebNotifications.supported()) {
-                        var notification = {
-                            title: args.Header,
-                            body: args.Text,
-                            timeout: args.TimeoutMs
-                        };
-
-                        WebNotifications.show(notification);
+                    if (args.TimeoutMs) {
+                        Dashboard.showFooterNotification({ html: "<div><b>" + args.Header + "</b></div>" + args.Text, timeout: args.TimeoutMs });
                     }
                     else {
-                        Dashboard.showFooterNotification({ html: "<div><b>" + args.Header + "</b></div>" + args.Text, timeout: args.TimeoutMs });
+                        Dashboard.alert({ title: args.Header, message: args.Text });
                     }
 
                     break;
@@ -1015,14 +1012,14 @@ var Dashboard = {
             Dashboard.updateSystemInfo(msg.Data);
         }
         else if (msg.MessageType === "UserUpdated" || msg.MessageType === "UserConfigurationUpdated") {
-            Dashboard.validateCurrentUser();
-
             var user = msg.Data;
 
             if (user.Id == Dashboard.getCurrentUserId()) {
 
+                Dashboard.validateCurrentUser();
                 $('.currentUsername').html(user.Name);
             }
+
         }
         else if (msg.MessageType === "PackageInstallationCompleted") {
             Dashboard.getCurrentUser().done(function (currentUser) {
@@ -1051,7 +1048,7 @@ var Dashboard = {
                 }
             });
         }
-        else if (msg.MessageType === "PackageInstalling") {
+        else if (msg.MessaapiclientcgeType === "PackageInstalling") {
             Dashboard.getCurrentUser().done(function (currentUser) {
 
                 if (currentUser.Policy.IsAdministrator) {
@@ -1375,7 +1372,7 @@ var Dashboard = {
             // The native app can handle a little bit more than safari
             if (Dashboard.isRunningInCordova()) {
 
-                quality -= 10;
+                quality -= 15;
 
                 if (isBackdrop) {
                     quality -= 20;
@@ -1383,7 +1380,7 @@ var Dashboard = {
 
             } else {
 
-                quality -= 50;
+                quality -= 40;
             }
         }
 
@@ -1403,7 +1400,7 @@ var Dashboard = {
         }
     },
 
-    getAppInfo: function () {
+    getAppInfo: function (appName, deviceId, deviceName) {
 
         function generateDeviceName() {
 
@@ -1436,28 +1433,12 @@ var Dashboard = {
         }
 
         var appVersion = window.dashboardVersion;
-        var appName = "Emby Web Client";
-
-        var deviceName;
-        var deviceId;
-
-        if (Dashboard.isRunningInCordova()) {
-
-            appName = "Emby Mobile";
-
-            deviceName = store.getItem('cordovaDeviceName');
-            deviceId = store.getItem('cordovaDeviceId');
-        }
+        appName = appName || "Emby Web Client";
 
         deviceName = deviceName || generateDeviceName();
 
         var seed = [];
         var keyName = 'randomId';
-
-        if (Dashboard.isRunningInCordova()) {
-            seed.push('cordova');
-            keyName = 'cordovaDeviceId';
-        }
 
         deviceId = deviceId || MediaBrowser.generateDeviceId(keyName, seed.join(','));
 
@@ -1481,6 +1462,23 @@ var Dashboard = {
             deferred.resolve();
         });
         return deferred.promise();
+    },
+
+    ready: function (fn) {
+
+        if (Dashboard.initPromiseDone) {
+            fn();
+            return;
+        }
+
+        Dashboard.initPromise.done(fn);
+    },
+
+    firePageEvent: function (page, name) {
+
+        Dashboard.ready(function () {
+            $(page).trigger(name);
+        });
     }
 };
 
@@ -1507,7 +1505,6 @@ var AppInfo = {};
         AppInfo.enableHeaderImages = true;
         AppInfo.enableMovieHomeSuggestions = true;
 
-
         AppInfo.enableAppStorePolicy = isCordova;
 
         if ($.browser.safari) {
@@ -1524,6 +1521,7 @@ var AppInfo = {};
                 AppInfo.enableDetailsMenuImages = false;
                 AppInfo.enableHeaderImages = false;
                 AppInfo.enableMovieHomeSuggestions = false;
+                AppInfo.enableLargeCardMargin = true;
             }
         }
         else {
@@ -1541,7 +1539,6 @@ var AppInfo = {};
             AppInfo.enablePeopleTabs = true;
             AppInfo.enableTvEpisodesTab = true;
             AppInfo.enableMusicArtistsTab = true;
-            AppInfo.enableHomeLatestTab = true;
             AppInfo.enableMovieTrailersTab = true;
         }
 
@@ -1558,13 +1555,10 @@ var AppInfo = {};
 
         $(apiClient).off('.dashboard')
             .on("websocketmessage.dashboard", Dashboard.onWebSocketMessageReceived)
-            .on('requestfail.dashboard', Dashboard.onRequestFail)
-            .on('serveraddresschanged.dashboard', Dashboard.onApiClientServerAddressChanged);
+            .on('requestfail.dashboard', Dashboard.onRequestFail);
     }
 
-    function createConnectionManager() {
-
-        var appInfo = Dashboard.getAppInfo();
+    function createConnectionManager(appInfo) {
 
         var credentialProvider = new MediaBrowser.CredentialProvider();
 
@@ -1572,41 +1566,36 @@ var AppInfo = {};
 
         window.ConnectionManager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities);
 
+        $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+
+            initializeApiClient(apiClient);
+        });
+
+        var lastApiClient = ConnectionManager.getLastUsedApiClient();
+
         if (Dashboard.isConnectMode()) {
-
-            $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
-
-                initializeApiClient(apiClient);
-            });
 
             if (!Dashboard.isServerlessPage()) {
 
-                if (Dashboard.serverAddress() && Dashboard.getCurrentUserId() && Dashboard.getAccessToken()) {
+                if (lastApiClient && lastApiClient.serverAddress() && lastApiClient.getCurrentUserId() && lastApiClient.accessToken()) {
 
-                    window.ApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+                    window.ApiClient = lastApiClient;
 
-                    ApiClient.setCurrentUserId(Dashboard.getCurrentUserId(), Dashboard.getAccessToken());
+                    initializeApiClient(lastApiClient);
 
-                    initializeApiClient(ApiClient);
+                    //ConnectionManager.addApiClient(lastApiClient, true).fail(Dashboard.logout);
 
-                    ConnectionManager.addApiClient(ApiClient, true).fail(Dashboard.logout);
-
-                } else {
-
-                    Dashboard.logout();
-                    return;
                 }
             }
 
         } else {
 
-            window.ApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+            if (!lastApiClient) {
+                lastApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+                ConnectionManager.addApiClient(lastApiClient);
+            }
 
-            ApiClient.setCurrentUserId(Dashboard.getCurrentUserId(), Dashboard.getAccessToken());
-
-            initializeApiClient(ApiClient);
-
-            ConnectionManager.addApiClient(ApiClient);
+            window.ApiClient = lastApiClient;
         }
 
         if (window.ApiClient) {
@@ -1633,7 +1622,7 @@ var AppInfo = {};
 
     }
 
-    function onReady() {
+    function onDocumentReady() {
 
         if (AppInfo.isTouchPreferred) {
             $(document.body).addClass('touch');
@@ -1643,7 +1632,7 @@ var AppInfo = {};
             initFastClick();
         }
 
-        if (AppInfo.hasLowImageBandwidth) {
+        if (AppInfo.enableLargeCardMargin) {
             $(document.body).addClass('largeCardMargin');
         }
 
@@ -1671,12 +1660,12 @@ var AppInfo = {};
             $(document.body).addClass('musicArtistsTabDisabled');
         }
 
-        if (!AppInfo.enableHomeLatestTab) {
-            $(document.body).addClass('homeLatestTabDisabled');
-        }
-
         if (!AppInfo.enableMovieTrailersTab) {
             $(document.body).addClass('movieTrailersTabDisabled');
+        }
+
+        if (AppInfo.enableBottomTabs) {
+            $(document.body).addClass('bottomSecondaryNav');
         }
 
         if (Dashboard.isRunningInCordova()) {
@@ -1768,7 +1757,7 @@ var AppInfo = {};
 
         $(window).on("beforeunload", function () {
 
-            var apiClient = ConnectionManager.currentApiClient();
+            var apiClient = window.ApiClient;
 
             // Close the connection gracefully when possible
             if (apiClient && apiClient.isWebSocketOpen()) {
@@ -1792,40 +1781,82 @@ var AppInfo = {};
             e.preventDefault();
             return false;
         });
+
+        if (Dashboard.isRunningInCordova()) {
+            requirejs(['thirdparty/cordova/connectsdk', 'thirdparty/cordova/remotecontrols']);
+        } else {
+            if ($.browser.chrome) {
+                requirejs(['scripts/chromecast']);
+            }
+        }
     }
 
-    requirejs.config({
-        map: {
-            '*': {
-                'css': 'thirdparty/requirecss' // or whatever the path to require-css is
+    function init(deferred, appName, deviceId, deviceName, resolveOnReady) {
+
+        requirejs.config({
+            map: {
+                '*': {
+                    'css': 'thirdparty/requirecss' // or whatever the path to require-css is
+                }
+            },
+            urlArgs: "v=" + window.dashboardVersion
+        });
+
+        // Required since jQuery is loaded before requireJs
+        define('jquery', [], function () {
+            return jQuery;
+        });
+
+        setAppInfo();
+
+        var appInfo = Dashboard.getAppInfo(appName, deviceId, deviceName);
+
+        createConnectionManager(appInfo);
+
+        if (!resolveOnReady) {
+            Dashboard.initPromiseDone = true;
+            deferred.resolve();
+        }
+        $(function () {
+            onDocumentReady();
+            if (resolveOnReady) {
+                Dashboard.initPromiseDone = true;
+                deferred.resolve();
             }
-        },
-        urlArgs: "v=" + window.dashboardVersion
-    });
+        });
+    }
 
-    // Required since jQuery is loaded before requireJs
-    define('jquery', [], function () {
-        return jQuery;
-    });
+    function initCordovaWithDeviceId(deferred, deviceId) {
+        if ($.browser.safari) {
+            requirejs(['thirdparty/cordova/imagestore.js']);
+        }
 
-    setAppInfo();
-    createConnectionManager();
+        init(deferred, "Emby Mobile", deviceId, device.model, true);
+    }
 
-    if (Dashboard.isRunningInCordova()) {
+    function initCordova(deferred) {
 
         document.addEventListener("deviceready", function () {
 
-            if ($.browser.safari) {
-                requirejs(['thirdparty/cordova/imagestore.js']);
-            }
+            window.plugins.uniqueDeviceID.get(function (uuid) {
 
-            $(onReady);
+                initCordovaWithDeviceId(deferred, uuid);
 
+            }, function () {
+
+                // Failure. Use cordova uuid
+                initCordovaWithDeviceId(deferred, device.uuid);
+            });
         }, false);
+    }
 
+    var initDeferred = $.Deferred();
+    Dashboard.initPromise = initDeferred.promise();
+
+    if (Dashboard.isRunningInCordova()) {
+        initCordova(initDeferred);
     } else {
-
-        $(onReady);
+        init(initDeferred);
     }
 
 })();
@@ -1871,10 +1902,10 @@ $(document).on('pagecreate', ".page", function () {
     if (require) {
         requirejs(require.split(','), function () {
 
-            $(page).trigger('pageinitdepends');
+            Dashboard.firePageEvent(page, 'pageinitdepends');
         });
     } else {
-        $(page).trigger('pageinitdepends');
+        Dashboard.firePageEvent(page, 'pageinitdepends');
     }
 
     $('.localnav a, .libraryViewNav a').attr('data-transition', 'none');
@@ -1882,41 +1913,52 @@ $(document).on('pagecreate', ".page", function () {
 }).on('pageshow', ".page", function () {
 
     var page = this;
-
     var require = this.getAttribute('data-require');
 
     if (require) {
         requirejs(require.split(','), function () {
 
-            $(page).trigger('pageshown');
+            Dashboard.firePageEvent(page, 'pageshowready');
         });
     } else {
-        $(page).trigger('pageshown');
+        Dashboard.firePageEvent(page, 'pageshowready');
     }
 
 }).on('pagebeforeshow', ".page", function () {
 
+    var page = this;
+    var require = this.getAttribute('data-require');
+
+    if (require) {
+        requirejs(require.split(','), function () {
+
+            Dashboard.firePageEvent(page, 'pagebeforeshowready');
+        });
+    } else {
+        Dashboard.firePageEvent(page, 'pagebeforeshowready');
+    }
+
+}).on('pagebeforeshowready', ".page", function () {
+
     var page = $(this);
 
-    var apiClient = ConnectionManager.currentApiClient();
+    var apiClient = window.ApiClient;
 
-    if (Dashboard.getAccessToken() && Dashboard.getCurrentUserId()) {
+    if (apiClient && apiClient.accessToken() && Dashboard.getCurrentUserId()) {
 
-        if (apiClient) {
-            Dashboard.getCurrentUser().done(function (user) {
+        Dashboard.getCurrentUser().done(function (user) {
 
-                var isSettingsPage = page.hasClass('type-interior');
+            var isSettingsPage = page.hasClass('type-interior');
 
-                if (!user.Policy.IsAdministrator && isSettingsPage) {
-                    window.location.replace("index.html");
-                    return;
-                }
+            if (!user.Policy.IsAdministrator && isSettingsPage) {
+                Dashboard.logout();
+                return;
+            }
 
-                if (isSettingsPage) {
-                    Dashboard.ensureToolsMenu(page, user);
-                }
-            });
-        }
+            if (isSettingsPage) {
+                Dashboard.ensureToolsMenu(page, user);
+            }
+        });
 
         Dashboard.ensureHeader(page);
         Dashboard.ensurePageTitle(page);
@@ -1929,15 +1971,15 @@ $(document).on('pagecreate', ".page", function () {
         if (isConnectMode) {
 
             if (!Dashboard.isServerlessPage()) {
-                Dashboard.logout();
+                Dashboard.logout(true);
                 return;
             }
         }
 
-        if (this.id !== "loginPage" && !page.hasClass('forgotPasswordPage') && !page.hasClass('wizardPage') && !isConnectMode) {
+        if (!isConnectMode && this.id !== "loginPage" && !page.hasClass('forgotPasswordPage') && !page.hasClass('wizardPage')) {
 
             console.log('Not logged into server. Redirecting to login.');
-            Dashboard.logout();
+            Dashboard.logout(true);
             return;
         }
 

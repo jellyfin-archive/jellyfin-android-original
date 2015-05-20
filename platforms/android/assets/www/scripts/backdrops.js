@@ -66,7 +66,7 @@
 
     function showBackdrop(type, parentId) {
 
-        var apiClient = ConnectionManager.currentApiClient();
+        var apiClient = window.ApiClient;
 
         if (!apiClient) {
             return;
@@ -141,7 +141,7 @@
 
         var userId = Dashboard.getCurrentUserId();
 
-        var val = store.getItem('enableBackdrops-' + userId);
+        var val = appStorage.getItem('enableBackdrops-' + userId);
 
         // For bandwidth
         return val == '1' || (val != '0' && isEnabledByDefault());
@@ -195,7 +195,7 @@
         }
     }
 
-    $(document).on('pagebeforeshow', ".page", function () {
+    $(document).on('pagebeforeshowready', ".page", function () {
 
         var page = this;
 

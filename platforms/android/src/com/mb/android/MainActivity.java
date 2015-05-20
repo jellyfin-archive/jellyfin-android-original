@@ -17,7 +17,7 @@
        under the License.
  */
 
-package com.emby.mobile;
+package com.mb.android;
 
 import android.os.Bundle;
 import org.apache.cordova.*;

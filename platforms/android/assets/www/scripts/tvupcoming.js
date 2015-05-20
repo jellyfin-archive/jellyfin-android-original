@@ -1,11 +1,11 @@
 ﻿(function ($, document) {
 
-    $(document).on('pageshown', "#tvUpcomingPage", function () {
+    $(document).on('pageshowready', "#tvUpcomingPage", function () {
 
         var page = this;
 
         var limit = AppInfo.hasLowImageBandwidth ?
-         18 :
+         24 :
          40;
 
         var query = {
