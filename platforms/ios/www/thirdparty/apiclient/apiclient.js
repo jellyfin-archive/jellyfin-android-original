@@ -7,7 +7,7 @@
     /**
      * Creates a new api client instance
      * @param {String} serverAddress
-     * @param {String} clientName 
+     * @param {String} clientName s
      * @param {String} applicationVersion 
      */
     globalScope.MediaBrowser.ApiClient = function (logger, serverAddress, clientName, applicationVersion, deviceName, deviceId) {
@@ -23,10 +23,8 @@
         logger.log('ApiClient deviceId: ' + deviceId);
 
         var self = this;
-        var currentUserId;
-        var accessToken;
         var webSocket;
-        var serverInfo;
+        var serverInfo = {};
 
         self.enableAppStorePolicy = false;
 
@@ -85,18 +83,11 @@
          */
         self.getCurrentUserId = function () {
 
-            return currentUserId;
+            return serverInfo.UserId;
         };
 
         self.accessToken = function () {
-            return accessToken;
-        };
-
-        self.setCurrentUserId = function (userId, token) {
-
-            currentUserId = userId;
-            currentUserPromise = null;
-            accessToken = token;
+            return serverInfo.AccessToken;
         };
 
         self.deviceName = function () {
@@ -108,13 +99,14 @@
         };
 
         self.clearAuthenticationInfo = function () {
-            accessToken = null;
-            currentUserId = null;
+            self.setAuthenticationInfo(null, null);
         };
 
         self.setAuthenticationInfo = function (accessKey, userId) {
-            accessToken = accessKey;
-            currentUserId = userId;
+            currentUserPromise = null;
+
+            serverInfo.AccessToken = accessKey;
+            serverInfo.UserId = userId;
         };
 
         self.encodeName = function (name) {
@@ -160,8 +152,10 @@
 
                     var auth = 'MediaBrowser Client="' + clientName + '", Device="' + deviceName + '", DeviceId="' + deviceId + '", Version="' + applicationVersion + '"';
 
-                    if (currentUserId) {
-                        auth += ', UserId="' + currentUserId + '"';
+                    var userId = serverInfo.UserId;
+
+                    if (userId) {
+                        auth += ', UserId="' + userId + '"';
                     }
 
                     request.headers = {
@@ -169,12 +163,14 @@
                     };
                 }
 
+                var accessToken = serverInfo.AccessToken;
+
                 if (accessToken) {
                     request.headers['X-MediaBrowser-Token'] = accessToken;
                 }
             }
 
-            if (!self.enableAutomaticNetwork || !self.serverInfo() || self.connectionMode == null) {
+            if (!self.enableAutomaticNetwork || self.connectionMode == null) {
                 logger.log('Requesting url without automatic networking: ' + request.url);
                 return AjaxApi.ajax(request).fail(onRequestFail);
             }
@@ -383,6 +379,8 @@
 
         self.openWebSocket = function () {
 
+            var accessToken = serverInfo.AccessToken;
+
             if (!accessToken) {
                 throw new Error("Cannot open web socket without access token.");
             }
@@ -577,10 +575,10 @@
             self.closeWebSocket();
 
             var done = function () {
-                self.setCurrentUserId(null, null);
+                self.setAuthenticationInfo(null, null);
             };
 
-            if (accessToken) {
+            if (serverInfo.AccessToken) {
                 var url = self.getUrl("Sessions/Logout");
 
                 return self.ajax({
