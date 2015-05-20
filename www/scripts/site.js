@@ -49,7 +49,6 @@ var Dashboard = {
 
     isConnectMode: function () {
 
-        return true;
         if (Dashboard.isRunningInCordova()) {
             return true;
         }
@@ -194,17 +193,17 @@ var Dashboard = {
 
     onServerChanged: function (userId, accessToken, apiClient) {
 
+        apiClient = apiClient || window.ApiClient;
+
         window.ApiClient = apiClient;
 
         var isMultiServerMode = Dashboard.isConnectMode();
 
-        apiClient = apiClient || window.ApiClient;
-
-        if (apiClient) {
-            apiClient.setAuthenticationInfo(accessToken, userId);
-        }
-
         if (!isMultiServerMode) {
+
+            if (apiClient) {
+                apiClient.setAuthenticationInfo(accessToken, userId);
+            }
 
             if (!userId || !accessToken) {
                 store.removeItem("userId");

@@ -109,6 +109,11 @@
             accessToken = accessKey;
             currentUserId = userId;
             currentUserPromise = null;
+
+            if (serverInfo) {
+                serverInfo.AccessToken = accessKey;
+                serverInfo.UserId = userId;
+            }
         };
 
         self.encodeName = function (name) {
