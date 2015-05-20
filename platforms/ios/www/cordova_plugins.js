@@ -79,6 +79,30 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
+        "clobbers": [
+            "cordova.plugins.notification.local",
+            "plugin.notification.local"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
+        "clobbers": [
+            "cordova.plugins.notification.local.core",
+            "plugin.notification.local.core"
+        ]
+    },
+    {
+        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
+        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
+        "merges": [
+            "cordova.plugins.notification.local.core",
+            "plugin.notification.local.core"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -113,8 +137,10 @@ module.exports.metadata =
     "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
     "io.litehelpers.cordova.sqlite": "0.7.7",
     "com.connectsdk.cordovaplugin": "1.2.0",
+    "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "cordova-plugin-chrome-apps-common": "1.0.7",
-    "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2"
+    "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
+    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
 }
 // BOTTOM OF METADATA
 });

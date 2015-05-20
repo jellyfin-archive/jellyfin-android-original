@@ -8,7 +8,6 @@
     function updatePlayerState(state) {
 
         if (!state.NowPlayingItem) {
- console.log('skipping');
             hideNowPlayingBar();
             return;
         }
@@ -58,9 +57,6 @@
         }
 
         var params = [artist, title, album, url, duration, elapsedTime];
- 
- console.log('calling updatemetas ' + JSON.stringify(params));
- 
         try {
             window.remoteControls.updateMetas(onUpdateMetasSuccess, onUpdateMetasFail, params);
         } catch (err) {
