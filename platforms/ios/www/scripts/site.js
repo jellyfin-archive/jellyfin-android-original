@@ -179,7 +179,7 @@ var Dashboard = {
         Dashboard.getUserPromise = null;
     },
 
-    logout: function (logoutWithServer, forceReload) {
+    logout: function (logoutWithServer) {
 
         function onLogoutDone() {
 
@@ -192,11 +192,7 @@ var Dashboard = {
                 loginPage = 'login.html';
             }
 
-            if (forceReload) {
-                window.location.href = loginPage;
-            } else {
-                Dashboard.navigate(loginPage);
-            }
+            Dashboard.navigate(loginPage);
         }
 
         if (logoutWithServer === false) {
@@ -420,7 +416,7 @@ var Dashboard = {
         return "ConfigurationPage?name=" + encodeURIComponent(name);
     },
 
-    navigate: function (url, preserveQueryString) {
+    navigate: function (url, preserveQueryString, transition) {
 
         if (!url) {
             throw new Error('url cannot be null or empty');
@@ -430,7 +426,14 @@ var Dashboard = {
         if (preserveQueryString && queryString) {
             url += queryString;
         }
-        $.mobile.changePage(url);
+
+        var options = {};
+
+        if (transition) {
+            options.transition = transition;
+        }
+
+        $.mobile.changePage(url, options);
     },
 
     showLoadingMsg: function () {
@@ -569,7 +572,7 @@ var Dashboard = {
 
         var apiClient = ApiClient;
 
-        if (apiClient.accessToken()) {
+        if (apiClient && apiClient.accessToken()) {
             if (apiClient.enableFooterNotifications) {
                 apiClient.getSystemInfo().done(function (info) {
 
@@ -961,17 +964,11 @@ var Dashboard = {
                 {
                     var args = cmd.Arguments;
 
-                    if (args.TimeoutMs && WebNotifications.supported()) {
-                        var notification = {
-                            title: args.Header,
-                            body: args.Text,
-                            timeout: args.TimeoutMs
-                        };
-
-                        WebNotifications.show(notification);
+                    if (args.TimeoutMs) {
+                        Dashboard.showFooterNotification({ html: "<div><b>" + args.Header + "</b></div>" + args.Text, timeout: args.TimeoutMs });
                     }
                     else {
-                        Dashboard.showFooterNotification({ html: "<div><b>" + args.Header + "</b></div>" + args.Text, timeout: args.TimeoutMs });
+                        Dashboard.alert({ title: args.Header, message: args.Text });
                     }
 
                     break;
@@ -1954,7 +1951,7 @@ $(document).on('pagecreate', ".page", function () {
             var isSettingsPage = page.hasClass('type-interior');
 
             if (!user.Policy.IsAdministrator && isSettingsPage) {
-                window.location.replace("index.html");
+                Dashboard.logout();
                 return;
             }
 
@@ -1974,15 +1971,15 @@ $(document).on('pagecreate', ".page", function () {
         if (isConnectMode) {
 
             if (!Dashboard.isServerlessPage()) {
-                Dashboard.logout(true, true);
+                Dashboard.logout(true);
                 return;
             }
         }
 
-        if (this.id !== "loginPage" && !page.hasClass('forgotPasswordPage') && !page.hasClass('wizardPage') && !isConnectMode) {
+        if (!isConnectMode && this.id !== "loginPage" && !page.hasClass('forgotPasswordPage') && !page.hasClass('wizardPage')) {
 
             console.log('Not logged into server. Redirecting to login.');
-            Dashboard.logout(true, true);
+            Dashboard.logout(true);
             return;
         }
 
