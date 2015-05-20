@@ -1051,7 +1051,7 @@ var Dashboard = {
                 }
             });
         }
-        else if (msg.MessageType === "PackageInstalling") {
+        else if (msg.MessaapiclientcgeType === "PackageInstalling") {
             Dashboard.getCurrentUser().done(function (currentUser) {
 
                 if (currentUser.Policy.IsAdministrator) {
@@ -1469,6 +1469,11 @@ var Dashboard = {
 
     ready: function (fn) {
 
+        if (Dashboard.initPromiseDone) {
+            fn();
+            return;
+        }
+
         Dashboard.initPromise.done(fn);
     },
 
@@ -1789,7 +1794,7 @@ var AppInfo = {};
         }
     }
 
-    function init(deferred, appName, deviceId, deviceName) {
+    function init(deferred, appName, deviceId, deviceName, resolveOnReady) {
 
         requirejs.config({
             map: {
@@ -1811,9 +1816,16 @@ var AppInfo = {};
 
         createConnectionManager(appInfo);
 
+        if (!resolveOnReady) {
+            Dashboard.initPromiseDone = true;
+            deferred.resolve();
+        }
         $(function () {
             onDocumentReady();
-            deferred.resolve();
+            if (resolveOnReady) {
+                Dashboard.initPromiseDone = true;
+                deferred.resolve();
+            }
         });
     }
 
@@ -1822,7 +1834,7 @@ var AppInfo = {};
             requirejs(['thirdparty/cordova/imagestore.js']);
         }
 
-        init(deferred, "Emby Mobile", deviceId, device.model);
+        init(deferred, "Emby Mobile", deviceId, device.model, true);
     }
 
     function initCordova(deferred) {

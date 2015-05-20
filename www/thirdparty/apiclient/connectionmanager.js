@@ -109,11 +109,11 @@
                 return b.DateLastAccessed - a.DateLastAccessed;
             });
 
-            var server = servers[0];
-
-            if (!server) {
+            if (!servers.length) {
                 return null;
             }
+
+            var server = servers[0];
 
             return getOrAddApiClient(server, server.LastConnectionMode);
         };
@@ -942,7 +942,7 @@
                 case MediaBrowser.ConnectionMode.Remote:
                     return server.RemoteAddress;
                 default:
-                    throw new Error("Unexpected ConnectionMode");
+                    return server.ManualAddress || server.LocalAddress || server.RemoteAddress;
             }
         };
 
@@ -951,6 +951,10 @@
             if (address.toLowerCase().indexOf('http') != 0) {
                 address = "http://" + address;
             }
+
+            // Seeing failures in iOS when protocol isn't lowercase
+            address = address.replace('Http:', 'http:');
+            address = address.replace('Https:', 'https:');
 
             return address;
         }
