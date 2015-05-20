@@ -1469,11 +1469,6 @@ var Dashboard = {
 
     ready: function (fn) {
 
-        if (Dashboard.initPromiseDone) {
-            fn();
-            return;
-        }
-
         Dashboard.initPromise.done(fn);
     },
 
@@ -1588,10 +1583,6 @@ var AppInfo = {};
 
                     //ConnectionManager.addApiClient(lastApiClient, true).fail(Dashboard.logout);
 
-                } else {
-
-                    Dashboard.logout();
-                    return;
                 }
             }
 
@@ -1820,9 +1811,10 @@ var AppInfo = {};
 
         createConnectionManager(appInfo);
 
-        Dashboard.initPromiseDone = true;
-        deferred.resolve();
-        $(onDocumentReady);
+        $(function () {
+            onDocumentReady();
+            deferred.resolve();
+        });
     }
 
     function initCordovaWithDeviceId(deferred, deviceId) {
