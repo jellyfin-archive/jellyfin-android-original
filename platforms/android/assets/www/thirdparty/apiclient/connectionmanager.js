@@ -24,6 +24,7 @@
 
         var self = this;
         var apiClients = [];
+        var defaultTimeout = 15000;
 
         function mergeServers(list1, list2) {
 
@@ -73,7 +74,7 @@
                 url: url,
                 dataType: "json",
 
-                timeout: timeout || 15000
+                timeout: timeout || defaultTimeout
 
             });
         }
@@ -91,11 +92,6 @@
             return deviceId;
         };
 
-        self.currentApiClient = function () {
-
-            return apiClients[0];
-        };
-
         self.connectUserId = function () {
             return credentialProvider.credentials().ConnectUserId;
         };
@@ -105,9 +101,32 @@
             return credentialProvider.credentials().ConnectAccessToken;
         };
 
-        self.addApiClient = function (apiClient, enableAutomaticNetworking) {
+        self.getLastUsedApiClient = function() {
+
+            var servers = credentialProvider.credentials().servers;
+
+            servers.sort(function (a, b) {
+                return b.DateLastAccessed - a.DateLastAccessed;
+            });
+
+            if (!servers.length) {
+                return null;
+            }
+
+            var server = servers[0];
+
+            return getOrAddApiClient(server, server.LastConnectionMode);
+        };
+
+        self.addApiClient = function (apiClient) {
 
             apiClients.push(apiClient);
+
+            Events.on(apiClient, 'authenticated', function (e, result) {
+                onAuthenticated(this, result, {}, true);
+            });
+
+            Events.trigger(self, 'apiclientcreated', [apiClient]);
 
             return apiClient.getPublicSystemInfo().done(function (systemInfo) {
 
@@ -120,13 +139,7 @@
                 updateServerInfo(server, systemInfo);
 
                 apiClient.serverInfo(server);
-                Events.trigger(self, 'apiclientcreated', [apiClient]);
-
-                if (enableAutomaticNetworking) {
-                    self.connectToServer(server);
-                }
             });
-
         };
 
         function onConnectUserSignIn(user) {
@@ -156,7 +169,7 @@
                 Events.trigger(self, 'apiclientcreated', [apiClient]);
             }
 
-            if (server.AccessToken) {
+            if (server.AccessToken && server.UserId) {
 
                 apiClient.setAuthenticationInfo(server.AccessToken, server.UserId);
             }
@@ -409,7 +422,7 @@
             };
         }
 
-        self.user = function () {
+        self.user = function (apiClient) {
 
             var deferred = DeferredBuilder.Deferred();
 
@@ -431,7 +444,6 @@
 
             function onEnsureConnectUserDone() {
 
-                var apiClient = self.currentApiClient();
                 if (apiClient && apiClient.getCurrentUserId()) {
                     apiClient.getCurrentUser().done(function (u) {
                         localUser = u;
@@ -443,7 +455,7 @@
 
             var credentials = credentialProvider.credentials();
 
-            if (credentials.ConnectUserId && credentials.ConnectAccessToken && !(self.currentApiClient() && self.currentApiClient().getCurrentUserId())) {
+            if (credentials.ConnectUserId && credentials.ConnectAccessToken && !(apiClient && apiClient.getCurrentUserId())) {
                 ensureConnectUser(credentials).always(onEnsureConnectUserDone);
             } else {
                 onEnsureConnectUserDone();
@@ -485,6 +497,7 @@
                 for (var j = 0, numServers = servers.length; j < numServers; j++) {
 
                     var server = servers[j];
+
                     server.UserId = null;
                     server.AccessToken = null;
                     server.ExchangeToken = null;
@@ -804,7 +817,7 @@
             var address = self.getServerAddress(server, mode);
             var enableRetry = false;
             var skipTest = false;
-            var timeout = 15000;
+            var timeout = defaultTimeout;
 
             if (mode == MediaBrowser.ConnectionMode.Local) {
 
@@ -812,7 +825,7 @@
                     skipTest = true;
                 }
                 enableRetry = true;
-                timeout = 5000;
+                timeout = 7000;
             }
 
             else if (mode == MediaBrowser.ConnectionMode.Manual) {
@@ -908,7 +921,7 @@
                 MediaBrowser.ConnectionState.ServerSignIn;
 
             result.Servers.push(server);
-            result.ApiClient.enableAutomaticNetworking(server, connectionMode);
+            result.ApiClient.enableAutomaticNetworking(server, connectionMode, self.getServerAddress(server, connectionMode));
 
             if (result.State == MediaBrowser.ConnectionState.SignedIn) {
                 afterConnected(result.ApiClient, options);
@@ -929,7 +942,7 @@
                 case MediaBrowser.ConnectionMode.Remote:
                     return server.RemoteAddress;
                 default:
-                    throw new Error("Unexpected ConnectionMode");
+                    return server.ManualAddress || server.LocalAddress || server.RemoteAddress;
             }
         };
 
@@ -938,6 +951,10 @@
             if (address.toLowerCase().indexOf('http') != 0) {
                 address = "http://" + address;
             }
+
+            // Seeing failures in iOS when protocol isn't lowercase
+            address = address.replace('Http:', 'http:');
+            address = address.replace('Https:', 'https:');
 
             return address;
         }
@@ -953,7 +970,12 @@
 
             address = normalizeAddress(address);
 
-            tryConnect(address, 15000).done(function (publicInfo) {
+            function onFail() {
+                logger.log('connectToAddress ' + address + ' failed');
+                resolveWithFailure(deferred);
+            }
+
+            tryConnect(address, defaultTimeout).done(function (publicInfo) {
 
                 logger.log('connectToAddress ' + address + ' succeeded');
 
@@ -967,13 +989,9 @@
 
                     deferred.resolveWith(null, [result]);
 
-                });
+                }).fail(onFail);
 
-            }).fail(function () {
-
-                logger.log('connectToAddress ' + address + ' failed');
-                resolveWithFailure(deferred);
-            });
+            }).fail(onFail);
 
             return deferred.promise();
         };

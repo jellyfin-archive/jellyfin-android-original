@@ -39,15 +39,6 @@
 
             updateFilterControls(page);
 
-            if (AppInfo.hasLowImageBandwidth) {
-                if (view == 'Thumb') {
-                    view = 'ThumbCard';
-                }
-                else if (view == 'Poster') {
-                    view = 'PosterCard';
-                }
-            }
-
             if (view == "Thumb") {
                 html = LibraryBrowser.getPosterViewHtml({
                     items: result.Items,
@@ -178,7 +169,7 @@
             LibraryBrowser.saveViewSetting(getSavedQueryKey(), view);
         });
 
-    }).on('pageshown', "#tvGenresPage", function () {
+    }).on('pageshowready', "#tvGenresPage", function () {
 
         query.ParentId = LibraryMenu.getTopParentId();
         var page = this;

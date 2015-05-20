@@ -48,15 +48,6 @@
             updateFilterControls(page);
             var trigger = false;
 
-            if (AppInfo.hasLowImageBandwidth) {
-                if (view == 'Thumb') {
-                    view = 'ThumbCard';
-                }
-                else if (view == 'Poster') {
-                    view = 'PosterCard';
-                }
-            }
-
             if (view == "Thumb") {
                 html = LibraryBrowser.getPosterViewHtml({
                     items: result.Items,
@@ -225,7 +216,7 @@
         }
     }
 
-    $(document).on('pageinit', "#moviesPage", function () {
+    $(document).on('pageinitdepends', "#moviesPage", function () {
 
         var page = this;
 
@@ -408,7 +399,7 @@
             reloadItems(page);
         });
 
-    }).on('pagebeforeshow', "#moviesPage", function () {
+    }).on('pageshowready', "#moviesPage", function () {
 
         query.ParentId = LibraryMenu.getTopParentId();
 
@@ -435,10 +426,6 @@
                 reloadItems(page);
             }
         });
-
-    }).on('pageshow', "#moviesPage", function () {
-
-        var page = this;
 
         updateFilterControls(page);
 

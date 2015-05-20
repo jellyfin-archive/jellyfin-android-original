@@ -43,15 +43,6 @@
 
             updateFilterControls(page);
 
-            if (AppInfo.hasLowImageBandwidth) {
-                if (view == 'Thumb') {
-                    view = 'ThumbCard';
-                }
-                else if (view == 'Poster') {
-                    view = 'PosterCard';
-                }
-            }
-
             if (view == "Thumb") {
 
                 html = LibraryBrowser.getPosterViewHtml({
@@ -211,7 +202,7 @@
         }
     }
 
-    $(document).on('pageinit', "#tvShowsPage", function () {
+    $(document).on('pageinitdepends', "#tvShowsPage", function () {
 
         var page = this;
 
@@ -369,7 +360,7 @@
             reloadItems(page);
         });
 
-    }).on('pagebeforeshow', "#tvShowsPage", function () {
+    }).on('pageshowready', "#tvShowsPage", function () {
 
         query.ParentId = LibraryMenu.getTopParentId();
 
@@ -395,8 +386,6 @@
                 reloadItems(page);
             }
         });
-
-    }).on('pageshow', "#tvShowsPage", function () {
 
         updateFilterControls(this);
     });

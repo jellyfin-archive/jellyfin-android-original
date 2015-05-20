@@ -105,6 +105,11 @@
             };
         };
 
+        function triggerPlayerChange(newPlayer, newTarget) {
+            
+            $(self).trigger('playerchange', [newPlayer, newTarget]);
+        }
+
         self.setActivePlayer = function (player, targetInfo) {
 
             if (typeof (player) === 'string') {
@@ -118,15 +123,42 @@
             }
 
             currentPlayer = player;
-            currentTargetInfo = targetInfo || player.getCurrentTargetInfo();
+            currentTargetInfo = targetInfo;
 
             console.log('Active player: ' + JSON.stringify(currentTargetInfo));
 
-            $(self).trigger('playerchange');
+            triggerPlayerChange(player, targetInfo);
+        };
+
+        self.trySetActivePlayer = function (player, targetInfo) {
+
+            if (typeof (player) === 'string') {
+                player = players.filter(function (p) {
+                    return p.name == player;
+                })[0];
+            }
+
+            if (!player) {
+                throw new Error('null player');
+            }
+
+            player.tryPair(targetInfo).done(function() {
+                
+                currentPlayer = player;
+                currentTargetInfo = targetInfo;
+
+                console.log('Active player: ' + JSON.stringify(currentTargetInfo));
+
+                triggerPlayerChange(player, targetInfo);
+            });
         };
 
         self.setDefaultPlayerActive = function () {
-            self.setActivePlayer(self.getDefaultPlayer());
+
+            var player = self.getDefaultPlayer();
+            var target = player.getTargets()[0];
+
+            self.setActivePlayer(player, target);
         };
 
         self.removeActivePlayer = function (name) {
@@ -135,6 +167,13 @@
                 self.setDefaultPlayerActive();
             }
 
+        };
+
+        self.removeActiveTarget = function (id) {
+
+            if (self.getPlayerInfo().id == id) {
+                self.setDefaultPlayerActive();
+            }
         };
 
         self.getPlayers = function() {
@@ -418,6 +457,20 @@
 
             return bottomText ? topText + '<br/>' + bottomText : topText;
         };
+
+        self.showPlaybackInfoErrorMessage = function(errorCode) {
+
+            // This timeout is messy, but if jqm is in the act of hiding a popup, it will not show a new one
+            // If we're coming from the popup play menu, this will be a problem
+
+            setTimeout(function() {
+                Dashboard.alert({
+                    message: Globalize.translate('MessagePlaybackError' + errorCode),
+                    title: Globalize.translate('HeaderPlaybackError')
+                });
+            }, 300);
+
+        };
     }
 
     window.MediaController = new mediaController();
@@ -480,15 +533,19 @@
         }
     }
 
-
-
     function initializeApiClient(apiClient) {
-        $(apiClient).on("websocketmessage", onWebSocketMessageReceived);
+        $(apiClient).off("websocketmessage", onWebSocketMessageReceived).on("websocketmessage", onWebSocketMessageReceived);
     }
 
-    $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+    Dashboard.ready(function () {
 
-        initializeApiClient(apiClient);
+        if (window.ApiClient) {
+            initializeApiClient(window.ApiClient);
+        }
+
+        $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+            initializeApiClient(apiClient);
+        });
     });
 
     function getTargetsHtml(targets) {
@@ -572,7 +629,7 @@
 
             });
 
-            $('.radioSelectPlayerTarget', elem).on('change', function () {
+            $('.radioSelectPlayerTarget', elem).off('change').on('change', function () {
 
                 var supportsMirror = this.getAttribute('data-mirror') == 'true';
 
@@ -582,14 +639,6 @@
                     $('.fldMirrorMode', elem).hide();
                 }
 
-            }).each(function () {
-
-                if (this.checked) {
-                    $(this).trigger('change');
-                }
-
-            }).on('change', function () {
-
                 var playerName = this.getAttribute('data-playername');
                 var targetId = this.getAttribute('data-targetid');
                 var targetName = this.getAttribute('data-targetname');
@@ -597,7 +646,7 @@
                 var playableMediaTypes = this.getAttribute('data-mediatypes').split(',');
                 var supportedCommands = this.getAttribute('data-commands').split(',');
 
-                MediaController.setActivePlayer(playerName, {
+                MediaController.trySetActivePlayer(playerName, {
                     id: targetId,
                     name: targetName,
                     playableMediaTypes: playableMediaTypes,
@@ -612,6 +661,12 @@
                 }
 
             });
+
+            if ($('.radioSelectPlayerTarget:checked', elem).attr('data-mirror') == 'true') {
+                $('.fldMirrorMode', elem).show();
+            } else {
+                $('.fldMirrorMode', elem).hide();
+            }
         });
     }
 
@@ -675,9 +730,8 @@
 
             showPlayerSelection($.mobile.activePage);
         });
-    });
 
-    $(document).on('pagebeforeshow', ".page", function () {
+    }).on('pagebeforeshow', ".page", function () {
 
         var page = this;
 
@@ -692,4 +746,4 @@
         mirrorIfEnabled(info);
     });
 
-})(jQuery, window, window.store);
+})(jQuery, window, window.appStorage);

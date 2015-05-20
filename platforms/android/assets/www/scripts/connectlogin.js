@@ -1,18 +1,13 @@
 ﻿(function () {
 
-    function onLoggedIn() {
-
-        Dashboard.hideModalLoadingMsg();
-        Dashboard.navigate('selectserver.html');
-    }
-
     function login(page, username, password) {
 
         Dashboard.showModalLoadingMsg();
 
         ConnectionManager.loginToConnect(username, password).done(function () {
 
-            onLoggedIn();
+            Dashboard.hideModalLoadingMsg();
+            Dashboard.navigate('selectserver.html');
 
         }).fail(function () {
 
@@ -39,19 +34,18 @@
                 {
                     var apiClient = result.ApiClient;
 
-                    Dashboard.serverAddress(apiClient.serverAddress());
-                    Dashboard.setCurrentUser(apiClient.getCurrentUserId(), apiClient.accessToken());
-                    window.location.href = 'index.html';
+                    Dashboard.onServerChanged(apiClient.getCurrentUserId(), apiClient.accessToken(), apiClient);
+                    Dashboard.navigate('index.html');
                 }
                 break;
             case MediaBrowser.ConnectionState.ServerSignIn:
                 {
-                    Dashboard.navigate('login.html?serverid=' + result.Servers[0].Id);
+                    Dashboard.navigate('login.html?serverid=' + result.Servers[0].Id, false, 'none');
                 }
                 break;
             case MediaBrowser.ConnectionState.ServerSelection:
                 {
-                    onLoggedIn();
+                    Dashboard.navigate('selectserver.html', false, 'none');
                 }
                 break;
             case MediaBrowser.ConnectionState.ConnectSignIn:
@@ -124,7 +118,23 @@
         Dashboard.navigate('selectserver.html');
     }
 
-    $(document).on('pageinit', "#connectLoginPage", function () {
+    function onSubmit() {
+        var page = $(this).parents('.page');
+
+        submit(page);
+
+        return false;
+    }
+
+    function onManualServerSubmit() {
+        var page = $(this).parents('.page');
+
+        submitManualServer(page);
+
+        return false;
+    }
+
+    $(document).on('pageinitdepends', "#connectLoginPage", function () {
 
         var page = this;
 
@@ -132,7 +142,10 @@
             skip();
         });
 
-    }).on('pageshow', "#connectLoginPage", function () {
+        $('.connectLoginForm').off('submit', onSubmit).on('submit', onSubmit);
+        $('.manualServerForm').off('submit', onManualServerSubmit).on('submit', onManualServerSubmit);
+
+    }).on('pageshowready', "#connectLoginPage", function () {
 
         var page = this;
 
@@ -179,26 +192,5 @@
 
         login(page, user, password);
     }
-
-    window.ConnectLoginPage = {
-
-        onSubmit: function () {
-
-            var page = $(this).parents('.page');
-
-            submit(page);
-
-            return false;
-        },
-
-        onManualServerSubmit: function () {
-            var page = $(this).parents('.page');
-
-            submitManualServer(page);
-
-            return false;
-
-        }
-    };
 
 })();

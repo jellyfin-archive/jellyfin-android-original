@@ -8,21 +8,22 @@
 
             Dashboard.hideLoadingMsg();
 
+            var apiClient = result.ApiClient;
+
             switch (result.State) {
 
                 case MediaBrowser.ConnectionState.SignedIn:
                     {
-                        var apiClient = result.ApiClient;
-
-                        Dashboard.serverAddress(apiClient.serverAddress());
-                        Dashboard.setCurrentUser(apiClient.getCurrentUserId(), apiClient.accessToken());
-                        window.location.href = 'index.html';
+                        Dashboard.onServerChanged(apiClient.getCurrentUserId(), apiClient.accessToken(), apiClient);
+                        Dashboard.navigate('index.html');
                     }
                     break;
                 case MediaBrowser.ConnectionState.ServerSignIn:
                     {
                         if (Dashboard.isRunningInCordova()) {
-                            window.location.href = 'login.html?serverid=' + result.Servers[0].Id;
+
+                            Dashboard.onServerChanged(null, null, apiClient);
+                            Dashboard.navigate('login.html?serverid=' + result.Servers[0].Id);
                         } else {
                             showServerConnectionFailure();
                         }
@@ -61,7 +62,7 @@
 
         html += '<div class="cardPadder"></div>';
 
-        var href = "#";
+        var href = server.href || "#";
         html += '<a class="cardContent lnkServer" data-serverid="' + server.Id + '" href="' + href + '">';
 
         var imgUrl = server.Id == 'connect' ? 'css/images/logo536.png' : '';
@@ -83,18 +84,20 @@
         // cardScalable
         html += "</div>";
 
-        html += '<div class="cardFooter">';
+        html += '<div class="cardFooter outerCardFooter">';
 
         if (server.showOptions !== false) {
             html += '<div class="cardText" style="text-align:right; float:right;">';
-
-            html += '<button class="btnServerMenu" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 2px 0 0;"></button>';
-
+            html += '<button class="listviewMenuButton imageButton btnCardOptions btnServerMenu" type="button" data-role="none" style="margin: 4px 0 0;"><i class="fa fa-ellipsis-v"></i></button>';
             html += "</div>";
         }
 
-        html += '<div class="cardText" style="margin-right: 30px; padding: 11px 0 10px;">';
+        html += '<div class="cardText">';
         html += server.Name;
+        html += "</div>";
+
+        html += '<div class="cardText">';
+        html += '&nbsp;';
         html += "</div>";
 
         // cardFooter
@@ -127,21 +130,15 @@
 
             var id = this.getAttribute('data-serverid');
 
-            if (id == 'new') {
-                Dashboard.navigate('connectlogin.html?mode=manualserver');
-                return;
+            if (id != 'new' && id != 'connect') {
+
+                var server = servers.filter(function (s) {
+                    return s.Id == id;
+                })[0];
+
+                connectToServer(page, server);
             }
 
-            if (id == 'connect') {
-                Dashboard.navigate('connectlogin.html?mode=connect');
-                return;
-            }
-
-            var server = servers.filter(function (s) {
-                return s.Id == id;
-            })[0];
-
-            connectToServer(page, server);
         });
 
         $('.btnServerMenu', elem).on('click', function () {
@@ -311,15 +308,18 @@
         // cardScalable
         html += "</div>";
 
-        html += '<div class="cardFooter">';
+        html += '<div class="cardFooter outerCardFooter">';
 
         html += '<div class="cardText" style="text-align:right; float:right;">';
-
-        html += '<button class="btnInviteMenu" type="button" data-inline="true" data-iconpos="notext" data-icon="ellipsis-v" style="margin: 2px 0 0;"></button>';
+        html += '<button class="listviewMenuButton imageButton btnCardOptions btnInviteMenu" type="button" data-role="none" style="margin: 4px 0 0;"><i class="fa fa-ellipsis-v"></i></button>';
         html += "</div>";
 
-        html += '<div class="cardText" style="margin-right: 30px; padding: 11px 0 10px;">';
+        html += '<div class="cardText">';
         html += invite.Name;
+        html += "</div>";
+
+        html += '<div class="cardText">';
+        html += '&nbsp;';
         html += "</div>";
 
         // cardFooter
@@ -382,15 +382,8 @@
                 servers.push({
                     Name: Globalize.translate('ButtonNewServer'),
                     Id: 'new',
-                    showOptions: false
-                });
-            }
-
-            if (!ConnectionManager.isLoggedIntoConnect()) {
-                servers.push({
-                    Name: Globalize.translate('ButtonSignInWithConnect'),
-                    Id: 'connect',
-                    showOptions: false
+                    showOptions: false,
+                    href: 'connectlogin.html?mode=manualserver'
                 });
             }
 
@@ -400,41 +393,34 @@
         });
 
         loadInvitations(page);
-    }
-
-    $(document).on('pagebeforecreate', "#selectServerPage", function () {
-
-        var page = this;
 
         if (ConnectionManager.isLoggedIntoConnect()) {
-            $(page).addClass('libraryPage').addClass(' noSecondaryNavPage').removeClass('standalonePage');
+            $('.connectLogin', page).hide();
         } else {
-            $(page).removeClass('libraryPage').removeClass(' noSecondaryNavPage').addClass('standalonePage');
+            $('.connectLogin', page).show();
         }
+    }
 
-    }).on('pagebeforeshow', "#selectServerPage", function () {
+    function updatePageStyle(page) {
+
+        if (ConnectionManager.isLoggedIntoConnect()) {
+            $(page).addClass('libraryPage').addClass('noSecondaryNavPage').removeClass('standalonePage');
+        } else {
+            $(page).removeClass('libraryPage').removeClass('noSecondaryNavPage').addClass('standalonePage');
+        }
+    }
+
+    $(document).on('pageinitdepends pagebeforeshowready', "#selectServerPage", function () {
+
+        var page = this;
+        updatePageStyle(page);
+
+    }).on('pageshowready', "#selectServerPage", function () {
 
         var page = this;
 
         loadPage(page);
 
     });
-
-    window.SelectServerPage = {
-
-        onServerAddressEntrySubmit: function () {
-
-            Dashboard.showLoadingMsg();
-
-            var form = this;
-            var page = $(form).parents('.page');
-
-
-            // Disable default form submission
-            return false;
-
-        }
-
-    };
 
 })();

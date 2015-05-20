@@ -138,7 +138,7 @@
         var page = $.mobile.activePage;
         var panel;
 
-        ConnectionManager.user().done(function (user) {
+        ConnectionManager.user(window.ApiClient).done(function (user) {
 
             panel = getLibraryMenu(user);
             updateLibraryNavLinks(page);
@@ -165,7 +165,7 @@
 
     function updateLibraryMenu(panel) {
 
-        var apiClient = ConnectionManager.currentApiClient();
+        var apiClient = window.ApiClient;
 
         if (!apiClient) {
 
@@ -257,6 +257,7 @@
     }
 
     var requiresLibraryMenuRefresh = false;
+    var requiresViewMenuRefresh = false;
 
     function getLibraryMenu(user) {
 
@@ -302,7 +303,7 @@
                 html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
             }
 
-            var homeHref = ConnectionManager.currentApiClient() ? 'index.html' : 'selectserver.html';
+            var homeHref = window.ApiClient ? 'index.html' : 'selectserver.html';
 
             if (showUserAtTop) {
                 html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
@@ -370,7 +371,7 @@
 
     function getTopParentId() {
 
-        return getParameterByName('topParentId') /*|| sessionStore.getItem('topParentId')*/ || null;
+        return getParameterByName('topParentId') || null;
     }
 
     window.LibraryMenu = {
@@ -460,7 +461,7 @@
 
     function updateContextText(page) {
 
-        var name = page.getAttribute('data-contextname');
+        var name = $(page)[0].getAttribute('data-contextname');
 
         if (name) {
 
@@ -490,6 +491,40 @@
         }
     }
 
+    function buildViewMenuBar(page) {
+
+        if ($(page).hasClass('standalonePage')) {
+            $('.viewMenuBar').remove();
+            return;
+        }
+
+        if (requiresViewMenuRefresh) {
+            $('.viewMenuBar').remove();
+        }
+
+        var viewMenuBar = $('.viewMenuBar');
+        if (!$('.viewMenuBar').length) {
+
+            ConnectionManager.user(window.ApiClient).done(function (user) {
+
+                renderHeader(user);
+                updateViewMenuBarHeadroom(page, $('.viewMenuBar'));
+
+                updateCastIcon();
+
+                updateLibraryNavLinks(page);
+                updateContextText(page);
+                requiresViewMenuRefresh = false;
+            });
+        } else {
+            updateContextText(page);
+            updateLibraryNavLinks(page);
+            updateViewMenuBarHeadroom(page, viewMenuBar);
+            requiresViewMenuRefresh = false;
+        }
+
+    }
+
     $(document).on('pageinit', ".page", function () {
 
         var page = this;
@@ -502,58 +537,38 @@
 
         });
 
-    }).on('pagebeforeshow', ".page:not(.standalonePage)", function () {
+    }).on('pagebeforeshowready', ".page", function () {
 
         var page = this;
-        var viewMenuBar = $('.viewMenuBar');
-        if (!$('.viewMenuBar').length) {
-
-            ConnectionManager.user().done(function (user) {
-
-                renderHeader(user);
-                updateViewMenuBarHeadroom(page, $('.viewMenuBar'));
-
-                updateCastIcon();
-
-                updateLibraryNavLinks(page);
-                updateContextText(page);
-            });
-        } else {
-            updateContextText(page);
-            updateLibraryNavLinks(page);
-            updateViewMenuBarHeadroom(page, viewMenuBar);
-        }
+        buildViewMenuBar(page);
 
         var jpage = $(page);
 
-        if (jpage.hasClass('libraryPage')) {
+        var isLibraryPage = jpage.hasClass('libraryPage');
+
+        if (isLibraryPage) {
             $(document.body).addClass('libraryDocument').removeClass('dashboardDocument');
+
+            if (AppInfo.enableBottomTabs) {
+                $(page).addClass('noSecondaryNavPage');
+
+                $(function () {
+
+                    $('.footer').addClass('footerOverBottomTabs');
+                });
+
+            } else {
+
+                $('.libraryViewNav', page).each(function () {
+
+                    initHeadRoom(this);
+                });
+            }
         }
         else if (jpage.hasClass('type-interior')) {
             $(document.body).addClass('dashboardDocument').removeClass('libraryDocument');
         } else {
             $(document.body).removeClass('dashboardDocument').removeClass('libraryDocument');
-        }
-
-    }).on('pagebeforeshow', ".libraryPage", function () {
-
-        var page = this;
-
-        if (AppInfo.enableBottomTabs) {
-            $('.libraryViewNav', page).addClass('bottomLibraryViewNav');
-            $(page).addClass('noSecondaryNavPage');
-
-            $(function () {
-
-                $('.footer').addClass('footerOverBottomTabs');
-            });
-
-        } else {
-
-            $('.libraryViewNav', page).each(function () {
-
-                initHeadRoom(this);
-            });
         }
 
     }).on('pageshow', ".libraryPage", function () {
@@ -587,12 +602,23 @@
 
     function initializeApiClient(apiClient) {
 
+        requiresLibraryMenuRefresh = true;
         $(apiClient).off('websocketmessage.librarymenu', onWebSocketMessage).on('websocketmessage.librarymenu', onWebSocketMessage);
     }
 
-    $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+    Dashboard.ready(function () {
 
-        initializeApiClient(apiClient);
+        if (window.ApiClient) {
+            initializeApiClient(window.ApiClient);
+        }
+
+        $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+            initializeApiClient(apiClient);
+
+        }).on('localusersignedin localusersignedout', function () {
+            requiresLibraryMenuRefresh = true;
+            requiresViewMenuRefresh = true;
+        });
     });
 
     $(function () {
