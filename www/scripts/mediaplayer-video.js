@@ -681,26 +681,6 @@
 
                 tooltip.remove();
             });
-
-            $('.videoSubtitleButton').on('click', function () {
-
-                self.showSubtitleMenu();
-            });
-
-            $('.videoQualityButton').on('click', function () {
-
-                self.showQualityFlyout();
-            });
-
-            $('.videoAudioButton').on('click', function () {
-
-                self.showAudioTracksFlyout();
-            });
-
-            $('.videoChaptersButton').on('click', function () {
-
-                self.showChaptersFlyout();
-            });
         });
 
         function idleHandler() {
@@ -1156,7 +1136,7 @@
         };
 
         function supportsContentOverVideoPlayer() {
-            return !Dashboard.isRunningInCordova();
+            return true;
         }
 
         self.playVideoInternal = function (item, mediaSource, startPosition, streamInfo) {
