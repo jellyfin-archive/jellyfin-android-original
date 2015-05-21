@@ -1722,7 +1722,13 @@
 
             }).on("timeupdate.mediaplayerevent", function () {
 
-                self.setCurrentTime(self.getCurrentTicks(this));
+                var currentTicks = self.getCurrentTicks(this);
+                // Seeing transcoded audio looping in safari, going past the runtime but restarting the audio
+                if ($.browser.safari && self.currentDurationTicks && (currentTicks > self.currentDurationTicks)) {
+                    self.stop();
+                } else {
+                    self.setCurrentTime(currentTicks);
+                }
 
             })[0];
         };
@@ -1739,7 +1745,7 @@
 
     window.MediaPlayer = new mediaPlayer();
 
-    Dashboard.ready(function() {
+    Dashboard.ready(function () {
         window.MediaController.registerPlayer(window.MediaPlayer);
         window.MediaController.setActivePlayer(window.MediaPlayer, window.MediaPlayer.getTargets()[0]);
     });
