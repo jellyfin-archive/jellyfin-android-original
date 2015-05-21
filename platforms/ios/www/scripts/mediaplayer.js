@@ -1725,7 +1725,11 @@
                 var currentTicks = self.getCurrentTicks(this);
                 // Seeing transcoded audio looping in safari, going past the runtime but restarting the audio
                 if ($.browser.safari && self.currentDurationTicks && (currentTicks > self.currentDurationTicks)) {
-                    self.stop();
+                    if (currentPlaylistIndex < self.playlist.length - 1) {
+                        self.nextTrack();
+                    } else {
+                        self.stop();
+                    }
                 } else {
                     self.setCurrentTime(currentTicks);
                 }
