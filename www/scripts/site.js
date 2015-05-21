@@ -1547,6 +1547,7 @@ var AppInfo = {};
         }
 
         AppInfo.enableUserImage = true;
+        AppInfo.hasPhysicalVolumeButtons = isCordova || $.browser.mobile;
     }
 
     function initializeApiClient(apiClient) {
