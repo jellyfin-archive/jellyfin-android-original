@@ -111,5 +111,6 @@
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="BackgroundColor" value="0xff222222" />
     <preference name="BackupWebStorage" value="local" />
+    <preference name="SplashScreenDelay" value="7000" />
     <icon src="res/icon.png" />
 </widget>
