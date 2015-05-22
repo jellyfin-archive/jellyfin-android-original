@@ -221,13 +221,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_6
     }
 
-    if (cdvReleaseSigningPropertiesFile) {
-        signingConfigs {
+    signingConfigs {
             release {
                 // These must be set or Gradle will complain (even if they are overridden).
                 keyAlias = ""
                 keyPassword = "__unset" // And these must be set to non-empty in order to have the signing step added to the task graph.
-                storeFile = null
+                storeFile = file("/path/to/keystore")
                 storePassword = "__unset"
             }
         }
@@ -237,11 +236,6 @@ android {
 				zipAlignEnabled true
             }
         }
-        addSigningProps(cdvReleaseSigningPropertiesFile, signingConfigs.release)
-    }
-    if (cdvDebugSigningPropertiesFile) {
-        addSigningProps(cdvDebugSigningPropertiesFile, signingConfigs.debug)
-    }
 }
 
 dependencies {

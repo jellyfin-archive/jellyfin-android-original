@@ -48,7 +48,6 @@
     <splash density="port-ldpi" src="res/screen/android/splash-port-ldpi.png" />
     <splash density="port-mdpi" src="res/screen/android/splash-port-mdpi.png" />
     <splash density="port-xhdpi" src="res/screen/android/splash-port-xhdpi.png" />
-    <preference name="dvReleaseSigningPropertiesFile" value="7000" />
     <name>Emby</name>
     <description>
     Emby Mobile
