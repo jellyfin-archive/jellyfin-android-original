@@ -113,4 +113,7 @@
     <preference name="BackupWebStorage" value="local" />
     <preference name="SplashScreenDelay" value="7000" />
     <icon src="res/icon.png" />
+    <feature name="InAppPurchase">
+        <param name="ios-package" value="InAppPurchase" />
+    </feature>
 </widget>

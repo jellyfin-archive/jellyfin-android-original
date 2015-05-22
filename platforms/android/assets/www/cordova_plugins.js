@@ -111,6 +111,13 @@ module.exports = [
             "cordova.plugins.notification.local.core",
             "plugin.notification.local.core"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-purchase/www/store-android.js",
+        "id": "cordova-plugin-purchase.InAppBillingPlugin",
+        "clobbers": [
+            "store"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -131,6 +138,7 @@ module.exports.metadata =
     "io.litehelpers.cordova.sqlite": "0.7.7",
     "com.connectsdk.cordovaplugin": "1.2.0",
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
+    "cordova-plugin-purchase": "1.0.4",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
