@@ -1,0 +1,22 @@
+# appveyor file
+# http://www.appveyor.com/docs/appveyor-yml
+
+install:
+  - gem install compass
+  - npm install --global grunt-cli bower cordova npm
+  - npm install
+
+build: off
+
+test_script:
+  - cd ..
+  - del /s /q cordova-test-app
+  - git clone https://github.com/hypery2k/cordova-demo-app.git cordova-test-app
+  - cd cordova-test-app
+  - npm install
+  - bower install
+  - grunt build
+  - cordova platform add wp8
+  - cordova build wp8
+  - cordova plugin add ../urlhandler-urlhandler-plugin
+  - cordova build wp8

@@ -63,6 +63,10 @@
                         {
                             "xml": "<feature name=\"LocalNotification\"><param name=\"ios-package\" onload=\"true\" value=\"APPLocalNotification\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -120,6 +124,12 @@
                             "xml": false,
                             "count": 1
                         }
+                    ],
+                    "StoreKit.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
                     ]
                 }
             }
@@ -163,6 +173,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "de.appplant.cordova.plugin.local-notification": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
