@@ -12,5 +12,11 @@
     initSupporterForm: function (page) {
 
         $('.recurringSubscriptionCancellationHelp', page).html('');
+    },
+
+    validatePlayback: function () {
+        var deferred = DeferredBuilder.Deferred();
+        deferred.resolve();
+        return deferred.promise();
     }
 };
