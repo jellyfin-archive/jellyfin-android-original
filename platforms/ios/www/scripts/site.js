@@ -1544,6 +1544,7 @@ var AppInfo = {};
 
         if (!isCordova) {
             AppInfo.enableFooterNotifications = true;
+            AppInfo.enableSupporterMembership = true;
         }
 
         AppInfo.enableUserImage = true;
@@ -1669,6 +1670,10 @@ var AppInfo = {};
             $(document.body).addClass('bottomSecondaryNav');
         }
 
+        if (!AppInfo.enableSupporterMembership) {
+            $(document.body).addClass('supporterMembershipDisabled');
+        }
+
         if (Dashboard.isRunningInCordova()) {
             $(document).addClass('nativeApp');
         }
@@ -1694,10 +1699,10 @@ var AppInfo = {};
         videoPlayerHtml += '<button class="mediaButton videoAudioButton imageButton" title="Audio tracks" type="button" data-role="none" onclick="MediaPlayer.showAudioTracksFlyout();"><i class="fa fa-music"></i></button>';
         videoPlayerHtml += '<div data-role="popup" class="videoAudioPopup videoPlayerPopup" data-history="false" data-theme="b"></div>';
 
-        videoPlayerHtml += '<button class="mediaButton videoSubtitleButton imageButton" title="Subtitles" type="button" data-role="none" onclick="MediaPlayer.videoSubtitleButton();"><i class="fa fa-text-width"></i></button>';
+        videoPlayerHtml += '<button class="mediaButton videoSubtitleButton imageButton" title="Subtitles" type="button" data-role="none" onclick="MediaPlayer.showSubtitleMenu();"><i class="fa fa-text-width"></i></button>';
         videoPlayerHtml += '<div data-role="popup" class="videoSubtitlePopup videoPlayerPopup" data-history="false" data-theme="b"></div>';
 
-        videoPlayerHtml += '<button class="mediaButton videoChaptersButton imageButton" title="Scenes" type="button" data-role="none" onclick="MediaPlayer.videoChaptersButton();"><i class="fa fa-video-camera"></i></button>';
+        videoPlayerHtml += '<button class="mediaButton videoChaptersButton imageButton" title="Scenes" type="button" data-role="none" onclick="MediaPlayer.showChaptersFlyout();"><i class="fa fa-video-camera"></i></button>';
         videoPlayerHtml += '<div data-role="popup" class="videoChaptersPopup videoPlayerPopup" data-history="false" data-theme="b"></div>';
 
         videoPlayerHtml += '<button class="mediaButton videoQualityButton imageButton" title="Quality" type="button" data-role="none" onclick="MediaPlayer.showQualityFlyout();"><i class="fa fa-gear"></i></button>';
