@@ -633,50 +633,62 @@ var Dashboard = {
 
     showUserFlyout: function (context) {
 
-        ConnectionManager.user(window.ApiClient).done(function (user) {
+        var html = '<div data-role="panel" data-position="right" data-display="overlay" id="userFlyout" data-position-fixed="true" data-theme="a">';
 
-            var html = '<div data-role="panel" data-position="right" data-display="overlay" id="userFlyout" data-position-fixed="true" data-theme="a">';
+        html += '<h3 class="userHeader">';
 
-            html += '<h3>';
+        html += '</h3>';
 
-            var imgWidth = 48;
+        html += '<form>';
 
-            if (user.imageUrl && AppInfo.enableUserImage) {
-                var url = user.imageUrl;
+        html += '<p class="preferencesContainer"></p>';
 
-                if (user.supportsImageParams) {
-                    url += "&width=" + (imgWidth * Math.max(window.devicePixelRatio || 1, 2));
-                }
+        if (Dashboard.isConnectMode()) {
+            html += '<p><a data-mini="true" data-role="button" href="selectserver.html" data-icon="cloud">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
+        }
 
-                html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
-            }
-            html += user.name;
-            html += '</h3>';
+        html += '<p><button data-mini="true" type="button" onclick="Dashboard.logout();" data-icon="lock">' + Globalize.translate('ButtonSignOut') + '</button></p>';
 
-            html += '<form>';
+        html += '</form>';
+        html += '</div>';
 
-            var isConnectMode = Dashboard.isConnectMode();
+        $(document.body).append(html);
 
-            if (user.localUser && user.localUser.Policy.EnableUserPreferenceAccess) {
-                html += '<p><a data-mini="true" data-role="button" href="mypreferencesdisplay.html?userId=' + user.localUser.Id + '" data-icon="gear">' + Globalize.translate('ButtonMyPreferences') + '</button></a>';
-            }
+        var elem = $('#userFlyout').panel({}).lazyChildren().trigger('create').panel("open").on("panelclose", function () {
 
-            if (isConnectMode) {
-                html += '<p><a data-mini="true" data-role="button" href="selectserver.html" data-icon="cloud">' + Globalize.translate('ButtonSelectServer') + '</button></a>';
-            }
-
-            html += '<p><button data-mini="true" type="button" onclick="Dashboard.logout();" data-icon="lock">' + Globalize.translate('ButtonSignOut') + '</button></p>';
-
-            html += '</form>';
-            html += '</div>';
-
-            $(document.body).append(html);
-
-            var elem = $('#userFlyout').panel({}).lazyChildren().trigger('create').panel("open").on("panelclose", function () {
-
-                $(this).off("panelclose").remove();
-            });
+            $(this).off("panelclose").remove();
         });
+
+        ConnectionManager.user(window.ApiClient).done(function (user) {
+            Dashboard.updateUserFlyout(elem, user);
+        });
+    },
+
+    updateUserFlyout: function (elem, user) {
+
+        var html = '';
+        var imgWidth = 48;
+
+        if (user.imageUrl && AppInfo.enableUserImage) {
+            var url = user.imageUrl;
+
+            if (user.supportsImageParams) {
+                url += "&width=" + (imgWidth * Math.max(window.devicePixelRatio || 1, 2));
+            }
+
+            html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
+        }
+        html += user.name;
+
+        $('.userHeader', elem).html(html).lazyChildren();
+
+        html = '';
+
+        if (user.localUser && user.localUser.Policy.EnableUserPreferenceAccess) {
+            html += '<p><a data-mini="true" data-role="button" href="mypreferencesdisplay.html?userId=' + user.localUser.Id + '" data-icon="gear">' + Globalize.translate('ButtonMyPreferences') + '</button></a>';
+        }
+
+        $('.preferencesContainer', elem).html(html).trigger('create');
     },
 
     getPluginSecurityInfo: function () {
@@ -1544,6 +1556,7 @@ var AppInfo = {};
 
         if (!isCordova) {
             AppInfo.enableFooterNotifications = true;
+            AppInfo.enableSupporterMembership = true;
         }
 
         AppInfo.enableUserImage = true;
@@ -1567,37 +1580,32 @@ var AppInfo = {};
 
         window.ConnectionManager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities);
 
-        $(ConnectionManager).on('apiclientcreated', function (e, apiClient) {
+        $(ConnectionManager).on('apiclientcreated', function (e, newApiClient) {
 
-            initializeApiClient(apiClient);
+            initializeApiClient(newApiClient);
         });
 
-        var lastApiClient = ConnectionManager.getLastUsedApiClient();
+        var apiClient;
 
         if (Dashboard.isConnectMode()) {
 
+            apiClient = ConnectionManager.getLastUsedApiClient();
+
             if (!Dashboard.isServerlessPage()) {
 
-                if (lastApiClient && lastApiClient.serverAddress() && lastApiClient.getCurrentUserId() && lastApiClient.accessToken()) {
+                if (apiClient && apiClient.serverAddress() && apiClient.getCurrentUserId() && apiClient.accessToken()) {
 
-                    window.ApiClient = lastApiClient;
-
-                    initializeApiClient(lastApiClient);
-
-                    //ConnectionManager.addApiClient(lastApiClient, true).fail(Dashboard.logout);
-
+                    initializeApiClient(apiClient);
                 }
             }
 
         } else {
 
-            if (!lastApiClient) {
-                lastApiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
-                ConnectionManager.addApiClient(lastApiClient);
-            }
-
-            window.ApiClient = lastApiClient;
+            apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+            ConnectionManager.addApiClient(apiClient);
         }
+
+        window.ApiClient = apiClient;
 
         if (window.ApiClient) {
             ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
@@ -1669,6 +1677,10 @@ var AppInfo = {};
             $(document.body).addClass('bottomSecondaryNav');
         }
 
+        if (!AppInfo.enableSupporterMembership) {
+            $(document.body).addClass('supporterMembershipDisabled');
+        }
+
         if (Dashboard.isRunningInCordova()) {
             $(document).addClass('nativeApp');
         }
@@ -1694,10 +1706,10 @@ var AppInfo = {};
         videoPlayerHtml += '<button class="mediaButton videoAudioButton imageButton" title="Audio tracks" type="button" data-role="none" onclick="MediaPlayer.showAudioTracksFlyout();"><i class="fa fa-music"></i></button>';
         videoPlayerHtml += '<div data-role="popup" class="videoAudioPopup videoPlayerPopup" data-history="false" data-theme="b"></div>';
 
-        videoPlayerHtml += '<button class="mediaButton videoSubtitleButton imageButton" title="Subtitles" type="button" data-role="none" onclick="MediaPlayer.videoSubtitleButton();"><i class="fa fa-text-width"></i></button>';
+        videoPlayerHtml += '<button class="mediaButton videoSubtitleButton imageButton" title="Subtitles" type="button" data-role="none" onclick="MediaPlayer.showSubtitleMenu();"><i class="fa fa-text-width"></i></button>';
         videoPlayerHtml += '<div data-role="popup" class="videoSubtitlePopup videoPlayerPopup" data-history="false" data-theme="b"></div>';
 
-        videoPlayerHtml += '<button class="mediaButton videoChaptersButton imageButton" title="Scenes" type="button" data-role="none" onclick="MediaPlayer.videoChaptersButton();"><i class="fa fa-video-camera"></i></button>';
+        videoPlayerHtml += '<button class="mediaButton videoChaptersButton imageButton" title="Scenes" type="button" data-role="none" onclick="MediaPlayer.showChaptersFlyout();"><i class="fa fa-video-camera"></i></button>';
         videoPlayerHtml += '<div data-role="popup" class="videoChaptersPopup videoPlayerPopup" data-history="false" data-theme="b"></div>';
 
         videoPlayerHtml += '<button class="mediaButton videoQualityButton imageButton" title="Quality" type="button" data-role="none" onclick="MediaPlayer.showQualityFlyout();"><i class="fa fa-gear"></i></button>';
