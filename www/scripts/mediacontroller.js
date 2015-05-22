@@ -223,7 +223,7 @@
         function doWithPlaybackValidation(fn) {
 
             requirejs(["scripts/registrationservices"], function () {
-                RegistrationServices.validatePlayback().done(fn);
+                RegistrationServices.validateFeature('playback').done(fn);
             });
         }
 
