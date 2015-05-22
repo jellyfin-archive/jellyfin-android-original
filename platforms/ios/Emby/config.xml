@@ -53,6 +53,9 @@
         <param name="ios-package" onload="true" value="APPLocalNotification" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="InAppPurchase">
+        <param name="ios-package" value="InAppPurchase" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -113,7 +116,4 @@
     <preference name="BackupWebStorage" value="local" />
     <preference name="SplashScreenDelay" value="7000" />
     <icon src="res/icon.png" />
-    <feature name="InAppPurchase">
-        <param name="ios-package" value="InAppPurchase" />
-    </feature>
 </widget>
