@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="14242239" id="com.mb.android" version="2.2.39" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="14242240" id="com.mb.android" version="2.2.40" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
@@ -40,14 +40,20 @@
     <icon density="mdpi" src="res/android/mdpi/icon.png" />
     <icon density="hdpi" src="res/android/hdpi/icon.png" />
     <icon density="xhdpi" src="res/android/xhdpi/icon.png" />
-    <splash density="land-hdpi" src="res/screen/android/splash-land-hdpi.png" />
-    <splash density="land-ldpi" src="res/screen/android/splash-land-ldpi.png" />
-    <splash density="land-mdpi" src="res/screen/android/splash-land-mdpi.png" />
-    <splash density="land-xhdpi" src="res/screen/android/splash-land-xhdpi.png" />
-    <splash density="port-hdpi" src="res/screen/android/splash-port-hdpi.png" />
-    <splash density="port-ldpi" src="res/screen/android/splash-port-ldpi.png" />
-    <splash density="port-mdpi" src="res/screen/android/splash-port-mdpi.png" />
-    <splash density="port-xhdpi" src="res/screen/android/splash-port-xhdpi.png" />
+    <icon density="xxhdpi" src="res/android/xxhdpi/icon.png" />
+    <icon density="xxxhdpi" src="res/android/xxxhdpi/icon.png" />
+    <splash density="land-hdpi" src="res/android/ldpi/splash-land.png" />
+    <splash density="land-ldpi" src="res/android/mdpi/splash-land.png" />
+    <splash density="land-mdpi" src="res/android/hdpi/splash-land.png" />
+    <splash density="land-xhdpi" src="res/android/xhdpi/splash-land.png" />
+    <splash density="land-xxhdpi" src="res/android/xxhdpi/splash-land.png" />
+    <splash density="land-xxxhdpi" src="res/android/xxxhdpi/splash-land.png" />
+    <splash density="port-hdpi" src="res/android/ldpi/splash-port.png" />
+    <splash density="port-ldpi" src="res/android/mdpi/splash-port.png" />
+    <splash density="port-mdpi" src="res/android/hdpi/splash-port.png" />
+    <splash density="port-xhdpi" src="res/android/xhdpi/splash-port.png" />
+    <splash density="port-xxhdpi" src="res/android/xxhdpi/splash-port.png" />
+    <splash density="port-xxxhdpi" src="res/android/xxxhdpi/splash-port.png" />
     <preference name="dvReleaseSigningPropertiesFile" value="7000" />
     <name>Emby</name>
     <description>
