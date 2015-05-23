@@ -1,0 +1,38 @@
+{
+  "name": "cordova-plugin-okhttp",
+  "version": "2.0.1-dev",
+  "description": "Uses OkHttp for network requests initiated from Java (e.g. via FileTransfer plugin).",
+  "cordova": {
+    "id": "cordova-plugin-okhttp",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MobileChromeApps/cordova-plugin-okhttp.git"
+  },
+  "keywords": [
+    "cordova",
+    "android",
+    "okhttp",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova-android",
+      "version": ">=4.0.0-dev"
+    },
+    {
+      "name": "cordova-plugman",
+      "version": ">=4.2.1-dev"
+    }
+  ],
+  "author": "agrieve@chromium.org",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/MobileChromeApps/cordova-plugin-okhttp/issues"
+  },
+  "homepage": "https://github.com/MobileChromeApps/cordova-plugin-okhttp"
+}

@@ -177,6 +177,9 @@
         },
         "cordova-plugin-purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-okhttp": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {
