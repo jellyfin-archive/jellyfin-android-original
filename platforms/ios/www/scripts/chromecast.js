@@ -28,6 +28,7 @@
 
     var PlayerName = 'Chromecast';
 
+    var applicationID = "2D4B1DA3";
     var messageNamespace = 'urn:x-cast:com.connectsdk';
 
     var CastPlayer = function () {
@@ -71,14 +72,6 @@
             setTimeout(this.initializeCastPlayer.bind(this), 1000);
             return;
         }
-
-        // v1 Id AE4DA10A
-        // v2 Id 472F0435
-        // v3 Id 69C59853
-        // v4 Id F4EB2E8E
-        // default receiver chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
-
-        var applicationID = "2D4B1DA3";
 
         // request session
         var sessionRequest = new chrome.cast.SessionRequest(applicationID);
