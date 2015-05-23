@@ -79,16 +79,22 @@
     <icon src="res/android/mdpi/icon.png" density="mdpi" />
     <icon src="res/android/hdpi/icon.png" density="hdpi" />
     <icon src="res/android/xhdpi/icon.png" density="xhdpi" />
+    <icon src="res/android/xxhdpi/icon.png" density="xxhdpi" />
+    <icon src="res/android/xxxhdpi/icon.png" density="xxxhdpi" />
     <!-- you can use any density that exists in the Android project -->
-    <splash src="res/screen/android/splash-land-hdpi.png" density="land-hdpi"/>
-    <splash src="res/screen/android/splash-land-ldpi.png" density="land-ldpi"/>
-    <splash src="res/screen/android/splash-land-mdpi.png" density="land-mdpi"/>
-    <splash src="res/screen/android/splash-land-xhdpi.png" density="land-xhdpi"/>
+    <splash src="res/android/ldpi/splash-land.png" density="land-hdpi"/>
+    <splash src="res/android/mdpi/splash-land.png" density="land-ldpi"/>
+    <splash src="res/android/hdpi/splash-land.png" density="land-mdpi"/>
+    <splash src="res/android/xhdpi/splash-land.png" density="land-xhdpi"/>
+    <splash src="res/android/xxhdpi/splash-land.png" density="land-xxhdpi"/>
+    <splash src="res/android/xxxhdpi/splash-land.png" density="land-xxxhdpi"/>
 
-    <splash src="res/screen/android/splash-port-hdpi.png" density="port-hdpi"/>
-    <splash src="res/screen/android/splash-port-ldpi.png" density="port-ldpi"/>
-    <splash src="res/screen/android/splash-port-mdpi.png" density="port-mdpi"/>
-    <splash src="res/screen/android/splash-port-xhdpi.png" density="port-xhdpi"/>
+    <splash src="res/android/ldpi/splash-port.png" density="port-hdpi"/>
+    <splash src="res/android/mdpi/splash-port.png" density="port-ldpi"/>
+    <splash src="res/android/hdpi/splash-port.png" density="port-mdpi"/>
+    <splash src="res/android/xhdpi/splash-port.png" density="port-xhdpi"/>
+    <splash src="res/android/xxhdpi/splash-port.png" density="port-xxhdpi"/>
+    <splash src="res/android/xxxhdpi/splash-port.png" density="port-xxxhdpi"/>
 	<preference name="dvReleaseSigningPropertiesFile" value="7000" />
   </platform>
 </widget>
