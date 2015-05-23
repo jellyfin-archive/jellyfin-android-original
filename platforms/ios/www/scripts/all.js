@@ -1532,7 +1532,7 @@ var isLocalNetworkAvailable=NetworkStatus.isAnyLocalNetworkAvailable();var sendW
 var wakeOnLanSendTime=new Date().getTime();testNextConnectionMode(tests,0,isLocalNetworkAvailable,server,wakeOnLanSendTime,options,deferred);return deferred.promise();};function stringEqualsIgnoreCase(str1,str2){return(str1||'').toLowerCase()==(str2||'').toLowerCase();}
 function testNextConnectionMode(tests,index,isLocalNetworkAvailable,server,wakeOnLanSendTime,options,deferred){if(index>=tests.length){logger.log('Tested all connection modes. Failing server connection.');resolveWithFailure(deferred);return;}
 var mode=tests[index];var address=self.getServerAddress(server,mode);var enableRetry=false;var skipTest=false;var timeout=defaultTimeout;if(mode==MediaBrowser.ConnectionMode.Local){if(!isLocalNetworkAvailable){skipTest=true;}
-enableRetry=true;timeout=7000;}
+enableRetry=true;timeout=5000;}
 else if(mode==MediaBrowser.ConnectionMode.Manual){if(stringEqualsIgnoreCase(address,server.LocalAddress)||stringEqualsIgnoreCase(address,server.RemoteAddress)){skipTest=true;}}
 if(skipTest||!address){testNextConnectionMode(tests,index+1,isLocalNetworkAvailable,server,wakeOnLanSendTime,options,deferred);return;}
 logger.log('testing connection mode '+mode+' with server '+server.Name);tryConnect(address,timeout).done(function(result){logger.log('calling onSuccessfulConnection with connection mode '+mode+' with server '+server.Name);onSuccessfulConnection(server,result,mode,options,deferred);}).fail(function(){logger.log('test failed for connection mode '+mode+' with server '+server.Name);if(enableRetry){var sleepTime=10000-(new Date().getTime()-wakeOnLanSendTime);testNextConnectionMode(tests,index+1,isLocalNetworkAvailable,server,wakeOnLanSendTime,options,deferred);}else{testNextConnectionMode(tests,index+1,isLocalNetworkAvailable,server,wakeOnLanSendTime,options,deferred);}});}
@@ -2795,7 +2795,7 @@ else if(device.indexOf('safari')!=-1){imgUrl='css/images/clients/safari.png';}
 else{imgUrl='css/images/clients/html5.png';}
 return"<img src='"+imgUrl+"' alt='Emby Web Client' />";}
 if(clientLowered=="emby mobile"){var imgUrl;if(device.indexOf('iphone')!=-1||device.indexOf('ipad')!=-1){imgUrl='css/images/clients/ios.png';}
-else{imgUrl='css/images/clients/html5.png';}
+else{imgUrl='css/images/clients/android.png';}
 return"<img src='"+imgUrl+"' alt='Emby Mobile' />";}
 if(clientLowered=="mb-classic"){return"<img src='css/images/clients/mbc.png' />";}
 if(clientLowered=="emby theater"){return"<img src='css/images/clients/mb.png' />";}
