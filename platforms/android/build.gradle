@@ -224,18 +224,34 @@ android {
     signingConfigs {
             release {
                 // These must be set or Gradle will complain (even if they are overridden).
-                keyAlias = ""
-                keyPassword = "__unset" // And these must be set to non-empty in order to have the signing step added to the task graph.
-                storeFile = file("/path/to/keystore")
-                storePassword = "__unset"
+                keyAlias = "mb3android"
+                storeFile = file("../../../keystores/mb3android.jks")
             }
         }
+
+        
         buildTypes {
             release {
                 signingConfig signingConfigs.release
 				zipAlignEnabled true
             }
         }
+		
+	def Properties props = new Properties()
+    def propFile = file('../../../keystores/androidmobile.properties')
+    if (propFile.canRead()){
+        props.load(new FileInputStream(propFile))
+
+        if (props!=null && props.containsKey('STORE_PASSWORD') && props.containsKey('KEY_PASSWORD')) {
+
+            android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+            android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+        } else {
+            android.buildTypes.release.signingConfig = null
+        }
+    }else {
+        android.buildTypes.release.signingConfig = null
+    }
 }
 
 dependencies {
