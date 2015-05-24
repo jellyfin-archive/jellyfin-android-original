@@ -1573,7 +1573,7 @@ var AppInfo = {};
             .on("websocketmessage.dashboard", Dashboard.onWebSocketMessageReceived)
             .on('requestfail.dashboard', Dashboard.onRequestFail);
     }
-
+    //localStorage.clear();
     function createConnectionManager(appInfo) {
 
         var credentialProvider = new MediaBrowser.CredentialProvider();
