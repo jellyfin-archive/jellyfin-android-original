@@ -1561,6 +1561,8 @@ var AppInfo = {};
 
         AppInfo.enableUserImage = true;
         AppInfo.hasPhysicalVolumeButtons = isCordova || $.browser.mobile;
+
+        AppInfo.enableBackButton = ($.browser.safari && window.navigator.standalone) || (isCordova && $.browser.safari);
     }
 
     function initializeApiClient(apiClient) {
@@ -1571,7 +1573,7 @@ var AppInfo = {};
             .on("websocketmessage.dashboard", Dashboard.onWebSocketMessageReceived)
             .on('requestfail.dashboard', Dashboard.onRequestFail);
     }
-
+    //localStorage.clear();
     function createConnectionManager(appInfo) {
 
         var credentialProvider = new MediaBrowser.CredentialProvider();
@@ -1841,9 +1843,8 @@ var AppInfo = {};
     }
 
     function initCordovaWithDeviceId(deferred, deviceId) {
-        if ($.browser.safari) {
-            requirejs(['thirdparty/cordova/imagestore.js']);
-        }
+
+        requirejs(['thirdparty/cordova/imagestore.js']);
 
         init(deferred, "Emby Mobile", deviceId, device.model, true);
     }
