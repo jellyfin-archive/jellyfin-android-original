@@ -67,6 +67,10 @@
                         {
                             "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Launcher\"><param name=\"ios-package\" value=\"Launcher\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -179,6 +183,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-okhttp": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

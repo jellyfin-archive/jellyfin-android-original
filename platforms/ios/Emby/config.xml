@@ -116,4 +116,7 @@
     <preference name="BackupWebStorage" value="local" />
     <preference name="SplashScreenDelay" value="7000" />
     <icon src="res/icon.png" />
+    <feature name="Launcher">
+        <param name="ios-package" value="Launcher" />
+    </feature>
 </widget>

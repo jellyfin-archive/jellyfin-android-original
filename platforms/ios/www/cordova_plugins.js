@@ -110,6 +110,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
+        "id": "com.hutchind.cordova.plugins.launcher.Launcher",
+        "clobbers": [
+            "plugins.launcher"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -147,6 +154,7 @@ module.exports.metadata =
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "cordova-plugin-purchase": "1.0.4",
     "cordova-plugin-okhttp": "2.0.0-dev",
+    "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"

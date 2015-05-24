@@ -33,6 +33,9 @@
     <feature name="InAppBillingPlugin">
         <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
     </feature>
+    <feature name="Launcher">
+        <param name="android-package" value="com.hutchind.cordova.plugins.launcher.Launcher" />
+    </feature>
     <feature name="OkHttpPlugin">
         <param name="android-package" value="com.google.cordova.OkHttpPlugin" />
         <param name="onload" value="true" />

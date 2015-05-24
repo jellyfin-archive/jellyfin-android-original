@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		10848650B90945DC8C725005 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E118860990849448ACC9FCC /* GCDWebServer.framework */; };
@@ -83,6 +82,7 @@
 		E93A4F32A2E9440DB873DBA2 /* RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFF6733D58F458C9DBB45AE /* RemoteControls.m */; };
 		EA05CC7F3E874F23A868BBEB /* CDVUniqueDeviceID.m in Sources */ = {isa = PBXBuildFile; fileRef = E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		952E4D2957A54FFAAD2AC6B9 /* Launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CFA885995414B6F8BFF37AE /* Launcher.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -229,6 +229,8 @@
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = Emby/config.xml; sourceTree = "<group>"; };
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
+		0CFA885995414B6F8BFF37AE /* Launcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "Launcher.m"; path = "com.hutchind.cordova.plugins.launcher/Launcher.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		79396F3D81F943D0A6AA5F33 /* Launcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Launcher.h"; path = "com.hutchind.cordova.plugins.launcher/Launcher.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -408,6 +410,8 @@
 				B95518DB468748B7BBA94DA5 /* SKProduct+LocalizedPrice.m */,
 				BE7A3566582145F19FBF5AF8 /* InAppPurchase.h */,
 				A8DBDBB19808435B8D259EF4 /* SKProduct+LocalizedPrice.h */,
+				0CFA885995414B6F8BFF37AE /* Launcher.m */,
+				79396F3D81F943D0A6AA5F33 /* Launcher.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -653,6 +657,7 @@
 				57D758C9E95F4380B6762C6C /* UILocalNotification+APPLocalNotification.m in Sources */,
 				AF26D096E1694FD2B0EC4E00 /* InAppPurchase.m in Sources */,
 				1508D36431034FCDA3A12ED5 /* SKProduct+LocalizedPrice.m in Sources */,
+				952E4D2957A54FFAAD2AC6B9 /* Launcher.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

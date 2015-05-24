@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+		xmlns="http://apache.org/cordova/ns/plugins/1.0"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		id="com.hutchind.cordova.plugins.launcher"
+		version="0.2.2">
+
+	<name>Launcher</name>
+
+	<description>
+		This plugin allows you to see if other apps are installed and launch them. On Android, you can send extras to the launched Activity and receive result data (if available), as well as retrieve a list of applications that can open a specified uri.
+	</description>
+
+	<license>MIT</license>
+
+	<engines>
+			<engine name="cordova" version=">=3.0.0" />
+	</engines>
+
+	<js-module src="www/Launcher.js" name="Launcher">
+			<clobbers target="plugins.launcher" />
+	</js-module>
+
+	<!-- ios -->
+	<platform name="ios">
+			<config-file target="config.xml" parent="/*">
+				<feature name="Launcher">
+						<param name="ios-package" value="Launcher" />
+				</feature>
+			</config-file>
+			<header-file src="src/ios/Launcher.h" />
+			<source-file src="src/ios/Launcher.m" />
+	</platform>
+
+	<!-- android -->
+	<platform name="android">
+			<config-file target="res/xml/config.xml" parent="/*">
+				<feature name="Launcher">
+						<param name="android-package" value="com.hutchind.cordova.plugins.launcher.Launcher" />
+				</feature>
+			</config-file>
+			<source-file src="src/android/Launcher.java" target-dir="src/com/hutchind/cordova/plugins/launcher" />
+			<source-file src="src/android/ParseTypes.java" target-dir="src/com/hutchind/cordova/plugins/launcher" />
+	</platform>
+</plugin>

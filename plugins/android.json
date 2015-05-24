@@ -49,6 +49,10 @@
                         {
                             "xml": "<feature name=\"InAppBillingPlugin\"><param name=\"android-package\" value=\"com.smartmobilesoftware.inappbilling.InAppBillingPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Launcher\"><param name=\"android-package\" value=\"com.hutchind.cordova.plugins.launcher.Launcher\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -204,6 +208,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-okhttp": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
