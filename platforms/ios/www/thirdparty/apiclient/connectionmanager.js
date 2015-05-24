@@ -228,6 +228,7 @@
             var credentials = credentialProvider.credentials();
 
             server.DateLastAccessed = new Date().getTime();
+            server.Id = result.ServerId;
 
             if (saveCredentials) {
                 server.UserId = result.User.Id;
