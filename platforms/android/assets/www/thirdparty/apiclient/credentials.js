@@ -48,6 +48,10 @@
 
         self.addOrUpdateServer = function (list, server) {
 
+            if (!server.Id) {
+                throw new Error('Server.Id cannot be null or empty');
+            }
+
             var existing = list.filter(function (s) {
                 return s.Id == server.Id;
             })[0];
@@ -76,9 +80,12 @@
                 if (server.WakeOnLanInfos && server.WakeOnLanInfos.length) {
                     existing.WakeOnLanInfos = server.WakeOnLanInfos;
                 }
+
+                return existing;
             }
             else {
                 list.push(server);
+                return server;
             }
         };
     };
