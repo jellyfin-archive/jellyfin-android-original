@@ -118,6 +118,13 @@ module.exports = [
         "clobbers": [
             "store"
         ]
+    },
+    {
+        "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
+        "id": "com.hutchind.cordova.plugins.launcher.Launcher",
+        "clobbers": [
+            "plugins.launcher"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -140,6 +147,7 @@ module.exports.metadata =
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "cordova-plugin-purchase": "1.0.4",
     "cordova-plugin-okhttp": "2.0.0-dev",
+    "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
