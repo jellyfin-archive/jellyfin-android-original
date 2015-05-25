@@ -143,7 +143,7 @@
     var basePlayerState;
     var progressInterval;
 
-    function getVideoUrl(item) {
+    function getVideoStreamInfo(item) {
 
         var deferred = $.Deferred();
         Dashboard.showModalLoadingMsg();
@@ -195,7 +195,8 @@
             }
         };
 
-        var currentSrc = MediaPlayer.createStreamInfo('Video', item, mediaSource, startPosition).url;
+        var streamInfo = MediaPlayer.createStreamInfo('Video', item, mediaSource, startPosition);
+        var currentSrc = streamInfo.url;
 
         var audioStreamIndex = getParameterByName('AudioStreamIndex', currentSrc);
 
@@ -215,12 +216,7 @@
         basePlayerState.PlayState.CanSeek = false;
         basePlayerState.NowPlayingItem = MediaPlayer.getNowPlayingItemForReporting(item, mediaSource);
 
-        deferred.resolveWith(null, [currentSrc]);
-    }
-
-    function getPlayerUrl(videoUrl, player) {
-
-        return player.scheme.replace('{0}', videoUrl);
+        deferred.resolveWith(null, [streamInfo]);
     }
 
     function getPlayerState(positionTicks) {
@@ -233,6 +229,8 @@
     }
 
     function onPlaybackStart() {
+
+        closePlayMenu();
 
         var state = getPlayerState();
 
@@ -250,6 +248,11 @@
             onPlaybackProgress(null);
 
         }, 10000);
+
+        setTimeout(function () {
+
+            showPostPlayMenu(currentItem);
+        }, 500);
     }
 
     function onPlaybackProgress(positionTicks) {
@@ -401,15 +404,7 @@
         $('.externalPlayerFlyout').popup("close").remove();
     }
 
-    function getExternalPlayers() {
-
-        return [
-            { name: 'Vlc', scheme: 'vlc://{0}' }
-        ];
-
-    }
-
-    function showMenuForItem(item, videoUrl) {
+    function showMenuForItem(item, players) {
 
         closePlayMenu();
 
@@ -421,9 +416,9 @@
 
         html += '<div style="padding:1em;">';
 
-        html += getExternalPlayers().map(function (p) {
+        html += players.map(function (p) {
 
-            return '<a href="' + getPlayerUrl(videoUrl, p) + '" data-role="button" data-icon="play" class="btnExternalPlayer" data-theme="b" data-mini="true">' + p.name + '</a>';
+            return '<a href="' + p.url + '" data-role="button" data-icon="play" class="btnExternalPlayer" data-theme="b" data-mini="true">' + p.name + '</a>';
 
         }).join('');
 
@@ -441,13 +436,7 @@
 
         $('.btnExternalPlayer', elem).on('click', function () {
 
-            onPlaybackStart();
-            closePlayMenu();
-
-            setTimeout(function () {
-
-                showPostPlayMenu(item);
-            }, 500);
+            ExternalPlayer.onPlaybackStart();
         });
     }
 
@@ -457,26 +446,41 @@
 
         ApiClient.getItem(userId, itemId).done(function (item) {
 
-            getVideoUrl(item).done(function (url) {
-                ExternalPlayer.showPlayerSelectionMenu(item, url);
+            getVideoStreamInfo(item).done(function (streamInfo) {
+
+                setTimeout(function () {
+                    ExternalPlayer.showPlayerSelectionMenu(item, streamInfo.url, streamInfo.mimeType);
+                }, 500);
             });
         });
     }
 
-    function showPlayerSelectionMenu(item, url) {
+    function getExternalPlayers(url, mimeType) {
 
-        setTimeout(function () {
+        var deferred = $.Deferred();
 
-            showMenuForItem(item, url);
-        }, 500);
+        var players = [
+            { name: 'Vlc', url: 'vlc://' + url, id: 'vlc' }
+        ];
+        deferred.resolveWith(null, [players]);
+
+        return deferred.promise();
+    }
+
+    function showPlayerSelectionMenu(item, url, mimeType) {
+
+        ExternalPlayer.getExternalPlayers(url, mimeType).done(function (players) {
+            showMenuForItem(item, players);
+        });
     }
 
     window.ExternalPlayer = {
 
         showMenu: showPlayMenu,
-        showPlayerSelectionMenu: showPlayerSelectionMenu,
         onPlaybackStart: onPlaybackStart,
-        onPlaybackStopped: onPlaybackStopped
+        onPlaybackStopped: onPlaybackStopped,
+        getExternalPlayers: getExternalPlayers,
+        showPlayerSelectionMenu: showPlayerSelectionMenu
     };
 
 })(window, window.appStorage);
