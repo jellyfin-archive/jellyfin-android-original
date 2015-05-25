@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="14242242" id="com.emby.mobile" version="2.2.42" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="14242244" id="com.emby.mobile" version="2.2.44" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -55,6 +55,9 @@
     </feature>
     <feature name="InAppPurchase">
         <param name="ios-package" value="InAppPurchase" />
+    </feature>
+    <feature name="Launcher">
+        <param name="ios-package" value="Launcher" />
     </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
@@ -116,7 +119,4 @@
     <preference name="BackupWebStorage" value="local" />
     <preference name="SplashScreenDelay" value="7000" />
     <icon src="res/icon.png" />
-    <feature name="Launcher">
-        <param name="ios-package" value="Launcher" />
-    </feature>
 </widget>
