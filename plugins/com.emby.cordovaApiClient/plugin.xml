@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  id="com.emby.cordovaApiClient"
+  version="0.1.4">
+
+    <name>ApiClient</name>
+ 
+    <description>
+        A cordova plugin providing access to a native Emby ApiClient
+	</description>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <js-module src="www/cordovaApiClient.js" name="CordovaApiClient">
+        <clobbers target="plugins.CordovaApiClient" />
+    </js-module>
+
+    <!--android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="CordovaApiClient">
+                <param name="android-package" value="com.emby.CordovaApiClient"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/com/emby/profiles/AndroidProfile.java" target-dir="src/com/emby/profiles" />
+        <source-file src="src/android/com/emby/profiles/AndroidProfileOptions.java" target-dir="src/com/emby/profiles" />
+        <source-file src="src/android/com/emby/profiles/Api16Builder.java" target-dir="src/com/emby/profiles" />
+        <source-file src="src/android/com/emby/profiles/Api21Builder.java" target-dir="src/com/emby/profiles" />
+        <source-file src="src/android/com/emby/CordovaApiClientPlugin.java" target-dir="src/com/emby" />
+        <source-file src="src/android/tangible/DotNetToJavaStringHelper.java" target-dir="src/tangible" />
+        <source-file src="src/android/mediabrowser/model/dlna/CodecProfile.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/CodecType.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/ContainerProfile.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/DeviceIdentification.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/DeviceProfile.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/DeviceProfileType.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/DirectPlayProfile.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/DlnaProfileType.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/EncodingContext.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/HeaderMatchType.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/HttpHeaderInfo.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/ProfileCondition.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/ProfileConditionType.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/ProfileConditionValue.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/ResponseProfile.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/SubtitleDeliveryMethod.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/SubtitleProfile.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/TranscodeSeekInfo.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/TranscodingProfile.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/dlna/XmlAttribute.java" target-dir="src/mediabrowser/model/dlna" />
+        <source-file src="src/android/mediabrowser/model/extensions/ListHelper.java" target-dir="src/mediabrowser/model/extensions" />
+        <source-file src="src/android/mediabrowser/model/extensions/StringHelper.java" target-dir="src/mediabrowser/model/extensions" />
+    </platform>
+</plugin>

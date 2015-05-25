@@ -53,6 +53,10 @@
                         {
                             "xml": "<feature name=\"Launcher\"><param name=\"android-package\" value=\"com.hutchind.cordova.plugins.launcher.Launcher\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"CordovaApiClient\"><param name=\"android-package\" value=\"com.emby.CordovaApiClient\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -211,6 +215,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "com.hutchind.cordova.plugins.launcher": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "com.emby.cordovaApiClient": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

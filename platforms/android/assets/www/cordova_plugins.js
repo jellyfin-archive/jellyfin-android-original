@@ -125,6 +125,13 @@ module.exports = [
         "clobbers": [
             "plugins.launcher"
         ]
+    },
+    {
+        "file": "plugins/com.emby.cordovaApiClient/www/cordovaApiClient.js",
+        "id": "com.emby.cordovaApiClient.CordovaApiClient",
+        "clobbers": [
+            "plugins.CordovaApiClient"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -148,6 +155,7 @@ module.exports.metadata =
     "cordova-plugin-purchase": "1.0.4",
     "cordova-plugin-okhttp": "2.0.0-dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
+    "com.emby.cordovaApiClient": "0.1.4",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

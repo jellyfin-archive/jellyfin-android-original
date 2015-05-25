@@ -36,6 +36,9 @@
     <feature name="Launcher">
         <param name="android-package" value="com.hutchind.cordova.plugins.launcher.Launcher" />
     </feature>
+    <feature name="CordovaApiClient">
+        <param name="android-package" value="com.emby.CordovaApiClient" />
+    </feature>
     <feature name="OkHttpPlugin">
         <param name="android-package" value="com.google.cordova.OkHttpPlugin" />
         <param name="onload" value="true" />
