@@ -175,14 +175,5 @@
         },
         "is_top_level": true,
         "variables": {}
-    },
-    "com.emby.cordovaApiClient": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/MediaBrowser/cordova-plugin-apiclient",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
     }
 }
