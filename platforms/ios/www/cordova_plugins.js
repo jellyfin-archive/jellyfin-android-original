@@ -117,13 +117,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.emby.cordovaApiClient/www/cordovaApiClient.js",
-        "id": "com.emby.cordovaApiClient.CordovaApiClient",
-        "clobbers": [
-            "plugins.CordovaApiClient"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -162,7 +155,6 @@ module.exports.metadata =
     "cordova-plugin-purchase": "1.0.4",
     "cordova-plugin-okhttp": "2.0.0-dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
-    "com.emby.cordovaApiClient": "0.1.4",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
