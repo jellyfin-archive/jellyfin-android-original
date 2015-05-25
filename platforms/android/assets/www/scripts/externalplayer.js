@@ -458,7 +458,7 @@
         ApiClient.getItem(userId, itemId).done(function (item) {
 
             getVideoUrl(item).done(function (url) {
-                showPlayerSelectionMenu(item, url);
+                ExternalPlayer.showPlayerSelectionMenu(item, url);
             });
         });
     }
