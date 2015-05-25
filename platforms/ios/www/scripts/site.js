@@ -1496,16 +1496,18 @@ var Dashboard = {
 
         var deferred = DeferredBuilder.Deferred();
 
-        var files = ['scripts/externalplayer.js'];
+        require(['scripts/externalplayer.js'], function () {
 
-        if (Dashboard.isRunningInCordova()) {
-            files.push('thirdparty/cordova/externalplayer.js');
-        }
+            if (Dashboard.isRunningInCordova()) {
+                require(['thirdparty/cordova/externalplayer.js'], function () {
 
-        require(files, function () {
-
-            deferred.resolve();
+                    deferred.resolve();
+                });
+            } else {
+                deferred.resolve();
+            }
         });
+
         return deferred.promise();
     }
 };
