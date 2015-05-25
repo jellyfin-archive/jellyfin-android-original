@@ -80,6 +80,9 @@
                 if (server.WakeOnLanInfos && server.WakeOnLanInfos.length) {
                     existing.WakeOnLanInfos = server.WakeOnLanInfos;
                 }
+                if (server.LastConnectionMode != null) {
+                    existing.LastConnectionMode = server.LastConnectionMode;
+                }
 
                 return existing;
             }
