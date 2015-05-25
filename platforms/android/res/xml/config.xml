@@ -1,26 +1,90 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
- Licensed to the Apache Software Foundation (ASF) under one
- or more contributor license agreements.  See the NOTICE file
- distributed with this work for additional information
- regarding copyright ownership.  The ASF licenses this file
- to you under the Apache License, Version 2.0 (the
- "License"); you may not use this file except in compliance
- with the License.  You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing,
- software distributed under the License is distributed on an
- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- KIND, either express or implied.  See the License for the
- specific language governing permissions and limitations
- under the License.
--->
-<widget xmlns     = "http://www.w3.org/ns/widgets"
-        id        = "io.cordova.helloCordova"
-        version   = "2.0.0">
-
-    <!-- Preferences for Android -->
+<?xml version='1.0' encoding='utf-8'?>
+<widget android-versionCode="14242245" id="com.mb.android" version="2.2.45" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
+    <feature name="ChromeSocketsUdp">
+        <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
+    </feature>
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
+    <feature name="Notification">
+        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
+    </feature>
+    <feature name="StatusBar">
+        <param name="android-package" value="org.apache.cordova.statusbar.StatusBar" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="Whitelist">
+        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="UniqueDeviceID">
+        <param name="android-package" value="hu.dpal.phonegap.plugins.UniqueDeviceID" />
+    </feature>
+    <feature name="SQLitePlugin">
+        <param name="android-package" value="io.liteglue.SQLitePlugin" />
+    </feature>
+    <feature name="ConnectSDK">
+        <param name="android-package" value="com.connectsdk.cordova.ConnectSDKCordova" />
+    </feature>
+    <feature name="LocalNotification">
+        <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
+    </feature>
+    <feature name="InAppBillingPlugin">
+        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
+    </feature>
+    <feature name="Launcher">
+        <param name="android-package" value="com.hutchind.cordova.plugins.launcher.Launcher" />
+    </feature>
+    <feature name="OkHttpPlugin">
+        <param name="android-package" value="com.google.cordova.OkHttpPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+    <allow-intent href="market:*" />
+    <preference name="android-minSdkVersion" value="14" />
+    <preference name="android-targetSdkVersion" value="21" />
+    <icon density="ldpi" src="res/android/ldpi/icon.png" />
+    <icon density="mdpi" src="res/android/mdpi/icon.png" />
+    <icon density="hdpi" src="res/android/hdpi/icon.png" />
+    <icon density="xhdpi" src="res/android/xhdpi/icon.png" />
+    <icon density="xxhdpi" src="res/android/xxhdpi/icon.png" />
+    <icon density="xxxhdpi" src="res/android/xxxhdpi/icon.png" />
+    <splash density="land-hdpi" src="res/android/ldpi/splash-land.png" />
+    <splash density="land-ldpi" src="res/android/mdpi/splash-land.png" />
+    <splash density="land-mdpi" src="res/android/hdpi/splash-land.png" />
+    <splash density="land-xhdpi" src="res/android/xhdpi/splash-land.png" />
+    <splash density="land-xxhdpi" src="res/android/xxhdpi/splash-land.png" />
+    <splash density="land-xxxhdpi" src="res/android/xxxhdpi/splash-land.png" />
+    <splash density="port-hdpi" src="res/android/ldpi/splash-port.png" />
+    <splash density="port-ldpi" src="res/android/mdpi/splash-port.png" />
+    <splash density="port-mdpi" src="res/android/hdpi/splash-port.png" />
+    <splash density="port-xhdpi" src="res/android/xhdpi/splash-port.png" />
+    <splash density="port-xxhdpi" src="res/android/xxhdpi/splash-port.png" />
+    <splash density="port-xxxhdpi" src="res/android/xxxhdpi/splash-port.png" />
+    <preference name="dvReleaseSigningPropertiesFile" value="7000" />
+    <name>Emby</name>
+    <description>
+    Emby Mobile
+  </description>
+    <author email="apps@emby.media" href="http://emby.media">
+    Emby
+  </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <preference name="AllowInlineMediaPlayback" value="true" />
+    <preference name="MediaPlaybackRequiresUserAction" value="false" />
+    <preference name="UIWebViewBounce" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="webviewbounce" value="false" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="BackgroundColor" value="0xff222222" />
+    <preference name="BackupWebStorage" value="local" />
+    <preference name="SplashScreenDelay" value="7000" />
+    <icon src="res/icon.png" />
 </widget>
