@@ -1870,19 +1870,8 @@ var AppInfo = {};
 
     function initCordovaWithDeviceId(deferred, deviceId) {
 
-        if ($.browser.android) {
-
-            NativeApiClient.getDeviceProfile(function (result) {
-
-                alert(JSON.stringify(result.profile));
-                var screenWidth = Math.max(screen.height, screen.width);
-                initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProfile(screenWidth));
-            });
-
-        } else {
-            var screenWidth = Math.max(screen.height, screen.width);
-            initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProfile(screenWidth));
-        }
+        var screenWidth = Math.max(screen.height, screen.width);
+        initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProfile(screenWidth));
     }
 
     function initCordovaWithDeviceProfile(deferred, deviceId, deviceProfile) {
