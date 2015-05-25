@@ -1872,15 +1872,16 @@ var AppInfo = {};
 
         if ($.browser.android) {
 
-            NativeApiClient.getDeviceProflie(function (result) {
+            NativeApiClient.getDeviceProfile(function (result) {
 
                 alert(JSON.stringify(result.profile));
-                initCordovaWithDeviceProfile(deferred, deviceId, result.profile);
+                var screenWidth = Math.max(screen.height, screen.width);
+                initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProfile(screenWidth));
             });
 
         } else {
             var screenWidth = Math.max(screen.height, screen.width);
-            initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProflie(screenWidth));
+            initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProfile(screenWidth));
         }
     }
 
