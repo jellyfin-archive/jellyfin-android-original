@@ -791,7 +791,7 @@
 
             return {
                 url: mediaUrl,
-                contentType: contentType,
+                mimeType: contentType,
                 startTimeTicksOffset: startTimeTicksOffset,
                 startPositionInSeekParam: startPositionInSeekParam,
                 playMethod: playMethod
