@@ -1359,7 +1359,8 @@ var Dashboard = {
     },
 
     capabilities: function () {
-        return {
+
+        var caps = {
             PlayableMediaTypes: "Audio,Video",
 
             SupportedCommands: Dashboard.getSupportedRemoteCommands().join(','),
@@ -1367,6 +1368,8 @@ var Dashboard = {
             SupportsMediaControl: true,
             SupportedLiveMediaTypes: ['Audio', 'Video']
         };
+
+        return caps;
     },
 
     getDefaultImageQuality: function (imageType) {
@@ -1600,11 +1603,9 @@ var AppInfo = {};
     }
 
     //localStorage.clear();
-    function createConnectionManager(appInfo) {
+    function createConnectionManager(appInfo, capabilities) {
 
         var credentialProvider = new MediaBrowser.CredentialProvider();
-
-        var capabilities = Dashboard.capabilities();
 
         window.ConnectionManager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities);
 
@@ -1830,7 +1831,7 @@ var AppInfo = {};
         }
     }
 
-    function init(deferred, appName, deviceId, deviceName, resolveOnReady) {
+    function init(deferred, capabilities, appName, deviceId, deviceName, resolveOnReady) {
 
         requirejs.config({
             map: {
@@ -1850,12 +1851,14 @@ var AppInfo = {};
 
         var appInfo = Dashboard.getAppInfo(appName, deviceId, deviceName);
 
-        createConnectionManager(appInfo);
+        createConnectionManager(appInfo, capabilities);
 
         if (!resolveOnReady) {
+
             Dashboard.initPromiseDone = true;
             deferred.resolve();
         }
+
         $(function () {
             onDocumentReady();
             if (resolveOnReady) {
@@ -1867,9 +1870,29 @@ var AppInfo = {};
 
     function initCordovaWithDeviceId(deferred, deviceId) {
 
+        if ($.browser.android) {
+
+            NativeApiClient.getDeviceProflie(function (result) {
+
+                alert(JSON.stringify(result.profile));
+                initCordovaWithDeviceProfile(deferred, deviceId, result.profile);
+            });
+
+        } else {
+            var screenWidth = Math.max(screen.height, screen.width);
+            initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProflie(screenWidth));
+        }
+    }
+
+    function initCordovaWithDeviceProfile(deferred, deviceId, deviceProfile) {
+
         requirejs(['thirdparty/cordova/imagestore.js']);
 
-        init(deferred, "Emby Mobile", deviceId, device.model, true);
+        var capablities = Dashboard.capabilities();
+
+        capablities.DeviceProfile = deviceProfile;
+
+        init(deferred, capablities, "Emby Mobile", deviceId, device.model, true);
     }
 
     function initCordova(deferred) {
@@ -1894,7 +1917,7 @@ var AppInfo = {};
     if (Dashboard.isRunningInCordova()) {
         initCordova(initDeferred);
     } else {
-        init(initDeferred);
+        init(initDeferred, Dashboard.capabilities());
     }
 
 })();
