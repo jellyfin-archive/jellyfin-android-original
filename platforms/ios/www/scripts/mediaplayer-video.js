@@ -982,7 +982,7 @@
             var hideElementsOnIdle = true;
 
             if (hideElementsOnIdle) {
-                $('.itemVideo').off('mousemove.videoplayer keydown.videoplayer scroll.videoplayer', idleHandler).on('mousemove.videoplayer keydown.videoplayer scroll.videoplayer', idleHandler).trigger('mousemove');
+                $('.itemVideo').off('mousemove.videoplayer keydown.videoplayer scroll.videoplayer mousedown.videoplayer', idleHandler).on('mousemove.videoplayer keydown.videoplayer scroll.videoplayer mousedown.videoplayer', idleHandler).trigger('mousemove');
             }
 
             $(document).on('webkitfullscreenchange.videoplayer mozfullscreenchange.videoplayer msfullscreenchange.videoplayer fullscreenchange.videoplayer', function (e) {
@@ -1019,7 +1019,7 @@
 
             $(document.body).off("mousemove.videoplayer");
 
-            $('.itemVideo').off('mousemove.videoplayer keydown.videoplayer scroll.videoplayer');
+            $('.itemVideo').off('mousemove.videoplayer keydown.videoplayer scroll.videoplayer mousedown.videoplayer');
         }
 
         self.canAutoPlayVideo = function () {
@@ -1084,7 +1084,7 @@
         self.playVideoInternal = function (item, mediaSource, startPosition, streamInfo) {
 
             var videoUrl = streamInfo.url;
-            var contentType = streamInfo.contentType;
+            var contentType = streamInfo.mimeType;
             var startPositionInSeekParam = streamInfo.startPositionInSeekParam;
             self.startTimeTicksOffset = streamInfo.startTimeTicksOffset;
 
@@ -1296,7 +1296,6 @@
             }).on("dblclick.mediaplayerevent", function () {
 
                 self.toggleFullscreen();
-
             });
 
             bindEventsForPlayback();
