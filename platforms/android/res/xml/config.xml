@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="14242246" id="com.mb.android" version="2.2.46" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242247" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.2.47" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
@@ -35,6 +35,9 @@
     </feature>
     <feature name="Launcher">
         <param name="android-package" value="com.hutchind.cordova.plugins.launcher.Launcher" />
+    </feature>
+    <feature name="AndroidFullScreen">
+        <param name="android-package" value="com.mesmotronic.plugins.FullScreenPlugin" />
     </feature>
     <feature name="OkHttpPlugin">
         <param name="android-package" value="com.google.cordova.OkHttpPlugin" />

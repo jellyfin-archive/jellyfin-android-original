@@ -1824,6 +1824,10 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova()) {
             requirejs(['thirdparty/cordova/connectsdk', 'thirdparty/cordova/remotecontrols']);
+
+            if ($.browser.android) {
+                requirejs(['thirdparty/cordova/android/immersive']);
+            }
         } else {
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
