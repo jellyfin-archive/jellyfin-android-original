@@ -1,6 +1,5 @@
 ﻿(function () {
 
-    var isStoreReady = false;
     var updatedProducts = [];
 
     function updateProductInfo(p) {
@@ -81,7 +80,23 @@
         }
 
         // Get supporter status
-        // Show IAP
+        ApiClient.getRegistrationInfo('appunlock').done(function (registrationInfo) {
+
+            if (registrationInfo.IsRegistered) {
+                deferred.resolve();
+                return;
+            }
+
+            showInAppPurchaseInfo(info, product, registrationInfo, deferred);
+
+        }).fail(function () {
+            deferred.reject();
+        });
+    }
+
+    function showInAppPurchaseInfo(info, product, serverRegistrationInfo, deferred) {
+
+        // Can only purchase if product != null
         deferred.resolve();
     }
 
@@ -181,13 +196,13 @@
         // The "ready" event should be welcomed with music and fireworks,
         // go ask your boss about it! (just in case)
         store.ready(function () {
-            console.log("Store ready");
-            isStoreReady = true;
-        });
 
-        // After we've done our setup, we tell the store to do
-        // it's first refresh. Nothing will happen if we do not call store.refresh()
-        store.refresh();
+            console.log("Store ready");
+
+            // After we've done our setup, we tell the store to do
+            // it's first refresh. Nothing will happen if we do not call store.refresh()
+            store.refresh();
+        });
     }
 
     // We must wait for the "deviceready" event to fire
