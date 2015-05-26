@@ -117,6 +117,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.mesmotronic.plugins.fullscreen/www/AndroidFullScreen.js",
+        "id": "com.mesmotronic.plugins.fullscreen.AndroidFullScreen",
+        "clobbers": [
+            "AndroidFullScreen"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -155,6 +162,7 @@ module.exports.metadata =
     "cordova-plugin-purchase": "1.0.4",
     "cordova-plugin-okhttp": "2.0.0-dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
+    "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"

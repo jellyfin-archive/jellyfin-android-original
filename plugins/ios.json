@@ -187,6 +187,9 @@
         },
         "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.mesmotronic.plugins.fullscreen": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {

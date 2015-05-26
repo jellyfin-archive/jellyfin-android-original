@@ -90,6 +90,12 @@
         console.log('chrome.sockets.udp.create');
         chrome.sockets.udp.create(function (createInfo) {
 
+            if (!createInfo || !createInfo.socketId) {
+                console.log('create fail: ' + result);
+                deferred.resolveWith(null, [servers]);
+                return;
+            }
+
             socketId = createInfo.socketId;
 
             console.log('chrome.sockets.udp.bind');

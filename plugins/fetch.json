@@ -175,5 +175,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "com.mesmotronic.plugins.fullscreen": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/mesmotronic/cordova-fullscreen-plugin.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
