@@ -1714,6 +1714,10 @@ var AppInfo = {};
             $(document).addClass('nativeApp');
         }
 
+        if (AppInfo.enableBackButton) {
+            $(document.body).addClass('enableBackButton');
+        }
+
         var videoPlayerHtml = '<div id="mediaPlayer" data-theme="b" class="ui-bar-b" style="display: none;">';
 
         videoPlayerHtml += '<div class="videoBackdrop">';
@@ -1824,6 +1828,10 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova()) {
             requirejs(['thirdparty/cordova/connectsdk', 'thirdparty/cordova/remotecontrols']);
+
+            if ($.browser.android) {
+                requirejs(['thirdparty/cordova/android/immersive']);
+            }
         } else {
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
