@@ -15,6 +15,8 @@
         $('#selectHomeSection3', page).val(displayPreferences.CustomPrefs.home2 || '').selectmenu("refresh");
         $('#selectHomeSection4', page).val(displayPreferences.CustomPrefs.home3 || '').selectmenu("refresh");
 
+        $('#selectEnableItemPreviews', page).val(AppSettings.enableItemPreviews().toString().toLowerCase()).selectmenu("refresh");
+
         $('#chkEnableLibraryTileNames', page).checked(displayPreferences.CustomPrefs.enableLibraryTileNames != '0').checkboxradio("refresh");
 
         Dashboard.hideLoadingMsg();
@@ -49,6 +51,8 @@
         AppSettings.maxStreamingBitrate($('#selectMaxBitrate', page).val());
         AppSettings.maxChromecastBitrate($('#selectMaxChromecastBitrate', page).val());
 
+        AppSettings.enableItemPreviews($('#selectEnableItemPreviews', page).val() == 'true');
+
         var userId = getParameterByName('userId') || Dashboard.getCurrentUserId();
 
         ApiClient.getDisplayPreferences('home', userId, 'webclient').done(function (result) {
@@ -61,11 +65,7 @@
         return false;
     }
 
-    $(document).on('pageinit', "#webClientPreferencesPage", function () {
-
-        var page = this;
-
-    }).on('pagebeforeshow', "#webClientPreferencesPage", function () {
+    $(document).on('pageshowready', "#webClientPreferencesPage", function () {
 
         var page = this;
 
@@ -85,6 +85,14 @@
             $('.homePageConfigurationSection', page).hide();
         } else {
             $('.homePageConfigurationSection', page).show();
+        }
+
+        if (AppInfo.hasKnownExternalPlayerSupport) {
+            $('.labelNativeExternalPlayers', page).show();
+            $('.labelGenericExternalPlayers', page).hide();
+        } else {
+            $('.labelGenericExternalPlayers', page).show();
+            $('.labelNativeExternalPlayers', page).hide();
         }
     });
 
@@ -121,6 +129,14 @@
             }
 
             return store.getItem('externalplayers') == 'true';
+        },
+        enableItemPreviews: function (val) {
+
+            if (val != null) {
+                store.setItem('enableItemPreviews', val.toString());
+            }
+
+            return store.getItem('enableItemPreviews') != 'false';
         }
 
     };
