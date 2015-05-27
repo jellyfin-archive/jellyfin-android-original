@@ -74,6 +74,16 @@
         }
     }
 
+    function updateFromSetting(leaveFullScreen) {
+
+        if (AppSettings.enableFullScreen()) {
+            AndroidFullScreen.immersiveMode(onSuccess, onError);
+        }
+        else if (leaveFullScreen) {
+            AndroidFullScreen.showSystemUI(onSuccess, onError);
+        }
+    }
+
     Dashboard.ready(function () {
 
         console.log('binding fullscreen to MediaController');
@@ -85,6 +95,14 @@
 
         bindToPlayer(MediaController.getCurrentPlayer());
 
+        updateFromSetting(false);
+
+        $(AppSettings).on('settingupdated', function (e, key) {
+
+            if (key == 'enableFullScreen') {
+                updateFromSetting(true);
+            }
+        });
     });
 
 })();
