@@ -273,7 +273,7 @@
 
         store.validator = validateProduct;
 
-        if (isAndroid) {
+        if (isAndroid()) {
             store.register({
                 id: "premiumunlock",
                 alias: "premium features",
