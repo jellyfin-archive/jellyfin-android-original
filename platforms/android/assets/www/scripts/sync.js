@@ -344,20 +344,7 @@
         }).join('')).trigger('change').selectmenu('refresh');
     }
 
-    function isSyncEnabledInApp() {
-
-        if (Dashboard.isRunningInCordova()) {
-            return false;
-        }
-
-        return true;
-    }
-
     function isAvailable(item, user) {
-
-        if (!isSyncEnabledInApp()) {
-            return false;
-        }
 
         return item.SupportsSync;
     }
@@ -380,7 +367,7 @@
 
         Dashboard.getCurrentUser().done(function (user) {
 
-            if (user.Policy.EnableSync && isSyncEnabledInApp()) {
+            if (user.Policy.EnableSync) {
                 $('.categorySyncButton', page).show();
             } else {
                 $('.categorySyncButton', page).hide();
