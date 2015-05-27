@@ -21,6 +21,18 @@
         return products.length ? products[0] : null;
     }
 
+    function hasPurchased(alias) {
+        var product = getProduct(alias);
+
+        return product != null && product.owned;
+    }
+
+    function isPurchaseAvailable(alias) {
+        var product = getProduct(alias);
+
+        return product != null && product.canPurchase;
+    }
+
     function isAndroid() {
 
         var platform = (device.platform || '').toLowerCase();
@@ -88,16 +100,14 @@
 
     function validateFeature(info, deferred) {
 
-        var product = getProduct(info.alias);
-
-        if (product && product.owned) {
+        if (hasPurchased(info.alias)) {
             deferred.resolve();
             return;
         }
 
         var productInfo = {
             enableSupporterUnlock: isAndroid(),
-            enableAppUnlock: product != null && product.canPurchase
+            enableAppUnlock: isPurchaseAvailable(info.alias)
         };
 
         var prefix = isAndroid() ? 'android' : 'ios';
@@ -275,27 +285,21 @@
 
     function initializeStore() {
 
+        if (isAndroid()) {
+            return;
+        }
         // Let's set a pretty high verbosity level, so that we see a lot of stuff
         // in the console (reassuring us that something is happening).
         store.verbosity = store.INFO;
 
         store.validator = validateProduct;
 
-        if (isAndroid()) {
-            store.register({
-                id: "premiumunlock",
-                alias: unlockAlias,
-                type: store.NON_CONSUMABLE
-            });
-        } else {
-
-            // iOS
-            store.register({
-                id: "appunlock",
-                alias: unlockAlias,
-                type: store.NON_CONSUMABLE
-            });
-        }
+        // iOS
+        store.register({
+            id: "appunlock",
+            alias: unlockAlias,
+            type: store.NON_CONSUMABLE
+        });
 
         // When purchase of the full version is approved,
         // show some logs and finish the transaction.
