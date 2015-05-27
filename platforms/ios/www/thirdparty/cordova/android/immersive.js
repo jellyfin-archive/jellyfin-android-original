@@ -12,23 +12,23 @@
     //AndroidFullScreen.isSupported();
 
     //// Is immersive mode supported?
-    //AndroidFullScreen.isImmersiveModeSupported(successFunction, errorFunction);
+    //AndroidFullScreen.isImmersiveModeSupported(onSuccess, onError);
 
     //// The width of the screen in immersive mode
-    //AndroidFullScreen.immersiveWidth(trace, errorFunction);
+    //AndroidFullScreen.immersiveWidth(trace, onError);
 
     //// The height of the screen in immersive mode
-    //AndroidFullScreen.immersiveHeight(trace, errorFunction);
+    //AndroidFullScreen.immersiveHeight(trace, onError);
 
     //// Hide system UI until user interacts
-    //AndroidFullScreen.leanMode(successFunction, errorFunction);
+    //AndroidFullScreen.leanMode(onSuccess, onError);
 
     //// Show system UI
-    //AndroidFullScreen.showSystemUI(successFunction, errorFunction);
+    //AndroidFullScreen.showSystemUI(onSuccess, onError);
 
     //// Extend your app underneath the system UI (Android 4.4+ only)
-    //AndroidFullScreen.showUnderSystemUI(successFunction, errorFunction);
+    //AndroidFullScreen.showUnderSystemUI(onSuccess, onError);
 
     //// Hide system UI and keep it hidden (Android 4.4+ only)
-    //AndroidFullScreen.immersiveMode(successFunction, errorFunction);
+    AndroidFullScreen.immersiveMode(onSuccess, onError);
 })();
