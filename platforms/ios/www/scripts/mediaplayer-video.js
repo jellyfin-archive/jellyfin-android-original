@@ -623,7 +623,7 @@
                 idleState = true;
                 $('.hiddenOnIdle').addClass("inactive");
                 $('#videoPlayer').addClass('idlePlayer');
-            }, 5000);
+            }, 4000);
         }
 
         function updateVolumeButtons(vol) {
