@@ -1317,10 +1317,10 @@
         };
 
         self.updatePlaylistUi = function () {
-            var index = self.currentPlaylistIndex(null),
-                length = self.playlist.length,
-                requiresNativeControls = !self.enableCustomVideoControls(),
-                controls = $(requiresNativeControls ? '.videoAdvancedControls' : '.videoControls');
+            var index = self.currentPlaylistIndex(null);
+            var length = self.playlist.length;
+            var requiresNativeControls = !self.enableCustomVideoControls();
+            var controls = $(requiresNativeControls ? '.videoAdvancedControls' : '.videoControls');
 
             if (length < 2) {
                 $('.videoTrackControl').hide();

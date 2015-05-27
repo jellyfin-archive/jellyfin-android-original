@@ -48,25 +48,23 @@
             return deferred.promise();
         }
 
-        var isTimedOut = false;
         var timeout;
         var socketId;
+
+        function onTimerExpired() {
+            deferred.resolveWith(null, [servers]);
+
+            if (socketId) {
+                chrome.sockets.udp.onReceive.removeListener(onReceive);
+                closeSocket(socketId);
+            }
+        }
 
         function startTimer() {
 
             console.log('starting udp receive timer with timeout ms: ' + timeoutMs);
 
-            timeout = setTimeout(function () {
-
-                isTimedOut = true;
-                deferred.resolveWith(null, [servers]);
-
-                if (socketId) {
-                    chrome.sockets.udp.onReceive.removeListener(onReceive);
-                    closeSocket(socketId);
-                }
-
-            }, timeoutMs);
+            timeout = setTimeout(onTimerExpired, timeoutMs);
         }
 
         function onReceive(info) {
@@ -129,17 +127,13 @@
                 console.log('chrome.sockets.udp.send');
                 chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (sendResult) {
 
+                    startTimer();
+
                     if (getResultCode(sendResult) != 0) {
                         console.log('send fail: ' + sendResult);
-                        deferred.resolveWith(null, [servers]);
-                        closeSocket(createInfo.socketId);
 
                     } else {
-
                         console.log('sendTo: success ' + port);
-
-                        startTimer();
-                        chrome.sockets.udp.onReceive.addListener(onReceive);
                     }
                 });
             });
