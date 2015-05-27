@@ -309,11 +309,11 @@
         store.ready(function () {
 
             console.log("Store ready");
-
-            // After we've done our setup, we tell the store to do
-            // it's first refresh. Nothing will happen if we do not call store.refresh()
-            store.refresh();
         });
+
+        // After we've done our setup, we tell the store to do
+        // it's first refresh. Nothing will happen if we do not call store.refresh()
+        store.refresh();
     }
 
     // We must wait for the "deviceready" event to fire
