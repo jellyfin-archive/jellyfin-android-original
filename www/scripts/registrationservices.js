@@ -2,6 +2,8 @@
 
     var updatedProducts = [];
 
+    var unlockAlias = "premium features";
+
     function updateProductInfo(p) {
 
         updatedProducts = updatedProducts.filter(function (r) {
@@ -9,6 +11,14 @@
         });
 
         updatedProducts.push(p);
+    }
+
+    function getProduct(alias) {
+        var products = updatedProducts.filter(function (r) {
+            return r.alias == alias;
+        });
+
+        return products.length ? products[0] : null;
     }
 
     function isAndroid() {
@@ -29,7 +39,7 @@
         validateFeature({
 
             id: 'appunlock',
-            alias: "premium features"
+            alias: unlockAlias
 
         }, deferred);
     }
@@ -45,7 +55,7 @@
         validateFeature({
 
             id: 'premiumunlock',
-            alias: "premium features"
+            alias: unlockAlias
 
         }, deferred);
     }
@@ -61,7 +71,7 @@
         validateFeature({
 
             id: 'premiumunlock',
-            alias: "premium features"
+            alias: unlockAlias
 
         }, deferred);
     }
@@ -78,11 +88,7 @@
 
     function validateFeature(info, deferred) {
 
-        var products = updatedProducts.filter(function (r) {
-            return r.alias == info.alias;
-        });
-
-        var product = products.length ? products[0] : null;
+        var product = getProduct(info.alias);
 
         if (product && product.owned) {
             deferred.resolve();
@@ -278,7 +284,7 @@
         if (isAndroid()) {
             store.register({
                 id: "premiumunlock",
-                alias: "premium features",
+                alias: unlockAlias,
                 type: store.NON_CONSUMABLE
             });
         } else {
@@ -286,21 +292,21 @@
             // iOS
             store.register({
                 id: "appunlock",
-                alias: "premium features",
+                alias: unlockAlias,
                 type: store.NON_CONSUMABLE
             });
         }
 
         // When purchase of the full version is approved,
         // show some logs and finish the transaction.
-        store.when("premium feautres").approved(function (order) {
+        store.when(unlockAlias).approved(function (order) {
             log('You just unlocked the FULL VERSION!');
             order.finish();
         });
 
         // The play button can only be accessed when the user
         // owns the full version.
-        store.when("premium feautres").updated(function (product) {
+        store.when(unlockAlias).updated(function (product) {
 
             updateProductInfo(product);
         });
