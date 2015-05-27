@@ -94,8 +94,10 @@
             enableAppUnlock: product != null && product.canPurchase
         };
 
+        var prefix = isAndroid() ? 'android' : 'ios';
+
         // Get supporter status
-        getRegistrationInfo('appunlock', productInfo.enableSupporterUnlock).done(function (registrationInfo) {
+        getRegistrationInfo(prefix + 'appunlock', productInfo.enableSupporterUnlock).done(function (registrationInfo) {
 
             if (registrationInfo.IsRegistered) {
                 deferred.resolve();
