@@ -468,11 +468,11 @@
             currentWebAppSession = session.acquire();
 
             currentWebAppSession.on('message', handleMessage);
-            currentWebAppSession.on('disconnect', handleSessionDisconnect);
 
             currentWebAppSession.connect().success(function () {
 
                 console.log('session.connect succeeded');
+                currentWebAppSession.on('disconnect', handleSessionDisconnect);
 
                 MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
                 currentDeviceFriendlyName = device.getFriendlyName();
