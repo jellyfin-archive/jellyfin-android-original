@@ -1248,7 +1248,7 @@ globalScope.NetworkStatus=new networkStatus();})(window,window.navigator);(funct
 globalScope.MediaBrowser.generateDeviceId=function(keyName,seed){var keys=[];keys.push(navigator.userAgent);keys.push((navigator.cpuClass||""));if(seed){keys.push(seed);}
 var randomId='';randomId=appStorage.getItem(keyName);if(!randomId){randomId=new Date().getTime();appStorage.setItem(keyName,randomId.toString());}
 keys.push(randomId);return CryptoJS.SHA1(keys.join('|')).toString();};})(window);(function(globalScope,JSON){if(!globalScope.MediaBrowser){globalScope.MediaBrowser={};}
-globalScope.MediaBrowser.CredentialProvider=function(){var self=this;var credentials;var key='servercredentials3';function ensure(){credentials=credentials||JSON.parse(appStorage.getItem(key)||'{}');credentials.Servers=credentials.Servers||credentials.servers||[];}
+globalScope.MediaBrowser.CredentialProvider=function(){var self=this;var credentials;var key='servercredentials4';function ensure(){credentials=credentials||JSON.parse(appStorage.getItem(key)||'{}');credentials.Servers=credentials.Servers||[];}
 function get(){ensure();return credentials;}
 function set(data){if(data){credentials=data;appStorage.setItem(key,JSON.stringify(data));}else{self.clear();}
 Events.trigger(self,'credentialsupdated');}
