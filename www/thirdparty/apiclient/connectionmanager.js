@@ -663,7 +663,7 @@
         function findServers() {
 
             var deferred = DeferredBuilder.Deferred();
-            ServerDiscovery.findServers(2000).done(function (foundServers) {
+            ServerDiscovery.findServers(2500).done(function (foundServers) {
 
                 var servers = foundServers.map(function (foundServer) {
 
