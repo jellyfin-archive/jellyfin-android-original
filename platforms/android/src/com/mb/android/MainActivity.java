@@ -55,8 +55,10 @@ public class MainActivity extends CordovaActivity
 
         WebView webView = (WebView)engine.getView();
 
+        ILogger logger = getLogger();
+
         webView.addJavascriptInterface(new IapManager(webView, logger), "NativeIapManager");
-        webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), getLogger()), "ApiClientBridge");
+        webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger), "ApiClientBridge");
 
         return engine;
     }
