@@ -1,7 +1,9 @@
-package com.mb.android;
+package com.mb.android.iap;
 
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
+
+import com.mb.android.WebViewResponder;
 
 import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.Response;
@@ -37,7 +39,7 @@ public class IapManager {
 
             @Override
             public void onResponse(final Boolean result){
-                RespondToWebView(String.format("javascript:%s(\"%s\", %s)", callback, id, result));
+                RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, result));
             }
         });
     }
@@ -45,13 +47,7 @@ public class IapManager {
     private void RespondToWebView(final String url) {
 
         logger.Info("Sending url to webView: %s", url);
-
-        webView.post(new Runnable() {
-            @Override
-            public void run() {
-                webView.loadUrl(url);
-            }
-        });
+        WebViewResponder.send(webView, url);
     }
 
     @JavascriptInterface

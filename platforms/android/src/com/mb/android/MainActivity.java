@@ -22,7 +22,14 @@ package com.mb.android;
 import android.os.Bundle;
 import android.webkit.WebView;
 
+import com.mb.android.api.ApiClientBridge;
+import com.mb.android.iap.IapManager;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
+
 import org.apache.cordova.*;
+
+import java.net.URL;
 
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.logging.ILogger;
@@ -44,6 +51,10 @@ public class MainActivity extends CordovaActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
+
         // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);
     }

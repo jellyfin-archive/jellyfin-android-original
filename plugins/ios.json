@@ -182,9 +182,6 @@
         "cordova-plugin-purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-okhttp": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
