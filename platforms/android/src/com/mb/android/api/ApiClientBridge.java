@@ -8,6 +8,9 @@ import android.webkit.WebView;
 import com.mb.android.SyncLoggerFactory;
 import com.mb.android.WebViewResponder;
 
+import java.net.URLEncoder;
+import java.util.regex.Pattern;
+
 import mediabrowser.apiinteraction.ApiEventListener;
 import mediabrowser.apiinteraction.IConnectionManager;
 import mediabrowser.apiinteraction.Response;
@@ -21,7 +24,9 @@ import mediabrowser.apiinteraction.android.sync.PeriodicSync;
 import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.logging.ConsoleLogger;
+import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
+import mediabrowser.model.net.HttpException;
 import mediabrowser.model.serialization.IJsonSerializer;
 import mediabrowser.model.session.ClientCapabilities;
 
@@ -33,11 +38,13 @@ public class ApiClientBridge {
     private Context context;
     private ILogger logger;
     private WebView webView;
-    IAsyncHttpClient httpClient;
+    private IAsyncHttpClient httpClient;
+    private IJsonSerializer jsonSerializer;
 
-    public ApiClientBridge(Context context, ILogger logger) {
+    public ApiClientBridge(Context context, ILogger logger, WebView webView) {
         this.context = context;
         this.logger = logger;
+        this.webView = webView;
     }
 
     @JavascriptInterface
@@ -58,7 +65,7 @@ public class ApiClientBridge {
 
         MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory();
 
-        IJsonSerializer jsonSerializer = new GsonJsonSerializer();
+        jsonSerializer = new GsonJsonSerializer();
 
         httpClient = new VolleyHttpClient(logger, context);
 
@@ -82,16 +89,49 @@ public class ApiClientBridge {
     }
 
     @JavascriptInterface
-    public void sendRequest(HttpRequest request, String callbackMethod, String callbackId) {
+    public void sendRequest(String url, String method, String headers, final String callbackMethod, final String callbackId) {
+
+        HttpRequest request = new HttpRequest();
+        request.setUrl(url);
+        request.setMethod(method);
+
+        logger.Info("Parsing full header %s", headers);
+        String[] headerValues = headers.split(Pattern.quote("|||||"));
+        for (int i=0; i < headerValues.length; i++) {
+
+            String headerValue = headerValues[i];
+
+            int index = headerValue.indexOf("=");
+
+            if (index == -1 || headerValue.length() < 2) {
+
+                continue;
+            }
+            logger.Info("Parsing header %s", headerValue);
+            String headerName = headerValue.substring(0, index);
+            request.getRequestHeaders().put(headerName, headerValue.substring(index + 1));
+        }
 
         httpClient.Send(request, new Response<String>(){
 
             @Override
             public void onResponse(String response){
+                RespondToWebView(callbackMethod, callbackId, 200, response);
+            }
 
+            @Override
+            public void onError(Exception ex){
+
+                HttpException httpError = (HttpException)ex;
+                RespondToWebView(callbackMethod, callbackId, httpError.getStatusCode(), "");
             }
         });
 
+    }
+
+    private void RespondToWebView(final String callbackMethod, final String callbackId, int status, String response) {
+
+        RespondToWebView(String.format("%s(\"%s\", %s, \"%s\");", callbackMethod, callbackId, status, URLEncoder.encode(response)));
     }
 
     private void RespondToWebView(final String url) {

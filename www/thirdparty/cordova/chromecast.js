@@ -610,7 +610,7 @@
                 if (newTarget.id != currentPairedDeviceId) {
                     if (currentWebAppSession) {
                         console.log('Disconnecting from chromecast');
-                        currentWebAppSession.disconnect();
+                        cleanupSession();
                     }
                 }
             }

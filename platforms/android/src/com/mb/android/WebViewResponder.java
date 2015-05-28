@@ -10,6 +10,14 @@ public class WebViewResponder {
 
     public static void send(final WebView webView, final String url) {
 
+        if (webView == null){
+            throw new IllegalArgumentException("webView");
+        }
+
+        if (url == null){
+            throw new IllegalArgumentException("url");
+        }
+
         webView.post(new Runnable() {
             @Override
             public void run() {
