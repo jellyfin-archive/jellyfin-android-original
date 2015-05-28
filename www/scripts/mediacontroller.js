@@ -147,7 +147,7 @@
                 return;
             }
 
-            currentPairingId = target.id;
+            currentPairingId = targetInfo.id;
 
             player.tryPair(targetInfo).done(function () {
 
