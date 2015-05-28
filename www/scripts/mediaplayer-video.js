@@ -45,8 +45,8 @@
 
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-            } else if (document.mozExitFullScreen) {
-                document.mozExitFullScreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
             } else if (document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
             } else if (document.msExitFullscreen) {
@@ -396,7 +396,7 @@
                 var chapterIndex = 0;
                 html += item.Chapters.map(function (c) {
 
-                    var width = 360;
+                    var width = 320;
                     var chapterHtml = '<a class="card backdropCard chapterCard" href="#" style="margin-right:1em;width:' + width + 'px;" data-position="' + c.StartPositionTicks + '">';
                     chapterHtml += '<div class="cardBox">';
                     chapterHtml += '<div class="cardScalable">';
@@ -445,11 +445,12 @@
                     var personHtml = '<div class="tileItem smallPosterTileItem" style="width:300px;">';
 
                     var imgUrl;
+                    var height = 160;
 
                     if (cast.PrimaryImageTag) {
 
                         imgUrl = ApiClient.getScaledImageUrl(cast.Id, {
-                            height: 160,
+                            height: height,
                             tag: cast.PrimaryImageTag,
                             type: "primary",
                             minScale: 2
@@ -460,7 +461,7 @@
                         imgUrl = "css/images/items/list/person.png";
                     }
 
-                    personHtml += '<div class="tileImage lazy" data-src="' + imgUrl + '" style="height:160px;"></div>';
+                    personHtml += '<div class="tileImage lazy" data-src="' + imgUrl + '" style="height:' + height + 'px;"></div>';
 
 
 

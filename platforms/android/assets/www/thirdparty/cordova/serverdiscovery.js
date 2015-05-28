@@ -96,43 +96,41 @@
 
         var port = 7359;
         console.log('chrome.sockets.udp.create');
+
+        startTimer();
+
         chrome.sockets.udp.create(function (createInfo) {
 
             if (!createInfo) {
                 console.log('create fail');
-                deferred.resolveWith(null, [servers]);
                 return;
             }
             if (!createInfo.socketId) {
                 console.log('create fail');
-                deferred.resolveWith(null, [servers]);
                 return;
             }
 
             socketId = createInfo.socketId;
 
             console.log('chrome.sockets.udp.bind');
-
             chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', 0, function (bindResult) {
 
                 if (getResultCode(bindResult) != 0) {
                     console.log('bind fail: ' + bindResult);
-                    deferred.resolveWith(null, [servers]);
-                    closeSocket(createInfo.socketId);
                     return;
                 }
 
                 var data = stringToArrayBuffer('who is EmbyServer?');
 
                 console.log('chrome.sockets.udp.send');
-                chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (sendResult) {
 
-                    startTimer();
+                chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (sendResult) {
 
                     if (getResultCode(sendResult) != 0) {
                         console.log('send fail: ' + sendResult);
 
                     } else {
+                        chrome.sockets.udp.onReceive.addListener(onReceive);
                         console.log('sendTo: success ' + port);
                     }
                 });
