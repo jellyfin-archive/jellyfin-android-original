@@ -313,6 +313,10 @@
         };
 
         self.seek = function (position) {
+
+            position = parseInt(position);
+            position = position / 10000000;
+
             sendMessageToDevice({
                 options: {
                     position: position
