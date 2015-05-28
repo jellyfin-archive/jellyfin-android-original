@@ -507,6 +507,13 @@
                 session.release();
             }
 
+            if (currentDevice != null) {
+                currentDevice.off("ready");
+                currentDevice.off("disconnect");
+
+                currentDevice.disconnect();
+            }
+
             currentWebAppSession = null;
             currentPairedDeviceId = null;
             currentDeviceFriendlyName = null;
@@ -547,7 +554,7 @@
                 return;
             }
 
-            console.log('calling launchWebApp');
+            console.log('creating webAppSession');
 
             setTimeout(function () {
 
