@@ -88,6 +88,10 @@
             return appVersion;
         };
 
+        self.capabilities = function () {
+            return capabilities;
+        };
+
         self.deviceId = function () {
             return deviceId;
         };

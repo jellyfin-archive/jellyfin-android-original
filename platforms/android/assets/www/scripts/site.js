@@ -1366,13 +1366,19 @@ var Dashboard = {
     capabilities: function () {
 
         var caps = {
-            PlayableMediaTypes: "Audio,Video",
+            PlayableMediaTypes: ['Audio', 'Video'],
 
-            SupportedCommands: Dashboard.getSupportedRemoteCommands().join(','),
+            SupportedCommands: Dashboard.getSupportedRemoteCommands(),
             SupportsPersistentIdentifier: AppInfo.isNativeApp,
             SupportsMediaControl: true,
             SupportedLiveMediaTypes: ['Audio', 'Video']
         };
+
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            caps.SupportsOfflineAccess = true;
+            caps.SupportsSync = true;
+            caps.SupportsContentUploading = true;
+        }
 
         return caps;
     },
@@ -1616,11 +1622,11 @@ var AppInfo = {};
     }
 
     //localStorage.clear();
-    function createConnectionManager(appInfo, capabilities) {
+    function createConnectionManager(capabilities) {
 
         var credentialProvider = new MediaBrowser.CredentialProvider();
 
-        window.ConnectionManager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities);
+        window.ConnectionManager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, capabilities);
 
         $(ConnectionManager).on('apiclientcreated', function (e, newApiClient) {
 
@@ -1643,7 +1649,7 @@ var AppInfo = {};
 
         } else {
 
-            apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId);
+            apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId);
             ConnectionManager.addApiClient(apiClient);
         }
 
@@ -1875,9 +1881,9 @@ var AppInfo = {};
 
         setAppInfo();
 
-        var appInfo = Dashboard.getAppInfo(appName, deviceId, deviceName);
+        $.extend(AppInfo, Dashboard.getAppInfo(appName, deviceId, deviceName));
 
-        createConnectionManager(appInfo, capabilities);
+        createConnectionManager(capabilities);
 
         if (!resolveOnReady) {
 
