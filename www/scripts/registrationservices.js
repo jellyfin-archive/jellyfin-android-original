@@ -128,7 +128,7 @@
         }
 
         if (info.enableAppUnlock) {
-            html += '<button class="btn btnActionAccent btnAppUnlock" data-role="none" type="button"><span>' + Globalize.translate('ButtonUnlockWithPurchase') + '</span><i class="fa fa-check"></i></button>';
+            html += '<button class="btn btnActionAccent btnAppUnlock" data-role="none" type="submit"><span>' + Globalize.translate('ButtonUnlockWithPurchase') + '</span><i class="fa fa-check"></i></button>';
         }
 
         if (info.enableSupporterUnlock) {
@@ -181,11 +181,6 @@
                     Dashboard.logout();
                 }
             });
-        });
-
-        $('.btnAppUnlock', elem).on('click', function () {
-
-            alert('coming soon');
         });
     }
 

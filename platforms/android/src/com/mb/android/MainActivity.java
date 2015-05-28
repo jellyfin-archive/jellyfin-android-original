@@ -24,8 +24,22 @@ import android.webkit.WebView;
 
 import org.apache.cordova.*;
 
+import mediabrowser.logging.ConsoleLogger;
+import mediabrowser.model.logging.ILogger;
+
 public class MainActivity extends CordovaActivity
 {
+    private ILogger logger;
+
+    private ILogger getLogger(){
+        if (logger == null){
+            logger = new ConsoleLogger();
+        }
+
+        return logger;
+    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -41,8 +55,8 @@ public class MainActivity extends CordovaActivity
 
         WebView webView = (WebView)engine.getView();
 
-        webView.addJavascriptInterface(new IapManager(webView), "NativeIapManager");
-        webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext()), "ApiClientBridge");
+        webView.addJavascriptInterface(new IapManager(webView, logger), "NativeIapManager");
+        webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), getLogger()), "ApiClientBridge");
 
         return engine;
     }
