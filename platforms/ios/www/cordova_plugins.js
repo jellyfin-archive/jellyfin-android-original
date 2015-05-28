@@ -160,7 +160,6 @@ module.exports.metadata =
     "com.connectsdk.cordovaplugin": "1.2.0",
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "cordova-plugin-purchase": "1.0.4",
-    "cordova-plugin-okhttp": "2.0.0-dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",

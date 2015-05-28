@@ -151,12 +151,7 @@
             },
             "config.xml": {
                 "parents": {
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"OkHttpPlugin\"><param name=\"android-package\" value=\"com.google.cordova.OkHttpPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        }
-                    ]
+                    "/*": []
                 }
             }
         }
@@ -205,9 +200,6 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "de.appplant.cordova.plugin.local-notification": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-okhttp": {
             "PACKAGE_NAME": "com.mb.android"
         },
         "com.hutchind.cordova.plugins.launcher": {
