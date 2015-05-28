@@ -255,13 +255,16 @@ android {
 }
 
 dependencies {
-	compile 'com.connectsdk:connect-sdk-android:1.4.+'
+    compile 'com.connectsdk:connect-sdk-android:1.4.+'
     compile fileTree(dir: 'libs', include: '*.jar')
     // SUB-PROJECT DEPENDENCIES START
     debugCompile project(path: ":CordovaLib", configuration: "debug")
     releaseCompile project(path: ":CordovaLib", configuration: "release")
     compile "com.squareup.okhttp:okhttp-urlconnection:2+"
     // SUB-PROJECT DEPENDENCIES END
+    compile files('libs/emby.apiclient.jar')
+    compile files('libs/emby.apiclient.android.jar')
+    compile files('libs/volley.jar')
 }
 
 def promptForReleaseKeyPassword() {

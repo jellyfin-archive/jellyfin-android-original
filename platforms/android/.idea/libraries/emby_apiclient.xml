@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="emby.apiclient">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/emby.apiclient.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
