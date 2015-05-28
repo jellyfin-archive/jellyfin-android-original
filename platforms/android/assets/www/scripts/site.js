@@ -49,7 +49,7 @@ var Dashboard = {
 
     isConnectMode: function () {
 
-        if (Dashboard.isRunningInCordova()) {
+        if (AppInfo.isNativeApp) {
             return true;
         }
 
@@ -1369,7 +1369,7 @@ var Dashboard = {
             PlayableMediaTypes: "Audio,Video",
 
             SupportedCommands: Dashboard.getSupportedRemoteCommands().join(','),
-            SupportsPersistentIdentifier: Dashboard.isRunningInCordova(),
+            SupportsPersistentIdentifier: AppInfo.isNativeApp,
             SupportsMediaControl: true,
             SupportedLiveMediaTypes: ['Audio', 'Video']
         };
@@ -1389,7 +1389,7 @@ var Dashboard = {
         if (AppInfo.hasLowImageBandwidth) {
 
             // The native app can handle a little bit more than safari
-            if (Dashboard.isRunningInCordova()) {
+            if (AppInfo.isNativeApp) {
 
                 quality -= 20;
 
@@ -1588,6 +1588,7 @@ var AppInfo = {};
         if (isCordova) {
             AppInfo.enableAppLayouts = true;
             AppInfo.hasKnownExternalPlayerSupport = true;
+            AppInfo.isNativeApp = true;
         }
         else {
             AppInfo.enableFooterNotifications = true;
@@ -1652,7 +1653,7 @@ var AppInfo = {};
             ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
             ApiClient.normalizeImageOptions = Dashboard.normalizeImageOptions;
 
-            if (!Dashboard.isRunningInCordova()) {
+            if (!AppInfo.isNativeApp) {
                 Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
             }
         }
@@ -1722,7 +1723,7 @@ var AppInfo = {};
             $(document.body).addClass('supporterMembershipDisabled');
         }
 
-        if (Dashboard.isRunningInCordova()) {
+        if (AppInfo.isNativeApp) {
             $(document).addClass('nativeApp');
         }
 
@@ -1842,7 +1843,7 @@ var AppInfo = {};
             requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices']);
 
             if ($.browser.android) {
-                requirejs(['thirdparty/cordova/android/immersive']);
+                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive']);
             }
 
             if ($.browser.safari) {

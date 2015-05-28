@@ -25,13 +25,17 @@ import mediabrowser.model.session.ClientCapabilities;
 public class ApiClientBridge {
 
     private Context context;
+    private ILogger logger;
 
-    public ApiClientBridge(Context context) {
+    public ApiClientBridge(Context context, ILogger logger) {
         this.context = context;
+        this.logger = logger;
     }
 
     @JavascriptInterface
     public void updateCredentials(String credentialsJson) {
+
+        logger.Info("Received instruction to updateCredentials");
 
         // Save this prior to creating ConnectionManager, to fill in the client-side credentials
         AndroidCredentialProvider.Save(credentialsJson, context);
@@ -39,6 +43,8 @@ public class ApiClientBridge {
 
     @JavascriptInterface
     public void init(String appName, String appVersion, String deviceId, String deviceName, String capabilitiesJson) {
+
+        logger.Info("ApiClientBridge.init");
 
         ILogger logger = new ConsoleLogger();
 
