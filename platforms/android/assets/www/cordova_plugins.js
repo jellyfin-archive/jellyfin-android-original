@@ -113,13 +113,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-purchase/www/store-android.js",
-        "id": "cordova-plugin-purchase.InAppBillingPlugin",
-        "clobbers": [
-            "store"
-        ]
-    },
-    {
         "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
         "id": "com.hutchind.cordova.plugins.launcher.Launcher",
         "clobbers": [
@@ -152,7 +145,6 @@ module.exports.metadata =
     "io.litehelpers.cordova.sqlite": "0.7.7",
     "com.connectsdk.cordovaplugin": "1.2.0",
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
-    "cordova-plugin-purchase": "1.0.4",
     "cordova-plugin-okhttp": "2.0.0-dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
