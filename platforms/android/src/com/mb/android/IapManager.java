@@ -29,8 +29,17 @@ public class IapManager {
         isPurchasedInternal(id, new Response<Boolean>(){
 
             @Override
-            public void onResponse(Boolean result){
-                //webView.loadUrl(String.format("javascript:%s('%s', %s)", callback, id, result));
+            public void onResponse(final Boolean result){
+                RespondToWebView(String.format("javascript:%s(\"%s\", %s)", callback, id, result));
+            }
+        });
+    }
+
+    private void RespondToWebView(final String url) {
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                webView.loadUrl(url);
             }
         });
     }
