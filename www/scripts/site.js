@@ -1908,7 +1908,11 @@ var AppInfo = {};
 
     function initCordovaWithDeviceProfile(deferred, deviceId, deviceProfile) {
 
-        requirejs(['thirdparty/cordova/imagestore.js']);
+        if ($.browser.android) {
+            requirejs(['thirdparty/cordova/android/imagestore.js']);
+        } else {
+            requirejs(['thirdparty/cordova/imagestore.js']);
+        }
 
         var capablities = Dashboard.capabilities();
 
