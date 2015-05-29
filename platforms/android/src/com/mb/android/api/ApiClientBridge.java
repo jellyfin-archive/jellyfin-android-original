@@ -1,12 +1,11 @@
 package com.mb.android.api;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
 
 import com.mb.android.SyncLoggerFactory;
-import com.mb.android.WebViewResponder;
+import com.mb.android.webviews.IWebView;
+
+import org.xwalk.core.JavascriptInterface;
 
 import java.net.URLEncoder;
 import java.util.regex.Pattern;
@@ -24,7 +23,6 @@ import mediabrowser.apiinteraction.android.sync.PeriodicSync;
 import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.logging.ConsoleLogger;
-import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.net.HttpException;
 import mediabrowser.model.serialization.IJsonSerializer;
@@ -37,11 +35,11 @@ public class ApiClientBridge {
 
     private Context context;
     private ILogger logger;
-    private WebView webView;
+    private IWebView webView;
     private IAsyncHttpClient httpClient;
     private IJsonSerializer jsonSerializer;
 
-    public ApiClientBridge(Context context, ILogger logger, WebView webView) {
+    public ApiClientBridge(Context context, ILogger logger, IWebView webView) {
         this.context = context;
         this.logger = logger;
         this.webView = webView;
@@ -137,6 +135,6 @@ public class ApiClientBridge {
     private void RespondToWebView(final String url) {
 
         logger.Info("Sending url to webView: %s", url);
-        WebViewResponder.send(webView, url);
+        webView.sendJavaScript(url);
     }
 }
