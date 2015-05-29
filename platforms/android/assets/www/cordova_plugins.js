@@ -147,6 +147,7 @@ module.exports.metadata =
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
+    "cordova-plugin-crosswalk-webview": "1.2.0",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

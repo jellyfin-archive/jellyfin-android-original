@@ -1,9 +1,8 @@
 package com.mb.android.iap;
 
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
+import com.mb.android.webviews.IWebView;
 
-import com.mb.android.WebViewResponder;
+import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.Response;
@@ -14,10 +13,10 @@ import mediabrowser.model.logging.ILogger;
  */
 public class IapManager {
 
-    private WebView webView;
+    private IWebView webView;
     private ILogger logger;
 
-    public IapManager(WebView webView, ILogger logger) {
+    public IapManager(IWebView webView, ILogger logger) {
         this.webView = webView;
         this.logger = logger;
     }
@@ -47,7 +46,7 @@ public class IapManager {
     private void RespondToWebView(final String url) {
 
         logger.Info("Sending url to webView: %s", url);
-        WebViewResponder.send(webView, url);
+        webView.sendJavaScript(url);
     }
 
     @JavascriptInterface

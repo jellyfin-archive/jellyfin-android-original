@@ -520,6 +520,44 @@
             currentDevice = null;
         }
 
+        function tryLaunchWebSession(device) {
+
+            console.log('calling launchWebApp');
+            device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
+
+                console.log('launchWebApp success. calling onSessionConnected');
+                setupWebAppSession(device, session);
+
+            }).error(function (err1) {
+
+                console.log('launchWebApp error:' + JSON.stringify(err1));
+
+            });
+        }
+
+        function tryJoinWebSession(device, enableRetry) {
+
+            console.log('calling joinWebApp');
+            device.getWebAppLauncher().joinWebApp(ApplicationID).success(function (session) {
+
+                console.log('joinWebApp success. calling onSessionConnected');
+                setupWebAppSession(device, session);
+
+            }).error(function (err) {
+
+                console.log('joinWebApp error: ' + JSON.stringify(err));
+
+                if (enableRetry) {
+                    tryJoinWebSession(device, false);
+                    return;
+                }
+
+                console.log('calling launchWebApp');
+                tryLaunchWebSession(device);
+
+            });
+        }
+
         function launchWebApp(device) {
 
             // First try to join existing session. If it fails, launch a new one
@@ -531,7 +569,7 @@
 
             }).error(function (err) {
 
-                console.log('joinWebApp error: ' + JSON.stringify(err) + '. calling joinWebApp');
+                console.log('joinWebApp error: ' + JSON.stringify(err) + '. calling launchWebApp');
 
                 device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
@@ -556,11 +594,7 @@
 
             console.log('creating webAppSession');
 
-            setTimeout(function () {
-
-                launchWebApp(device);
-
-            }, 0);
+            launchWebApp(device);
         }
 
         self.tryPair = function (target) {

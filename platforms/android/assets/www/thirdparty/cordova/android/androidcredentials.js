@@ -27,7 +27,7 @@
 
         ApiClientBridge.init(AppInfo.appName, AppInfo.appVersion, AppInfo.deviceId, AppInfo.deviceName, JSON.stringify(capabilities));
 
-        initAjax();
+        //initAjax();
     }
 
     var baseAjaxMethod;
@@ -50,12 +50,12 @@
         var deferred = DeferredBuilder.Deferred();
 
         var id = getNewRequestId();
-		
-		request.headers = request.headers || {};
-		
-		if (request.dataType == 'json') {
-			request.headers.accept = 'application/json';
-		}
+
+        request.headers = request.headers || {};
+
+        if (request.dataType == 'json') {
+            request.headers.accept = 'application/json';
+        }
 
         var requestHeaders = [];
         for (name in request.headers) {
@@ -67,11 +67,11 @@
         Events.on(AndroidAjax, 'response' + id, function (e, status, response) {
 
             Events.off(AndroidAjax, 'response' + id);
-			
-			response = decodeURIComponent(response);
-			
-			if (status >= 400) {
-				alert(status);
+
+            response = decodeURIComponent(response);
+
+            if (status >= 400) {
+                alert(status);
                 deferred.reject();
             }
             else if (request.dataType == 'json') {

@@ -20,14 +20,20 @@
 package com.mb.android;
 
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
+import com.mb.android.webviews.CrosswalkWebView;
+import com.mb.android.webviews.IWebView;
+import com.mb.android.webviews.NativeWebView;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
 
 import org.apache.cordova.*;
+import org.crosswalk.engine.XWalkCordovaView;
+import org.xwalk.core.internal.XWalkSettings;
 
 import java.net.URL;
 
@@ -64,9 +70,20 @@ public class MainActivity extends CordovaActivity
 
         CordovaWebViewEngine engine =  super.makeWebViewEngine();
 
-        WebView webView = (WebView)engine.getView();
-
+        View engineView = engine.getView();
         ILogger logger = getLogger();
+
+
+        IWebView webView = null;
+
+        if (engineView instanceof WebView){
+            webView = new NativeWebView((WebView)engine.getView());
+        }
+        else{
+
+            XWalkCordovaView xView = (XWalkCordovaView)engine.getView();
+            webView = new CrosswalkWebView(xView);
+        }
 
         webView.addJavascriptInterface(new IapManager(webView, logger), "NativeIapManager");
         webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView), "ApiClientBridge");

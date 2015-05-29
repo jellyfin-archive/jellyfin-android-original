@@ -162,6 +162,7 @@ module.exports.metadata =
     "cordova-plugin-purchase": "1.0.4",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
+    "cordova-plugin-crosswalk-webview": "1.2.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
