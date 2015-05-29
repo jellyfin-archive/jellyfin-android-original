@@ -187,13 +187,25 @@ android {
 
     if (Boolean.valueOf(cdvBuildMultipleApks)) {
         productFlavors {
-            armv7 {
+            googlearmv7 {
                 versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
                 ndk {
                     abiFilters "armeabi-v7a", ""
                 }
             }
-            x86 {
+            googlex86 {
+                versionCode cdvVersionCode ?: defaultConfig.versionCode + 4
+                ndk {
+                    abiFilters "x86", ""
+                }
+            }
+            amazonarmv7 {
+                versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
+                ndk {
+                    abiFilters "armeabi-v7a", ""
+                }
+            }
+            amazonx86 {
                 versionCode cdvVersionCode ?: defaultConfig.versionCode + 4
                 ndk {
                     abiFilters "x86", ""
