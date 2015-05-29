@@ -25,6 +25,7 @@ import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
+import com.mb.android.io.NativeFileSystem;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.NativeWebView;
@@ -33,7 +34,6 @@ import com.squareup.okhttp.OkUrlFactory;
 
 import org.apache.cordova.*;
 import org.crosswalk.engine.XWalkCordovaView;
-import org.xwalk.core.internal.XWalkSettings;
 
 import java.net.URL;
 
@@ -73,11 +73,12 @@ public class MainActivity extends CordovaActivity
         View engineView = engine.getView();
         ILogger logger = getLogger();
 
-
         IWebView webView = null;
 
         if (engineView instanceof WebView){
-            webView = new NativeWebView((WebView)engine.getView());
+
+            WebView webkitView = (WebView)engine.getView();
+            webView = new NativeWebView(webkitView);
         }
         else{
 
@@ -87,6 +88,7 @@ public class MainActivity extends CordovaActivity
 
         webView.addJavascriptInterface(new IapManager(webView, logger), "NativeIapManager");
         webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView), "ApiClientBridge");
+        webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
 
         return engine;
     }

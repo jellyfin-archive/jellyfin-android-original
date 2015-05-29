@@ -146,11 +146,11 @@
 }
 
 .viewMenuBar {
-    background-color: #111;
+    background-color: #111 ;
 }
 
 .libraryViewNav {
-    background-color: #111;
+    background-color: #111 ;
 }
 
     .libraryViewNav::-webkit-scrollbar {

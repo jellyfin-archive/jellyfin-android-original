@@ -1849,7 +1849,9 @@ var AppInfo = {};
             requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices']);
 
             if ($.browser.android) {
-                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive']);
+                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'scripts/thirdparty/cordova/android/filesystem']);
+            } else {
+                requirejs(['scripts/thirdparty/cordova/filesystem']);
             }
 
             if ($.browser.safari) {
@@ -1860,6 +1862,7 @@ var AppInfo = {};
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
             }
+            requirejs(['scripts/thirdparty/filesystem']);
         }
     }
 

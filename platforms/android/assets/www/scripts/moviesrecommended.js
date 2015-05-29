@@ -2,12 +2,12 @@
 
     function getView() {
 
-        return 'PosterCard';
+        return 'Poster';
     }
 
     function getResumeView() {
 
-        return 'ThumbCard';
+        return 'Thumb';
     }
 
     function enableScrollX() {
