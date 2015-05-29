@@ -20,13 +20,7 @@
 
         html += '<div class="viewMenuSecondary">';
 
-        if (!AppInfo.enableHeaderImages) {
-            html += '<button id="btnCast" class="btnCast btnCastIcon btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="display:none;">';
-            html += '<div class="headerSelectedPlayer"></div><i class="fa fa-wifi"></i>';
-            html += '</button>';
-        } else {
-            html += '<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="display:none;"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';
-        }
+        html += '<button id="btnCast" class="btnCast btnDefaultCast headerButton headerButtonRight" type="button" data-role="none" style="display:none;"><div class="headerSelectedPlayer"></div><div class="btnCastImage"></div></button>';
 
         html += '<button onclick="Search.showSearchPanel();" type="button" data-role="none" class="headerButton headerButtonRight headerSearchButton" style="display:none;"><div class="fa fa-search" style="font-size:21px;"></div></button>';
         html += '<div class="viewMenuSearch hide">';
@@ -290,51 +284,36 @@
 
             html += '<div class="sidebarLinks librarySidebarLinks">';
 
-            var showUserAtTop = AppInfo.isTouchPreferred;
+            var userHref = user.localUser && user.localUser.Policy.EnableUserPreferenceAccess ?
+                'mypreferencesdisplay.html?userId=' + user.localUser.Id :
+                (user.localUser ? 'index.html' : '#');
 
-            if (showUserAtTop) {
+            var hasUserImage = user.imageUrl && AppInfo.enableUserImage;
+            var paddingLeft = hasUserImage ? 'padding-left:.7em;' : '';
+            html += '<a style="margin-top:0;' + paddingLeft + 'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #000;" href="' + userHref + '">';
 
-                var userHref = user.localUser && user.localUser.Policy.EnableUserPreferenceAccess ?
-                    'mypreferencesdisplay.html?userId=' + user.localUser.Id :
-                    (user.localUser ? 'index.html' : '#');
+            var imgWidth = 44;
 
-                var hasUserImage = user.imageUrl && AppInfo.enableUserImage;
-                var paddingLeft = hasUserImage ? 'padding-left:.7em;' : '';
-                html += '<a style="margin-top:0;' + paddingLeft + 'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #000;" href="' + userHref + '">';
+            if (hasUserImage) {
+                var url = user.imageUrl;
 
-                var imgWidth = 44;
-
-                if (hasUserImage) {
-                    var url = user.imageUrl;
-
-                    if (user.supportsImageParams) {
-                        url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
-                    }
-
-                    html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
-                } else {
-                    html += '<span class="fa fa-user sidebarLinkIcon"></span>';
+                if (user.supportsImageParams) {
+                    url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
                 }
 
-                html += user.name;
-                html += '</a>';
-
-                html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
+                html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
+            } else {
+                html += '<span class="fa fa-user sidebarLinkIcon"></span>';
             }
+
+            html += user.name;
+            html += '</a>';
+
+            html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
 
             var homeHref = window.ApiClient ? 'index.html' : 'selectserver.html';
 
-            if (showUserAtTop) {
-                html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
-
-            } else {
-                html += '<a class="lnkMediaFolder sidebarLink" style="margin-top:.5em;padding-left:1em;display:block;color:#fff;text-decoration:none;" href="' + homeHref + '">';
-
-                html += '<img style="max-width:36px;vertical-align:middle;margin-right:1em;" src="css/images/mblogoicon.png" />';
-
-                html += Globalize.translate('ButtonHome');
-                html += '</a>';
-            }
+            html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
 
             html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" data-rel="none" href="nowplaying.html"><span class="fa fa-tablet sidebarLinkIcon"></span>' + Globalize.translate('ButtonRemote') + '</a>';
 

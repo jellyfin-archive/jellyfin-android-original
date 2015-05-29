@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="jcifs-1.3.14-kohsuke-1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.samba.jcifs/jcifs/1.3.14-kohsuke-1/b772f122690d0ee05a2cbf11d141d5a14392ef05/jcifs-1.3.14-kohsuke-1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.samba.jcifs/jcifs/1.3.14-kohsuke-1/4df98b6db84c6cba2c86d7c3b4a5384561228581/jcifs-1.3.14-kohsuke-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
