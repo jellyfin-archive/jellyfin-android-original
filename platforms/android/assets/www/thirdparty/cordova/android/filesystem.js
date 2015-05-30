@@ -3,8 +3,11 @@
     window.FileSystem = {
 
         fileExists: function (path) {
-            var exists = NativeFileSystem.fileExists(path);
-            return false;
+            return NativeFileSystem.fileExists(path);
+        },
+
+        translateFilePath: function (path) {
+            return NativeFileSystem.translateFilePath(path);
         }
     };
 
