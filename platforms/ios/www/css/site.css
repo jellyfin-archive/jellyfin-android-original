@@ -243,7 +243,7 @@ body:not(.enableBackButton) .headerBackButton {
     left: 270px !important;
 }
 
-@media all and (min-width: 400px) {
+@media all and (min-width: 340px) {
 
     .largePanel {
         width: 300px;
@@ -469,12 +469,16 @@ h1 .imageLink {
 }
 
 .sidebarLinkIcon {
-    font-size: 17px;
+    font-size: 16px;
     width: 66px;
     text-align: center;
     vertical-align: middle;
     color: #ddd;
 }
+
+    .sidebarLinkIcon + span {
+        vertical-align: middle;
+    }
 
 .ui-page-theme-a .sidebarLinkIcon {
     color: #666;
