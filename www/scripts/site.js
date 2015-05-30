@@ -1485,11 +1485,11 @@ var AppInfo = {};
 
         AppInfo.enableAppStorePolicy = isCordova;
 
-        var isSafari = $.browser.safari;
+        var isIOS = $.browser.safari || $.browser.ipad || $.browser.iphone;
         var isAndroid = $.browser.android;
         var isMobile = $.browser.mobile;
 
-        if (isSafari) {
+        if (isIOS) {
 
             if (isMobile) {
                 AppInfo.hasLowImageBandwidth = true;
@@ -1533,7 +1533,7 @@ var AppInfo = {};
             AppInfo.enableFooterNotifications = true;
             AppInfo.enableSupporterMembership = true;
 
-            if (!isAndroid && !isSafari) {
+            if (!isAndroid && !isIOS) {
                 AppInfo.enableAppLayouts = true;
             }
         }
@@ -1541,7 +1541,7 @@ var AppInfo = {};
         AppInfo.enableUserImage = true;
         AppInfo.hasPhysicalVolumeButtons = isCordova || isMobile;
 
-        AppInfo.enableBackButton = (isSafari && window.navigator.standalone) || (isCordova && isSafari);
+        AppInfo.enableBackButton = (isIOS && window.navigator.standalone) || (isCordova && isIOS);
         AppInfo.supportsFullScreen = isCordova && isAndroid;
     }
 
@@ -1782,9 +1782,9 @@ var AppInfo = {};
             requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices']);
 
             if ($.browser.android) {
-                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'scripts/thirdparty/cordova/android/filesystem']);
+                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'thirdparty/cordova/android/filesystem']);
             } else {
-                requirejs(['scripts/thirdparty/cordova/filesystem']);
+                requirejs(['thirdparty/cordova/filesystem']);
             }
 
             if ($.browser.safari) {
@@ -1795,7 +1795,7 @@ var AppInfo = {};
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
             }
-            requirejs(['scripts/thirdparty/filesystem']);
+            requirejs(['thirdparty/filesystem']);
         }
     }
 

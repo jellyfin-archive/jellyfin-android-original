@@ -34,6 +34,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="IapManager.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/iap/IapManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.9133089" vertical-offset="0" max-vertical-offset="1088">
+              <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="AndroidManifest.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/AndroidManifest.xml">
           <provider selected="true" editor-type-id="text-editor">
@@ -44,11 +54,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NativeFileSystem.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="NativeFileSystem.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/io/NativeFileSystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.36255923" vertical-offset="17" max-vertical-offset="1037">
-              <caret line="19" column="29" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
+            <state vertical-scroll-proportion="-17.68" vertical-offset="17" max-vertical-offset="1037">
+              <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#381#382#0" expanded="true" />
@@ -61,8 +71,8 @@
       <file leaf-file-name="ApiClientBridge.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1122" max-vertical-offset="2040">
-              <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
+            <state vertical-scroll-proportion="-9.52" vertical-offset="1122" max-vertical-offset="2040">
+              <caret line="106" column="13" selection-start-line="106" selection-start-column="13" selection-end-line="106" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -2453,14 +2463,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/iap/IapManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36255923" vertical-offset="0" max-vertical-offset="1088">
-          <caret line="24" column="4" selection-start-line="23" selection-start-column="4" selection-end-line="24" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.samba.jcifs/jcifs/1.3.14-kohsuke-1/4df98b6db84c6cba2c86d7c3b4a5384561228581/jcifs-1.3.14-kohsuke-1-sources.jar!/jcifs/smb/SmbFile.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="4.2695546" vertical-offset="3388" max-vertical-offset="49453">
@@ -2485,14 +2487,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="2482">
-          <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.28199053" vertical-offset="0" max-vertical-offset="1428">
@@ -2511,13 +2505,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/io/NativeFileSystem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36255923" vertical-offset="17" max-vertical-offset="1037">
-          <caret line="19" column="29" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
+        <state vertical-scroll-proportion="-17.68" vertical-offset="17" max-vertical-offset="1037">
+          <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#381#382#0" expanded="true" />
             <element signature="e#417#418#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.52" vertical-offset="1122" max-vertical-offset="2040">
+          <caret line="106" column="13" selection-start-line="106" selection-start-column="13" selection-end-line="106" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/iap/IapManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9133089" vertical-offset="0" max-vertical-offset="1088">
+          <caret line="54" column="13" selection-start-line="54" selection-start-column="13" selection-end-line="54" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
