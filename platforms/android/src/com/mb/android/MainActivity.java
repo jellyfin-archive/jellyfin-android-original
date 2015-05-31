@@ -59,7 +59,14 @@ public class MainActivity extends CordovaActivity
         super.onCreate(savedInstanceState);
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
+
+        try {
+            URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
+        }
+        catch (Exception ex){
+            // Occasionally seeing factory already set error
+        }
+
 
         // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);
