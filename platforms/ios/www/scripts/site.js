@@ -738,7 +738,15 @@ var Dashboard = {
                         menuHtml += '<a data-transition="none" class="sidebarLink" href="' + item.href + '">';
                     }
 
-                    menuHtml += '<span class="fa ' + item.icon + ' sidebarLinkIcon"' + style + '></span>';
+                    var icon = item.icon;
+
+                    if (icon) {
+                        if (icon.indexOf('fa') == 0) {
+                            menuHtml += '<span class="fa ' + icon + ' sidebarLinkIcon"' + style + '></span>';
+                        } else {
+                            menuHtml += '<i class="material-icons sidebarLinkIcon"' + style + '>' + icon + '</i>';
+                        }
+                    }
 
                     menuHtml += '<span class="sidebarLinkText">';
                     menuHtml += item.name;
