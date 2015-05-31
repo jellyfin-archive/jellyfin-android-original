@@ -288,6 +288,10 @@ dependencies {
     // FLAVOR-SPECIFIC DEPENDENCIES
     googlex86Compile(name: 'emby.googleiap', ext: 'aar')
     googlearmv7Compile(name: 'emby.googleiap', ext: 'aar')
+    amazonx86Compile(name: 'emby.amazoniap', ext: 'aar')
+    amazonarmv7Compile(name: 'emby.amazoniap', ext: 'aar')
+    amazonx86Compile files('libs/in-app-purchasing-2.0.61.jar')
+    amazonarmv7Compile files('libs/in-app-purchasing-2.0.61.jar')
     // FLAVOR-SPECIFIC DEPENDENCIES END
 }
 
