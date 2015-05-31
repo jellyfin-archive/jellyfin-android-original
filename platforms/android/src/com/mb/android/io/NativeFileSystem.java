@@ -9,9 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -32,54 +29,46 @@ public class NativeFileSystem {
     @JavascriptInterface
     public boolean fileExists(String path) {
 
-        File file = new File(path);
-
-        if (file.exists()) {
-            return true;
+        try {
+            return getFileLength(path) >= 0;
         }
+        catch (IOException ex) {
+            return false;
+        }
+    }
 
-        if (path.startsWith("\\\\")){
-            // convert unc to smb
-            path = path.replace("\\", "/");
-            path = "smb:" + path;
+    public long getFileLength(String path) throws IOException {
+
+        try {
+
+            File file = new File(path);
+
+            if (file.exists()) {
+                return file.length();
+            }
+
+        } catch (Exception  e) {
+            logger.ErrorException("Exception", e);
         }
 
         try {
             SmbFile sFile = new SmbFile(path);
 
             if (sFile.exists()) {
-                return true;
+
+                return sFile.length();
             }
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            logger.ErrorException("MalformedURLException", e);
-        }catch (SmbException e) {
-            e.printStackTrace();
+        } catch (SmbException e) {
             logger.ErrorException("SmbException", e);
         }
-
-        return false;
-    }
-
-    public long getFileLength(String path) throws IOException {
-
-        File file = new File(path);
-
-        if (file.exists()) {
-            return file.length();
+        catch (IOException  e) {
+            logger.ErrorException("IOException", e);
         }
+        catch (NullPointerException ex){
 
-        if (path.startsWith("\\\\")){
-            // convert unc to smb
-            path = path.replace("\\", "/");
-            path = "smb:" + path;
-        }
-
-        SmbFile sFile = new SmbFile(path);
-
-        if (sFile.exists()) {
-            return sFile.length();
+            // Seeing an internal error in SmbFile when the path is not valid. Exists should have returned false
+            logger.ErrorException("SmbException", ex);
         }
 
         throw new FileNotFoundException(path);
@@ -98,12 +87,6 @@ public class NativeFileSystem {
 
         if (file.exists()) {
             return new FileInputStream(path);
-        }
-
-        if (path.startsWith("\\\\")){
-            // convert unc to smb
-            path = path.replace("\\", "/");
-            path = "smb:" + path;
         }
 
         return new SmbFileInputStream(path);
