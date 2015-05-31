@@ -60,15 +60,6 @@ public class IapManager {
         webView.sendJavaScript(url);
     }
 
-    @JavascriptInterface
-    public void beginPurchase(String id) {
-
-        logger.Info("beginPurchase: %s", id);
-
-        beginPurchaseInternal(id, new EmptyResponse());
-        // myWebView.loadUrl("javascript:window.MyHandler.setResult( addSomething("+val1+","+val2+") )");
-    }
-
     private void isPurchasedInternal(String id, final Response<Boolean> response) {
         final IabValidator iabValidator = new IabValidator(context, GOOGLE_KEY, new IResultHandler() {
             @Override
@@ -83,10 +74,6 @@ public class IapManager {
         });
 
         iabValidator.checkInAppPurchase(id);
-
-    }
-
-    private void beginPurchaseInternal(String id, EmptyResponse response) {
 
     }
 }

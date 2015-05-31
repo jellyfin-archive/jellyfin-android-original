@@ -35,6 +35,7 @@ import com.squareup.okhttp.OkUrlFactory;
 
 import org.apache.cordova.*;
 import org.crosswalk.engine.XWalkCordovaView;
+import org.xwalk.core.JavascriptInterface;
 
 import java.net.URL;
 
@@ -48,6 +49,7 @@ public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_UNLOCK_REQUEST = 999;
     private ILogger logger;
+    private IWebView webView;
 
     private ILogger getLogger(){
         if (logger == null){
@@ -85,7 +87,7 @@ public class MainActivity extends CordovaActivity
         View engineView = engine.getView();
         ILogger logger = getLogger();
 
-        IWebView webView = null;
+        webView = null;
 
         if (engineView instanceof WebView){
 
@@ -101,6 +103,7 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(new IapManager(getApplicationContext(), webView, logger), "NativeIapManager");
         webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
+        webView.addJavascriptInterface(this, "MainActivity");
 
         return engine;
     }
@@ -109,18 +112,25 @@ public class MainActivity extends CordovaActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == PURCHASE_UNLOCK_REQUEST) {
             if (resultCode == ResultType.Success.ordinal()) {
-                //TODO purchase was successful - set whatever we need to
+                RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
             } else {
                 String data = intent.getStringExtra("data");
-                //TODO handle error with purchase.  data will be the json returned from the attempt
+                RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
             }
         }
     }
 
+    @JavascriptInterface
     public void beginPurchase(String id) {
         Intent purchaseIntent = new Intent(this, UnlockActivity.class);
         purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
         purchaseIntent.putExtra("sku", id);
         startActivityForResult(purchaseIntent, PURCHASE_UNLOCK_REQUEST);
+    }
+
+    private void RespondToWebView(final String url) {
+
+        logger.Info("Sending url to webView: %s", url);
+        webView.sendJavaScript(url);
     }
 }

@@ -701,7 +701,7 @@ var Dashboard = {
         }
     },
 
-    ensureToolsMenu: function (page, user) {
+    ensureToolsMenu: function (page) {
 
         var sidebar = $('.toolsSidebar', page);
 
@@ -719,10 +719,6 @@ var Dashboard = {
             for (i = 0, length = items.length; i < length; i++) {
 
                 item = items[i];
-
-                if (!user.Policy.IsAdministrator) {
-                    break;
-                }
 
                 if (item.divider) {
                     menuHtml += "<div class='sidebarDivider ui-bar-inherit'></div>";
@@ -1977,19 +1973,19 @@ $(document).on('pagecreate', ".page", function () {
 
     if (apiClient && apiClient.accessToken() && Dashboard.getCurrentUserId()) {
 
-        Dashboard.getCurrentUser().done(function (user) {
+        var isSettingsPage = page.hasClass('type-interior');
 
-            var isSettingsPage = page.hasClass('type-interior');
+        if (isSettingsPage) {
+            Dashboard.ensureToolsMenu(page);
 
-            if (!user.Policy.IsAdministrator && isSettingsPage) {
-                Dashboard.logout();
-                return;
-            }
+            Dashboard.getCurrentUser().done(function (user) {
 
-            if (isSettingsPage) {
-                Dashboard.ensureToolsMenu(page, user);
-            }
-        });
+                if (!user.Policy.IsAdministrator) {
+                    Dashboard.logout();
+                    return;
+                }
+            });
+        }
     }
 
     else {
