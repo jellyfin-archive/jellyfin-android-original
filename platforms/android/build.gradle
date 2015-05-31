@@ -48,6 +48,9 @@ buildscript {
 // Allow plugins to declare Maven dependencies via build-extras.gradle.
 repositories {
     mavenCentral()
+    flatDir {
+        dirs 'libs/aars'
+    }
 }
 
 task wrapper(type: Wrapper) {
@@ -282,6 +285,10 @@ dependencies {
     compile files('libs/volley.jar')
     compile 'com.google.guava:guava:18.0'
     compile 'org.samba.jcifs:jcifs:1.3.14-kohsuke-1'
+    // FLAVOR-SPECIFIC DEPENDENCIES
+    googlex86Compile(name: 'emby.googleiap', ext: 'aar')
+    googlearmv7Compile(name: 'emby.googleiap', ext: 'aar')
+    // FLAVOR-SPECIFIC DEPENDENCIES END
 }
 
 def promptForReleaseKeyPassword() {

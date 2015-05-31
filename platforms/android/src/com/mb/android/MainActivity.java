@@ -19,6 +19,7 @@
 
 package com.mb.android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
@@ -39,9 +40,13 @@ import java.net.URL;
 
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.logging.ILogger;
+import tv.emby.googleiap.ErrorType;
+import tv.emby.googleiap.ResultType;
+import tv.emby.googleiap.UnlockActivity;
 
 public class MainActivity extends CordovaActivity
 {
+    private final int PURCHASE_UNLOCK_REQUEST = 999;
     private ILogger logger;
 
     private ILogger getLogger(){
@@ -86,10 +91,29 @@ public class MainActivity extends CordovaActivity
             webView = new CrosswalkWebView(xView);
         }
 
-        webView.addJavascriptInterface(new IapManager(webView, logger), "NativeIapManager");
+        webView.addJavascriptInterface(new IapManager(getApplicationContext(), webView, logger), "NativeIapManager");
         webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
 
         return engine;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == PURCHASE_UNLOCK_REQUEST) {
+            if (resultCode == ResultType.Success.ordinal()) {
+                //TODO purchase was successful - set whatever we need to
+            } else {
+                String data = intent.getStringExtra("data");
+                //TODO handle error with purchase.  data will be the json returned from the attempt
+            }
+        }
+    }
+
+    public void beginPurchase(String id) {
+        Intent purchaseIntent = new Intent(this, UnlockActivity.class);
+        purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
+        purchaseIntent.putExtra("sku", id);
+        startActivityForResult(purchaseIntent, PURCHASE_UNLOCK_REQUEST);
     }
 }
