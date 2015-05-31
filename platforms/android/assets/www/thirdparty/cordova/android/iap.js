@@ -1,6 +1,6 @@
 ﻿(function () {
 
-    var unlockId = "premiumunlock";
+    var unlockId = "com.mb.android.unlock";
     var updatedProducts = [];
 
     function updateProductInfo(id, owned) {
@@ -38,11 +38,16 @@
         return MainActivity.beginPurchase(id);
     }
 
+    function onPurchaseComplete(result) {
+        alert(result);
+    }
+
     window.IapManager = {
         isPurchaseAvailable: isPurchaseAvailable,
         hasPurchased: hasPurchased,
         updateProduct: updateProductInfo,
-        beginPurchase: beginPurchase
+        beginPurchase: beginPurchase,
+        onPurchaseComplete: onPurchaseComplete
     };
 
     NativeIapManager.isPurchased(unlockId, "window.IapManager.updateProduct");
