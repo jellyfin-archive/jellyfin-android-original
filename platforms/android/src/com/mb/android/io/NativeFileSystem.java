@@ -89,23 +89,7 @@ public class NativeFileSystem {
 
         File file = new File(path);
 
-        if (file.exists()) {
-            return file.getName();
-        }
-
-        if (path.startsWith("\\\\")){
-            // convert unc to smb
-            path = path.replace("\\", "/");
-            path = "smb:" + path;
-        }
-
-        SmbFile sFile = new SmbFile(path);
-
-        if (sFile.exists()) {
-            return sFile.getName();
-        }
-
-        throw new FileNotFoundException(path);
+        return file.getName();
     }
 
     public InputStream getFileInputStream(String path) throws IOException {
