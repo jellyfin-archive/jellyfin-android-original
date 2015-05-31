@@ -124,7 +124,7 @@ public class MainActivity extends CordovaActivity
     public void beginPurchase(String id) {
         Intent purchaseIntent = new Intent(this, UnlockActivity.class);
         purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
-        purchaseIntent.putExtra("sku", id);
+        purchaseIntent.putExtra("sku", "com.mb.android.unlock");
         startActivityForResult(purchaseIntent, PURCHASE_UNLOCK_REQUEST);
     }
 

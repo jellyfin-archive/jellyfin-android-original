@@ -45,7 +45,7 @@ public class IapManager {
 
         logger.Info("isPurchased: %s", id);
 
-        isPurchasedInternal(id, new Response<Boolean>(){
+        isPurchasedInternal("com.mb.android.unlock", new Response<Boolean>(){
 
             @Override
             public void onResponse(final Boolean result){
