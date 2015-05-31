@@ -9,11 +9,11 @@ import org.xwalk.core.JavascriptInterface;
 import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.model.logging.ILogger;
-import tv.emby.googleiap.ErrorSeverity;
-import tv.emby.googleiap.ErrorType;
-import tv.emby.googleiap.IResultHandler;
-import tv.emby.googleiap.IabValidator;
-import tv.emby.googleiap.ResultType;
+import tv.emby.iap.ErrorSeverity;
+import tv.emby.iap.ErrorType;
+import tv.emby.iap.IResultHandler;
+import tv.emby.iap.IabValidator;
+import tv.emby.iap.ResultType;
 
 /**
  * Created by Luke on 5/27/2015.

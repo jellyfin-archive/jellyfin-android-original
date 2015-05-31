@@ -33,7 +33,8 @@ import com.mb.android.webviews.NativeWebView;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
 
-import org.apache.cordova.*;
+import org.apache.cordova.CordovaActivity;
+import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
 import org.xwalk.core.JavascriptInterface;
 
@@ -41,9 +42,8 @@ import java.net.URL;
 
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.logging.ILogger;
-import tv.emby.googleiap.ErrorType;
-import tv.emby.googleiap.ResultType;
-import tv.emby.googleiap.UnlockActivity;
+import tv.emby.iap.ResultType;
+import tv.emby.iap.UnlockActivity;
 
 public class MainActivity extends CordovaActivity
 {
