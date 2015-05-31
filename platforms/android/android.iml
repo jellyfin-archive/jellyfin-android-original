@@ -12,9 +12,8 @@
         <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
         <option name="ASSEMBLE_TASK_NAME" value="assembleGooglex86Debug" />
         <option name="COMPILE_JAVA_TASK_NAME" value="compileGooglex86DebugSources" />
-        <option name="SOURCE_GEN_TASK_NAME" value="generateGooglex86DebugSources" />
         <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleGooglex86DebugTest" />
-        <option name="COMPILE_JAVA_TEST_TASK_NAME" value="compileGooglex86DebugTestSources" />
+        <option name="SOURCE_GEN_TASK_NAME" value="generateGooglex86DebugSources" />
         <option name="TEST_SOURCE_GEN_TASK_NAME" value="generateGooglex86DebugTestSources" />
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res" />
@@ -124,3 +123,4 @@
     <orderEntry type="module" module-name="CordovaLib" exported="" />
   </component>
 </module>
+
