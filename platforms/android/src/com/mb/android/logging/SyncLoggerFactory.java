@@ -20,7 +20,7 @@ public class SyncLoggerFactory implements ISyncLoggerFactory {
 
     @Override
     public ILogger getNewLogger() {
-        AppLogger.ResetSyncLogger(context);
+        //AppLogger.ResetSyncLogger(context);
         return syncLogger;
     }
 
