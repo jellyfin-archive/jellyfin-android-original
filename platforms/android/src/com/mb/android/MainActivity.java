@@ -27,7 +27,6 @@ import android.webkit.WebView;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
-import com.mb.android.logging.AppLogger;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.NativeWebView;
@@ -35,7 +34,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
 
 import org.apache.cordova.CordovaActivity;
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
 import org.xwalk.core.JavascriptInterface;
@@ -55,7 +53,8 @@ public class MainActivity extends CordovaActivity
 
     private ILogger getLogger(){
         if (logger == null){
-            logger = AppLogger.createLogger(this);
+            //logger = AppLogger.createLogger(this);
+            logger = new ConsoleLogger();
         }
 
         return logger;
