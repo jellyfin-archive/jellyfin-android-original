@@ -122,10 +122,17 @@ public class MainActivity extends CordovaActivity
 
     @JavascriptInterface
     public void beginPurchase(String id) {
-        Intent purchaseIntent = new Intent(this, UnlockActivity.class);
-        purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
-        purchaseIntent.putExtra("sku", "com.mb.android.unlock");
-        startActivityForResult(purchaseIntent, PURCHASE_UNLOCK_REQUEST);
+
+        try {
+            Intent purchaseIntent = new Intent(this, UnlockActivity.class);
+            purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
+            purchaseIntent.putExtra("sku", "com.mb.android.unlock");
+            startActivityForResult(purchaseIntent, PURCHASE_UNLOCK_REQUEST);
+        }
+        catch (Exception ex) {
+            logger.ErrorException("Error launching activity", ex);
+            RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
+        }
     }
 
     private void RespondToWebView(final String url) {
