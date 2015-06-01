@@ -324,7 +324,7 @@
 
             html += '<a class="sidebarLink lnkMediaFolder" data-itemid="remote" href="nowplaying.html"><span class="fa fa-tablet sidebarLinkIcon"></span>' + Globalize.translate('ButtonRemote') + '</a>';
 
-            html += '<a class="sidebarLink lnkMediaFolder syncViewMenu" data-itemid="mysync" href="mysync.html"><span class="fa fa-cloud sidebarLinkIcon"></span>' + Globalize.translate('ButtonSync') + '</a>';
+            html += '<a class="sidebarLink lnkMediaFolder syncViewMenu" data-itemid="mysync" href="mysync.html"><span class="fa fa-refresh sidebarLinkIcon"></span>' + Globalize.translate('ButtonSync') + '</a>';
 
             html += '<div class="sidebarDivider"></div>';
 
