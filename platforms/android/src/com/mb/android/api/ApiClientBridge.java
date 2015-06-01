@@ -2,7 +2,7 @@ package com.mb.android.api;
 
 import android.content.Context;
 
-import com.mb.android.SyncLoggerFactory;
+import com.mb.android.logging.SyncLoggerFactory;
 import com.mb.android.webviews.IWebView;
 
 import org.xwalk.core.JavascriptInterface;
@@ -58,10 +58,6 @@ public class ApiClientBridge {
     public void init(String appName, String appVersion, String deviceId, String deviceName, String capabilitiesJson) {
 
         logger.Info("ApiClientBridge.init");
-
-        ILogger logger = new ConsoleLogger();
-
-        MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory();
 
         jsonSerializer = new GsonJsonSerializer();
 
