@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+           id="org.apache.cordova.speech.speechrecognition"
+      version="0.1.0">
+    <name>SpeechRecognition</name>
+    <description>Cordova Speech Recognition Plugin</description>
+    <license>Apache</license>
+    <keywords>cordova,speech,recognition</keywords>
+
+
+    <js-module src="www/SpeechRecognition.js" name="SpeechRecognition">
+        <clobbers target="SpeechRecognition" />
+    </js-module>
+
+    <js-module src="www/SpeechRecognitionError.js" name="SpeechRecognitionError">
+        <clobbers target="SpeechRecognitionError" />
+    </js-module>
+
+    <js-module src="www/SpeechRecognitionAlternative.js" name="SpeechRecognitionAlternative">
+        <clobbers target="SpeechRecognitionAlternative" />
+    </js-module>
+
+    <js-module src="www/SpeechRecognitionResult.js" name="SpeechRecognitionResult">
+        <clobbers target="SpeechRecognitionResult" />
+    </js-module>
+
+    <js-module src="www/SpeechRecognitionResultList.js" name="SpeechRecognitionResultList">
+        <clobbers target="SpeechRecognitionResultList" />
+    </js-module>
+
+    <js-module src="www/SpeechRecognitionEvent.js" name="SpeechRecognitionEvent">
+        <clobbers target="SpeechRecognitionEvent" />
+    </js-module>
+
+    <js-module src="www/SpeechGrammar.js" name="SpeechGrammar">
+        <clobbers target="SpeechGrammar" />
+    </js-module>
+
+    <js-module src="www/SpeechGrammarList.js" name="SpeechGrammarList">
+        <clobbers target="SpeechGrammarList" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SpeechRecognition">
+                <param name="android-package" value="org.apache.cordova.speech.SpeechRecognition"/>
+            </feature>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+        </config-file>
+
+        <source-file src="src/android/SpeechRecognition.java" target-dir="src/org/apache/cordova/speech" />      
+    </platform>
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SpeechRecognition">
+                <param name="ios-package" value="SpeechRecognition"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/ios/SpeechRecognition.m" />
+        <source-file src="src/ios/libiSpeechSDK.a" framework="true" />
+
+        <header-file src="src/ios/SpeechRecognition.h" />
+        <header-file src="src/ios/Headers/iSpeechSDK.h" />
+        <header-file src="src/ios/Headers/ISSpeechRecognition.h" />
+        <header-file src="src/ios/Headers/ISSpeechRecognitionLocales.h" />
+        <header-file src="src/ios/Headers/ISSpeechRecognitionResult.h" />
+        <header-file src="src/ios/Headers/ISSpeechSynthesis.h" />
+        <header-file src="src/ios/Headers/ISSpeechSynthesisVoices.h" />
+        
+
+        <framework src="AudioToolbox.framework" />
+        <framework src="SystemConfiguration.framework" />
+        <framework src="Security.framework" />
+        <framework src="CFNetwork.framework" />
+
+        <resource-file src="src/ios/iSpeechSDK.bundle" />
+    </platform>
+          
+</plugin>

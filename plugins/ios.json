@@ -71,6 +71,10 @@
                         {
                             "xml": "<feature name=\"Launcher\"><param name=\"ios-package\" value=\"Launcher\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SpeechRecognition\"><param name=\"ios-package\" value=\"SpeechRecognition\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -91,18 +95,22 @@
                         {
                             "xml": true,
                             "count": 1
+                        },
+                        {
+                            "xml": false,
+                            "count": 1
                         }
                     ],
                     "Security.framework": [
                         {
                             "xml": false,
-                            "count": 2
+                            "count": 3
                         }
                     ],
                     "CFNetwork.framework": [
                         {
                             "xml": false,
-                            "count": 1
+                            "count": 2
                         }
                     ],
                     "WebKit.framework": [
@@ -130,6 +138,12 @@
                         }
                     ],
                     "StoreKit.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "SystemConfiguration.framework": [
                         {
                             "xml": false,
                             "count": 1
@@ -189,6 +203,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "org.apache.cordova.speech.speechrecognition": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

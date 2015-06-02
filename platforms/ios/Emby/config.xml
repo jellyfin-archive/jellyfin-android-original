@@ -119,4 +119,7 @@
     <preference name="BackupWebStorage" value="local" />
     <preference name="SplashScreenDelay" value="7000" />
     <icon src="res/icon.png" />
+    <feature name="SpeechRecognition">
+        <param name="ios-package" value="SpeechRecognition" />
+    </feature>
 </widget>

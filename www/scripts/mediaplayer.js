@@ -466,8 +466,8 @@
                 return true;
             }
 
-            return false;
             //return $.browser.chrome || $.browser.msie;
+            return false;
         };
 
         self.changeStream = function (ticks, params) {

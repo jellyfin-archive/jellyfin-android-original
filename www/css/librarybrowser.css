@@ -1387,6 +1387,12 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 .listItem a:first-child {
     margin-right: 0 !important;
     background-color: transparent !important;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.listItem.ui-li-has-thumb .ui-btn {
+    padding-left: 5.9em!important;
 }
 
 .ui-page-theme-a .listItem a:first-child {
@@ -1407,7 +1413,11 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 }
 
 .ui-page-theme-b .listItem:hover a {
-    background-color: #333 !important;
+    background-color: rgba(51,51,51,.6) !important;
+}
+
+.listviewSubLink:hover {
+    color: #2ad;
 }
 
 @media all and (max-width: 600px) {
