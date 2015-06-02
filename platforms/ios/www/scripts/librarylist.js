@@ -450,7 +450,7 @@
             }
 
             if (commands.indexOf('sync') != -1) {
-                html += '<li data-icon="cloud"><a href="#" class="btnSync" data-itemId="' + itemId + '">' + Globalize.translate('ButtonSync') + '</a></li>';
+                html += '<li data-icon="refresh"><a href="#" class="btnSync" data-itemId="' + itemId + '">' + Globalize.translate('ButtonSync') + '</a></li>';
             }
 
             html += '</ul>';
@@ -707,7 +707,7 @@
             if (SyncManager.isAvailable(item, user)) {
                 contentHtml += '<div class="detailsMenuButtonContainer">';
                 contentHtml += '<a href="#" class="btn btnSync">';
-                contentHtml += '<i class="fa fa-cloud"></i>';
+                contentHtml += '<i class="fa fa-refresh"></i>';
                 contentHtml += '<span>' + Globalize.translate('ButtonSync') + '</span>';
                 contentHtml += '</a>';
                 contentHtml += '</div>';
@@ -1049,6 +1049,13 @@
         PlaylistManager.showPanel(selection);
     }
 
+    function onListviewSubLinkClick(e) {
+        
+        var elem = e.target;
+        Dashboard.navigate(elem.getAttribute('data-href'));
+        return false;
+    }
+
     function onItemWithActionClick(e) {
 
         var elem = this;
@@ -1129,7 +1136,7 @@
 
             toggleSelections(page);
 
-        }).on('click', '.itemWithAction', onItemWithActionClick);
+        }).on('click', '.itemWithAction', onItemWithActionClick).on('click', '.listviewSubLink', onListviewSubLinkClick);
 
         $('.itemsContainer', page).createCardMenus();
 

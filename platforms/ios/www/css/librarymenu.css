@@ -6,10 +6,14 @@
         padding-top: 98px !important;
     }
 
-.libraryMenuDivider {
+.sidebarDivider {
     height: 1px;
     background: #333;
     margin: .5em 0;
+}
+
+.ui-page-theme-a .sidebarDivider {
+    background: #ddd !important;
 }
 
 .headerBackButton {
@@ -278,7 +282,7 @@
     }
 }
 
-@media all and (max-width: 1000px) {
+@media all and (max-width: 1440px) {
 
     /* They can use the left menu */
     .dashboardEntryHeaderButton {

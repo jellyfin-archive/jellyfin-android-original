@@ -31,7 +31,11 @@
         html += '</form>';
         html += '</div>';
 
-        html += '<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton" style="display:none;"><i class="material-icons">settings</i></a>';
+        html += '<button onclick="VoiceInputManager.startListening();" type="button" data-role="none" class="headerButton headerButtonRight headerVoiceButton" style="display:none;"><i class="material-icons">mic</i></button>';
+
+        if (!$.browser.mobile) {
+            html += '<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton" style="display:none;"><i class="material-icons">settings</i></a>';
+        }
 
         html += '</div>';
 
@@ -51,8 +55,20 @@
         if (user.localUser) {
             $('.btnCast', header).show();
             $('.headerSearchButton', header).show();
+
+            requirejs(['scripts/voice'], function () {
+
+                if (VoiceInputManager.isSupported()) {
+                    $('.headerVoiceButton', header).show();
+                } else {
+                    $('.headerVoiceButton', header).hide();
+                }
+
+            });
+
         } else {
             $('.btnCast', header).hide();
+            $('.headerVoiceButton', header).hide();
             $('.headerSearchButton', header).hide();
         }
 
@@ -108,7 +124,7 @@
         html += '<div class="libraryMenuOptions">';
         html += '</div>';
 
-        html += '<div class="libraryMenuDivider"></div>';
+        html += '<div class="sidebarDivider"></div>';
         html += '<div class="adminMenuOptions">';
 
         html += '<div class="sidebarHeader">';
@@ -120,7 +136,7 @@
         html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" href="dashboard.html"><span class="fa fa-server sidebarLinkIcon"></span>' + Globalize.translate('ButtonServer') + '</a>';
         html += '</div>';
 
-        html += '<div class="libraryMenuDivider"></div>';
+        html += '<div class="sidebarDivider"></div>';
         html += '<div class="userMenuOptions">';
 
         if (Dashboard.isConnectMode()) {
@@ -311,26 +327,29 @@
             html += user.name;
             html += '</a>';
 
-            //html += '<a href="#" class="btnNotifications"><div class="btnNotificationsInner">0</div></a>';
-
-            html += '<div class="libraryMenuDivider" style="margin-top:0;"></div>';
+            html += '<div class="sidebarDivider" style="margin-top:0;"></div>';
 
             var homeHref = window.ApiClient ? 'index.html' : 'selectserver.html';
 
             html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
 
+            html += '<a class="sidebarLink lnkMediaFolder" data-itemid="inbox" href="notificationlist.html"><span class="fa fa-inbox sidebarLinkIcon"></span>';
+            html += Globalize.translate('ButtonInbox');
+            html += '<div class="btnNotifications"><div class="btnNotificationsInner">0</div></div>';
+            html += '</a>';
+
             html += '<a class="sidebarLink lnkMediaFolder" data-itemid="remote" href="nowplaying.html"><span class="fa fa-tablet sidebarLinkIcon"></span>' + Globalize.translate('ButtonRemote') + '</a>';
 
-            html += '<a class="sidebarLink lnkMediaFolder syncViewMenu" data-itemid="mysync" href="mysync.html"><span class="fa fa-cloud sidebarLinkIcon"></span>' + Globalize.translate('ButtonSync') + '</a>';
+            html += '<a class="sidebarLink lnkMediaFolder syncViewMenu" data-itemid="mysync" href="mysync.html"><span class="fa fa-refresh sidebarLinkIcon"></span>' + Globalize.translate('ButtonSync') + '</a>';
 
-            html += '<div class="libraryMenuDivider"></div>';
+            html += '<div class="sidebarDivider"></div>';
 
             html += getViewsHtml();
             html += '</div>';
 
             html += '</div>';
 
-            $(document.body).append(html);
+            $(document.body).append(html).trigger('libraryMenuCreated');
 
             panel = $('#libraryPanel').panel({}).lazyChildren().trigger('create');
 

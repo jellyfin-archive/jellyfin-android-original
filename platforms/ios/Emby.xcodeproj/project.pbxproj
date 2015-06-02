@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		10848650B90945DC8C725005 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E118860990849448ACC9FCC /* GCDWebServer.framework */; };
@@ -39,6 +40,7 @@
 		35F55F81D0454338B09EF99B /* CDVWebViewOperationsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BC438BB8DA4C48A7C7D100 /* CDVWebViewOperationsDelegate.m */; };
 		37E4C15B37C74748907180F7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B7E7ABEF62E4669B12D0F3D /* Security.framework */; };
 		3CD3895F56AD4D2590DF6E6F /* CDVNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF50A5F2C4F94C9DB577E984 /* CDVNotification.bundle */; };
+		3D16EE750DFF442D89831332 /* SpeechRecognition.m in Sources */ = {isa = PBXBuildFile; fileRef = A4AE934D5E724B3F972F1D2A /* SpeechRecognition.m */; };
 		43DEFF2366C1463DA0E35BC2 /* APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 587B74605C264FABB734128C /* APPLocalNotification.m */; };
 		43EE36D79D5D42F79262AE12 /* MyMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD5924BFFE44D9DAE1EBCCF /* MyMainViewController.m */; };
 		44397C8D0EB142C4BF3BA52F /* AppDelegate+WKWebViewPolyfill.m in Sources */ = {isa = PBXBuildFile; fileRef = 2805BC76AD8647F19B9AD144 /* AppDelegate+WKWebViewPolyfill.m */; };
@@ -64,14 +66,17 @@
 		9596D411A2E9438D8136CE32 /* CDVWebViewUIDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B4AB100994C24B9485EB5C2E /* CDVWebViewUIDelegate.m */; };
 		9768F064C50B4537AA2D8BDF /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = D2DB7B133B344DBAA07EA098 /* sqlite3.c */; };
 		9A32AA82E6DD4E569BD6C997 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3049DBEE86084920A12BC843 /* libz.dylib */; };
+		9D19E2AE4B6E49E98E7B8603 /* iSpeechSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF4461AB528B4E8790AE6153 /* iSpeechSDK.bundle */; };
 		A2E430C6B70447E582216526 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 729D3184A4A142E38454FC6A /* GCDAsyncUdpSocket.m */; };
 		A3E7DCCE1B08611D007556B9 /* libConnectSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCD1B0860DD007556B9 /* libConnectSDK.a */; };
 		A3E7DCD01B086136007556B9 /* MediaAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */; };
 		A3E7DCD41B086211007556B9 /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCD31B086211007556B9 /* GoogleCast.framework */; };
+		A3E7DDCA1B1DF746007556B9 /* libiSpeechSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */; };
 		A3E9F8D01AF9509800F2026A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3E9F8CF1AF9509800F2026A /* Images.xcassets */; };
 		AF26D096E1694FD2B0EC4E00 /* InAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088A13177C24E7BB3122063 /* InAppPurchase.m */; };
 		AFDD39138D6A4CD69475B841 /* ConnectSDKCordovaObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD33B35E9E4B65A9D3D14D /* ConnectSDKCordovaObjects.m */; };
 		B40F3BFFEB2C408EA34A2AA8 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4330620717C0471DB4E477AC /* libicucore.dylib */; };
+		B5BACF4ED8274178BEE337D4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F14394E959548C7B6B7754D /* SystemConfiguration.framework */; };
 		B7ECA3E0A8474A71911D4FAF /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2C374D3F2B74479A84498C2 /* MediaPlayer.framework */; };
 		BA1E686482644D83B7E53524 /* ReroutingUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = A2CBB4ACFB1C47D0AE933096 /* ReroutingUIWebView.m */; };
 		C8CFAF61E7E447AAB4833E59 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CB0CC3E3F764AB88AAF5D06 /* WebKit.framework */; };
@@ -83,10 +88,6 @@
 		E93A4F32A2E9440DB873DBA2 /* RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AFF6733D58F458C9DBB45AE /* RemoteControls.m */; };
 		EA05CC7F3E874F23A868BBEB /* CDVUniqueDeviceID.m in Sources */ = {isa = PBXBuildFile; fileRef = E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
-		3D16EE750DFF442D89831332 /* SpeechRecognition.m in Sources */ = {isa = PBXBuildFile; fileRef = A4AE934D5E724B3F972F1D2A /* SpeechRecognition.m */; };
-		6F06BA476FA44A258A3EAF69 /* libiSpeechSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 166FC62C9C4B43E9B1EB48CB /* libiSpeechSDK.a */; };
-		9D19E2AE4B6E49E98E7B8603 /* iSpeechSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF4461AB528B4E8790AE6153 /* iSpeechSDK.bundle */; };
-		B5BACF4ED8274178BEE337D4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F14394E959548C7B6B7754D /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,12 +122,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0557D2E68354474BA330ED2B /* SpeechRecognition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpeechRecognition.h; path = org.apache.cordova.speech.speechrecognition/SpeechRecognition.h; sourceTree = "<group>"; };
 		0649EE606C1D4B068F13F08C /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncSocket.m; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncSocket.m"; sourceTree = "<group>"; };
 		0B7E7ABEF62E4669B12D0F3D /* Security.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		0CFA885995414B6F8BFF37AE /* Launcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Launcher.m; path = com.hutchind.cordova.plugins.launcher/Launcher.m; sourceTree = "<group>"; };
 		10972958725E460893D016ED /* CDVStatusBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVStatusBar.m; path = "cordova-plugin-statusbar/CDVStatusBar.m"; sourceTree = "<group>"; };
 		10E02A6832274788A3FA62CD /* RemoteControls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RemoteControls.h; path = "com.rd11.remote-controls/RemoteControls.h"; sourceTree = "<group>"; };
 		1259561DA06141A0874765FE /* SQLitePlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SQLitePlugin.m; path = io.litehelpers.cordova.sqlite/SQLitePlugin.m; sourceTree = "<group>"; };
+		1647A165B5C64F418DA28534 /* ISSpeechSynthesisVoices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechSynthesisVoices.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechSynthesisVoices.h; sourceTree = "<group>"; };
 		1A1314DA827645568F312D86 /* ReroutingUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReroutingUIWebView.h; path = com.telerik.plugins.wkwebview/ReroutingUIWebView.h; sourceTree = "<group>"; };
 		1A522589CC024B4BAE9A8F94 /* MyMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyMainViewController.h; path = com.telerik.plugins.wkwebview/MyMainViewController.h; sourceTree = "<group>"; };
 		1D3623240D0F684500981E51 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -162,6 +165,7 @@
 		32CA4F630368D1EE00C91783 /* Emby-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Emby-Prefix.pch"; sourceTree = "<group>"; };
 		363DB1316BA74D069FC5B731 /* CDVLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVLogger.m; path = "cordova-plugin-console/CDVLogger.m"; sourceTree = "<group>"; };
 		3AFF6733D58F458C9DBB45AE /* RemoteControls.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RemoteControls.m; path = "com.rd11.remote-controls/RemoteControls.m"; sourceTree = "<group>"; };
+		3F14394E959548C7B6B7754D /* SystemConfiguration.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		41D1806BDA254742924CF179 /* AppDelegate+APPRegisterUserNotificationSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+APPRegisterUserNotificationSettings.m"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.m"; sourceTree = "<group>"; };
 		4330620717C0471DB4E477AC /* libicucore.dylib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		456124F140B04CD38A346E27 /* CDVDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVDevice.h; path = "cordova-plugin-device/CDVDevice.h"; sourceTree = "<group>"; };
@@ -175,8 +179,10 @@
 		5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		5CB0CC3E3F764AB88AAF5D06 /* WebKit.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ChromeSocketsUdp.m; path = "cordova-plugin-chrome-apps-sockets-udp/ChromeSocketsUdp.m"; sourceTree = "<group>"; };
+		64ABE96F71674FC480F4D76C /* ISSpeechRecognition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechRecognition.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechRecognition.h; sourceTree = "<group>"; };
 		67AB33E4AC854FCEBC8B175E /* CDVDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVDevice.m; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; };
 		69C4AF8969D3404CA1BB606B /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncUdpSocket.h; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncUdpSocket.h"; sourceTree = "<group>"; };
+		6D986C63AAA6406CB075A8DE /* ISSpeechSynthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechSynthesis.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechSynthesis.h; sourceTree = "<group>"; };
 		729D3184A4A142E38454FC6A /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncUdpSocket.m; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncUdpSocket.m"; sourceTree = "<group>"; };
 		72A2F848A81D461F88B5CBB1 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UICKeyChainStore.m; path = hu.dpal.phonegap.plugins.UniqueDeviceID/UICKeyChainStore.m; sourceTree = "<group>"; };
 		72E6F2B18B0B44BBB237A2D5 /* CDVBackgroundColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVBackgroundColor.h; path = "com.crewmeister.cordova-ios-backgroundcolor/CDVBackgroundColor.h"; sourceTree = "<group>"; };
@@ -204,13 +210,17 @@
 		A3E7DCC81B0860DD007556B9 /* ConnectSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConnectSDK.xcodeproj; path = "../../../Connect-SDK-iOS/ConnectSDK.xcodeproj"; sourceTree = "<group>"; };
 		A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaAccessibility.framework; path = System/Library/Frameworks/MediaAccessibility.framework; sourceTree = SDKROOT; };
 		A3E7DCD31B086211007556B9 /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleCast.framework; path = "../../../Connect-SDK-iOS/ConnectSDK/Frameworks/GoogleCast.framework"; sourceTree = "<group>"; };
+		A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libiSpeechSDK.a; path = Emby/Plugins/org.apache.cordova.speech.speechrecognition/libiSpeechSDK.a; sourceTree = "<group>"; };
 		A3E9F8CF1AF9509800F2026A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Emby/Images.xcassets; sourceTree = SOURCE_ROOT; };
+		A4AE934D5E724B3F972F1D2A /* SpeechRecognition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SpeechRecognition.m; path = org.apache.cordova.speech.speechrecognition/SpeechRecognition.m; sourceTree = "<group>"; };
 		A8AE01EBC7F84534B913262F /* CDVBackgroundColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVBackgroundColor.m; path = "com.crewmeister.cordova-ios-backgroundcolor/CDVBackgroundColor.m"; sourceTree = "<group>"; };
 		A8DBDBB19808435B8D259EF4 /* SKProduct+LocalizedPrice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "SKProduct+LocalizedPrice.h"; path = "cordova-plugin-purchase/SKProduct+LocalizedPrice.h"; sourceTree = "<group>"; };
 		AA5E29E0DF32484C9A6CCC01 /* APPLocalNotificationOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = APPLocalNotificationOptions.h; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.h"; sourceTree = "<group>"; };
 		AADB02B34F04495FA12F9D3A /* CDVWebViewUIDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVWebViewUIDelegate.h; path = com.telerik.plugins.wkwebview/CDVWebViewUIDelegate.h; sourceTree = "<group>"; };
 		AC1FB59EDA20473AA5411CA6 /* APPLocalNotificationOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = APPLocalNotificationOptions.m; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.m"; sourceTree = "<group>"; };
+		AF4461AB528B4E8790AE6153 /* iSpeechSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = iSpeechSDK.bundle; path = ResourcesiSpeechSDK.bundle; sourceTree = "<group>"; };
 		AF50A5F2C4F94C9DB577E984 /* CDVNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CDVNotification.bundle; sourceTree = "<group>"; };
+		B11E29A4881A4CF5AC01841E /* ISSpeechRecognitionResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechRecognitionResult.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechRecognitionResult.h; sourceTree = "<group>"; };
 		B4AB100994C24B9485EB5C2E /* CDVWebViewUIDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVWebViewUIDelegate.m; path = com.telerik.plugins.wkwebview/CDVWebViewUIDelegate.m; sourceTree = "<group>"; };
 		B64DD62D0BAE45A585B6CD0A /* ConnectSDKCordovaDispatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordovaDispatcher.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordovaDispatcher.m; sourceTree = "<group>"; };
 		B95518DB468748B7BBA94DA5 /* SKProduct+LocalizedPrice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "SKProduct+LocalizedPrice.m"; path = "cordova-plugin-purchase/SKProduct+LocalizedPrice.m"; sourceTree = "<group>"; };
@@ -218,6 +228,7 @@
 		C07D974A9E5E406C93B4321C /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UICKeyChainStore.h; path = hu.dpal.phonegap.plugins.UniqueDeviceID/UICKeyChainStore.h; sourceTree = "<group>"; };
 		C1D4F4121AAB446AA7C3ED3D /* UIApplication+APPLocalNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIApplication+APPLocalNotification.m"; path = "de.appplant.cordova.plugin.local-notification/UIApplication+APPLocalNotification.m"; sourceTree = "<group>"; };
 		C2C374D3F2B74479A84498C2 /* MediaPlayer.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		C3651931A6144725B2C8C2B0 /* iSpeechSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = iSpeechSDK.h; path = org.apache.cordova.speech.speechrecognition/iSpeechSDK.h; sourceTree = "<group>"; };
 		C4A40473EFB34782995E6A4E /* CDVWebViewOperationsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVWebViewOperationsDelegate.h; path = com.telerik.plugins.wkwebview/CDVWebViewOperationsDelegate.h; sourceTree = "<group>"; };
 		C7BC438BB8DA4C48A7C7D100 /* CDVWebViewOperationsDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVWebViewOperationsDelegate.m; path = com.telerik.plugins.wkwebview/CDVWebViewOperationsDelegate.m; sourceTree = "<group>"; };
 		CDD5924BFFE44D9DAE1EBCCF /* MyMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyMainViewController.m; path = com.telerik.plugins.wkwebview/MyMainViewController.m; sourceTree = "<group>"; };
@@ -226,6 +237,7 @@
 		D4A0D8751607E02300AEF8BB /* Default-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x~iphone.png"; sourceTree = "<group>"; };
 		D5F431DD79A748B5A3EEDF82 /* AudioToolbox.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E47C61C713344082B4AF9C17 /* CDVUniqueDeviceID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVUniqueDeviceID.m; path = hu.dpal.phonegap.plugins.UniqueDeviceID/CDVUniqueDeviceID.m; sourceTree = "<group>"; };
+		EAB502D018B14E7C8F98CA62 /* ISSpeechRecognitionLocales.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechRecognitionLocales.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechRecognitionLocales.h; sourceTree = "<group>"; };
 		EB87FDF21871DA7A0020F90C /* merges */ = {isa = PBXFileReference; lastKnownFileType = folder; name = merges; path = ../../merges; sourceTree = "<group>"; };
 		EB87FDF31871DA8E0020F90C /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = ../../www; sourceTree = "<group>"; };
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
@@ -235,17 +247,6 @@
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = Emby/config.xml; sourceTree = "<group>"; };
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
-		A4AE934D5E724B3F972F1D2A /* SpeechRecognition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SpeechRecognition.m"; path = "org.apache.cordova.speech.speechrecognition/SpeechRecognition.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		166FC62C9C4B43E9B1EB48CB /* libiSpeechSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libiSpeechSDK.a"; path = "Emby\Plugins\org.apache.cordova.speech.speechrecognition\libiSpeechSDK.a"; sourceTree = "<group>"; fileEncoding = 4; };
-		0557D2E68354474BA330ED2B /* SpeechRecognition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SpeechRecognition.h"; path = "org.apache.cordova.speech.speechrecognition/SpeechRecognition.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		C3651931A6144725B2C8C2B0 /* iSpeechSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "iSpeechSDK.h"; path = "org.apache.cordova.speech.speechrecognition/iSpeechSDK.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		64ABE96F71674FC480F4D76C /* ISSpeechRecognition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ISSpeechRecognition.h"; path = "org.apache.cordova.speech.speechrecognition/ISSpeechRecognition.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		EAB502D018B14E7C8F98CA62 /* ISSpeechRecognitionLocales.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ISSpeechRecognitionLocales.h"; path = "org.apache.cordova.speech.speechrecognition/ISSpeechRecognitionLocales.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		B11E29A4881A4CF5AC01841E /* ISSpeechRecognitionResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ISSpeechRecognitionResult.h"; path = "org.apache.cordova.speech.speechrecognition/ISSpeechRecognitionResult.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		6D986C63AAA6406CB075A8DE /* ISSpeechSynthesis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ISSpeechSynthesis.h"; path = "org.apache.cordova.speech.speechrecognition/ISSpeechSynthesis.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		1647A165B5C64F418DA28534 /* ISSpeechSynthesisVoices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ISSpeechSynthesisVoices.h"; path = "org.apache.cordova.speech.speechrecognition/ISSpeechSynthesisVoices.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		AF4461AB528B4E8790AE6153 /* iSpeechSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = "iSpeechSDK.bundle"; path = "Resources\iSpeechSDK.bundle"; sourceTree = "<group>"; };
-		3F14394E959548C7B6B7754D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "SystemConfiguration.framework"; path = "System/Library/Frameworks/SystemConfiguration.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,6 +257,7 @@
 				A3E7DCD01B086136007556B9 /* MediaAccessibility.framework in Frameworks */,
 				5B1594DD16A7569C00FEF299 /* AssetsLibrary.framework in Frameworks */,
 				301BF552109A68D80062928A /* libCordova.a in Frameworks */,
+				A3E7DDCA1B1DF746007556B9 /* libiSpeechSDK.a in Frameworks */,
 				A3E7DCD41B086211007556B9 /* GoogleCast.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				305D5FD1115AB8F900A74A75 /* MobileCoreServices.framework in Frameworks */,
@@ -269,7 +271,6 @@
 				B40F3BFFEB2C408EA34A2AA8 /* libicucore.dylib in Frameworks */,
 				A3E7DCCE1B08611D007556B9 /* libConnectSDK.a in Frameworks */,
 				CCB55D00AD29476691AFE2E8 /* StoreKit.framework in Frameworks */,
-				6F06BA476FA44A258A3EAF69 /* libiSpeechSDK.a in Frameworks */,
 				B5BACF4ED8274178BEE337D4 /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -344,6 +345,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */,
 				A3E7DCD31B086211007556B9 /* GoogleCast.framework */,
 				A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */,
 				5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */,
@@ -358,7 +360,6 @@
 				C2C374D3F2B74479A84498C2 /* MediaPlayer.framework */,
 				4330620717C0471DB4E477AC /* libicucore.dylib */,
 				24979162D35B422499D236D5 /* StoreKit.framework */,
-				166FC62C9C4B43E9B1EB48CB /* libiSpeechSDK.a */,
 				3F14394E959548C7B6B7754D /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
@@ -731,6 +732,11 @@
 				GCC_VERSION = "";
 				INFOPLIST_FILE = "Emby/Emby-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Emby/Plugins/org.apache.cordova.speech.speechrecognition\"",
+					"$(PROJECT_DIR)/Emby/Plugins/org.apache.cordova.speech.speechrecognition",
+				);
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					CoreFoundation,
@@ -746,10 +752,6 @@
 				PRODUCT_NAME = Emby;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Emby/Plugins/org.apache.cordova.speech.speechrecognition\"",
-				);
 			};
 			name = Debug;
 		};
@@ -775,6 +777,11 @@
 				GCC_VERSION = "";
 				INFOPLIST_FILE = "Emby/Emby-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Emby/Plugins/org.apache.cordova.speech.speechrecognition\"",
+					"$(PROJECT_DIR)/Emby/Plugins/org.apache.cordova.speech.speechrecognition",
+				);
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					CoreFoundation,
@@ -790,10 +797,6 @@
 				PRODUCT_NAME = Emby;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Emby/Plugins/org.apache.cordova.speech.speechrecognition\"",
-				);
 			};
 			name = Release;
 		};

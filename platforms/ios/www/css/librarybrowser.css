@@ -908,6 +908,26 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     background: rgba(248, 58, 34, .8);
 }
 
+.syncIndicator {
+    display: block;
+    position: absolute;
+    top: 32px;
+    right: 5px;
+    text-align: center;
+    vertical-align: middle;
+    width: 24px;
+    height: 19px;
+    padding-top: 3px;
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(51, 136, 204, .8);
+    line-height: 16px;
+}
+
+.syncWorkingIndicator {
+    background: rgba(255, 106, 0, .8);
+}
+
 .playedIndicator {
     display: block;
     position: absolute;
@@ -1367,6 +1387,12 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 .listItem a:first-child {
     margin-right: 0 !important;
     background-color: transparent !important;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.listItem.ui-li-has-thumb .ui-btn {
+    padding-left: 5.9em!important;
 }
 
 .ui-page-theme-a .listItem a:first-child {
@@ -1387,7 +1413,11 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 }
 
 .ui-page-theme-b .listItem:hover a {
-    background-color: #333 !important;
+    background-color: rgba(51,51,51,.6) !important;
+}
+
+.listviewSubLink:hover {
+    color: #2ad;
 }
 
 @media all and (max-width: 600px) {
