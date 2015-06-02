@@ -7,6 +7,15 @@
         return platform.indexOf('android') != -1;
     }
 
+    function getPremiumUnlockFeatureId() {
+
+        if (isAndroid()) {
+            return "com.mb.android.unlock";
+        }
+
+        return 'premiumunlock';
+    }
+
     function validatePlayback(deferred) {
 
         // Don't require validation on android
@@ -17,37 +26,16 @@
 
         validateFeature({
 
-            id: 'premiumunlock'
+            id: getPremiumUnlockFeatureId()
 
         }, deferred);
     }
 
     function validateLiveTV(deferred) {
 
-        // Don't require validation if not android
-        if (!isAndroid()) {
-            deferred.resolve();
-            return;
-        }
-
         validateFeature({
 
-            id: 'premiumunlock'
-
-        }, deferred);
-    }
-
-    function validateSmb(deferred) {
-
-        // Don't require validation if not android
-        if (!isAndroid()) {
-            deferred.resolve();
-            return;
-        }
-
-        validateFeature({
-
-            id: 'premiumunlock'
+            id: getPremiumUnlockFeatureId()
 
         }, deferred);
     }
@@ -152,9 +140,20 @@
         $('.inAppPurchaseOverlay').remove();
     }
 
+    var currentDisplayingProductInfo = null;
+    var currentDisplayingDeferred = null;
+
+    function clearCurrentDisplayingInfo() {
+        currentDisplayingProductInfo = null;
+        currentDisplayingDeferred = null;
+    }
+
     function showInAppPurchaseInfo(info, serverRegistrationInfo, deferred) {
 
         var elem = getInAppPurchaseElement(info);
+
+        currentDisplayingProductInfo = info;
+        currentDisplayingDeferred = deferred;
 
         $('.inAppPurchaseForm', elem).on('submit', function () {
 
@@ -163,6 +162,8 @@
         });
 
         $('.btnCancel', elem).on('click', function () {
+
+            clearCurrentDisplayingInfo();
             cancelInAppPurchase();
 
             // For testing purposes
@@ -174,6 +175,8 @@
         });
         $('.btnSignInSupporter', elem).on('click', function () {
 
+            clearCurrentDisplayingInfo();
+
             Dashboard.alert({
                 message: Globalize.translate('MessagePleaseSignInLocalNetwork'),
                 callback: function () {
@@ -182,6 +185,21 @@
                 }
             });
         });
+    }
+
+    function onProductUpdated(e, product) {
+
+        var currentInfo = currentDisplayingProductInfo;
+        var deferred = currentDisplayingDeferred;
+
+        if (currentInfo && deferred) {
+            if (product.owned && product.id == currentInfo.id) {
+
+                clearCurrentDisplayingInfo();
+                cancelInAppPurchase();
+                deferred.resolve();
+            }
+        }
     }
 
     window.RegistrationServices = {
@@ -215,8 +233,14 @@
         }
     };
 
-    var depends = isAndroid() ? 'thirdparty/cordova/android/iap' : 'thirdparty/cordova/iap';
+    function onIapManagerLoaded() {
+        Events.on(IapManager, 'productupdated', onProductUpdated);
+    }
 
-    requirejs([depends]);
+    if (isAndroid()) {
+        requirejs(['thirdparty/cordova/android/iap', onIapManagerLoaded]);
+    } else {
+        requirejs(['thirdparty/cordova/iap', onIapManagerLoaded]);
+    }
 
 })();

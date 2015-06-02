@@ -701,7 +701,7 @@ var Dashboard = {
         }
     },
 
-    ensureToolsMenu: function (page, user) {
+    ensureToolsMenu: function (page) {
 
         var sidebar = $('.toolsSidebar', page);
 
@@ -720,12 +720,8 @@ var Dashboard = {
 
                 item = items[i];
 
-                if (!user.Policy.IsAdministrator) {
-                    break;
-                }
-
                 if (item.divider) {
-                    menuHtml += "<div class='sidebarDivider ui-bar-inherit'></div>";
+                    menuHtml += "<div class='sidebarDivider'></div>";
                 }
 
                 if (item.href) {
@@ -769,11 +765,31 @@ var Dashboard = {
 
             html += '<div data-role="panel" id="dashboardPanel" class="dashboardPanel" data-position="left" data-display="overlay" data-position-fixed="true" data-theme="a">';
 
-            html += '<p class="libraryPanelHeader" style="margin: 15px 0 15px 15px;"><a href="index.html" data-transition="none" class="imageLink"><img src="css/images/mblogoicon.png" /><span style="color:#333;">EMBY</span></a></p>';
+            html += '<p class="libraryPanelHeader" style="margin: 15px 0 15px 20px;"><a href="index.html" data-transition="none" class="imageLink"><img src="css/images/mblogoicon.png" /><span style="color:#333;">EMBY</span></a></p>';
 
             html += '<div class="sidebarLinks">';
             html += menuHtml;
             // sidebarLinks
+
+            html += '<div class="sidebarDivider"></div>';
+            html += '<div class="userMenuOptions">';
+
+            if (Dashboard.isConnectMode()) {
+                html += '<a class="sidebarLink" data-itemid="selectserver" href="selectserver.html"><span class="fa fa-globe sidebarLinkIcon"></span>';
+                html += '<span class="sidebarLinkText">';
+                html += Globalize.translate('ButtonSelectServer');
+                html += '</span>';
+                html += '</a>';
+            }
+
+            html += '<a class="sidebarLink" data-itemid="logout" href="#" onclick="Dashboard.logout();"><span class="fa fa-sign-out sidebarLinkIcon"></span>';
+            html += '<span class="sidebarLinkText">';
+            html += Globalize.translate('ButtonSignOut');
+            html += '</span>';
+            html += '</a>';
+
+            html += '</div>';
+
             html += '</div>';
             html += '</div>';
 
@@ -827,7 +843,7 @@ var Dashboard = {
             name: Globalize.translate('TabSync'),
             href: "syncactivity.html",
             selected: page.hasClass('syncConfigurationPage') || (isServicesPage && context == 'sync'),
-            icon: 'fa-cloud'
+            icon: 'fa-refresh'
         }, {
             divider: true,
             name: Globalize.translate('TabExtras')
@@ -1823,6 +1839,8 @@ var AppInfo = {};
             return jQuery;
         });
 
+        //requirejs(['http://viblast.com/player/free-version/qy2fdwajo1/viblast.js']);
+
         setAppInfo();
 
         $.extend(AppInfo, Dashboard.getAppInfo(appName, deviceId, deviceName));
@@ -1977,19 +1995,19 @@ $(document).on('pagecreate', ".page", function () {
 
     if (apiClient && apiClient.accessToken() && Dashboard.getCurrentUserId()) {
 
-        Dashboard.getCurrentUser().done(function (user) {
+        var isSettingsPage = page.hasClass('type-interior');
 
-            var isSettingsPage = page.hasClass('type-interior');
+        if (isSettingsPage) {
+            Dashboard.ensureToolsMenu(page);
 
-            if (!user.Policy.IsAdministrator && isSettingsPage) {
-                Dashboard.logout();
-                return;
-            }
+            Dashboard.getCurrentUser().done(function (user) {
 
-            if (isSettingsPage) {
-                Dashboard.ensureToolsMenu(page, user);
-            }
-        });
+                if (!user.Policy.IsAdministrator) {
+                    Dashboard.logout();
+                    return;
+                }
+            });
+        }
     }
 
     else {

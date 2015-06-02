@@ -1,6 +1,6 @@
 ﻿(function () {
 
-    var unlockId = "premiumunlock";
+    var unlockId = "com.mb.android.unlock";
     var updatedProducts = [];
 
     function updateProductInfo(id, owned) {
@@ -9,10 +9,14 @@
             return r.id != id;
         });
 
-        updatedProducts.push({
+        var product = {
             id: id,
             owned: owned
-        });
+        };
+
+        updatedProducts.push(product);
+
+        Events.trigger(IapManager, 'productupdated', [product]);
     }
 
     function hasPurchased(id) {
@@ -35,16 +39,28 @@
     }
 
     function beginPurchase(id) {
-        return NativeIapManager.beginPurchase(id);
+        return MainActivity.beginPurchase(id);
+    }
+
+    function onPurchaseComplete(result) {
+
+        if (result) {
+            refreshPurchases();
+        }
+    }
+
+    function refreshPurchases() {
+        NativeIapManager.isPurchased(unlockId, "window.IapManager.updateProduct");
     }
 
     window.IapManager = {
         isPurchaseAvailable: isPurchaseAvailable,
         hasPurchased: hasPurchased,
         updateProduct: updateProductInfo,
-        beginPurchase: beginPurchase
+        beginPurchase: beginPurchase,
+        onPurchaseComplete: onPurchaseComplete
     };
 
-    NativeIapManager.isPurchased(unlockId, "window.IapManager.updateProduct");
+    refreshPurchases();
 
 })();
