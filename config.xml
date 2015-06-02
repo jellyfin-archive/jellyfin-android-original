@@ -71,7 +71,7 @@
     <splash src="res/ios/splash-Landscape-736h.png" width="2208" height="1242"/>
     <allow-intent href="itms:*" />
     <allow-intent href="itms-apps:*" />
-	<preference name="apiKey" value="yourApiKeyHere" />
+	<preference name="apiKey" value="1d44b9d3acd7d0fbcff284549c6ec5d9" />
   </platform>
   <platform name="android">
 	<preference name="android-minSdkVersion" value="14" />
