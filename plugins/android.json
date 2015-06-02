@@ -61,6 +61,10 @@
                         {
                             "xml": "<preference name=\"webView\" value=\"org.crosswalk.engine.XWalkWebViewEngine\" />",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SpeechRecognition\"><param name=\"android-package\" value=\"org.apache.cordova.speech.SpeechRecognition\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -90,6 +94,10 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
                             "count": 1
                         }
                     ],
@@ -213,6 +221,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "org.apache.cordova.speech.speechrecognition": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

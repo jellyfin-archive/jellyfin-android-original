@@ -31,7 +31,11 @@
         html += '</form>';
         html += '</div>';
 
-        html += '<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton" style="display:none;"><i class="material-icons">settings</i></a>';
+        html += '<button onclick="VoiceInputManager.startListening();" type="button" data-role="none" class="headerButton headerButtonRight headerVoiceButton" style="display:none;"><i class="material-icons">mic</i></button>';
+
+        if (!$.browser.mobile) {
+            html += '<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton" style="display:none;"><i class="material-icons">settings</i></a>';
+        }
 
         html += '</div>';
 
@@ -51,8 +55,20 @@
         if (user.localUser) {
             $('.btnCast', header).show();
             $('.headerSearchButton', header).show();
+
+            requirejs(['scripts/voice'], function () {
+
+                if (VoiceInputManager.isSupported()) {
+                    $('.headerVoiceButton', header).show();
+                } else {
+                    $('.headerVoiceButton', header).hide();
+                }
+
+            });
+
         } else {
             $('.btnCast', header).hide();
+            $('.headerVoiceButton', header).hide();
             $('.headerSearchButton', header).hide();
         }
 

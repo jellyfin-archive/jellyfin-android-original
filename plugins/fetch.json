@@ -183,5 +183,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "org.apache.cordova.speech.speechrecognition": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/macdonst/SpeechRecognitionPlugin",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
