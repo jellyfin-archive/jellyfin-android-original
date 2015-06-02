@@ -537,7 +537,7 @@
 						DevelopmentTeam = WGKJRMCSGJ;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
