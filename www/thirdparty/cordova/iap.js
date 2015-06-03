@@ -42,10 +42,11 @@
     function isPurchaseAvailable(id) {
         var product = getProduct(id);
 
-        return product != null && product.canPurchase;
+        return product != null && product.valid && product.canPurchase;
     }
 
     function beginPurchase(id) {
+        id = normalizeId(id);
         store.order(id);
     }
 

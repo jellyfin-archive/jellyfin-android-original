@@ -13,7 +13,7 @@
             return "com.mb.android.unlock";
         }
 
-        return 'premiumunlock';
+        return 'appunlock';
     }
 
     function validatePlayback(deferred) {
@@ -165,12 +165,7 @@
             clearCurrentDisplayingInfo();
             cancelInAppPurchase();
 
-            // For testing purposes
-            if (!info.enableSupporterUnlock && !info.enableAppUnlock) {
-                deferred.resolve();
-            } else {
-                deferred.reject();
-            }
+            deferred.reject();
         });
         $('.btnSignInSupporter', elem).on('click', function () {
 
