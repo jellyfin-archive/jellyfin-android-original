@@ -1,6 +1,8 @@
 ﻿(function () {
 
     var unlockAlias = "premium features";
+    var unlockAppProductId = 'appunlock';
+
     var updatedProducts = [];
 
     function updateProductInfo(product) {
@@ -77,21 +79,28 @@
 
         // iOS
         store.register({
-            id: "appunlock",
+            id: unlockAppProductId,
             alias: unlockAlias,
             type: store.NON_CONSUMABLE
         });
 
         // When purchase of the full version is approved,
         // show some logs and finish the transaction.
-        store.when(unlockAlias).approved(function (order) {
+        store.when(unlockAppProductId).approved(function (order) {
             log('You just unlocked the FULL VERSION!');
+            alert('approved');
             order.finish();
+        });
+
+        store.when(unlockAppProductId).verified(function (p) {
+            alert('verified');
+            log("verified");
+            p.finish();
         });
 
         // The play button can only be accessed when the user
         // owns the full version.
-        store.when(unlockAlias).updated(function (product) {
+        store.when(unlockAppProductId).updated(function (product) {
 
             updateProductInfo(product);
         });
