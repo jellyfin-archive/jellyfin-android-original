@@ -3,7 +3,7 @@
     var unlockId = "com.mb.android.unlock";
     var updatedProducts = [];
 
-    function updateProductInfo(id, owned) {
+    function updateProductInfo(id, owned, price) {
 
         updatedProducts = updatedProducts.filter(function (r) {
             return r.id != id;
@@ -11,7 +11,8 @@
 
         var product = {
             id: id,
-            owned: owned
+            owned: owned,
+            price: price
         };
 
         updatedProducts.push(product);
