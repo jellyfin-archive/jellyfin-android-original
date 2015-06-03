@@ -24,20 +24,12 @@
             return;
         }
 
-        validateFeature({
-
-            id: getPremiumUnlockFeatureId()
-
-        }, deferred);
+        validateFeature(getPremiumUnlockFeatureId(), deferred);
     }
 
     function validateLiveTV(deferred) {
 
-        validateFeature({
-
-            id: getPremiumUnlockFeatureId()
-
-        }, deferred);
+        validateFeature(getPremiumUnlockFeatureId(), deferred);
     }
 
     function getRegistrationInfo(feature, enableSupporterUnlock) {
@@ -50,9 +42,11 @@
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
     }
 
-    function validateFeature(info, deferred) {
+    function validateFeature(id, deferred) {
 
-        if (IapManager.hasPurchased(info.id)) {
+        var info = IapManager.getProductInfo(id) || {};
+
+        if (info.owned) {
             deferred.resolve();
             return;
         }
@@ -120,8 +114,8 @@
 
             var unlockText = Globalize.translate('ButtonUnlockWithPurchase');
             if (info.price) {
-                unlockText = Globalize.translate('ButtonUnlockPrice');
-            } 
+                unlockText = Globalize.translate('ButtonUnlockPrice', info.price);
+            }
             html += '<button class="btn btnActionAccent btnAppUnlock" data-role="none" type="button"><span>' + unlockText + '</span><i class="fa fa-check"></i></button>';
         }
 
