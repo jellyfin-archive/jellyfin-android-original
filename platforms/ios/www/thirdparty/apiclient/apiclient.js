@@ -173,7 +173,7 @@
                 }
             }
 
-            if (!self.enableAutomaticNetwork || self.connectionMode == null) {
+            if (!self.enableAutomaticNetwork || self.connectionMode == null || request.type != "GET") {
                 logger.log('Requesting url without automatic networking: ' + request.url);
                 return AjaxApi.ajax(request).fail(onRequestFail);
             }
