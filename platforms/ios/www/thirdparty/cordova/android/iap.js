@@ -20,12 +20,6 @@
         Events.trigger(IapManager, 'productupdated', [product]);
     }
 
-    function hasPurchased(id) {
-        var product = getProduct(id);
-
-        return product != null && product.owned;
-    }
-
     function getProduct(id) {
         var products = updatedProducts.filter(function (r) {
             return r.id == id;
@@ -56,7 +50,7 @@
 
     window.IapManager = {
         isPurchaseAvailable: isPurchaseAvailable,
-        hasPurchased: hasPurchased,
+        getProductInfo: getProduct,
         updateProduct: updateProductInfo,
         beginPurchase: beginPurchase,
         onPurchaseComplete: onPurchaseComplete
