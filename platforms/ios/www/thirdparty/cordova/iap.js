@@ -3,13 +3,15 @@
     var unlockAlias = "premium features";
     var updatedProducts = [];
 
-    function updateProductInfo(p) {
+    function updateProductInfo(product) {
 
         updatedProducts = updatedProducts.filter(function (r) {
-            return r.id != p.id;
+            return r.id != product.id;
         });
 
-        updatedProducts.push(p);
+        updatedProducts.push(product);
+
+        Events.trigger(IapManager, 'productupdated', [product]);
     }
 
     function normalizeId(id) {
@@ -40,11 +42,12 @@
     function isPurchaseAvailable(id) {
         var product = getProduct(id);
 
-        return product != null && product.canPurchase;
+        return product != null && product.valid && product.canPurchase;
     }
 
     function beginPurchase(id) {
-
+        id = normalizeId(id);
+        store.order(id);
     }
 
     function validateProduct(product, callback) {
