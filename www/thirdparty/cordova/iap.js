@@ -33,12 +33,6 @@
         return products.length ? products[0] : null;
     }
 
-    function hasPurchased(id) {
-        var product = getProduct(id);
-
-        return product != null && product.owned;
-    }
-
     function isPurchaseAvailable(id) {
         var product = getProduct(id);
 
@@ -117,7 +111,7 @@
 
     window.IapManager = {
         isPurchaseAvailable: isPurchaseAvailable,
-        hasPurchased: hasPurchased,
+        getProductInfo: getProduct,
         beginPurchase: beginPurchase
     };
 
