@@ -60,7 +60,8 @@
         var productInfo = {
             enableSupporterUnlock: isAndroid(),
             enableAppUnlock: IapManager.isPurchaseAvailable(info.id),
-            id: info.id
+            id: info.id,
+            price: info.price
         };
 
         var prefix = isAndroid() ? 'android' : 'ios';
@@ -116,7 +117,12 @@
         }
 
         if (info.enableAppUnlock) {
-            html += '<button class="btn btnActionAccent btnAppUnlock" data-role="none" type="button"><span>' + Globalize.translate('ButtonUnlockWithPurchase') + '</span><i class="fa fa-check"></i></button>';
+
+            var unlockText = Globalize.translate('ButtonUnlockWithPurchase');
+            if (info.price) {
+                unlockText = Globalize.translate('ButtonUnlockPrice');
+            } 
+            html += '<button class="btn btnActionAccent btnAppUnlock" data-role="none" type="button"><span>' + unlockText + '</span><i class="fa fa-check"></i></button>';
         }
 
         if (info.enableSupporterUnlock) {

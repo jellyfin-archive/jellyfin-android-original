@@ -1941,9 +1941,9 @@ if(displayAsSpecial&&item.Type=="Episode"&&item.ParentIndexNumber==0){name=Globa
 if(item.IndexNumberEnd){displayIndexNumber=item.IndexNumberEnd;number+="-"+displayIndexNumber;}
 name=number+" - "+name;}
 return name;},getOfflineIndicatorHtml:function(item){if(item.LocationType=="Offline"){return'<div class="posterRibbon offlinePosterRibbon">'+Globalize.translate('HeaderOffline')+'</div>';}
-try{var date=parseISO8601Date(item.PremiereDate,{toLocal:true});if(item.PremiereDate&&(new Date().getTime()<date.getTime())){return'<div class="posterRibbon unairedPosterRibbon">'+Globalize.translate('HeaderUnaired')+'</div>';}}catch(err){}
-if(item.IsFolder){return'';}
-return'<div class="posterRibbon missingPosterRibbon">'+Globalize.translate('HeaderMissing')+'</div>';},getPlayedIndicatorHtml:function(item){if(item.Type=="Series"||item.Type=="Season"||item.Type=="BoxSet"||item.MediaType=="Video"||item.MediaType=="Game"||item.MediaType=="Book"){if(item.UserData.UnplayedItemCount){return'<div class="playedIndicator">'+item.UserData.UnplayedItemCount+'</div>';}
+if(item.Type=='Episode'){try{var date=parseISO8601Date(item.PremiereDate,{toLocal:true});if(item.PremiereDate&&(new Date().getTime()<date.getTime())){return'<div class="posterRibbon unairedPosterRibbon">'+Globalize.translate('HeaderUnaired')+'</div>';}}catch(err){}
+return'<div class="posterRibbon missingPosterRibbon">'+Globalize.translate('HeaderMissing')+'</div>';}
+return'';},getPlayedIndicatorHtml:function(item){if(item.Type=="Series"||item.Type=="Season"||item.Type=="BoxSet"||item.MediaType=="Video"||item.MediaType=="Game"||item.MediaType=="Book"){if(item.UserData.UnplayedItemCount){return'<div class="playedIndicator">'+item.UserData.UnplayedItemCount+'</div>';}
 if(item.Type!='TvChannel'){if(item.UserData.PlayedPercentage&&item.UserData.PlayedPercentage>=100||(item.UserData&&item.UserData.Played)){return'<div class="playedIndicator"><div class="ui-icon-check ui-btn-icon-notext"></div></div>';}}}
 return'';},getGroupCountIndicator:function(item){if(item.ChildCount){return'<div class="playedIndicator">'+item.ChildCount+'</div>';}
 return'';},getSyncIndicator:function(item){if(item.SyncPercent){if(item.SyncPercent>=100){return'<div class="syncIndicator"><i class="fa fa-refresh"></i></div>';}
