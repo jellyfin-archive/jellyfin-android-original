@@ -20,13 +20,17 @@ import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.PeriodicSync;
+import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
 import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
+import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.logging.ConsoleLogger;
+import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.net.HttpException;
 import mediabrowser.model.serialization.IJsonSerializer;
 import mediabrowser.model.session.ClientCapabilities;
+import mediabrowser.model.sync.LocalItem;
 
 /**
  * Created by Luke on 5/28/2015.
@@ -39,10 +43,15 @@ public class ApiClientBridge {
     private IAsyncHttpClient httpClient;
     private IJsonSerializer jsonSerializer;
 
-    public ApiClientBridge(Context context, ILogger logger, IWebView webView) {
+    private ILocalAssetManager localAssetManager;
+
+    public ApiClientBridge(Context context, ILogger logger, IWebView webView, IJsonSerializer jsonSerializer) {
         this.context = context;
         this.logger = logger;
         this.webView = webView;
+        this.jsonSerializer = jsonSerializer;
+
+        localAssetManager = new AndroidAssetManager(context, logger, this.jsonSerializer);
     }
 
     @JavascriptInterface
@@ -58,8 +67,6 @@ public class ApiClientBridge {
     public void init(String appName, String appVersion, String deviceId, String deviceName, String capabilitiesJson) {
 
         logger.Info("ApiClientBridge.init");
-
-        jsonSerializer = new GsonJsonSerializer();
 
         httpClient = new VolleyHttpClient(logger, context);
 
@@ -83,54 +90,22 @@ public class ApiClientBridge {
     }
 
     @JavascriptInterface
-    public void sendRequest(String url, String method, String headers, final String callbackMethod, final String callbackId) {
+    public String getLocalMediaSource(String serverId, String itemId) {
 
-        HttpRequest request = new HttpRequest();
-        request.setUrl(url);
-        request.setMethod(method);
+        LocalItem item = localAssetManager.getLocalItem(serverId, itemId);
 
-        logger.Info("Parsing full header %s", headers);
-        String[] headerValues = headers.split(Pattern.quote("|||||"));
-        for (int i=0; i < headerValues.length; i++) {
+        if (item != null && item.getItem().getMediaSources().size() > 0) {
 
-            String headerValue = headerValues[i];
+            MediaSourceInfo mediaSourceInfo = item.getItem().getMediaSources().get(0);
 
-            int index = headerValue.indexOf("=");
+            boolean fileExists = localAssetManager.fileExists(mediaSourceInfo.getPath());
 
-            if (index == -1 || headerValue.length() < 2) {
-
-                continue;
+            if (fileExists) {
+                return jsonSerializer.SerializeToString(mediaSourceInfo);
             }
-            logger.Info("Parsing header %s", headerValue);
-            String headerName = headerValue.substring(0, index);
-            request.getRequestHeaders().put(headerName, headerValue.substring(index + 1));
+
         }
 
-        httpClient.Send(request, new Response<String>(){
-
-            @Override
-            public void onResponse(String response){
-                RespondToWebView(callbackMethod, callbackId, 200, response);
-            }
-
-            @Override
-            public void onError(Exception ex){
-
-                HttpException httpError = (HttpException)ex;
-                RespondToWebView(callbackMethod, callbackId, httpError.getStatusCode(), "");
-            }
-        });
-
-    }
-
-    private void RespondToWebView(final String callbackMethod, final String callbackId, int status, String response) {
-
-        RespondToWebView(String.format("%s(\"%s\", %s, \"%s\");", callbackMethod, callbackId, status, URLEncoder.encode(response)));
-    }
-
-    private void RespondToWebView(final String url) {
-
-        logger.Info("Sending url to webView: %s", url);
-        webView.sendJavaScript(url);
+        return null;
     }
 }

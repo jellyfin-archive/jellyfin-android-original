@@ -1,7 +1,5 @@
 package com.mb.android.io;
 
-import com.mb.android.smbstreamer.Streamer;
-
 import org.xwalk.core.JavascriptInterface;
 
 import java.io.File;
@@ -30,9 +28,12 @@ public class NativeFileSystem {
     public boolean fileExists(String path) {
 
         try {
-            return getFileLength(path) >= 0;
+            boolean exists = new File(path).exists();
+            return exists;
+            //return getFileLength(path) >= 0;
         }
-        catch (IOException ex) {
+        catch (Exception ex) {
+            logger.ErrorException("Error determining if file exists", ex);
             return false;
         }
     }
@@ -95,8 +96,6 @@ public class NativeFileSystem {
     @JavascriptInterface
     public String translateFilePath(String path) {
 
-        Streamer streamer = Streamer.getInstance(logger);
-
-        return streamer.getUrl(path);
+        return path;
     }
 }

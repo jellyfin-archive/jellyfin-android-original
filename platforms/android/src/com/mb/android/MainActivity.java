@@ -40,8 +40,10 @@ import org.xwalk.core.JavascriptInterface;
 
 import java.net.URL;
 
+import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.logging.ILogger;
+import mediabrowser.model.serialization.IJsonSerializer;
 import tv.emby.iap.ResultType;
 import tv.emby.iap.UnlockActivity;
 
@@ -86,6 +88,7 @@ public class MainActivity extends CordovaActivity
 
         View engineView = engine.getView();
         ILogger logger = getLogger();
+        IJsonSerializer jsonSerializer = new GsonJsonSerializer();
 
         webView = null;
 
@@ -101,7 +104,7 @@ public class MainActivity extends CordovaActivity
         }
 
         webView.addJavascriptInterface(new IapManager(getApplicationContext(), webView, logger), "NativeIapManager");
-        webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView), "ApiClientBridge");
+        webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView, jsonSerializer), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
 

@@ -3,13 +3,15 @@
     var unlockAlias = "premium features";
     var updatedProducts = [];
 
-    function updateProductInfo(p) {
+    function updateProductInfo(product) {
 
         updatedProducts = updatedProducts.filter(function (r) {
-            return r.id != p.id;
+            return r.id != product.id;
         });
 
-        updatedProducts.push(p);
+        updatedProducts.push(product);
+
+        Events.trigger(IapManager, 'productupdated', [product]);
     }
 
     function normalizeId(id) {
@@ -44,7 +46,7 @@
     }
 
     function beginPurchase(id) {
-
+        store.order(id);
     }
 
     function validateProduct(product, callback) {

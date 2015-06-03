@@ -33,7 +33,9 @@
 
         html += '<button onclick="VoiceInputManager.startListening();" type="button" data-role="none" class="headerButton headerButtonRight headerVoiceButton" style="display:none;"><i class="material-icons">mic</i></button>';
 
-        if (!$.browser.mobile) {
+        //html += '<button class="btnViewMenu headerButton headerButtonRight" type="button" data-role="none"><i class="material-icons">more_vert</i></button>';
+
+        if (!$.browser.mobile && !AppInfo.isTouchPreferred) {
             html += '<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton" style="display:none;"><i class="material-icons">settings</i></a>';
         }
 
