@@ -66,12 +66,12 @@
 		9596D411A2E9438D8136CE32 /* CDVWebViewUIDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B4AB100994C24B9485EB5C2E /* CDVWebViewUIDelegate.m */; };
 		9768F064C50B4537AA2D8BDF /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = D2DB7B133B344DBAA07EA098 /* sqlite3.c */; };
 		9A32AA82E6DD4E569BD6C997 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3049DBEE86084920A12BC843 /* libz.dylib */; };
-		9D19E2AE4B6E49E98E7B8603 /* iSpeechSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AF4461AB528B4E8790AE6153 /* iSpeechSDK.bundle */; };
 		A2E430C6B70447E582216526 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 729D3184A4A142E38454FC6A /* GCDAsyncUdpSocket.m */; };
 		A3E7DCCE1B08611D007556B9 /* libConnectSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCD1B0860DD007556B9 /* libConnectSDK.a */; };
 		A3E7DCD01B086136007556B9 /* MediaAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */; };
 		A3E7DCD41B086211007556B9 /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCD31B086211007556B9 /* GoogleCast.framework */; };
 		A3E7DDCA1B1DF746007556B9 /* libiSpeechSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */; };
+		A3E7DDD01B1E8796007556B9 /* iSpeechSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A3E7DDCF1B1E8796007556B9 /* iSpeechSDK.bundle */; };
 		A3E9F8D01AF9509800F2026A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3E9F8CF1AF9509800F2026A /* Images.xcassets */; };
 		AF26D096E1694FD2B0EC4E00 /* InAppPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 8088A13177C24E7BB3122063 /* InAppPurchase.m */; };
 		AFDD39138D6A4CD69475B841 /* ConnectSDKCordovaObjects.m in Sources */ = {isa = PBXBuildFile; fileRef = 94CD33B35E9E4B65A9D3D14D /* ConnectSDKCordovaObjects.m */; };
@@ -211,6 +211,7 @@
 		A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaAccessibility.framework; path = System/Library/Frameworks/MediaAccessibility.framework; sourceTree = SDKROOT; };
 		A3E7DCD31B086211007556B9 /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleCast.framework; path = "../../../Connect-SDK-iOS/ConnectSDK/Frameworks/GoogleCast.framework"; sourceTree = "<group>"; };
 		A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libiSpeechSDK.a; path = Emby/Plugins/org.apache.cordova.speech.speechrecognition/libiSpeechSDK.a; sourceTree = "<group>"; };
+		A3E7DDCF1B1E8796007556B9 /* iSpeechSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = iSpeechSDK.bundle; sourceTree = "<group>"; };
 		A3E9F8CF1AF9509800F2026A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Emby/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		A4AE934D5E724B3F972F1D2A /* SpeechRecognition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SpeechRecognition.m; path = org.apache.cordova.speech.speechrecognition/SpeechRecognition.m; sourceTree = "<group>"; };
 		A8AE01EBC7F84534B913262F /* CDVBackgroundColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVBackgroundColor.m; path = "com.crewmeister.cordova-ios-backgroundcolor/CDVBackgroundColor.m"; sourceTree = "<group>"; };
@@ -218,7 +219,6 @@
 		AA5E29E0DF32484C9A6CCC01 /* APPLocalNotificationOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = APPLocalNotificationOptions.h; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.h"; sourceTree = "<group>"; };
 		AADB02B34F04495FA12F9D3A /* CDVWebViewUIDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVWebViewUIDelegate.h; path = com.telerik.plugins.wkwebview/CDVWebViewUIDelegate.h; sourceTree = "<group>"; };
 		AC1FB59EDA20473AA5411CA6 /* APPLocalNotificationOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = APPLocalNotificationOptions.m; path = "de.appplant.cordova.plugin.local-notification/APPLocalNotificationOptions.m"; sourceTree = "<group>"; };
-		AF4461AB528B4E8790AE6153 /* iSpeechSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = iSpeechSDK.bundle; path = ResourcesiSpeechSDK.bundle; sourceTree = "<group>"; };
 		AF50A5F2C4F94C9DB577E984 /* CDVNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = CDVNotification.bundle; sourceTree = "<group>"; };
 		B11E29A4881A4CF5AC01841E /* ISSpeechRecognitionResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechRecognitionResult.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechRecognitionResult.h; sourceTree = "<group>"; };
 		B4AB100994C24B9485EB5C2E /* CDVWebViewUIDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVWebViewUIDelegate.m; path = com.telerik.plugins.wkwebview/CDVWebViewUIDelegate.m; sourceTree = "<group>"; };
@@ -331,12 +331,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A3E7DDCF1B1E8796007556B9 /* iSpeechSDK.bundle */,
 				A3E9F8CF1AF9509800F2026A /* Images.xcassets */,
 				308D052D1370CCF300D202BF /* icons */,
 				308D05311370CCF300D202BF /* splash */,
 				8D1107310486CEB800E47090 /* Emby-Info.plist */,
 				AF50A5F2C4F94C9DB577E984 /* CDVNotification.bundle */,
-				AF4461AB528B4E8790AE6153 /* iSpeechSDK.bundle */,
 			);
 			name = Resources;
 			path = Emby/Resources;
@@ -624,9 +624,9 @@
 				30C1856619D5FC0A00212699 /* icon-60@3x.png in Resources */,
 				7E7966E11810823500FA85AD /* icon-50@2x.png in Resources */,
 				7E7966E51810823500FA85AD /* icon-76@2x.png in Resources */,
+				A3E7DDD01B1E8796007556B9 /* iSpeechSDK.bundle in Resources */,
 				30FC414916E50CA1004E6F35 /* icon-72@2x.png in Resources */,
 				3CD3895F56AD4D2590DF6E6F /* CDVNotification.bundle in Resources */,
-				9D19E2AE4B6E49E98E7B8603 /* iSpeechSDK.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
