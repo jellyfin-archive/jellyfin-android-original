@@ -24,20 +24,12 @@
             return;
         }
 
-        validateFeature({
-
-            id: getPremiumUnlockFeatureId()
-
-        }, deferred);
+        validateFeature(getPremiumUnlockFeatureId(), deferred);
     }
 
     function validateLiveTV(deferred) {
 
-        validateFeature({
-
-            id: getPremiumUnlockFeatureId()
-
-        }, deferred);
+        validateFeature(getPremiumUnlockFeatureId(), deferred);
     }
 
     function getRegistrationInfo(feature, enableSupporterUnlock) {
@@ -50,9 +42,11 @@
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
     }
 
-    function validateFeature(info, deferred) {
+    function validateFeature(id, deferred) {
 
-        if (IapManager.hasPurchased(info.id)) {
+        var info = IapManager.getProductInfo(id) || {};
+
+        if (info.owned) {
             deferred.resolve();
             return;
         }
@@ -60,7 +54,8 @@
         var productInfo = {
             enableSupporterUnlock: isAndroid(),
             enableAppUnlock: IapManager.isPurchaseAvailable(info.id),
-            id: info.id
+            id: info.id,
+            price: info.price
         };
 
         var prefix = isAndroid() ? 'android' : 'ios';
@@ -116,7 +111,12 @@
         }
 
         if (info.enableAppUnlock) {
-            html += '<button class="btn btnActionAccent btnAppUnlock" data-role="none" type="button"><span>' + Globalize.translate('ButtonUnlockWithPurchase') + '</span><i class="fa fa-check"></i></button>';
+
+            var unlockText = Globalize.translate('ButtonUnlockWithPurchase');
+            if (info.price) {
+                unlockText = Globalize.translate('ButtonUnlockPrice', info.price);
+            }
+            html += '<button class="btn btnActionAccent btnAppUnlock" data-role="none" type="button"><span>' + unlockText + '</span><i class="fa fa-check"></i></button>';
         }
 
         if (info.enableSupporterUnlock) {
