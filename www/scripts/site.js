@@ -1837,7 +1837,7 @@ var AppInfo = {};
             }
 
             if ($.browser.safari) {
-                requirejs(['thirdparty/cordova/remotecontrols']);
+                requirejs(['thirdparty/cordova/remotecontrols', 'thirdparty/cordova/ios/orientation']);
             }
 
         } else {
