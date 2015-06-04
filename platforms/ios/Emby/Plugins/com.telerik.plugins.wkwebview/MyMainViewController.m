@@ -8,6 +8,7 @@
 #import "CDVWebViewUIDelegate.h"
 #import "ReroutingUIWebView.h"
 #import "AppDelegate+WKWebViewPolyfill.h"
+#import "RemoteControls.h"
 
 @interface CDVViewController ()
 @property (nonatomic, readwrite, retain) NSArray *startupPluginNames;
@@ -230,10 +231,19 @@
   }
 }
 
+//add this function
+- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
+    [[RemoteControls remoteControls] receiveRemoteEvent:receivedEvent];
+}
+
 - (void)viewDidLoad
 {
   NSURL* appURL = nil;
   NSString* loadErr = nil;
+    
+    
+  // Turn off remote control event delivery
+  [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 
   if ([self.startPage rangeOfString:@"://"].location != NSNotFound) {
     appURL = [NSURL URLWithString:self.startPage];
@@ -508,6 +518,15 @@
 //  if ([self settingForKey:@"RecoverFromCrash"] && [[self settingForKey:@"RecoverFromCrash"] boolValue]) {
     _crashRecoveryTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(recoverFromCrash) userInfo:nil repeats:YES];
 //  }
+    
+    
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    // Do any additional setup after loading the view from its nib.
+    [[RemoteControls remoteControls] setWebView:self.webView];
+    
+    // Black base color for background matches the native apps
+    self.wkWebView.backgroundColor = [UIColor blackColor];
+
 }
 
 - (WKWebView*)newCordovaWKWebViewWithFrame:(CGRect)bounds wkWebViewConfig:(WKWebViewConfiguration*) config

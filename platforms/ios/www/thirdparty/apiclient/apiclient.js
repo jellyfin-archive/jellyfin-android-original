@@ -376,7 +376,7 @@
 
             self.serverInfo(server);
 
-            var serverUrl = MediaBrowser.ServerInfo.getServerAddress(connectionMode);
+            var serverUrl = MediaBrowser.ServerInfo.getServerAddress(server, connectionMode);
 
             if (!serverUrl) {
                 throw new Error('serverUrl cannot be null. serverInfo: ' + JSON.stringify(server));
