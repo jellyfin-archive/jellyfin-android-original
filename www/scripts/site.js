@@ -1536,17 +1536,22 @@ var AppInfo = {};
 
             if (isMobile) {
                 AppInfo.hasLowImageBandwidth = true;
-                AppInfo.forcedImageFormat = 'jpg';
             }
 
             if (isCordova) {
                 AppInfo.enableBottomTabs = true;
                 AppInfo.cardMargin = 'mediumCardMargin';
+
             } else {
-                AppInfo.enableDetailPageChapters = false;
-                AppInfo.enableDetailsMenuImages = false;
-                AppInfo.enableMovieHomeSuggestions = false;
-                AppInfo.cardMargin = 'largeCardMargin';
+                if (isMobile) {
+
+                    AppInfo.enableDetailPageChapters = false;
+                    AppInfo.enableDetailsMenuImages = false;
+                    AppInfo.enableMovieHomeSuggestions = false;
+                    AppInfo.cardMargin = 'largeCardMargin';
+
+                    AppInfo.forcedImageFormat = 'jpg';
+                }
             }
         }
         else {
