@@ -107,6 +107,16 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.51462764" vertical-offset="922" max-vertical-offset="1853">
+              <caret line="120" column="70" selection-start-line="120" selection-start-column="70" selection-end-line="120" selection-end-column="70" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="SyncLoggerFactory.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/logging/SyncLoggerFactory.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -139,10 +149,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NativeFileSystem.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="NativeFileSystem.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/io/NativeFileSystem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.78457445" vertical-offset="175" max-vertical-offset="1632">
+            <state vertical-scroll-proportion="0.0" vertical-offset="175" max-vertical-offset="1632">
               <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
               <folding>
                 <element signature="e#505#506#0" expanded="true" />
@@ -2113,7 +2123,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5730303970012" />
+        <entry key="$PROJECT_DIR$" value="5730414764769" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2448,9 +2458,9 @@
         <option value="$PROJECT_DIR$/src/com/mb/android/logging/LogbackLogger.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/logging/AppLogger.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/logging/SyncLoggerFactory.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/MainActivity.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/io/NativeFileSystem.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -2942,7 +2952,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="54" y="-8" width="2514" height="1456" extended-state="7" />
+    <frame x="54" y="-8" width="2514" height="1456" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -3324,14 +3334,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.2875739" vertical-offset="0" max-vertical-offset="1853">
-          <caret line="107" column="43" selection-start-line="107" selection-start-column="43" selection-end-line="107" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/iap/IapManager.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="187" max-vertical-offset="1445">
@@ -3354,12 +3356,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/io/NativeFileSystem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.78457445" vertical-offset="175" max-vertical-offset="1632">
+        <state vertical-scroll-proportion="0.0" vertical-offset="175" max-vertical-offset="1632">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
           <folding>
             <element signature="e#505#506#0" expanded="true" />
             <element signature="e#541#542#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.51462764" vertical-offset="922" max-vertical-offset="1853">
+          <caret line="120" column="70" selection-start-line="120" selection-start-column="70" selection-end-line="120" selection-end-column="70" />
+          <folding />
         </state>
       </provider>
     </entry>
