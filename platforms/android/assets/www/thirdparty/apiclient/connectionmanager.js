@@ -221,10 +221,16 @@
             }
 
             var credentials = credentialProvider.credentials();
-            var server = credentials.Servers.filter(function (s) {
+            var servers = credentials.Servers.filter(function (s) {
                 return stringEqualsIgnoreCase(s.Id, serverId);
 
-            })[0];
+            });
+
+            if (!servers.length) {
+                throw new Error('Server not found: ' + serverId);
+            }
+
+            var server = servers[0];
 
             return getOrAddApiClient(server, server.LastConnectionMode);
         };
@@ -945,7 +951,7 @@
                 MediaBrowser.ConnectionState.ServerSignIn;
 
             result.Servers.push(server);
-            result.ApiClient.enableAutomaticNetworking(server, connectionMode, MediaBrowser.ServerInfo.getServerAddress(server, connectionMode));
+            result.ApiClient.updateServerInfo(server, connectionMode);
 
             if (result.State == MediaBrowser.ConnectionState.SignedIn) {
                 afterConnected(result.ApiClient, options);

@@ -53,8 +53,8 @@
 
         var productInfo = {
             enableSupporterUnlock: isAndroid(),
-            enableAppUnlock: IapManager.isPurchaseAvailable(info.id),
-            id: info.id,
+            enableAppUnlock: IapManager.isPurchaseAvailable(id),
+            id: id,
             price: info.price
         };
 
@@ -232,9 +232,9 @@
     }
 
     if (isAndroid()) {
-        requirejs(['thirdparty/cordova/android/iap', onIapManagerLoaded]);
+        requirejs(['thirdparty/cordova/android/iap'], onIapManagerLoaded);
     } else {
-        requirejs(['thirdparty/cordova/iap', onIapManagerLoaded]);
+        requirejs(['thirdparty/cordova/iap'], onIapManagerLoaded);
     }
 
 })();
