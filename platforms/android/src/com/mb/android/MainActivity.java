@@ -114,10 +114,9 @@ public class MainActivity extends CordovaActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == PURCHASE_UNLOCK_REQUEST) {
-            if (resultCode == ResultType.Success.ordinal()) {
+            if (resultCode == RESULT_OK) {
                 RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
             } else {
-                String data = intent.getStringExtra("data");
                 RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
             }
         }
