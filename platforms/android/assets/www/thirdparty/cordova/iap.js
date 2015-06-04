@@ -88,12 +88,10 @@
         // show some logs and finish the transaction.
         store.when(unlockAppProductId).approved(function (order) {
             log('You just unlocked the FULL VERSION!');
-            alert('approved');
             order.finish();
         });
 
         store.when(unlockAppProductId).verified(function (p) {
-            alert('verified');
             log("verified");
             p.finish();
         });
@@ -102,6 +100,10 @@
         // owns the full version.
         store.when(unlockAppProductId).updated(function (product) {
 
+            if (product.loaded && product.valid && product.state == store.APPROVED) {
+                console.log('finishing previously created transaction');
+                product.finish();
+            }
             updateProductInfo(product);
         });
 

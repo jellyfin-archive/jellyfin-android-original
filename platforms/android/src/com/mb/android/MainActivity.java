@@ -71,7 +71,8 @@ public class MainActivity extends CordovaActivity
         OkHttpClient okHttpClient = new OkHttpClient();
 
         try {
-            URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
+            // This is throwing an exception we can't catch and is crashing the app
+            // URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
         }
         catch (Exception ex){
             // Occasionally seeing factory already set error
