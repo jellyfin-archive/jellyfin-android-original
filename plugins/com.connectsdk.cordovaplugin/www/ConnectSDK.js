@@ -1292,6 +1292,15 @@ var WebAppSession = createClass(
         return this._device._sendCommand("webAppSession", "disconnect", {objectId: this._objectId});
     },
 
+    /** 
+     * Set web app session listener to app
+     * @returns {Command}
+     */
+     setWebAppSessionListener: function() {
+        this.acquire();
+        return this._device._sendCommand("webAppSession", "setWebAppSessionListener", {objectId: this._objectId});
+     },
+
     /**
      * Send a text string to the app. Must be connected first.
      * @param {string} text - Text to send to the app
