@@ -20,6 +20,7 @@
 package com.mb.android;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
@@ -68,8 +69,6 @@ public class MainActivity extends CordovaActivity
     {
         super.onCreate(savedInstanceState);
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-
         try {
             // This is throwing an exception we can't catch and is crashing the app
             // URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
@@ -80,6 +79,10 @@ public class MainActivity extends CordovaActivity
 
         // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
     }
 
     @Override

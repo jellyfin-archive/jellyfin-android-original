@@ -527,7 +527,7 @@
             var deviceId = device.getId();
             currentPairingDeviceId = deviceId;
 
-            console.log('Will attempt to connect to Chromecast');
+            console.log('Will attempt to connect to Connect device');
 
             Dashboard.showModalLoadingMsg();
             setTimeout(Dashboard.hideModalLoadingMsg, 3000);
