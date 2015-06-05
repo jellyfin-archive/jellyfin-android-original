@@ -459,10 +459,12 @@
             MediaController.removeActivePlayer(PlayerName);
         }
 
-        function onWebAppSessionConnect(device) {
+        function onWebAppSessionConnect(webAppSession, device) {
+
+            currentWebAppSession = webAppSession;
 
             console.log('session.connect succeeded');
-            currentWebAppSession.setWebAppSessionListener();
+            webAppSession.setWebAppSessionListener();
 
             MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
             currentDevice = device;
@@ -475,19 +477,19 @@
         function setupWebAppSession(device, session, connectToSession) {
 
             // hold on to a reference
-            currentWebAppSession = session.acquire();
+            var currentSession = session.acquire();
 
-            currentWebAppSession.on('message', handleMessage);
-            currentWebAppSession.on('disconnect', handleSessionDisconnect);
+            currentSession.on('message', handleMessage);
+            currentSession.on('disconnect', handleSessionDisconnect);
 
-            if (connectToSession) {
-                currentWebAppSession.connect().success(function () {
+            if (connectToSession || $.browser.safari) {
+                currentSession.connect().success(function () {
 
-                    onWebAppSessionConnect(device);
+                    onWebAppSessionConnect(currentSession, device);
 
                 }).error(handleSessionError);
             } else {
-                onWebAppSessionConnect(device);
+                onWebAppSessionConnect(currentSession, device);
             }
         }
 
