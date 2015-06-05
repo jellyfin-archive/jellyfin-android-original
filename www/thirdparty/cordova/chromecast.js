@@ -461,6 +461,8 @@
 
         function onWebAppSessionConnect(webAppSession, device) {
 
+            currentWebAppSession = webAppSession;
+
             console.log('session.connect succeeded');
             webAppSession.setWebAppSessionListener();
 
@@ -475,12 +477,12 @@
         function setupWebAppSession(device, session, connectToSession) {
 
             // hold on to a reference
-            var currentSession = currentWebAppSession = session.acquire();
+            var currentSession = session.acquire();
 
             currentSession.on('message', handleMessage);
             currentSession.on('disconnect', handleSessionDisconnect);
 
-            if (connectToSession) {
+            if (connectToSession || $.browser.safari) {
                 currentSession.connect().success(function () {
 
                     onWebAppSessionConnect(currentSession, device);
