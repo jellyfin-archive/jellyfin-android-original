@@ -29,7 +29,16 @@
 
     function validateLiveTV(deferred) {
 
+        if (!isAndroid()) {
+            deferred.resolve();
+            return;
+        }
+
         validateFeature(getPremiumUnlockFeatureId(), deferred);
+    }
+
+    function validateServerManagement(deferred) {
+        deferred.resolve();
     }
 
     function getRegistrationInfo(feature, enableSupporterUnlock) {
@@ -219,6 +228,8 @@
                 validatePlayback(deferred);
             } else if (name == 'livetv') {
                 validateLiveTV(deferred);
+            } else if (name == 'manageserver') {
+                validateServerManagement(deferred);
             } else {
                 deferred.resolve();
             }
