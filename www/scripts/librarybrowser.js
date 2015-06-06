@@ -1557,7 +1557,7 @@
             html += '<div class="' + footerClass + '">';
 
             if (options.cardLayout) {
-                html += '<div class="cardText" style="text-align:right; float:right;">';
+                html += '<div class="cardButtonContainer">';
                 html += '<button class="listviewMenuButton imageButton btnCardOptions" type="button" data-role="none" style="margin: 4px 0 0;"><i class="material-icons">more_vert</i></button>';
                 html += "</div>";
             }
