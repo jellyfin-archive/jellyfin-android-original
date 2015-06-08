@@ -7,12 +7,16 @@
     globalScope.MediaBrowser.CredentialProvider = function () {
 
         var self = this;
-        var credentials;
+        var credentials = null;
         var key = 'servercredentials3';
 
         function ensure() {
 
-            credentials = credentials || JSON.parse(appStorage.getItem(key) || '{}');
+            var json = appStorage.getItem(key) || '{}';
+
+            console.log('credentials initialized with: ' + json);
+
+            credentials = credentials || JSON.parse(json);
             credentials.Servers = credentials.Servers || credentials.servers || [];
 
             credentials.servers = null;
@@ -65,6 +69,8 @@
                 // Merge the data
                 existing.DateLastAccessed = Math.max(existing.DateLastAccessed || 0, server.DateLastAccessed || 0);
 
+                existing.UserLinkType = server.UserLinkType;
+
                 if (server.AccessToken) {
                     existing.AccessToken = server.AccessToken;
                     existing.UserId = server.UserId;
@@ -99,23 +105,6 @@
                 return server;
             }
         };
-    };
-
-    globalScope.MediaBrowser.ServerInfo = {
-
-        getServerAddress: function (server, mode) {
-
-            switch (mode) {
-                case MediaBrowser.ConnectionMode.Local:
-                    return server.LocalAddress;
-                case MediaBrowser.ConnectionMode.Manual:
-                    return server.ManualAddress;
-                case MediaBrowser.ConnectionMode.Remote:
-                    return server.RemoteAddress;
-                default:
-                    return server.ManualAddress || server.LocalAddress || server.RemoteAddress;
-            }
-        }
     };
 
 })(window, window.JSON);

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.emby.mobile" android-packageName="com.mb.android" ios-CFBundleIdentifier="com.emby.mobile" version="2.2.96" android-versionCode="14242296" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.emby.mobile" android-packageName="com.mb.android" ios-CFBundleIdentifier="com.emby.mobile" version="2.2.98" android-versionCode="14242298" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Emby</name>
   <description>
     Emby Mobile
@@ -10,12 +10,7 @@
   <content src="index.html" />
   <plugin name="cordova-plugin-whitelist" version="1" />
   <access origin="*" />
-  <allow-intent href="http://*/*" />
-  <allow-intent href="https://*/*" />
-  <allow-intent href="tel:*" />
-  <allow-intent href="sms:*" />
-  <allow-intent href="mailto:*" />
-  <allow-intent href="geo:*" />
+  <allow-intent href="*" />
   <preference name="AllowInlineMediaPlayback" value="true" />
   <preference name="MediaPlaybackRequiresUserAction" value="false" />
   <preference name="UIWebViewBounce" value="false" />
@@ -26,9 +21,6 @@
   <preference name="BackupWebStorage" value="local" />
   <preference name="SplashScreenDelay" value="7000" />
   <icon src="res/icon.png" />
-  <platform name="android">
-    <allow-intent href="market:*" />
-  </platform>
   <platform name="ios">
     <!-- iOS 8.0+ -->
     <!-- iPhone 6 Plus  -->
@@ -96,6 +88,5 @@
     <splash src="res/android/xhdpi/splash-port.png" density="port-xhdpi"/>
     <splash src="res/android/xxhdpi/splash-port.png" density="port-xxhdpi"/>
     <splash src="res/android/xxxhdpi/splash-port.png" density="port-xxxhdpi"/>
-	<preference name="dvReleaseSigningPropertiesFile" value="7000" />
   </platform>
 </widget>
