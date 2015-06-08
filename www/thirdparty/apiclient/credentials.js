@@ -12,14 +12,16 @@
 
         function ensure() {
 
-            var json = appStorage.getItem(key) || '{}';
+            if (!credentials) {
+                
+                var json = appStorage.getItem(key) || '{}';
 
-            console.log('credentials initialized with: ' + json);
+                console.log('credentials initialized with: ' + json);
+                credentials = JSON.parse(json);
+                credentials.Servers = credentials.Servers || credentials.servers || [];
 
-            credentials = credentials || JSON.parse(json);
-            credentials.Servers = credentials.Servers || credentials.servers || [];
-
-            credentials.servers = null;
+                credentials.servers = null;
+            }
         }
 
         function get() {
