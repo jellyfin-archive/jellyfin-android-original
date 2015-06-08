@@ -62,6 +62,20 @@
 
             AndroidSharedPreferences.remove(name);
         };
+
+        function migrateKey(key) {
+            var json = localStorage.getItem(key);
+            if (json) {
+                self.setItem(key, json);
+                localStorage.removeItem(key);
+            }
+        }
+
+        function migrate() {
+            migrateKey('servercredentials3');
+        }
+
+        migrate();
     }
 
     globalScope.appStorage = new preferencesStore();

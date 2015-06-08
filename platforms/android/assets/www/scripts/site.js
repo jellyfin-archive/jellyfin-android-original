@@ -1591,6 +1591,8 @@ var AppInfo = {};
     function initializeApiClient(apiClient) {
 
         apiClient.enableAppStorePolicy = AppInfo.enableAppStorePolicy;
+        apiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
+        apiClient.normalizeImageOptions = Dashboard.normalizeImageOptions;
 
         $(apiClient).off('.dashboard')
             .on("websocketmessage.dashboard", Dashboard.onWebSocketMessageReceived)
@@ -1609,37 +1611,35 @@ var AppInfo = {};
             initializeApiClient(newApiClient);
         });
 
-        var apiClient;
+        var deferred = DeferredBuilder.Deferred();
 
         if (Dashboard.isConnectMode()) {
 
-            apiClient = ConnectionManager.getLastUsedApiClient();
+            var server = ConnectionManager.getLastUsedServer();
 
             if (!Dashboard.isServerlessPage()) {
 
-                if (apiClient && apiClient.serverAddress() && apiClient.getCurrentUserId() && apiClient.accessToken()) {
-
-                    initializeApiClient(apiClient);
+                if (server && server.UserId && server.AccessToken) {
+                    ConnectionManager.connectToServer(server).done(function (result) {
+                        if (result.State == MediaBrowser.ConnectionState.SignedIn) {
+                            window.ApiClient = result.ApiClient;
+                        }
+                        deferred.resolve();
+                    });
+                    return deferred.promise();
                 }
             }
+            deferred.resolve();
 
         } else {
 
-            apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId);
+            var apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId);
             apiClient.enableAutomaticNetworking = false;
             ConnectionManager.addApiClient(apiClient);
+            Dashboard.importCss(apiClient.getUrl('Branding/Css'));
+            window.ApiClient = apiClient;
         }
-
-        window.ApiClient = apiClient;
-
-        if (window.ApiClient) {
-            ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
-            ApiClient.normalizeImageOptions = Dashboard.normalizeImageOptions;
-
-            if (!AppInfo.isNativeApp) {
-                Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
-            }
-        }
+        return deferred.promise();
     }
 
     function initFastClick() {
@@ -1892,17 +1892,17 @@ var AppInfo = {};
 
         $.extend(AppInfo, Dashboard.getAppInfo(appName, deviceId, deviceName));
 
-        if (Dashboard.isRunningInCordova()) {
+        if (Dashboard.isConnectMode()) {
 
             require(['appstorage'], function () {
 
                 capabilities.DeviceProfile = MediaPlayer.getDeviceProfile(Math.max(screen.height, screen.width));
-                createConnectionManager(capabilities);
-
-                $(function () {
-                    onDocumentReady();
-                    Dashboard.initPromiseDone = true;
-                    deferred.resolve();
+                createConnectionManager(capabilities).done(function() {
+                    $(function () {
+                        onDocumentReady();
+                        Dashboard.initPromiseDone = true;
+                        deferred.resolve();
+                    });
                 });
             });
 
@@ -1911,6 +1911,8 @@ var AppInfo = {};
 
             Dashboard.initPromiseDone = true;
             deferred.resolve();
+
+            $(onDocumentReady);
         }
     }
 

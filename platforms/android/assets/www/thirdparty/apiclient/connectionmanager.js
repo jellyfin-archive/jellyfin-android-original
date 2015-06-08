@@ -126,6 +126,21 @@
             return credentialProvider.credentials().ConnectAccessToken;
         };
 
+        self.getLastUsedServer = function () {
+
+            var servers = credentialProvider.credentials().Servers;
+
+            servers.sort(function (a, b) {
+                return (b.DateLastAccessed || 0) - (a.DateLastAccessed || 0);
+            });
+
+            if (!servers.length) {
+                return null;
+            }
+
+            return servers[0];
+        };
+
         self.getLastUsedApiClient = function () {
 
             var servers = credentialProvider.credentials().Servers;
@@ -533,7 +548,6 @@
         self.logout = function () {
 
             console.log('begin connectionManager loguot');
-
             var promises = [];
 
             for (var i = 0, length = apiClients.length; i < length; i++) {
@@ -927,7 +941,6 @@
         function onSuccessfulConnection(server, systemInfo, connectionMode, options, deferred) {
 
             var credentials = credentialProvider.credentials();
-
             if (credentials.ConnectAccessToken) {
 
                 ensureConnectUser(credentials).done(function () {

@@ -302,9 +302,7 @@
 
         self.getTargets = function () {
 
-            var manager = ConnectSDK.discoveryManager;
-
-            return manager.getDeviceList().filter(function (d) {
+            return ConnectHelper.getDeviceList().filter(function (d) {
 
                 return isChromecast(d.getModelName()) || isChromecast(d.getFriendlyName());
 
@@ -586,7 +584,7 @@
 
             var deferred = $.Deferred();
 
-            var device = ConnectSDK.discoveryManager.getDeviceList().filter(function (d) {
+            var device = ConnectHelper.getDeviceList().filter(function (d) {
 
                 return d.getId() == target.id;
             })[0];
@@ -634,7 +632,7 @@
                 if (newTarget.id != currentDeviceId) {
                     if (currentWebAppSession) {
                         console.log('Disconnecting from chromecast');
-                        currentDevice.disconnect();
+                        //currentDevice.disconnect();
                         currentDevice = null;
                         currentDeviceId = null;
                     }

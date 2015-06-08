@@ -50,18 +50,32 @@
 
         self.setItem = function (name, value) {
 
-            PreferencesProvider.set(name, value);
+            AndroidSharedPreferences.set(name, value);
         };
 
         self.getItem = function (name) {
 
-            return PreferencesProvider.get(name);
+            return AndroidSharedPreferences.get(name);
         };
 
         self.removeItem = function (name) {
 
-            PreferencesProvider.remove(name);
+            AndroidSharedPreferences.remove(name);
         };
+
+        function migrateKey(key) {
+            var json = localStorage.getItem(key);
+            if (json) {
+                self.setItem(key, json);
+                localStorage.removeItem(key);
+            }
+        }
+
+        function migrate() {
+            migrateKey('servercredentials3');
+        }
+
+        migrate();
     }
 
     globalScope.appStorage = new preferencesStore();
