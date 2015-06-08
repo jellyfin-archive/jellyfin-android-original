@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242296" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.2.96" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242298" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.2.98" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
@@ -43,7 +43,6 @@
     <feature name="SpeechRecognition">
         <param name="android-package" value="org.apache.cordova.speech.SpeechRecognition" />
     </feature>
-    <allow-intent href="market:*" />
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="21" />
     <icon density="ldpi" src="res/android/ldpi/icon.png" />
@@ -64,7 +63,6 @@
     <splash density="port-xhdpi" src="res/android/xhdpi/splash-port.png" />
     <splash density="port-xxhdpi" src="res/android/xxhdpi/splash-port.png" />
     <splash density="port-xxxhdpi" src="res/android/xxxhdpi/splash-port.png" />
-    <preference name="dvReleaseSigningPropertiesFile" value="7000" />
     <name>Emby</name>
     <description>
     Emby Mobile
@@ -74,12 +72,7 @@
   </author>
     <content src="index.html" />
     <access origin="*" />
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
+    <allow-intent href="*" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="UIWebViewBounce" value="false" />

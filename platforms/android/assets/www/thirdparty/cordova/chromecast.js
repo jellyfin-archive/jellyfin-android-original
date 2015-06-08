@@ -1,13 +1,14 @@
 ﻿(function () {
 
-    var PlayerName = "Chromecast";
-    var ApplicationID = "2D4B1DA3";
-    var currentWebAppSession;
-    var currentDevice;
-
     function chromecastPlayer() {
 
         var self = this;
+
+        var PlayerName = "Chromecast";
+        var ApplicationID = "2D4B1DA3";
+        var currentWebAppSession;
+        var currentDevice;
+        var currentDeviceId;
 
         // MediaController needs this
         self.name = PlayerName;
@@ -84,7 +85,8 @@
                 accessToken: ApiClient.accessToken(),
                 serverAddress: ApiClient.serverAddress(),
                 maxBitrate: bitrateSetting,
-                receiverName: currentDevice.getFriendlyName()
+                receiverName: currentDevice.getFriendlyName(),
+                supportsAc3: AppSettings.enableChromecastAc3()
             });
 
             getEndpointInfo().done(function (endpoint) {
@@ -468,6 +470,7 @@
 
             MediaController.setActivePlayer(PlayerName, convertDeviceToTarget(device));
             currentDevice = device;
+            currentDeviceId = device.getId();
 
             $(castPlayer).trigger('connect');
 
@@ -628,22 +631,31 @@
         $(MediaController).on('playerchange', function (e, newPlayer, newTarget) {
 
             if (currentDevice) {
-                if (newTarget.id != currentDevice.getId()) {
+                if (newTarget.id != currentDeviceId) {
                     if (currentWebAppSession) {
                         console.log('Disconnecting from chromecast');
                         currentDevice.disconnect();
                         currentDevice = null;
+                        currentDeviceId = null;
                     }
                 }
             }
         });
+
+        function onResume() {
+
+            var deviceId = currentDeviceId;
+
+            if (deviceId) {
+                self.tryPair({
+                    id: deviceId
+                });
+            }
+        }
+
+        document.addEventListener("resume", onResume, false);
     }
 
-    function initSdk() {
-
-        MediaController.registerPlayer(new chromecastPlayer());
-    }
-
-    initSdk();
+    MediaController.registerPlayer(new chromecastPlayer());
 
 })();

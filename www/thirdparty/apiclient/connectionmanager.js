@@ -18,6 +18,23 @@
         Manual: 2
     };
 
+    globalScope.MediaBrowser.ServerInfo = {
+
+        getServerAddress: function (server, mode) {
+
+            switch (mode) {
+                case MediaBrowser.ConnectionMode.Local:
+                    return server.LocalAddress;
+                case MediaBrowser.ConnectionMode.Manual:
+                    return server.ManualAddress;
+                case MediaBrowser.ConnectionMode.Remote:
+                    return server.RemoteAddress;
+                default:
+                    return server.ManualAddress || server.LocalAddress || server.RemoteAddress;
+            }
+        }
+    };
+
     globalScope.MediaBrowser.ConnectionManager = function (logger, credentialProvider, appName, appVersion, deviceName, deviceId, capabilities) {
 
         logger.log('Begin MediaBrowser.ConnectionManager constructor');
@@ -114,7 +131,7 @@
             var servers = credentialProvider.credentials().Servers;
 
             servers.sort(function (a, b) {
-                return b.DateLastAccessed - a.DateLastAccessed;
+                return (b.DateLastAccessed || 0) - (a.DateLastAccessed || 0);
             });
 
             if (!servers.length) {
@@ -515,6 +532,8 @@
 
         self.logout = function () {
 
+            console.log('begin connectionManager loguot');
+
             var promises = [];
 
             for (var i = 0, length = apiClients.length; i < length; i++) {
@@ -646,7 +665,7 @@
                     servers = filterServers(servers, connectServers);
 
                     servers.sort(function (a, b) {
-                        return b.DateLastAccessed - a.DateLastAccessed;
+                        return (b.DateLastAccessed || 0) - (a.DateLastAccessed || 0);
                     });
 
                     credentials.Servers = servers;
@@ -680,23 +699,27 @@
         function findServers() {
 
             var deferred = DeferredBuilder.Deferred();
-            ServerDiscovery.findServers(2500).done(function (foundServers) {
 
-                var servers = foundServers.map(function (foundServer) {
+            require(['serverdiscovery'], function () {
+                ServerDiscovery.findServers(2500).done(function (foundServers) {
 
-                    var info = {
-                        Id: foundServer.Id,
-                        LocalAddress: foundServer.Address,
-                        Name: foundServer.Name,
-                        ManualAddress: convertEndpointAddressToManualAddress(foundServer),
-                        DateLastLocalConnection: new Date().getTime()
-                    };
+                    var servers = foundServers.map(function (foundServer) {
 
-                    info.LastConnectionMode = info.ManualAddress ? MediaBrowser.ConnectionMode.Manual : MediaBrowser.ConnectionMode.Local;
+                        var info = {
+                            Id: foundServer.Id,
+                            LocalAddress: foundServer.Address,
+                            Name: foundServer.Name,
+                            ManualAddress: convertEndpointAddressToManualAddress(foundServer),
+                            DateLastLocalConnection: new Date().getTime()
+                        };
 
-                    return info;
+                        info.LastConnectionMode = info.ManualAddress ? MediaBrowser.ConnectionMode.Manual : MediaBrowser.ConnectionMode.Local;
+
+                        return info;
+                    });
+                    deferred.resolveWith(null, [servers]);
                 });
-                deferred.resolveWith(null, [servers]);
+
             });
             return deferred.promise();
         }
@@ -804,6 +827,14 @@
 
         function beginWakeServer(server) {
 
+            require(['wakeonlan'], function () {
+                var infos = server.WakeOnLanInfos || [];
+
+                for (var i = 0, length = infos.length; i < length; i++) {
+
+                    WakeOnLan.send(infos[i]);
+                }
+            });
         }
 
         self.connectToServer = function (server, options) {
@@ -819,11 +850,7 @@
             if (tests.indexOf(MediaBrowser.ConnectionMode.Local) == -1) { tests.push(MediaBrowser.ConnectionMode.Local); }
             if (tests.indexOf(MediaBrowser.ConnectionMode.Remote) == -1) { tests.push(MediaBrowser.ConnectionMode.Remote); }
 
-            var sendWakeOnLan = server.WakeOnLanInfos && server.WakeOnLanInfos.length;
-
-            if (sendWakeOnLan) {
-                beginWakeServer(server);
-            }
+            beginWakeServer(server);
 
             var wakeOnLanSendTime = new Date().getTime();
 
@@ -964,6 +991,9 @@
 
         function normalizeAddress(address) {
 
+            // attempt to correct bad input
+            address = address.trim();
+
             if (address.toLowerCase().indexOf('http') != 0) {
                 address = "http://" + address;
             }
@@ -1014,43 +1044,53 @@
 
         self.loginToConnect = function (username, password) {
 
+            var deferred = DeferredBuilder.Deferred();
+
             if (!username) {
-                var deferred = DeferredBuilder.Deferred();
                 deferred.reject();
                 return deferred.promise();
             }
             if (!password) {
-                var deferred = DeferredBuilder.Deferred();
                 deferred.reject();
                 return deferred.promise();
             }
 
-            var md5 = self.getConnectPasswordHash(password);
+            require(['connectservice'], function () {
 
-            return AjaxApi.ajax({
-                type: "POST",
-                url: "https://connect.mediabrowser.tv/service/user/authenticate",
-                data: {
-                    nameOrEmail: username,
-                    password: md5
-                },
-                dataType: "json",
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                headers: {
-                    "X-Application": appName + "/" + appVersion
-                }
+                var md5 = self.getConnectPasswordHash(password);
 
-            }).done(function (result) {
+                AjaxApi.ajax({
+                    type: "POST",
+                    url: "https://connect.mediabrowser.tv/service/user/authenticate",
+                    data: {
+                        nameOrEmail: username,
+                        password: md5
+                    },
+                    dataType: "json",
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    headers: {
+                        "X-Application": appName + "/" + appVersion
+                    }
 
-                var credentials = credentialProvider.credentials();
+                }).done(function (result) {
 
-                credentials.ConnectAccessToken = result.AccessToken;
-                credentials.ConnectUserId = result.User.Id;
+                    var credentials = credentialProvider.credentials();
 
-                credentialProvider.credentials(credentials);
+                    credentials.ConnectAccessToken = result.AccessToken;
+                    credentials.ConnectUserId = result.User.Id;
 
-                onConnectUserSignIn(result.User);
+                    credentialProvider.credentials(credentials);
+
+                    onConnectUserSignIn(result.User);
+
+                    deferred.resolveWith(null, [result]);
+
+                }).fail(function () {
+                    deferred.reject();
+                });
             });
+
+            return deferred.promise();
         };
 
         self.getConnectPasswordHash = function (password) {

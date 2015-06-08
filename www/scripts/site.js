@@ -35,6 +35,8 @@ var Dashboard = {
         //$.mobile.popup.prototype.options.theme = "c";
         $.mobile.popup.prototype.options.transition = "pop";
 
+        //$.mobile.keepNative = "input[type='text'],input[type='password'],input[type='number']";
+
         if ($.browser.mobile) {
             $.mobile.defaultPageTransition = "none";
         } else {
@@ -48,6 +50,7 @@ var Dashboard = {
 
         $.event.special.swipe.verticalDistanceThreshold = 40;
         $.mobile.loader.prototype.options.disabled = true;
+        //$.mobile.page.prototype.options.domCache = true;
     },
 
     isConnectMode: function () {
@@ -1331,7 +1334,7 @@ var Dashboard = {
             PlayableMediaTypes: ['Audio', 'Video'],
 
             SupportedCommands: Dashboard.getSupportedRemoteCommands(),
-            SupportsPersistentIdentifier: AppInfo.isNativeApp,
+            SupportsPersistentIdentifier: AppInfo.isNativeApp === true,
             SupportsMediaControl: true,
             SupportedLiveMediaTypes: ['Audio', 'Video']
         };
@@ -1451,25 +1454,6 @@ var Dashboard = {
         return deferred.promise();
     },
 
-    loadLocalAssetManager: function () {
-
-        var deferred = DeferredBuilder.Deferred();
-
-        var file = 'thirdparty/apiclient/localassetmanager';
-
-        if (AppInfo.isNativeApp && $.browser.android) {
-            file = 'thirdparty/cordova/android/localassetmanager';
-        }
-
-        require([
-            file
-        ], function () {
-
-            deferred.resolve();
-        });
-        return deferred.promise();
-    },
-
     ready: function (fn) {
 
         if (Dashboard.initPromiseDone) {
@@ -1504,6 +1488,14 @@ var Dashboard = {
         });
 
         return deferred.promise();
+    },
+
+    exitOnBack: function () {
+        return $($.mobile.activePage).is('#indexPage');
+    },
+
+    exit: function () {
+        Dashboard.logout();
     }
 };
 
@@ -1831,7 +1823,7 @@ var AppInfo = {};
         });
 
         if (Dashboard.isRunningInCordova()) {
-            requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices']);
+            requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices', 'thirdparty/cordova/volume', 'thirdparty/cordova/back']);
 
             if ($.browser.android) {
                 requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'thirdparty/cordova/android/filesystem']);
@@ -1859,13 +1851,33 @@ var AppInfo = {};
                     'css': 'thirdparty/requirecss' // or whatever the path to require-css is
                 }
             },
-            urlArgs: "v=" + window.dashboardVersion
+            urlArgs: "v=" + window.dashboardVersion,
+
+            paths: {
+                "velocity": "thirdparty/velocity.min"
+            }
         });
 
         // Required since jQuery is loaded before requireJs
         define('jquery', [], function () {
             return jQuery;
         });
+
+        if (Dashboard.isRunningInCordova()) {
+            define("serverdiscovery", ["thirdparty/cordova/serverdiscovery"]);
+            define("wakeonlan", ["thirdparty/cordova/wakeonlan"]);
+        } else {
+            define("serverdiscovery", ["thirdparty/apiclient/serverdiscovery"]);
+            define("wakeonlan", ["thirdparty/apiclient/wakeonlan"]);
+        }
+
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            define("localassetmanager", ["thirdparty/cordova/android/localassetmanager"]);
+        } else {
+            define("localassetmanager", ["thirdparty/apiclient/localassetmanager"]);
+        }
+
+        define("connectservice", ["thirdparty/apiclient/connectservice"]);
 
         //requirejs(['http://viblast.com/player/free-version/qy2fdwajo1/viblast.js']);
 
