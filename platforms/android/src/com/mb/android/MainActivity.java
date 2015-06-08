@@ -28,24 +28,20 @@ import android.webkit.WebView;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
+import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.NativeWebView;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
 
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
 import org.xwalk.core.JavascriptInterface;
 
-import java.net.URL;
-
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
-import tv.emby.iap.ResultType;
 import tv.emby.iap.UnlockActivity;
 
 public class MainActivity extends CordovaActivity
@@ -111,6 +107,7 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView, jsonSerializer), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
+        webView.addJavascriptInterface(new PreferencesProvider(this, logger), "AndroidSharedPreferences");
 
         return engine;
     }

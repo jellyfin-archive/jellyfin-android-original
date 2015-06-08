@@ -1843,7 +1843,7 @@ var AppInfo = {};
         }
     }
 
-    function init(deferred, capabilities, appName, deviceId, deviceName, resolveOnReady) {
+    function init(deferred, capabilities, appName, deviceId, deviceName) {
 
         requirejs.config({
             map: {
@@ -1863,6 +1863,13 @@ var AppInfo = {};
             return jQuery;
         });
 
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            define("appstorage", ["thirdparty/cordova/android/appstorage"]);
+        } else {
+            define('appstorage', [], function () {
+                return appStorage;
+            });
+        }
         if (Dashboard.isRunningInCordova()) {
             define("serverdiscovery", ["thirdparty/cordova/serverdiscovery"]);
             define("wakeonlan", ["thirdparty/cordova/wakeonlan"]);
@@ -1885,30 +1892,29 @@ var AppInfo = {};
 
         $.extend(AppInfo, Dashboard.getAppInfo(appName, deviceId, deviceName));
 
-        createConnectionManager(capabilities);
+        if (Dashboard.isRunningInCordova()) {
 
-        if (!resolveOnReady) {
+            require(['appstorage'], function () {
+
+                capabilities.DeviceProfile = MediaPlayer.getDeviceProfile(Math.max(screen.height, screen.width));
+                createConnectionManager(capabilities);
+
+                $(function () {
+                    onDocumentReady();
+                    Dashboard.initPromiseDone = true;
+                    deferred.resolve();
+                });
+            });
+
+        } else {
+            createConnectionManager(capabilities);
 
             Dashboard.initPromiseDone = true;
             deferred.resolve();
         }
-
-        $(function () {
-            onDocumentReady();
-            if (resolveOnReady) {
-                Dashboard.initPromiseDone = true;
-                deferred.resolve();
-            }
-        });
     }
 
     function initCordovaWithDeviceId(deferred, deviceId) {
-
-        var screenWidth = Math.max(screen.height, screen.width);
-        initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProfile(screenWidth));
-    }
-
-    function initCordovaWithDeviceProfile(deferred, deviceId, deviceProfile) {
 
         if ($.browser.android) {
             requirejs(['thirdparty/cordova/android/imagestore.js']);
@@ -1918,9 +1924,7 @@ var AppInfo = {};
 
         var capablities = Dashboard.capabilities();
 
-        capablities.DeviceProfile = deviceProfile;
-
-        init(deferred, capablities, "Emby Mobile", deviceId, device.model, true);
+        init(deferred, capablities, "Emby Mobile", deviceId, device.model);
     }
 
     function initCordova(deferred) {
