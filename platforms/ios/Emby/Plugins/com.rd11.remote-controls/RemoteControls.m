@@ -51,11 +51,9 @@ static RemoteControls *remoteControls = nil;
         else {
             // default named "no-image"
             image = [UIImage imageNamed:@"no-image"];
+            return;
         }
-        // check whether image is loaded
-        CGImageRef cgref = [image CGImage];
-        CIImage *cim = [image CIImage];
-        if (cim != nil || cgref != NULL) {
+        
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (NSClassFromString(@"MPNowPlayingInfoCenter")) {
                     MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage: image];
@@ -70,7 +68,7 @@ static RemoteControls *remoteControls = nil;
                         [NSNumber numberWithInt:1], MPNowPlayingInfoPropertyPlaybackRate, nil];
                 }
             });
-        }
+        
     });
 }
 
