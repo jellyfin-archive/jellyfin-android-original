@@ -38,7 +38,7 @@
         //    html += '<button class="headerButtonViewMenu headerButton headerButtonRight" type="button" data-role="none"><i class="material-icons">more_vert</i></button>';
         //}
 
-        if (!$.browser.mobile && !AppInfo.isTouchPreferred) {
+        if (!$.browser.mobile && !AppInfo.isNativeApp) {
             html += '<a href="dashboard.html" class="headerButton headerButtonRight dashboardEntryHeaderButton" style="display:none;"><i class="material-icons">settings</i></a>';
         }
 
@@ -101,6 +101,21 @@
         $(initViewMenuBarHeadroom);
 
         //$('.headerButtonViewMenu').off('click', onViewButtonClick).on('click', onViewButtonClick);
+
+        if (AppInfo.isNativeApp) {
+            $(document).off('swiperight.drawer').on('swiperight.drawer', '.libraryPage', onSwipeRight);
+        }
+    }
+
+    function onSwipeRight(event) {
+
+        if (event.swipestop && event.swipestop.coords) {
+            var x = event.swipestop.coords[0];
+
+            if (x < 50) {
+                showLibraryMenu();
+            }
+        }
     }
 
     //function onViewButtonClick() {
@@ -148,14 +163,14 @@
         html += '<div class="libraryMenuOptions">';
         html += '</div>';
 
-        html += '<div class="sidebarDivider"></div>';
         html += '<div class="adminMenuOptions">';
+        html += '<div class="sidebarDivider"></div>';
 
         html += '<div class="sidebarHeader">';
         html += Globalize.translate('HeaderAdmin');
         html += '</div>';
 
-        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="dashboard" href="dashboard.html"><span class="fa fa-server sidebarLinkIcon"></span>' + Globalize.translate('ButtonManageServer') + '</a>';
+        html += '<a class="sidebarLink lnkMediaFolder lnkManageServer" data-itemid="dashboard" href="#"><span class="fa fa-server sidebarLinkIcon"></span>' + Globalize.translate('ButtonManageServer') + '</a>';
         html += '<a class="sidebarLink lnkMediaFolder editorViewMenu" data-itemid="editor" href="edititemmetadata.html"><span class="fa fa-edit sidebarLinkIcon"></span>' + Globalize.translate('ButtonMetadataManager') + '</a>';
 
         if (!$.browser.mobile && !AppInfo.isTouchPreferred) {
@@ -163,14 +178,21 @@
         }
         html += '</div>';
 
-        html += '<div class="sidebarDivider"></div>';
         html += '<div class="userMenuOptions">';
+        html += '<div class="sidebarDivider"></div>';
+
+        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="inbox" href="notificationlist.html"><span class="fa fa-inbox sidebarLinkIcon"></span>';
+        html += Globalize.translate('ButtonInbox');
+        html += '<div class="btnNotifications"><div class="btnNotificationsInner">0</div></div>';
+        html += '</a>';
+
+        html += '<a class="sidebarLink lnkMediaFolder syncViewMenu" data-itemid="mysync" href="mysync.html"><span class="fa fa-refresh sidebarLinkIcon" ></span>' + Globalize.translate('ButtonSync') + '</a>';
 
         if (Dashboard.isConnectMode()) {
             html += '<a class="sidebarLink lnkMediaFolder" data-itemid="selectserver" href="selectserver.html"><span class="fa fa-globe sidebarLinkIcon"></span>' + Globalize.translate('ButtonSelectServer') + '</a>';
         }
 
-        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="logout" href="#" onclick="Dashboard.logout();"><span class="fa fa-sign-out sidebarLinkIcon"></span>' + Globalize.translate('ButtonSignOut') + '</a>';
+        html += '<a class="sidebarLink lnkMediaFolder" data-itemid="logout" href="#" onclick="Dashboard.logout();"><span class="fa fa-lock sidebarLinkIcon"></span>' + Globalize.translate('ButtonSignOut') + '</a>';
         html += '</div>';
 
 
@@ -314,6 +336,11 @@
         });
     }
 
+    function showUserAtTop() {
+
+        return $.browser.mobile || AppInfo.isNativeApp;
+    }
+
     var requiresLibraryMenuRefresh = false;
     var requiresViewMenuRefresh = false;
 
@@ -329,45 +356,65 @@
 
             html += '<div class="sidebarLinks librarySidebarLinks">';
 
-            var userHref = user.localUser && user.localUser.Policy.EnableUserPreferenceAccess ?
-                'mypreferencesdisplay.html?userId=' + user.localUser.Id :
-                (user.localUser ? 'index.html' : '#');
-
-            var hasUserImage = user.imageUrl && AppInfo.enableUserImage;
-            var paddingLeft = hasUserImage ? 'padding-left:.7em;' : '';
-            html += '<a style="margin-top:0;' + paddingLeft + 'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #111;" href="' + userHref + '">';
-
-            var imgWidth = 44;
-
-            if (hasUserImage) {
-                var url = user.imageUrl;
-
-                if (user.supportsImageParams) {
-                    url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
-                }
-
-                html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
-            } else {
-                html += '<span class="fa fa-user sidebarLinkIcon"></span>';
-            }
-
-            html += user.name;
-            html += '</a>';
-
-            html += '<div class="sidebarDivider" style="margin-top:0;"></div>';
+            var userAtTop = showUserAtTop();
 
             var homeHref = window.ApiClient ? 'index.html' : 'selectserver.html';
 
-            html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
+            var userHref = user.localUser && user.localUser.Policy.EnableUserPreferenceAccess ?
+                'mypreferencesdisplay.html?userId=' + user.localUser.Id :
+                (user.localUser ? ('mypreferenceswebclient.html?userId=' + user.localUser.Id) : '#');
 
-            html += '<a class="sidebarLink lnkMediaFolder" data-itemid="inbox" href="notificationlist.html"><span class="fa fa-inbox sidebarLinkIcon"></span>';
-            html += Globalize.translate('ButtonInbox');
-            html += '<div class="btnNotifications"><div class="btnNotificationsInner">0</div></div>';
-            html += '</a>';
+            var hasUserImage = user.imageUrl && AppInfo.enableUserImage;
+            if (userAtTop) {
+                var paddingLeft = hasUserImage ? 'padding-left:.7em;' : '';
+                html += '<a style="margin-top:0;' + paddingLeft + 'display:block;color:#fff;text-decoration:none;font-size:16px;font-weight:400!important;background: #111;" href="' + userHref + '">';
+
+                var imgWidth = 44;
+
+                if (hasUserImage) {
+                    var url = user.imageUrl;
+
+                    if (user.supportsImageParams) {
+                        url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
+                    }
+
+                    html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin-right:.8em;display:inline-block;"></div>';
+                } else {
+                    html += '<span class="fa fa-user sidebarLinkIcon"></span>';
+                }
+
+                html += user.name;
+                html += '</a>';
+
+                html += '<div class="sidebarDivider" style="margin-top:0;"></div>';
+
+                html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '"><span class="fa fa-home sidebarLinkIcon"></span><span>' + Globalize.translate('ButtonHome') + '</span></a>';
+            } else {
+                html += '<div style="margin-top:5px;"></div>';
+
+                html += '<a class="lnkMediaFolder sidebarLink" href="' + homeHref + '">';
+                html += '<div class="lazy" data-src="css/images/mblogoicon.png" style="width:' + 28 + 'px;height:' + 28 + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin:0 1.4em 0 1.3em;display:inline-block;"></div>';
+                html += Globalize.translate('ButtonHome');
+                html += '</a>';
+
+                html += '<a class="sidebarLink lnkMediaFolder" href="' + userHref + '">';
+                if (hasUserImage) {
+                    var imgWidth = 20;
+                    var url = user.imageUrl;
+
+                    if (user.supportsImageParams) {
+                        url += "&width=" + (imgWidth * Math.max(devicePixelRatio || 1, 2));
+                    }
+
+                    html += '<div class="lazy" data-src="' + url + '" style="width:' + imgWidth + 'px;height:' + imgWidth + 'px;background-size:contain;background-repeat:no-repeat;background-position:center center;border-radius:1000px;vertical-align:middle;margin:0 1.6em 0 1.6em;display:inline-block;"></div>';
+                } else {
+                    html += '<span class="fa fa-user sidebarLinkIcon"></span>';
+                }
+                html += Globalize.translate('ButtonPreferences');
+                html += '</a>';
+            }
 
             html += '<a class="sidebarLink lnkMediaFolder" data-itemid="remote" href="nowplaying.html"><span class="fa fa-tablet sidebarLinkIcon"></span>' + Globalize.translate('ButtonRemote') + '</a>';
-
-            html += '<a class="sidebarLink lnkMediaFolder syncViewMenu" data-itemid="mysync" href="mysync.html"><span class="fa fa-refresh sidebarLinkIcon"></span>' + Globalize.translate('ButtonSync') + '</a>';
 
             html += '<div class="sidebarDivider"></div>';
 
@@ -380,6 +427,8 @@
 
             panel = $('#libraryPanel').panel({}).lazyChildren().trigger('create');
 
+            $('.lnkManageServer', panel).on('click', onManageServerClicked);
+
             updateLibraryMenu();
         }
         else if (requiresLibraryMenuRefresh) {
@@ -388,6 +437,17 @@
         }
 
         return panel;
+    }
+
+    function onManageServerClicked() {
+
+        requirejs(["scripts/registrationservices"], function () {
+
+            RegistrationServices.validateFeature('manageserver').done(function () {
+                Dashboard.navigate('dashboard.html');
+
+            });
+        });
     }
 
     function getDashboardMenu(page) {
