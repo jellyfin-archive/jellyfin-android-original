@@ -1,6 +1,7 @@
 package com.mb.android.api;
 
 import android.content.Context;
+import android.os.Handler;
 
 import com.mb.android.logging.SyncLoggerFactory;
 import com.mb.android.webviews.IWebView;
@@ -40,10 +41,12 @@ public class ApiClientBridge {
     private Context context;
     private ILogger logger;
     private IWebView webView;
-    private IAsyncHttpClient httpClient;
+    public VolleyHttpClient httpClient;
     private IJsonSerializer jsonSerializer;
 
     private ILocalAssetManager localAssetManager;
+
+    public static ApiClientBridge Current;
 
     public ApiClientBridge(Context context, ILogger logger, IWebView webView, IJsonSerializer jsonSerializer) {
         this.context = context;
@@ -52,6 +55,9 @@ public class ApiClientBridge {
         this.jsonSerializer = jsonSerializer;
 
         localAssetManager = new AndroidAssetManager(context, logger, this.jsonSerializer);
+
+        httpClient = new VolleyHttpClient(logger, context);
+        Current = this;
     }
 
     @JavascriptInterface
@@ -67,8 +73,6 @@ public class ApiClientBridge {
     public void init(String appName, String appVersion, String deviceId, String deviceName, String capabilitiesJson) {
 
         logger.Info("ApiClientBridge.init");
-
-        httpClient = new VolleyHttpClient(logger, context);
 
         ApiEventListener apiEventListener = new ApiEventListener();
 
@@ -107,5 +111,37 @@ public class ApiClientBridge {
         }
 
         return null;
+    }
+
+    @JavascriptInterface
+    public void getImage(final String id, final String url) {
+
+        Handler mainHandler = new Handler(context.getMainLooper());
+
+        Runnable myRunnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.Debug("Received request for %s", url);
+
+                httpClient.getCachedFile(url, new Response<String>() {
+
+                    @Override
+                    public void onResponse(String path) {
+
+                        if (path != null) {
+                            RespondToWebView(String.format("$(ImageStore).trigger('imagepath%s', ['%s']);", id, path));
+                        }
+                    }
+
+                });
+            }
+        };
+        mainHandler.post(myRunnable);
+    }
+
+    private void RespondToWebView(final String js) {
+
+        //logger.Info("Sending url to webView: %s", js);
+        webView.sendJavaScript(js);
     }
 }

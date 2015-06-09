@@ -1822,13 +1822,13 @@ var AppInfo = {};
             return false;
         });
 
+        require(['filesystem']);
+
         if (Dashboard.isRunningInCordova()) {
             requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices', 'thirdparty/cordova/volume', 'thirdparty/cordova/back']);
 
             if ($.browser.android) {
-                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'thirdparty/cordova/android/filesystem']);
-            } else {
-                requirejs(['thirdparty/cordova/filesystem']);
+                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'thirdparty/cordova/android/mediasession']);
             }
 
             if ($.browser.safari) {
@@ -1839,7 +1839,6 @@ var AppInfo = {};
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
             }
-            requirejs(['thirdparty/filesystem']);
         }
     }
 
@@ -1882,6 +1881,16 @@ var AppInfo = {};
             define("localassetmanager", ["thirdparty/cordova/android/localassetmanager"]);
         } else {
             define("localassetmanager", ["thirdparty/apiclient/localassetmanager"]);
+        }
+
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            define("filesystem", ["thirdparty/cordova/android/filesystem"]);
+        }
+        else if (Dashboard.isRunningInCordova()) {
+            define("filesystem", ["thirdparty/cordova/filesystem"]);
+        }
+        else {
+            define("filesystem", ["thirdparty/filesystem"]);
         }
 
         define("connectservice", ["thirdparty/apiclient/connectservice"]);
@@ -2010,6 +2019,8 @@ $(document).on('pagecreate', ".page", function () {
     var page = this;
     var require = this.getAttribute('data-require');
 
+    Dashboard.ensurePageTitle($(page));
+
     if (require) {
         requirejs(require.split(','), function () {
 
@@ -2079,7 +2090,6 @@ $(document).on('pagecreate', ".page", function () {
     Dashboard.firePageEvent(page, 'pageshowready');
 
     Dashboard.ensureHeader(page);
-    Dashboard.ensurePageTitle(page);
 
     if (apiClient && !apiClient.isWebSocketOpen()) {
         Dashboard.refreshSystemInfoFromServer();
