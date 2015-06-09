@@ -19,6 +19,7 @@
 
 package com.mb.android;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +29,8 @@ import android.webkit.WebView;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
+import com.mb.android.media.Constants;
+import com.mb.android.media.MediaPlayerService;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
@@ -48,7 +51,7 @@ public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_UNLOCK_REQUEST = 999;
     private ILogger logger;
-    private IWebView webView;
+    private static IWebView webView;
 
     private ILogger getLogger(){
         if (logger == null){
@@ -58,7 +61,6 @@ public class MainActivity extends CordovaActivity
 
         return logger;
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -103,11 +105,13 @@ public class MainActivity extends CordovaActivity
             webView = new CrosswalkWebView(xView);
         }
 
-        webView.addJavascriptInterface(new IapManager(getApplicationContext(), webView, logger), "NativeIapManager");
-        webView.addJavascriptInterface(new ApiClientBridge(getApplicationContext(), logger, webView, jsonSerializer), "ApiClientBridge");
+        Context context = getApplicationContext();
+
+        webView.addJavascriptInterface(new IapManager(context, webView, logger), "NativeIapManager");
+        webView.addJavascriptInterface(new ApiClientBridge(context, logger, webView, jsonSerializer), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
-        webView.addJavascriptInterface(new PreferencesProvider(this, logger), "AndroidSharedPreferences");
+        webView.addJavascriptInterface(new PreferencesProvider(context, logger), "AndroidSharedPreferences");
 
         return engine;
     }
@@ -138,9 +142,68 @@ public class MainActivity extends CordovaActivity
         }
     }
 
-    private void RespondToWebView(final String url) {
+    public static void RespondToWebView(final String js) {
 
-        logger.Info("Sending url to webView: %s", url);
-        webView.sendJavaScript(url);
+        //logger.Info("Sending url to webView: %s", js);
+        webView.sendJavaScript(js);
+    }
+
+    @JavascriptInterface
+    public void hideMediaSession() {
+
+        //Intent i = new Intent("com.android.music.playstatechanged");
+        //i.putExtra("id", "1");
+        //i.putExtra("playing", "false");
+        //context.sendBroadcast(i);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent( this, MediaPlayerService.class );
+            intent.setAction( Constants.ACTION_REPORT );
+
+            intent.putExtra("playerAction", "playbackstop");
+
+            startService( intent );
+        }
+    }
+
+    @JavascriptInterface
+    public void updateMediaSession(String action, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
+
+        //bluetoothNotifyChange(action, title, artist, album, duration, position, imageUrl, canSeek, isPaused);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent( this, MediaPlayerService.class );
+            intent.setAction( Constants.ACTION_REPORT );
+
+            intent.putExtra("playerAction", action);
+            intent.putExtra("title", title);
+            intent.putExtra("artist", artist);
+            intent.putExtra("album", album);
+            intent.putExtra("duration", duration);
+            intent.putExtra("position", position);
+            intent.putExtra("imageUrl", imageUrl);
+            intent.putExtra("canSeek", canSeek);
+            intent.putExtra("isPaused", isPaused);
+
+            startService( intent );
+        }
+    }
+
+    private void bluetoothNotifyChange(String action, String title, String artist, String album, long duration, long position, String imageUrl, boolean canSeek, boolean isPaused) {
+
+        String intentName = action.equalsIgnoreCase("playbackstart") ?
+                "com.android.music.metachanged" :
+                "com.android.music.playstatechanged";
+
+        Intent i = new Intent(intentName);
+        i.putExtra("id", 1L);
+        i.putExtra("artist", artist);
+        i.putExtra("album",album);
+        i.putExtra("track", title);
+        i.putExtra("playing", !isPaused);
+        i.putExtra("duration", duration);
+        i.putExtra("position", position);
+        //i.putExtra("ListSize", getQueue());
+        sendBroadcast(i);
     }
 }
