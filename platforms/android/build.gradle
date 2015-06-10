@@ -277,7 +277,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
 	compile 'com.android.support:support-v4:22.1.+'
 	compile 'net.rdrei.android.dirchooser:library:2.1@aar'
-    // SUB-PROJECT DEPENDENCIES START
+	compile "de.mrmaffen:vlc-android-sdk:1.0.6"
+	// SUB-PROJECT DEPENDENCIES START
     debugCompile project(path: ":CordovaLib", configuration: "debug")
     releaseCompile project(path: ":CordovaLib", configuration: "release")
     compile "com.squareup.okhttp:okhttp-urlconnection:2+"

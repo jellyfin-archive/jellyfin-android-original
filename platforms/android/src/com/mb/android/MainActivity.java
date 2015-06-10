@@ -25,12 +25,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.media.Constants;
 import com.mb.android.media.MediaPlayerService;
+import com.mb.android.media.VlcEventHandler;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
@@ -41,6 +43,10 @@ import net.rdrei.android.dirchooser.DirectoryChooserActivity;
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
+import org.videolan.libvlc.EventHandler;
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.LibVlcException;
+import org.videolan.libvlc.Media;
 import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -51,10 +57,15 @@ import tv.emby.iap.UnlockActivity;
 
 public class MainActivity extends CordovaActivity
 {
+    private LibVLC mLibVLC = null;
+
     private final int PURCHASE_UNLOCK_REQUEST = 999;
     private final int REQUEST_DIRECTORY = 998;
     private ILogger logger;
     private static IWebView webView;
+    private VlcEventHandler vlcEventHandler;
+
+    boolean mIsVlcPlaying = false; // Don't destroy libVLC if it is playing.
 
     private ILogger getLogger(){
         if (logger == null){
@@ -115,6 +126,7 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
+        webView.addJavascriptInterface(this, "AndroidVlcPlayer");
         webView.addJavascriptInterface(new PreferencesProvider(context, logger), "AndroidSharedPreferences");
 
         return engine;
@@ -231,9 +243,87 @@ public class MainActivity extends CordovaActivity
 
         // Optional: Allow users to create a new directory with a fixed name.
         chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_NEW_DIR_NAME,
-                "DirChooserSample");
+                "NewFolder");
 
         // REQUEST_DIRECTORY is a constant integer to identify the request, e.g. 0
         startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
+    }
+
+    @JavascriptInterface
+    public void playAudioVlc(String path) {
+
+        ensureVlc();
+
+        Media media = new Media(mLibVLC, path);
+
+        mLibVLC.playMRL(media.getMrl());
+        mIsVlcPlaying = true;
+    }
+
+    @JavascriptInterface
+    public void playVideoVlc(String path) {
+
+        ensureVlc();
+
+        Media media = new Media(mLibVLC, path);
+
+        mLibVLC.playMRL(media.getMrl());
+        mIsVlcPlaying = true;
+    }
+
+    private void ensureVlc() {
+
+        if (mLibVLC == null) {
+            mLibVLC = new LibVLC();
+            try {
+                mLibVLC.init(this);
+            } catch(LibVlcException e) {
+                Toast.makeText(MainActivity.this,
+                        "Error initializing the libVLC multimedia framework!",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            vlcEventHandler = new VlcEventHandler(logger, mLibVLC, webView);
+            EventHandler.getInstance().addHandler(vlcEventHandler);
+        }
+    }
+
+    @JavascriptInterface
+    public void destroyVlc() {
+        //mLibVLC.closeAout();
+
+        if (vlcEventHandler != null) {
+            EventHandler.getInstance().removeHandler(vlcEventHandler);
+            vlcEventHandler = null;
+        }
+
+        if (mLibVLC != null){
+            mLibVLC.destroy();
+            mLibVLC = null;
+        }
+
+        mIsVlcPlaying = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mIsVlcPlaying = false;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(!mIsVlcPlaying) {
+            destroyVlc();
+        }
+    }
+
+    @JavascriptInterface
+    public void sendVlcCommand(String name, String arg1) {
+        if (vlcEventHandler != null) {
+            vlcEventHandler.sendVlcCommand(name, arg1);
+        }
     }
 }

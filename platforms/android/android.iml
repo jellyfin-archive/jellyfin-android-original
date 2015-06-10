@@ -116,6 +116,7 @@
     <orderEntry type="library" exported="" name="mediarouter-v7-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="emby.apiclient" level="project" />
     <orderEntry type="library" exported="" name="xwalk_core_library_beta-13.42.319.11" level="project" />
+    <orderEntry type="library" exported="" name="vlc-android-sdk-1.0.6" level="project" />
     <orderEntry type="library" exported="" name="emby.apiclient.android" level="project" />
     <orderEntry type="library" exported="" name="volley" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.1.1" level="project" />

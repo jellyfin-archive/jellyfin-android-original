@@ -1390,7 +1390,10 @@ var Dashboard = {
             PlayableMediaTypes: ['Audio', 'Video'],
 
             SupportedCommands: Dashboard.getSupportedRemoteCommands(),
-            SupportsPersistentIdentifier: AppInfo.isNativeApp === true,
+
+            // Need to use this rather than AppInfo.isNativeApp because the property isn't set yet at the time we call this
+            SupportsPersistentIdentifier: Dashboard.isRunningInCordova(),
+
             SupportsMediaControl: true,
             SupportedLiveMediaTypes: ['Audio', 'Video']
         };
@@ -1954,6 +1957,16 @@ var AppInfo = {};
             define("nativedirectorychooser", ["thirdparty/cordova/android/nativedirectorychooser"]);
         }
 
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            define("audiorenderer", ["thirdparty/cordova/android/vlcplayer"]);
+            //define("audiorenderer", ["scripts/htmlmediarenderer"]);
+            define("videorenderer", ["scripts/htmlmediarenderer"]);
+        }
+        else {
+            define("audiorenderer", ["scripts/htmlmediarenderer"]);
+            define("videorenderer", ["scripts/htmlmediarenderer"]);
+        }
+
         define("connectservice", ["thirdparty/apiclient/connectservice"]);
 
         //requirejs(['http://viblast.com/player/free-version/qy2fdwajo1/viblast.js']);
@@ -1967,7 +1980,7 @@ var AppInfo = {};
             require(['appstorage'], function () {
 
                 capabilities.DeviceProfile = MediaPlayer.getDeviceProfile(Math.max(screen.height, screen.width));
-                createConnectionManager(capabilities).done(function() {
+                createConnectionManager(capabilities).done(function () {
                     $(function () {
                         onDocumentReady();
                         Dashboard.initPromiseDone = true;

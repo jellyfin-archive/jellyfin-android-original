@@ -760,7 +760,7 @@
                 contentType = 'video/' + mediaSource.Container;
 
                 if (mediaSource.enableDirectPlay) {
-                    mediaUrl = FileSystem.translateFilePath(mediaSource.Path);
+                    mediaUrl = FileSystemBridge.translateFilePath(mediaSource.Path);
                     playMethod = 'DirectPlay';
 
                 } else {
@@ -797,7 +797,7 @@
 
                 if (mediaSource.enableDirectPlay) {
 
-                    mediaUrl = FileSystem.translateFilePath(mediaSource.Path);
+                    mediaUrl = FileSystemBridge.translateFilePath(mediaSource.Path);
                     playMethod = 'DirectPlay';
 
                 } else {
@@ -1338,7 +1338,7 @@
 
             if (mediaRenderer) {
 
-                mediaRenderer.pause();
+                mediaRenderer.stop();
 
                 $(mediaRenderer).off("ended.playnext").one("ended", function () {
 
@@ -1628,7 +1628,7 @@
 
         function getAudioRenderer() {
 
-            return new HtmlMediaRenderer('audio');
+            return new AudioRenderer('audio');
         }
 
         function onTimeUpdate() {
@@ -1639,7 +1639,7 @@
 
         function playAudio(item, mediaSource, startPositionTicks) {
 
-            requirejs(['scripts/htmlmediarenderer'], function () {
+            requirejs(['audiorenderer'], function () {
                 playAudioInternal(item, mediaSource, startPositionTicks);
             });
         }
@@ -1654,9 +1654,10 @@
 
             var mediaRenderer = getAudioRenderer();
 
-            mediaRenderer.setCurrentSrc(audioUrl);
+            // Set volume first to avoid an audible change
             mediaRenderer.volume(initialVolume);
             mediaRenderer.setPoster(self.getPosterUrl(item));
+            mediaRenderer.setCurrentSrc(audioUrl);
 
             $(mediaRenderer).on("volumechange.mediaplayerevent", function () {
 

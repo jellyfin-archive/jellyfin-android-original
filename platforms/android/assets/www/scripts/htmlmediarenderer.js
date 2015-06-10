@@ -159,6 +159,12 @@
             return null;
         };
 
+        self.stop = function () {
+            if (mediaElement) {
+                mediaElement.pause();
+            }
+        };
+
         self.pause = function () {
             if (mediaElement) {
                 mediaElement.pause();
@@ -261,6 +267,12 @@
         }
     }
 
-    window.HtmlMediaRenderer = htmlMediaRenderer;
+    if (!window.AudioRenderer) {
+        window.AudioRenderer = htmlMediaRenderer;
+    }
+
+    if (!window.VideoRenderer) {
+        window.VideoRenderer = htmlMediaRenderer;
+    }
 
 })();
