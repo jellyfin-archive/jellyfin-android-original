@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242296" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.2.96" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242302" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.3.02" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -62,6 +62,13 @@
     <feature name="SpeechRecognition">
         <param name="ios-package" value="SpeechRecognition" />
     </feature>
+    <feature name="File">
+        <param name="ios-package" value="CDVFile" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="FileTransfer">
+        <param name="ios-package" value="CDVFileTransfer" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -107,12 +114,7 @@
   </author>
     <content src="index.html" />
     <access origin="*" />
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
+    <allow-intent href="*" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="UIWebViewBounce" value="false" />
@@ -123,11 +125,4 @@
     <preference name="BackupWebStorage" value="local" />
     <preference name="SplashScreenDelay" value="7000" />
     <icon src="res/icon.png" />
-    <feature name="File">
-        <param name="ios-package" value="CDVFile" />
-        <param name="onload" value="true" />
-    </feature>
-    <feature name="FileTransfer">
-        <param name="ios-package" value="CDVFileTransfer" />
-    </feature>
 </widget>

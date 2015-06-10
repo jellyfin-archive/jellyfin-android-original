@@ -344,7 +344,8 @@
             accessToken: ApiClient.accessToken(),
             serverAddress: ApiClient.serverAddress(),
             maxBitrate: bitrateSetting,
-            receiverName: receiverName
+            receiverName: receiverName,
+            supportsAc3: AppSettings.enableChromecastAc3()
         });
 
         getEndpointInfo().done(function (endpoint) {
@@ -742,12 +743,18 @@
 
         self.volumeDown = function () {
 
-            self.setVolume(getCurrentVolume() - 2);
+            castPlayer.sendMessage({
+                options: {},
+                command: 'VolumeDown'
+            });
         };
 
         self.volumeUp = function () {
 
-            self.setVolume(getCurrentVolume() + 2);
+            castPlayer.sendMessage({
+                options: {},
+                command: 'VolumeUp'
+            });
         };
 
         self.setVolume = function (vol) {
