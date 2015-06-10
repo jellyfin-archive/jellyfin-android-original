@@ -36,6 +36,8 @@ import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.NativeWebView;
 
+import net.rdrei.android.dirchooser.DirectoryChooserActivity;
+
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
@@ -50,6 +52,7 @@ import tv.emby.iap.UnlockActivity;
 public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_UNLOCK_REQUEST = 999;
+    private final int REQUEST_DIRECTORY = 998;
     private ILogger logger;
     private static IWebView webView;
 
@@ -111,6 +114,7 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(new ApiClientBridge(context, logger, webView, jsonSerializer), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
+        webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
         webView.addJavascriptInterface(new PreferencesProvider(context, logger), "AndroidSharedPreferences");
 
         return engine;
@@ -123,6 +127,19 @@ public class MainActivity extends CordovaActivity
                 RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
             } else {
                 RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
+            }
+        }
+
+        else if (requestCode == REQUEST_DIRECTORY) {
+
+            if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
+
+                String path = intent.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR);
+
+                RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", path));
+            }
+            else{
+                RespondToWebView("window.NativeDirectoryChooser.onChosen(null);");
             }
         }
     }
@@ -205,5 +222,18 @@ public class MainActivity extends CordovaActivity
         i.putExtra("position", position);
         //i.putExtra("ListSize", getQueue());
         sendBroadcast(i);
+    }
+
+    @JavascriptInterface
+    public void chooseDirectory() {
+
+        final Intent chooserIntent = new Intent(this, DirectoryChooserActivity.class);
+
+        // Optional: Allow users to create a new directory with a fixed name.
+        chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_NEW_DIR_NAME,
+                "DirChooserSample");
+
+        // REQUEST_DIRECTORY is a constant integer to identify the request, e.g. 0
+        startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
     }
 }

@@ -1,4 +1,4 @@
-package com.mb.android.logging;
+package com.mb.android.api;
 
 import android.content.Context;
 

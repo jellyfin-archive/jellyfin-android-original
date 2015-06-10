@@ -11,29 +11,73 @@
         }
     }
 
-    var fileSystem;
-    function getFileSystem() {
+    function onDbOpened(imageStore, db) {
 
-        var deferred = DeferredBuilder.Deferred();
-
-        if (fileSystem) {
-            deferred.resolveWith(null, [fileSystem]);
-        } else {
-            requestFileSystem(PERSISTENT, 0, function (fs) {
-                fileSystem = fs;
-                deferred.resolveWith(null, [fileSystem]);
-            });
-        }
-
-        return deferred.promise();
+        imageStore._db = db;
+        window.ImageStore = imageStore;
     }
 
-    function indexedDbBlobImageStore() {
+    function openDb(imageStore) {
+
+        // Create/open database
+        var db = window.sqlitePlugin.openDatabase({ name: "my.db" });
+
+        db.transaction(function (tx) {
+
+            tx.executeSql('CREATE TABLE IF NOT EXISTS images (id text primary key, data text)');
+            tx.executeSql('create index if not exists idx_images on images(id)');
+
+            onDbOpened(imageStore, db);
+        });
+    }
+
+    function sqliteImageStore() {
 
         var self = this;
 
-        function getCacheKey(url) {
+        self.addImageToDatabase = function (blob, key, deferred) {
 
+            console.log("addImageToDatabase");
+
+            self.db().transaction(function (tx) {
+
+                tx.executeSql("REPLACE INTO images (id, data) VALUES (?,?)", [key, blob], function (tx, res) {
+
+                    deferred.resolve();
+                }, function (e) {
+                    deferred.reject();
+                });
+            });
+        };
+
+        self.db = function () {
+
+            return self._db;
+        };
+
+        self.get = function (key) {
+
+            var deferred = DeferredBuilder.Deferred();
+
+            self.db().transaction(function (tx) {
+
+                tx.executeSql("SELECT data from images where id=?", [key], function (tx, res) {
+
+                    if (res.rows.length) {
+
+                        deferred.resolveWith(null, [res.rows.item(0).data]);
+                    } else {
+                        deferred.reject();
+                    }
+                }, function (e) {
+                    deferred.reject();
+                });
+            });
+
+            return deferred.promise();
+        };
+        function getCacheKey(url) {
+            
             // Try to strip off the domain to share the cache between local and remote connections
             var index = url.indexOf('://');
 
@@ -47,44 +91,86 @@
                 }
 
             }
-
             return CryptoJS.MD5(url).toString();
         }
 
         self.getImageUrl = function (originalUrl) {
 
-            if ($.browser.android && originalUrl.indexOf('tag=') != -1) {
-                originalUrl += "&format=webp";
-            }
-
-            var deferred = DeferredBuilder.Deferred();
-            var key = getCacheKey(originalUrl);
-
             console.log('getImageUrl:' + originalUrl);
 
-            getFileSystem().done(function (fileSystem) {
-                var path = fileSystem.root.toURL() + "/emby/cache" + key;
+            var key = getCacheKey(originalUrl);
 
-                resolveLocalFileSystemURL(path, function (fileEntry) {
-                    var localUrl = fileEntry.toURL();
-                    console.log('returning cached file: ' + localUrl);
-                    console.log(localUrl);
-                    deferred.resolveWith(null, [localUrl]);
+            var deferred = DeferredBuilder.Deferred();
 
-                }, function () {
+            self.get(key).done(function (url) {
 
-                    console.log('downloading: ' + originalUrl);
-                    var ft = new FileTransfer();
-                    ft.download(originalUrl, path, function (entry) {
+                deferred.resolveWith(null, [url]);
 
-                        var localUrl = entry.toURL();
+            }).fail(function () {
 
-                        console.log(localUrl);
-                        deferred.resolveWith(null, [localUrl]);
+                self.downloadImage(originalUrl, key).done(function () {
+                    self.get(key).done(function (url) {
+
+                        deferred.resolveWith(null, [url]);
+
+                    }).fail(function () {
+
+                        deferred.reject();
                     });
+                }).fail(function () {
+
+                    deferred.reject();
                 });
             });
 
+            return deferred.promise();
+        };
+
+        self.downloadImage = function (url, key) {
+
+            var deferred = DeferredBuilder.Deferred();
+
+            console.log('downloadImage:' + url);
+
+            // Create XHR
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("GET", url, true);
+            // Set the responseType to blob
+            xhr.responseType = "arraybuffer";
+
+            xhr.addEventListener("load", function () {
+
+                if (xhr.status === 200) {
+                    console.log("Image retrieved");
+
+                    try {
+
+                        var arr = new Uint8Array(this.response);
+
+                        // Convert the int array to a binary string
+                        // We have to use apply() as we are converting an *array*
+                        // and String.fromCharCode() takes one or more single values, not
+                        // an array.
+                        var raw = String.fromCharCode.apply(null, arr);
+
+                        // This works!!!
+                        var b64 = btoa(raw);
+                        var dataURL = "data:image/jpeg;base64," + b64;
+
+                        // Put the received blob into the database
+                        self.addImageToDatabase(dataURL, key, deferred);
+                    } catch (err) {
+                        console.log("Error adding image to database");
+                        deferred.reject();
+                    }
+                } else {
+                    deferred.reject();
+                }
+            }, false);
+
+            // Send XHR
+            xhr.send();
             return deferred.promise();
         };
 
@@ -95,15 +181,14 @@
             }
 
             self.getImageUrl(url).done(function (localUrl) {
-
                 setImageIntoElement(elem, localUrl);
 
             }).fail(onFail);
         };
 
-        window.ImageStore = self;
+        openDb(self);
     }
 
-    new indexedDbBlobImageStore();
+    new sqliteImageStore();
 
 })();
