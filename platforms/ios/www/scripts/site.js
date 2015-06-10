@@ -35,6 +35,8 @@ var Dashboard = {
         //$.mobile.popup.prototype.options.theme = "c";
         $.mobile.popup.prototype.options.transition = "pop";
 
+        //$.mobile.keepNative = "input[type='text'],input[type='password'],input[type='number']";
+
         if ($.browser.mobile) {
             $.mobile.defaultPageTransition = "none";
         } else {
@@ -48,6 +50,7 @@ var Dashboard = {
 
         $.event.special.swipe.verticalDistanceThreshold = 40;
         $.mobile.loader.prototype.options.disabled = true;
+        //$.mobile.page.prototype.options.domCache = true;
     },
 
     isConnectMode: function () {
@@ -1331,7 +1334,7 @@ var Dashboard = {
             PlayableMediaTypes: ['Audio', 'Video'],
 
             SupportedCommands: Dashboard.getSupportedRemoteCommands(),
-            SupportsPersistentIdentifier: AppInfo.isNativeApp,
+            SupportsPersistentIdentifier: AppInfo.isNativeApp === true,
             SupportsMediaControl: true,
             SupportedLiveMediaTypes: ['Audio', 'Video']
         };
@@ -1451,25 +1454,6 @@ var Dashboard = {
         return deferred.promise();
     },
 
-    loadLocalAssetManager: function () {
-
-        var deferred = DeferredBuilder.Deferred();
-
-        var file = 'thirdparty/apiclient/localassetmanager';
-
-        if (AppInfo.isNativeApp && $.browser.android) {
-            file = 'thirdparty/cordova/android/localassetmanager';
-        }
-
-        require([
-            file
-        ], function () {
-
-            deferred.resolve();
-        });
-        return deferred.promise();
-    },
-
     ready: function (fn) {
 
         if (Dashboard.initPromiseDone) {
@@ -1504,6 +1488,14 @@ var Dashboard = {
         });
 
         return deferred.promise();
+    },
+
+    exitOnBack: function () {
+        return $($.mobile.activePage).is('#indexPage');
+    },
+
+    exit: function () {
+        Dashboard.logout();
     }
 };
 
@@ -1599,6 +1591,8 @@ var AppInfo = {};
     function initializeApiClient(apiClient) {
 
         apiClient.enableAppStorePolicy = AppInfo.enableAppStorePolicy;
+        apiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
+        apiClient.normalizeImageOptions = Dashboard.normalizeImageOptions;
 
         $(apiClient).off('.dashboard')
             .on("websocketmessage.dashboard", Dashboard.onWebSocketMessageReceived)
@@ -1617,37 +1611,35 @@ var AppInfo = {};
             initializeApiClient(newApiClient);
         });
 
-        var apiClient;
+        var deferred = DeferredBuilder.Deferred();
 
         if (Dashboard.isConnectMode()) {
 
-            apiClient = ConnectionManager.getLastUsedApiClient();
+            var server = ConnectionManager.getLastUsedServer();
 
             if (!Dashboard.isServerlessPage()) {
 
-                if (apiClient && apiClient.serverAddress() && apiClient.getCurrentUserId() && apiClient.accessToken()) {
-
-                    initializeApiClient(apiClient);
+                if (server && server.UserId && server.AccessToken) {
+                    ConnectionManager.connectToServer(server).done(function (result) {
+                        if (result.State == MediaBrowser.ConnectionState.SignedIn) {
+                            window.ApiClient = result.ApiClient;
+                        }
+                        deferred.resolve();
+                    });
+                    return deferred.promise();
                 }
             }
+            deferred.resolve();
 
         } else {
 
-            apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId);
+            var apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId);
             apiClient.enableAutomaticNetworking = false;
             ConnectionManager.addApiClient(apiClient);
+            Dashboard.importCss(apiClient.getUrl('Branding/Css'));
+            window.ApiClient = apiClient;
         }
-
-        window.ApiClient = apiClient;
-
-        if (window.ApiClient) {
-            ApiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
-            ApiClient.normalizeImageOptions = Dashboard.normalizeImageOptions;
-
-            if (!AppInfo.isNativeApp) {
-                Dashboard.importCss(ApiClient.getUrl('Branding/Css'));
-            }
-        }
+        return deferred.promise();
     }
 
     function initFastClick() {
@@ -1830,13 +1822,13 @@ var AppInfo = {};
             return false;
         });
 
+        require(['filesystem']);
+
         if (Dashboard.isRunningInCordova()) {
-            requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices']);
+            requirejs(['thirdparty/cordova/connectsdk', 'scripts/registrationservices', 'thirdparty/cordova/volume', 'thirdparty/cordova/back']);
 
             if ($.browser.android) {
-                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'thirdparty/cordova/android/filesystem']);
-            } else {
-                requirejs(['thirdparty/cordova/filesystem']);
+                requirejs(['thirdparty/cordova/android/androidcredentials', 'thirdparty/cordova/android/immersive', 'thirdparty/cordova/android/mediasession']);
             }
 
             if ($.browser.safari) {
@@ -1847,11 +1839,10 @@ var AppInfo = {};
             if ($.browser.chrome) {
                 requirejs(['scripts/chromecast']);
             }
-            requirejs(['thirdparty/filesystem']);
         }
     }
 
-    function init(deferred, capabilities, appName, deviceId, deviceName, resolveOnReady) {
+    function init(deferred, capabilities, appName, deviceId, deviceName) {
 
         requirejs.config({
             map: {
@@ -1859,7 +1850,11 @@ var AppInfo = {};
                     'css': 'thirdparty/requirecss' // or whatever the path to require-css is
                 }
             },
-            urlArgs: "v=" + window.dashboardVersion
+            urlArgs: "v=" + window.dashboardVersion,
+
+            paths: {
+                "velocity": "thirdparty/velocity.min"
+            }
         });
 
         // Required since jQuery is loaded before requireJs
@@ -1867,36 +1862,70 @@ var AppInfo = {};
             return jQuery;
         });
 
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            define("appstorage", ["thirdparty/cordova/android/appstorage"]);
+        } else {
+            define('appstorage', [], function () {
+                return appStorage;
+            });
+        }
+        if (Dashboard.isRunningInCordova()) {
+            define("serverdiscovery", ["thirdparty/cordova/serverdiscovery"]);
+            define("wakeonlan", ["thirdparty/cordova/wakeonlan"]);
+        } else {
+            define("serverdiscovery", ["thirdparty/apiclient/serverdiscovery"]);
+            define("wakeonlan", ["thirdparty/apiclient/wakeonlan"]);
+        }
+
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            define("localassetmanager", ["thirdparty/cordova/android/localassetmanager"]);
+        } else {
+            define("localassetmanager", ["thirdparty/apiclient/localassetmanager"]);
+        }
+
+        if (Dashboard.isRunningInCordova() && $.browser.android) {
+            define("filesystem", ["thirdparty/cordova/android/filesystem"]);
+        }
+        else if (Dashboard.isRunningInCordova()) {
+            define("filesystem", ["thirdparty/cordova/filesystem"]);
+        }
+        else {
+            define("filesystem", ["thirdparty/filesystem"]);
+        }
+
+        define("connectservice", ["thirdparty/apiclient/connectservice"]);
+
         //requirejs(['http://viblast.com/player/free-version/qy2fdwajo1/viblast.js']);
 
         setAppInfo();
 
         $.extend(AppInfo, Dashboard.getAppInfo(appName, deviceId, deviceName));
 
-        createConnectionManager(capabilities);
+        if (Dashboard.isConnectMode()) {
 
-        if (!resolveOnReady) {
+            require(['appstorage'], function () {
+
+                capabilities.DeviceProfile = MediaPlayer.getDeviceProfile(Math.max(screen.height, screen.width));
+                createConnectionManager(capabilities).done(function() {
+                    $(function () {
+                        onDocumentReady();
+                        Dashboard.initPromiseDone = true;
+                        deferred.resolve();
+                    });
+                });
+            });
+
+        } else {
+            createConnectionManager(capabilities);
 
             Dashboard.initPromiseDone = true;
             deferred.resolve();
-        }
 
-        $(function () {
-            onDocumentReady();
-            if (resolveOnReady) {
-                Dashboard.initPromiseDone = true;
-                deferred.resolve();
-            }
-        });
+            $(onDocumentReady);
+        }
     }
 
     function initCordovaWithDeviceId(deferred, deviceId) {
-
-        var screenWidth = Math.max(screen.height, screen.width);
-        initCordovaWithDeviceProfile(deferred, deviceId, MediaPlayer.getDeviceProfile(screenWidth));
-    }
-
-    function initCordovaWithDeviceProfile(deferred, deviceId, deviceProfile) {
 
         if ($.browser.android) {
             requirejs(['thirdparty/cordova/android/imagestore.js']);
@@ -1906,9 +1935,7 @@ var AppInfo = {};
 
         var capablities = Dashboard.capabilities();
 
-        capablities.DeviceProfile = deviceProfile;
-
-        init(deferred, capablities, "Emby Mobile", deviceId, device.model, true);
+        init(deferred, capablities, "Emby Mobile", deviceId, device.model);
     }
 
     function initCordova(deferred) {
@@ -1992,6 +2019,8 @@ $(document).on('pagecreate', ".page", function () {
     var page = this;
     var require = this.getAttribute('data-require');
 
+    Dashboard.ensurePageTitle($(page));
+
     if (require) {
         requirejs(require.split(','), function () {
 
@@ -2061,7 +2090,6 @@ $(document).on('pagecreate', ".page", function () {
     Dashboard.firePageEvent(page, 'pageshowready');
 
     Dashboard.ensureHeader(page);
-    Dashboard.ensurePageTitle(page);
 
     if (apiClient && !apiClient.isWebSocketOpen()) {
         Dashboard.refreshSystemInfoFromServer();
