@@ -8,7 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
 import android.media.Rating;
@@ -17,7 +17,9 @@ import android.media.session.MediaSession;
 import android.media.session.MediaSession.Callback;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
@@ -27,44 +29,59 @@ import com.mb.android.api.ApiClientBridge;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
+import mediabrowser.logging.ConsoleLogger;
 
 public class MediaPlayerService extends Service {
 
+    private static final String TAG = "Emby/AudioService";
 
     private MediaSessionManager m_objMediaSessionManager;
     private MediaSession m_objMediaSession;
     private MediaController m_objMediaController;
-    private MediaPlayer m_objMediaPlayer;
+
+    private String mediaSessionMediaId = "";
+    private Bitmap largeItemIcon;
+
+    private AudioManager.OnAudioFocusChangeListener audioFocusListener;
+    private boolean mDetectHeadset = true;
+    private PowerManager.WakeLock mWakeLock;
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    private void handleIntent( Intent intent ) {
-        if( intent == null || intent.getAction() == null )
+    private void handleIntent(Intent intent) {
+        if (intent == null || intent.getAction() == null)
             return;
 
         String action = intent.getAction();
 
-        if( action.equalsIgnoreCase( Constants.ACTION_PLAY ) ) {
-            m_objMediaController.getTransportControls().play();
-        } else if( action.equalsIgnoreCase( Constants.ACTION_PAUSE ) ) {
-            m_objMediaController.getTransportControls().pause();
-        } else if( action.equalsIgnoreCase( Constants.ACTION_FAST_FORWARD ) ) {
-            m_objMediaController.getTransportControls().fastForward();
-        } else if( action.equalsIgnoreCase( Constants.ACTION_REWIND ) ) {
-            m_objMediaController.getTransportControls().rewind();
-        } else if( action.equalsIgnoreCase( Constants.ACTION_PREVIOUS ) ) {
-            m_objMediaController.getTransportControls().skipToPrevious();
-        } else if( action.equalsIgnoreCase(Constants.ACTION_NEXT ) ) {
-            m_objMediaController.getTransportControls().skipToNext();
-        } else if( action.equalsIgnoreCase( Constants.ACTION_STOP ) ) {
-            m_objMediaController.getTransportControls().stop();
-        } else if( action.equalsIgnoreCase( Constants.ACTION_REPORT ) ) {
+        if (action.equalsIgnoreCase(Constants.ACTION_REPORT)) {
             notify(intent);
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
+                m_objMediaController.getTransportControls().play();
+            } else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
+                m_objMediaController.getTransportControls().pause();
+            } else if (action.equalsIgnoreCase(Constants.ACTION_FAST_FORWARD)) {
+                m_objMediaController.getTransportControls().fastForward();
+            } else if (action.equalsIgnoreCase(Constants.ACTION_REWIND)) {
+                m_objMediaController.getTransportControls().rewind();
+            } else if (action.equalsIgnoreCase(Constants.ACTION_PREVIOUS)) {
+                m_objMediaController.getTransportControls().skipToPrevious();
+            } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
+                m_objMediaController.getTransportControls().skipToNext();
+            } else if (action.equalsIgnoreCase(Constants.ACTION_STOP)) {
+                m_objMediaController.getTransportControls().stop();
+            }
         }
     }
+
+    private VolleyHttpClient httpClient;
 
     private void notify(final Intent handledIntent) {
 
@@ -75,120 +92,188 @@ public class MediaPlayerService extends Service {
             return;
         }
 
+        String itemId = handledIntent.getStringExtra("itemId");
         String imageUrl = handledIntent.getStringExtra("imageUrl");
 
-        if (imageUrl != null && imageUrl.length() > 0){
-            VolleyHttpClient httpClient = (VolleyHttpClient)ApiClientBridge.Current.httpClient;
+        if (largeItemIcon != null && mediaSessionMediaId.equalsIgnoreCase(itemId)) {
+            notifyWithBitmap(handledIntent, largeItemIcon);
+            return;
+        }
 
-            httpClient.getBitmap(imageUrl, new Response<Bitmap>(){
+        if (imageUrl != null && imageUrl.length() > 0) {
+
+            if (ApiClientBridge.Current != null) {
+                httpClient = ApiClientBridge.Current.httpClient;
+            }
+
+            if (httpClient == null) {
+                httpClient = new VolleyHttpClient(new ConsoleLogger(), getApplicationContext());
+            }
+
+            httpClient.getBitmap(imageUrl, new Response<Bitmap>() {
 
                 @Override
-                public void onResponse(Bitmap bitmap){
+                public void onResponse(Bitmap bitmap) {
+                    largeItemIcon = bitmap;
                     notifyWithBitmap(handledIntent, bitmap);
                 }
 
                 @Override
-                public void onError(Exception ex){
+                public void onError(Exception ex) {
                     notifyWithBitmap(handledIntent, null);
                 }
 
             });
-        }
-        else{
+        } else {
             notifyWithBitmap(handledIntent, null);
         }
     }
 
     private void notifyWithBitmap(Intent handledIntent, Bitmap largeIcon) {
 
-        String playerAction = handledIntent.getStringExtra("playerAction");
-
         String artist = handledIntent.getStringExtra("artist");
         String album = handledIntent.getStringExtra("artist");
         String title = handledIntent.getStringExtra("title");
+        String itemId = handledIntent.getStringExtra("itemId");
         boolean isPaused = handledIntent.getBooleanExtra("isPaused", false);
         boolean canSeek = handledIntent.getBooleanExtra("canSeek", false);
-        String imageUrl = handledIntent.getStringExtra("imageUrl");
+        boolean isLocalPlayer = handledIntent.getBooleanExtra("isLocalPlayer", false);
+
+        if (!mediaSessionMediaId.equalsIgnoreCase(itemId)) {
+            setMediaSessionMetadata(m_objMediaSession, itemId, artist, album, title, largeIcon);
+
+            mediaSessionMediaId = itemId;
+
+            changeAudioFocus(isLocalPlayer);
+
+            // Make sure the audio player will acquire a wake-lock while playing. If we don't do
+            // that, the CPU might go to sleep while the song is playing, causing playback to stop.
+            setWakeLock(isLocalPlayer);
+        }
+
         int position = handledIntent.getIntExtra("position", 0);
         int duration = handledIntent.getIntExtra("duration", 0);
 
-        Notification.Action action = isPaused ?
-                generateAction( android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY ) :
-                generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Notification.Action action = isPaused ?
+                    generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY) :
+                    generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE);
 
-        Notification.MediaStyle style = new Notification.MediaStyle();
-        style.setMediaSession( m_objMediaSession.getSessionToken() );
+            Notification.MediaStyle style = new Notification.MediaStyle();
+            style.setMediaSession(m_objMediaSession.getSessionToken());
 
-        Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class);
-        intent.setAction( Constants.ACTION_STOP );
+            Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+            intent.setAction(Constants.ACTION_STOP);
 
-        MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
-                .putString(MediaMetadata.METADATA_KEY_ALBUM, album)
-                .putString(MediaMetadata.METADATA_KEY_TITLE, title);
+            PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
+            stateBuilder.setActiveQueueItemId(MediaSession.QueueItem.UNKNOWN_ID);
+            long actions = PlaybackState.ACTION_PLAY_PAUSE | PlaybackState.ACTION_STOP | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS | PlaybackState.ACTION_SEEK_TO | PlaybackState.ACTION_SET_RATING;
+            stateBuilder.setActions(actions);
 
-        if (largeIcon != null){
-            metadataBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, largeIcon);
+            if (isPaused) {
+                stateBuilder.setState(PlaybackState.STATE_PAUSED, 0, 1.0f);
+            } else {
+                stateBuilder.setState(PlaybackState.STATE_PLAYING, 0, 1.0f);
+            }
+
+            m_objMediaSession.setPlaybackState(stateBuilder.build());
+
+            PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+            Notification.Builder builder = new Notification.Builder(this)
+                    .setContentTitle(title)
+                    .setContentText(artist)
+                    .setDeleteIntent(pendingIntent)
+                    .setProgress(duration, position, duration == 0)
+                    .setStyle(style);
+
+            builder.setOngoing(true);
+            builder.setShowWhen(false);
+            builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+
+            if (largeIcon != null) {
+                builder.setLargeIcon(largeIcon);
+                builder.setSmallIcon(R.drawable.icon);
+            } else {
+                builder.setSmallIcon(R.drawable.icon);
+            }
+
+            builder.addAction(generateAction(android.R.drawable.ic_media_previous, "Previous", Constants.ACTION_PREVIOUS));
+            //builder.addAction( generateAction( android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND ) );
+            builder.addAction(action);
+            //builder.addAction( generateAction( android.R.drawable.ic_media_ff, "Fast Foward", Constants.ACTION_FAST_FORWARD ) );
+            builder.addAction(generateAction(android.R.drawable.ic_media_next, "Next", Constants.ACTION_NEXT));
+
+            //final TransportControls controls = m_objMediaSession.getController().getTransportControls();
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1, builder.build());
         }
+    }
 
-        PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
-        stateBuilder.setActiveQueueItemId(MediaSession.QueueItem.UNKNOWN_ID);
-        long actions = PlaybackState.ACTION_PLAY_PAUSE | PlaybackState.ACTION_STOP | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS | PlaybackState.ACTION_SEEK_TO | PlaybackState.ACTION_SET_RATING;
-        stateBuilder.setActions(actions);
+    private void setMediaSessionMetadata(MediaSession mediaSession, String itemId, String artist, String album, String title, Bitmap largeIcon) {
 
-        if (isPaused){
-            stateBuilder.setState(PlaybackState.STATE_PAUSED, 0, 1.0f);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
+                    .putString(MediaMetadata.METADATA_KEY_ALBUM, album)
+                    .putString(MediaMetadata.METADATA_KEY_TITLE, title)
+                    .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, itemId);
+
+            if (largeIcon != null) {
+                metadataBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, largeIcon);
+            }
+
+            mediaSession.setMetadata(metadataBuilder.build());
         }
-        else{
-            stateBuilder.setState(PlaybackState.STATE_PLAYING, 0, 1.0f);
-        }
+    }
 
-        m_objMediaSession.setMetadata(metadataBuilder.build());
-        m_objMediaSession.setPlaybackState(stateBuilder.build());
+    private void cleanupAfterMediaStop() {
+        changeAudioFocus(false);
 
-        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        Notification.Builder builder = new Notification.Builder( this )
-                .setContentTitle(title)
-                .setContentText( artist )
-                .setDeleteIntent( pendingIntent )
-                .setProgress(duration, position, duration == 0)
-                .setStyle(style);
+        setWakeLock(false);
+    }
 
-        builder.setOngoing(true);
-        builder.setShowWhen(false);
-        builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+    private void setWakeLock(boolean enabled) {
 
-        if (largeIcon != null){
-            builder.setLargeIcon(largeIcon);
-            builder.setSmallIcon(R.drawable.icon);
+        if (enabled) {
+
+            if (mWakeLock == null) {
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+            }
+
+            if (!mWakeLock.isHeld())
+                mWakeLock.acquire();
         }
         else {
-            builder.setSmallIcon(R.drawable.icon);
+            if (mWakeLock != null) {
+                if (mWakeLock.isHeld())
+                    mWakeLock.release();
+            }
         }
-
-        builder.addAction( generateAction( android.R.drawable.ic_media_previous, "Previous", Constants.ACTION_PREVIOUS ) );
-        //builder.addAction( generateAction( android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND ) );
-        builder.addAction( action );
-        //builder.addAction( generateAction( android.R.drawable.ic_media_ff, "Fast Foward", Constants.ACTION_FAST_FORWARD ) );
-        builder.addAction( generateAction( android.R.drawable.ic_media_next, "Next", Constants.ACTION_NEXT ) );
-
-        //final TransportControls controls = m_objMediaSession.getController().getTransportControls();
-        NotificationManager notificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
-        notificationManager.notify( 1, builder.build() );
     }
 
     private void onStopped() {
+
+        cleanupAfterMediaStop();
+
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel( 1 );
-        Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
-        stopService( intent );
+        notificationManager.cancel(1);
+        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+        stopService(intent);
     }
 
-    private Notification.Action generateAction( int icon, String title, String intentAction ) {
-        Intent intent = new Intent( getApplicationContext(), MediaPlayerService.class );
-        intent.setAction( intentAction );
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        cleanupAfterMediaStop();
+    }
+
+    private Notification.Action generateAction(int icon, String title, String intentAction) {
+        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+        intent.setAction(intentAction);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        return new Notification.Action.Builder( icon, title, pendingIntent ).build();
+        return new Notification.Action.Builder(icon, title, pendingIntent).build();
 
     }
 
@@ -234,91 +319,142 @@ public class MediaPlayerService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if( m_objMediaSessionManager == null ) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
+
+        if (m_objMediaSessionManager == null) {
             initMediaSessions();
         }
 
-        handleIntent( intent );
+        handleIntent(intent);
+
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void responseToWebView(String js) {
+        MainActivity.RespondToWebView(js);
     }
 
     private void initMediaSessions() {
 
-        m_objMediaPlayer = new MediaPlayer();
         m_objMediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-        m_objMediaSession = new MediaSession(getApplicationContext(), "sample session");
-        m_objMediaController = new MediaController(getApplicationContext(), m_objMediaSession.getSessionToken());
-        m_objMediaSession.setActive(true);
-        m_objMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSessionMediaId = "";
+        largeItemIcon = null;
 
-        m_objMediaSession.setCallback(new Callback() {
-            @Override
-            public void onPlay() {
-                super.onPlay();
-                Log.e( Constants.LOG_TAG, "onPlay");
-                //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
-                MainActivity.RespondToWebView("MediaController.unpause();");
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            @Override
-            public void onPause() {
-                super.onPause();
-                Log.e(Constants.LOG_TAG, "onPause");
-                //buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY));
-                MainActivity.RespondToWebView("MediaController.pause();");
-            }
+            m_objMediaSession = new MediaSession(getApplicationContext(), "sample session");
+            m_objMediaController = new MediaController(getApplicationContext(), m_objMediaSession.getSessionToken());
+            m_objMediaSession.setActive(true);
+            m_objMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
 
-            @Override
-            public void onSkipToNext() {
-                super.onSkipToNext();
-                Log.e(Constants.LOG_TAG, "onSkipToNext");
-                //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
-                MainActivity.RespondToWebView("MediaController.nextTrack();");
-            }
+            m_objMediaSession.setCallback(new Callback() {
+                @Override
+                public void onPlay() {
+                    super.onPlay();
+                    Log.e(Constants.LOG_TAG, "onPlay");
+                    //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
+                    responseToWebView("MediaController.unpause();");
+                }
 
-            @Override
-            public void onSkipToPrevious() {
-                super.onSkipToPrevious();
-                Log.e(Constants.LOG_TAG, "onSkipToPrevious");
-                //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
-                MainActivity.RespondToWebView("MediaController.previousTrack();");
-            }
+                @Override
+                public void onPause() {
+                    super.onPause();
+                    Log.e(Constants.LOG_TAG, "onPause");
+                    //buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY));
+                    responseToWebView("MediaController.pause();");
+                }
 
-            @Override
-            public void onFastForward() {
-                super.onFastForward();
-                Log.e(Constants.LOG_TAG, "onFastForward");
-            }
+                @Override
+                public void onSkipToNext() {
+                    super.onSkipToNext();
+                    Log.e(Constants.LOG_TAG, "onSkipToNext");
+                    //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
+                    responseToWebView("MediaController.nextTrack();");
+                }
 
-            @Override
-            public void onRewind() {
-                super.onRewind();
-                Log.e(Constants.LOG_TAG, "onRewind");
-            }
+                @Override
+                public void onSkipToPrevious() {
+                    super.onSkipToPrevious();
+                    Log.e(Constants.LOG_TAG, "onSkipToPrevious");
+                    //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
+                    responseToWebView("MediaController.previousTrack();");
+                }
 
-            @Override
-            public void onStop() {
-                super.onStop();
-                onStopped();
-            }
+                @Override
+                public void onFastForward() {
+                    super.onFastForward();
+                    Log.e(Constants.LOG_TAG, "onFastForward");
+                }
 
-            @Override
-            public void onSeekTo(long pos) {
-                super.onSeekTo(pos);
-            }
+                @Override
+                public void onRewind() {
+                    super.onRewind();
+                    Log.e(Constants.LOG_TAG, "onRewind");
+                }
 
-            @Override
-            public void onSetRating(Rating rating) {
-                super.onSetRating(rating);
-            }
-        });
+                @Override
+                public void onStop() {
+                    super.onStop();
+                    onStopped();
+                }
 
+                @Override
+                public void onSeekTo(long pos) {
+                    super.onSeekTo(pos);
+                }
+
+                @Override
+                public void onSetRating(Rating rating) {
+                    super.onSetRating(rating);
+                }
+            });
+        }
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        m_objMediaSession.release();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            m_objMediaSession.release();
+        }
+
         return super.onUnbind(intent);
+    }
+
+    private void changeAudioFocus(boolean gain) {
+
+        if (audioFocusListener == null) {
+            audioFocusListener = new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+
+                    switch (focusChange) {
+                        case AudioManager.AUDIOFOCUS_LOSS:
+                            responseToWebView("MediaController.pause();");
+                            break;
+                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                            /*
+                             * Lower the volume to 36% to "duck" when an alert or something
+                             * needs to be played.
+                             */
+                            responseToWebView("MediaController.setVolume(36);");
+                            break;
+                        case AudioManager.AUDIOFOCUS_GAIN:
+                        case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
+                        case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
+                            responseToWebView("MediaController.setVolume(100);");
+                            break;
+                    }
+                }
+            };
+        }
+
+        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+        if (gain)
+            am.requestAudioFocus(audioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        else
+            am.abandonAudioFocus(audioFocusListener);
+
     }
 }
