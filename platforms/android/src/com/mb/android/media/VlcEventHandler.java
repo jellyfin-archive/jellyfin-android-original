@@ -51,9 +51,11 @@ public class VlcEventHandler extends Handler {
                 break;
             case EventHandler.MediaPlayerEncounteredError:
                 logger.Debug("MediaPlayerEncounteredError");
+                reportState("playbackstop");
                 break;
             case EventHandler.MediaPlayerEndReached:
                 logger.Debug("MediaPlayerEndReached");
+                reportState("playbackstop");
                 break;
             case EventHandler.MediaPlayerESAdded:
                 logger.Debug("MediaPlayerESAdded");
@@ -95,9 +97,10 @@ public class VlcEventHandler extends Handler {
         // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
         boolean isPaused = eventName.equalsIgnoreCase("playbackstop") ?
                 false :
-                playerState == 4;
+                eventName.equalsIgnoreCase("paused") || playerState == 4;
 
-        float position = mLibVLC.getPosition() * 100;
+        logger.Debug("Vlc player state: %s", playerState);
+
         long length = mLibVLC.getLength() / 1000;
 
         long time = mLibVLC.getTime() / 1000;
@@ -122,15 +125,25 @@ public class VlcEventHandler extends Handler {
 
     public void sendVlcCommand(String name, String arg1) {
 
+        logger.Debug("Vlc received command: %s", name);
         try {
             if (name.equalsIgnoreCase("pause")){
-                mLibVLC.pause();
+
+                if (mLibVLC.getPlayerState() != 4){
+                    mLibVLC.pause();
+                }
             }
             else if (name.equalsIgnoreCase("unpause")){
                 mLibVLC.play();
             }
             else if (name.equalsIgnoreCase("stop")){
-                mLibVLC.stop();
+
+                // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
+                int playerState = mLibVLC.getPlayerState();
+
+                if (playerState >= 1 && playerState <= 4){
+                    mLibVLC.stop();
+                }
             }
             else if (name.equalsIgnoreCase("setvolume")){
 

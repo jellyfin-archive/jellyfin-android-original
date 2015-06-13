@@ -1,6 +1,1 @@
-﻿var Logger = {
-
-    log: function (str) {
-        console.log(str);
-    }
-};
+﻿var Logger={log:function(str){console.log(str);}};

@@ -17,7 +17,6 @@ import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.PeriodicSync;
 import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
-import mediabrowser.apiinteraction.sync.data.IFileRepository;
 import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
@@ -46,12 +45,9 @@ public class ApiClientBridge {
         this.webView = webView;
         this.jsonSerializer = jsonSerializer;
 
-        IFileRepository fileRepository = new SyncFileRepository(context, logger);
-
         MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(logger, context);
-        MediaSyncAdapter.SyncRepositoryFactory = new FileRepositoryFactory(fileRepository);
 
-        localAssetManager = new AndroidAssetManager(context, logger, this.jsonSerializer, fileRepository);
+        localAssetManager = new AndroidAssetManager(context, logger, this.jsonSerializer);
 
         httpClient = new VolleyHttpClient(logger, context);
         Current = this;

@@ -127,7 +127,10 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
         webView.addJavascriptInterface(this, "AndroidVlcPlayer");
-        webView.addJavascriptInterface(new PreferencesProvider(context, logger), "AndroidSharedPreferences");
+
+        PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
+
+        webView.addJavascriptInterface(preferencesProvider, "AndroidSharedPreferences");
 
         return engine;
     }
@@ -174,7 +177,9 @@ public class MainActivity extends CordovaActivity
     public static void RespondToWebView(final String js) {
 
         //logger.Info("Sending url to webView: %s", js);
-        webView.sendJavaScript(js);
+        if (webView != null){
+            webView.sendJavaScript(js);
+        }
     }
 
     @JavascriptInterface
@@ -185,37 +190,35 @@ public class MainActivity extends CordovaActivity
         //i.putExtra("playing", "false");
         //context.sendBroadcast(i);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent( this, MediaPlayerService.class );
-            intent.setAction( Constants.ACTION_REPORT );
+        Intent intent = new Intent( this, MediaPlayerService.class );
+        intent.setAction( Constants.ACTION_REPORT );
 
-            intent.putExtra("playerAction", "playbackstop");
+        intent.putExtra("playerAction", "playbackstop");
 
-            startService( intent );
-        }
+        startService( intent );
     }
 
     @JavascriptInterface
-    public void updateMediaSession(String action, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
+    public void updateMediaSession(String action, boolean isLocalPlayer, String itemId, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
 
         //bluetoothNotifyChange(action, title, artist, album, duration, position, imageUrl, canSeek, isPaused);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent( this, MediaPlayerService.class );
-            intent.setAction( Constants.ACTION_REPORT );
+        Intent intent = new Intent( this, MediaPlayerService.class );
+        intent.setAction( Constants.ACTION_REPORT );
 
-            intent.putExtra("playerAction", action);
-            intent.putExtra("title", title);
-            intent.putExtra("artist", artist);
-            intent.putExtra("album", album);
-            intent.putExtra("duration", duration);
-            intent.putExtra("position", position);
-            intent.putExtra("imageUrl", imageUrl);
-            intent.putExtra("canSeek", canSeek);
-            intent.putExtra("isPaused", isPaused);
+        intent.putExtra("playerAction", action);
+        intent.putExtra("title", title);
+        intent.putExtra("artist", artist);
+        intent.putExtra("album", album);
+        intent.putExtra("duration", duration);
+        intent.putExtra("position", position);
+        intent.putExtra("imageUrl", imageUrl);
+        intent.putExtra("canSeek", canSeek);
+        intent.putExtra("isPaused", isPaused);
+        intent.putExtra("itemId", itemId);
+        intent.putExtra("isLocalPlayer", isLocalPlayer);
 
-            startService( intent );
-        }
+        startService( intent );
     }
 
     private void bluetoothNotifyChange(String action, String title, String artist, String album, long duration, long position, String imageUrl, boolean canSeek, boolean isPaused) {
@@ -293,8 +296,10 @@ public class MainActivity extends CordovaActivity
     public void destroyVlc() {
         //mLibVLC.closeAout();
 
-        if (vlcEventHandler != null) {
-            EventHandler.getInstance().removeHandler(vlcEventHandler);
+        VlcEventHandler handler = vlcEventHandler;
+
+        if (handler != null) {
+            EventHandler.getInstance().removeHandler(handler);
             vlcEventHandler = null;
         }
 
@@ -322,8 +327,11 @@ public class MainActivity extends CordovaActivity
 
     @JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
-        if (vlcEventHandler != null) {
-            vlcEventHandler.sendVlcCommand(name, arg1);
+
+        VlcEventHandler handler = vlcEventHandler;
+
+        if (handler != null) {
+            handler.sendVlcCommand(name, arg1);
         }
     }
 }
