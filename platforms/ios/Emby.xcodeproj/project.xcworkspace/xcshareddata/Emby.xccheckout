@@ -18,6 +18,8 @@
 		<string>https://github.com/ConnectSDK/Connect-SDK-iOS</string>
 		<key>A66AB07D00310EEAA22A90A63D173413E2D6C6BC</key>
 		<string>https://github.com/MediaBrowser/MediaBrowser.Mobile.git</string>
+		<key>F6F96CA34C5878B0A9123C7C37855491A5E599DA</key>
+		<string>https://github.com/swisspol/GCDWebServer</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>platforms/ios/Emby.xcodeproj</string>
@@ -31,6 +33,8 @@
 		<string>../../../../../Connect-SDK-iOS</string>
 		<key>A66AB07D00310EEAA22A90A63D173413E2D6C6BC</key>
 		<string>../../../..</string>
+		<key>F6F96CA34C5878B0A9123C7C37855491A5E599DA</key>
+		<string>../../../../../GCDWebServer</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/MediaBrowser/MediaBrowser.Mobile.git</string>
@@ -55,6 +59,14 @@
 			<string>11E76B4A8B249084BFAB339B1C0AB3F9B9875C19</string>
 			<key>IDESourceControlWCCName</key>
 			<string>core</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F6F96CA34C5878B0A9123C7C37855491A5E599DA</string>
+			<key>IDESourceControlWCCName</key>
+			<string>GCDWebServer</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

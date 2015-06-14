@@ -28,9 +28,6 @@
     </feature>
     <preference name="StatusBarOverlaysWebView" value="true" />
     <preference name="StatusBarStyle" value="lightcontent" />
-    <feature name="WKWebViewPolyfill">
-        <param name="ios-package" value="WKWebViewPolyfill" />
-    </feature>
     <feature name="BackgroundColor">
         <param name="ios-package" value="CDVBackgroundColor" />
         <param name="onload" value="true" />
@@ -68,6 +65,9 @@
     </feature>
     <feature name="FileTransfer">
         <param name="ios-package" value="CDVFileTransfer" />
+    </feature>
+    <feature name="WKWebViewPolyfill">
+        <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />

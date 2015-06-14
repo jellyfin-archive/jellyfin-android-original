@@ -33,10 +33,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"BackgroundColor\"><param name=\"ios-package\" value=\"CDVBackgroundColor\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -83,6 +79,10 @@
                         {
                             "xml": "<feature name=\"FileTransfer\"><param name=\"ios-package\" value=\"CDVFileTransfer\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -118,7 +118,7 @@
                     "CFNetwork.framework": [
                         {
                             "xml": false,
-                            "count": 2
+                            "count": 3
                         }
                     ],
                     "WebKit.framework": [
@@ -154,7 +154,7 @@
                     "SystemConfiguration.framework": [
                         {
                             "xml": false,
-                            "count": 1
+                            "count": 2
                         }
                     ],
                     "AssetsLibrary.framework": [
@@ -166,7 +166,7 @@
                     "MobileCoreServices.framework": [
                         {
                             "xml": false,
-                            "count": 1
+                            "count": 2
                         }
                     ]
                 }
@@ -190,9 +190,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-chrome-apps-sockets-udp": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.crewmeister.cordova-ios-backgroundcolor": {
@@ -233,6 +230,9 @@
         },
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {
@@ -243,6 +243,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "de.appplant.cordova.common.registerusernotificationsettings": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     }

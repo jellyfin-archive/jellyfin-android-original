@@ -1,0 +1,33 @@
+{
+  "name": "cordova-plugin-webserver",
+  "version": "1.0.3",
+  "description": "Cordova WebServer Plugin",
+  "cordova": {
+    "id": "cordova-plugin-webserver",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/icenium/cordova-plugin-webserver.git"
+  },
+  "keywords": [
+    "cordova",
+    "webserver",
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Telerik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/icenium/cordova-plugin-webserver/issues"
+  },
+  "homepage": "https://github.com/icenium/cordova-plugin-webserver#readme"
+}

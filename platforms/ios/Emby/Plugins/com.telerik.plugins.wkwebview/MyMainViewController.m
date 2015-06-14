@@ -8,7 +8,6 @@
 #import "CDVWebViewUIDelegate.h"
 #import "ReroutingUIWebView.h"
 #import "AppDelegate+WKWebViewPolyfill.h"
-#import "RemoteControls.h"
 
 @interface CDVViewController ()
 @property (nonatomic, readwrite, retain) NSArray *startupPluginNames;
@@ -111,6 +110,10 @@
   self.wkWebView = [self newCordovaWKWebViewWithFrame:webViewBounds wkWebViewConfig:config];
   self.wkWebView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 
+  // avoid the white flash while opening the app
+  [self.wkWebView setOpaque:NO];
+  self.wkWebView.backgroundColor = [UIColor clearColor];
+
   _webViewOperationsDelegate = [[CDVWebViewOperationsDelegate alloc] initWithWebView:self.webView];
 
   [self.view addSubview:self.wkWebView];
@@ -133,7 +136,7 @@
             [_crashRecoveryTimer invalidate];
             _crashRecoveryTimer = nil;
             AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-            [appDelegate createWindowAndStartWebServer:false];
+            [appDelegate createWindowAndStartWebServer:true];
         }
     } else {
 
@@ -231,19 +234,10 @@
   }
 }
 
-//add this function
-- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
-    [[RemoteControls remoteControls] receiveRemoteEvent:receivedEvent];
-}
-
 - (void)viewDidLoad
 {
   NSURL* appURL = nil;
   NSString* loadErr = nil;
-    
-    
-  // Turn off remote control event delivery
-  [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 
   if ([self.startPage rangeOfString:@"://"].location != NSNotFound) {
     appURL = [NSURL URLWithString:self.startPage];
@@ -385,6 +379,10 @@
     [self.wkWebView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
   }
 
+  // don't show scrollbars
+  self.wkWebView.scrollView.showsHorizontalScrollIndicator = NO;
+  self.wkWebView.scrollView.showsVerticalScrollIndicator = NO;
+
   /*
    * iOS 6.0 UIWebView properties
    */
@@ -515,18 +513,9 @@
   }
 
   // Start timer which periodically checks whether the app is alive
-//  if ([self settingForKey:@"RecoverFromCrash"] && [[self settingForKey:@"RecoverFromCrash"] boolValue]) {
+  if (![self settingForKey:@"DisableCrashRecovery"] || ![[self settingForKey:@"DisableCrashRecovery"] boolValue]) {
     _crashRecoveryTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(recoverFromCrash) userInfo:nil repeats:YES];
-//  }
-    
-    
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    // Do any additional setup after loading the view from its nib.
-    [[RemoteControls remoteControls] setWebView:self.webView];
-    
-    // Black base color for background matches the native apps
-    self.wkWebView.backgroundColor = [UIColor blackColor];
-
+  }
 }
 
 - (WKWebView*)newCordovaWKWebViewWithFrame:(CGRect)bounds wkWebViewConfig:(WKWebViewConfiguration*) config
@@ -560,7 +549,7 @@
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-  
+
   if (!navigationAction.targetFrame) {
     // links with target="_blank" need to open outside the app, but WKWebView doesn't allow it currently
     NSURL *url = navigationAction.request.URL;
@@ -581,7 +570,7 @@
   if (![message.name isEqualToString:@"cordova"]) {
     return;
   }
-  
+
   NSArray* jsonEntry = message.body; // NSString:callbackId, NSString:service, NSString:action, NSArray:args
   CDVInvokedUrlCommand* command = [CDVInvokedUrlCommand commandFromJson:jsonEntry];
   CDV_EXEC_LOG(@"Exec(%@): Calling %@.%@", command.callbackId, command.className, command.methodName);
