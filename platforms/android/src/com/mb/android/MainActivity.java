@@ -25,20 +25,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.media.Constants;
 import com.mb.android.media.MediaPlayerService;
+import com.mb.android.media.VlcEventHandler;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.NativeWebView;
 
+import net.rdrei.android.dirchooser.DirectoryChooserActivity;
+
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
+import org.videolan.libvlc.EventHandler;
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.LibVlcException;
+import org.videolan.libvlc.Media;
 import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -49,9 +57,15 @@ import tv.emby.iap.UnlockActivity;
 
 public class MainActivity extends CordovaActivity
 {
+    private LibVLC mLibVLC = null;
+
     private final int PURCHASE_UNLOCK_REQUEST = 999;
+    private final int REQUEST_DIRECTORY = 998;
     private ILogger logger;
     private static IWebView webView;
+    private VlcEventHandler vlcEventHandler;
+
+    boolean mIsVlcPlaying = false; // Don't destroy libVLC if it is playing.
 
     private ILogger getLogger(){
         if (logger == null){
@@ -111,7 +125,12 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(new ApiClientBridge(context, logger, webView, jsonSerializer), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
-        webView.addJavascriptInterface(new PreferencesProvider(context, logger), "AndroidSharedPreferences");
+        webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
+        webView.addJavascriptInterface(this, "AndroidVlcPlayer");
+
+        PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
+
+        webView.addJavascriptInterface(preferencesProvider, "AndroidSharedPreferences");
 
         return engine;
     }
@@ -123,6 +142,19 @@ public class MainActivity extends CordovaActivity
                 RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
             } else {
                 RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
+            }
+        }
+
+        else if (requestCode == REQUEST_DIRECTORY) {
+
+            if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
+
+                String path = intent.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR);
+
+                RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", path));
+            }
+            else{
+                RespondToWebView("window.NativeDirectoryChooser.onChosen(null);");
             }
         }
     }
@@ -145,7 +177,9 @@ public class MainActivity extends CordovaActivity
     public static void RespondToWebView(final String js) {
 
         //logger.Info("Sending url to webView: %s", js);
-        webView.sendJavaScript(js);
+        if (webView != null){
+            webView.sendJavaScript(js);
+        }
     }
 
     @JavascriptInterface
@@ -156,37 +190,35 @@ public class MainActivity extends CordovaActivity
         //i.putExtra("playing", "false");
         //context.sendBroadcast(i);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent( this, MediaPlayerService.class );
-            intent.setAction( Constants.ACTION_REPORT );
+        Intent intent = new Intent( this, MediaPlayerService.class );
+        intent.setAction( Constants.ACTION_REPORT );
 
-            intent.putExtra("playerAction", "playbackstop");
+        intent.putExtra("playerAction", "playbackstop");
 
-            startService( intent );
-        }
+        startService( intent );
     }
 
     @JavascriptInterface
-    public void updateMediaSession(String action, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
+    public void updateMediaSession(String action, boolean isLocalPlayer, String itemId, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
 
         //bluetoothNotifyChange(action, title, artist, album, duration, position, imageUrl, canSeek, isPaused);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent( this, MediaPlayerService.class );
-            intent.setAction( Constants.ACTION_REPORT );
+        Intent intent = new Intent( this, MediaPlayerService.class );
+        intent.setAction( Constants.ACTION_REPORT );
 
-            intent.putExtra("playerAction", action);
-            intent.putExtra("title", title);
-            intent.putExtra("artist", artist);
-            intent.putExtra("album", album);
-            intent.putExtra("duration", duration);
-            intent.putExtra("position", position);
-            intent.putExtra("imageUrl", imageUrl);
-            intent.putExtra("canSeek", canSeek);
-            intent.putExtra("isPaused", isPaused);
+        intent.putExtra("playerAction", action);
+        intent.putExtra("title", title);
+        intent.putExtra("artist", artist);
+        intent.putExtra("album", album);
+        intent.putExtra("duration", duration);
+        intent.putExtra("position", position);
+        intent.putExtra("imageUrl", imageUrl);
+        intent.putExtra("canSeek", canSeek);
+        intent.putExtra("isPaused", isPaused);
+        intent.putExtra("itemId", itemId);
+        intent.putExtra("isLocalPlayer", isLocalPlayer);
 
-            startService( intent );
-        }
+        startService( intent );
     }
 
     private void bluetoothNotifyChange(String action, String title, String artist, String album, long duration, long position, String imageUrl, boolean canSeek, boolean isPaused) {
@@ -205,5 +237,101 @@ public class MainActivity extends CordovaActivity
         i.putExtra("position", position);
         //i.putExtra("ListSize", getQueue());
         sendBroadcast(i);
+    }
+
+    @JavascriptInterface
+    public void chooseDirectory() {
+
+        final Intent chooserIntent = new Intent(this, DirectoryChooserActivity.class);
+
+        // Optional: Allow users to create a new directory with a fixed name.
+        chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_NEW_DIR_NAME,
+                "NewFolder");
+
+        // REQUEST_DIRECTORY is a constant integer to identify the request, e.g. 0
+        startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
+    }
+
+    @JavascriptInterface
+    public void playAudioVlc(String path) {
+
+        ensureVlc();
+
+        Media media = new Media(mLibVLC, path);
+
+        mLibVLC.playMRL(media.getMrl());
+        mIsVlcPlaying = true;
+    }
+
+    @JavascriptInterface
+    public void playVideoVlc(String path) {
+
+        ensureVlc();
+
+        Media media = new Media(mLibVLC, path);
+
+        mLibVLC.playMRL(media.getMrl());
+        mIsVlcPlaying = true;
+    }
+
+    private void ensureVlc() {
+
+        if (mLibVLC == null) {
+            mLibVLC = new LibVLC();
+            try {
+                mLibVLC.init(this);
+            } catch(LibVlcException e) {
+                Toast.makeText(MainActivity.this,
+                        "Error initializing the libVLC multimedia framework!",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            vlcEventHandler = new VlcEventHandler(logger, mLibVLC, webView);
+            EventHandler.getInstance().addHandler(vlcEventHandler);
+        }
+    }
+
+    @JavascriptInterface
+    public void destroyVlc() {
+        //mLibVLC.closeAout();
+
+        VlcEventHandler handler = vlcEventHandler;
+
+        if (handler != null) {
+            EventHandler.getInstance().removeHandler(handler);
+            vlcEventHandler = null;
+        }
+
+        if (mLibVLC != null){
+            mLibVLC.destroy();
+            mLibVLC = null;
+        }
+
+        mIsVlcPlaying = false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mIsVlcPlaying = false;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(!mIsVlcPlaying) {
+            destroyVlc();
+        }
+    }
+
+    @JavascriptInterface
+    public void sendVlcCommand(String name, String arg1) {
+
+        VlcEventHandler handler = vlcEventHandler;
+
+        if (handler != null) {
+            handler.sendVlcCommand(name, arg1);
+        }
     }
 }

@@ -4,6 +4,7 @@
 
     var currentPlayer;
     var lastPlayerState;
+    var lastUpdateTime = 0;
 
     function updatePlayerState(state, eventName) {
 
@@ -29,12 +30,13 @@
         var album = state.NowPlayingItem.Album || '';
         var duration = state.NowPlayingItem.RunTimeTicks ? (state.NowPlayingItem.RunTimeTicks / 10000000) : 0;
         var position = playState.PositionTicks ? (playState.PositionTicks / 10000000) : 0;
+        var itemId = state.NowPlayingItem.Id;
 
         var isPaused = playState.IsPaused || false;
         var canSeek = playState.CanSeek || false;
 
         var url = '';
-        var imgHeight = 200;
+        var imgHeight = 400;
 
         var nowPlayingItem = state.NowPlayingItem;
 
@@ -64,7 +66,19 @@
 
         }
 
-        MainActivity.updateMediaSession(eventName, title, artist, album, parseInt(duration), parseInt(position), url, canSeek, isPaused);
+        // Don't go crazy reporting position changes
+        if (eventName == 'positionchange') {
+            if (lastUpdateTime) {
+                // Only report if this item hasn't been reported yet, or if there's an actual playback change.
+                // Don't report on simple time updates
+                return;
+            }
+        }
+
+        var isLocalPlayer = MediaController.getPlayerInfo().isLocalPlayer || false;
+
+        MainActivity.updateMediaSession(eventName, isLocalPlayer, itemId, title, artist, album, parseInt(duration), parseInt(position), url, canSeek, isPaused);
+        lastUpdateTime = new Date().getTime();
     }
 
     function onStateChanged(e, state) {
@@ -107,6 +121,7 @@
 
     function hideMediaControls() {
         MainActivity.hideMediaSession();
+        lastUpdateTime = 0;
     }
 
     function bindToPlayer(player) {

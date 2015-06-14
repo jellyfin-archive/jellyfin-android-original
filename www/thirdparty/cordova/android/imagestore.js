@@ -63,7 +63,7 @@
             console.log('getImageUrl:' + originalUrl);
 
             getFileSystem().done(function (fileSystem) {
-                var path = fileSystem.root.toURL() + "/emby/cache" + key;
+                var path = fileSystem.root.toURL() + "/emby/cache/" + key;
 
                 resolveLocalFileSystemURL(path, function (fileEntry) {
                     var localUrl = fileEntry.toURL();
