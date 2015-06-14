@@ -183,9 +183,6 @@
         "com.rd11.remote-controls": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-chrome-apps-common": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -238,6 +235,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

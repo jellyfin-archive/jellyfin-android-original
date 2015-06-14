@@ -31,7 +31,7 @@ if(!cordova.exec.jsToNativeModes.WK_WEBVIEW_BINDING) {
 	try{
 		exec(null, null, 'WKWebView', '', []);
 	} catch(e) {}
-	
+
 	//wrap nativeFetchMessages with redirect to wkwebview bridge
 	var origNativeFetchMessages = exec.nativeFetchMessages;
 	exec.nativeFetchMessages = function() {

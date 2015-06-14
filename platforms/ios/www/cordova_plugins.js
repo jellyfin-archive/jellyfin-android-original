@@ -43,13 +43,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
-        "id": "com.telerik.plugins.wkwebview.wkwebview",
-        "clobbers": [
-            "wkwebview"
-        ]
-    },
-    {
         "file": "plugins/com.rd11.remote-controls/www/RemoteControls.js",
         "id": "com.rd11.remote-controls.RemoteControls",
         "clobbers": [
@@ -340,6 +333,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
+        "id": "com.telerik.plugins.wkwebview.wkwebview",
+        "clobbers": [
+            "wkwebview"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -368,7 +368,6 @@ module.exports.metadata =
     "cordova-plugin-dialogs": "1.0.0",
     "cordova-plugin-statusbar": "1.0.0",
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
-    "com.telerik.plugins.wkwebview": "0.3.7",
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "com.rd11.remote-controls": "1.0.0",
     "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
@@ -382,9 +381,11 @@ module.exports.metadata =
     "org.apache.cordova.speech.speechrecognition": "0.1.0",
     "cordova-plugin-file": "2.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
+    "com.telerik.plugins.wkwebview": "0.4.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
-    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
+    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
+    "cordova-plugin-webserver": "1.0.3"
 }
 // BOTTOM OF METADATA
 });

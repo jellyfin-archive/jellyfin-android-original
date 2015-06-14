@@ -63,10 +63,10 @@
             console.log('getImageUrl:' + originalUrl);
 
             getFileSystem().done(function (fileSystem) {
-                var path = fileSystem.root.toURL() + "/emby/cache/" + key;
+                var path = fileSystem.root.toURL() + "/emby/cache" + key;
 
                 resolveLocalFileSystemURL(path, function (fileEntry) {
-                    var localUrl = fileEntry.toInternalURL();
+                    var localUrl = fileEntry.toURL();
                     console.log('returning cached file: ' + localUrl);
                     console.log(localUrl);
                     deferred.resolveWith(null, [localUrl]);
@@ -77,7 +77,7 @@
                     var ft = new FileTransfer();
                     ft.download(originalUrl, path, function (entry) {
 
-                        var localUrl = entry.toInternalURL();
+                        var localUrl = entry.toURL();
 
                         console.log(localUrl);
                         deferred.resolveWith(null, [localUrl]);

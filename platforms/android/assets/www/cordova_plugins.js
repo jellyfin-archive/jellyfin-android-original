@@ -348,7 +348,6 @@ module.exports.metadata =
 {
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "com.rd11.remote-controls": "1.0.0",
-    "com.telerik.plugins.wkwebview": "0.3.7",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
@@ -367,6 +366,7 @@ module.exports.metadata =
     "org.apache.cordova.speech.speechrecognition": "0.1.0",
     "cordova-plugin-file": "2.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
+    "com.telerik.plugins.wkwebview": "0.4.0",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

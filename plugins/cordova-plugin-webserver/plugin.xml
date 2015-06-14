@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	id="cordova-plugin-webserver"
+	version="1.0.3">
+
+	<name>CordovaWebServer</name>
+	<description>Cordova WebServer Plugin</description>
+	<keywords>cordova,webserver</keywords>
+
+	<engines>
+		<engine name="cordova" version=">=3.0.0" />
+	</engines>
+
+	<platform name="ios">		
+		<framework src="src/ios/GCDWebServer.framework" custom="true" />
+		<framework src="libz.dylib" />
+		<framework src="CFNetwork.framework" />
+		<framework src="SystemConfiguration.framework" />
+		<framework src="MobileCoreServices.framework" />
+	</platform>
+</plugin>
