@@ -30,7 +30,7 @@ else if(nowPlayingItem.Type=="TvChannel"||nowPlayingItem.Type=="Recording"){url=
 else if(nowPlayingItem.MediaType=="Audio"){url="css/images/items/detail/audio.png";}
 else{url="css/images/items/detail/video.png";}
 if(url==currentImgUrl){return;}
-currentImgUrl=url;nowPlayingImageElement.html('<img src="'+url+'" />');if(nowPlayingItem.Id){ApiClient.getItem(Dashboard.getCurrentUserId(),nowPlayingItem.Id).done(function(item){nowPlayingUserData.html(LibraryBrowser.getUserDataIconsHtml(item));});}}
+currentImgUrl=url;nowPlayingImageElement.html('<img src="'+url+'" />');if(nowPlayingItem.Id){ApiClient.getItem(Dashboard.getCurrentUserId(),nowPlayingItem.Id).done(function(item){nowPlayingUserData.html(LibraryBrowser.getUserDataIconsHtml(item,false));});}}
 function onPlaybackStart(e,state){console.log('nowplaying event: '+e.type);var player=this;player.beginPlayerUpdates();onStateChanged.call(player,e,state);}
 function showNowPlayingBar(){var nowPlayingBar=getNowPlayingBar();nowPlayingBar.show();}
 function hideNowPlayingBar(){$('.nowPlayingBar').hide();}
