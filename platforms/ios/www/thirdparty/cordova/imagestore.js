@@ -51,6 +51,13 @@
             return CryptoJS.MD5(url).toString();
         }
 
+        function normalizeReturnUrl(url) {
+            if ($.browser.safari) {
+                return url.replace('file://', '');
+            }
+            return url;
+        }
+
         self.getImageUrl = function (originalUrl) {
 
             if ($.browser.android && originalUrl.indexOf('tag=') != -1) {
@@ -63,10 +70,10 @@
             console.log('getImageUrl:' + originalUrl);
 
             getFileSystem().done(function (fileSystem) {
-                var path = fileSystem.root.toURL() + "/emby/cache" + key;
+                var path = fileSystem.root.toURL() + "/emby/cache/" + key;
 
                 resolveLocalFileSystemURL(path, function (fileEntry) {
-                    var localUrl = fileEntry.toURL();
+                    var localUrl = normalizeReturnUrl(fileEntry.toURL());
                     console.log('returning cached file: ' + localUrl);
                     console.log(localUrl);
                     deferred.resolveWith(null, [localUrl]);
@@ -77,7 +84,7 @@
                     var ft = new FileTransfer();
                     ft.download(originalUrl, path, function (entry) {
 
-                        var localUrl = entry.toURL();
+                        var localUrl = normalizeReturnUrl(entry.toURL());
 
                         console.log(localUrl);
                         deferred.resolveWith(null, [localUrl]);
