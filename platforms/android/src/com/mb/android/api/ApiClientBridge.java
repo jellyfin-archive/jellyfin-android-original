@@ -3,13 +3,9 @@ package com.mb.android.api;
 import android.content.Context;
 import android.os.Handler;
 
-import com.mb.android.logging.SyncLoggerFactory;
 import com.mb.android.webviews.IWebView;
 
 import org.xwalk.core.JavascriptInterface;
-
-import java.net.URLEncoder;
-import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.ApiEventListener;
 import mediabrowser.apiinteraction.IConnectionManager;
@@ -17,18 +13,13 @@ import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.AndroidConnectionManager;
 import mediabrowser.apiinteraction.android.AndroidCredentialProvider;
 import mediabrowser.apiinteraction.android.AndroidDevice;
-import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.PeriodicSync;
 import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
-import mediabrowser.apiinteraction.http.HttpRequest;
-import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
-import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
-import mediabrowser.model.net.HttpException;
 import mediabrowser.model.serialization.IJsonSerializer;
 import mediabrowser.model.session.ClientCapabilities;
 import mediabrowser.model.sync.LocalItem;
@@ -53,6 +44,8 @@ public class ApiClientBridge {
         this.logger = logger;
         this.webView = webView;
         this.jsonSerializer = jsonSerializer;
+
+        MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(logger, context);
 
         localAssetManager = new AndroidAssetManager(context, logger, this.jsonSerializer);
 

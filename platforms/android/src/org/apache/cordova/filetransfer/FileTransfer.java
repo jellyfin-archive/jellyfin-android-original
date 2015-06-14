@@ -53,6 +53,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.CordovaResourceApi.OpenForReadResult;
+import org.apache.cordova.LOG;
 import org.apache.cordova.PluginManager;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.Whitelist;
@@ -214,7 +215,7 @@ public class FileTransfer extends CordovaPlugin {
     }
 
     private String getCookies(final String target) {
-        boolean gotCookie = false;
+
         String cookie = null;
         Class webViewClass = webView.getClass();
         try {
@@ -227,15 +228,10 @@ public class FileTransfer extends CordovaPlugin {
                             gcmMethod.invoke(webView)
                         ), target);
 
-            gotCookie = true;
         } catch (NoSuchMethodException e) {
         } catch (IllegalAccessException e) {
         } catch (InvocationTargetException e) {
         } catch (ClassCastException e) {
-        }
-
-        if (!gotCookie) {
-            cookie = CookieManager.getInstance().getCookie(target);
         }
 
         return cookie;
