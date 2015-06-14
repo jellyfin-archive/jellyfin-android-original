@@ -9,12 +9,23 @@ function loadAppConnection(page){Dashboard.showModalLoadingMsg();ConnectionManag
 function loadPage(page){var mode=getParameterByName('mode')||'auto';if(mode=='auto'){if(AppInfo.isNativeApp){loadAppConnection(page);return;}
 mode='connect';}
 loadMode(page,mode);}
-function loadMode(page,mode){Backdrops.setDefault(page);if(mode=='welcome'){$('.connectLoginForm',page).hide();$('.welcomeContainer',page).show();$('.manualServerForm',page).hide();}
-else if(mode=='connect'){$('.connectLoginForm',page).show();$('.welcomeContainer',page).hide();$('.manualServerForm',page).hide();}
-else if(mode=='manualserver'){$('.manualServerForm',page).show();$('.connectLoginForm',page).hide();$('.welcomeContainer',page).hide();}}
+function loadMode(page,mode){Backdrops.setDefault(page);if(mode=='welcome'){$('.connectLoginForm',page).hide();$('.welcomeContainer',page).show();$('.manualServerForm',page).hide();$('.signupForm',page).hide();}
+else if(mode=='connect'){$('.connectLoginForm',page).show();$('.welcomeContainer',page).hide();$('.manualServerForm',page).hide();$('.signupForm',page).hide();}
+else if(mode=='manualserver'){$('.manualServerForm',page).show();$('.connectLoginForm',page).hide();$('.welcomeContainer',page).hide();$('.signupForm',page).hide();}
+else if(mode=='signup'){$('.manualServerForm',page).hide();$('.connectLoginForm',page).hide();$('.welcomeContainer',page).hide();$('.signupForm',page).show();initSignup(page);}}
 function skip(){Dashboard.navigate('selectserver.html');}
 function onSubmit(){var page=$(this).parents('.page');submit(page);return false;}
 function onManualServerSubmit(){var page=$(this).parents('.page');submitManualServer(page);return false;}
-$(document).on('pageinitdepends',"#connectLoginPage",function(){var page=this;$('.btnSkipConnect',page).on('click',function(){skip();});$('.connectLoginForm').off('submit',onSubmit).on('submit',onSubmit);$('.manualServerForm').off('submit',onManualServerSubmit).on('submit',onManualServerSubmit);}).on('pageshowready',"#connectLoginPage",function(){var page=this;loadPage(page);var link='<a href="http://emby.media" target="_blank">http://emby.media</a>';$('.embyIntroDownloadMessage',page).html(Globalize.translate('EmbyIntroDownloadMessage',link));if(AppInfo.isNativeApp){$('.skip',page).show();}else{$('.skip',page).hide();}});function submitManualServer(page){var host=$('#txtServerHost',page).val();var port=$('#txtServerPort',page).val();if(port){host+=':'+port;}
+function onSignupFormSubmit(){if(!supportInAppSignup()){return false;}
+var captchaResponse=grecaptcha.getResponse('recaptchaWidget');alert(captchaResponse);var page=$(this).parents('.page');ConnectionManager.signupForConnect($('#txtSignupEmail',page).val(),$('#txtSignupUsername',page).val(),$('#txtSignupPassword',page).val(),$('#txtSignupPasswordConfirm',page).val()).done(function(){Dashboard.alert({message:Globalize.translate('MessageThankYouForConnectSignUp'),callback:function(){Dashboard.navigate('connectlogin.html?mode=welcome');}});}).fail(function(result){if(result.errorCode=='passwordmatch'){Dashboard.alert({message:Globalize.translate('ErrorMessagePasswordNotMatchConfirm')});}
+else if(result.errorCode=='USERNAME_IN_USE'){Dashboard.alert({message:Globalize.translate('ErrorMessageUsernameInUse')});}
+else if(result.errorCode=='EMAIL_IN_USE'){Dashboard.alert({message:Globalize.translate('ErrorMessageEmailInUse')});}else{Dashboard.alert({message:Globalize.translate('DefaultErrorMessage')});}});return false;}
+function requireCaptcha(){return!AppInfo.isNativeApp&&getWindowUrl().toLowerCase().indexOf('https')==0;}
+function supportInAppSignup(){return AppInfo.isNativeApp;return AppInfo.isNativeApp||getWindowUrl().toLowerCase().indexOf('https')==0;}
+function initSignup(page){if(!supportInAppSignup()){return;}
+if(!requireCaptcha()){return;}
+require(['https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit'],function(){});}
+$(document).on('pageinitdepends',"#connectLoginPage",function(){var page=this;$('.btnSkipConnect',page).on('click',function(){skip();});$('.connectLoginForm').off('submit',onSubmit).on('submit',onSubmit);$('.manualServerForm').off('submit',onManualServerSubmit).on('submit',onManualServerSubmit);$('.signupForm').off('submit',onSignupFormSubmit).on('submit',onSignupFormSubmit);$('.btnSignupForConnect',page).on('click',function(){if(supportInAppSignup()){Dashboard.navigate('connectlogin.html?mode=signup');return false;}});}).on('pagebeforeshowready',"#connectLoginPage",function(){var page=this;$('#txtSignupEmail',page).val('');$('#txtSignupUsername',page).val('');$('#txtSignupPassword',page).val('');$('#txtSignupPasswordConfirm',page).val('');if(AppInfo.isNativeApp){$('.skip',page).show();}else{$('.skip',page).hide();}
+var link='<a href="http://emby.media" target="_blank">http://emby.media</a>';$('.embyIntroDownloadMessage',page).html(Globalize.translate('EmbyIntroDownloadMessage',link));}).on('pageshowready',"#connectLoginPage",function(){var page=this;loadPage(page);});function submitManualServer(page){var host=$('#txtServerHost',page).val();var port=$('#txtServerPort',page).val();if(port){host+=':'+port;}
 Dashboard.showModalLoadingMsg();ConnectionManager.connectToAddress(host).done(function(result){handleConnectionResult(page,result);}).fail(function(){handleConnectionResult(page,{State:MediaBrowser.ConnectionState.Unavailable});});}
 function submit(page){var user=$('#txtManualName',page).val();var password=$('#txtManualPassword',page).val();login(page,user,password);}})();

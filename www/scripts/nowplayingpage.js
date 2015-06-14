@@ -36,7 +36,7 @@ if(playState.PositionTicks==null){$('.positionTime',page).html('--:--');}else{$(
 if(item&&item.RunTimeTicks!=null){$('.runtime',page).html(Dashboard.getDisplayTime(item.RunTimeTicks));}else{$('.runtime',page).html('--:--');}
 if(item&&item.MediaType=='Video'){$('.videoButton',page).css('visibility','visible');}else{$('.videoButton',page).css('visibility','hidden');}
 updateNowPlayingInfo(page,state);}
-var currentImgUrl;function updateNowPlayingInfo(page,state){var item=state.NowPlayingItem;$('.itemName',page).html(item?MediaController.getNowPlayingNameHtml(item):'');var url;var backdropUrl=null;if(!item){}
+var currentImgUrl;function updateNowPlayingInfo(page,state){var item=state.NowPlayingItem;$('.itemName',page).html(item?MediaController.getNowPlayingNameHtml(item).replace('<br/>',' - '):'');var url;var backdropUrl=null;if(!item){}
 else if(item.PrimaryImageTag){url=ApiClient.getScaledImageUrl(item.PrimaryImageItemId,{type:"Primary",height:300,tag:item.PrimaryImageTag});}
 else if(item.BackdropImageTag){url=ApiClient.getScaledImageUrl(item.BackdropItemId,{type:"Backdrop",height:300,tag:item.BackdropImageTag,index:0});}else if(item.ThumbImageTag){url=ApiClient.getScaledImageUrl(item.ThumbImageItemId,{type:"Thumb",height:300,tag:item.ThumbImageTag});}
 if(url==currentImgUrl){return;}
