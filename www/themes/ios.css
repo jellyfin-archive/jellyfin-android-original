@@ -19,6 +19,8 @@
 
 .libraryViewNav {
     border-top: 1px solid #333;
+    font-size: 12px;
+    height: 47px !important;
 }
 
 .viewMenuBar {
