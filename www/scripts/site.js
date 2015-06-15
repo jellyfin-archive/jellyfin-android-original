@@ -102,14 +102,16 @@ else{if(!$.browser.tv){AppInfo.enableHeadRoom=true;}}
 AppInfo.enableMusicSongsTab=true;if(!AppInfo.hasLowImageBandwidth){AppInfo.enableLatestChannelItems=true;AppInfo.enableStudioTabs=true;AppInfo.enablePeopleTabs=true;AppInfo.enableTvEpisodesTab=true;AppInfo.enableMusicArtistsTab=true;AppInfo.enableMovieTrailersTab=true;}
 if(isCordova){AppInfo.enableAppLayouts=true;AppInfo.hasKnownExternalPlayerSupport=true;AppInfo.isNativeApp=true;}
 else{AppInfo.enableFooterNotifications=true;AppInfo.enableSupporterMembership=true;if(!isAndroid&&!isIOS){AppInfo.enableAppLayouts=true;}}
-AppInfo.enableUserImage=true;AppInfo.hasPhysicalVolumeButtons=isCordova||isMobile;AppInfo.enableBackButton=(isIOS&&window.navigator.standalone)||(isCordova&&isIOS);AppInfo.supportsFullScreen=isCordova&&isAndroid;AppInfo.supportsSyncPathSetting=isCordova&&isAndroid;if(isCordova&&isAndroid){AppInfo.directPlayAudioContainers=['aac','mp3','ogg','flac','wma','m4a','oga'];}else{AppInfo.directPlayAudioContainers=[];}}
+AppInfo.enableUserImage=true;AppInfo.hasPhysicalVolumeButtons=isCordova||isMobile;AppInfo.enableBackButton=isIOS&&window.navigator.standalone&&!AppInfo.isNativeApp;AppInfo.supportsFullScreen=isCordova&&isAndroid;AppInfo.supportsSyncPathSetting=isCordova&&isAndroid;if(isCordova&&isAndroid){AppInfo.directPlayAudioContainers=['aac','mp3','ogg','flac','wma','m4a','oga'];}else{AppInfo.directPlayAudioContainers=[];}}
 function initializeApiClient(apiClient){apiClient.enableAppStorePolicy=AppInfo.enableAppStorePolicy;apiClient.getDefaultImageQuality=Dashboard.getDefaultImageQuality;apiClient.normalizeImageOptions=Dashboard.normalizeImageOptions;$(apiClient).off('.dashboard').on("websocketmessage.dashboard",Dashboard.onWebSocketMessageReceived).on('requestfail.dashboard',Dashboard.onRequestFail);}
 function createConnectionManager(capabilities){var credentialKey=Dashboard.isConnectMode()?null:'servercredentials4';var credentialProvider=new MediaBrowser.CredentialProvider(credentialKey);window.ConnectionManager=new MediaBrowser.ConnectionManager(Logger,credentialProvider,AppInfo.appName,AppInfo.appVersion,AppInfo.deviceName,AppInfo.deviceId,capabilities);$(ConnectionManager).on('apiclientcreated',function(e,newApiClient){initializeApiClient(newApiClient);});var deferred=DeferredBuilder.Deferred();if(Dashboard.isConnectMode()){var server=ConnectionManager.getLastUsedServer();if(!Dashboard.isServerlessPage()){if(server&&server.UserId&&server.AccessToken){ConnectionManager.connectToServer(server).done(function(result){if(result.State==MediaBrowser.ConnectionState.SignedIn){window.ApiClient=result.ApiClient;}
 deferred.resolve();});return deferred.promise();}}
 deferred.resolve();}else{var apiClient=new MediaBrowser.ApiClient(Logger,Dashboard.serverAddress(),AppInfo.appName,AppInfo.appVersion,AppInfo.deviceName,AppInfo.deviceId);apiClient.enableAutomaticNetworking=false;ConnectionManager.addApiClient(apiClient);Dashboard.importCss(apiClient.getUrl('Branding/Css'));window.ApiClient=apiClient;}
 return deferred.promise();}
 function initFastClick(){requirejs(["thirdparty/fastclick"],function(FastClick){FastClick.attach(document.body);$(document.body).on('touchstart','.ui-panel-dismiss',function(){$(this).trigger('click');});});}
-function onDocumentReady(){if(AppInfo.isTouchPreferred){$(document.body).addClass('touch');}
+function onDocumentReady(){if(AppInfo.isNativeApp&&$.browser.safari){require(['css!themes/ios']);}
+if(AppInfo.enableBottomTabs){$(document.body).addClass('bottomSecondaryNav');}
+if(AppInfo.isTouchPreferred){$(document.body).addClass('touch');}
 if($.browser.safari&&$.browser.mobile){initFastClick();}
 if(AppInfo.cardMargin){$(document.body).addClass(AppInfo.cardMargin);}
 if(!AppInfo.enableLatestChannelItems){$(document.body).addClass('latestChannelItemsDisabled');}
@@ -119,7 +121,6 @@ if(!AppInfo.enableTvEpisodesTab){$(document.body).addClass('tvEpisodesTabDisable
 if(!AppInfo.enableMusicSongsTab){$(document.body).addClass('musicSongsTabDisabled');}
 if(!AppInfo.enableMusicArtistsTab){$(document.body).addClass('musicArtistsTabDisabled');}
 if(!AppInfo.enableMovieTrailersTab){$(document.body).addClass('movieTrailersTabDisabled');}
-if(AppInfo.enableBottomTabs){$(document.body).addClass('bottomSecondaryNav');}
 if(!AppInfo.enableSupporterMembership){$(document.body).addClass('supporterMembershipDisabled');}
 if(AppInfo.isNativeApp){$(document).addClass('nativeApp');}
 if(AppInfo.enableBackButton){$(document.body).addClass('enableBackButton');}
@@ -135,8 +136,7 @@ if(Dashboard.isRunningInCordova()&&$.browser.android){define("nativedirectorycho
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["thirdparty/cordova/android/vlcplayer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
 else{define("audiorenderer",["scripts/htmlmediarenderer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
 define("connectservice",["thirdparty/apiclient/connectservice"]);setAppInfo();$.extend(AppInfo,Dashboard.getAppInfo(appName,deviceId,deviceName));if(Dashboard.isConnectMode()){require(['appstorage'],function(){capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){$(function(){onDocumentReady();Dashboard.initPromiseDone=true;deferred.resolve();});});});}else{createConnectionManager(capabilities);Dashboard.initPromiseDone=true;deferred.resolve();$(onDocumentReady);}}
-function initCordovaWithDeviceId(deferred,deviceId){if($.browser.android){requirejs(['thirdparty/cordova/android/imagestore.js']);}else{requirejs(['thirdparty/cordova/imagestore.js']);}
-var capablities=Dashboard.capabilities();init(deferred,capablities,"Emby Mobile",deviceId,device.model);}
+function initCordovaWithDeviceId(deferred,deviceId){requirejs(['thirdparty/cordova/imagestore.js']);var capablities=Dashboard.capabilities();init(deferred,capablities,"Emby Mobile",deviceId,device.model);}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}
 var initDeferred=$.Deferred();Dashboard.initPromise=initDeferred.promise();if(Dashboard.isRunningInCordova()){initCordova(initDeferred);}else{init(initDeferred,Dashboard.capabilities());}})();Dashboard.jQueryMobileInit();$(document).on('pagecreate',".page",function(){var page=$(this);var current=page.data('theme');if(!current){var newTheme;if(page.hasClass('libraryPage')){newTheme='b';}else{newTheme='a';}
 current=page.page("option","theme");if(current&&current!=newTheme){page.page("option","theme",newTheme);}

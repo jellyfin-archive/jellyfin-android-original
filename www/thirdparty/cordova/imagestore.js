@@ -75,7 +75,6 @@
                 resolveLocalFileSystemURL(path, function (fileEntry) {
                     var localUrl = normalizeReturnUrl(fileEntry.toURL());
                     console.log('returning cached file: ' + localUrl);
-                    console.log(localUrl);
                     deferred.resolveWith(null, [localUrl]);
 
                 }, function () {

@@ -49,10 +49,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"SQLitePlugin\"><param name=\"ios-package\" value=\"SQLitePlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"ConnectSDK\"><param name=\"ios-package\" value=\"ConnectSDKCordova\" /></feature>",
                             "count": 1
                         },
@@ -199,9 +195,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "hu.dpal.phonegap.plugins.UniqueDeviceID": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "io.litehelpers.cordova.sqlite": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.connectsdk.cordovaplugin": {
