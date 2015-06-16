@@ -1,6 +1,6 @@
 ﻿(function($,document){var view=LibraryBrowser.getDefaultItemsView('PosterCard','PosterCard');var query={SortBy:"SortName",SortOrder:"Ascending",IncludeItemTypes:"Playlist",Recursive:true,Fields:"PrimaryImageAspectRatio,SortName,CumulativeRunTimeTicks,CanDelete,SyncInfo",StartIndex:0};function getSavedQueryKey(){return'playlists2'+(query.ParentId||'');}
-function showLoadingMessage(page){$('.popupLoading',page).popup('open');}
-function hideLoadingMessage(page){$('.popupLoading',page).popup('close');}
+function showLoadingMessage(page){Dashboard.showLoadingMsg();}
+function hideLoadingMessage(page){Dashboard.hideLoadingMsg();}
 function reloadItems(page){showLoadingMessage(page);var promise1=ApiClient.getItems(Dashboard.getCurrentUserId(),query);var promise2=Dashboard.getCurrentUser();$.when(promise1,promise2).done(function(response1,response2){var result=response1[0];var user=response2[0];$(document).scrollTop(0);var html='';$('.listTopPaging',page).html(LibraryBrowser.getQueryPagingHtml({startIndex:query.StartIndex,limit:query.Limit,totalRecordCount:result.TotalRecordCount,viewButton:true,showLimit:false})).trigger('create');updateFilterControls(page);var trigger=false;if(result.TotalRecordCount){if(view=="List"){html=LibraryBrowser.getListViewHtml({items:result.Items,context:'playlists',sortBy:query.SortBy});trigger=true;}
 else if(view=="PosterCard"){html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:"square",context:'playlists',showTitle:true,lazy:true,coverImage:true,showItemCounts:true,cardLayout:true});}
 $('.noItemsMessage',page).hide();}else{$('.noItemsMessage',page).show();}
