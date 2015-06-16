@@ -79,8 +79,8 @@ ApiClient.getItems(Dashboard.getCurrentUserId(),{Recursive:true,Limit:3,Filters:
 WebNotifications.show(notification);}});},ensurePageTitle:function(page){if(!page.hasClass('type-interior')){return;}
 if($('.pageTitle',page).length){return;}
 var parent=$('.content-primary',page);if(!parent.length){parent=$('.ui-content',page)[0];}
-var helpUrl=page.attr('data-helpurl');var html='<div>';html+='<h1 class="pageTitle" style="display:inline-block;">'+(document.title||'&nbsp;')+'</h1>';if(helpUrl){html+='<a href="'+helpUrl+'" target="_blank" class="accentButton accentButton-g" style="margin-top:-10px;"><i class="fa fa-info-circle"></i>'+Globalize.translate('ButtonHelp')+'</a>';}
-html+='</div>';$(parent).prepend(html);},setPageTitle:function(title){$('.pageTitle',$.mobile.activePage).html(title);if(title){document.title=title;}},getDisplayTime:function(ticks){var ticksPerHour=36000000000;var ticksPerMinute=600000000;var ticksPerSecond=10000000;var parts=[];var hours=ticks/ticksPerHour;hours=Math.floor(hours);if(hours){parts.push(hours);}
+var helpUrl=page.attr('data-helpurl');var html='<div>';html+='<h1 class="pageTitle" style="display:inline-block;">'+(document.title||'&nbsp;')+'</h1>';if(helpUrl){html+='<a href="'+helpUrl+'" target="_blank" class="clearLink" style="margin-top:-10px;display:inline-block;vertical-align:middle;margin-left:1em;"><paper-button raised class="secondary mini"><i class="fa fa-info-circle"></i>'+Globalize.translate('ButtonHelp')+'</paper-button></a>';}
+html+='</div>';$(parent).prepend(html);if(helpUrl){require(['css!thirdparty/paper-button/paper-button-style']);}},setPageTitle:function(title){$('.pageTitle',$.mobile.activePage).html(title);if(title){document.title=title;}},getDisplayTime:function(ticks){var ticksPerHour=36000000000;var ticksPerMinute=600000000;var ticksPerSecond=10000000;var parts=[];var hours=ticks/ticksPerHour;hours=Math.floor(hours);if(hours){parts.push(hours);}
 ticks-=(hours*ticksPerHour);var minutes=ticks/ticksPerMinute;minutes=Math.floor(minutes);ticks-=(minutes*ticksPerMinute);if(minutes<10&&hours){minutes='0'+minutes;}
 parts.push(minutes);var seconds=ticks/ticksPerSecond;seconds=Math.floor(seconds);if(seconds<10){seconds='0'+seconds;}
 parts.push(seconds);return parts.join(':');},populateLanguages:function(select,languages){var html="";html+="<option value=''></option>";for(var i=0,length=languages.length;i<length;i++){var culture=languages[i];html+="<option value='"+culture.TwoLetterISOLanguageName+"'>"+culture.DisplayName+"</option>";}
@@ -98,7 +98,7 @@ Dashboard.initPromise.done(fn);},firePageEvent:function(page,name){Dashboard.rea
 function setAppInfo(){if(isTouchDevice()){AppInfo.isTouchPreferred=true;}
 var isCordova=Dashboard.isRunningInCordova();AppInfo.enableDetailPageChapters=true;AppInfo.enableDetailsMenuImages=true;AppInfo.enableMovieHomeSuggestions=true;AppInfo.enableAppStorePolicy=isCordova;var isIOS=$.browser.safari||$.browser.ipad||$.browser.iphone;var isAndroid=$.browser.android;var isMobile=$.browser.mobile;if(isIOS){if(isMobile){AppInfo.hasLowImageBandwidth=true;}
 if(isCordova){AppInfo.enableBottomTabs=true;AppInfo.cardMargin='mediumCardMargin';}else{if(isMobile){AppInfo.enableDetailPageChapters=false;AppInfo.enableDetailsMenuImages=false;AppInfo.enableMovieHomeSuggestions=false;AppInfo.cardMargin='largeCardMargin';AppInfo.forcedImageFormat='jpg';}}}
-else{if(!$.browser.tv){AppInfo.enableHeadRoom=true;}}
+else{if(!$.browser.tv){}}
 AppInfo.enableMusicSongsTab=true;if(!AppInfo.hasLowImageBandwidth){AppInfo.enableLatestChannelItems=true;AppInfo.enableStudioTabs=true;AppInfo.enablePeopleTabs=true;AppInfo.enableTvEpisodesTab=true;AppInfo.enableMusicArtistsTab=true;AppInfo.enableMovieTrailersTab=true;}
 if(isCordova){AppInfo.enableAppLayouts=true;AppInfo.hasKnownExternalPlayerSupport=true;AppInfo.isNativeApp=true;}
 else{AppInfo.enableFooterNotifications=true;AppInfo.enableSupporterMembership=true;if(!isAndroid&&!isIOS){AppInfo.enableAppLayouts=true;}}
@@ -109,9 +109,7 @@ deferred.resolve();});return deferred.promise();}}
 deferred.resolve();}else{var apiClient=new MediaBrowser.ApiClient(Logger,Dashboard.serverAddress(),AppInfo.appName,AppInfo.appVersion,AppInfo.deviceName,AppInfo.deviceId);apiClient.enableAutomaticNetworking=false;ConnectionManager.addApiClient(apiClient);Dashboard.importCss(apiClient.getUrl('Branding/Css'));window.ApiClient=apiClient;}
 return deferred.promise();}
 function initFastClick(){requirejs(["thirdparty/fastclick"],function(FastClick){FastClick.attach(document.body);$(document.body).on('touchstart','.ui-panel-dismiss',function(){$(this).trigger('click');});});}
-function onDocumentReady(){if(AppInfo.isNativeApp&&$.browser.safari){require(['css!themes/ios']);}
-if(AppInfo.enableBottomTabs){$(document.body).addClass('bottomSecondaryNav');}
-if(AppInfo.isTouchPreferred){$(document.body).addClass('touch');}
+function onDocumentReady(){if(AppInfo.isTouchPreferred){$(document.body).addClass('touch');}
 if($.browser.safari&&$.browser.mobile){initFastClick();}
 if(AppInfo.cardMargin){$(document.body).addClass(AppInfo.cardMargin);}
 if(!AppInfo.enableLatestChannelItems){$(document.body).addClass('latestChannelItemsDisabled');}
@@ -135,7 +133,9 @@ else{define("filesystem",["thirdparty/filesystem"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("nativedirectorychooser",["thirdparty/cordova/android/nativedirectorychooser"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["thirdparty/cordova/android/vlcplayer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
 else{define("audiorenderer",["scripts/htmlmediarenderer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
-define("connectservice",["thirdparty/apiclient/connectservice"]);setAppInfo();$.extend(AppInfo,Dashboard.getAppInfo(appName,deviceId,deviceName));if(Dashboard.isConnectMode()){require(['appstorage'],function(){capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){$(function(){onDocumentReady();Dashboard.initPromiseDone=true;deferred.resolve();});});});}else{createConnectionManager(capabilities);Dashboard.initPromiseDone=true;deferred.resolve();$(onDocumentReady);}}
+define("connectservice",["thirdparty/apiclient/connectservice"]);setAppInfo();$.extend(AppInfo,Dashboard.getAppInfo(appName,deviceId,deviceName));if(AppInfo.isNativeApp&&$.browser.safari){require(['css!themes/ios']);}
+if(AppInfo.enableBottomTabs){$(document.body).addClass('bottomSecondaryNav');}
+if(Dashboard.isConnectMode()){require(['appstorage'],function(){capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){$(function(){onDocumentReady();Dashboard.initPromiseDone=true;deferred.resolve();});});});}else{createConnectionManager(capabilities);$(function(){onDocumentReady();Dashboard.initPromiseDone=true;deferred.resolve();});}}
 function initCordovaWithDeviceId(deferred,deviceId){requirejs(['thirdparty/cordova/imagestore.js']);var capablities=Dashboard.capabilities();init(deferred,capablities,"Emby Mobile",deviceId,device.model);}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}
 var initDeferred=$.Deferred();Dashboard.initPromise=initDeferred.promise();if(Dashboard.isRunningInCordova()){initCordova(initDeferred);}else{init(initDeferred,Dashboard.capabilities());}})();Dashboard.jQueryMobileInit();$(document).on('pagecreate',".page",function(){var page=$(this);var current=page.data('theme');if(!current){var newTheme;if(page.hasClass('libraryPage')){newTheme='b';}else{newTheme='a';}

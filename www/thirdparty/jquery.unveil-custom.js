@@ -26,7 +26,7 @@
         var screens = $.browser.mobile ? 2 : 1;
 
         // This helps eliminate the draw-in effect as you scroll
-        return screen.availHeight * screens;
+        return Math.max(screen.availHeight * screens, 1000);
     }
 
     $.fn.unveil = function () {
