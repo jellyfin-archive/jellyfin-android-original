@@ -21,7 +21,7 @@ var page=$(this).parents('.page');ConnectionManager.signupForConnect($('#txtSign
 else if(result.errorCode=='USERNAME_IN_USE'){Dashboard.alert({message:Globalize.translate('ErrorMessageUsernameInUse')});}
 else if(result.errorCode=='EMAIL_IN_USE'){Dashboard.alert({message:Globalize.translate('ErrorMessageEmailInUse')});}else{Dashboard.alert({message:Globalize.translate('DefaultErrorMessage')});}});return false;}
 function requireCaptcha(){return!AppInfo.isNativeApp&&getWindowUrl().toLowerCase().indexOf('https')==0;}
-function supportInAppSignup(){return false;return AppInfo.isNativeApp;return AppInfo.isNativeApp||getWindowUrl().toLowerCase().indexOf('https')==0;}
+function supportInAppSignup(){return AppInfo.isNativeApp;return AppInfo.isNativeApp||getWindowUrl().toLowerCase().indexOf('https')==0;}
 function initSignup(page){if(!supportInAppSignup()){return;}
 if(!requireCaptcha()){return;}
 require(['https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit'],function(){});}

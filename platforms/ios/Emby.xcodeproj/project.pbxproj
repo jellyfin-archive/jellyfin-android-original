@@ -66,9 +66,9 @@
 		A3A0165A1B2E22DB0089774E /* CDVWebViewOperationsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BC438BB8DA4C48A7C7D100 /* CDVWebViewOperationsDelegate.m */; };
 		A3A0165B1B2E22DE0089774E /* CDVWebViewUIDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B4AB100994C24B9485EB5C2E /* CDVWebViewUIDelegate.m */; };
 		A3A0165D1B2E23D80089774E /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CB0CC3E3F764AB88AAF5D06 /* WebKit.framework */; };
-		A3E7DCCE1B08611D007556B9 /* libConnectSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCD1B0860DD007556B9 /* libConnectSDK.a */; };
+		A3A0168D1B3111590089774E /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A0168C1B3111590089774E /* GoogleCast.framework */; };
+		A3A016951B311C000089774E /* libConnectSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A016871B310C850089774E /* libConnectSDK.a */; };
 		A3E7DCD01B086136007556B9 /* MediaAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */; };
-		A3E7DCD41B086211007556B9 /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCD31B086211007556B9 /* GoogleCast.framework */; };
 		A3E7DDCA1B1DF746007556B9 /* libiSpeechSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */; };
 		A3E7DDD01B1E8796007556B9 /* iSpeechSDK.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A3E7DDCF1B1E8796007556B9 /* iSpeechSDK.bundle */; };
 		A3E9F8D01AF9509800F2026A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3E9F8CF1AF9509800F2026A /* Images.xcassets */; };
@@ -107,16 +107,23 @@
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = CordovaLib;
 		};
-		A3E7DCCC1B0860DD007556B9 /* PBXContainerItemProxy */ = {
+		A3A016861B310C850089774E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3E7DCC81B0860DD007556B9 /* ConnectSDK.xcodeproj */;
+			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = EA61EB1018FE485B00D75696;
 			remoteInfo = ConnectSDK;
 		};
-		A3E7DCD11B08614E007556B9 /* PBXContainerItemProxy */ = {
+		A3A016881B310C850089774E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = A3E7DCC81B0860DD007556B9 /* ConnectSDK.xcodeproj */;
+			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4480857A1A12A7BE00E13938;
+			remoteInfo = ConnectSDKTests;
+		};
+		A3A0168A1B310CD30089774E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = EA61EB0F18FE485B00D75696;
 			remoteInfo = ConnectSDK;
@@ -211,9 +218,9 @@
 		9CE8FB8349CF44059C00A8E0 /* SQLitePlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLitePlugin.h; path = io.litehelpers.cordova.sqlite/SQLitePlugin.h; sourceTree = "<group>"; };
 		9EA8FBA95FD8464CB98980DD /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncSocket.h; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncSocket.h"; sourceTree = "<group>"; };
 		A2CBB4ACFB1C47D0AE933096 /* ReroutingUIWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ReroutingUIWebView.m; path = com.telerik.plugins.wkwebview/ReroutingUIWebView.m; sourceTree = "<group>"; };
-		A3E7DCC81B0860DD007556B9 /* ConnectSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConnectSDK.xcodeproj; path = "../../../Connect-SDK-iOS/ConnectSDK.xcodeproj"; sourceTree = "<group>"; };
+		A3A016801B310C840089774E /* ConnectSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConnectSDK.xcodeproj; path = "../../../Connect-SDK-iOS-1.4/ConnectSDK.xcodeproj"; sourceTree = "<group>"; };
+		A3A0168C1B3111590089774E /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleCast.framework; path = "../../../Connect-SDK-iOS-1.4/GoogleCast.framework"; sourceTree = "<group>"; };
 		A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaAccessibility.framework; path = System/Library/Frameworks/MediaAccessibility.framework; sourceTree = SDKROOT; };
-		A3E7DCD31B086211007556B9 /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleCast.framework; path = "../../../Connect-SDK-iOS/ConnectSDK/Frameworks/GoogleCast.framework"; sourceTree = "<group>"; };
 		A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libiSpeechSDK.a; path = Emby/Plugins/org.apache.cordova.speech.speechrecognition/libiSpeechSDK.a; sourceTree = "<group>"; };
 		A3E7DDCF1B1E8796007556B9 /* iSpeechSDK.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = iSpeechSDK.bundle; sourceTree = "<group>"; };
 		A3E9F8CF1AF9509800F2026A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Emby/Images.xcassets; sourceTree = SOURCE_ROOT; };
@@ -269,18 +276,18 @@
 				5B1594DD16A7569C00FEF299 /* AssetsLibrary.framework in Frameworks */,
 				301BF552109A68D80062928A /* libCordova.a in Frameworks */,
 				A3E7DDCA1B1DF746007556B9 /* libiSpeechSDK.a in Frameworks */,
-				A3E7DCD41B086211007556B9 /* GoogleCast.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				305D5FD1115AB8F900A74A75 /* MobileCoreServices.framework in Frameworks */,
 				22109D3B82564713AD563554 /* AudioToolbox.framework in Frameworks */,
 				37E4C15B37C74748907180F7 /* Security.framework in Frameworks */,
 				04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */,
 				B7ECA3E0A8474A71911D4FAF /* MediaPlayer.framework in Frameworks */,
+				A3A0168D1B3111590089774E /* GoogleCast.framework in Frameworks */,
 				B40F3BFFEB2C408EA34A2AA8 /* libicucore.dylib in Frameworks */,
+				A3A016951B311C000089774E /* libConnectSDK.a in Frameworks */,
 				CCB55D00AD29476691AFE2E8 /* StoreKit.framework in Frameworks */,
 				A3A0165D1B2E23D80089774E /* WebKit.framework in Frameworks */,
 				B5BACF4ED8274178BEE337D4 /* SystemConfiguration.framework in Frameworks */,
-				A3E7DCCE1B08611D007556B9 /* libConnectSDK.a in Frameworks */,
 				E4134BFF02C04A4CAF7CF040 /* GCDWebServer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,7 +319,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				A3E7DCC81B0860DD007556B9 /* ConnectSDK.xcodeproj */,
+				A3A016801B310C840089774E /* ConnectSDK.xcodeproj */,
 				EB87FDF41871DAF40020F90C /* config.xml */,
 				EB87FDF31871DA8E0020F90C /* www */,
 				EB87FDF21871DA7A0020F90C /* merges */,
@@ -355,8 +362,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A3A0168C1B3111590089774E /* GoogleCast.framework */,
 				A3E7DDC91B1DF746007556B9 /* libiSpeechSDK.a */,
-				A3E7DCD31B086211007556B9 /* GoogleCast.framework */,
 				A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */,
 				5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
@@ -503,10 +510,11 @@
 			path = splash;
 			sourceTree = "<group>";
 		};
-		A3E7DCC91B0860DD007556B9 /* Products */ = {
+		A3A016811B310C840089774E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A3E7DCCD1B0860DD007556B9 /* libConnectSDK.a */,
+				A3A016871B310C850089774E /* libConnectSDK.a */,
+				A3A016891B310C850089774E /* ConnectSDKTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -535,7 +543,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				A3E7DCD21B08614E007556B9 /* PBXTargetDependency */,
+				A3A0168B1B310CD30089774E /* PBXTargetDependency */,
 				301BF551109A68C00062928A /* PBXTargetDependency */,
 			);
 			name = Emby;
@@ -579,8 +587,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = A3E7DCC91B0860DD007556B9 /* Products */;
-					ProjectRef = A3E7DCC81B0860DD007556B9 /* ConnectSDK.xcodeproj */;
+					ProductGroup = A3A016811B310C840089774E /* Products */;
+					ProjectRef = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
 				},
 				{
 					ProductGroup = 301BF52E109A57CC0062928A /* Products */;
@@ -602,11 +610,18 @@
 			remoteRef = 301BF534109A57CC0062928A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A3E7DCCD1B0860DD007556B9 /* libConnectSDK.a */ = {
+		A3A016871B310C850089774E /* libConnectSDK.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libConnectSDK.a;
-			remoteRef = A3E7DCCC1B0860DD007556B9 /* PBXContainerItemProxy */;
+			remoteRef = A3A016861B310C850089774E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A3A016891B310C850089774E /* ConnectSDKTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ConnectSDKTests.xctest;
+			remoteRef = A3A016881B310C850089774E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -720,10 +735,10 @@
 			name = CordovaLib;
 			targetProxy = 301BF550109A68C00062928A /* PBXContainerItemProxy */;
 		};
-		A3E7DCD21B08614E007556B9 /* PBXTargetDependency */ = {
+		A3A0168B1B310CD30089774E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ConnectSDK;
-			targetProxy = A3E7DCD11B08614E007556B9 /* PBXContainerItemProxy */;
+			targetProxy = A3A0168A1B310CD30089774E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -746,7 +761,8 @@
 					"Emby/Plugins/cordova-plugin-webserver",
 					"$(PROJECT_DIR)/Emby/Plugins/cordova-plugin-webserver",
 					"/Users/luke/MediaBrowser.Mobile/plugins/cordova-plugin-webserver/src/ios",
-					"\"Emby/Plugins/cordova-plugin-webserver\"",
+					"Emby/Plugins/cordova-plugin-webserver",
+					"/Users/luke/Connect-SDK-iOS-1.4",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -797,7 +813,8 @@
 					"Emby/Plugins/cordova-plugin-webserver",
 					"$(PROJECT_DIR)/Emby/Plugins/cordova-plugin-webserver",
 					"/Users/luke/MediaBrowser.Mobile/plugins/cordova-plugin-webserver/src/ios",
-					"\"Emby/Plugins/cordova-plugin-webserver\"",
+					"Emby/Plugins/cordova-plugin-webserver",
+					"/Users/luke/Connect-SDK-iOS-1.4",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Emby/Emby-Prefix.pch";
