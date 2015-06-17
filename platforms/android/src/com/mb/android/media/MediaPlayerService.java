@@ -336,12 +336,12 @@ public class MediaPlayerService extends Service {
 
     private void initMediaSessions() {
 
-        m_objMediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
         mediaSessionMediaId = "";
         largeItemIcon = null;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
+            m_objMediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
             m_objMediaSession = new MediaSession(getApplicationContext(), "sample session");
             m_objMediaController = new MediaController(getApplicationContext(), m_objMediaSession.getSessionToken());
             m_objMediaSession.setActive(true);
