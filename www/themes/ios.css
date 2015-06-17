@@ -109,29 +109,30 @@ h1, h1 a {
 
 .libraryViewNav .material-icons {
     display: block;
-    margin-top: -5px;
+    margin-top: -6px;
+    font-size: 13px;
 }
 
 paper-button[raised].submit {
     background: none !important;
-    color: #4285f4;
+    color: #4285f4 !important;
     border: 1px solid #4285f4 !important;
 }
 
 paper-button[raised].more {
     background: none !important;
-    color: #388E3C;
+    color: #388E3C !important;
     border: 1px solid #388E3C !important;
 }
 
 paper-button[raised].secondary {
     background: none !important;
-    color: #52B54B;
+    color: #52B54B !important;
     border: 1px solid #52B54B !important;
 }
 
 paper-button[raised].cancel {
     background: none !important;
-    color: #444;
+    color: #444 !important;
     border: 1px solid #444 !important;
 }
