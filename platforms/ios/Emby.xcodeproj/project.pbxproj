@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		128CF0722F9A49B0BF19550D /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 67AB33E4AC854FCEBC8B175E /* CDVDevice.m */; };
@@ -686,7 +687,6 @@
 				E93A4F32A2E9440DB873DBA2 /* RemoteControls.m in Sources */,
 				D6B315FC7BC54470BB3D8A8C /* UICKeyChainStore.m in Sources */,
 				EA05CC7F3E874F23A868BBEB /* CDVUniqueDeviceID.m in Sources */,
-				9768F064C50B4537AA2D8BDF /* sqlite3.c in Sources */,
 				5F276D33DF504C35BFD963D2 /* ConnectSDKCordova.m in Sources */,
 				5DB6290B34FB4784B3FB23A9 /* ConnectSDKCordovaDispatcher.m in Sources */,
 				AFDD39138D6A4CD69475B841 /* ConnectSDKCordovaObjects.m in Sources */,
