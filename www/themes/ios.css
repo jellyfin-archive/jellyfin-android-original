@@ -14,6 +14,7 @@
     font-weight: 400;
     text-transform: none;
     color: #ccc !important;
+    padding-top: 16px;
 }
 
 .libraryViewNav .ui-btn-active {
@@ -95,10 +96,6 @@ h1, h1 a {
 
 .viewMenuSearch {
     background: #1c1c1c;
-}
-
-.libraryViewNav a {
-    padding-top: 16px;
 }
 
 .libraryMenuButtonText {
