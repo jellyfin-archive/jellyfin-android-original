@@ -96,3 +96,17 @@ h1, h1 a {
 .viewMenuSearch {
     background: #1c1c1c;
 }
+
+.libraryViewNavLinkContent {
+}
+
+.libraryMenuButtonText {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.libraryViewNav .material-icons {
+    display: block;
+}
