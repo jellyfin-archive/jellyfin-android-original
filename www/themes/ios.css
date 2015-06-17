@@ -100,12 +100,38 @@ h1, h1 a {
 
 .libraryMenuButtonText {
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 100px;
+    right: 100px;
     text-align: center;
+    font-size: 16px;
+    margin: 0 auto;
 }
 
 .libraryViewNav .material-icons {
     display: block;
-    margin-top: -4px;
+    margin-top: -5px;
+}
+
+paper-button[raised].submit {
+    background: none !important;
+    color: #4285f4;
+    border: 1px solid #4285f4 !important;
+}
+
+paper-button[raised].more {
+    background: none !important;
+    color: #388E3C;
+    border: 1px solid #388E3C !important;
+}
+
+paper-button[raised].secondary {
+    background: none !important;
+    color: #52B54B;
+    border: 1px solid #52B54B !important;
+}
+
+paper-button[raised].cancel {
+    background: none !important;
+    color: #444;
+    border: 1px solid #444 !important;
 }
