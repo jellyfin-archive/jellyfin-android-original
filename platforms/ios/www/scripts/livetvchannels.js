@@ -1,6 +1,6 @@
 ﻿(function($,document){var query={StartIndex:0,EnableFavoriteSorting:true};function getChannelsHtml(channels){return LibraryBrowser.getPosterViewHtml({items:channels,shape:"smallBackdrop",centerText:true,lazy:true});}
-function showLoadingMessage(page){$('.popupLoading',page).popup('open');}
-function hideLoadingMessage(page){$('.popupLoading',page).popup('close');}
+function showLoadingMessage(page){Dashboard.showLoadingMsg();}
+function hideLoadingMessage(page){Dashboard.hideLoadingMsg();}
 function renderChannels(page,result){$('.listTopPaging',page).html(LibraryBrowser.getQueryPagingHtml({startIndex:query.StartIndex,limit:query.Limit,totalRecordCount:result.TotalRecordCount,viewButton:true,showLimit:false})).trigger('create');updateFilterControls(this);var html=getChannelsHtml(result.Items);$('#items',page).html(html).lazyChildren();$('.btnNextPage',page).on('click',function(){query.StartIndex+=query.Limit;reloadItems(page);});$('.btnPreviousPage',page).on('click',function(){query.StartIndex-=query.Limit;reloadItems(page);});LibraryBrowser.saveQueryValues('movies',query);}
 function reloadItems(page){showLoadingMessage(page);ApiClient.getLiveTvChannels(query).done(function(result){renderChannels(page,result);hideLoadingMessage(page);});}
 function updateFilterControls(page){$('#chkFavorite',page).checked(query.IsFavorite==true).checkboxradio('refresh');$('#chkLikes',page).checked(query.IsLiked==true).checkboxradio('refresh');$('#chkDislikes',page).checked(query.IsDisliked==true).checkboxradio('refresh');$('#selectPageSize',page).val(query.Limit).selectmenu('refresh');}

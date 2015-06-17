@@ -1,5 +1,5 @@
-﻿(function($,document){var cellCurationMinutes=30;var cellDurationMs=cellCurationMinutes*60*1000;var msPerDay=86400000;var currentDate;var defaultChannels=50;var channelLimit=1000;var channelQuery={StartIndex:0,Limit:defaultChannels,EnableFavoriteSorting:true};var channelsPromise;function showLoadingMessage(page){$('.popupLoading',page).popup('open');}
-function hideLoadingMessage(page){$('.popupLoading',page).popup('close');}
+﻿(function($,document){var cellCurationMinutes=30;var cellDurationMs=cellCurationMinutes*60*1000;var msPerDay=86400000;var currentDate;var defaultChannels=50;var channelLimit=1000;var channelQuery={StartIndex:0,Limit:defaultChannels,EnableFavoriteSorting:true};var channelsPromise;function showLoadingMessage(page){Dashboard.showModalLoadingMsg();}
+function hideLoadingMessage(page){Dashboard.hideModalLoadingMsg();}
 function normalizeDateToTimeslot(date){var minutesOffset=date.getMinutes()-cellCurationMinutes;if(minutesOffset>=0){date.setHours(date.getHours(),cellCurationMinutes,0,0);}else{date.setHours(date.getHours(),0,0,0);}
 return date;}
 function reloadChannels(page){channelsPromise=null;reloadGuide(page);}
