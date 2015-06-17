@@ -43,6 +43,6 @@ function cancelListener(){destroyCurrentRecognition();hideVoiceHelp();}
 function destroyCurrentRecognition(){var recognition=currentRecognition;if(recognition){recognition.abort();currentRecognition=null;}}
 function processTranscript(text){$('.voiceInputText').html(text);if(text||AppInfo.isNativeApp){$('.blockedMessage').hide();}else{$('.blockedMessage').show();}
 processText(text).done(hideVoiceHelp).fail(showUnrecognizedCommandHelp);}
-function startListening(){destroyCurrentRecognition();require(['css!voice/voice'],function(){startListeningInternal();});}
+function startListening(){destroyCurrentRecognition();Dashboard.importCss('voice/voice.css');startListeningInternal();}
 function startListeningInternal(){var recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition)();recognition.onresult=function(event){if(event.results.length>0){processTranscript(event.results[0][0].transcript||'');}};recognition.onerror=function(){processTranscript('');};recognition.onnomatch=function(){processTranscript('');};recognition.start();currentRecognition=recognition;showVoiceHelp();}
 window.VoiceInputManager={isSupported:function(){return window.SpeechRecognition||window.webkitSpeechRecognition;},startListening:startListening};})();
