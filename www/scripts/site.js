@@ -101,10 +101,10 @@ function setAppInfo(){if(isTouchDevice()){AppInfo.isTouchPreferred=true;}
 var isCordova=Dashboard.isRunningInCordova();AppInfo.enableDetailPageChapters=true;AppInfo.enableDetailsMenuImages=true;AppInfo.enableMovieHomeSuggestions=true;AppInfo.enableAppStorePolicy=isCordova;var isIOS=$.browser.safari||$.browser.ipad||$.browser.iphone;var isAndroid=$.browser.android;var isMobile=$.browser.mobile;if(isIOS){if(isMobile){AppInfo.hasLowImageBandwidth=true;}
 if(isCordova){AppInfo.enableBottomTabs=true;AppInfo.cardMargin='mediumCardMargin';}else{if(isMobile){AppInfo.enableDetailPageChapters=false;AppInfo.enableDetailsMenuImages=false;AppInfo.enableMovieHomeSuggestions=false;AppInfo.cardMargin='largeCardMargin';AppInfo.forcedImageFormat='jpg';}}}
 else{if(!$.browser.tv){AppInfo.enableHeadRoom=true;}}
-AppInfo.enableMusicSongsTab=true;if(!AppInfo.hasLowImageBandwidth){AppInfo.enableLatestChannelItems=true;AppInfo.enableStudioTabs=true;AppInfo.enablePeopleTabs=true;AppInfo.enableTvEpisodesTab=true;AppInfo.enableMusicArtistsTab=true;AppInfo.enableMovieTrailersTab=true;}
+if(!AppInfo.hasLowImageBandwidth){AppInfo.enableStudioTabs=true;AppInfo.enablePeopleTabs=true;AppInfo.enableTvEpisodesTab=true;AppInfo.enableMovieTrailersTab=true;}
 if(isCordova){AppInfo.enableAppLayouts=true;AppInfo.hasKnownExternalPlayerSupport=true;AppInfo.isNativeApp=true;}
 else{AppInfo.enableFooterNotifications=true;AppInfo.enableSupporterMembership=true;if(!isAndroid&&!isIOS){AppInfo.enableAppLayouts=true;}}
-AppInfo.enableUserImage=true;AppInfo.hasPhysicalVolumeButtons=isCordova||isMobile;AppInfo.enableBackButton=isIOS&&(window.navigator.standalone||AppInfo.isNativeApp);AppInfo.supportsFullScreen=isCordova&&isAndroid;AppInfo.supportsSyncPathSetting=isCordova&&isAndroid;if(isCordova&&isAndroid){AppInfo.directPlayAudioContainers=['aac','mp3','ogg','flac','wma','m4a','oga'];}else{AppInfo.directPlayAudioContainers=[];}}
+AppInfo.enableUserImage=true;AppInfo.hasPhysicalVolumeButtons=isCordova||isMobile;AppInfo.enableBackButton=isIOS&&(window.navigator.standalone||AppInfo.isNativeApp);AppInfo.enableBackButton=true;AppInfo.supportsFullScreen=isCordova&&isAndroid;AppInfo.supportsSyncPathSetting=isCordova&&isAndroid;if(isCordova&&isAndroid){AppInfo.directPlayAudioContainers=['aac','mp3','ogg','flac','wma','m4a','oga'];}else{AppInfo.directPlayAudioContainers=[];}}
 function initializeApiClient(apiClient){apiClient.enableAppStorePolicy=AppInfo.enableAppStorePolicy;apiClient.getDefaultImageQuality=Dashboard.getDefaultImageQuality;apiClient.normalizeImageOptions=Dashboard.normalizeImageOptions;$(apiClient).off('.dashboard').on("websocketmessage.dashboard",Dashboard.onWebSocketMessageReceived).on('requestfail.dashboard',Dashboard.onRequestFail);}
 function createConnectionManager(capabilities){var credentialKey=Dashboard.isConnectMode()?null:'servercredentials4';var credentialProvider=new MediaBrowser.CredentialProvider(credentialKey);window.ConnectionManager=new MediaBrowser.ConnectionManager(Logger,credentialProvider,AppInfo.appName,AppInfo.appVersion,AppInfo.deviceName,AppInfo.deviceId,capabilities);$(ConnectionManager).on('apiclientcreated',function(e,newApiClient){initializeApiClient(newApiClient);});var deferred=DeferredBuilder.Deferred();if(Dashboard.isConnectMode()){var server=ConnectionManager.getLastUsedServer();if(!Dashboard.isServerlessPage()){if(server&&server.UserId&&server.AccessToken){ConnectionManager.connectToServer(server).done(function(result){if(result.State==MediaBrowser.ConnectionState.SignedIn){window.ApiClient=result.ApiClient;}
 deferred.resolve();});return deferred.promise();}}
@@ -114,12 +114,9 @@ function initFastClick(){require(["thirdparty/fastclick"],function(FastClick){Fa
 function setDocumentClasses(){var elem=$(document.documentElement);if(AppInfo.enableBottomTabs){elem.addClass('bottomSecondaryNav');}
 if(AppInfo.isTouchPreferred){elem.addClass('touch');}
 if(AppInfo.cardMargin){elem.addClass(AppInfo.cardMargin);}
-if(!AppInfo.enableLatestChannelItems){elem.addClass('latestChannelItemsDisabled');}
 if(!AppInfo.enableStudioTabs){elem.addClass('studioTabDisabled');}
 if(!AppInfo.enablePeopleTabs){elem.addClass('peopleTabDisabled');}
 if(!AppInfo.enableTvEpisodesTab){elem.addClass('tvEpisodesTabDisabled');}
-if(!AppInfo.enableMusicSongsTab){elem.addClass('musicSongsTabDisabled');}
-if(!AppInfo.enableMusicArtistsTab){elem.addClass('musicArtistsTabDisabled');}
 if(!AppInfo.enableMovieTrailersTab){elem.addClass('movieTrailersTabDisabled');}
 if(!AppInfo.enableSupporterMembership){elem.addClass('supporterMembershipDisabled');}
 if(AppInfo.isNativeApp){elem.addClass('nativeApp');}}
