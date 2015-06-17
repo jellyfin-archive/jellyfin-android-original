@@ -1,7 +1,7 @@
 ﻿(function($,document){var maxPageSize;var query={SortBy:"",SortOrder:"Ascending",Fields:"PrimaryImageAspectRatio,SyncInfo",StartIndex:0};function getPageSizes(){var sizes=[];if(!maxPageSize||maxPageSize>=10)sizes.push(10);if(!maxPageSize||maxPageSize>=20)sizes.push(20);if(!maxPageSize||maxPageSize>=30)sizes.push(30);if(!maxPageSize||maxPageSize>=40)sizes.push(40);if(!maxPageSize||maxPageSize>=50)sizes.push(50);if(!maxPageSize||maxPageSize>=100)sizes.push(100);return sizes;}
 function getSavedQueryId(){return'channels-1-'+getParameterByName('id')+(getParameterByName('folderId')||'');}
-function showLoadingMessage(page){$('#popupDialog',page).popup('open');}
-function hideLoadingMessage(page){$('#popupDialog',page).popup('close');}
+function showLoadingMessage(page){Dashboard.showModalLoadingMsg();}
+function hideLoadingMessage(page){Dashboard.hideModalLoadingMsg();}
 function reloadFeatures(page){var channelId=getParameterByName('id');ApiClient.getJSON(ApiClient.getUrl("Channels/"+channelId+"/Features",query)).done(function(features){if(features.CanFilter){$('.filterControls',page).show();}else{$('.filterControls',page).hide();}
 if(features.SupportsSortOrderToggle){$('.sortOrderToggle',page).show();}else{$('.sortOrderToggle',page).hide();}
 maxPageSize=features.MaxPageSize;if(maxPageSize){query.Limit=Math.min(maxPageSize,query.Limit||maxPageSize);}
