@@ -18,8 +18,14 @@
   <preference name="webviewbounce" value="false" />
   <preference name="BackgroundColor" value="0xff222222" />
   <preference name="BackupWebStorage" value="local" />
-  <preference name="SplashScreenDelay" value="7000" />
   <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
+  <preference name="SplashScreen" value="res/icon.png" /> <!-- defaults to "img/logo.png" -->
+  <preference name="SplashScreenDelay" value="7000" /> <!-- defaults to "3000" -->
+  <preference name="ShowSplashScreen" value="true" /> <!-- defaults to "true" -->
+  <preference name="SplashScreenWidth" value="600" /> <!-- defaults to "170" -->
+  <preference name="SplashScreenHeight" value="300" /> <!-- defaults to "200" -->
+  <preference name="AutoHideSplashScreen" value="false" /> <!-- defaults to "200" -->
+  <preference name="SplashMaintainAspectRatio" value="true" />
   <icon src="res/icon.png" />
   <platform name="ios">
     <!-- iOS 8.0+ -->
@@ -67,6 +73,7 @@
 	<preference name="StatusBarOverlaysWebView" value="false" />
 	<preference name="StatusBarBackgroundColor" value="#1c1c1c" />
 	<preference name="StatusBarStyle" value="blacktranslucent" />
+	<preference name="SplashScreenBackgroundColor" value="#1c1c1c" /> <!-- defaults to "#464646" -->
   </platform>
   <platform name="android">
 	<preference name="android-minSdkVersion" value="14" />
@@ -92,5 +99,6 @@
     <splash src="res/android/xhdpi/splash-port.png" density="port-xhdpi"/>
     <splash src="res/android/xxhdpi/splash-port.png" density="port-xxhdpi"/>
     <splash src="res/android/xxxhdpi/splash-port.png" density="port-xxxhdpi"/>
+	<preference name="SplashScreenBackgroundColor" value="#1f1f1f" /> <!-- defaults to "#464646" -->
   </platform>
 </widget>
