@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242315" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.3.15" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242316" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.3.16" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
@@ -68,6 +68,7 @@
     <splash density="port-xhdpi" src="res/android/xhdpi/splash-port.png" />
     <splash density="port-xxhdpi" src="res/android/xxhdpi/splash-port.png" />
     <splash density="port-xxxhdpi" src="res/android/xxxhdpi/splash-port.png" />
+    <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
     <name>Emby</name>
     <description>
     Emby Mobile
@@ -85,7 +86,12 @@
     <preference name="webviewbounce" value="false" />
     <preference name="BackgroundColor" value="0xff222222" />
     <preference name="BackupWebStorage" value="local" />
-    <preference name="SplashScreenDelay" value="7000" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="SplashScreen" value="res/icon.png" />
+    <preference name="SplashScreenDelay" value="7000" />
+    <preference name="ShowSplashScreen" value="true" />
+    <preference name="SplashScreenWidth" value="600" />
+    <preference name="SplashScreenHeight" value="300" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
 </widget>
