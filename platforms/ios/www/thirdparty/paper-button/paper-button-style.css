@@ -1,11 +1,12 @@
 ﻿paper-button {
     font-weight: 500;
     vertical-align: middle;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
     paper-button.block {
         display: block;
-        margin-bottom: 1em;
     }
 
     paper-button.submit {
@@ -18,11 +19,11 @@
     }
 
     paper-button.more {
-        color: #388E3C;
+        color: #EC407A;
     }
 
     paper-button[raised].more {
-        background: #388E3C;
+        background: #EC407A;
         color: #fff;
     }
 
@@ -35,6 +36,15 @@
         color: #fff;
     }
 
+    paper-button.alt {
+        color: #F57F17;
+    }
+
+    paper-button[raised].alt {
+        background: #F57F17;
+        color: #fff;
+    }
+
     paper-button.cancel {
         color: #444;
     }
@@ -44,31 +54,57 @@
         color: #fff;
     }
 
-    paper-button.hover:hover {
-        background: #eee;
-    }
+.ui-page-theme-b paper-button.subdued:not([disabled]) {
+    color: #555;
+}
 
-    paper-button.ripple::shadow paper-ripple {
-        color: var(--paper-pink-a200);
-    }
+.ui-page-theme-b paper-button[raised].subdued:not([disabled]) {
+    background: #555;
+    color: #fff;
+}
 
-    paper-button.ripple paper-ripple {
-        color: var(--paper-pink-a200);
-    }
+.ui-page-theme-b paper-button[raised][disabled].subdued {
+    background: #111;
+}
 
-    paper-button span {
-        vertical-align: middle;
-    }
+paper-button.hover:hover {
+    background: #eee;
+}
 
-    paper-button:not(.iconRight) iron-icon, paper-button:not(.iconRight) .fa {
-        margin-right: .5em;
-    }
+paper-button.ripple::shadow paper-ripple {
+    color: var(--paper-pink-a200);
+}
 
-    paper-button.iconRight iron-icon, paper-button.iconRight .fa {
-        position: absolute;
-        right: 5px;
-        top: 5px;
-    }
+paper-button.ripple paper-ripple {
+    color: var(--paper-pink-a200);
+}
+
+paper-button span {
+    vertical-align: middle;
+}
+
+paper-button:not(.iconRight) iron-icon, paper-button:not(.iconRight) .fa {
+    margin-right: .5em;
+}
+
+paper-button:not(.iconRight) .material-icons {
+    margin-right: .25em;
+}
+
+paper-button.iconRight iron-icon, paper-button.iconRight .fa, paper-button.iconRight .material-icons {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+paper-button .material-icons {
+    font-size: 150%;
+    vertical-align: middle;
+}
+
+paper-button .fa {
+    vertical-align: middle;
+}
 
 .clearButton {
     background: transparent;
@@ -92,13 +128,26 @@ paper-button.mini {
 }
 
     paper-button.mini .content {
-        padding: 0.35em 0.7em;
+        padding: 0.3em 0.7em;
     }
 
 
 paper-toast {
     z-index: 9999999;
 }
+
+paper-button.notext {
+    min-width: 2.8em;
+}
+
+    paper-button.notext .content {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    paper-button.notext iron-icon {
+        margin-right: 0;
+    }
 
 #docspinner {
     display: block;
