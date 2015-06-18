@@ -158,7 +158,7 @@ if(options.centerImage){imageCssClass+=" centeredCardImage";}
 var dataSrc="";if(options.lazy&&imgUrl){imageCssClass+=" lazy";dataSrc=' data-src="'+imgUrl+'"';}
 var cardboxCssClass='cardBox';if(options.cardLayout){cardboxCssClass+=' visualCardBox';}
 html+='<div class="'+cardboxCssClass+'">';html+='<div class="cardScalable">';html+='<div class="cardPadder"></div>';var anchorCssClass="cardContent";anchorCssClass+=' mediaItem';if(options.defaultAction){anchorCssClass+=' itemWithAction';}
-html+='<a class="'+anchorCssClass+'" href="'+href+'"'+defaultActionAttribute+'>';html+='<div class="'+imageCssClass+'" style="'+style+'"'+dataSrc+'>';if(icon){html+='<i class="fa '+icon+'"></i>';}
+var transition=options.transition===false||!AppInfo.enableSectionTransitions?'':' data-transition="slide"';html+='<a'+transition+' class="'+anchorCssClass+'" href="'+href+'"'+defaultActionAttribute+'>';html+='<div class="'+imageCssClass+'" style="'+style+'"'+dataSrc+'>';if(icon){html+='<i class="fa '+icon+'"></i>';}
 html+='</div>';html+='<div class="cardOverlayTarget"></div>';if(item.LocationType=="Offline"||item.LocationType=="Virtual"){if(options.showLocationTypeIndicator!==false){html+=LibraryBrowser.getOfflineIndicatorHtml(item);}}else if(options.showUnplayedIndicator!==false){html+=LibraryBrowser.getPlayedIndicatorHtml(item);}else if(options.showChildCountIndicator){html+=LibraryBrowser.getGroupCountIndicator(item);}
 html+=LibraryBrowser.getSyncIndicator(item);if(mediaSourceCount>1){html+='<div class="mediaSourceIndicator">'+mediaSourceCount+'</div>';}
 if(item.IsUnidentified){html+='<div class="unidentifiedIndicator"><div class="ui-icon-alert ui-btn-icon-notext"></div></div>';}

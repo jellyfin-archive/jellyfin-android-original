@@ -11,8 +11,8 @@ return[hint.Type];}
 function search(){var self=this;self.showSearchPanel=function(){showSearchMenu();$('.headerSearchInput').focus();};}
 window.Search=new search();function renderSearchResultsInOverlay(elem,hints){hints=hints.map(function(i){i.Id=i.ItemId;i.ImageTags={};i.UserData={};if(i.PrimaryImageTag){i.ImageTags.Primary=i.PrimaryImageTag;}
 return i;});var html=LibraryBrowser.getPosterViewHtml({items:hints,shape:"auto",lazy:true,overlayText:false,showTitle:true,coverImage:true,centerImage:true,textLines:getAdditionalTextLines});$('.itemsContainer',elem).html(html).lazyChildren();}
-function requestSearchHintsForOverlay(elem,searchTerm){var currentTimeout=searchHintTimeout;ApiClient.getSearchHints({userId:Dashboard.getCurrentUserId(),searchTerm:searchTerm,limit:30}).done(function(result){if(currentTimeout!=searchHintTimeout){return;}
-renderSearchResultsInOverlay(elem,result.SearchHints);});}
+function requestSearchHintsForOverlay(elem,searchTerm){var currentTimeout=searchHintTimeout;Dashboard.showLoadingMsg();ApiClient.getSearchHints({userId:Dashboard.getCurrentUserId(),searchTerm:searchTerm,limit:30}).done(function(result){if(currentTimeout==searchHintTimeout){renderSearchResultsInOverlay(elem,result.SearchHints);}
+Dashboard.hideLoadingMsg();}).fail(function(){Dashboard.hideLoadingMsg();});}
 function updateSearchOverlay(elem,searchTerm){if(!searchTerm){$('.itemsContainer',elem).empty();clearSearchHintTimeout();return;}
 clearSearchHintTimeout();searchHintTimeout=setTimeout(function(){requestSearchHintsForOverlay(elem,searchTerm);},100);}
 function getSearchOverlay(createIfNeeded){var elem=$('.searchResultsOverlay');if(createIfNeeded&&!elem.length){var html='<div class="searchResultsOverlay ui-page-theme-b smoothScrollY">';html+='<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';elem=$(html).appendTo(document.body).hide().trigger('create');elem.createCardMenus();}
