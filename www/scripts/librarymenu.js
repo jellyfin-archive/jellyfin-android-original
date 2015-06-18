@@ -69,7 +69,7 @@ addNextToBackStack=true;}).on('pagebeforehide',".page",function(){$('.headroomEn
 else if(jpage.hasClass('type-interior')){$(document.body).addClass('dashboardDocument').removeClass('libraryDocument');}else{$(document.body).removeClass('dashboardDocument').removeClass('libraryDocument');}
 if(AppInfo.enableBackButton)
 {updateBackButton(page);}}
-function updateBackButton(page){var jPage=$(page);var canGoBack=backStack.length>0&&jPage.is('.itemDetailPage');$('.headerBackButton').visible(canGoBack);jPage.off('swipeleft',onPageSwipeLeft);if(canGoBack){jPage.on('swipeleft',onPageSwipeLeft);}}
+function updateBackButton(page){var jPage=$(page);var canGoBack=backStack.length>0&&jPage.is('.itemDetailPage');$('.headerBackButton').visible(canGoBack);jPage.off('swiperight',onPageSwipeLeft);if(canGoBack){jPage.on('swiperight',onPageSwipeLeft);}}
 function onPageSwipeLeft(e){var target=$(e.target);if(!target.is('.hiddenScrollX')&&!target.parents('.hiddenScrollX').length){history.back();}}
 function onPageShowDocumentReady(page){var elem=$('.libraryViewNav .ui-btn-active:visible',page);if(elem.length){elem[0].scrollIntoView();$(document).scrollTop(0);}}
 function initHeadRoom(elem){if(!AppInfo.enableHeadRoom){return;}
