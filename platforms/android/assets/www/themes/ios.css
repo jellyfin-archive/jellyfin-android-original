@@ -1,5 +1,7 @@
-﻿body {
+﻿html, body {
     font-family: Helvetica Neue;
+    /* Setting it here will help prevent white flashes */
+    background-color: #1c1c1c;
 }
 
 .viewMenuBar, .libraryViewNav {
@@ -14,17 +16,25 @@
     font-weight: 400;
     text-transform: none;
     color: #ccc !important;
+    padding-top: 16px;
+}
+
+@media all and (max-width: 600px) {
+
+    .libraryViewNav a {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 }
 
 .libraryViewNav .ui-btn-active {
     border-bottom-color: transparent;
-    color: #2ad !important;
+    color: #539FFD !important;
 }
 
 .libraryViewNav {
     border-top: 1px solid #333;
     font-size: 12px;
-    height: 47px !important;
 }
 
 .viewMenuBar {
@@ -32,7 +42,7 @@
 }
 
 .barsMenuButton .fa {
-    color: #2ad !important;
+    color: #539FFD !important;
 }
 
 .btn, .btn-large {
@@ -92,3 +102,31 @@ h1, h1 a {
     .visualCardBox .outerCardFooter {
         padding: 0;
     }
+
+
+.viewMenuSearch {
+    background: #1c1c1c;
+}
+
+.libraryMenuButtonText {
+    position: absolute;
+    left: 100px;
+    right: 100px;
+    text-align: center;
+    font-size: 16px;
+    margin: 0 auto !important;
+}
+
+.libraryViewNav .material-icons {
+    display: block;
+    margin-top: -6px;
+    font-size: 15px;
+}
+
+.btnActiveCast i {
+    color: #539FFD !important;
+}
+
+.libraryViewNav a:not(.ui-btn-active):hover {
+    color: #539FFD !important;
+}
