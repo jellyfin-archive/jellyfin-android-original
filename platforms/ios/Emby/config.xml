@@ -125,8 +125,4 @@
     <preference name="SplashScreenDelay" value="7000" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <icon src="res/icon.png" />
-    <feature name="SplashScreen">
-        <param name="ios-package" value="CDVSplashScreen" />
-        <param name="onload" value="true" />
-    </feature>
 </widget>

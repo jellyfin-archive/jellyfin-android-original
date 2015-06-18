@@ -1,11 +1,12 @@
 ﻿paper-button {
     font-weight: 500;
     vertical-align: middle;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
     paper-button.block {
         display: block;
-        margin-bottom: 1em;
     }
 
     paper-button.submit {
@@ -53,18 +54,18 @@
         color: #fff;
     }
 
-    .ui-page-theme-b paper-button.subdued:not([disabled]) {
-        color: #555;
-    }
+.ui-page-theme-b paper-button.subdued:not([disabled]) {
+    color: #555;
+}
 
-    .ui-page-theme-b paper-button[raised].subdued:not([disabled]) {
-        background: #555;
-        color: #fff;
-    }
+.ui-page-theme-b paper-button[raised].subdued:not([disabled]) {
+    background: #555;
+    color: #fff;
+}
 
-    .ui-page-theme-b paper-button[raised][disabled].subdued {
-        background: #111;
-    }
+.ui-page-theme-b paper-button[raised][disabled].subdued {
+    background: #111;
+}
 
 paper-button.hover:hover {
     background: #eee;

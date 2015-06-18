@@ -24,7 +24,6 @@
   <preference name="ShowSplashScreen" value="true" /> <!-- defaults to "true" -->
   <preference name="SplashScreenWidth" value="600" /> <!-- defaults to "170" -->
   <preference name="SplashScreenHeight" value="300" /> <!-- defaults to "200" -->
-  <preference name="AutoHideSplashScreen" value="false" /> <!-- defaults to "200" -->
   <preference name="SplashMaintainAspectRatio" value="true" />
   <icon src="res/icon.png" />
   <platform name="ios">
