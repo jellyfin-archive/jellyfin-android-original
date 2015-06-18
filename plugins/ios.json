@@ -79,10 +79,6 @@
                         {
                             "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SplashScreen\"><param name=\"ios-package\" value=\"CDVSplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -169,12 +165,7 @@
                             "count": 2
                         }
                     ],
-                    "CoreGraphics.framework": [
-                        {
-                            "xml": false,
-                            "count": 1
-                        }
-                    ]
+                    "CoreGraphics.framework": []
                 }
             }
         }
@@ -235,9 +226,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-splashscreen": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
