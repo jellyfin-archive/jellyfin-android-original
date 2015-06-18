@@ -105,6 +105,7 @@
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#1c1c1c" />
     <preference name="StatusBarStyle" value="blacktranslucent" />
+    <preference name="SplashScreenBackgroundColor" value="#1c1c1c" />
     <name>Emby</name>
     <description>
     Emby Mobile
@@ -122,7 +123,12 @@
     <preference name="webviewbounce" value="false" />
     <preference name="BackgroundColor" value="0xff222222" />
     <preference name="BackupWebStorage" value="local" />
-    <preference name="SplashScreenDelay" value="7000" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
+    <preference name="SplashScreen" value="res/icon.png" />
+    <preference name="SplashScreenDelay" value="7000" />
+    <preference name="ShowSplashScreen" value="true" />
+    <preference name="SplashScreenWidth" value="600" />
+    <preference name="SplashScreenHeight" value="300" />
+    <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
 </widget>
