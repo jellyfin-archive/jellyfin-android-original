@@ -5,8 +5,7 @@ if(item.LocalTrailerCount&&item.PlayAccess=='Full'){$('.btnPlayTrailer',page).re
 if(SyncManager.isAvailable(item,user)){$('.btnSync',page).removeClass('hide');}else{$('.btnSync',page).addClass('hide');}
 if(!item.LocalTrailerCount&&item.RemoteTrailers.length&&item.PlayAccess=='Full'){$('.btnPlayExternalTrailer',page).removeClass('hide').attr('href',item.RemoteTrailers[0].Url);}else{$('.btnPlayExternalTrailer',page).addClass('hide').attr('href','#');}
 var groupedVersions=(item.MediaSources||[]).filter(function(g){return g.Type=="Grouping";});if(user.Policy.IsAdministrator&&groupedVersions.length){$('.splitVersionContainer',page).show();}else{$('.splitVersionContainer',page).hide();}
-if(LibraryBrowser.getMoreCommands(item,user).length){$('.btnMoreCommands',page).show();}else{$('.btnMoreCommands',page).show();}
-if(user.Policy.IsAdministrator){$('.chapterSettingsButton',page).show();}else{$('.chapterSettingsButton',page).hide();}});if(item.LocationType=="Offline"){$('.offlineIndicator',page).show();}
+$('.btnMoreCommands',page).visible(LibraryBrowser.getMoreCommands(item,user).length>0);if(user.Policy.IsAdministrator){$('.chapterSettingsButton',page).show();}else{$('.chapterSettingsButton',page).hide();}});if(item.LocationType=="Offline"){$('.offlineIndicator',page).show();}
 else{$('.offlineIndicator',page).hide();}
 var isMissingEpisode=false;if(item.LocationType=="Virtual"&&item.Type=="Episode"){try{if(item.PremiereDate&&(new Date().getTime()>=parseISO8601Date(item.PremiereDate,{toLocal:true}).getTime())){isMissingEpisode=true;}}catch(err){}}
 if(isMissingEpisode){$('.missingIndicator',page).show();}

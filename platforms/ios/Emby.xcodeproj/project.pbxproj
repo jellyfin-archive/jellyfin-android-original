@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		128CF0722F9A49B0BF19550D /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 67AB33E4AC854FCEBC8B175E /* CDVDevice.m */; };
@@ -90,6 +89,8 @@
 		EC634FEA5AB846C9A94B200C /* AppDelegate+WKWebViewPolyfill.m in Sources */ = {isa = PBXBuildFile; fileRef = AF8E51927D99431AA623E755 /* AppDelegate+WKWebViewPolyfill.m */; };
 		ED6B4D7048AB461AA2ECF565 /* CDVLocalFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 753AB05F07ED4BFE898DE60D /* CDVLocalFilesystem.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		71ADF0AD93A9479AB6422E71 /* CDVSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FF3EFCAD0364D709B8DD6CF /* CDVSplashScreen.m */; };
+		37B9B8539F94463EA55724EE /* CDVViewController+SplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = E2179C9817224F8E9231FB13 /* CDVViewController+SplashScreen.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -264,6 +265,10 @@
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
+		1FF3EFCAD0364D709B8DD6CF /* CDVSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVSplashScreen.m"; path = "cordova-plugin-splashscreen/CDVSplashScreen.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		E2179C9817224F8E9231FB13 /* CDVViewController+SplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVViewController+SplashScreen.m"; path = "cordova-plugin-splashscreen/CDVViewController+SplashScreen.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		36ED6CB68E8F4217B1227649 /* CDVSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVSplashScreen.h"; path = "cordova-plugin-splashscreen/CDVSplashScreen.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		D62333C1222E466C8C40806C /* CDVViewController+SplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVViewController+SplashScreen.h"; path = "cordova-plugin-splashscreen/CDVViewController+SplashScreen.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -466,6 +471,10 @@
 				FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */,
 				32289A2BC0AF44F8808BB011 /* AppDelegate+WKWebViewPolyfill.h */,
 				AF8E51927D99431AA623E755 /* AppDelegate+WKWebViewPolyfill.m */,
+				1FF3EFCAD0364D709B8DD6CF /* CDVSplashScreen.m */,
+				E2179C9817224F8E9231FB13 /* CDVViewController+SplashScreen.m */,
+				36ED6CB68E8F4217B1227649 /* CDVSplashScreen.h */,
+				D62333C1222E466C8C40806C /* CDVViewController+SplashScreen.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -724,6 +733,8 @@
 				A3A016591B2E22CF0089774E /* ReroutingUIWebView.m in Sources */,
 				B660F272C09C4ED1BEDB08AE /* AppDelegate+WKWebViewPolyfill.h in Sources */,
 				EC634FEA5AB846C9A94B200C /* AppDelegate+WKWebViewPolyfill.m in Sources */,
+				71ADF0AD93A9479AB6422E71 /* CDVSplashScreen.m in Sources */,
+				37B9B8539F94463EA55724EE /* CDVViewController+SplashScreen.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

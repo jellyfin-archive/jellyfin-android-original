@@ -334,6 +334,13 @@ module.exports = [
         "clobbers": [
             "window.FileTransfer"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
+        "id": "cordova-plugin-splashscreen.SplashScreen",
+        "clobbers": [
+            "navigator.splashscreen"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -359,6 +366,7 @@ module.exports.metadata =
     "cordova-plugin-file": "2.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
     "com.telerik.plugins.wkwebview": "0.4.0",
+    "cordova-plugin-splashscreen": "2.1.1-dev",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
