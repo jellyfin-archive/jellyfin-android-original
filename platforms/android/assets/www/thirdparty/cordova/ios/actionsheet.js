@@ -1,8 +1,5 @@
 ﻿(function () {
 
-    function onClosed() {
-        $(this).remove();
-    }
     function show(options) {
 
         // items
@@ -26,7 +23,10 @@
         window.plugins.actionsheet.show(innerOptions, function (index) {
 
             if (options.callback) {
-                options.callback(options.items[index - 1].id);
+
+                if (index >= 1) {
+                    options.callback(options.items[index - 1].id);
+                }
             }
         });
     }

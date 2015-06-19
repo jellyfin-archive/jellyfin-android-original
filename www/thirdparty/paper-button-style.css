@@ -17,6 +17,15 @@
             background: #e1f5f3;
         }
 
+    paper-button.menuButton {
+        color: #212121;
+        text-align: left;
+    }
+
+        paper-button.menuButton:hover {
+            background: #e1f5f3;
+        }
+
     paper-button.ripple::shadow paper-ripple {
         color: #ff3bee;
     }
@@ -187,4 +196,8 @@ paper-button.notext {
 
 iron-overlay-backdrop {
     z-index: 999998 !important;
+}
+
+.scrollable.paper-dialog-scrollable {
+    padding: 0 20px;
 }
