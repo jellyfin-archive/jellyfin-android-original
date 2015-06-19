@@ -69,6 +69,10 @@
                         {
                             "xml": "<feature name=\"FileTransfer\"><param name=\"android-package\" value=\"org.apache.cordova.filetransfer.FileTransfer\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ActionSheet\"><param name=\"android-package\" value=\"nl.xservices.plugins.actionsheet.ActionSheet\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -231,6 +235,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "nl.x-services.plugins.actionsheet": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

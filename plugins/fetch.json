@@ -201,5 +201,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "nl.x-services.plugins.actionsheet": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/EddyVerbruggen/cordova-plugin-actionsheet",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

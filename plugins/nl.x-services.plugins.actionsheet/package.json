@@ -1,0 +1,43 @@
+{
+  "name": "cordova-plugin-actionsheet",
+  "version": "1.1.6",
+  "description": "Show a sheet of options the user can choose from.",
+  "cordova": {
+    "id": "cordova-plugin-actionsheet",
+    "platforms": [
+      "ios",
+      "android",
+      "wp8"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EddyVerbruggen/cordova-plugin-actionsheet.git"
+  },
+  "keywords": [
+    "ActionSheet",
+    "UIActionSheet",
+    "AlertDialog",
+    "Dialog",
+    "List",
+    "Picker",
+    "Popup",
+    "cordova",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android",
+    "cordova-wp8"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Eddy Verbruggen - @EddyVerbruggen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EddyVerbruggen/cordova-plugin-actionsheet/issues"
+  },
+  "homepage": "https://github.com/EddyVerbruggen/cordova-plugin-actionsheet#readme"
+}

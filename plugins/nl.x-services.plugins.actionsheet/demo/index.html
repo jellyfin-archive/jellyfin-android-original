@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+  <link rel="stylesheet" type="text/css" href="css/index.css" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <title>Hello ActionSheet</title>
+</head>
+<body>
+<div class="app">
+  <h1>ActionSheet demo</h1>
+  <div id="deviceready" class="blink">
+    <p class="event listening">Connecting to Device</p>
+    <p class="event received">Device is Ready</p>
+    <button onclick="testShareSheet()">Test Share</button><br/><br/>
+    <button onclick="testDeleteSheet()">Test Delete</button><br/><br/>
+    <button onclick="testLogoutSheet()">Test Logout</button>
+  </div>
+</div>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript">
+
+  app.initialize();
+
+  var callback = function(buttonIndex) {
+    setTimeout(function() {
+      alert('button index clicked: ' + buttonIndex);
+    });
+  };
+
+  function testShareSheet() {
+    var options = {
+      'androidTheme' : window.plugins.actionsheet.ANDROID_THEMES.THEME_HOLO_LIGHT,
+      'title': 'What do you want with this image?',
+      'buttonLabels': ['Share via Facebook', 'Share via Twitter'],
+      'addCancelButtonWithLabel': 'Cancel',
+      'androidEnableCancelButton' : true,
+      'winphoneEnableCancelButton' : true,
+      'addDestructiveButtonWithLabel' : 'Delete it'
+    };
+    window.plugins.actionsheet.show(options, callback);
+  }
+
+  function testDeleteSheet() {
+    var options = {
+      'addCancelButtonWithLabel': 'Cancel',
+      'addDestructiveButtonWithLabel' : 'Delete note'
+    };
+    window.plugins.actionsheet.show(options, callback);
+  }
+
+  function testLogoutSheet() {
+    var options = {
+      'buttonLabels': ['Log out'],
+      'androidEnableCancelButton' : true,
+      'winphoneEnableCancelButton' : true,
+      'addCancelButtonWithLabel': 'Cancel'
+    };
+    window.plugins.actionsheet.show(options, callback);
+  }
+
+</script>
+</body>
+</html>
