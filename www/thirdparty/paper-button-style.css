@@ -137,6 +137,7 @@ paper-button .fa {
     text-decoration: none;
     font-weight: inherit !important;
     vertical-align: middle;
+    color: inherit !important;
 }
 
 paper-button.mini {
@@ -179,3 +180,11 @@ paper-button.notext {
     background-color: #eee;
     color: #000;
 }*/
+
+.bottomFab {
+    bottom: 30px;
+}
+
+iron-overlay-backdrop {
+    z-index: 999998 !important;
+}
