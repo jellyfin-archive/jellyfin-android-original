@@ -334,6 +334,13 @@ module.exports = [
         "clobbers": [
             "window.FileTransfer"
         ]
+    },
+    {
+        "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
+        "id": "nl.x-services.plugins.actionsheet.ActionSheet",
+        "clobbers": [
+            "window.plugins.actionsheet"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -359,6 +366,7 @@ module.exports.metadata =
     "cordova-plugin-file": "2.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
     "com.telerik.plugins.wkwebview": "0.4.0",
+    "nl.x-services.plugins.actionsheet": "1.1.7",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

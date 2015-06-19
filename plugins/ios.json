@@ -79,6 +79,10 @@
                         {
                             "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"ActionSheet\"><param name=\"ios-package\" value=\"ActionSheet\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -226,6 +230,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "nl.x-services.plugins.actionsheet": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

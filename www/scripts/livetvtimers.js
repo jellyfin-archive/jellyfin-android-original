@@ -5,4 +5,4 @@ html+='<img src="css/images/items/searchhintsv2/tv.png" style="display:none;">';
 html+='</a>';html+='<a data-timerid="'+timer.Id+'" href="#" title="'+Globalize.translate('ButonCancelRecording')+'" class="btnDeleteTimer">'+Globalize.translate('ButonCancelRecording')+'</a>';html+='</li>';}
 html+='</ul>';var elem=$('#items',page).html(html).trigger('create');$('.btnDeleteTimer',elem).on('click',function(){var id=this.getAttribute('data-timerid');deleteTimer(page,id);});Dashboard.hideLoadingMsg();}
 function reload(page){Dashboard.showLoadingMsg();ApiClient.getLiveTvTimers().done(function(result){renderTimers(page,result.Items);});}
-$(document).on('pageshowready',"#liveTvTimersPage",function(){var page=this;reload(page);});})(jQuery,document);
+$(document).on('pagebeforeshowready',"#liveTvTimersPage",function(){var page=this;reload(page);});})(jQuery,document);

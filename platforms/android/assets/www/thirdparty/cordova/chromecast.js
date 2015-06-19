@@ -639,6 +639,7 @@
                     if (currentWebAppSession) {
                         console.log('Disconnecting from chromecast');
                         //currentDevice.disconnect();
+                        cleanupSession();
                         currentDevice = null;
                         currentDeviceId = null;
                     }
@@ -657,9 +658,7 @@
             }
         }
 
-        if (!$.browser.safari) {
-            document.addEventListener("resume", onResume, false);
-        }
+        document.addEventListener("resume", onResume, false);
     }
 
     MediaController.registerPlayer(new chromecastPlayer());

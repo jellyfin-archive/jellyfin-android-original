@@ -634,15 +634,13 @@
 
         $(MediaController).on('playerchange', function (e, newPlayer, newTarget) {
 
-            if (currentDevice) {
-                if (newTarget.id != currentDeviceId) {
-                    if (currentWebAppSession) {
-                        console.log('Disconnecting from chromecast');
-                        //currentDevice.disconnect();
-                        cleanupSession();
-                        currentDevice = null;
-                        currentDeviceId = null;
-                    }
+            if (newTarget.id != currentDeviceId) {
+                if (currentWebAppSession) {
+                    console.log('Disconnecting from chromecast');
+                    //currentDevice.disconnect();
+                    cleanupSession();
+                    currentDevice = null;
+                    currentDeviceId = null;
                 }
             }
         });
