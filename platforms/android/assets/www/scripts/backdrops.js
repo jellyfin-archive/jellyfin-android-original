@@ -12,7 +12,7 @@ $(page).addClass('backdropPage staticBackdropPage');}
 function clearBackdrop(){$('.backdropContainer').css('backgroundImage','');}
 function isEnabledByDefault(){if(AppInfo.hasLowImageBandwidth){return false;}
 if($.browser.msie){return false;}
-if($.browser.android&&AppInfo.isNativeApp){return true;}
+if($.browser.android&&AppInfo.isNativeApp){return screen.availWidth>=1200;}
 if($.browser.mobile){return false;}
 return true;}
 function enabled(){var userId=Dashboard.getCurrentUserId();var val=appStorage.getItem('enableBackdrops-'+userId);return val=='1'||(val!='0'&&isEnabledByDefault());}

@@ -1,9 +1,9 @@
 ﻿.viewMenuBar, .libraryViewNav {
-    background-color: #212121;
+    background-color: #181818;
 }
 
 .ui-page-theme-b {
-    background-color: #303030;
+    background-color: #282828;
 }
 
 .backdropPage.ui-page-theme-b {
@@ -11,5 +11,5 @@
 }
 
 .defaultBackground .cardImage {
-    background-color: #444;
+    background-color: #383838;
 }
