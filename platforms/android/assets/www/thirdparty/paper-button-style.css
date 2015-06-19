@@ -17,6 +17,15 @@
             background: #e1f5f3;
         }
 
+    paper-button.menuButton {
+        color: #212121;
+        text-align: left;
+    }
+
+        paper-button.menuButton:hover {
+            background: #e1f5f3;
+        }
+
     paper-button.ripple::shadow paper-ripple {
         color: #ff3bee;
     }
@@ -137,6 +146,7 @@ paper-button .fa {
     text-decoration: none;
     font-weight: inherit !important;
     vertical-align: middle;
+    color: inherit !important;
 }
 
 paper-button.mini {
@@ -179,3 +189,15 @@ paper-button.notext {
     background-color: #eee;
     color: #000;
 }*/
+
+.bottomFab {
+    bottom: 30px;
+}
+
+iron-overlay-backdrop {
+    z-index: 999998 !important;
+}
+
+.scrollable.paper-dialog-scrollable {
+    padding: 0 20px;
+}
