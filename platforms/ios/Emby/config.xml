@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242315" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.3.15" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242319" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.3.19" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -66,6 +66,9 @@
     <feature name="WKWebViewPolyfill">
         <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
+    <feature name="ActionSheet">
+        <param name="ios-package" value="ActionSheet" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -131,7 +134,4 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
-    <feature name="ActionSheet">
-        <param name="ios-package" value="ActionSheet" />
-    </feature>
 </widget>
