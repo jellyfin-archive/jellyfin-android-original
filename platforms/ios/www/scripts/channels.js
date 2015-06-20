@@ -2,4 +2,4 @@
 else if(view=="ThumbCard"){html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:"backdrop",preferThumb:true,context:'channels',lazy:true,cardLayout:true,showTitle:true});}
 $('#items',page).html(html).lazyChildren();LibraryBrowser.saveQueryValues('channels',query);Dashboard.hideLoadingMsg();});}
 function updateFilterControls(page){}
-$(document).on('pageshowready',"#channelsPage",function(){LibraryBrowser.loadSavedQueryValues('channels',query);reloadItems(this);updateFilterControls(this);});})(jQuery,document);
+$(document).on('pagebeforeshowready',"#channelsPage",function(){LibraryBrowser.loadSavedQueryValues('channels',query);reloadItems(this);updateFilterControls(this);});})(jQuery,document);

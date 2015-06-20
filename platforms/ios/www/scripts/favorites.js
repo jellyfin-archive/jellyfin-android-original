@@ -8,4 +8,4 @@ var i,length;var elem=$('.sections',page);if(!elem.html().length){var html='';fo
 elem.html(html);}
 var promises=[];for(i=0,length=sections.length;i<length;i++){var section=sections[i];elem=$('.section'+section.id,page);promises.push(loadSection(elem,userId,section,sections.length==1));}
 $.when(promises).done(function(){Dashboard.hideLoadingMsg();});}
-$(document).on('pageshowready',"#favoritesPage",function(){var page=this;var userId=Dashboard.getCurrentUserId();loadSections(page,userId);});})(jQuery,document);
+$(document).on('pagebeforeshowready',"#favoritesPage",function(){var page=this;var userId=Dashboard.getCurrentUserId();loadSections(page,userId);});})(jQuery,document);
