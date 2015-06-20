@@ -31,7 +31,7 @@ var gridScrolling=false;var headersScrolling=false;function onProgramGridScroll(
 function onTimeslotHeadersScroll(page,elem){if(!gridScrolling){headersScrolling=true;elem=$(elem);$('.programGrid',page).scrollLeft(elem.scrollLeft());headersScrolling=false;}}
 function changeDate(page,date){currentDate=normalizeDateToTimeslot(date);reloadGuide(page);var text=LibraryBrowser.getFutureDateText(date);text='<span class="currentDay">'+text.replace(' ',' </span>');$('.currentDate',page).html(text);}
 var dateOptions=[];function setDateRange(page,guideInfo){var today=new Date();today.setHours(today.getHours(),0,0,0);var start=parseISO8601Date(guideInfo.StartDate,{toLocal:true});var end=parseISO8601Date(guideInfo.EndDate,{toLocal:true});start.setHours(0,0,0,0);end.setHours(0,0,0,0);if(start.getTime()>=end.getTime()){end.setDate(start.getDate()+1);}
-start=new Date(Math.max(today,start));dateOptions=[];while(start<=end){dateOptions.push({name:LibraryBrowser.getFutureDateText(start),id:start.getTime()});start.setDate(start.getDate()+1);start.setHours(0,0,0,0);}
+start=new Date(Math.max(today,start));dateOptions=[];while(start<=end){dateOptions.push({name:LibraryBrowser.getFutureDateText(start),id:start.getTime(),ironIcon:'today'});start.setDate(start.getDate()+1);start.setHours(0,0,0,0);}
 var date=new Date();if(currentDate){date.setTime(currentDate.getTime());}
 changeDate(page,date);}
 function reloadPageAfterValidation(page,limit){channelLimit=limit;ApiClient.getLiveTvGuideInfo().done(function(guideInfo){setDateRange(page,guideInfo);});}
