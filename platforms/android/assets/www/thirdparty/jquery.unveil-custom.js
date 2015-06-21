@@ -23,7 +23,7 @@
             return 8000;
         }
 
-        var screens = $.browser.mobile ? 2 : 1;
+        var screens = $.browser.mobile ? 2.5 : 1;
 
         // This helps eliminate the draw-in effect as you scroll
         return Math.max(screen.availHeight * screens, 1000);
@@ -102,7 +102,7 @@
 
     function setImageIntoElement(elem, url) {
 
-        if (elem.tagName === "DIV") {
+        if (elem.tagName !== "IMG") {
 
             elem.style.backgroundImage = "url('" + url + "')";
 
