@@ -194,10 +194,24 @@ paper-button.notext {
     bottom: 30px;
 }
 
+paper-dialog {
+    border-radius: 4px;
+    z-index: 999999 !important;
+}
+
 iron-overlay-backdrop {
     z-index: 999998 !important;
 }
 
+/* These values default to 24px and create huge white padding around the dialog content. */
 .scrollable.paper-dialog-scrollable {
-    padding: 0 20px;
+    padding: 0 12px;
+}
+
+paper-dialog > *:last-child {
+    margin-bottom: 12px;
+}
+
+paper-dialog > *:first-child {
+    margin-top: 12px;
 }
