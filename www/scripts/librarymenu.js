@@ -9,7 +9,7 @@ if(user.canManageServer){$('.dashboardEntryHeaderButton',header).visible(true);}
 var userButtonHtml='';if(user.name){if(user.imageUrl&&AppInfo.enableUserImage){var userButtonHeight=26;var url=user.imageUrl;if(user.supportsImageParams){url+="&height="+(userButtonHeight*Math.max(devicePixelRatio||1,2));}
 userButtonHtml+='<div class="lazy headerUserImage" data-src="'+url+'" style="width:'+userButtonHeight+'px;height:'+userButtonHeight+'px;"></div>';}else{userButtonHtml+='<div class="fa fa-user"></div>';}
 $('.headerUserButton',header).html(userButtonHtml).lazyChildren();}}
-function bindMenuEvents(){if(AppInfo.isTouchPreferred){if('ontouchend'in document){$('.mainDrawerButton').on('touchend',openMainDrawer);}else{$('.mainDrawerButton').on('click',openMainDrawer);}}else{$('.mainDrawerButton').createHoverTouch().on('hovertouch',openMainDrawer);}
+function bindMenuEvents(){if(AppInfo.isTouchPreferred){if('ontouchend'in document){$('.mainDrawerButton').on('touchend click',openMainDrawer);}else{$('.mainDrawerButton').on('click',openMainDrawer);}}else{$('.mainDrawerButton').createHoverTouch().on('hovertouch',openMainDrawer);}
 $('.headerBackButton').on('click',onBackClick);$(initViewMenuBarHeadroom);}
 function initViewMenuBarHeadroom(){var viewMenuBar=document.getElementsByClassName("viewMenuBar")[0];initHeadRoom(viewMenuBar);}
 function updateViewMenuBarHeadroom(page,viewMenuBar){if($(page).hasClass('libraryPage')){setTimeout(reEnableHeadroom,700);}else{viewMenuBar.addClass('headroomDisabled');}}
