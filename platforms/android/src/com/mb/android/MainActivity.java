@@ -19,8 +19,10 @@
 
 package com.mb.android;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -31,7 +33,9 @@ import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.media.Constants;
-import com.mb.android.media.MediaPlayerService;
+import com.mb.android.media.KitKatMediaService;
+import com.mb.android.media.MediaService;
+import com.mb.android.media.RemotePlayerService;
 import com.mb.android.media.VlcEventHandler;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
@@ -57,15 +61,12 @@ import tv.emby.iap.UnlockActivity;
 
 public class MainActivity extends CordovaActivity
 {
-    private LibVLC mLibVLC = null;
-
     private final int PURCHASE_UNLOCK_REQUEST = 999;
     private final int REQUEST_DIRECTORY = 998;
     private ILogger logger;
     private static IWebView webView;
-    private VlcEventHandler vlcEventHandler;
 
-    boolean mIsVlcPlaying = false; // Don't destroy libVLC if it is playing.
+    public static final String ACTION_SHOW_PLAYER = "com.mb.android.ShowPlayer";
 
     private ILogger getLogger(){
         if (logger == null){
@@ -95,6 +96,11 @@ public class MainActivity extends CordovaActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+
+        /* Prepare the progressBar */
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_SHOW_PLAYER);
+        registerReceiver(messageReceiver, filter);
     }
 
     @Override
@@ -185,40 +191,37 @@ public class MainActivity extends CordovaActivity
     @JavascriptInterface
     public void hideMediaSession() {
 
-        //Intent i = new Intent("com.android.music.playstatechanged");
-        //i.putExtra("id", "1");
-        //i.putExtra("playing", "false");
-        //context.sendBroadcast(i);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent( this, RemotePlayerService.class );
+            intent.setAction( Constants.ACTION_REPORT );
 
-        Intent intent = new Intent( this, MediaPlayerService.class );
-        intent.setAction( Constants.ACTION_REPORT );
+            intent.putExtra("playerAction", "playbackstop");
 
-        intent.putExtra("playerAction", "playbackstop");
-
-        startService( intent );
+            startService( intent );
+        }
     }
 
     @JavascriptInterface
     public void updateMediaSession(String action, boolean isLocalPlayer, String itemId, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
 
-        //bluetoothNotifyChange(action, title, artist, album, duration, position, imageUrl, canSeek, isPaused);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent( this, RemotePlayerService.class );
+            intent.setAction( Constants.ACTION_REPORT );
 
-        Intent intent = new Intent( this, MediaPlayerService.class );
-        intent.setAction( Constants.ACTION_REPORT );
+            intent.putExtra("playerAction", action);
+            intent.putExtra("title", title);
+            intent.putExtra("artist", artist);
+            intent.putExtra("album", album);
+            intent.putExtra("duration", duration);
+            intent.putExtra("position", position);
+            intent.putExtra("imageUrl", imageUrl);
+            intent.putExtra("canSeek", canSeek);
+            intent.putExtra("isPaused", isPaused);
+            intent.putExtra("itemId", itemId);
+            intent.putExtra("isLocalPlayer", isLocalPlayer);
 
-        intent.putExtra("playerAction", action);
-        intent.putExtra("title", title);
-        intent.putExtra("artist", artist);
-        intent.putExtra("album", album);
-        intent.putExtra("duration", duration);
-        intent.putExtra("position", position);
-        intent.putExtra("imageUrl", imageUrl);
-        intent.putExtra("canSeek", canSeek);
-        intent.putExtra("isPaused", isPaused);
-        intent.putExtra("itemId", itemId);
-        intent.putExtra("isLocalPlayer", isLocalPlayer);
-
-        startService( intent );
+            startService( intent );
+        }
     }
 
     private void bluetoothNotifyChange(String action, String title, String artist, String album, long duration, long position, String imageUrl, boolean canSeek, boolean isPaused) {
@@ -253,85 +256,131 @@ public class MainActivity extends CordovaActivity
     }
 
     @JavascriptInterface
-    public void playAudioVlc(String path) {
+    public void playAudioVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
 
-        ensureVlc();
+        Intent intent = null;
 
-        Media media = new Media(mLibVLC, path);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-        mLibVLC.playMRL(media.getMrl());
-        mIsVlcPlaying = true;
+            intent = new Intent( this, KitKatMediaService.class );
+        }
+        else {
+            intent = new Intent( this, KitKatMediaService.class );
+        }
+
+        intent.setAction( Constants.ACTION_PLAY );
+        intent.putExtra("path", path);
+        intent.putExtra("item", itemJson);
+        intent.putExtra("mediaSource", mediaSourceJson);
+        intent.putExtra("posterUrl", posterUrl);
+
+        startService( intent );
     }
 
     @JavascriptInterface
     public void playVideoVlc(String path) {
 
-        ensureVlc();
 
-        Media media = new Media(mLibVLC, path);
-
-        mLibVLC.playMRL(media.getMrl());
-        mIsVlcPlaying = true;
-    }
-
-    private void ensureVlc() {
-
-        if (mLibVLC == null) {
-            mLibVLC = new LibVLC();
-            try {
-                mLibVLC.init(this);
-            } catch(LibVlcException e) {
-                Toast.makeText(MainActivity.this,
-                        "Error initializing the libVLC multimedia framework!",
-                        Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            vlcEventHandler = new VlcEventHandler(logger, mLibVLC, webView);
-            EventHandler.getInstance().addHandler(vlcEventHandler);
-        }
     }
 
     @JavascriptInterface
     public void destroyVlc() {
-        //mLibVLC.closeAout();
 
-        VlcEventHandler handler = vlcEventHandler;
+        Intent intent = null;
 
-        if (handler != null) {
-            EventHandler.getInstance().removeHandler(handler);
-            vlcEventHandler = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            intent = new Intent( this, KitKatMediaService.class );
+        }
+        else {
+            intent = new Intent( this, KitKatMediaService.class );
         }
 
-        if (mLibVLC != null){
-            mLibVLC.destroy();
-            mLibVLC = null;
-        }
-
-        mIsVlcPlaying = false;
+        intent.setAction( Constants.ACTION_STOP );
+        startService( intent );
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mIsVlcPlaying = false;
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if(!mIsVlcPlaying) {
-            destroyVlc();
-        }
     }
 
     @JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
 
-        VlcEventHandler handler = vlcEventHandler;
+        logger.Debug("Vlc received command: %s", name);
 
-        if (handler != null) {
-            handler.sendVlcCommand(name, arg1);
+        Intent intent = null;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            intent = new Intent( this, KitKatMediaService.class );
         }
+        else {
+            intent = new Intent( this, KitKatMediaService.class );
+        }
+
+        try {
+            if (name.equalsIgnoreCase("pause")){
+
+                intent.setAction( Constants.ACTION_PAUSE );
+                startService( intent );
+            }
+            else if (name.equalsIgnoreCase("unpause")){
+                intent.setAction( Constants.ACTION_UNPAUSE );
+                startService( intent );
+            }
+            else if (name.equalsIgnoreCase("stop")){
+
+                intent.setAction( Constants.ACTION_STOP );
+                startService( intent );
+            }
+            else if (name.equalsIgnoreCase("setvolume")){
+
+                // incoming value is 0-100
+
+                float val = Float.parseFloat(arg1);
+                val = Math.min(val, 100);
+                val = Math.max(val, 0);
+
+                //mLibVLC.setVolume(Math.round(val));
+            }
+            else if (name.equalsIgnoreCase("setposition")){
+
+                // incoming value is seconds
+
+                float val = Float.parseFloat(arg1) * 1000;
+
+                //mLibVLC.setTime(Math.round(val));
+            }
+        }
+        catch (Exception ex){
+            logger.ErrorException("Error sending command %s to Vlc", ex, name);
+        }
+    }
+
+    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (action.equalsIgnoreCase(ACTION_SHOW_PLAYER)) {
+//                showAudioPlayer();
+            }
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        try {
+            unregisterReceiver(messageReceiver);
+        } catch (IllegalArgumentException e) {}
     }
 }

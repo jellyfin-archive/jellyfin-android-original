@@ -70,14 +70,23 @@
         color: #fff;
     }
 
-    .ui-page-theme-b paper-button.cancel {
-        color: #444;
-    }
+.ui-page-theme-b paper-button.cancel {
+    color: #444;
+}
 
-   .ui-page-theme-b  paper-button[raised].cancel {
-        background: #444;
-        color: #fff;
-    }
+.ui-page-theme-b paper-button[raised].cancel {
+    background: #444;
+    color: #fff;
+}
+
+paper-button.cancelDark {
+    color: #444;
+}
+
+paper-button[raised].cancelDark {
+    background: #444;
+    color: #fff;
+}
 
 .ui-page-theme-b paper-button.subdued:not([disabled]) {
     color: #484848;
@@ -155,6 +164,10 @@ paper-button.mini {
 
     paper-button.mini .content {
         padding: 0.3em 0.7em;
+    }
+
+    paper-button.mini.noIcon .content {
+        padding: 0.5em 0.7em;
     }
 
 
