@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.mb.android.MainActivity;
 import com.mb.android.webviews.IWebView;
 
 import org.apache.cordova.device.Device;
@@ -19,12 +20,10 @@ public class VlcEventHandler extends Handler {
 
     private ILogger logger;
     private LibVLC mLibVLC;
-    private IWebView webView;
 
-    public VlcEventHandler(ILogger logger, LibVLC mLibVLC, IWebView webView) {
+    public VlcEventHandler(ILogger logger, LibVLC mLibVLC) {
         this.logger = logger;
         this.mLibVLC = mLibVLC;
-        this.webView = webView;
     }
 
     @Override
@@ -120,52 +119,6 @@ public class VlcEventHandler extends Handler {
     private void RespondToWebView(final String js) {
 
         //logger.Info("Sending url to webView: %s", js);
-        webView.sendJavaScript(js);
-    }
-
-    public void sendVlcCommand(String name, String arg1) {
-
-        logger.Debug("Vlc received command: %s", name);
-        try {
-            if (name.equalsIgnoreCase("pause")){
-
-                if (mLibVLC.getPlayerState() != 4){
-                    mLibVLC.pause();
-                }
-            }
-            else if (name.equalsIgnoreCase("unpause")){
-                mLibVLC.play();
-            }
-            else if (name.equalsIgnoreCase("stop")){
-
-                // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
-                int playerState = mLibVLC.getPlayerState();
-
-                if (playerState >= 1 && playerState <= 4){
-                    mLibVLC.stop();
-                }
-            }
-            else if (name.equalsIgnoreCase("setvolume")){
-
-                // incoming value is 0-100
-
-                float val = Float.parseFloat(arg1);
-                val = Math.min(val, 100);
-                val = Math.max(val, 0);
-
-                mLibVLC.setVolume(Math.round(val));
-            }
-            else if (name.equalsIgnoreCase("setposition")){
-
-                // incoming value is seconds
-
-                float val = Float.parseFloat(arg1) * 1000;
-
-                mLibVLC.setTime(Math.round(val));
-            }
-        }
-        catch (Exception ex){
-            logger.ErrorException("Error sending command %s to Vlc", ex, name);
-        }
+        MainActivity.RespondToWebView(js);
     }
 }

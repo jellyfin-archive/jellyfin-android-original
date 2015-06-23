@@ -8,9 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.media.MediaMetadata;
-import android.media.MediaPlayer;
 import android.media.Rating;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
@@ -19,7 +17,6 @@ import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
@@ -31,7 +28,7 @@ import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.logging.ConsoleLogger;
 
-public class MediaPlayerService extends Service {
+public class RemotePlayerService extends Service {
 
     private static final String TAG = "Emby/AudioService";
 
@@ -41,10 +38,6 @@ public class MediaPlayerService extends Service {
 
     private String mediaSessionMediaId = "";
     private Bitmap largeItemIcon;
-
-    private AudioManager.OnAudioFocusChangeListener audioFocusListener;
-    private boolean mDetectHeadset = true;
-    private PowerManager.WakeLock mWakeLock;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -143,26 +136,21 @@ public class MediaPlayerService extends Service {
             setMediaSessionMetadata(m_objMediaSession, itemId, artist, album, title, largeIcon);
 
             mediaSessionMediaId = itemId;
-
-            changeAudioFocus(isLocalPlayer);
-
-            // Make sure the audio player will acquire a wake-lock while playing. If we don't do
-            // that, the CPU might go to sleep while the song is playing, causing playback to stop.
-            setWakeLock(isLocalPlayer);
         }
 
         int position = handledIntent.getIntExtra("position", 0);
         int duration = handledIntent.getIntExtra("duration", 0);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
             Notification.Action action = isPaused ?
-                    generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY) :
-                    generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE);
+                         generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY) :
+                         generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE);
 
             Notification.MediaStyle style = new Notification.MediaStyle();
             style.setMediaSession(m_objMediaSession.getSessionToken());
 
-            Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+            Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
             intent.setAction(Constants.ACTION_STOP);
 
             PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
@@ -171,9 +159,9 @@ public class MediaPlayerService extends Service {
             stateBuilder.setActions(actions);
 
             if (isPaused) {
-                stateBuilder.setState(PlaybackState.STATE_PAUSED, 0, 1.0f);
+                stateBuilder.setState(PlaybackState.STATE_PAUSED, position, 1.0f);
             } else {
-                stateBuilder.setState(PlaybackState.STATE_PLAYING, 0, 1.0f);
+                stateBuilder.setState(PlaybackState.STATE_PLAYING, position, 1.0f);
             }
 
             m_objMediaSession.setPlaybackState(stateBuilder.build());
@@ -187,7 +175,9 @@ public class MediaPlayerService extends Service {
                     .setStyle(style);
 
             builder.setOngoing(true);
-            builder.setShowWhen(false);
+            builder.setShowWhen(true);
+            builder.setUsesChronometer(true);
+            builder.setWhen(System.currentTimeMillis() - position);
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
 
             if (largeIcon != null) {
@@ -227,29 +217,7 @@ public class MediaPlayerService extends Service {
     }
 
     private void cleanupAfterMediaStop() {
-        changeAudioFocus(false);
 
-        setWakeLock(false);
-    }
-
-    private void setWakeLock(boolean enabled) {
-
-        if (enabled) {
-
-            if (mWakeLock == null) {
-                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-            }
-
-            if (!mWakeLock.isHeld())
-                mWakeLock.acquire();
-        }
-        else {
-            if (mWakeLock != null) {
-                if (mWakeLock.isHeld())
-                    mWakeLock.release();
-            }
-        }
     }
 
     private void onStopped() {
@@ -258,7 +226,7 @@ public class MediaPlayerService extends Service {
 
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);
-        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
         stopService(intent);
     }
 
@@ -270,17 +238,18 @@ public class MediaPlayerService extends Service {
     }
 
     private Notification.Action generateAction(int icon, String title, String intentAction) {
-        Intent intent = new Intent(getApplicationContext(), MediaPlayerService.class);
+
+        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
         intent.setAction(intentAction);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        return new Notification.Action.Builder(icon, title, pendingIntent).build();
 
+        return new Notification.Action(icon, title, pendingIntent);
     }
 
     private PendingIntent retreivePlaybackAction(int which) {
         Intent action;
         PendingIntent pendingIntent;
-        final ComponentName serviceName = new ComponentName(this, MediaPlayerService.class);
+        final ComponentName serviceName = new ComponentName(this, RemotePlayerService.class);
         switch (which) {
             case 1:
                 // Play and pause
@@ -419,42 +388,5 @@ public class MediaPlayerService extends Service {
         }
 
         return super.onUnbind(intent);
-    }
-
-    private void changeAudioFocus(boolean gain) {
-
-        if (audioFocusListener == null) {
-            audioFocusListener = new AudioManager.OnAudioFocusChangeListener() {
-                @Override
-                public void onAudioFocusChange(int focusChange) {
-
-                    switch (focusChange) {
-                        case AudioManager.AUDIOFOCUS_LOSS:
-                            responseToWebView("MediaController.pause();");
-                            break;
-                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                            /*
-                             * Lower the volume to 36% to "duck" when an alert or something
-                             * needs to be played.
-                             */
-                            responseToWebView("MediaController.setVolume(36);");
-                            break;
-                        case AudioManager.AUDIOFOCUS_GAIN:
-                        case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
-                        case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
-                            responseToWebView("MediaController.setVolume(100);");
-                            break;
-                    }
-                }
-            };
-        }
-
-        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
-        if (gain)
-            am.requestAudioFocus(audioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        else
-            am.abandonAudioFocus(audioFocusListener);
-
     }
 }
