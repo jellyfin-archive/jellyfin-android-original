@@ -1,5 +1,6 @@
 package com.mb.android.media;
 
+import java.util.Calendar;
 import java.util.Random;
 import java.util.Stack;
 
@@ -14,12 +15,15 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
+import android.media.MediaMetadataRetriever;
+import android.media.RemoteControlClient;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -53,6 +57,9 @@ public class KitKatMediaService extends Service {
     public static final String INCOMING_CALL_INTENT = "com.mb.android.media.incomingcall";
     public static final String CALL_ENDED_INTENT = "com.mb.android.media.callended";
 
+    public static final String WIDGET_PACKAGE = "org.videolan.vlc";
+    public static final String WIDGET_CLASS = "org.videolan.vlc.widget.VLCAppWidgetProvider";
+
     private LibVLC mLibVLC;
     private OnAudioFocusChangeListener audioFocusListener;
     private boolean mDetectHeadset = true;
@@ -61,16 +68,18 @@ public class KitKatMediaService extends Service {
     private IJsonSerializer jsonSerializer = new GsonJsonSerializer();
 
     private static boolean mWasPlayingAudio = false;
-
-    // Index management
     /**
-     * Stack of previously played indexes, used in shuffle mode
+     * Last widget position update timestamp
      */
-    private Stack<Integer> mPrevious;
+    private long mWidgetPositionTimestamp = Calendar.getInstance().getTimeInMillis();
 
-    // Playback management
-    private boolean mShuffling = false;
-    private Random mRandom = null; // Used in shuffling process
+    // RemoteControlClient-related
+    /**
+     * RemoteControlClient is for lock screen playback control.
+     */
+    private RemoteControlClient mRemoteControlClient = null;
+    private RemoteControlClientReceiver mRemoteControlClientReceiver = null;
+    private ComponentName mRemoteControlClientReceiverComponent;
 
     @Override
     public void onCreate() {
@@ -90,7 +99,8 @@ public class KitKatMediaService extends Service {
             e.printStackTrace();
         }
 
-        mPrevious = new Stack<Integer>();
+        mRemoteControlClientReceiverComponent = new ComponentName(getPackageName(),
+                RemoteControlClientReceiver.class.getName());
 
         // Make sure the audio player will acquire a wake-lock while playing. If we don't do
         // that, the CPU might go to sleep while the song is playing, causing playback to stop.
@@ -109,10 +119,116 @@ public class KitKatMediaService extends Service {
         filter.addAction(SLEEP_INTENT);
         filter.addAction(INCOMING_CALL_INTENT);
         filter.addAction(CALL_ENDED_INTENT);
+        filter.addAction(MediaWidgetProvider.ACTION_WIDGET_INIT);
         registerReceiver(serviceReceiver, filter);
     }
 
-    private VolleyHttpClient GetHttpClient() {
+
+    /**
+     * Set up the remote control and tell the system we want to be the default receiver for the MEDIA buttons
+     * @see http://android-developers.blogspot.fr/2010/06/allowing-applications-to-play-nicer.html
+     */
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    public void setUpRemoteControlClient() {
+        Context context = getApplicationContext();
+        AudioManager audioManager = (AudioManager)context.getSystemService(AUDIO_SERVICE);
+
+        if (LibVlcUtil.isICSOrLater()) {
+            audioManager.registerMediaButtonEventReceiver(mRemoteControlClientReceiverComponent);
+
+            if (mRemoteControlClient == null) {
+                Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+                mediaButtonIntent.setComponent(mRemoteControlClientReceiverComponent);
+                PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(context, 0, mediaButtonIntent, 0);
+
+                // create and register the remote control client
+                mRemoteControlClient = new RemoteControlClient(mediaPendingIntent);
+                audioManager.registerRemoteControlClient(mRemoteControlClient);
+            }
+
+            mRemoteControlClient.setTransportControlFlags(
+                    RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
+                            RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
+                            RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
+                            RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
+                            RemoteControlClient.FLAG_KEY_MEDIA_STOP);
+        } else if (LibVlcUtil.isFroyoOrLater()) {
+            audioManager.registerMediaButtonEventReceiver(mRemoteControlClientReceiverComponent);
+        }
+    }
+
+    /**
+     * A function to control the Remote Control Client. It is needed for
+     * compatibility with devices below Ice Cream Sandwich (4.0).
+     *
+     * @param p Playback state
+     */
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private void setRemoteControlClientPlaybackState(int state) {
+        if (!LibVlcUtil.isICSOrLater() || mRemoteControlClient == null)
+            return;
+
+        switch (state) {
+            case EventHandler.MediaPlayerPlaying:
+                mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+                break;
+            case EventHandler.MediaPlayerPaused:
+                mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
+                break;
+            case EventHandler.MediaPlayerStopped:
+                mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
+                break;
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private void updateRemoteControlClientMetadata() {
+
+        if (!LibVlcUtil.isICSOrLater()) // NOP check
+            return;
+
+        BaseItemDto item = currentItem;
+
+        String album = item.getAlbum() == null ? "" : item.getAlbum();
+        String artist = item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
+        String genre = item.getGenres().size() > 0 ? item.getGenres().get(0) : "";
+        String albumArtist = item.getAlbumArtist() == null ? "" : item.getAlbumArtist();
+        String title = item.getName() == null ? "" : item.getName();
+        String itemId = item.getId();
+
+        if (mRemoteControlClient != null && item != null) {
+            final RemoteControlClient.MetadataEditor editor = mRemoteControlClient.editMetadata(true);
+            editor.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, album);
+            editor.putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, artist);
+            editor.putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, albumArtist);
+            editor.putString(MediaMetadataRetriever.METADATA_KEY_GENRE, genre);
+            editor.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, title);
+
+            // TODO: Add duration
+            //editor.putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, media.getLength());
+
+            if (posterUrl == null || posterUrl.length() == 0) {
+                editor.apply();
+                return;
+            }
+
+            GetHttpClient().getBitmap(posterUrl, new Response<Bitmap>() {
+
+                @Override
+                public void onResponse(Bitmap bitmap) {
+                    editor.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, bitmap);
+                    editor.apply();
+                }
+
+                @Override
+                public void onError(Exception ex) {
+
+                    editor.apply();
+                }
+            });
+        }
+    }
+        private VolleyHttpClient GetHttpClient() {
 
         VolleyHttpClient httpClient = null;
         if (ApiClientBridge.Current != null) {
@@ -148,6 +264,7 @@ public class KitKatMediaService extends Service {
 
         handleIntent(this, intent);
 
+        updateWidget(this);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -158,6 +275,10 @@ public class KitKatMediaService extends Service {
         if (mWakeLock.isHeld())
             mWakeLock.release();
         unregisterReceiver(serviceReceiver);
+        if (mRemoteControlClientReceiver != null) {
+            unregisterReceiver(mRemoteControlClientReceiver);
+            mRemoteControlClientReceiver = null;
+        }
         EventHandler.getInstance().removeHandler(mVlcEventHandler);
 
         if (mLibVLC != null){
@@ -242,6 +363,8 @@ public class KitKatMediaService extends Service {
     private void handleIntent(Context context, Intent intent) {
 
         String action = intent.getAction();
+        if (action == null) action = "";
+
         int state = intent.getIntExtra("state", 0);
         if( mLibVLC == null ) {
             Log.w(TAG, "Intent received, but VLC is not loaded, skipping.");
@@ -302,6 +425,8 @@ public class KitKatMediaService extends Service {
             handlePreviousTrackCommand();
         } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
             handleNextTrackCommand();
+        } else if (action.equalsIgnoreCase(MediaWidgetProvider.ACTION_WIDGET_INIT)) {
+            updateWidget(context);
         }
 
             /*
@@ -331,6 +456,12 @@ public class KitKatMediaService extends Service {
     private BaseItemDto currentItem;
     private String posterUrl;
 
+    private void destroyCurrentMediaInfo() {
+        currentMrl = null;
+        posterUrl = null;
+        currentItem = null;
+    }
+
     private void play(Context context, Intent intent) {
 
         String path = intent.getStringExtra("path");
@@ -343,6 +474,9 @@ public class KitKatMediaService extends Service {
         Media media = new Media(mLibVLC, path);
         mLibVLC.playMRL(media.getMrl());
         currentMrl = media.getMrl();
+
+        setUpRemoteControlClient();
+        updateRemoteControlClientMetadata();
     }
 
     private final BroadcastReceiver serviceReceiver = new BroadcastReceiver() {
@@ -384,6 +518,7 @@ public class KitKatMediaService extends Service {
                     service.executeUpdateProgress();
 
                     service.changeAudioFocus(true);
+                    service.setRemoteControlClientPlaybackState(EventHandler.MediaPlayerPlaying);
                     service.showNotification();
                     if (!service.mWakeLock.isHeld())
                         service.mWakeLock.acquire();
@@ -393,20 +528,22 @@ public class KitKatMediaService extends Service {
                     service.executeUpdate();
                     service.executeUpdateProgress();
                     service.showNotification();
+                    service.setRemoteControlClientPlaybackState(EventHandler.MediaPlayerPaused);
                     if (service.mWakeLock.isHeld())
                         service.mWakeLock.release();
                     break;
                 case EventHandler.MediaPlayerStopped:
                     Log.i(TAG, "MediaPlayerStopped");
-                    service.currentMrl = null;
+                    service.destroyCurrentMediaInfo();
                     service.executeUpdate();
                     service.executeUpdateProgress();
+                    service.setRemoteControlClientPlaybackState(EventHandler.MediaPlayerStopped);
                     if (service.mWakeLock.isHeld())
                         service.mWakeLock.release();
                     break;
                 case EventHandler.MediaPlayerEndReached:
                     Log.i(TAG, "MediaPlayerEndReached");
-                    service.currentMrl = null;
+                    service.destroyCurrentMediaInfo();
                     service.executeUpdate();
                     service.executeUpdateProgress();
 
@@ -420,13 +557,15 @@ public class KitKatMediaService extends Service {
                     break;
                 case EventHandler.MediaPlayerPositionChanged:
                     float pos = msg.getData().getFloat("data");
+                    long length = service.mLibVLC.getLength();
+                    service.updateWidgetPosition(service, pos, length);
                     break;
                 case EventHandler.MediaPlayerEncounteredError:
                     /*service.showToast(service.getString(
                             R.string.invalid_location,
                             service.mLibVLC.getMediaList().getMRL(
                                     service.mCurrentIndex)), Toast.LENGTH_SHORT);*/
-                    service.currentMrl = null;
+                    service.destroyCurrentMediaInfo();
                     service.executeUpdate();
                     service.executeUpdateProgress();
                     if (service.mWakeLock.isHeld())
@@ -457,7 +596,12 @@ public class KitKatMediaService extends Service {
     }
 
     private void executeUpdate() {
+        executeUpdate(true);
+    }
 
+    private void executeUpdate(Boolean updateWidget) {
+        if (updateWidget)
+            updateWidget(this);
     }
 
     private void executeUpdateProgress() {
@@ -515,18 +659,51 @@ public class KitKatMediaService extends Service {
             notificationIntent.putExtra(START_FROM_NOTIFICATION, true);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            if (cover != null) {
-                builder.setLargeIcon(cover);
-            }
+            boolean isPlaying = mLibVLC.isPlaying();
+
             if (LibVlcUtil.isJellyBeanOrLater()) {
 
-                builder.setContentTitle(title)
-                        .setContentText(artist)
-                        .setContentInfo(album)
-                        .setContentIntent(pendingIntent);
+                Intent iBackward = new Intent(Constants.ACTION_PREVIOUS);
+                Intent iPlay = new Intent(Constants.ACTION_PLAYPAUSE);
+                Intent iForward = new Intent(Constants.ACTION_NEXT);
+                Intent iStop = new Intent(Constants.ACTION_STOP);
+                PendingIntent piBackward = PendingIntent.getBroadcast(this, 0, iBackward, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent piPlay = PendingIntent.getBroadcast(this, 0, iPlay, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent piForward = PendingIntent.getBroadcast(this, 0, iForward, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent piStop = PendingIntent.getBroadcast(this, 0, iStop, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
+                if (cover != null)
+                    view.setImageViewBitmap(R.id.cover, cover);
+                view.setTextViewText(R.id.title, title);
+                view.setTextViewText(R.id.artist, artist);
+                view.setImageViewResource(R.id.play_pause, isPlaying ? R.drawable.ic_pause_w : R.drawable.ic_play_w);
+                view.setOnClickPendingIntent(R.id.play_pause, piPlay);
+                view.setOnClickPendingIntent(R.id.forward, piForward);
+                view.setOnClickPendingIntent(R.id.stop, piStop);
+                view.setOnClickPendingIntent(R.id.content, pendingIntent);
+
+                RemoteViews view_expanded = new RemoteViews(getPackageName(), R.layout.notification_expanded);
+                if (cover != null)
+                    view_expanded.setImageViewBitmap(R.id.cover, cover);
+                view_expanded.setTextViewText(R.id.songName, title);
+                view_expanded.setTextViewText(R.id.artist, artist);
+                view_expanded.setTextViewText(R.id.album, album);
+                view_expanded.setImageViewResource(R.id.play_pause, isPlaying ? R.drawable.ic_pause_w : R.drawable.ic_play_w);
+                view_expanded.setOnClickPendingIntent(R.id.backward, piBackward);
+                view_expanded.setOnClickPendingIntent(R.id.play_pause, piPlay);
+                view_expanded.setOnClickPendingIntent(R.id.forward, piForward);
+                view_expanded.setOnClickPendingIntent(R.id.stop, piStop);
+                view_expanded.setOnClickPendingIntent(R.id.content, pendingIntent);
+
                 notification = builder.build();
+                notification.contentView = view_expanded;
+                notification.bigContentView = view_expanded;
             }
             else {
+                if (cover != null) {
+                    builder.setLargeIcon(cover);
+                }
                 builder.setContentTitle(title)
                         .setContentText(artist)
                         .setContentInfo(album)
@@ -574,23 +751,109 @@ public class KitKatMediaService extends Service {
     }
 
     private void pause() {
+        setUpRemoteControlClient();
         mLibVLC.pause();
     }
 
     private void play() {
         if(hasCurrentMedia()) {
+            setUpRemoteControlClient();
             mLibVLC.play();
             showNotification();
+            updateWidget(this);
         }
     }
 
     private void stop() {
         mLibVLC.stop();
 
-        mPrevious.clear();
+        setRemoteControlClientPlaybackState(EventHandler.MediaPlayerStopped);
         hideNotification();
         executeUpdate();
         executeUpdateProgress();
         changeAudioFocus(false);
+    }
+
+    private void updateWidget(Context context) {
+
+        Log.d(TAG, "Updating widget");
+        updateWidgetState(context);
+        updateWidgetCover(context);
+    }
+
+    private void updateWidgetState(Context context) {
+
+        Intent i = new Intent();
+        i.setClassName(WIDGET_PACKAGE, WIDGET_CLASS);
+        i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE);
+
+        if (hasCurrentMedia()) {
+
+            BaseItemDto item = currentItem;
+
+            String album = item.getAlbum() == null ? "" : item.getAlbum();
+            String artist = item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
+            String title = item.getName() == null ? "" : item.getName();
+            String itemId = item.getId();
+
+            i.putExtra("title", title);
+            i.putExtra("artist", artist);
+
+            int playerState = mLibVLC.getPlayerState();
+
+            // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
+            boolean isPaused = playerState == 4;
+
+            i.putExtra("isplaying", !isPaused);
+        }
+        else {
+            i.putExtra("title", "Emby");
+            i.putExtra("artist", "");
+
+            i.putExtra("isplaying", false);
+        }
+
+        sendBroadcast(i);
+    }
+
+    private void updateWidgetCover(Context context)
+    {
+        if (posterUrl == null || posterUrl.length() == 0) {
+            return;
+        }
+
+        GetHttpClient().getBitmap(posterUrl, new Response<Bitmap>(){
+
+            @Override
+            public void onResponse(Bitmap bitmap) {
+                Intent i = new Intent();
+                i.setClassName(WIDGET_PACKAGE, WIDGET_CLASS);
+                i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE_COVER);
+                i.putExtra("cover", bitmap);
+                sendBroadcast(i);
+            }
+
+            @Override
+            public void onError(Exception ex) {
+
+            }
+        });
+    }
+
+    private void updateWidgetPosition(Context context, float positionMs, float durationMs)
+    {
+        // no more than one widget update for each 1/50 of the song
+        long timestamp = Calendar.getInstance().getTimeInMillis();
+        if (!hasCurrentMedia() || timestamp - mWidgetPositionTimestamp < durationMs / 50)
+            return;
+
+        updateWidgetState(context);
+
+        mWidgetPositionTimestamp = timestamp;
+        Intent i = new Intent();
+        i.setClassName(WIDGET_PACKAGE, WIDGET_CLASS);
+        i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE_POSITION);
+        i.putExtra("position", positionMs);
+        sendBroadcast(i);
     }
 }

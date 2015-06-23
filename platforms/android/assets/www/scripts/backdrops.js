@@ -6,8 +6,7 @@ return deferred.promise();}
 function setBackdropImage(elem,url){elem.lazyImage(url);}
 function showBackdrop(type,parentId){var apiClient=window.ApiClient;if(!apiClient){return;}
 getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).done(function(images){if(images.length){var index=getRandom(0,images.length-1);var item=images[index];var screenWidth=$(window).width();var imgUrl=apiClient.getScaledImageUrl(item.id,{type:"Backdrop",tag:item.tag,maxWidth:screenWidth,quality:50});setBackdropImage(getElement(),imgUrl);}else{clearBackdrop();}});}
-function setDefault(page){var backdropContainer=$('.backdropContainer');if(backdropContainer.length){backdropContainer.css('backgroundImage','url(css/images/splash.jpg)');}else{$(document.body).prepend('<div class="backdropContainer" style="background-image:url(css/images/splash.jpg);top:0;"></div>');}
-$(page).addClass('backdropPage staticBackdropPage');}
+function setDefault(page){getElement().css('backgroundImage','url(css/images/splash.jpg)');$(page).addClass('backdropPage staticBackdropPage');}
 function clearBackdrop(){$('.backdropContainer').css('backgroundImage','').removeClass('backdropContainer');}
 function isEnabledByDefault(){if(AppInfo.hasLowImageBandwidth){return false;}
 if($.browser.android&&AppInfo.isNativeApp){return screen.availWidth>=1200;}

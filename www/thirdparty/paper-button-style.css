@@ -61,6 +61,15 @@
         color: #fff;
     }
 
+    paper-button.accent {
+        color: #52B54B;
+    }
+
+    paper-button[raised].accent {
+        background: #52B54B;
+        color: #fff;
+    }
+
     paper-button.alt {
         color: #F57F17;
     }
