@@ -3,4 +3,8 @@
     <string name="app_name">Emby</string>
     <string name="launcher_name">@string/app_name</string>
     <string name="activity_name">@string/launcher_name</string>
+    <string name="miniplayer_widget_name" translatable="false">Emby</string>
+    <string name="title" translatable="false" />
+    <string name="artist" translatable="false" />
+    <string name="album" translatable="false" />
 </resources>

@@ -262,7 +262,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent( this, MediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
@@ -290,7 +290,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent( this, MediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
@@ -319,7 +319,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent( this, MediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
