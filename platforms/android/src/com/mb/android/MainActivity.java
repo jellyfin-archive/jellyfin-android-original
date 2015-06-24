@@ -23,6 +23,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -262,7 +263,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, MediaService.class );
+            intent = new Intent( this, KitKatMediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
@@ -273,6 +274,8 @@ public class MainActivity extends CordovaActivity
         intent.putExtra("item", itemJson);
         intent.putExtra("mediaSource", mediaSourceJson);
         intent.putExtra("posterUrl", posterUrl);
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         startService( intent );
     }
@@ -290,7 +293,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, MediaService.class );
+            intent = new Intent( this, KitKatMediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
@@ -319,7 +322,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, MediaService.class );
+            intent = new Intent( this, KitKatMediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );

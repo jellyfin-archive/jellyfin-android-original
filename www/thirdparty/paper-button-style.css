@@ -237,3 +237,7 @@ paper-dialog > *:last-child {
 paper-dialog > *:first-child {
     margin-top: 12px;
 }
+
+paper-icon-button paper-ripple {
+    color: inherit !important;
+}
