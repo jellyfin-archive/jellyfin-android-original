@@ -52,17 +52,6 @@
             android:text="@string/album" />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/stop"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentRight="true"
-        android:layout_margin="5dp"
-        android:background="#00ffffff"
-        android:clickable="true"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_stop_w" />
-
     <LinearLayout
         android:id="@+id/buttons"
         android:layout_width="wrap_content"

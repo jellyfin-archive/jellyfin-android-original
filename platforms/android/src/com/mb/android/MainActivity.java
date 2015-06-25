@@ -50,6 +50,7 @@ import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.logging.ConsoleLogger;
+import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
 import tv.emby.iap.UnlockActivity;
@@ -335,6 +336,8 @@ public class MainActivity extends CordovaActivity
             else if (name.equalsIgnoreCase("stop")){
 
                 intent.setAction( Constants.ACTION_STOP );
+                boolean stopService = StringHelper.EqualsIgnoreCase(arg1, "true");
+                intent.putExtra("stopService", stopService);
                 startService( intent );
             }
             else if (name.equalsIgnoreCase("setvolume")){
