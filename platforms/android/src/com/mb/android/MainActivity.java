@@ -28,16 +28,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.media.Constants;
-import com.mb.android.media.KitKatMediaService;
 import com.mb.android.media.MediaService;
+import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
-import com.mb.android.media.VlcEventHandler;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
@@ -48,10 +46,6 @@ import net.rdrei.android.dirchooser.DirectoryChooserActivity;
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
-import org.videolan.libvlc.EventHandler;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.LibVlcException;
-import org.videolan.libvlc.Media;
 import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -263,7 +257,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent( this, MediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
@@ -293,7 +287,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent( this, MediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
@@ -322,7 +316,7 @@ public class MainActivity extends CordovaActivity
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent( this, MediaService.class );
         }
         else {
             intent = new Intent( this, KitKatMediaService.class );
@@ -355,11 +349,20 @@ public class MainActivity extends CordovaActivity
             }
             else if (name.equalsIgnoreCase("setposition")){
 
-                // incoming value is seconds
+                // incoming value is ms
 
-                float val = Float.parseFloat(arg1) * 1000;
+                intent.setAction( Constants.ACTION_SEEK );
+                logger.Debug("Sending seek command to Vlc Service. Position: %s", arg1);
+                try {
+                    float newPosition = Float.parseFloat(arg1);
+                    long roundedPosition = Math.round(newPosition);
 
-                //mLibVLC.setTime(Math.round(val));
+                    intent.putExtra("position", roundedPosition);
+                    startService( intent );
+                }
+                catch (NumberFormatException ex){
+                    logger.ErrorException("Error parsing seek value", ex);
+                }
             }
         }
         catch (Exception ex){

@@ -88,104 +88,36 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="KitKatMediaService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/KitKatMediaService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-19.5" vertical-offset="11116" max-vertical-offset="14688">
-              <caret line="686" column="34" selection-start-line="686" selection-start-column="34" selection-end-line="686" selection-end-column="34" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#11037#11038#0" expanded="true" />
-                <element signature="e#11064#11065#0" expanded="true" />
-                <element signature="e#11321#12545#0" expanded="true" />
-                <element signature="e#12530#12531#0" expanded="true" />
-                <element signature="e#13117#13118#0" expanded="true" />
-                <element signature="e#13139#13140#0" expanded="true" />
-                <element signature="e#17778#17944#0" expanded="true" />
-                <element signature="e#17937#17938#0" expanded="true" />
-                <element signature="e#22589#22590#0" expanded="true" />
-                <element signature="e#22624#22625#0" expanded="true" />
-                <element signature="e#23153#23154#0" expanded="true" />
-                <element signature="e#23209#23210#0" expanded="true" />
-                <element signature="e#28158#28159#0" expanded="true" />
-                <element signature="e#28196#28197#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="notification_expanded.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/layout/notification_expanded.xml">
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.037037" vertical-offset="27" max-vertical-offset="1921">
-              <caret line="8" column="4" selection-start-line="7" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
-              <folding>
-                <element signature="e#1238#1253#0" expanded="true" />
-                <element signature="e#1586#1602#0" expanded="true" />
-                <element signature="e#1934#1949#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.15369837" vertical-offset="4158" max-vertical-offset="6596">
-              <caret line="254" column="82" selection-start-line="254" selection-start-column="82" selection-end-line="254" selection-end-column="82" />
+            <state vertical-scroll-proportion="6.214286" vertical-offset="4577" max-vertical-offset="6698">
+              <caret line="259" column="51" selection-start-line="259" selection-start-column="51" selection-end-line="259" selection-end-column="51" />
               <folding>
-                <element signature="e#0#13024#0" expanded="true" />
+                <element signature="e#0#13242#0" expanded="true" />
                 <element signature="imports" expanded="true" />
+                <element signature="e#12762#13048#0" expanded="true" />
+                <element signature="e#13041#13042#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="notification.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/layout/notification.xml">
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
+      <file leaf-file-name="Constants.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/Constants.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-22.666666" vertical-offset="0" max-vertical-offset="850">
-              <caret line="36" column="44" selection-start-line="36" selection-start-column="44" selection-end-line="36" selection-end-column="44" />
-              <folding>
-                <element signature="e#1463#1478#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="strings.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.44" vertical-offset="0" max-vertical-offset="272">
-              <caret line="8" column="23" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
+            <state vertical-scroll-proportion="0.1509434" vertical-offset="0" max-vertical-offset="901">
+              <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RemoteControlClientReceiver.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/RemoteControlClientReceiver.java">
+      <file leaf-file-name="MediaNotificationManager.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaNotificationManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-41.892857" vertical-offset="0" max-vertical-offset="1666">
-              <caret line="69" column="26" selection-start-line="69" selection-start-column="25" selection-end-line="69" selection-end-column="26" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VlcEventHandler.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1141" max-vertical-offset="2210">
-              <caret line="95" column="8" selection-start-line="93" selection-start-column="8" selection-end-line="95" selection-end-column="8" />
+            <state vertical-scroll-proportion="-94.14286" vertical-offset="764" max-vertical-offset="5406">
+              <caret line="200" column="12" selection-start-line="200" selection-start-column="12" selection-end-line="200" selection-end-column="12" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -196,11 +128,21 @@
       <file leaf-file-name="RemotePlayerService.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/RemotePlayerService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="532" max-vertical-offset="6579">
-              <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2478" max-vertical-offset="6579">
+              <caret line="135" column="12" selection-start-line="135" selection-start-column="12" selection-end-line="135" selection-end-column="12" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RemoteControlClientReceiver.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/legacy/RemoteControlClientReceiver.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="1598">
+              <caret line="73" column="26" selection-start-line="73" selection-start-column="26" selection-end-line="73" selection-end-column="26" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -208,24 +150,11 @@
       <file leaf-file-name="MediaWidgetProvider.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWidgetProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.178572" vertical-offset="1020" max-vertical-offset="2006">
-              <caret line="85" column="24" selection-start-line="85" selection-start-column="24" selection-end-line="85" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2006">
+              <caret line="18" column="32" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="embyminiplayerwidget.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/res/layout/embyminiplayerwidget.xml">
-          <provider editor-type-id="android-designer">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.296296" vertical-offset="408" max-vertical-offset="2210">
-              <caret line="34" column="40" selection-start-line="34" selection-start-column="40" selection-end-line="34" selection-end-column="40" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -2201,7 +2130,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5733791794592" />
+        <entry key="$PROJECT_DIR$" value="5734002396110" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2562,10 +2491,6 @@
         <option value="$PROJECT_DIR$/src/com/mb/android/media/NotificationManager.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/AudioService.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/IMediaService.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/Constants.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaService.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaNotificationManager.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/RemotePlayerService.java" />
         <option value="$PROJECT_DIR$/res/layout/embyminiplayerwidget.xml" />
         <option value="$PROJECT_DIR$/res/xml/embyminiplayerwidget.xml" />
@@ -2574,8 +2499,15 @@
         <option value="$PROJECT_DIR$/res/values/strings.xml" />
         <option value="$PROJECT_DIR$/res/layout/notification_expanded.xml" />
         <option value="$PROJECT_DIR$/res/layout/notification.xml" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/Constants.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/KitKatMediaService.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaNotificationManager.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/exclude/MediaBrowsingService.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaBrowsingService.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/MainActivity.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/legacy/KitKatMediaService.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaService.java" />
       </list>
     </option>
   </component>
@@ -2737,74 +2669,6 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="xml" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="res" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="java" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
             </PATH_ELEMENT>
@@ -2908,6 +2772,36 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="legacy" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -3157,15 +3051,15 @@
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32943925" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21339564" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36412627" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48442367" sideWeight="0.14250614" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21339564" sideWeight="0.68099916" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36370715" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27647975" sideWeight="0.14250614" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22113022" sideWeight="0.15198451" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19548286" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27647975" sideWeight="0.8574939" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27647975" sideWeight="0.8574939" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32948422" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24979626" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -3173,7 +3067,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22113022" sideWeight="0.8480155" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14563863" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21417445" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -3236,22 +3130,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/de/appplant/cordova/plugin/notification/AssetUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5467836" vertical-offset="3876" max-vertical-offset="7412">
-          <caret line="296" column="0" selection-start-line="296" selection-start-column="0" selection-end-line="296" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/java/lang/ReflectiveOperationException.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.22156398" vertical-offset="0" max-vertical-offset="844">
-          <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/java/lang/IllegalAccessException.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.16113745" vertical-offset="0" max-vertical-offset="844">
@@ -3410,26 +3288,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/app/Service.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.71473354" vertical-offset="9754" max-vertical-offset="11781">
-          <caret line="648" column="22" selection-start-line="648" selection-start-column="22" selection-end-line="648" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/java/lang/Object.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.8422153" vertical-offset="6438" max-vertical-offset="7395">
           <caret line="309" column="29" selection-start-line="309" selection-start-column="29" selection-end-line="309" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/content/Intent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34169278" vertical-offset="69152" max-vertical-offset="132498">
-          <caret line="4158" column="11" selection-start-line="4158" selection-start-column="11" selection-end-line="4158" selection-end-column="11" />
           <folding />
         </state>
       </provider>
@@ -3450,38 +3312,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/IAudioServiceCallback.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
-          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/IMediaService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
-          <caret line="0" column="29" selection-start-line="0" selection-start-column="29" selection-end-line="0" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
-          <caret line="7" column="67" selection-start-line="7" selection-start-column="67" selection-end-line="7" selection-end-column="67" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/media/session/PlaybackState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="13152" max-vertical-offset="15810">
-          <caret line="855" column="23" selection-start-line="855" selection-start-column="23" selection-end-line="855" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/media/MediaMetadata.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.38876653" vertical-offset="72" max-vertical-offset="12172">
@@ -3495,54 +3325,6 @@
         <state vertical-scroll-proportion="0.34169278" vertical-offset="285" max-vertical-offset="7072">
           <caret line="75" column="13" selection-start-line="75" selection-start-column="13" selection-end-line="75" selection-end-column="13" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.07676561" vertical-offset="4872" max-vertical-offset="11135">
-          <caret line="291" column="9" selection-start-line="291" selection-start-column="9" selection-end-line="291" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#6118#6119#0" expanded="true" />
-            <element signature="e#6145#6146#0" expanded="true" />
-            <element signature="e#6402#7626#0" expanded="true" />
-            <element signature="e#7611#7612#0" expanded="true" />
-            <element signature="e#8179#8180#0" expanded="true" />
-            <element signature="e#8220#8221#0" expanded="true" />
-            <element signature="e#8506#8507#0" expanded="true" />
-            <element signature="e#8528#8529#0" expanded="true" />
-            <element signature="e#12528#12529#0" expanded="true" />
-            <element signature="e#12604#12605#0" expanded="true" />
-            <element signature="e#14097#14263#0" expanded="true" />
-            <element signature="e#14256#14257#0" expanded="true" />
-            <element signature="e#20047#20048#0" expanded="true" />
-            <element signature="e#20085#20086#0" expanded="true" />
-            <element signature="e#20895#20896#0" expanded="true" />
-            <element signature="e#20926#20927#0" expanded="true" />
-            <element signature="e#21437#21438#0" expanded="true" />
-            <element signature="e#21483#21484#0" expanded="true" />
-            <element signature="e#21548#21549#0" expanded="true" />
-            <element signature="e#21599#21600#0" expanded="true" />
-            <element signature="e#21650#21651#0" expanded="true" />
-            <element signature="e#21694#21695#0" expanded="true" />
-            <element signature="e#21744#21745#0" expanded="true" />
-            <element signature="e#21787#21788#0" expanded="true" />
-            <element signature="e#21843#21844#0" expanded="true" />
-            <element signature="e#21891#21892#0" expanded="true" />
-            <element signature="e#21951#21952#0" expanded="true" />
-            <element signature="e#22003#22004#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaNotificationManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.4965174" vertical-offset="3086" max-vertical-offset="5695">
-          <caret line="270" column="0" selection-start-line="270" selection-start-column="0" selection-end-line="270" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3613,46 +3395,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWidgetProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.178572" vertical-offset="1020" max-vertical-offset="2006">
-          <caret line="85" column="24" selection-start-line="85" selection-start-column="24" selection-end-line="85" selection-end-column="24" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/RemotePlayerService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="532" max-vertical-offset="6579">
-          <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1141" max-vertical-offset="2210">
-          <caret line="95" column="8" selection-start-line="93" selection-start-column="8" selection-end-line="95" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/RemoteControlClientReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-41.892857" vertical-offset="0" max-vertical-offset="1666">
-          <caret line="69" column="26" selection-start-line="69" selection-start-column="25" selection-end-line="69" selection-end-column="26" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-5.44" vertical-offset="0" max-vertical-offset="272">
@@ -3669,9 +3411,9 @@
         <state vertical-scroll-proportion="-4.037037" vertical-offset="27" max-vertical-offset="1921">
           <caret line="8" column="4" selection-start-line="7" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
           <folding>
-            <element signature="e#1238#1253#0" expanded="true" />
-            <element signature="e#1586#1602#0" expanded="true" />
-            <element signature="e#1934#1949#0" expanded="true" />
+            <element signature="e#1238#1253#0" expanded="false" />
+            <element signature="e#1586#1602#0" expanded="false" />
+            <element signature="e#1934#1949#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -3683,52 +3425,176 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-22.666666" vertical-offset="0" max-vertical-offset="850">
           <caret line="36" column="44" selection-start-line="36" selection-start-column="44" selection-end-line="36" selection-end-column="44" />
-          <folding>
-            <element signature="e#1463#1478#0" expanded="true" />
-          </folding>
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/drawable-ldpi/icon.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/IMediaService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
+          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/app/Notification.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33302152" vertical-offset="2908" max-vertical-offset="84405">
-          <caret line="248" column="23" selection-start-line="248" selection-start-column="23" selection-end-line="248" selection-end-column="23" />
+        <state vertical-scroll-proportion="0.33296338" vertical-offset="34040" max-vertical-offset="84405">
+          <caret line="2110" column="23" selection-start-line="2110" selection-start-column="23" selection-end-line="2110" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/KitKatMediaService.java">
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/content/Intent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-19.5" vertical-offset="11116" max-vertical-offset="14688">
-          <caret line="686" column="34" selection-start-line="686" selection-start-column="34" selection-end-line="686" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.33302152" vertical-offset="83080" max-vertical-offset="132498">
+          <caret line="5009" column="16" selection-start-line="5009" selection-start-column="16" selection-end-line="5009" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/java/lang/Long.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33518314" vertical-offset="4492" max-vertical-offset="12308">
+          <caret line="319" column="0" selection-start-line="319" selection-start-column="0" selection-end-line="319" selection-end-column="0" />
+          <folding>
+            <element signature="e#10593#10594#0" expanded="false" />
+            <element signature="e#10637#10638#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/app/Service.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33296338" vertical-offset="8540" max-vertical-offset="11781">
+          <caret line="552" column="22" selection-start-line="552" selection-start-column="22" selection-end-line="552" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/RemotePlayerService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5572" max-vertical-offset="6579">
+          <caret line="135" column="12" selection-start-line="135" selection-start-column="12" selection-end-line="135" selection-end-column="12" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#11037#11038#0" expanded="true" />
-            <element signature="e#11064#11065#0" expanded="true" />
-            <element signature="e#11321#12545#0" expanded="true" />
-            <element signature="e#12530#12531#0" expanded="true" />
-            <element signature="e#13117#13118#0" expanded="true" />
-            <element signature="e#13139#13140#0" expanded="true" />
-            <element signature="e#17778#17944#0" expanded="true" />
-            <element signature="e#17937#17938#0" expanded="true" />
-            <element signature="e#22589#22590#0" expanded="true" />
-            <element signature="e#22624#22625#0" expanded="true" />
-            <element signature="e#23153#23154#0" expanded="true" />
-            <element signature="e#23209#23210#0" expanded="true" />
-            <element signature="e#28158#28159#0" expanded="true" />
-            <element signature="e#28196#28197#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/media/session/PlaybackState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5407332" vertical-offset="12304" max-vertical-offset="15810">
+          <caret line="818" column="23" selection-start-line="818" selection-start-column="23" selection-end-line="818" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.697556" vertical-offset="947" max-vertical-offset="2210">
+          <caret line="96" column="8" selection-start-line="95" selection-start-column="8" selection-end-line="96" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/legacy/RemoteControlClientReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="1598">
+          <caret line="73" column="26" selection-start-line="73" selection-start-column="26" selection-end-line="73" selection-end-column="26" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15369837" vertical-offset="4158" max-vertical-offset="6596">
-          <caret line="254" column="82" selection-start-line="254" selection-start-column="82" selection-end-line="254" selection-end-column="82" />
+        <state vertical-scroll-proportion="6.214286" vertical-offset="4577" max-vertical-offset="6698">
+          <caret line="259" column="51" selection-start-line="259" selection-start-column="51" selection-end-line="259" selection-end-column="51" />
           <folding>
-            <element signature="e#0#13024#0" expanded="true" />
+            <element signature="e#0#13242#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#12762#13048#0" expanded="true" />
+            <element signature="e#13041#13042#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWidgetProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2006">
+          <caret line="18" column="32" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="32" />
+          <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/legacy/KitKatMediaService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.19832109" vertical-offset="678" max-vertical-offset="14603">
+          <caret line="51" column="37" selection-start-line="51" selection-start-column="37" selection-end-line="51" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#11026#11027#0" expanded="true" />
+            <element signature="e#11053#11054#0" expanded="true" />
+            <element signature="e#21640#21641#0" expanded="true" />
+            <element signature="e#21675#21676#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaNotificationManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-94.14286" vertical-offset="764" max-vertical-offset="5406">
+          <caret line="200" column="12" selection-start-line="200" selection-start-column="12" selection-end-line="200" selection-end-column="12" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6494845" vertical-offset="10330" max-vertical-offset="13719">
+          <caret line="641" column="71" selection-start-line="641" selection-start-column="71" selection-end-line="641" selection-end-column="71" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#6118#6119#0" expanded="true" />
+            <element signature="e#6145#6146#0" expanded="true" />
+            <element signature="e#6402#7563#0" expanded="true" />
+            <element signature="e#7548#7549#0" expanded="true" />
+            <element signature="e#8116#8117#0" expanded="true" />
+            <element signature="e#8157#8158#0" expanded="true" />
+            <element signature="e#13778#14128#0" expanded="true" />
+            <element signature="e#14113#14114#0" expanded="true" />
+            <element signature="e#26545#26546#0" expanded="true" />
+            <element signature="e#26575#26576#0" expanded="true" />
+            <element signature="e#26640#26641#0" expanded="true" />
+            <element signature="e#26678#26679#0" expanded="true" />
+            <element signature="e#26729#26730#0" expanded="true" />
+            <element signature="e#26760#26761#0" expanded="true" />
+            <element signature="e#26810#26811#0" expanded="true" />
+            <element signature="e#26840#26841#0" expanded="true" />
+            <element signature="e#26896#26897#0" expanded="true" />
+            <element signature="e#26944#26945#0" expanded="true" />
+            <element signature="e#27004#27005#0" expanded="true" />
+            <element signature="e#27056#27057#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1509434" vertical-offset="0" max-vertical-offset="901">
+          <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
+          <folding />
         </state>
       </provider>
     </entry>

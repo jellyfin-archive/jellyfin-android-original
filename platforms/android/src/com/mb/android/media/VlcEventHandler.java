@@ -102,7 +102,7 @@ public class VlcEventHandler extends Handler {
 
         long length = mLibVLC.getLength() / 1000;
 
-        long time = mLibVLC.getTime() / 1000;
+        long time = mLibVLC.getTime();
 
         int volume = mLibVLC.getVolume();
 

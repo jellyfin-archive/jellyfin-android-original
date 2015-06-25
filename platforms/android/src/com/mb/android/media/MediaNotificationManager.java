@@ -82,12 +82,17 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mNotificationManager.cancelAll();
     }
 
+    private Bitmap currentBitmap = null;
+
     /**
      * Posts the notification and starts tracking the session to keep it
      * updated. The notification will automatically be removed if the session is
      * destroyed before {@link #stopNotification} is called.
      */
-    public void startNotification() {
+    public void startNotification(Bitmap bitmap) {
+
+        currentBitmap = bitmap;
+
         if (!mStarted) {
             mMetadata = mController.getMetadata();
             mPlaybackState = mController.getPlaybackState();
@@ -238,15 +243,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         MediaDescription description = mMetadata.getDescription();
 
-        String fetchArtUrl = null;
-        Bitmap art = null;
-        if (description.getIconUri() != null) {
-            // This sample assumes the iconUri will be a valid URL formatted String, but
-            // it can actually be any valid Android Uri formatted String.
-            // async fetch the album art icon
-            fetchArtUrl = description.getIconUri().toString();
-        }
-
         notificationBuilder
                 .setStyle(new Notification.MediaStyle()
                         .setShowActionsInCompactView(
@@ -260,8 +256,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setContentText(description.getSubtitle());
 
         setNotificationPlaybackState(notificationBuilder);
-        if (fetchArtUrl != null) {
-            fetchBitmapFromURLAsync(fetchArtUrl, notificationBuilder);
+
+        if (currentBitmap != null) {
+            notificationBuilder.setLargeIcon(currentBitmap);
         }
 
         return notificationBuilder.build();
@@ -291,8 +288,14 @@ public class MediaNotificationManager extends BroadcastReceiver {
             mService.stopForeground(true);
             return;
         }
-        if ((mPlaybackState.getState() == PlaybackState.STATE_PLAYING || mPlaybackState.getState() == PlaybackState.STATE_PAUSED)
-                && mPlaybackState.getPosition() >= 0) {
+        if (mPlaybackState.getState() == PlaybackState.STATE_PAUSED || mPlaybackState.getPosition() == 0) {
+            builder
+                    .setWhen(0)
+                    .setShowWhen(false)
+                    .setUsesChronometer(true);
+        }
+        else if (mPlaybackState.getState() == PlaybackState.STATE_PLAYING && mPlaybackState.getPosition() >= 0) {
+
             builder
                     .setWhen(System.currentTimeMillis() - mPlaybackState.getPosition())
                     .setShowWhen(true)
@@ -306,25 +309,5 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         // Make sure that the notification can be dismissed by the user when we are not playing:
         builder.setOngoing(mPlaybackState.getState() == PlaybackState.STATE_PLAYING);
-    }
-
-    private void fetchBitmapFromURLAsync(final String bitmapUrl,
-                                         final Notification.Builder builder) {
-
-        httpClient.getBitmap(bitmapUrl, new Response<Bitmap>() {
-
-            @Override
-            public void onResponse(Bitmap bitmap) {
-                builder.setLargeIcon(bitmap);
-                mNotificationManager.notify(NOTIFICATION_ID, builder.build());
-            }
-
-            @Override
-            public void onError(Exception ex) {
-
-                // Logged at lower levels
-            }
-
-        });
     }
 }
