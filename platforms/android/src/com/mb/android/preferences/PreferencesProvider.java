@@ -27,8 +27,6 @@ public class PreferencesProvider {
 
     @JavascriptInterface
     public String get(String key) {
-
-
         return getSharedPreferences(context).getString(key, null);
     }
 
@@ -62,7 +60,7 @@ public class PreferencesProvider {
 
         // Need to take the app settings and copy them to where the sync services will read them
         String syncPath = get("syncPath");
-
+        logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences with %s", syncPath);
         MediaSyncAdapter.updateSyncPreferences(context, syncPath);
     }
 
