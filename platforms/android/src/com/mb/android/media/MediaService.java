@@ -2,9 +2,6 @@ package com.mb.android.media;
 
 import java.lang.ref.WeakReference;
 import java.util.Date;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Stack;
 
 import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
@@ -14,7 +11,6 @@ import org.videolan.libvlc.Media;
 
 import android.annotation.TargetApi;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -25,7 +21,6 @@ import android.media.MediaMetadata;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -37,7 +32,6 @@ import android.util.Log;
 
 import com.mb.android.MainActivity;
 import com.mb.android.api.ApiClientBridge;
-import com.mb.android.webviews.IWebView;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -46,8 +40,6 @@ import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.dto.BaseItemDto;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
-
-import android.media.session.MediaSession;
 
 public class MediaService extends Service implements IMediaService {
 
@@ -67,12 +59,11 @@ public class MediaService extends Service implements IMediaService {
 
     private static boolean mWasPlayingAudio = false;
 
-    // Delay stopSelf by using a handler.
-    private static final int STOP_DELAY = 30000;
-
     private MediaNotificationManager mMediaNotificationManager;
     // Indicates whether the service was started.
     private boolean mServiceStarted;
+    // Delay stopSelf by using a handler.
+    private static final int STOP_DELAY = 30000;
     private DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
 
     @Override
@@ -101,10 +92,13 @@ public class MediaService extends Service implements IMediaService {
         IntentFilter filter = new IntentFilter();
         filter.setPriority(Integer.MAX_VALUE);
         filter.addAction(Constants.ACTION_PLAYPAUSE);
+        filter.addAction(Constants.ACTION_NEXT);
+        filter.addAction(Constants.ACTION_PREVIOUS);
         filter.addAction(Constants.ACTION_PLAY);
         filter.addAction(Constants.ACTION_PAUSE);
         filter.addAction(Constants.ACTION_UNPAUSE);
         filter.addAction(Constants.ACTION_STOP);
+        filter.addAction(Constants.ACTION_SEEK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         filter.addAction(SLEEP_INTENT);
@@ -115,7 +109,7 @@ public class MediaService extends Service implements IMediaService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // Start a new MediaSession
             mSession = new MediaSession(this, "MediaService");
-            mSession.setCallback(new MediaSessionCallback());
+            mSession.setCallback(new MediaSessionCallback(logger));
             mSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
         }
 
@@ -167,7 +161,9 @@ public class MediaService extends Service implements IMediaService {
     public void onDestroy() {
         super.onDestroy();
 
-        stop();
+        logger.Debug("MediaService.onDestroy");
+
+        stop(false);
 
         if (mWakeLock.isHeld())
             mWakeLock.release();
@@ -262,7 +258,14 @@ public class MediaService extends Service implements IMediaService {
             return;
         }
 
-        int state = intent.getIntExtra("state", 0);
+        logger.Debug("MediaService.handleIntent action=%s", action);
+
+        if (action.equalsIgnoreCase(Constants.ACTION_PREVIOUS)) {
+            handlePreviousTrackCommand();
+        } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
+            handleNextTrackCommand();
+        }
+
         if( mLibVLC == null ) {
             Log.w(TAG, "Intent received, but VLC is not loaded, skipping.");
             return;
@@ -303,7 +306,7 @@ public class MediaService extends Service implements IMediaService {
         } else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
             pause();
         } else if (action.equalsIgnoreCase(Constants.ACTION_STOP)) {
-            stop();
+            stop(intent.getBooleanExtra("stopService", false));
 
         } else if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
             play(context, intent);
@@ -320,6 +323,7 @@ public class MediaService extends Service implements IMediaService {
              * headset plug events
              */
         if (mDetectHeadset) {
+            int state = intent.getIntExtra("state", 0);
             if (action.equalsIgnoreCase(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
                 Log.i(TAG, "Headset Removed.");
                 if (mLibVLC.isPlaying() && hasCurrentMedia())
@@ -336,7 +340,7 @@ public class MediaService extends Service implements IMediaService {
              * Sleep
              */
         if (action.equalsIgnoreCase(SLEEP_INTENT)) {
-            stop();
+            stop(true);
         }
     }
 
@@ -370,7 +374,9 @@ public class MediaService extends Service implements IMediaService {
             LibVLC vlc = getLibVlcInstance();
             Media media = new Media(vlc, path);
             currentMrl = media.getMrl();
-            vlc.playMRL(media.getMrl());
+
+            logger.Debug("Vlc playMRL: %s", currentMrl);
+            vlc.playMRL(currentMrl);
         //}
     }
 
@@ -379,7 +385,7 @@ public class MediaService extends Service implements IMediaService {
         mSession.setActive(true);
 
         String album = item.getAlbum() == null ? "" : item.getAlbum();
-        String artist = item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
+        String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
         String title = item.getName() == null ? "" : item.getName();
         String itemId = item.getId();
 
@@ -712,7 +718,7 @@ public class MediaService extends Service implements IMediaService {
         }
     }
 
-    private void stop() {
+    private void stop(boolean stopService) {
 
         LibVLC vlc = mLibVLC;
 
@@ -732,18 +738,32 @@ public class MediaService extends Service implements IMediaService {
         if (mWakeLock.isHeld())
             mWakeLock.release();
 
-        // service is no longer necessary. Will be started again if needed.
-        stopSelf();
-        mServiceStarted = false;
+        if (stopService) {
+            // service is no longer necessary. Will be started again if needed.
+            logger.Debug("MediaService.stopSelf");
+            stopSelf();
+
+            mServiceStarted = false;
+        }
     }
 
     private void destroyCurrentMediaInfo() {
+
+        logger.Debug("MediaService.destroyCurrentMediaInfo");
+
         currentMrl = null;
         currentBitmap = null;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private final class MediaSessionCallback extends MediaSession.Callback {
+
+        private ILogger logger;
+
+        private MediaSessionCallback(ILogger logger) {
+            this.logger = logger;
+        }
+
         @Override
         public void onPlay() {
             play();
@@ -761,7 +781,10 @@ public class MediaService extends Service implements IMediaService {
 
         @Override
         public void onStop() {
-            stop();
+
+            logger.Debug("MediaSessionCallback.onStop");
+
+            stop(true);
         }
 
         @Override

@@ -1,7 +1,9 @@
 package com.mb.android.media.legacy;
 
+import java.lang.ref.WeakReference;
 import java.util.Calendar;
 
+import org.apache.http.protocol.HTTP;
 import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.LibVlcException;
@@ -71,6 +73,11 @@ public class KitKatMediaService extends Service {
      * Last widget position update timestamp
      */
     private long mWidgetPositionTimestamp = Calendar.getInstance().getTimeInMillis();
+    // Indicates whether the service was started.
+    private boolean mServiceStarted;
+    // Delay stopSelf by using a handler.
+    private static final int STOP_DELAY = 30000;
+    private DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
 
     // RemoteControlClient-related
     /**
@@ -109,10 +116,13 @@ public class KitKatMediaService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.setPriority(Integer.MAX_VALUE);
         filter.addAction(Constants.ACTION_PLAYPAUSE);
+        filter.addAction(Constants.ACTION_NEXT);
+        filter.addAction(Constants.ACTION_PREVIOUS);
         filter.addAction(Constants.ACTION_PLAY);
         filter.addAction(Constants.ACTION_PAUSE);
         filter.addAction(Constants.ACTION_UNPAUSE);
         filter.addAction(Constants.ACTION_STOP);
+        filter.addAction(Constants.ACTION_SEEK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         filter.addAction(SLEEP_INTENT);
@@ -189,8 +199,8 @@ public class KitKatMediaService extends Service {
         BaseItemDto item = currentItem;
 
         String album = item.getAlbum() == null ? "" : item.getAlbum();
-        String artist = item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
-        String genre = item.getGenres().size() > 0 ? item.getGenres().get(0) : "";
+        String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
+        String genre = item.getGenres() != null && item.getGenres().size() > 0 ? item.getGenres().get(0) : "";
         String albumArtist = item.getAlbumArtist() == null ? "" : item.getAlbumArtist();
         String title = item.getName() == null ? "" : item.getName();
         String itemId = item.getId();
@@ -215,8 +225,19 @@ public class KitKatMediaService extends Service {
 
                 @Override
                 public void onResponse(Bitmap bitmap) {
-                    editor.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, bitmap);
-                    editor.apply();
+
+                    try {
+                        editor.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, bitmap);
+                        editor.apply();
+                    }
+                    catch (IllegalStateException ex){
+
+                        // Occasionally seeing this exception: Caused by: java.lang.IllegalStateException: Can't parcel a recycled bitmap
+                        logger.ErrorException("Error applying bitmap to notification", ex);
+
+                        editor.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, null);
+                        editor.apply();
+                    }
                 }
 
                 @Override
@@ -270,7 +291,7 @@ public class KitKatMediaService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stop();
+        stop(false);
         if (mWakeLock.isHeld())
             mWakeLock.release();
         unregisterReceiver(serviceReceiver);
@@ -346,7 +367,14 @@ public class KitKatMediaService extends Service {
         String action = intent.getAction();
         if (action == null) action = "";
 
-        int state = intent.getIntExtra("state", 0);
+        logger.Debug("KitKatMediaService.handleIntent action=%s", action);
+
+        if (action.equalsIgnoreCase(Constants.ACTION_PREVIOUS)) {
+            handlePreviousTrackCommand();
+        } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
+            handleNextTrackCommand();
+        }
+
         if( mLibVLC == null ) {
             Log.w(TAG, "Intent received, but VLC is not loaded, skipping.");
             return;
@@ -397,16 +425,12 @@ public class KitKatMediaService extends Service {
         } else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
             pause();
         } else if (action.equalsIgnoreCase(Constants.ACTION_STOP)) {
-            stop();
+            stop(intent.getBooleanExtra("stopService", false));
 
         } else if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
             play(context, intent);
         }
-        else if (action.equalsIgnoreCase(Constants.ACTION_PREVIOUS)) {
-            handlePreviousTrackCommand();
-        } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
-            handleNextTrackCommand();
-        } else if (action.equalsIgnoreCase(Constants.ACTION_SEEK)) {
+        else if (action.equalsIgnoreCase(Constants.ACTION_SEEK)) {
 
             seek(intent.getLongExtra("position", 0));
 
@@ -418,6 +442,7 @@ public class KitKatMediaService extends Service {
              * headset plug events
              */
         if (mDetectHeadset) {
+            int state = intent.getIntExtra("state", 0);
             if (action.equalsIgnoreCase(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
                 Log.i(TAG, "Headset Removed.");
                 if (mLibVLC.isPlaying() && hasCurrentMedia())
@@ -434,7 +459,7 @@ public class KitKatMediaService extends Service {
              * Sleep
              */
         if (action.equalsIgnoreCase(SLEEP_INTENT)) {
-            stop();
+            stop(true);
         }
     }
 
@@ -448,6 +473,15 @@ public class KitKatMediaService extends Service {
     }
 
     private void play(Context context, Intent intent) {
+
+        if (!mServiceStarted) {
+            logger.Info("Starting service");
+            // The MusicService needs to keep running even after the calling MediaBrowser
+            // is disconnected. Call startService(Intent) and then stopSelf(..) when we no longer
+            // need to play media.
+            startService(new Intent(getApplicationContext(), KitKatMediaService.class));
+            mServiceStarted = true;
+        }
 
         String path = intent.getStringExtra("path");
         String itemJson = intent.getStringExtra("item");
@@ -519,11 +553,18 @@ public class KitKatMediaService extends Service {
                     break;
                 case EventHandler.MediaPlayerStopped:
                     Log.i(TAG, "MediaPlayerStopped");
-                    service.onStopped();
+                    service.executeUpdate();
+                    service.executeUpdateProgress();
+                    service.setRemoteControlClientPlaybackState(EventHandler.MediaPlayerStopped);
+                    if (service.mWakeLock.isHeld())
+                        service.mWakeLock.release();
                     break;
                 case EventHandler.MediaPlayerEndReached:
                     Log.i(TAG, "MediaPlayerEndReached");
-                    service.onStopped();
+                    service.executeUpdate();
+                    service.executeUpdateProgress();
+                    if (service.mWakeLock.isHeld())
+                        service.mWakeLock.release();
                     break;
                 case EventHandler.MediaPlayerVout:
                     if(msg.getData().getInt("data") > 0) {
@@ -545,7 +586,10 @@ public class KitKatMediaService extends Service {
                             R.string.invalid_location,
                             service.mLibVLC.getMediaList().getMRL(
                                     service.mCurrentIndex)), Toast.LENGTH_SHORT);*/
-                    service.onStopped();
+                    service.executeUpdate();
+                    service.executeUpdateProgress();
+                    if (service.mWakeLock.isHeld())
+                        service.mWakeLock.release();
                     break;
                 case EventHandler.MediaPlayerTimeChanged:
                     // avoid useless error logs
@@ -617,7 +661,7 @@ public class KitKatMediaService extends Service {
                 return;
 
             String album = item.getAlbum() == null ? "" : item.getAlbum();
-            String artist = item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
+            String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
             String title = item.getName() == null ? "" : item.getName();
             String itemId = item.getId();
             Notification notification;
@@ -646,18 +690,6 @@ public class KitKatMediaService extends Service {
                 PendingIntent piBackward = PendingIntent.getBroadcast(this, 0, iBackward, PendingIntent.FLAG_UPDATE_CURRENT);
                 PendingIntent piPlay = PendingIntent.getBroadcast(this, 0, iPlay, PendingIntent.FLAG_UPDATE_CURRENT);
                 PendingIntent piForward = PendingIntent.getBroadcast(this, 0, iForward, PendingIntent.FLAG_UPDATE_CURRENT);
-                PendingIntent piStop = PendingIntent.getBroadcast(this, 0, iStop, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
-                if (cover != null)
-                    view.setImageViewBitmap(R.id.cover, cover);
-                view.setTextViewText(R.id.title, title);
-                view.setTextViewText(R.id.artist, artist);
-                view.setImageViewResource(R.id.play_pause, isPlaying ? R.drawable.ic_pause_w : R.drawable.ic_play_w);
-                view.setOnClickPendingIntent(R.id.play_pause, piPlay);
-                view.setOnClickPendingIntent(R.id.forward, piForward);
-                view.setOnClickPendingIntent(R.id.stop, piStop);
-                view.setOnClickPendingIntent(R.id.content, pendingIntent);
 
                 RemoteViews view_expanded = new RemoteViews(getPackageName(), R.layout.notification_expanded);
                 if (cover != null)
@@ -669,7 +701,6 @@ public class KitKatMediaService extends Service {
                 view_expanded.setOnClickPendingIntent(R.id.backward, piBackward);
                 view_expanded.setOnClickPendingIntent(R.id.play_pause, piPlay);
                 view_expanded.setOnClickPendingIntent(R.id.forward, piForward);
-                view_expanded.setOnClickPendingIntent(R.id.stop, piStop);
                 view_expanded.setOnClickPendingIntent(R.id.content, pendingIntent);
 
                 notification = builder.build();
@@ -697,20 +728,18 @@ public class KitKatMediaService extends Service {
         }
     }
 
-    private void hideNotification() {
-        hideNotification(true);
-    }
-
     /**
      * Hides the VLC notification and stops the service.
      *
-     * @param stopPlayback True to also stop playback at the same time. Set to false to preserve playback (e.g. for vout events)
+     * @param stopService True to also stop playback at the same time. Set to false to preserve playback (e.g. for vout events)
      */
-    private void hideNotification(boolean stopPlayback) {
+    private void hideNotification(boolean stopService) {
 
         stopForeground(true);
-        if(stopPlayback)
+        if(stopService) {
             stopSelf();
+            mServiceStarted = false;
+        }
     }
 
     private String currentMrl;
@@ -756,21 +785,17 @@ public class KitKatMediaService extends Service {
         }
     }
 
-    private void stop() {
+    private void stop(boolean stopService) {
 
         LibVLC vlc = mLibVLC;
 
         if (vlc != null) {
             vlc.stop();
-            onStopped();
         }
-    }
-
-    private void onStopped() {
 
         destroyCurrentMediaInfo();
         setRemoteControlClientPlaybackState(EventHandler.MediaPlayerStopped);
-        hideNotification();
+        hideNotification(stopService);
         executeUpdate();
         executeUpdateProgress();
         changeAudioFocus(false);
@@ -797,7 +822,7 @@ public class KitKatMediaService extends Service {
             BaseItemDto item = currentItem;
 
             String album = item.getAlbum() == null ? "" : item.getAlbum();
-            String artist = item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
+            String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
             String title = item.getName() == null ? "" : item.getName();
             String itemId = item.getId();
 
@@ -860,5 +885,30 @@ public class KitKatMediaService extends Service {
         i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE_POSITION);
         i.putExtra("position", positionMs);
         sendBroadcast(i);
+    }
+
+    /**
+     * A simple handler that stops the service if playback is not active (playing)
+     */
+    private static class DelayedStopHandler extends Handler {
+        private final WeakReference<KitKatMediaService> mWeakReference;
+
+        private DelayedStopHandler(KitKatMediaService service) {
+            mWeakReference = new WeakReference<KitKatMediaService>(service);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            KitKatMediaService service = mWeakReference.get();
+            if (service != null && service.mLibVLC != null) {
+                if (service.hasCurrentMedia()) {
+                    service.logger.Debug("Ignoring delayed stop since the media player is in use.");
+                    return;
+                }
+                service.logger.Debug("Stopping service with delay handler.");
+                service.stopSelf();
+                service.mServiceStarted = false;
+            }
+        }
     }
 }
