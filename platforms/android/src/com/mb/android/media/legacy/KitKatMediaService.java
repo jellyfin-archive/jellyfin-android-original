@@ -1,8 +1,6 @@
-package com.mb.android.media;
+package com.mb.android.media.legacy;
 
 import java.util.Calendar;
-import java.util.Random;
-import java.util.Stack;
 
 import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
@@ -28,7 +26,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Parcelable;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
@@ -38,6 +35,9 @@ import android.widget.RemoteViews;
 import com.mb.android.MainActivity;
 import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
+import com.mb.android.media.Constants;
+import com.mb.android.media.MediaWidgetProvider;
+import com.mb.android.media.VlcEventHandler;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -57,8 +57,7 @@ public class KitKatMediaService extends Service {
     public static final String INCOMING_CALL_INTENT = "com.mb.android.media.incomingcall";
     public static final String CALL_ENDED_INTENT = "com.mb.android.media.callended";
 
-    public static final String WIDGET_PACKAGE = "org.videolan.vlc";
-    public static final String WIDGET_CLASS = "org.videolan.vlc.widget.VLCAppWidgetProvider";
+    public static final String WIDGET_CLASS = "com.mb.android.media.MediaWidgetProvider";
 
     private LibVLC mLibVLC;
     private OnAudioFocusChangeListener audioFocusListener;
@@ -305,8 +304,8 @@ public class KitKatMediaService extends Service {
                     switch (focusChange)
                     {
                         case AudioManager.AUDIOFOCUS_LOSS:
-                            if (libVLC.isPlaying())
-                                libVLC.pause();
+                            if (hasCurrentMedia())
+                                pause();
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -334,30 +333,12 @@ public class KitKatMediaService extends Service {
 
     }
 
-    private void handlePauseCommand() {
-        if (mLibVLC.isPlaying() && hasCurrentMedia())
-            pause();
-    }
-
-    private void handleUnpauseCommand() {
-        if (!mLibVLC.isPlaying() && hasCurrentMedia())
-            play();
-    }
-
-    private void handleStopCommand() {
-        stop();
-    }
-
     private void handleNextTrackCommand() {
         MainActivity.RespondToWebView("MediaController.nextTrack();");
     }
 
     private void handlePreviousTrackCommand() {
         MainActivity.RespondToWebView("MediaController.previousTrack();");
-    }
-
-    private void handleSeekCommand(long positionMs) {
-
     }
 
     private void handleIntent(Context context, Intent intent) {
@@ -375,8 +356,8 @@ public class KitKatMediaService extends Service {
              * Incoming Call : Pause if VLC is playing audio or video.
              */
         if (action.equalsIgnoreCase(INCOMING_CALL_INTENT)) {
-            mWasPlayingAudio = mLibVLC.isPlaying() && mLibVLC.getVideoTracksCount() < 1;
-            if (mLibVLC.isPlaying())
+            mWasPlayingAudio = hasCurrentMedia() && mLibVLC.getVideoTracksCount() < 1;
+            if (hasCurrentMedia())
                 pause();
         }
 
@@ -408,15 +389,15 @@ public class KitKatMediaService extends Service {
              */
         if (action.equalsIgnoreCase(Constants.ACTION_PLAYPAUSE)) {
             if (mLibVLC.isPlaying() && hasCurrentMedia())
-                handlePauseCommand();
-            else if (!mLibVLC.isPlaying() && hasCurrentMedia())
-                handleUnpauseCommand();
+                pause();
+            else if (hasCurrentMedia())
+                play();
         } else if (action.equalsIgnoreCase(Constants.ACTION_UNPAUSE)) {
-            handleUnpauseCommand();
+            play();
         } else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
-            handlePauseCommand();
+            pause();
         } else if (action.equalsIgnoreCase(Constants.ACTION_STOP)) {
-            handleStopCommand();
+            stop();
 
         } else if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
             play(context, intent);
@@ -425,7 +406,11 @@ public class KitKatMediaService extends Service {
             handlePreviousTrackCommand();
         } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
             handleNextTrackCommand();
-        } else if (action.equalsIgnoreCase(MediaWidgetProvider.ACTION_WIDGET_INIT)) {
+        } else if (action.equalsIgnoreCase(Constants.ACTION_SEEK)) {
+
+            seek(intent.getLongExtra("position", 0));
+
+        }else if (action.equalsIgnoreCase(MediaWidgetProvider.ACTION_WIDGET_INIT)) {
             updateWidget(context);
         }
 
@@ -534,21 +519,11 @@ public class KitKatMediaService extends Service {
                     break;
                 case EventHandler.MediaPlayerStopped:
                     Log.i(TAG, "MediaPlayerStopped");
-                    service.destroyCurrentMediaInfo();
-                    service.executeUpdate();
-                    service.executeUpdateProgress();
-                    service.setRemoteControlClientPlaybackState(EventHandler.MediaPlayerStopped);
-                    if (service.mWakeLock.isHeld())
-                        service.mWakeLock.release();
+                    service.onStopped();
                     break;
                 case EventHandler.MediaPlayerEndReached:
                     Log.i(TAG, "MediaPlayerEndReached");
-                    service.destroyCurrentMediaInfo();
-                    service.executeUpdate();
-                    service.executeUpdateProgress();
-
-                    if (service.mWakeLock.isHeld())
-                        service.mWakeLock.release();
+                    service.onStopped();
                     break;
                 case EventHandler.MediaPlayerVout:
                     if(msg.getData().getInt("data") > 0) {
@@ -557,19 +532,20 @@ public class KitKatMediaService extends Service {
                     break;
                 case EventHandler.MediaPlayerPositionChanged:
                     float pos = msg.getData().getFloat("data");
-                    long length = service.mLibVLC.getLength();
-                    service.updateWidgetPosition(service, pos, length);
+
+                    LibVLC vlc = service.mLibVLC;
+                    // Make sure it hasn't been disposed
+                    if (vlc != null) {
+                        long length = vlc.getLength();
+                        service.updateWidgetPosition(service, pos, length);
+                    }
                     break;
                 case EventHandler.MediaPlayerEncounteredError:
                     /*service.showToast(service.getString(
                             R.string.invalid_location,
                             service.mLibVLC.getMediaList().getMRL(
                                     service.mCurrentIndex)), Toast.LENGTH_SHORT);*/
-                    service.destroyCurrentMediaInfo();
-                    service.executeUpdate();
-                    service.executeUpdateProgress();
-                    if (service.mWakeLock.isHeld())
-                        service.mWakeLock.release();
+                    service.onStopped();
                     break;
                 case EventHandler.MediaPlayerTimeChanged:
                     // avoid useless error logs
@@ -659,7 +635,7 @@ public class KitKatMediaService extends Service {
             notificationIntent.putExtra(START_FROM_NOTIFICATION, true);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            boolean isPlaying = mLibVLC.isPlaying();
+            boolean isPlaying = hasCurrentMedia();
 
             if (LibVlcUtil.isJellyBeanOrLater()) {
 
@@ -751,8 +727,15 @@ public class KitKatMediaService extends Service {
     }
 
     private void pause() {
-        setUpRemoteControlClient();
-        mLibVLC.pause();
+
+        LibVLC vlc = mLibVLC;
+
+        if (vlc != null) {
+            setUpRemoteControlClient();
+            if (vlc.getPlayerState() != 4){
+                vlc.pause();
+            }
+        }
     }
 
     private void play() {
@@ -764,9 +747,28 @@ public class KitKatMediaService extends Service {
         }
     }
 
-    private void stop() {
-        mLibVLC.stop();
+    private void seek(long position) {
 
+        LibVLC vlc = mLibVLC;
+
+        if (vlc != null) {
+            vlc.setTime(position);
+        }
+    }
+
+    private void stop() {
+
+        LibVLC vlc = mLibVLC;
+
+        if (vlc != null) {
+            vlc.stop();
+            onStopped();
+        }
+    }
+
+    private void onStopped() {
+
+        destroyCurrentMediaInfo();
         setRemoteControlClientPlaybackState(EventHandler.MediaPlayerStopped);
         hideNotification();
         executeUpdate();
@@ -784,10 +786,13 @@ public class KitKatMediaService extends Service {
     private void updateWidgetState(Context context) {
 
         Intent i = new Intent();
-        i.setClassName(WIDGET_PACKAGE, WIDGET_CLASS);
+        i.setClassName(MediaWidgetProvider.APP_PACKAGE, WIDGET_CLASS);
         i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE);
 
-        if (hasCurrentMedia()) {
+        LibVLC vlc = mLibVLC;
+
+        // Make sure vlc hasn't been disposed
+        if (hasCurrentMedia() && vlc != null) {
 
             BaseItemDto item = currentItem;
 
@@ -799,7 +804,7 @@ public class KitKatMediaService extends Service {
             i.putExtra("title", title);
             i.putExtra("artist", artist);
 
-            int playerState = mLibVLC.getPlayerState();
+            int playerState = vlc.getPlayerState();
 
             // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
             boolean isPaused = playerState == 4;
@@ -827,7 +832,7 @@ public class KitKatMediaService extends Service {
             @Override
             public void onResponse(Bitmap bitmap) {
                 Intent i = new Intent();
-                i.setClassName(WIDGET_PACKAGE, WIDGET_CLASS);
+                i.setClassName(MediaWidgetProvider.APP_PACKAGE, WIDGET_CLASS);
                 i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE_COVER);
                 i.putExtra("cover", bitmap);
                 sendBroadcast(i);
@@ -851,7 +856,7 @@ public class KitKatMediaService extends Service {
 
         mWidgetPositionTimestamp = timestamp;
         Intent i = new Intent();
-        i.setClassName(WIDGET_PACKAGE, WIDGET_CLASS);
+        i.setClassName(MediaWidgetProvider.APP_PACKAGE, WIDGET_CLASS);
         i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE_POSITION);
         i.putExtra("position", positionMs);
         sendBroadcast(i);

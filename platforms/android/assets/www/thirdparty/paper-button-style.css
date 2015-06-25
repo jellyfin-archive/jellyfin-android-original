@@ -230,14 +230,22 @@ iron-overlay-backdrop {
     padding: 0 12px;
 }
 
-paper-dialog > *:last-child {
+paper-dialog > *:last-child:not(.buttons) {
     margin-bottom: 12px;
 }
 
-paper-dialog > *:first-child {
+paper-dialog > *:first-child:not(h2) {
     margin-top: 12px;
 }
 
 paper-icon-button paper-ripple {
     color: inherit !important;
+}
+
+paper-dialog + iron-overlay-backdrop {
+    background-color: transparent !important;
+}
+
+paper-dialog[role="alertdialog"] + iron-overlay-backdrop {
+    background-color: #000 !important;
 }
