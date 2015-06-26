@@ -382,6 +382,7 @@ module.exports.metadata =
     "cordova-plugin-file-transfer": "1.1.0",
     "com.telerik.plugins.wkwebview": "0.4.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
+    "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",

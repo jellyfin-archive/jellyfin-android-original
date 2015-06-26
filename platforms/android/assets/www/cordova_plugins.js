@@ -367,6 +367,7 @@ module.exports.metadata =
     "cordova-plugin-file-transfer": "1.1.0",
     "com.telerik.plugins.wkwebview": "0.4.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
+    "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
