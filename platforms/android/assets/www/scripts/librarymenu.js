@@ -19,8 +19,8 @@ var requiresDrawerRefresh=true;var requiresDashboardDrawerRefresh=true;var lastO
 function onMainDrawerOpened(){if($.browser.mobile){$(document.body).addClass('bodyWithPopupOpen');}
 var drawer=$('.mainDrawerPanel .mainDrawer');ConnectionManager.user(window.ApiClient).done(function(user){if(requiresDrawerRefresh){ensureDrawerStructure(drawer);refreshUserInfoInDrawer(user,drawer);refreshLibraryInfoInDrawer(user,drawer);refreshBottomUserInfoInDrawer(user,drawer);$(document).trigger('libraryMenuCreated');updateLibraryMenu(user.localUser);}
 if(requiresDrawerRefresh||requiresDashboardDrawerRefresh){refreshDashboardInfoInDrawer($.mobile.activePage,user,drawer);requiresDashboardDrawerRefresh=false;}
-requiresDrawerRefresh=false;updateLibraryNavLinks($.mobile.activePage);});}
-function onMainDrawerClosed(){$(document.body).removeClass('bodyWithPopupOpen');}
+requiresDrawerRefresh=false;updateLibraryNavLinks($.mobile.activePage);});$('.mainDrawerPanel #drawer').addClass('verticalScrollingDrawer');}
+function onMainDrawerClosed(){$(document.body).removeClass('bodyWithPopupOpen');$('.mainDrawerPanel #drawer').removeClass('verticalScrollingDrawer');}
 function closeMainDrawer(){var drawerPanel=$('.mainDrawerPanel')[0];drawerPanel.closeDrawer();}
 function ensureDrawerStructure(drawer){if($('.mainDrawerContent',drawer).length){return;}
 var html='<div class="mainDrawerContent">';html+='<div class="userheader">';html+='</div>';html+='<div class="libraryDrawerContent">';html+='</div>';html+='<div class="dashboardDrawerContent">';html+='</div>';html+='<div class="userFooter">';html+='</div>';html+='</div>';$(drawer).html(html);}
@@ -56,7 +56,7 @@ function setLibraryMenuText(text){$('.libraryMenuButtonText').html('<span>'+text
 function getTopParentId(){return getParameterByName('topParentId')||null;}
 window.LibraryMenu={getTopParentId:getTopParentId,setText:setLibraryMenuText,onLinkClicked:function(link){if((new Date().getTime()-lastOpenTime)>200){closeMainDrawer();setTimeout(function(){Dashboard.navigate(link.href);},300);}
 return false;},onLogoutClicked:function(){if((new Date().getTime()-lastOpenTime)>200){closeMainDrawer();setTimeout(function(){Dashboard.logout();},300);}
-return false;}};function updateCastIcon(){var info=MediaController.getPlayerInfo();if(info.isLocalPlayer){$('.btnCast').removeClass('btnActiveCast').each(function(){this.icon='cast';});$('.headerSelectedPlayer').html('');}else{$('.btnCast').addClass('btnActiveCast').each(function(){this.icon='cast-connected';});$('.headerSelectedPlayer').html((info.deviceName||info.name));}}
+return false;}};function updateCastIcon(){var info=MediaController.getPlayerInfo();if(info.isLocalPlayer){$('.btnCast').removeClass('btnActiveCast').each(function(){this.icon='cast';});$('.nowPlayingSelectedPlayer').html('');}else{$('.btnCast').addClass('btnActiveCast').each(function(){this.icon='cast-connected';});$('.nowPlayingSelectedPlayer').html((info.deviceName||info.name));}}
 function updateLibraryNavLinks(page){page=$(page);var isLiveTvPage=page.hasClass('liveTvPage');var isChannelsPage=page.hasClass('channelsPage');var isEditorPage=page.hasClass('metadataEditorPage');var isReportsPage=page.hasClass('reportsPage');var isMySyncPage=page.hasClass('mySyncPage');var id=isLiveTvPage||isChannelsPage||isEditorPage||isReportsPage||isMySyncPage||page.hasClass('allLibraryPage')?'':getTopParentId()||'';$('.lnkMediaFolder').each(function(){var itemId=this.getAttribute('data-itemid');if(isChannelsPage&&itemId=='channels'){$(this).addClass('selectedMediaFolder');}
 else if(isLiveTvPage&&itemId=='livetv'){$(this).addClass('selectedMediaFolder');}
 else if(isEditorPage&&itemId=='editor'){$(this).addClass('selectedMediaFolder');}
