@@ -239,6 +239,9 @@
         },
         "nl.x-services.plugins.actionsheet": {
             "PACKAGE_NAME": "com.mb.android"
+        },
+        "nl.x-services.plugins.backgroundaudio": {
+            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {
