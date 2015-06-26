@@ -1,4 +1,4 @@
-﻿(function($,document){var defaultFirstSection='smalllibrarytiles';function getDefaultSection(index){switch(index){case 0:return defaultFirstSection;case 1:return'resume';case 2:return'latestmedia';case 3:return'';default:return'';}}
+﻿(function($,document){var defaultFirstSection='smalllibrarytiles';function getDefaultSection(index){switch(index){case 0:return defaultFirstSection;case 1:return'resume';case 2:return'latestmedia';case 3:return'latesttvrecordings';default:return'';}}
 function loadSection(page,user,displayPreferences,index){var userId=user.Id;var section=displayPreferences.CustomPrefs['home'+index]||getDefaultSection(index);if(section=='folders'){section=defaultFirstSection;}
 var showLibraryTileNames=displayPreferences.CustomPrefs.enableLibraryTileNames!='0';var elem=$('.section'+index,page);if(section=='latestmedia'){return Sections.loadRecentlyAdded(elem,user);}
 else if(section=='librarytiles'){return Sections.loadLibraryTiles(elem,user,'backdrop',index,false,showLibraryTileNames);}

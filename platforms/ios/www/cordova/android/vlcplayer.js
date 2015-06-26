@@ -88,7 +88,7 @@
             }
         };
 
-        self.setCurrentSrc = function (val) {
+        self.setCurrentSrc = function (val, item, mediaSource) {
 
             if (!val) {
                 self.destroy();
@@ -96,7 +96,8 @@
             }
 
             if (type == 'audio') {
-                AndroidVlcPlayer.playAudioVlc(val);
+
+                AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), posterUrl);
             } else {
                 AndroidVlcPlayer.playVideoVlc(val);
             }
@@ -119,13 +120,18 @@
             return false;
         };
 
-        self.destroy = function () {
+        self.cleanup = function (destroyRenderer) {
 
-            AndroidVlcPlayer.destroyVlc();
+            if (destroyRenderer !== false) {
+                AndroidVlcPlayer.destroyVlc();
+            }
+
             playerState = {};
         };
 
+        var posterUrl;
         self.setPoster = function (url) {
+            posterUrl = url;
         };
 
         self.report = function (eventName, duration, position, isPaused, volume) {
