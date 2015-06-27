@@ -277,16 +277,16 @@ text+=minutes;}
 text+=suffix;}else{text=hours+':';if(minutes<10){text+='0';}
 text+=minutes;}
 return text;},getMiscInfoHtml:function(item){var miscInfo=[];var text,date;if(item.Type=="Episode"||item.MediaType=='Photo'){if(item.PremiereDate){try{date=parseISO8601Date(item.PremiereDate,{toLocal:true});text=date.toLocaleDateString();miscInfo.push(text);}
-catch(e){console.log("Error parsing date: "+item.PremiereDate);}}}
+catch(e){Logger.log("Error parsing date: "+item.PremiereDate);}}}
 if(item.StartDate){try{date=parseISO8601Date(item.StartDate,{toLocal:true});text=date.toLocaleDateString();miscInfo.push(text);if(item.Type!="Recording"){text=LibraryBrowser.getDisplayTime(date);miscInfo.push(text);}}
-catch(e){console.log("Error parsing date: "+item.PremiereDate);}}
+catch(e){Logger.log("Error parsing date: "+item.PremiereDate);}}
 if(item.ProductionYear&&item.Type=="Series"){if(item.Status=="Continuing"){miscInfo.push(Globalize.translate('ValueSeriesYearToPresent',item.ProductionYear));}
 else if(item.ProductionYear){text=item.ProductionYear;if(item.EndDate){try{var endYear=parseISO8601Date(item.EndDate,{toLocal:true}).getFullYear();if(endYear!=item.ProductionYear){text+="-"+parseISO8601Date(item.EndDate,{toLocal:true}).getFullYear();}}
-catch(e){console.log("Error parsing date: "+item.EndDate);}}
+catch(e){Logger.log("Error parsing date: "+item.EndDate);}}
 miscInfo.push(text);}}
 if(item.Type!="Series"&&item.Type!="Episode"&&item.MediaType!='Photo'){if(item.ProductionYear){miscInfo.push(item.ProductionYear);}
 else if(item.PremiereDate){try{text=parseISO8601Date(item.PremiereDate,{toLocal:true}).getFullYear();miscInfo.push(text);}
-catch(e){console.log("Error parsing date: "+item.PremiereDate);}}}
+catch(e){Logger.log("Error parsing date: "+item.PremiereDate);}}}
 var minutes;if(item.RunTimeTicks&&item.Type!="Series"){if(item.Type=="Audio"){miscInfo.push(Dashboard.getDisplayTime(item.RunTimeTicks));}else{minutes=item.RunTimeTicks/600000000;minutes=minutes||1;miscInfo.push(Math.round(minutes)+"min");}}
 if(item.OfficialRating&&item.Type!=="Season"&&item.Type!=="Episode"){miscInfo.push(item.OfficialRating);}
 if(item.Video3DFormat){miscInfo.push("3D");}
