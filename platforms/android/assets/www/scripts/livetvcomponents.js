@@ -6,7 +6,7 @@ if(obj.Audio){html.push(obj.Audio);}
 html=html.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');if(obj.SeriesTimerId){html+='<a href="livetvseriestimer.html?id='+obj.SeriesTimerId+'" title="'+Globalize.translate('ButtonViewSeriesRecording')+'">';html+='<div class="timerCircle seriesTimerCircle"></div>';html+='<div class="timerCircle seriesTimerCircle"></div>';html+='<div class="timerCircle seriesTimerCircle"></div>';html+='</a>';}
 else if(obj.TimerId){html+='<a href="livetvtimer.html?id='+obj.TimerId+'">';html+='<div class="timerCircle"></div>';html+='</a>';}
 elem.html(html).trigger('create');},renderOriginalAirDate:function(elem,item){var airDate=item.OriginalAirDate;if(airDate&&item.IsRepeat){try{airDate=parseISO8601Date(airDate,{toLocal:true}).toLocaleDateString();}
-catch(e){console.log("Error parsing date: "+airDate);}
+catch(e){Logger.log("Error parsing date: "+airDate);}
 elem.html(Globalize.translate('ValueOriginalAirDate').replace('{0}',airDate)).show();}else{elem.hide();}}};})();(function($,document,window){var showOverlayTimeout;var hideOverlayTimeout;var currentPosterItem;function onOverlayMouseOver(){if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}}
 function onOverlayMouseOut(){startHideOverlayTimer();}
 function getOverlayHtml(item){var html='';html+='<div class="itemOverlayContent">';if(item.EpisodeTitle){html+='<p>';html+=item.EpisodeTitle;html+='</p>';}
