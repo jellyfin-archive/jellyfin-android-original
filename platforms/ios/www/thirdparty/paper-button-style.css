@@ -289,6 +289,16 @@ paper-fab.subdued {
     background: #222;
 }
 
+paper-fab.white {
+    background: #fff;
+    color: #000;
+}
+
+    paper-fab.white paper-material.keyboard-focus {
+        background: #01579b !important;
+        color: #fff;
+    }
+
 paper-fab.blue {
     background: #03a9f4;
 }
@@ -297,11 +307,10 @@ paper-fab.blue {
         background: #01579b !important;
     }
 
-paper-fab.large {
-    width: 64px;
-    height: 64px;
-}
-
 paper-fab.square {
     border-radius: 5px;
+}
+
+paper-slider {
+    width: 100%;
 }

@@ -13,7 +13,7 @@ var player=new remoteControlPlayer();MediaController.registerPlayer(player);func
 function firePlaybackEvent(name,session){$(player).trigger(name,[getPlayerState(session)]);}
 function onWebSocketConnectionChange(){if(player.isUpdating){player.subscribeToPlayerUpdates();}}
 function onWebSocketMessageReceived(e,msg){var apiClient=this;if(msg.MessageType==="Sessions"){var currentTargetId=MediaController.getPlayerInfo().id;var session=msg.Data.filter(function(s){return s.Id==currentTargetId;})[0];if(session){firePlaybackEvent('playstatechange',session);}}
-else if(msg.MessageType==="SessionEnded"){console.log("Server reports another session ended");if(MediaController.getPlayerInfo().id==msg.Data.Id){MediaController.setDefaultPlayerActive();}}
+else if(msg.MessageType==="SessionEnded"){Logger.log("Server reports another session ended");if(MediaController.getPlayerInfo().id==msg.Data.Id){MediaController.setDefaultPlayerActive();}}
 else if(msg.MessageType==="PlaybackStart"){if(msg.Data.DeviceId!=apiClient.deviceId()){if(MediaController.getPlayerInfo().id==msg.Data.Id){firePlaybackEvent('playbackstart',msg.Data);}}}
 else if(msg.MessageType==="PlaybackStopped"){if(msg.Data.DeviceId!=apiClient.deviceId()){if(MediaController.getPlayerInfo().id==msg.Data.Id){firePlaybackEvent('playbackstop',msg.Data);}}}}
 function initializeApiClient(apiClient){$(apiClient).on("websocketmessage",onWebSocketMessageReceived).on("websocketopen",onWebSocketConnectionChange);}

@@ -5,12 +5,14 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		128CF0722F9A49B0BF19550D /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 67AB33E4AC854FCEBC8B175E /* CDVDevice.m */; };
 		1508D36431034FCDA3A12ED5 /* SKProduct+LocalizedPrice.m in Sources */ = {isa = PBXBuildFile; fileRef = B95518DB468748B7BBA94DA5 /* SKProduct+LocalizedPrice.m */; };
 		155998F45A1143369C3F3A57 /* CDVStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 10972958725E460893D016ED /* CDVStatusBar.m */; };
 		16677AE4D36C42B09F1CC22F /* APPLocalNotificationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = AC1FB59EDA20473AA5411CA6 /* APPLocalNotificationOptions.m */; };
+		1754832D61E54F09A2CB0B1C /* BackgroundAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCB181009E4ECE87AB7C7E /* BackgroundAudio.m */; };
 		1BCD48E696CB4748B02FC28E /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 0649EE606C1D4B068F13F08C /* GCDAsyncSocket.m */; };
 		1BF80882DE9540D7BCEC5950 /* CDVBackgroundColor.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AE01EBC7F84534B913262F /* CDVBackgroundColor.m */; };
 		1D3623260D0F684500981E51 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* AppDelegate.m */; };
@@ -90,7 +92,6 @@
 		EC634FEA5AB846C9A94B200C /* AppDelegate+WKWebViewPolyfill.m in Sources */ = {isa = PBXBuildFile; fileRef = AF8E51927D99431AA623E755 /* AppDelegate+WKWebViewPolyfill.m */; };
 		ED6B4D7048AB461AA2ECF565 /* CDVLocalFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 753AB05F07ED4BFE898DE60D /* CDVLocalFilesystem.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
-		1754832D61E54F09A2CB0B1C /* BackgroundAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCB181009E4ECE87AB7C7E /* BackgroundAudio.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -149,6 +150,7 @@
 		24979162D35B422499D236D5 /* StoreKit.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2CFCB181009E4ECE87AB7C7E /* BackgroundAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BackgroundAudio.m; path = "nl.x-services.plugins.backgroundaudio/BackgroundAudio.m"; sourceTree = "<group>"; };
 		301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
 		301BF56E109A69640062928A /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = SOURCE_ROOT; };
 		302D95EE14D2391D003F00A1 /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
@@ -193,6 +195,7 @@
 		600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ChromeSocketsUdp.m; path = "cordova-plugin-chrome-apps-sockets-udp/ChromeSocketsUdp.m"; sourceTree = "<group>"; };
 		64ABE96F71674FC480F4D76C /* ISSpeechRecognition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechRecognition.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechRecognition.h; sourceTree = "<group>"; };
 		67AB33E4AC854FCEBC8B175E /* CDVDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVDevice.m; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; };
+		6814DC3C1E6E45C09B4E0FB9 /* BackgroundAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BackgroundAudio.h; path = "nl.x-services.plugins.backgroundaudio/BackgroundAudio.h"; sourceTree = "<group>"; };
 		69C4AF8969D3404CA1BB606B /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncUdpSocket.h; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncUdpSocket.h"; sourceTree = "<group>"; };
 		6D986C63AAA6406CB075A8DE /* ISSpeechSynthesis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISSpeechSynthesis.h; path = org.apache.cordova.speech.speechrecognition/ISSpeechSynthesis.h; sourceTree = "<group>"; };
 		729D3184A4A142E38454FC6A /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncUdpSocket.m; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncUdpSocket.m"; sourceTree = "<group>"; };
@@ -267,8 +270,6 @@
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
-		2CFCB181009E4ECE87AB7C7E /* BackgroundAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "BackgroundAudio.m"; path = "nl.x-services.plugins.backgroundaudio/BackgroundAudio.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		6814DC3C1E6E45C09B4E0FB9 /* BackgroundAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "BackgroundAudio.h"; path = "nl.x-services.plugins.backgroundaudio/BackgroundAudio.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
