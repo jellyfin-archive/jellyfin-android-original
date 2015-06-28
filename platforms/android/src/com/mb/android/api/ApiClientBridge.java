@@ -17,6 +17,7 @@ import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.PeriodicSync;
 import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
+import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
@@ -107,34 +108,11 @@ public class ApiClientBridge {
     }
 
     @JavascriptInterface
-    public void getImage(final String id, final String url) {
+    public void sendRequest(String requestJson, String dataType, final String callbackId) {
 
-        Handler mainHandler = new Handler(context.getMainLooper());
+        HttpRequest request = jsonSerializer.DeserializeFromString(requestJson, HttpRequest.class);
 
-        Runnable myRunnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.Debug("Received request for %s", url);
+        httpClient.Send(request, new HttpRequestResponse(jsonSerializer, webView, callbackId));
 
-                httpClient.getCachedFile(url, new Response<String>() {
-
-                    @Override
-                    public void onResponse(String path) {
-
-                        if (path != null) {
-                            RespondToWebView(String.format("$(ImageStore).trigger('imagepath%s', ['%s']);", id, path));
-                        }
-                    }
-
-                });
-            }
-        };
-        mainHandler.post(myRunnable);
-    }
-
-    private void RespondToWebView(final String js) {
-
-        //logger.Info("Sending url to webView: %s", js);
-        webView.sendJavaScript(js);
     }
 }
