@@ -266,13 +266,16 @@ public class Options {
      */
     public Bitmap getIconBitmap() {
         String icon = options.optString("icon", "icon");
-        Bitmap bmp;
+        Bitmap bmp = null;
 
         try{
             Uri uri = Uri.parse(options.optString("iconUri"));
             bmp = assets.getIconFromUri(uri);
         } catch (Exception e){
-            bmp = assets.getIconFromDrawable(icon);
+
+            // We don't need this and it's throwing IndexOutOfBounds in ExtractResourceName
+            // This is also really bad. It catches any possible failure and assumes it's a drawable resource
+            // bmp = assets.getIconFromDrawable(icon);
         }
 
         return bmp;

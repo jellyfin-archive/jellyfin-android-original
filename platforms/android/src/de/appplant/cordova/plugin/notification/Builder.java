@@ -26,6 +26,7 @@ package de.appplant.cordova.plugin.notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
@@ -129,11 +130,15 @@ public class Builder {
                 .setNumber(options.getBadgeNumber())
                 .setTicker(options.getText())
                 .setSmallIcon(options.getSmallIcon())
-                .setLargeIcon(options.getIconBitmap())
                 .setAutoCancel(options.isAutoClear())
                 .setOngoing(options.isOngoing())
                 .setStyle(style)
                 .setLights(options.getLedColor(), 500, 500);
+
+        Bitmap largeIcon = options.getIconBitmap();
+        if (largeIcon != null) {
+            builder.setLargeIcon(largeIcon);
+        }
 
         if (sound != null) {
             builder.setSound(sound);
