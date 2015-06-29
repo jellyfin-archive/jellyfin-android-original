@@ -37,24 +37,49 @@ public class HttpRequestResponse extends Response<String> {
     @Override
     public void onError(Exception ex){
 
-        HttpException httpError = (HttpException)ex;
+        String jsResponse;
 
-        HttpRequestWebViewResponse response = new HttpRequestWebViewResponse();
-        response.setStatusCode(httpError.getStatusCode());
-        response.setResponseHeaders(httpError.getHeaders());
-        String responseJson = jsonSerializer.SerializeToString(response);
+        String statusCodeString = "null";
 
-        String js = String.format("AndroidAjax.onError('%s', %s, %s);", requestId, httpError.getStatusCode(), responseJson);
-        RespondToWebView(js);
+        if (ex instanceof HttpException){
+            HttpException httpError = (HttpException)ex;
+
+            HttpRequestWebViewResponse response = new HttpRequestWebViewResponse();
+
+            if (httpError.getIsTimedOut()){
+
+            }
+            else{
+
+                if (httpError.getStatusCode() != null) {
+                    response.setStatusCode(httpError.getStatusCode());
+                    statusCodeString = String.valueOf(httpError.getStatusCode());
+                }
+
+                response.setResponseHeaders(httpError.getHeaders());
+            }
+
+            String responseJson = jsonSerializer.SerializeToString(response);
+
+            jsResponse = String.format("AndroidAjax.onError('%s', %s, %s);", requestId, statusCodeString, responseJson);
+        }
+        else{
+            HttpRequestWebViewResponse response = new HttpRequestWebViewResponse();
+            String responseJson = jsonSerializer.SerializeToString(response);
+
+            jsResponse = String.format("AndroidAjax.onError('%s', %s, %s);", requestId, statusCodeString, responseJson);
+        }
+
+        RespondToWebView(jsResponse);
     }
 
     private class HttpRequestWebViewResponse{
 
-        private int StatusCode;
-        public int getStatusCode() {
+        private Integer StatusCode;
+        public Integer getStatusCode() {
             return StatusCode;
         }
-        public void setStatusCode(int statusCode){
+        public void setStatusCode(Integer statusCode){
             StatusCode = statusCode;
         }
 

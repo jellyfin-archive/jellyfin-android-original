@@ -37,9 +37,9 @@ function hideNowPlayingBar(){var elem=document.getElementsByClassName('nowPlayin
 function onPlaybackStopped(e,state){Logger.log('nowplaying event: '+e.type);var player=this;player.endPlayerUpdates();hideNowPlayingBar();}
 function onStateChanged(e,state){var player=this;if(player.isDefaultPlayer&&state.NowPlayingItem&&state.NowPlayingItem.MediaType=='Video'){return;}
 updatePlayerState(state);}
-function releaseCurrentPlayer(){if(currentPlayer){Events.off(currentPlayer,'.nowplayingbar');currentPlayer.endPlayerUpdates();currentPlayer=null;hideNowPlayingBar();}}
+function releaseCurrentPlayer(){if(currentPlayer){$(currentPlayer).off('playbackstart',onPlaybackStart).off('playbackstop',onPlaybackStopped).off('volumechange',onVolumeChanged).off('playstatechange',onStateChanged).off('positionchange',onStateChanged);currentPlayer.endPlayerUpdates();currentPlayer=null;hideNowPlayingBar();}}
 function onVolumeChanged(e){var player=this;player.getPlayerState().done(function(state){if(player.isDefaultPlayer&&state.NowPlayingItem&&state.NowPlayingItem.MediaType=='Video'){return;}
 updatePlayerVolumeState(state);});}
 function bindToPlayer(player){releaseCurrentPlayer();currentPlayer=player;player.getPlayerState().done(function(state){if(state.NowPlayingItem){player.beginPlayerUpdates();}
-onStateChanged.call(player,{type:'init'},state);});$(player).on('playbackstart.nowplayingbar',onPlaybackStart).on('playbackstop.nowplayingbar',onPlaybackStopped).on('volumechange.nowplayingbar',onVolumeChanged).on('playstatechange.nowplayingbar',onStateChanged).on('positionchange.nowplayingbar',onStateChanged);}
+onStateChanged.call(player,{type:'init'},state);});$(player).on('playbackstart',onPlaybackStart).on('playbackstop',onPlaybackStopped).on('volumechange',onVolumeChanged).on('playstatechange',onStateChanged).on('positionchange',onStateChanged);}
 Dashboard.ready(function(){Events.on(MediaController,'playerchange',function(){bindToPlayer(MediaController.getCurrentPlayer());});bindToPlayer(MediaController.getCurrentPlayer());});})(window,document,jQuery,setTimeout,clearTimeout);
