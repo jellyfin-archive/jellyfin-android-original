@@ -79,7 +79,7 @@ if(!$.browser.mobile){darkDrawer=true;}}
 else if(page.classList.contains('type-interior')){document.body.classList.remove('libraryDocument');document.body.classList.add('dashboardDocument');document.body.classList.remove('hideMainDrawer');}else{document.body.classList.remove('libraryDocument');document.body.classList.remove('dashboardDocument');document.body.classList.add('hideMainDrawer');}
 if(darkDrawer){document.querySelector('.mainDrawerPanel #drawer').classList.add('darkDrawer');}else{document.querySelector('.mainDrawerPanel #drawer').classList.remove('darkDrawer');}
 if(AppInfo.enableBackButton){updateBackButton(page);}}
-function updateBackButton(page){var canGoBack=backStack.length>0&&!page.classList.contains('homePage');$('.headerBackButton').visible(canGoBack);Events.off(page,'swiperight',onPageSwipeLeft);if(canGoBack){Events.on(page,'swiperight',onPageSwipeLeft);}}
+function updateBackButton(page){var canGoBack=backStack.length>0&&!page.classList.contains('homePage');$('.headerBackButton').visible(canGoBack);Events.off(page,'swiperight',onPageSwipeLeft);if(canGoBack){}}
 function onPageSwipeLeft(e){var target=e.target;if(!target.classList.contains('hiddenScrollX')&&!$(target).parents('.hiddenScrollX').length){history.back();}}
 function onPageShowDocumentReady(page){var elems=page.querySelectorAll('.libraryViewNav .ui-btn-active');elems=$(elems).filter(':visible');if(elems.length){elems[0].scrollIntoView();window.scrollTo(0,0);}}
 function initHeadRoom(elem){if(!AppInfo.enableHeadRoom){return;}
