@@ -15,7 +15,7 @@ function showOverlay(elem,item){$('.itemFlyout').popup('close').remove();var htm
 function onProgramClicked(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}
 if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}
 hideOverlay();}
-function hideOverlay(){$('.itemFlyout').popup('close').remove();if(currentPosterItem){$(currentPosterItem).off('click.overlay');currentPosterItem=null;}}
+function hideOverlay(){$('.itemFlyout').popup('close').remove();if(currentPosterItem){$(currentPosterItem).off('click');currentPosterItem=null;}}
 function startHideOverlayTimer(){if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}
 hideOverlayTimeout=setTimeout(hideOverlay,200);}
 function onHoverOut(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}
