@@ -30,7 +30,7 @@ public class HttpRequestResponse extends Response<String> {
             response = "null";
         }
 
-        String js = String.format("AndroidAjax.onResponse('%s', %s, %s);", requestId, 200, response);
+        String js = String.format("AndroidAjax.onResponse('%s', %s);", requestId, response);
         RespondToWebView(js);
     }
 
@@ -38,8 +38,6 @@ public class HttpRequestResponse extends Response<String> {
     public void onError(Exception ex){
 
         String jsResponse;
-
-        String statusCodeString = "null";
 
         if (ex instanceof HttpException){
             HttpException httpError = (HttpException)ex;
@@ -53,7 +51,6 @@ public class HttpRequestResponse extends Response<String> {
 
                 if (httpError.getStatusCode() != null) {
                     response.setStatusCode(httpError.getStatusCode());
-                    statusCodeString = String.valueOf(httpError.getStatusCode());
                 }
 
                 response.setResponseHeaders(httpError.getHeaders());
@@ -61,13 +58,13 @@ public class HttpRequestResponse extends Response<String> {
 
             String responseJson = jsonSerializer.SerializeToString(response);
 
-            jsResponse = String.format("AndroidAjax.onError('%s', %s, %s);", requestId, statusCodeString, responseJson);
+            jsResponse = String.format("AndroidAjax.onError('%s', %s);", requestId, responseJson);
         }
         else{
             HttpRequestWebViewResponse response = new HttpRequestWebViewResponse();
             String responseJson = jsonSerializer.SerializeToString(response);
 
-            jsResponse = String.format("AndroidAjax.onError('%s', %s, %s);", requestId, statusCodeString, responseJson);
+            jsResponse = String.format("AndroidAjax.onError('%s', %s);", requestId, responseJson);
         }
 
         RespondToWebView(jsResponse);

@@ -7,7 +7,7 @@ return deferred.promise();}
 function setBackdropImage(elem,url){ImageLoader.lazyImage(elem,url);}
 function showBackdrop(type,parentId){var apiClient=window.ApiClient;if(!apiClient){return;}
 getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).done(function(images){if(images.length){var index=getRandom(0,images.length-1);var item=images[index];var screenWidth=$(window).width();var imgUrl=apiClient.getScaledImageUrl(item.id,{type:"Backdrop",tag:item.tag,maxWidth:screenWidth,quality:50});setBackdropImage(getElement(),imgUrl);}else{clearBackdrop();}});}
-function setDefault(page){getElement().css('backgroundImage','url(css/images/splash.jpg)');page.classList.add('backdropPage staticBackdropPage');}
+function setDefault(page){getElement().style.backgroundImage="url(css/images/splash.jpg)";page.classList.add('backdropPage');page.classList.add('staticBackdropPage');}
 function isEnabledByDefault(){if(AppInfo.hasLowImageBandwidth){return false;}
 if($.browser.android&&AppInfo.isNativeApp){return screen.availWidth>=1200;}
 if($.browser.mobile){return false;}
