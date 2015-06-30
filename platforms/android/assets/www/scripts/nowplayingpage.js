@@ -34,6 +34,8 @@ positionSlider.disabled=!playState.CanSeek;}
 if(playState.PositionTicks==null){$('.positionTime',page).html('--:--');}else{$('.positionTime',page).html(Dashboard.getDisplayTime(playState.PositionTicks));}
 if(item&&item.RunTimeTicks!=null){$('.runtime',page).html(Dashboard.getDisplayTime(item.RunTimeTicks));}else{$('.runtime',page).html('--:--');}
 if(item&&item.MediaType=='Video'){$('.videoButton',page).css('visibility','visible');}else{$('.videoButton',page).css('visibility','hidden');}
+if(playerInfo.isLocalPlayer&&AppInfo.hasPhysicalVolumeButtons){$('.volumeButton',page).css('visibility','hidden');}else{$('.volumeButton',page).css('visibility','visible');}
+if(playerInfo.isLocalPlayer&&AppInfo.hasPhysicalVolumeButtons&&item&&item.MediaType=='Audio'){$('.buttonsRow2',page).hide();$('.buttonsRow3',page).hide();}else{$('.buttonsRow2',page).show();$('.buttonsRow3',page).show();}
 updateNowPlayingInfo(page,state);}
 var currentImgUrl;function updateNowPlayingInfo(page,state){var item=state.NowPlayingItem;var displayName=item?MediaController.getNowPlayingNameHtml(item).replace('<br/>',' - '):'';$('.nowPlayingPageTitle',page).html(displayName).visible(displayName.length>0);var url;var backdropUrl=null;if(!item){}
 else if(item.PrimaryImageTag){url=ApiClient.getScaledImageUrl(item.PrimaryImageItemId,{type:"Primary",height:300,tag:item.PrimaryImageTag});}

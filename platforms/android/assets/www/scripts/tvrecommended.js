@@ -11,4 +11,4 @@ function loadResume(page){var parentId=LibraryMenu.getTopParentId();var screenWi
 var view=getResumeView();var html='';if(view=='PosterCard'){html+=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:getThumbShape(),showTitle:true,showParentTitle:true,lazy:true,cardLayout:true,context:'tv',showDetailsMenu:true});}else if(view=='Poster'){html+=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:getThumbShape(),showTitle:true,showParentTitle:true,overlayText:screenWidth>=800&&!AppInfo.hasLowImageBandwidth,lazy:true,context:'tv',showDetailsMenu:true});}
 var elem=page.querySelector('#resumableItems');elem.innerHTML=html;ImageLoader.lazyChildren(elem);});}
 $(document).on('pagebeforeshowready',"#tvRecommendedPage",function(){var page=this;if(enableScrollX()){page.querySelector('#resumableItems').classList.add('hiddenScrollX');}else{page.querySelector('#resumableItems').classList.remove('hiddenScrollX');}
-reload(page);});})(jQuery,document);
+if(NavHelper.needsRefresh(page)){reload(page);}});})(jQuery,document);

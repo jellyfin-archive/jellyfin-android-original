@@ -32,9 +32,9 @@ if(commands.indexOf('download')!=-1){items.push({name:Globalize.translate('Butto
 if(commands.indexOf('edit')!=-1){items.push({name:Globalize.translate('ButtonEdit'),id:'edit',ironIcon:'mode-edit'});}
 if(commands.indexOf('refresh')!=-1){items.push({name:Globalize.translate('ButtonRefresh'),id:'refresh',ironIcon:'refresh'});}
 require(['actionsheet'],function(){ActionSheetElement.show({items:items,positionTo:positionTo,callback:function(id){switch(id){case'addtocollection':BoxSetEditor.showPanel([itemId]);break;case'playlist':PlaylistManager.showPanel([itemId]);break;case'delete':LibraryBrowser.deleteItem(itemId);break;case'download':{var downloadHref=ApiClient.getUrl("Items/"+itemId+"/Download",{api_key:ApiClient.accessToken()});window.location.href=downloadHref;break;}
-case'edit':Dashboard.navigate('edititemmetadata.html?id='+itemId);break;case'refresh':ApiClient.refreshItem(itemId,{Recursive:true,ImageRefreshMode:'FullRefresh',MetadataRefreshMode:'FullRefresh',ReplaceAllImages:false,ReplaceAllMetadata:true});break;default:break;}}});});},getHref:function(item,context,topParentId){var href=LibraryBrowser.getHrefInternal(item,context);if(context){href+=href.indexOf('?')==-1?"?context=":"&context=";href+=context;}
-if(topParentId==null&&context!='playlists'){topParentId=LibraryMenu.getTopParentId();}
-if(topParentId){href+=href.indexOf('?')==-1?"?topParentId=":"&topParentId=";href+=topParentId;}
+case'edit':Dashboard.navigate('edititemmetadata.html?id='+itemId);break;case'refresh':ApiClient.refreshItem(itemId,{Recursive:true,ImageRefreshMode:'FullRefresh',MetadataRefreshMode:'FullRefresh',ReplaceAllImages:false,ReplaceAllMetadata:true});break;default:break;}}});});},getHref:function(item,context,topParentId){var href=LibraryBrowser.getHrefInternal(item,context);if(context){if(context!='livetv'){href+=href.indexOf('?')==-1?"?context=":"&context=";href+=context;}}
+if(context!='livetv'){if(topParentId==null&&context!='playlists'){topParentId=LibraryMenu.getTopParentId();}
+if(topParentId){href+=href.indexOf('?')==-1?"?topParentId=":"&topParentId=";href+=topParentId;}}
 return href;},getHrefInternal:function(item,context){if(!item){throw new Error('item cannot be null');}
 if(item.url){return item.url;}
 var id=item.Id||item.ItemId;if(item.CollectionType=='livetv'){return'livetvsuggested.html';}
@@ -196,7 +196,7 @@ return name;},getOfflineIndicatorHtml:function(item){if(item.LocationType=="Offl
 if(item.Type=='Episode'){try{var date=parseISO8601Date(item.PremiereDate,{toLocal:true});if(item.PremiereDate&&(new Date().getTime()<date.getTime())){return'<div class="posterRibbon unairedPosterRibbon">'+Globalize.translate('HeaderUnaired')+'</div>';}}catch(err){}
 return'<div class="posterRibbon missingPosterRibbon">'+Globalize.translate('HeaderMissing')+'</div>';}
 return'';},getPlayedIndicatorHtml:function(item){if(item.Type=="Series"||item.Type=="Season"||item.Type=="BoxSet"||item.MediaType=="Video"||item.MediaType=="Game"||item.MediaType=="Book"){if(item.UserData.UnplayedItemCount){return'<div class="playedIndicator textIndicator">'+item.UserData.UnplayedItemCount+'</div>';}
-if(item.Type!='TvChannel'){if(item.UserData.PlayedPercentage&&item.UserData.PlayedPercentage>=100||(item.UserData&&item.UserData.Played)){return'<div class="playedIndicator"><i class="fa fa-check"></i></div>';}}}
+if(item.Type!='TvChannel'){if(item.UserData.PlayedPercentage&&item.UserData.PlayedPercentage>=100||(item.UserData&&item.UserData.Played)){return'<div class="playedIndicator"><iron-icon icon="check"></iron-icon></div>';}}}
 return'';},getGroupCountIndicator:function(item){if(item.ChildCount){return'<div class="playedIndicator textIndicator">'+item.ChildCount+'</div>';}
 return'';},getSyncIndicator:function(item){if(item.SyncPercent){if(item.SyncPercent>=100){return'<div class="syncIndicator"><i class="fa fa-refresh"></i></div>';}
 var degree=(item.SyncPercent/100)*360;return'<div class="pieIndicator"><i class="fa fa-refresh"></i><div class="pieBackground"></div><div class="hold"><div class="pie" style="-webkit-transform: rotate('+degree+'deg);-moz-transform: rotate('+degree+'deg);-o-transform: rotate('+degree+'deg);transform: rotate('+degree+'deg);"></div></div></div>';}
