@@ -6,5 +6,5 @@ function loadSections(page,userId){Dashboard.showLoadingMsg();var sections=getSe
 var i,length;var elem=$('.sections',page);if(!elem.html().length){var html='';for(i=0,length=sections.length;i<length;i++){html+='<div class="homePageSection section'+sections[i].id+'"></div>';}
 elem.html(html);}
 var promises=[];for(i=0,length=sections.length;i<length;i++){var section=sections[i];elem=page.querySelector('.section'+section.id);promises.push(loadSection(elem,userId,section,sections.length==1));}
-$.when(promises).done(function(){Dashboard.hideLoadingMsg();});}
-$(document).on('pagebeforeshowready',"#favoritesPage",function(){var page=this;var userId=Dashboard.getCurrentUserId();loadSections(page,userId);});})(jQuery,document);
+$.when(promises).done(function(){Dashboard.hideLoadingMsg();LibraryBrowser.setLastRefreshed(page);});}
+$(document).on('pagebeforeshowready',"#favoritesPage",function(){var page=this;var userId=Dashboard.getCurrentUserId();if(LibraryBrowser.needsRefresh(page)){loadSections(page,userId);}});})(jQuery,document);
