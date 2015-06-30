@@ -3,9 +3,12 @@ if(defaultValue){return defaultValue;}
 var isChrome=$.browser.chrome;return isChrome?200:100;},getDefaultItemsView:function(view,mobileView){return $.browser.mobile?mobileView:view;},loadSavedQueryValues:function(key,query){var values=appStorage.getItem(key+'_'+Dashboard.getCurrentUserId());if(values){values=JSON.parse(values);return $.extend(query,values);}
 return query;},saveQueryValues:function(key,query){var values={};if(query.SortBy){values.SortBy=query.SortBy;}
 if(query.SortOrder){values.SortOrder=query.SortOrder;}
-try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId(),JSON.stringify(values));}catch(e){}},saveViewSetting:function(key,value){try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId()+'_view',value);}catch(e){}},getSavedViewSetting:function(key){var deferred=$.Deferred();var val=appStorage.getItem(key+'_'+Dashboard.getCurrentUserId()+'_view');deferred.resolveWith(null,[val]);return deferred.promise();},needsRefresh:function(elem){var last=elem.getAttribute('data-lastrefresh')||'0';if(NavHelper.isBack()){return false;}
-var now=new Date().getTime();if((now-parseInt(last))<60000){return false;}
-return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());},getDateParamValue:function(date){function formatDigit(i){return i<10?"0"+i:i;}
+try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId(),JSON.stringify(values));}catch(e){}},saveViewSetting:function(key,value){try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId()+'_view',value);}catch(e){}},getSavedViewSetting:function(key){var deferred=$.Deferred();var val=appStorage.getItem(key+'_'+Dashboard.getCurrentUserId()+'_view');deferred.resolveWith(null,[val]);return deferred.promise();},needsRefresh:function(elem){var last=parseInt(elem.getAttribute('data-lastrefresh')||'0');if(!last){return true;}
+if(NavHelper.isBack()){return false;}
+var now=new Date().getTime();var cacheDuration=300000;if(!AppInfo.isNativeApp&&($.browser.ipad||$.browser.iphone||$.browser.android)){cacheDuration=10000;}
+else if(!$.browser.mobile){cacheDuration=60000;}
+if((now-last)<cacheDuration){return false;}
+return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},getDateParamValue:function(date){function formatDigit(i){return i<10?"0"+i:i;}
 var d=date;return""+d.getFullYear()+formatDigit(d.getMonth()+1)+formatDigit(d.getDate())+formatDigit(d.getHours())+formatDigit(d.getMinutes())+formatDigit(d.getSeconds());},playAllFromHere:function(fn,index){fn(index,100,"MediaSources,Chapters").done(function(result){MediaController.play({items:result.Items});});},queueAllFromHere:function(query,index){fn(index,100,"MediaSources,Chapters").done(function(result){MediaController.queue({items:result.Items});});},getItemCountsHtml:function(options,item){var counts=[];var childText;if(item.Type=='Playlist'){childText='';if(item.CumulativeRunTimeTicks){var minutes=item.CumulativeRunTimeTicks/600000000;minutes=minutes||1;childText+=Globalize.translate('ValueMinutes',Math.round(minutes));}else{childText+=Globalize.translate('ValueMinutes',0);}
 counts.push(childText);}
 else if(options.context=="movies"){if(item.MovieCount){childText=item.MovieCount==1?Globalize.translate('ValueOneMovie'):Globalize.translate('ValueMovieCount',item.MovieCount);counts.push(childText);}
@@ -34,12 +37,11 @@ if(commands.indexOf('download')!=-1){items.push({name:Globalize.translate('Butto
 if(commands.indexOf('edit')!=-1){items.push({name:Globalize.translate('ButtonEdit'),id:'edit',ironIcon:'mode-edit'});}
 if(commands.indexOf('refresh')!=-1){items.push({name:Globalize.translate('ButtonRefresh'),id:'refresh',ironIcon:'refresh'});}
 require(['actionsheet'],function(){ActionSheetElement.show({items:items,positionTo:positionTo,callback:function(id){switch(id){case'addtocollection':BoxSetEditor.showPanel([itemId]);break;case'playlist':PlaylistManager.showPanel([itemId]);break;case'delete':LibraryBrowser.deleteItem(itemId);break;case'download':{var downloadHref=ApiClient.getUrl("Items/"+itemId+"/Download",{api_key:ApiClient.accessToken()});window.location.href=downloadHref;break;}
-case'edit':Dashboard.navigate('edititemmetadata.html?id='+itemId);break;case'refresh':ApiClient.refreshItem(itemId,{Recursive:true,ImageRefreshMode:'FullRefresh',MetadataRefreshMode:'FullRefresh',ReplaceAllImages:false,ReplaceAllMetadata:true});break;default:break;}}});});},getHref:function(item,context,topParentId){var href=LibraryBrowser.getHrefInternal(item,context);if(context){if(context!='livetv'){href+=href.indexOf('?')==-1?"?context=":"&context=";href+=context;}}
-if(context!='livetv'){if(topParentId==null&&context!='playlists'){topParentId=LibraryMenu.getTopParentId();}
+case'edit':Dashboard.navigate('edititemmetadata.html?id='+itemId);break;case'refresh':ApiClient.refreshItem(itemId,{Recursive:true,ImageRefreshMode:'FullRefresh',MetadataRefreshMode:'FullRefresh',ReplaceAllImages:false,ReplaceAllMetadata:true});break;default:break;}}});});},getHref:function(item,context,topParentId){var href=LibraryBrowser.getHrefInternal(item,context);if(context!='livetv'){if(topParentId==null&&context!='playlists'){topParentId=LibraryMenu.getTopParentId();}
 if(topParentId){href+=href.indexOf('?')==-1?"?topParentId=":"&topParentId=";href+=topParentId;}}
 return href;},getHrefInternal:function(item,context){if(!item){throw new Error('item cannot be null');}
 if(item.url){return item.url;}
-var id=item.Id||item.ItemId;if(item.CollectionType=='livetv'){return'livetvsuggested.html';}
+var contextSuffix=context?('&context='+context):'';var id=item.Id||item.ItemId;if(item.CollectionType=='livetv'){return'livetvsuggested.html';}
 if(item.CollectionType=='channels'){if(AppInfo.enableLatestChannelItems){return'channelslatest.html';}else{return'channels.html';}}
 if(context!='folders'){if(item.CollectionType=='movies'){return'moviesrecommended.html?topParentId='+item.Id;}
 if(item.CollectionType=='boxsets'){return'collections.html?topParentId='+item.Id;}
@@ -55,20 +57,20 @@ if(item.Type=="TvChannel"){return"livetvchannel.html?id="+id;}
 if(item.Type=="Channel"){return"channelitems.html?id="+id;}
 if(item.Type=="ChannelFolderItem"){return"channelitems.html?id="+item.ChannelId+'&folderId='+item.Id;}
 if(item.Type=="Program"){return"livetvprogram.html?id="+id;}
-if(item.Type=="Series"){return"itemdetails.html?id="+id;}
-if(item.Type=="Season"){return"itemdetails.html?id="+id;}
-if(item.Type=="BoxSet"){return"itemdetails.html?id="+id;}
-if(item.Type=="MusicAlbum"){return"itemdetails.html?id="+id;}
-if(item.Type=="GameSystem"){return"itemdetails.html?id="+id;}
-if(item.Type=="Genre"){return"itembynamedetails.html?id="+id;}
-if(item.Type=="MusicGenre"){return"itembynamedetails.html?id="+id;}
-if(item.Type=="GameGenre"){return"itembynamedetails.html?id="+id;}
-if(item.Type=="Studio"){return"itembynamedetails.html?id="+id;}
-if(item.Type=="Person"){return"itembynamedetails.html?id="+id;}
-if(item.Type=="Recording"){return"livetvrecording.html?id="+id;}
-if(item.Type=="MusicArtist"){return"itembynamedetails.html?id="+id;}
+if(item.Type=="Series"){return"itemdetails.html?id="+id+contextSuffix;}
+if(item.Type=="Season"){return"itemdetails.html?id="+id+contextSuffix;}
+if(item.Type=="BoxSet"){return"itemdetails.html?id="+id+contextSuffix;}
+if(item.Type=="MusicAlbum"){return"itemdetails.html?id="+id+contextSuffix;}
+if(item.Type=="GameSystem"){return"itemdetails.html?id="+id+contextSuffix;}
+if(item.Type=="Genre"){return"itembynamedetails.html?id="+id+contextSuffix;}
+if(item.Type=="MusicGenre"){return"itembynamedetails.html?id="+id+contextSuffix;}
+if(item.Type=="GameGenre"){return"itembynamedetails.html?id="+id+contextSuffix;}
+if(item.Type=="Studio"){return"itembynamedetails.html?id="+id+contextSuffix;}
+if(item.Type=="Person"){return"itembynamedetails.html?id="+id+contextSuffix;}
+if(item.Type=="Recording"){return"livetvrecording.html?id="+id+contextSuffix;}
+if(item.Type=="MusicArtist"){return"itembynamedetails.html?id="+id+contextSuffix;}
 if(item.IsFolder){return id?"itemlist.html?parentId="+id:"#";}
-return"itemdetails.html?id="+id;},getImageUrl:function(item,type,index,options){options=options||{};options.type=type;options.index=index;if(type=='Backdrop'){options.tag=item.BackdropImageTags[index];}else if(type=='Screenshot'){options.tag=item.ScreenshotImageTags[index];}else if(type=='Primary'){options.tag=item.PrimaryImageTag||item.ImageTags[type];}else{options.tag=item.ImageTags[type];}
+return"itemdetails.html?id="+id+contextSuffix;},getImageUrl:function(item,type,index,options){options=options||{};options.type=type;options.index=index;if(type=='Backdrop'){options.tag=item.BackdropImageTags[index];}else if(type=='Screenshot'){options.tag=item.ScreenshotImageTags[index];}else if(type=='Primary'){options.tag=item.PrimaryImageTag||item.ImageTags[type];}else{options.tag=item.ImageTags[type];}
 return ApiClient.getScaledImageUrl(item.Id||item.ItemId,options);},getListViewIndex:function(item,options){if(options.index=='disc'){return item.ParentIndexNumber==null?'':Globalize.translate('ValueDiscNumber',item.ParentIndexNumber);}
 var sortBy=(options.sortBy||'').toLowerCase();var code,name;if(sortBy.indexOf('sortname')==0){if(item.Type=='Episode')return'';name=(item.SortName||item.Name||'?')[0].toUpperCase();code=name.charCodeAt(0);if(code<65||code>90){return'#';}
 return name.toUpperCase();}
