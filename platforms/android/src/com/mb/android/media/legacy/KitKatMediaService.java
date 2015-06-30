@@ -37,6 +37,7 @@ import android.widget.RemoteViews;
 import com.mb.android.MainActivity;
 import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
+import com.mb.android.logging.AppLogger;
 import com.mb.android.media.Constants;
 import com.mb.android.media.MediaWidgetProvider;
 import com.mb.android.media.VlcEventHandler;
@@ -91,7 +92,7 @@ public class KitKatMediaService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        logger = new ConsoleLogger();
+        logger = AppLogger.getLogger(getApplicationContext());
 
         // Get libVLC instance
         try {

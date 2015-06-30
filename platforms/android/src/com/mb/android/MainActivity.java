@@ -32,6 +32,8 @@ import android.webkit.WebView;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
+import com.mb.android.logging.AppLogger;
+import com.mb.android.logging.LoggingBridge;
 import com.mb.android.media.Constants;
 import com.mb.android.media.MediaService;
 import com.mb.android.media.legacy.KitKatMediaService;
@@ -59,18 +61,12 @@ public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_UNLOCK_REQUEST = 999;
     private final int REQUEST_DIRECTORY = 998;
-    private ILogger logger;
     private static IWebView webView;
 
     public static final String ACTION_SHOW_PLAYER = "com.mb.android.ShowPlayer";
 
     private ILogger getLogger(){
-        if (logger == null){
-            //logger = AppLogger.createLogger(this);
-            logger = new ConsoleLogger();
-        }
-
-        return logger;
+        return AppLogger.getLogger(this);
     }
 
     @Override
@@ -129,6 +125,7 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
         webView.addJavascriptInterface(this, "AndroidVlcPlayer");
+        webView.addJavascriptInterface(new LoggingBridge(getLogger()), "LoggingBridge");
 
         PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
 
@@ -171,7 +168,7 @@ public class MainActivity extends CordovaActivity
             startActivityForResult(purchaseIntent, PURCHASE_UNLOCK_REQUEST);
         }
         catch (Exception ex) {
-            logger.ErrorException("Error launching activity", ex);
+            getLogger().ErrorException("Error launching activity", ex);
             RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
         }
     }
@@ -311,7 +308,7 @@ public class MainActivity extends CordovaActivity
     @JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
 
-        logger.Debug("Vlc received command: %s", name);
+        getLogger().Debug("Vlc received command: %s", name);
 
         Intent intent = null;
 
@@ -355,7 +352,7 @@ public class MainActivity extends CordovaActivity
                 // incoming value is ms
 
                 intent.setAction( Constants.ACTION_SEEK );
-                logger.Debug("Sending seek command to Vlc Service. Position: %s", arg1);
+                getLogger().Debug("Sending seek command to Vlc Service. Position: %s", arg1);
                 try {
                     float newPosition = Float.parseFloat(arg1);
                     long roundedPosition = Math.round(newPosition);
@@ -364,12 +361,12 @@ public class MainActivity extends CordovaActivity
                     startService( intent );
                 }
                 catch (NumberFormatException ex){
-                    logger.ErrorException("Error parsing seek value", ex);
+                    getLogger().ErrorException("Error parsing seek value", ex);
                 }
             }
         }
         catch (Exception ex){
-            logger.ErrorException("Error sending command %s to Vlc", ex, name);
+            getLogger().ErrorException("Error sending command %s to Vlc", ex, name);
         }
     }
 
