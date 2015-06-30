@@ -1874,7 +1874,9 @@ return query;},saveQueryValues:function(key,query){var values={};if(query.SortBy
 if(query.SortOrder){values.SortOrder=query.SortOrder;}
 try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId(),JSON.stringify(values));}catch(e){}},saveViewSetting:function(key,value){try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId()+'_view',value);}catch(e){}},getSavedViewSetting:function(key){var deferred=$.Deferred();var val=appStorage.getItem(key+'_'+Dashboard.getCurrentUserId()+'_view');deferred.resolveWith(null,[val]);return deferred.promise();},needsRefresh:function(elem){var last=parseInt(elem.getAttribute('data-lastrefresh')||'0');if(!last){return true;}
 if(NavHelper.isBack()){return false;}
-var now=new Date().getTime();if((now-last)<180000){return false;}
+var now=new Date().getTime();var cacheDuration=300000;if(!AppInfo.isNativeApp&&($.browser.ipad||$.browser.iphone||$.browser.android)){cacheDuration=10000;}
+else if(!$.browser.mobile){cacheDuration=60000;}
+if((now-last)<cacheDuration){return false;}
 return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},getDateParamValue:function(date){function formatDigit(i){return i<10?"0"+i:i;}
 var d=date;return""+d.getFullYear()+formatDigit(d.getMonth()+1)+formatDigit(d.getDate())+formatDigit(d.getHours())+formatDigit(d.getMinutes())+formatDigit(d.getSeconds());},playAllFromHere:function(fn,index){fn(index,100,"MediaSources,Chapters").done(function(result){MediaController.play({items:result.Items});});},queueAllFromHere:function(query,index){fn(index,100,"MediaSources,Chapters").done(function(result){MediaController.queue({items:result.Items});});},getItemCountsHtml:function(options,item){var counts=[];var childText;if(item.Type=='Playlist'){childText='';if(item.CumulativeRunTimeTicks){var minutes=item.CumulativeRunTimeTicks/600000000;minutes=minutes||1;childText+=Globalize.translate('ValueMinutes',Math.round(minutes));}else{childText+=Globalize.translate('ValueMinutes',0);}
 counts.push(childText);}

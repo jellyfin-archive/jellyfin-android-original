@@ -9,7 +9,6 @@ function showBackdrop(type,parentId){var apiClient=window.ApiClient;if(!apiClien
 getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).done(function(images){if(images.length){var index=getRandom(0,images.length-1);var item=images[index];var screenWidth=$(window).width();var imgUrl=apiClient.getScaledImageUrl(item.id,{type:"Backdrop",tag:item.tag,maxWidth:screenWidth,quality:50});setBackdropImage(getElement(),imgUrl);}else{clearBackdrop();}});}
 function setDefault(page){getElement().style.backgroundImage="url(css/images/splash.jpg)";page.classList.add('backdropPage');page.classList.add('staticBackdropPage');}
 function isEnabledByDefault(){if(AppInfo.hasLowImageBandwidth){return false;}
-if($.browser.android&&AppInfo.isNativeApp){return screen.availWidth>=1200;}
 if($.browser.mobile){return false;}
 return true;}
 function enabled(){var userId=Dashboard.getCurrentUserId();var val=appStorage.getItem('enableBackdrops-'+userId);return val=='1'||(val!='0'&&isEnabledByDefault());}
