@@ -23,10 +23,12 @@ import android.util.Log;
 import com.mb.android.MainActivity;
 import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
+import com.mb.android.logging.AppLogger;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.logging.ConsoleLogger;
+import mediabrowser.model.logging.ILogger;
 
 public class RemotePlayerService extends Service {
 
@@ -99,8 +101,10 @@ public class RemotePlayerService extends Service {
                 httpClient = ApiClientBridge.Current.httpClient;
             }
 
+            ILogger logger = AppLogger.getLogger(getApplicationContext());
+
             if (httpClient == null) {
-                httpClient = new VolleyHttpClient(new ConsoleLogger(), getApplicationContext());
+                httpClient = new VolleyHttpClient(logger, getApplicationContext());
             }
 
             httpClient.getBitmap(imageUrl, new Response<Bitmap>() {

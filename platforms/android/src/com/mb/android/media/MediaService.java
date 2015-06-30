@@ -32,6 +32,7 @@ import android.util.Log;
 
 import com.mb.android.MainActivity;
 import com.mb.android.api.ApiClientBridge;
+import com.mb.android.logging.AppLogger;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -70,7 +71,7 @@ public class MediaService extends Service implements IMediaService {
     public void onCreate() {
         super.onCreate();
 
-        logger = new ConsoleLogger();
+        logger = AppLogger.getLogger(getApplicationContext());
 
         // Get libVLC instance
         try {

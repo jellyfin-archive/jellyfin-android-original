@@ -104,5 +104,6 @@ function onUserDataChanged(userData){var cssClass=LibraryBrowser.getUserDataCssC
 $('.'+cssClass).each(function(){var mediaType=this.getAttribute('data-mediatype');if(mediaType=='Video'){this.setAttribute('data-positionticks',(userData.PlaybackPositionTicks||0));if($(this).hasClass('card')){renderUserDataChanges(this,userData);}}});}
 function onWebSocketMessage(e,data){var msg=data;if(msg.MessageType==="UserDataChanged"){if(msg.Data.UserId==Dashboard.getCurrentUserId()){for(var i=0,length=msg.Data.UserDataList.length;i<length;i++){onUserDataChanged(msg.Data.UserDataList[i]);}}}}
 function initializeApiClient(apiClient){$(apiClient).off('websocketmessage',onWebSocketMessage).on('websocketmessage',onWebSocketMessage);}
+function clearRefreshTimes(){$('.hasrefreshtime').removeClass('hasrefreshtime').removeAttr('data-lastrefresh');}
 Dashboard.ready(function(){if(window.ApiClient){initializeApiClient(window.ApiClient);}
-$(ConnectionManager).on('apiclientcreated',function(e,apiClient){initializeApiClient(apiClient);});});})(jQuery,document,window);
+$(ConnectionManager).on('apiclientcreated',function(e,apiClient){initializeApiClient(apiClient);});Events.on(ConnectionManager,'localusersignedin',clearRefreshTimes);Events.on(ConnectionManager,'localusersignedout',clearRefreshTimes);});})(jQuery,document,window);
