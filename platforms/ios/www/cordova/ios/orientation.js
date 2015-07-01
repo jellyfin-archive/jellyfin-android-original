@@ -6,6 +6,8 @@
 
         // Try to make it react quicker to the orientation change
         doc.scrollTop(doc.scrollTop() + 1);
+
+        $('paper-tabs').filter(':visible').hide().show();
     }
 
     function onOrientationChange() {
