@@ -1,4 +1,4 @@
-﻿.viewMenuBar, .libraryViewNav {
+﻿.viewMenuBar, .libraryViewNav:not(.paperLibraryViewNav), paper-tabs {
     background-color: #191919;
 }
 
@@ -16,4 +16,12 @@
 
 .ui-page-theme-b .visualCardBox {
     background: rgba(56,56,56,.85);
+}
+
+.libraryViewNav a {
+    font-weight: 500!important;
+}
+
+paper-tab {
+    font-weight: 500!important;
 }
