@@ -87,6 +87,10 @@
                         {
                             "xml": "<feature name=\"BackgroundAudio\"><param name=\"ios-package\" value=\"BackgroundAudio\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SocialSharing\"><param name=\"ios-package\" value=\"SocialSharing\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -173,7 +177,19 @@
                             "count": 2
                         }
                     ],
-                    "CoreGraphics.framework": []
+                    "CoreGraphics.framework": [],
+                    "Social.framework": [
+                        {
+                            "xml": true,
+                            "count": 1
+                        }
+                    ],
+                    "MessageUI.framework": [
+                        {
+                            "xml": true,
+                            "count": 1
+                        }
+                    ]
                 }
             },
             "*-Info.plist": {
@@ -250,6 +266,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "nl.x-services.plugins.backgroundaudio": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "nl.x-services.plugins.socialsharing": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

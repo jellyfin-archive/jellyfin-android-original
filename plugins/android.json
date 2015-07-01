@@ -73,6 +73,10 @@
                         {
                             "xml": "<feature name=\"ActionSheet\"><param name=\"android-package\" value=\"nl.xservices.plugins.actionsheet.ActionSheet\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SocialSharing\"><param name=\"android-package\" value=\"nl.xservices.plugins.SocialSharing\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -102,7 +106,7 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
-                            "count": 3
+                            "count": 4
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
@@ -241,6 +245,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "nl.x-services.plugins.backgroundaudio": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "nl.x-services.plugins.socialsharing": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
