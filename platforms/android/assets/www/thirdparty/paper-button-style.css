@@ -266,6 +266,7 @@ paper-tabs, paper-toolbar {
 
 paper-tab {
     text-transform: uppercase;
+    font-weight: 400;
 }
 
 paper-tabs:not([alignbottom]) #selectionBar {
@@ -320,7 +321,7 @@ paper-menu-item {
 }
 
 paper-menu-item iron-icon {
-    margin-right: 1em;
+    margin-right: 1.5em;
 }
 .actionSheetMenuItem {
     cursor: pointer;

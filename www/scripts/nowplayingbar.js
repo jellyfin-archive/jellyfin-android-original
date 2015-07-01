@@ -3,7 +3,7 @@ function bindEvents(elem){currentTimeElement=$('.nowPlayingBarCurrentTime',elem)
 var ticks=state.NowPlayingItem.RunTimeTicks;ticks/=100;ticks*=value;this.pinValue=Dashboard.getDisplayTime(ticks);};}
 function getNowPlayingBar(){var elem=document.querySelector('.nowPlayingBar');if(elem){return elem;}
 elem=$(getNowPlayingBarHtml()).insertBefore('#footerNotifications')[0];if(($.browser.safari||!AppInfo.isNativeApp)&&$.browser.mobile){elem.classList.add('noMediaProgress');}
-bindEvents(elem);return elem;}
+$.mobile.loadPage('nowplaying.html');bindEvents(elem);return elem;}
 function showButton(button){button.removeClass('hide');}
 function hideButton(button){button.addClass('hide');}
 function updatePlayerState(state){if(state.NowPlayingItem){showNowPlayingBar();}else{hideNowPlayingBar();return;}

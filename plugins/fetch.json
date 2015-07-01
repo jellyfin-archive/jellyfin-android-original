@@ -219,5 +219,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "nl.x-services.plugins.socialsharing": {
+        "source": {
+            "type": "registry",
+            "id": "nl.x-services.plugins.socialsharing"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

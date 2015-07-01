@@ -232,6 +232,8 @@ android {
         defaultConfig.versionCode += 8
       }
     }
+	
+	defaultConfig.multiDexEnabled = true
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
@@ -279,6 +281,10 @@ dependencies {
 	compile 'com.android.support:support-v4:22.1.+'
 	compile 'net.rdrei.android.dirchooser:library:2.1@aar'
 	compile "de.mrmaffen:vlc-android-sdk:1.0.6"
+    compile 'org.slf4j:slf4j-api:1.7.10'
+    compile 'com.github.tony19:logback-android-core:1.1.1-3'
+    compile 'com.github.tony19:logback-android-classic:1.1.1-3'
+	compile 'com.android.support:multidex:1.0.0'
 	// SUB-PROJECT DEPENDENCIES START
     debugCompile project(path: ":CordovaLib", configuration: "debug")
     releaseCompile project(path: ":CordovaLib", configuration: "release")
@@ -289,10 +295,6 @@ dependencies {
     compile files('libs/volley.jar')
     compile 'com.google.guava:guava:18.0'
     compile 'org.samba.jcifs:jcifs:1.3.14-kohsuke-1'
-    compile 'org.slf4j:slf4j-api:1.7.10'
-    compile 'com.github.tony19:logback-android-core:1.1.1-3'
-    compile 'com.github.tony19:logback-android-classic:1.1.1-3'
-	compile 'com.android.support:multidex:1.0.0'
     // FLAVOR-SPECIFIC DEPENDENCIES
     googlex86Compile(name: 'emby.googleiap', ext: 'aar')
     googlearmv7Compile(name: 'emby.googleiap', ext: 'aar')

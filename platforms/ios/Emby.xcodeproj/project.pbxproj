@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		128CF0722F9A49B0BF19550D /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 67AB33E4AC854FCEBC8B175E /* CDVDevice.m */; };
@@ -92,6 +91,9 @@
 		EC634FEA5AB846C9A94B200C /* AppDelegate+WKWebViewPolyfill.m in Sources */ = {isa = PBXBuildFile; fileRef = AF8E51927D99431AA623E755 /* AppDelegate+WKWebViewPolyfill.m */; };
 		ED6B4D7048AB461AA2ECF565 /* CDVLocalFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 753AB05F07ED4BFE898DE60D /* CDVLocalFilesystem.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		28F582A7C44D4506B57DC467 /* SocialSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = 07DAE792B6DA42ECA5208E0E /* SocialSharing.m */; };
+		6EB006F92FD94E1BA33765E9 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C2FD61737914F109F3B9CF4 /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		3FA5C557A8EA4A0288AD3AC4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 187C1F5FEE2E4A0F8EE30CEA /* MessageUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -270,6 +272,10 @@
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
+		07DAE792B6DA42ECA5208E0E /* SocialSharing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SocialSharing.m"; path = "nl.x-services.plugins.socialsharing/SocialSharing.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		F6E1DF323B774AED9C0C7A24 /* SocialSharing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SocialSharing.h"; path = "nl.x-services.plugins.socialsharing/SocialSharing.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		9C2FD61737914F109F3B9CF4 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Social.framework"; path = "System/Library/Frameworks/Social.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		187C1F5FEE2E4A0F8EE30CEA /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "MessageUI.framework"; path = "System/Library/Frameworks/MessageUI.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -295,6 +301,8 @@
 				A3A0165D1B2E23D80089774E /* WebKit.framework in Frameworks */,
 				B5BACF4ED8274178BEE337D4 /* SystemConfiguration.framework in Frameworks */,
 				E4134BFF02C04A4CAF7CF040 /* GCDWebServer.framework in Frameworks */,
+				6EB006F92FD94E1BA33765E9 /* Social.framework in Frameworks */,
+				3FA5C557A8EA4A0288AD3AC4 /* MessageUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,6 +392,8 @@
 				24979162D35B422499D236D5 /* StoreKit.framework */,
 				3F14394E959548C7B6B7754D /* SystemConfiguration.framework */,
 				EC87FA4BD876434380BA3A39 /* GCDWebServer.framework */,
+				9C2FD61737914F109F3B9CF4 /* Social.framework */,
+				187C1F5FEE2E4A0F8EE30CEA /* MessageUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -476,6 +486,8 @@
 				8D1E493984A84C29A7CAD131 /* ActionSheet.h */,
 				2CFCB181009E4ECE87AB7C7E /* BackgroundAudio.m */,
 				6814DC3C1E6E45C09B4E0FB9 /* BackgroundAudio.h */,
+				07DAE792B6DA42ECA5208E0E /* SocialSharing.m */,
+				F6E1DF323B774AED9C0C7A24 /* SocialSharing.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -739,6 +751,7 @@
 				EC634FEA5AB846C9A94B200C /* AppDelegate+WKWebViewPolyfill.m in Sources */,
 				9161EEC11EF64FEC9C8E3AA3 /* ActionSheet.m in Sources */,
 				1754832D61E54F09A2CB0B1C /* BackgroundAudio.m in Sources */,
+				28F582A7C44D4506B57DC467 /* SocialSharing.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

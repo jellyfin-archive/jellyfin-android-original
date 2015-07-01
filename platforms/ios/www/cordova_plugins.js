@@ -340,6 +340,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/nl.x-services.plugins.socialsharing/www/SocialSharing.js",
+        "id": "nl.x-services.plugins.socialsharing.SocialSharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -383,6 +390,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.4.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
+    "nl.x-services.plugins.socialsharing": "4.3.18",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
