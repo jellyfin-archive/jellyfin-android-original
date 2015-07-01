@@ -3,7 +3,7 @@ function reloadFromItem(page,item){currentItem=item;var context=getContext(item)
 else{$('.btnPlay',page).addClass('hide');}
 if(item.LocalTrailerCount&&item.PlayAccess=='Full'){$('.btnPlayTrailer',page).removeClass('hide');}else{$('.btnPlayTrailer',page).addClass('hide');}
 if(SyncManager.isAvailable(item,user)){$('.btnSync',page).removeClass('hide');}else{$('.btnSync',page).addClass('hide');}
-if(user.Policy.EnablePublicSharing){$('.btnShare',page).removeClass('hide');}else{$('.btnShare',page).addClass('hide');}
+if(LibraryBrowser.canShare(item,user)){$('.btnShare',page).removeClass('hide');}else{$('.btnShare',page).addClass('hide');}
 if(!item.LocalTrailerCount&&item.RemoteTrailers.length&&item.PlayAccess=='Full'){$('.btnPlayExternalTrailer',page).removeClass('hide').attr('href',item.RemoteTrailers[0].Url);}else{$('.btnPlayExternalTrailer',page).addClass('hide').attr('href','#');}
 var groupedVersions=(item.MediaSources||[]).filter(function(g){return g.Type=="Grouping";});if(user.Policy.IsAdministrator&&groupedVersions.length){$('.splitVersionContainer',page).show();}else{$('.splitVersionContainer',page).hide();}
 $('.btnMoreCommands',page).visible(LibraryBrowser.getMoreCommands(item,user).length>0);if(user.Policy.IsAdministrator){$('.chapterSettingsButton',page).show();}else{$('.chapterSettingsButton',page).hide();}});if(item.LocationType=="Offline"){$('.offlineIndicator',page).show();}
