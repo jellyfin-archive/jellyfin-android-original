@@ -2,16 +2,25 @@
 
     function showMenu(options, successCallback, cancelCallback) {
 
-        var shareInfo = options.share;
+        Dashboard.confirm(Globalize.translate('ButtonShareHelp'), Globalize.translate('HeaderConfirm'), function (confirmed) {
 
-        window.plugins.socialsharing.share(shareInfo.Overview, shareInfo.Name, shareInfo.ImageUrl, shareInfo.Url, function () {
+            if (!confirmed) {
+                cancelCallback(options);
+                return;
+            }
 
-            successCallback(options);
+            var shareInfo = options.share;
 
-        }, function () {
+            window.plugins.socialsharing.share(shareInfo.Overview, shareInfo.Name, shareInfo.ImageUrl, shareInfo.Url, function () {
 
-            cancelCallback(options);
+                successCallback(options);
+
+            }, function () {
+
+                cancelCallback(options);
+            });
         });
+
     }
 
     window.SharingWidget = {
