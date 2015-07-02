@@ -1,9 +1,9 @@
 ﻿.viewMenuBar, .libraryViewNav:not(.paperLibraryViewNav), paper-tabs {
-    background-color: #191919;
+    background-color: #1b1b1b;
 }
 
-.ui-page-theme-b {
-    background-color: #292929;
+.ui-page-theme-b:not(.pageWithAbsoluteTabs), .pageWithAbsoluteTabs .pageBackground {
+    background-color: #2b2b2b;
 }
 
 .backdropPage.ui-page-theme-b {
