@@ -1,4 +1,5 @@
 package com.mb.android.media;
+import android.media.session.MediaSession;
 import android.os.Parcelable;
 
 /**
@@ -6,7 +7,7 @@ import android.os.Parcelable;
  */
 public interface IMediaService {
 
-    Parcelable getSessionToken();
+    MediaSession.Token getSessionToken();
 
     Class<?> getServiceClass();
 }

@@ -17,5 +17,6 @@ public class Constants {
     public static final String ACTION_REPORT = "action_report";
     public static final String ACTION_SEEK = "action_seek";
     public static final String LOG_TAG = "MediaService";
+    public static final String THUMBS_UP = "ThumbsUp";
 
 }
