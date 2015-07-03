@@ -7,4 +7,4 @@ var i,length;var elem=$('.sections',page);if(!elem.html().length){var html='';fo
 elem.html(html);}
 var promises=[];for(i=0,length=sections.length;i<length;i++){var section=sections[i];elem=page.querySelector('.section'+section.id);promises.push(loadSection(elem,userId,section,sections.length==1));}
 $.when(promises).done(function(){Dashboard.hideLoadingMsg();LibraryBrowser.setLastRefreshed(page);});}
-$(document).on('pageinitdepends',"#indexPage",function(){var page=this;var tabContent=page.querySelector('.homeFavoritesTabContent');$(page.querySelector('neon-animated-pages')).on('iron-select',function(){if(parseInt(this.selected)==2){if(LibraryBrowser.needsRefresh(tabContent)){loadSections(tabContent,Dashboard.getCurrentUserId());}}});});})(jQuery,document);
+$(document).on('pageinitdepends',"#indexPage",function(){var page=this;var tabContent=page.querySelector('.homeFavoritesTabContent');$(page.querySelector('neon-animated-pages')).on('tabchange',function(){if(parseInt(this.selected)==2){if(LibraryBrowser.needsRefresh(tabContent)){loadSections(tabContent,Dashboard.getCurrentUserId());}}});});})(jQuery,document);
