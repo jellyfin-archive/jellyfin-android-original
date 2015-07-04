@@ -15,9 +15,6 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.text.TextUtils;
 
-import com.mb.android.media.provider.MusicProvider;
-import com.mb.android.media.utils.MediaIDHelper;
-
 import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.LibVlcException;
@@ -26,6 +23,10 @@ import org.videolan.libvlc.Media;
 import java.io.IOException;
 import java.util.Date;
 
+import mediabrowser.apiinteraction.android.mediabrowser.Constants;
+import mediabrowser.apiinteraction.android.mediabrowser.IPlayback;
+import mediabrowser.apiinteraction.android.mediabrowser.IPlaybackCallback;
+import mediabrowser.apiinteraction.android.mediabrowser.MusicProvider;
 import mediabrowser.model.logging.ILogger;
 
 import static android.media.MediaPlayer.OnPreparedListener;
@@ -35,7 +36,7 @@ import static android.media.session.MediaSession.QueueItem;
  * A class that implements local media playback using {@link android.media.MediaPlayer}
  */
 @TargetApi(14)
-public class Playback implements AudioManager.OnAudioFocusChangeListener {
+public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListener {
 
     // The volume we set the media player to when we lose audio focus, but are
     // allowed to reduce the volume instead of stopping playback.
@@ -54,7 +55,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     private final WifiManager.WifiLock mWifiLock;
     private int mState;
     private boolean mPlayOnFocusGain;
-    private Callback mCallback;
+    private IPlaybackCallback mCallback;
     private MusicProvider mMusicProvider;
     private volatile boolean mAudioNoisyReceiverRegistered;
     private volatile long mCurrentPosition;
@@ -120,7 +121,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         if (notifyListeners && mCallback != null) {
             mCallback.onPlaybackStatusChanged(mState);
         }
-        mCurrentPosition = getCurrentStreamPosition();
+        mCurrentPosition = getCurrentPositionMs();
         // Give up Audio focus
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
@@ -142,15 +143,12 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         return mState;
     }
 
-    public boolean isConnected() {
-        return true;
-    }
-
     public boolean isPlaying() {
         return mPlayOnFocusGain || (mLibVLC != null && mLibVLC.isPlaying());
     }
 
-    public long getCurrentStreamPosition() {
+    @Override
+    public long getCurrentPositionMs() {
         return mLibVLC != null ?
                 mLibVLC.getTime() : mCurrentPosition;
     }
@@ -196,7 +194,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
             } catch (Exception ex) {
                 logger.ErrorException("Exception playing media", ex);
                 if (mCallback != null) {
-                    mCallback.onError(ex.getMessage());
+                    mCallback.onPlaybackError(ex.getMessage());
                 }
             }
         }
@@ -219,8 +217,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         } else {
             mState = PlaybackState.STATE_STOPPED;
             relaxResources(false); // release everything except MediaPlayer
-            MediaMetadata track = mMusicProvider.getMusic(
-                    MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId()));
+            MediaMetadata track = mMusicProvider.getMusic(item.getDescription().getMediaId());
 
             String source = track.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE);
 
@@ -250,13 +247,13 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
             } catch (Exception ex) {
                 logger.ErrorException("Exception playing media", ex);
                 if (mCallback != null) {
-                    mCallback.onError(ex.getMessage());
+                    mCallback.onPlaybackError(ex.getMessage());
                 }
             }
         }
     }
 
-    public void unpause() {
+    public void unPause() {
 
        if (mState == PlaybackState.STATE_PAUSED) {
             // Pause media player and cancel the 'foreground service' state.
@@ -295,24 +292,24 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         unregisterAudioNoisyReceiver();
     }
 
-    public void seekTo(int position) {
-        logger.Debug("seekTo called with ", position);
+    public void seek(long positionMs) {
+        logger.Debug("seekTo called with ", positionMs);
 
         if (mLibVLC == null) {
             // If we do not have a current media player, simply update the current position
-            mCurrentPosition = position;
+            mCurrentPosition = positionMs;
         } else {
             if (mLibVLC.isPlaying()) {
                 mState = PlaybackState.STATE_BUFFERING;
             }
-            mLibVLC.setTime(position);
+            mLibVLC.setTime(positionMs);
             if (mCallback != null) {
                 mCallback.onPlaybackStatusChanged(mState);
             }
         }
     }
 
-    public void setCallback(Callback callback) {
+    public void setCallback(IPlaybackCallback callback) {
         this.mCallback = callback;
     }
 
@@ -532,7 +529,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
                     break;
                 case EventHandler.MediaPlayerEndReached:
                     if (playback.mCallback != null) {
-                        playback.mCallback.onCompletion();
+                        playback.mCallback.onPlaybackCompletion();
                     }
                     break;
                 case EventHandler.MediaPlayerVout:
@@ -548,7 +545,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
                             service.mLibVLC.getMediaList().getMRL(
                                     service.mCurrentIndex)), Toast.LENGTH_SHORT);*/
                     if (playback.mCallback != null) {
-                        playback.mCallback.onError("Vlc reported an error");
+                        playback.mCallback.onPlaybackError("Vlc reported an error");
                     }
                     break;
                 case EventHandler.MediaPlayerTimeChanged:
@@ -570,24 +567,4 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
             }
         }
     };
-
-    interface Callback {
-        /**
-         * On current music completed.
-         */
-        void onCompletion();
-        /**
-         * on Playback status changed
-         * Implementations can use this callback to update
-         * playback state on the media sessions.
-         */
-        void onPlaybackStatusChanged(int state);
-
-        /**
-         * @param error to be added to the PlaybackState
-         */
-        void onError(String error);
-
-    }
-
 }
