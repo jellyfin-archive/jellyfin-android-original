@@ -34,7 +34,8 @@ public class PackageValidator {
     private final Map<String, ArrayList<CallerInfo>> mValidCertificates;
     private ILogger logger;
 
-    public PackageValidator(Context ctx) {
+    public PackageValidator(Context ctx, ILogger logger) {
+        this.logger = logger;
         mValidCertificates = readValidCertificates(ctx.getResources().getXml(R.xml.allowed_media_browser_callers));
     }
 
