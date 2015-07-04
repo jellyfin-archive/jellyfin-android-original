@@ -3,23 +3,14 @@ package com.mb.android.media;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import org.videolan.libvlc.EventHandler;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.LibVlcException;
-import org.videolan.libvlc.LibVlcUtil;
-import org.videolan.libvlc.Media;
-
 import android.annotation.TargetApi;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaDescription;
 import android.media.MediaMetadata;
 import android.media.browse.MediaBrowser;
@@ -30,18 +21,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
-import android.os.PowerManager;
 import android.os.SystemClock;
 import android.service.media.MediaBrowserService;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.mb.android.MainActivity;
 import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
+import com.mb.android.media.provider.MusicProvider;
 import com.mb.android.media.utils.CarHelper;
 import com.mb.android.media.utils.MediaIDHelper;
 import com.mb.android.media.utils.QueueHelper;
@@ -51,9 +40,11 @@ import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.dto.BaseItemDto;
+import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
 
+@TargetApi(21)
 public class MediaService extends MediaBrowserService implements Playback.Callback, IMediaService {
 
     private static final String TAG = "VLC/AudioService";
@@ -62,15 +53,12 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
     public static final String INCOMING_CALL_INTENT = "com.mb.android.media.incomingcall";
     public static final String CALL_ENDED_INTENT = "com.mb.android.media.callended";
 
-    private LibVLC mLibVLC;
-    private OnAudioFocusChangeListener audioFocusListener;
     private boolean mDetectHeadset = true;
-    private PowerManager.WakeLock mWakeLock;
     private ILogger logger;
-    private MediaSession mSession;
     private IJsonSerializer jsonSerializer = new GsonJsonSerializer();
 
-    private static boolean mWasPlayingAudio = false;
+    private MusicProvider mMusicProvider;
+    private MediaSession mSession;
 
     // "Now playing" queue:
     private List<MediaSession.QueueItem> mPlayingQueue;
@@ -92,23 +80,6 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
 
         logger = AppLogger.getLogger(getApplicationContext());
 
-        // Get libVLC instance
-        try {
-            mLibVLC = getLibVlcInstance();
-
-            mVlcEventHandler = new VlcServiceEventHandler(logger, mLibVLC, this);
-
-            EventHandler.getInstance().addHandler(mVlcEventHandler);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Make sure the audio player will acquire a wake-lock while playing. If we don't do
-        // that, the CPU might go to sleep while the song is playing, causing playback to stop.
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
-
         IntentFilter filter = new IntentFilter();
         filter.setPriority(Integer.MAX_VALUE);
         filter.addAction(Constants.ACTION_PLAYPAUSE);
@@ -127,8 +98,8 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         //registerReceiver(serviceReceiver, filter);
 
         mPlayingQueue = new ArrayList<MediaSession.QueueItem>();
-        mMusicProvider = new MusicProvider();
-        mPackageValidator = new PackageValidator(this);
+        mMusicProvider = new MusicProvider(logger);
+        mPackageValidator = new PackageValidator(this, logger);
 
         // Start a new MediaSession
         mSession = new MediaSession(this, "MediaService");
@@ -136,7 +107,7 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         mSession.setCallback(new MediaSessionCallback(logger));
         mSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
-        mPlayback = new Playback(this, mMusicProvider);
+        mPlayback = new Playback(this, mMusicProvider, logger);
         mPlayback.setState(PlaybackState.STATE_NONE);
         mPlayback.setCallback(this);
         mPlayback.start();
@@ -180,21 +151,6 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         return httpClient;
     }
 
-    private LibVLC getLibVlcInstance() {
-
-        if (mLibVLC == null) {
-            mLibVLC = new LibVLC();
-            try {
-                mLibVLC.init(this);
-            } catch(LibVlcException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        return mLibVLC;
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -202,22 +158,12 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         logger.Debug("MediaService.onDestroy");
 
         // Service is being killed, so make sure we release our resources
-        handleStopRequest(null);
-
-        if (mWakeLock.isHeld())
-            mWakeLock.release();
-
-        EventHandler.getInstance().removeHandler(mVlcEventHandler);
+        handleStopRequest(null, false);
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
 
         if (mSession != null){
             mSession.release();
-        }
-
-        if (mLibVLC != null){
-            mLibVLC.destroy();
-            mLibVLC = null;
         }
     }
 
@@ -283,46 +229,7 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
 
         if (MediaIDHelper.MEDIA_ID_ROOT.equals(parentMediaId)) {
             logger.Debug("OnLoadChildren.ROOT");
-            mediaItems.add(new MediaBrowser.MediaItem(
-                    new MediaDescription.Builder()
-                            .setMediaId(MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE)
-                            .setTitle(getString(R.string.browse_genres))
-                            .setIconUri(Uri.parse("android.resource://" +
-                                    "com.example.android.mediabrowserservice/drawable/ic_by_genre"))
-                            .setSubtitle(getString(R.string.browse_genre_subtitle))
-                            .build(), MediaBrowser.MediaItem.FLAG_BROWSABLE
-            ));
 
-        } else if (MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE.equals(parentMediaId)) {
-            logger.Debug("OnLoadChildren.GENRES");
-            for (String genre : mMusicProvider.getGenres()) {
-                MediaBrowser.MediaItem item = new MediaBrowser.MediaItem(
-                        new MediaDescription.Builder()
-                                .setMediaId(MediaIDHelper.createBrowseCategoryMediaID(MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE, genre))
-                                .setTitle(genre)
-                                .setSubtitle(getString(R.string.browse_musics_by_genre_subtitle, genre))
-                                .build(), MediaBrowser.MediaItem.FLAG_BROWSABLE
-                );
-                mediaItems.add(item);
-            }
-
-        } else if (parentMediaId.startsWith(MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE)) {
-            String genre = MediaIDHelper.getHierarchy(parentMediaId)[1];
-            logger.Debug("OnLoadChildren.SONGS_BY_GENRE  genre=", genre);
-            for (MediaMetadata track : mMusicProvider.getMusicsByGenre(genre)) {
-                // Since mediaMetadata fields are immutable, we need to create a copy, so we
-                // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
-                // when we get a onPlayFromMusicID call, so we can create the proper queue based
-                // on where the music was selected from (by artist, by genre, random, etc)
-                String hierarchyAwareMediaID = MediaIDHelper.createMediaID(
-                        track.getDescription().getMediaId(), MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE, genre);
-                MediaMetadata trackCopy = new MediaMetadata.Builder(track)
-                        .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
-                        .build();
-                MediaBrowser.MediaItem bItem = new MediaBrowser.MediaItem(
-                        trackCopy.getDescription(), MediaBrowser.MediaItem.FLAG_PLAYABLE);
-                mediaItems.add(bItem);
-            }
         } else {
             logger.Warn("Skipping unmatched parentMediaId: ", parentMediaId);
         }
@@ -331,57 +238,50 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         result.sendResult(mediaItems);
     }
 
-    @TargetApi(Build.VERSION_CODES.FROYO)
-    private void changeAudioFocus(boolean gain) {
-        if (!LibVlcUtil.isFroyoOrLater()) // NOP if not supported
-            return;
-
-        if (audioFocusListener == null) {
-            audioFocusListener = new OnAudioFocusChangeListener() {
-                @Override
-                public void onAudioFocusChange(int focusChange) {
-                    LibVLC libVLC = getLibVlcInstance();
-                    switch (focusChange)
-                    {
-                        case AudioManager.AUDIOFOCUS_LOSS:
-                            pause();
-                            break;
-                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                            /*
-                             * Lower the volume to 36% to "duck" when an alert or something
-                             * needs to be played.
-                             */
-                            libVLC.setVolume(36);
-                            break;
-                        case AudioManager.AUDIOFOCUS_GAIN:
-                        case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT:
-                        case AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK:
-                            libVLC.setVolume(100);
-                            break;
-                    }
-                }
-            };
-        }
-
-        AudioManager am = (AudioManager)getSystemService(AUDIO_SERVICE);
-        if(gain)
-            am.requestAudioFocus(audioFocusListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-        else
-            am.abandonAudioFocus(audioFocusListener);
-
-    }
-
     @Override
     public Class<?> getServiceClass() {
         return MediaService.class;
     }
 
     private void handleNextTrackCommand() {
+
+        logger.Debug("skipToNext");
+        mCurrentIndexOnQueue++;
+        if (mPlayingQueue != null && mCurrentIndexOnQueue >= mPlayingQueue.size()) {
+            // This sample's behavior: skipping to next when in last song returns to the
+            // first song.
+            mCurrentIndexOnQueue = 0;
+        }
+        if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+            handlePlayRequest();
+        } else {
+            logger.Error("skipToNext: cannot skip to next. next Index=" +
+                    mCurrentIndexOnQueue + " queue length=" +
+                    (mPlayingQueue == null ? "null" : mPlayingQueue.size()));
+            handleStopRequest("Cannot skip", true);
+        }
+
         MainActivity.RespondToWebView("MediaController.nextTrack();");
     }
 
     private void handlePreviousTrackCommand() {
+
+        logger.Debug("skipToPrevious");
+        mCurrentIndexOnQueue--;
+        if (mPlayingQueue != null && mCurrentIndexOnQueue < 0) {
+            // This sample's behavior: skipping to previous when in first song restarts the
+            // first song.
+            mCurrentIndexOnQueue = 0;
+        }
+        if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+            handlePlayRequest();
+        } else {
+            logger.Error("skipToPrevious: cannot skip to previous. previous Index=" +
+                    mCurrentIndexOnQueue + " queue length=" +
+                    (mPlayingQueue == null ? "null" : mPlayingQueue.size()));
+            handleStopRequest("Cannot skip", true);
+        }
+
         MainActivity.RespondToWebView("MediaController.previousTrack();");
     }
 
@@ -400,26 +300,18 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
             handleNextTrackCommand();
         }
 
-        if( mLibVLC == null ) {
-            Log.w(TAG, "Intent received, but VLC is not loaded, skipping.");
-            return;
-        }
-
             /*
              * Incoming Call : Pause if VLC is playing audio or video.
              */
         if (action.equalsIgnoreCase(INCOMING_CALL_INTENT)) {
-            mWasPlayingAudio = hasCurrentMedia() && mLibVLC.getVideoTracksCount() < 1;
-            if (hasCurrentMedia())
-                pause();
+            handlePauseRequest();
         }
 
             /*
-             * Call ended : Play only if VLC was playing audio.
+             * Call ended : Play only if VLC was playing.
              */
-        if (action.equalsIgnoreCase(CALL_ENDED_INTENT)
-                && mWasPlayingAudio) {
-            play();
+        if (action.equalsIgnoreCase(CALL_ENDED_INTENT) && mPlayback.getState() == PlaybackState.STATE_PAUSED) {
+            handleUnpauseRequest();
         }
 
         // skip all headsets events if there is a call
@@ -431,16 +323,16 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
              * Remote / headset control events
              */
         if (action.equalsIgnoreCase(Constants.ACTION_PLAYPAUSE)) {
-            if (mLibVLC.isPlaying() && hasCurrentMedia())
-                pause();
-            else if (hasCurrentMedia())
-                play();
+            if (mPlayback.getState() == PlaybackState.STATE_PLAYING)
+                handlePauseRequest();
+            else if (mPlayback.getState() == PlaybackState.STATE_PAUSED)
+                handleUnpauseRequest();
         } else if (action.equalsIgnoreCase(Constants.ACTION_UNPAUSE)) {
-            play();
+            handleUnpauseRequest();
         } else if (action.equalsIgnoreCase(Constants.ACTION_PAUSE)) {
-            pause();
+            handlePauseRequest();
         } else if (action.equalsIgnoreCase(Constants.ACTION_STOP)) {
-            stop(intent.getBooleanExtra("stopService", false));
+            handleStopRequest(null, intent.getBooleanExtra("stopService", false));
 
         } else if (action.equalsIgnoreCase(Constants.ACTION_PLAY)) {
             play(context, intent);
@@ -450,31 +342,14 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
             handleNextTrackCommand();
         }else if (action.equalsIgnoreCase(Constants.ACTION_SEEK)) {
-            seek(intent.getLongExtra("position", 0));
-        }
-
-            /*
-             * headset plug events
-             */
-        if (mDetectHeadset) {
-            int state = intent.getIntExtra("state", 0);
-            if (action.equalsIgnoreCase(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-                Log.i(TAG, "Headset Removed.");
-                if (mLibVLC.isPlaying() && hasCurrentMedia())
-                    pause();
-            }
-            else if (action.equalsIgnoreCase(Intent.ACTION_HEADSET_PLUG) && state != 0) {
-                Log.i(TAG, "Headset Inserted.");
-                if (!mLibVLC.isPlaying() && hasCurrentMedia())
-                    play();
-            }
+            handleSeekRequest(intent.getLongExtra("position", 0));
         }
 
             /*
              * Sleep
              */
         if (action.equalsIgnoreCase(SLEEP_INTENT)) {
-            stop(true);
+            handleStopRequest(null, true);
         }
     }
 
@@ -486,65 +361,31 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         final String posterUrl = intent.getStringExtra("posterUrl");
 
         final BaseItemDto item = jsonSerializer.DeserializeFromString(itemJson, BaseItemDto.class);
+        final MediaSourceInfo mediaSource = jsonSerializer.DeserializeFromString(mediaSourceJson, MediaSourceInfo.class);
 
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
+        // The mediaId used here is not the unique musicId. This one comes from the
+        // MediaBrowser, and is actually a "hierarchy-aware mediaID": a concatenation of
+        // the hierarchy in MediaBrowser and the actual unique musicID. This is necessary
+        // so we can build the correct playing queue, based on where the track was
+        // selected from.
+        mPlayingQueue = QueueHelper.getPlayingQueue(item, mediaSource, path, posterUrl, mMusicProvider, logger);
+        mSession.setQueue(mPlayingQueue);
 
-        if (!mServiceStarted) {
-            logger.Info("Starting service");
-            // The MusicService needs to keep running even after the calling MediaBrowser
-            // is disconnected. Call startService(Intent) and then stopSelf(..) when we no longer
-            // need to play media.
-            startService(new Intent(getApplicationContext(), MediaService.class));
-            mServiceStarted = true;
-        }
+        String mediaId = item.getId();
 
-        if (!mSession.isActive()) {
-            mSession.setActive(true);
-        }
+        mSession.setQueueTitle(item.getName());
 
-        //if (QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
-            updateMetadata();
-            setMediaSessionInfo(item, posterUrl);
-            LibVLC vlc = getLibVlcInstance();
-            Media media = new Media(vlc, path);
-            currentMrl = media.getMrl();
+        if (mPlayingQueue != null && !mPlayingQueue.isEmpty()) {
+            // set the current index on queue from the media Id:
+            mCurrentIndexOnQueue = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, mediaId);
 
-            logger.Debug("Vlc playMRL: %s", currentMrl);
-            vlc.playMRL(currentMrl);
-        //}
-    }
-
-    private void setMediaSessionInfo(BaseItemDto item, String posterUrl) {
-
-        mSession.setActive(true);
-
-        String album = item.getAlbum() == null ? "" : item.getAlbum();
-        String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
-        String title = item.getName() == null ? "" : item.getName();
-        String itemId = item.getId();
-
-        final MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
-                .putString(MediaMetadata.METADATA_KEY_ALBUM, album)
-                .putString(MediaMetadata.METADATA_KEY_TITLE, title)
-                .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, itemId);
-
-        if (posterUrl != null && posterUrl.length() > 0) {
-            metadataBuilder.putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, posterUrl);
-        }
-
-        mSession.setMetadata(metadataBuilder.build());
-
-        if (posterUrl != null && posterUrl.length() > 0) {
-            GetHttpClient().getBitmap(posterUrl, new Response<Bitmap>() {
-
-                @Override
-                public void onResponse(Bitmap bitmap) {
-                    currentBitmap = bitmap;
-                    metadataBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, currentBitmap);
-                    mSession.setMetadata(metadataBuilder.build());
-                }
-            });
+            if (mCurrentIndexOnQueue < 0) {
+                logger.Error("playFromMediaId: media ID ", mediaId,
+                        " could not be found on queue. Ignoring.");
+            } else {
+                // play the music
+                handlePlayRequest();
+            }
         }
     }
 
@@ -587,10 +428,31 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
     }
 
+    private void handleUnpauseRequest() {
+
+        mDelayedStopHandler.removeCallbacksAndMessages(null);
+        if (!mServiceStarted) {
+            logger.Debug("Starting service");
+            // The MusicService needs to keep running even after the calling MediaBrowser
+            // is disconnected. Call startService(Intent) and then stopSelf(..) when we no longer
+            // need to play media.
+            startService(new Intent(getApplicationContext(), MediaService.class));
+            mServiceStarted = true;
+        }
+
+        if (!mSession.isActive()) {
+            mSession.setActive(true);
+        }
+
+        logger.Debug("handleUnpauseRequest: mState=" + mPlayback.getState());
+        mPlayback.unpause();
+        // reset the delayed stop handler.
+    }
+
     /**
      * Handle a request to stop music
      */
-    private void handleStopRequest(String withError) {
+    private void handleStopRequest(String withError, boolean stopSelf) {
 
         logger.Debug("handleStopRequest: mState=" + mPlayback.getState() + " error=", withError);
         mPlayback.stop(true);
@@ -598,24 +460,33 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
 
+        updatePlaybackState(null);
+
+        currentBitmap = null;
+
         updatePlaybackState(withError);
 
-        // service is no longer necessary. Will be started again if needed.
-        stopSelf();
-        mServiceStarted = false;
+        if (stopSelf) {
+            // service is no longer necessary. Will be started again if needed.
+            logger.Debug("MediaService.stopSelf");
+            stopSelf();
+            mServiceStarted = false;
+        }
     }
 
     private void updateMetadata() {
-        /*if (!QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
+
+        if (!QueueHelper.isIndexPlayable(mCurrentIndexOnQueue, mPlayingQueue)) {
             logger.Error(TAG, "Can't retrieve current metadata.");
             updatePlaybackState(getResources().getString(R.string.error_no_metadata));
             return;
         }
-        MediaSession.QueueItem queueItem = mPlayingQueue.get(mCurrentIndexOnQueue);
+        final MediaSession.QueueItem queueItem = mPlayingQueue.get(mCurrentIndexOnQueue);
         String musicId = MediaIDHelper.extractMusicIDFromMediaID(
                 queueItem.getDescription().getMediaId());
-        MediaMetadata track = mMusicProvider.getMusic(musicId);
+        final MediaMetadata track = mMusicProvider.getMusic(musicId);
         final String trackId = track.getString(MediaMetadata.METADATA_KEY_MEDIA_ID);
+
         if (!musicId.equals(trackId)) {
             IllegalStateException e = new IllegalStateException("track ID should match musicId.");
             logger.Error(TAG, "track ID should match musicId.",
@@ -636,36 +507,38 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         // locked screen and in other places.
         if (track.getDescription().getIconBitmap() == null &&
                 track.getDescription().getIconUri() != null) {
-            String albumUri = track.getDescription().getIconUri().toString();
-            AlbumArtCache.getInstance().fetch(albumUri, new AlbumArtCache.FetchListener() {
-                @Override
-                public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                    MediaSession.QueueItem queueItem = mPlayingQueue.get(mCurrentIndexOnQueue);
-                    MediaMetadata track = mMusicProvider.getMusic(trackId);
-                    track = new MediaMetadata.Builder(track)
+            String posterUrl = track.getDescription().getIconUri().toString();
 
-                            // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
-                            // example, on the lockscreen background when the media session is active.
-                            .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, bitmap)
+            if (posterUrl != null && posterUrl.length() > 0) {
+                GetHttpClient().getBitmap(posterUrl, new Response<Bitmap>() {
 
-                                    // set small version of the album art in the DISPLAY_ICON. This is used on
-                                    // the MediaDescription and thus it should be small to be serialized if
-                                    // necessary..
-                            .putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, icon)
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        currentBitmap = bitmap;
 
-                            .build();
+                        MediaMetadata updatedTrack = new MediaMetadata.Builder(track)
 
-                    mMusicProvider.updateMusic(trackId, track);
+                                // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
+                                // example, on the lockscreen background when the media session is active.
+                                .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, bitmap)
 
-                    // If we are still playing the same music
-                    String currentPlayingId = MediaIDHelper.extractMusicIDFromMediaID(
-                            queueItem.getDescription().getMediaId());
-                    if (trackId.equals(currentPlayingId)) {
-                        mSession.setMetadata(track);
+                                        // set small version of the album art in the DISPLAY_ICON. This is used on
+                                        // the MediaDescription and thus it should be small to be serialized if
+                                        // necessary..
+                                //.putBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON, icon)
+
+                                .build();
+
+                        // If we are still playing the same music
+                        String currentPlayingId = MediaIDHelper.extractMusicIDFromMediaID(queueItem.getDescription().getMediaId());
+                        if (trackId.equals(currentPlayingId)) {
+                            mSession.setMetadata(updatedTrack);
+                            updatePlaybackState(null);
+                        }
                     }
-                }
-            });
-        }*/
+                });
+            }
+        }
     }
 
     /**
@@ -705,225 +578,16 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         mSession.setPlaybackState(stateBuilder.build());
 
         if (state == PlaybackState.STATE_PLAYING || state == PlaybackState.STATE_PAUSED) {
-            mMediaNotificationManager.startNotification();
+            mMediaNotificationManager.startNotification(currentBitmap);
         }
     }
 
-    private int getState() {
-
-        if (mLibVLC == null){
-            return PlaybackState.STATE_NONE;
-        }
-
-        int state = mLibVLC.getPlayerState();
-
-        // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
-
-        switch (state) {
-
-            case 0:
-                return PlaybackState.STATE_NONE;
-            case 1:
-                return PlaybackState.STATE_CONNECTING;
-            case 2:
-                return PlaybackState.STATE_BUFFERING;
-            case 3:
-                return PlaybackState.STATE_PLAYING;
-            case 4:
-                return PlaybackState.STATE_PAUSED;
-            case 5:
-                return PlaybackState.STATE_STOPPED;
-            case 6:
-                return PlaybackState.STATE_STOPPED;
-            case 7:
-                return PlaybackState.STATE_ERROR;
-            default:
-                return PlaybackState.STATE_NONE;
-        }
-    }
-
-    private long getCurrentStreamPosition() {
-
-        if (mLibVLC != null){
-            return mLibVLC.getTime();
-        }
-
-        return 0;
-    }
-
-    /**
-     * Handle libvlc asynchronous events
-     */
-    private  Handler mVlcEventHandler;
-
-    private static class VlcServiceEventHandler extends VlcEventHandler {
-
-        private MediaService audioService;
-        private long lastReportTime;
-
-        public VlcServiceEventHandler(ILogger logger, LibVLC mLibVLC, MediaService audioService) {
-            super(logger, mLibVLC);
-            this.audioService = audioService;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-
-            super.handleMessage(msg);
-
-            MediaService service = audioService;
-            if(service == null) return;
-
-            int event = msg.getData().getInt("event");
-
-            switch (event) {
-                case EventHandler.MediaParsedChanged:
-                    break;
-                case EventHandler.MediaPlayerPlaying:
-
-                    service.changeAudioFocus(true);
-                    if (!service.mWakeLock.isHeld())
-                        service.mWakeLock.acquire();
-                    service.updatePlaybackState(null);
-                    break;
-                case EventHandler.MediaPlayerPaused:
-                    if (service.mWakeLock.isHeld())
-                        service.mWakeLock.release();
-                    service.updatePlaybackState(null);
-                    break;
-                case EventHandler.MediaPlayerStopped:
-                    service.updatePlaybackState(null);
-                    break;
-                case EventHandler.MediaPlayerEndReached:
-                    service.updatePlaybackState(null);
-                    break;
-                case EventHandler.MediaPlayerVout:
-                    if(msg.getData().getInt("data") > 0) {
-                        service.handleVout();
-                    }
-                    break;
-                case EventHandler.MediaPlayerPositionChanged:
-                    break;
-                case EventHandler.MediaPlayerEncounteredError:
-                    /*service.showToast(service.getString(
-                            R.string.invalid_location,
-                            service.mLibVLC.getMediaList().getMRL(
-                                    service.mCurrentIndex)), Toast.LENGTH_SHORT);*/
-                    service.updatePlaybackState(null);
-                    break;
-                case EventHandler.MediaPlayerTimeChanged:
-
-                    // avoid useless error logs
-                    if (event == EventHandler.MediaPlayerTimeChanged) {
-                        // Avoid overly aggressive reporting
-                        if ((new Date().getTime() - lastReportTime) < 600){
-                            return;
-                        }
-                    }
-
-                    lastReportTime = new Date().getTime();
-                    service.updatePlaybackState(null);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
-    private void handleVout() {
-
-        if (!hasCurrentMedia())
-            return;
-        Log.i(TAG, "Obtained video track");
-
-        //mEventHandler.removeHandler(mVlcEventHandler);
-        // Preserve playback when switching to video
-        //hideNotification(false);
-
-        // Switch to the video player & don't lose the currently playing stream
-        //VideoPlayerActivity.start(VLCApplication.getAppContext(), MRL, title, index, true);
-    }
-
-    private String currentMrl;
     private Bitmap currentBitmap = null;
 
-    /**
-     * Alias for mCurrentIndex >= 0
-     *
-     * @return True if a media is currently loaded, false otherwise
-     */
-    private boolean hasCurrentMedia() {
+    private void handleSeekRequest(long position) {
 
-        // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
-
-        return currentMrl != null && currentMrl.length() > 0;
-    }
-
-    private void pause() {
-
-        LibVLC vlc = mLibVLC;
-
-        if (vlc != null) {
-            if (vlc.getPlayerState() != 4){
-                vlc.pause();
-            }
-        }
-
-        // reset the delayed stop handler.
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
-        mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-    }
-
-    private void play() {
-        if(hasCurrentMedia()) {
-            mLibVLC.play();
-        }
-    }
-
-    private void seek(long position) {
-
-        LibVLC vlc = mLibVLC;
-
-        if (vlc != null) {
-            vlc.setTime(position);
-        }
-    }
-
-    private void stop(boolean stopService) {
-
-        LibVLC vlc = mLibVLC;
-
-        if (vlc != null) {
-            vlc.stop();
-        }
-
-        // reset the delayed stop handler.
-        mDelayedStopHandler.removeCallbacksAndMessages(null);
-        mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-
-        updatePlaybackState(null);
-
-        destroyCurrentMediaInfo();
-        changeAudioFocus(false);
-
-        if (mWakeLock.isHeld())
-            mWakeLock.release();
-
-        if (stopService) {
-            // service is no longer necessary. Will be started again if needed.
-            logger.Debug("MediaService.stopSelf");
-            stopSelf();
-
-            mServiceStarted = false;
-        }
-    }
-
-    private void destroyCurrentMediaInfo() {
-
-        logger.Debug("MediaService.destroyCurrentMediaInfo");
-
-        currentMrl = null;
-        currentBitmap = null;
+        logger.Debug("onSeekTo:", position);
+        mPlayback.seekTo((int) position);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -937,25 +601,75 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
 
         @Override
         public void onPlay() {
-            play();
+            logger.Debug("play");
+
+            if (mPlayback.getState() == PlaybackState.STATE_PAUSED){
+                handleUnpauseRequest();
+                return;
+            }
+
+            if (mPlayingQueue != null && !mPlayingQueue.isEmpty()) {
+                handlePlayRequest();
+            }
+        }
+
+        @Override
+        public void onSkipToQueueItem(long queueId) {
+
+            logger.Debug("OnSkipToQueueItem:" + queueId);
+
+            if (mPlayingQueue != null && !mPlayingQueue.isEmpty()) {
+                // set the current index on queue from the music Id:
+                mCurrentIndexOnQueue = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, queueId);
+                //play the music
+                handlePlayRequest();
+            }
         }
 
         @Override
         public void onSeekTo(long position) {
-            seek(position);
+            handleSeekRequest(position);
+        }
+
+        @Override
+        public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            logger.Debug("playFromMediaId mediaId:", mediaId, "  extras=", extras);
+
+            // The mediaId used here is not the unique musicId. This one comes from the
+            // MediaBrowser, and is actually a "hierarchy-aware mediaID": a concatenation of
+            // the hierarchy in MediaBrowser and the actual unique musicID. This is necessary
+            // so we can build the correct playing queue, based on where the track was
+            // selected from.
+            mPlayingQueue = QueueHelper.getPlayingQueue(mediaId, mMusicProvider, logger);
+            mSession.setQueue(mPlayingQueue);
+            //String queueTitle = getString(R.string.browse_musics_by_genre_subtitle,
+                    //MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId));
+            //mSession.setQueueTitle(queueTitle);
+
+            if (mPlayingQueue != null && !mPlayingQueue.isEmpty()) {
+                // set the current index on queue from the media Id:
+                mCurrentIndexOnQueue = QueueHelper.getMusicIndexOnQueue(mPlayingQueue, mediaId);
+
+                if (mCurrentIndexOnQueue < 0) {
+                    logger.Error("playFromMediaId: media ID ", mediaId,
+                            " could not be found on queue. Ignoring.");
+                } else {
+                    // play the music
+                    handlePlayRequest();
+                }
+            }
         }
 
         @Override
         public void onPause() {
-            pause();
+            logger.Debug("pause. current state=" + mPlayback.getState());
+            handlePauseRequest();
         }
 
         @Override
         public void onStop() {
-
-            logger.Debug("MediaSessionCallback.onStop");
-
-            stop(true);
+            logger.Debug("stop. current state=" + mPlayback.getState());
+            handleStopRequest(null, true);
         }
 
         @Override
@@ -995,9 +709,9 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
                 // A generic search like "Play music" sends an empty query
                 // and it's expected that we start playing something. What will be played depends
                 // on the app: favorite playlist, "I'm feeling lucky", most recent, etc.
-                mPlayingQueue = QueueHelper.getRandomQueue(mMusicProvider);
+                mPlayingQueue = new ArrayList<MediaSession.QueueItem>();
             } else {
-                mPlayingQueue = QueueHelper.getPlayingQueueFromSearch(query, mMusicProvider);
+                mPlayingQueue = QueueHelper.getPlayingQueueFromSearch(query, mMusicProvider, logger);
             }
 
             logger.Debug("playFromSearch  playqueue.length=" + mPlayingQueue.size());
@@ -1010,7 +724,7 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
                 handlePlayRequest();
             } else {
                 // if nothing was found, we need to warn the user and stop playing
-                handleStopRequest(getString(R.string.no_search_results));
+                handleStopRequest(getString(R.string.no_search_results), true);
             }
         }
     }
@@ -1040,12 +754,12 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         if (mPlayback.isPlaying()) {
             actions |= PlaybackState.ACTION_PAUSE;
         }
-        if (mCurrentIndexOnQueue > 0) {
+        //if (mCurrentIndexOnQueue > 0) {
             actions |= PlaybackState.ACTION_SKIP_TO_PREVIOUS;
-        }
-        if (mCurrentIndexOnQueue < mPlayingQueue.size() - 1) {
+        //}
+        //if (mCurrentIndexOnQueue < mPlayingQueue.size() - 1) {
             actions |= PlaybackState.ACTION_SKIP_TO_NEXT;
-        }
+        //}
         return actions;
     }
 
@@ -1074,12 +788,14 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
             // In this sample, we restart the playing queue when it gets to the end:
             mCurrentIndexOnQueue++;
             if (mCurrentIndexOnQueue >= mPlayingQueue.size()) {
-                mCurrentIndexOnQueue = 0;
+                handleStopRequest(null, true);
+                return;
+                //mCurrentIndexOnQueue = 0;
             }
             handlePlayRequest();
         } else {
             // If there is nothing to play, we stop and release the resources:
-            handleStopRequest(null);
+            handleStopRequest(null, true);
         }
     }
 
@@ -1106,8 +822,8 @@ public class MediaService extends MediaBrowserService implements Playback.Callba
         @Override
         public void handleMessage(Message msg) {
             MediaService service = mWeakReference.get();
-            if (service != null && service.mLibVLC != null) {
-                if (service.hasCurrentMedia()) {
+            if (service != null && service.mPlayback != null) {
+                if (service.mPlayback.isPlaying()) {
                     service.logger.Debug("Ignoring delayed stop since the media player is in use.");
                     return;
                 }

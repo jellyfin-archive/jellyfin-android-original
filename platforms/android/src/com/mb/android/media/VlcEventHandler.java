@@ -19,7 +19,7 @@ import mediabrowser.model.logging.ILogger;
 public class VlcEventHandler extends Handler {
 
     private ILogger logger;
-    private LibVLC mLibVLC;
+    protected LibVLC mLibVLC;
 
     public VlcEventHandler(ILogger logger, LibVLC mLibVLC) {
         this.logger = logger;

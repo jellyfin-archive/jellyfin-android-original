@@ -1,6 +1,6 @@
 ﻿(function () {
 
-    function vlcRenderer(type) {
+    function vlcRenderer(options) {
 
         var self = this;
 
@@ -95,7 +95,7 @@
                 return;
             }
 
-            if (type == 'audio') {
+            if (options.type == 'audio') {
 
                 AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), posterUrl);
             } else {
@@ -166,6 +166,11 @@
         window.AudioRenderer.Current = self;
     }
 
-    window.AudioRenderer = vlcRenderer;
+    window.AudioRenderer = function (options) {
+        options = options || {};
+        options.type = 'audio';
+
+        return new vlcRenderer(options);
+    };
 
 })();
