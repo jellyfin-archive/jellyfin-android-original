@@ -56,7 +56,6 @@ public class KitKatMediaService extends Service {
 
     public static final String ACTION_REMOTE_GENERIC = "com.mb.android.remote.";
     public static final String START_FROM_NOTIFICATION = "from_notification";
-    public static final String SLEEP_INTENT = "com.mb.android.sleep";
     public static final String INCOMING_CALL_INTENT = "com.mb.android.media.incomingcall";
     public static final String CALL_ENDED_INTENT = "com.mb.android.media.callended";
 
@@ -126,7 +125,7 @@ public class KitKatMediaService extends Service {
         filter.addAction(Constants.ACTION_SEEK);
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        filter.addAction(SLEEP_INTENT);
+        filter.addAction(Constants.SLEEP_INTENT);
         filter.addAction(INCOMING_CALL_INTENT);
         filter.addAction(CALL_ENDED_INTENT);
         filter.addAction(MediaWidgetProvider.ACTION_WIDGET_INIT);
@@ -459,7 +458,7 @@ public class KitKatMediaService extends Service {
             /*
              * Sleep
              */
-        if (action.equalsIgnoreCase(SLEEP_INTENT)) {
+        if (action.equalsIgnoreCase(Constants.SLEEP_INTENT)) {
             stop(true);
         }
     }
