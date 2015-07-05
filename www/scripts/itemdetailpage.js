@@ -185,8 +185,9 @@ if(limit&&items.length>limit){html+='<p style="margin: 0;padding-left:5px;"><pap
 return html;}
 function renderSpecials(page,item,user,limit){ApiClient.getSpecialFeatures(user.Id,item.Id).done(function(specials){var specialsContent=page.querySelector('#specialsContent');specialsContent.innerHTML=getVideosHtml(specials,user,limit,"moreSpecials");ImageLoader.lazyChildren(specialsContent);});}
 function renderCast(page,item,context,limit,isStatic){var html='';var casts=item.People||[];for(var i=0,length=casts.length;i<length;i++){if(limit&&i>=limit){break;}
-var cast=casts[i];var href=isStatic?'#':'itembynamedetails.html?context='+context+'&id='+cast.Id+'';html+='<a class="tileItem smallPosterTileItem" href="'+href+'">';var imgUrl;if(cast.PrimaryImageTag){imgUrl=ApiClient.getScaledImageUrl(cast.Id,{width:100,tag:cast.PrimaryImageTag,type:"primary",minScale:2});}else{imgUrl="css/images/items/list/person.png";}
-html+='<div class="tileImage lazy" data-src="'+imgUrl+'"></div>';html+='<div class="tileContent">';html+='<p>'+cast.Name+'</p>';var role=cast.Role?Globalize.translate('ValueAsRole',cast.Role):cast.Type;if(role=="GuestStar"){role=Globalize.translate('ValueGuestStar');}
+var cast=casts[i];var href=isStatic?'#':'itembynamedetails.html?context='+context+'&id='+cast.Id+'';html+='<a class="tileItem smallPosterTileItem" href="'+href+'">';var imgUrl;var lazy=true;if(cast.PrimaryImageTag){imgUrl=ApiClient.getScaledImageUrl(cast.Id,{width:100,tag:cast.PrimaryImageTag,type:"primary",minScale:2});}else{imgUrl="css/images/items/list/person.png";lazy=false;}
+if(lazy){html+='<div class="tileImage lazy" data-src="'+imgUrl+'"></div>';}else{html+='<div class="tileImage" style="background-image:url(\''+imgUrl+'\');"></div>';}
+html+='<div class="tileContent">';html+='<p>'+cast.Name+'</p>';var role=cast.Role?Globalize.translate('ValueAsRole',cast.Role):cast.Type;if(role=="GuestStar"){role=Globalize.translate('ValueGuestStar');}
 role=role||"";var maxlength=40;if(role.length>maxlength){role=role.substring(0,maxlength-3)+'...';}
 html+='<p>'+role+'</p>';html+='</div>';html+='</a>';}
 if(limit&&casts.length>limit){html+='<p style="margin: 0;padding-left:5px;"><paper-button raised class="more morePeople">'+Globalize.translate('ButtonMoreItems')+'</paper-button></p>';}
