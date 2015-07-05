@@ -133,7 +133,7 @@ if(Dashboard.isRunningInCordova()&&$.browser.android){define("filesystem",["cord
 else if(Dashboard.isRunningInCordova()){define("filesystem",["cordova/filesystem"]);}
 else{define("filesystem",["thirdparty/filesystem"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("nativedirectorychooser",["cordova/android/nativedirectorychooser"]);}
-if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["cordova/android/vlcplayer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
+if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["cordova/android/vlcplayer"]);define("videorenderer",["cordova/android/vlcplayer"]);}
 else{define("audiorenderer",["scripts/htmlmediarenderer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
 define("connectservice",["apiclient/connectservice"]);define("paperbuttonstyle",[],function(){return{};});define("jqmicons",[],function(){Dashboard.importCss('thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.icons.css');return{};});define("livetvcss",[],function(){Dashboard.importCss('css/livetv.css');return{};});define("detailtablecss",[],function(){Dashboard.importCss('css/detailtable.css');return{};});define("tileitemcss",[],function(){Dashboard.importCss('css/tileitem.css');return{};});if(Dashboard.isRunningInCordova()&&$.browser.safari){define("actionsheet",["cordova/ios/actionsheet"]);}else{define("actionsheet",["scripts/actionsheet"]);}
 define("sharingmanager",["scripts/sharingmanager"]);if(Dashboard.isRunningInCordova()){define("sharingwidget",["cordova/sharingwidget"]);}else{define("sharingwidget",["scripts/sharingwidget"]);}

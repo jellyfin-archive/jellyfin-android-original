@@ -550,12 +550,9 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
                     break;
                 case EventHandler.MediaPlayerTimeChanged:
 
-                    // avoid useless error logs
-                    if (event == EventHandler.MediaPlayerTimeChanged) {
-                        // Avoid overly aggressive reporting
-                        if ((new Date().getTime() - lastReportTime) < 600){
-                            return;
-                        }
+                    // Avoid overly aggressive reporting
+                    if ((new Date().getTime() - lastReportTime) < 500){
+                        return;
                     }
 
                     lastReportTime = new Date().getTime();

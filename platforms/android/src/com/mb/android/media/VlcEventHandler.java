@@ -11,6 +11,8 @@ import org.apache.cordova.device.Device;
 import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
 
+import java.util.Date;
+
 import mediabrowser.model.logging.ILogger;
 
 /**
@@ -20,6 +22,8 @@ public class VlcEventHandler extends Handler {
 
     private ILogger logger;
     protected LibVLC mLibVLC;
+
+    private long lastReportTime;
 
     public VlcEventHandler(ILogger logger, LibVLC mLibVLC) {
         this.logger = logger;
@@ -79,6 +83,13 @@ public class VlcEventHandler extends Handler {
                 break;
             case EventHandler.MediaPlayerTimeChanged:
                 logger.Debug("MediaPlayerTimeChanged");
+
+                // Avoid overly aggressive reporting
+                if ((new Date().getTime() - lastReportTime) < 500){
+                    return;
+                }
+
+                lastReportTime = new Date().getTime();
                 reportState("positionchange");
                 break;
             case EventHandler.MediaPlayerVout:

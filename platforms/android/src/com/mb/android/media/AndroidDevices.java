@@ -33,10 +33,6 @@ public class AndroidDevices {
                 && !devicesWithoutNavBar.contains(android.os.Build.MODEL);
     }
 
-    public static boolean hasExternalStorage() {
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-    }
-
     public static boolean hasNavBar()
     {
         return hasNavBar;
@@ -56,65 +52,6 @@ public class AndroidDevices {
         }else{
             return true;
         }
-    }
-
-    public static String[] getStorageDirectories() {
-        String[] dirs = null;
-        BufferedReader bufReader = null;
-        ArrayList<String> list = new ArrayList<String>();
-        list.add(Environment.getExternalStorageDirectory().getPath());
-
-        List<String> typeWL = Arrays.asList("vfat", "exfat", "sdcardfs", "fuse");
-        List<String> typeBL = Arrays.asList("tmpfs");
-        String[] mountWL = { "/mnt", "/Removable" };
-        String[] mountBL = {
-                "/mnt/secure",
-                "/mnt/shell",
-                "/mnt/asec",
-                "/mnt/obb",
-                "/mnt/media_rw/extSdCard",
-                "/mnt/media_rw/sdcard",
-                "/storage/emulated" };
-        String[] deviceWL = {
-                "/dev/block/vold",
-                "/dev/fuse",
-                "/mnt/media_rw/extSdCard" };
-
-        try {
-            bufReader = new BufferedReader(new FileReader("/proc/mounts"));
-            String line;
-            while((line = bufReader.readLine()) != null) {
-
-                StringTokenizer tokens = new StringTokenizer(line, " ");
-                String device = tokens.nextToken();
-                String mountpoint = tokens.nextToken();
-                String type = tokens.nextToken();
-
-                // skip if already in list or if type/mountpoint is blacklisted
-                if (list.contains(mountpoint) || typeBL.contains(type) || Strings.StartsWith(mountBL, mountpoint))
-                    continue;
-
-                // check that device is in whitelist, and either type or mountpoint is in a whitelist
-                if (Strings.StartsWith(deviceWL, device) && (typeWL.contains(type) || Strings.StartsWith(mountWL, mountpoint)))
-                    list.add(mountpoint);
-            }
-
-            dirs = new String[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                dirs[i] = list.get(i);
-            }
-        }
-        catch (FileNotFoundException e) {}
-        catch (IOException e) {}
-        finally {
-            if (bufReader != null) {
-                try {
-                    bufReader.close();
-                }
-                catch (IOException e) {}
-            }
-        }
-        return dirs;
     }
 
 }

@@ -16,8 +16,6 @@ import mediabrowser.model.logging.ILogger;
 @TargetApi(21)
 public class MediaService extends BaseMediaBrowserService implements IPlaybackCallback {
 
-    private static final String TAG = "VLC/AudioService";
-
     @Override
     protected ILogger createLogger() {
         return AppLogger.getLogger(getApplicationContext());

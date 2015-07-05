@@ -38,13 +38,13 @@ import com.mb.android.MainActivity;
 import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
-import com.mb.android.media.Constants;
 import com.mb.android.media.MediaWidgetProvider;
 import com.mb.android.media.VlcEventHandler;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
+import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.dto.BaseItemDto;
 import mediabrowser.model.logging.ILogger;
@@ -56,8 +56,6 @@ public class KitKatMediaService extends Service {
 
     public static final String ACTION_REMOTE_GENERIC = "com.mb.android.remote.";
     public static final String START_FROM_NOTIFICATION = "from_notification";
-    public static final String INCOMING_CALL_INTENT = "com.mb.android.media.incomingcall";
-    public static final String CALL_ENDED_INTENT = "com.mb.android.media.callended";
 
     public static final String WIDGET_CLASS = "com.mb.android.media.MediaWidgetProvider";
 
@@ -97,10 +95,6 @@ public class KitKatMediaService extends Service {
         try {
             mLibVLC = getLibVlcInstance();
 
-            mVlcEventHandler = new AudioServiceEventHandler(logger, mLibVLC, this);
-
-            EventHandler.getInstance().addHandler(mVlcEventHandler);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,12 +120,28 @@ public class KitKatMediaService extends Service {
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         filter.addAction(Constants.SLEEP_INTENT);
-        filter.addAction(INCOMING_CALL_INTENT);
-        filter.addAction(CALL_ENDED_INTENT);
+        filter.addAction(Constants.INCOMING_CALL_INTENT);
+        filter.addAction(Constants.CALL_ENDED_INTENT);
         filter.addAction(MediaWidgetProvider.ACTION_WIDGET_INIT);
         registerReceiver(serviceReceiver, filter);
     }
 
+    private LibVLC getLibVlcInstance() {
+
+        if (mLibVLC == null) {
+            mLibVLC = new LibVLC();
+            try {
+                mLibVLC.init(this);
+                mVlcEventHandler = new AudioServiceEventHandler(logger, mLibVLC, this);
+                EventHandler.getInstance().addHandler(mVlcEventHandler);
+            } catch(LibVlcException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        return mLibVLC;
+    }
 
     /**
      * Set up the remote control and tell the system we want to be the default receiver for the MEDIA buttons
@@ -262,21 +272,6 @@ public class KitKatMediaService extends Service {
         return httpClient;
     }
 
-    private LibVLC getLibVlcInstance() {
-
-        if (mLibVLC == null) {
-            mLibVLC = new LibVLC();
-            try {
-                mLibVLC.init(this);
-            } catch(LibVlcException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        return mLibVLC;
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null)
@@ -321,7 +316,10 @@ public class KitKatMediaService extends Service {
             audioFocusListener = new OnAudioFocusChangeListener() {
                 @Override
                 public void onAudioFocusChange(int focusChange) {
-                    LibVLC libVLC = getLibVlcInstance();
+                    LibVLC libVLC = mLibVLC;
+                    if (libVLC == null){
+                        return;
+                    }
                     switch (focusChange)
                     {
                         case AudioManager.AUDIOFOCUS_LOSS:
@@ -383,7 +381,7 @@ public class KitKatMediaService extends Service {
             /*
              * Incoming Call : Pause if VLC is playing audio or video.
              */
-        if (action.equalsIgnoreCase(INCOMING_CALL_INTENT)) {
+        if (action.equalsIgnoreCase(Constants.INCOMING_CALL_INTENT)) {
             mWasPlayingAudio = hasCurrentMedia() && mLibVLC.getVideoTracksCount() < 1;
             if (hasCurrentMedia())
                 pause();
@@ -392,7 +390,7 @@ public class KitKatMediaService extends Service {
             /*
              * Call ended : Play only if VLC was playing audio.
              */
-        if (action.equalsIgnoreCase(CALL_ENDED_INTENT)
+        if (action.equalsIgnoreCase(Constants.CALL_ENDED_INTENT)
                 && mWasPlayingAudio) {
             play();
         }

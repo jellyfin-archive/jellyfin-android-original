@@ -34,8 +34,8 @@ import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.logging.AppLogger;
 import com.mb.android.logging.LoggingBridge;
-import com.mb.android.media.Constants;
 import com.mb.android.media.MediaService;
+import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
 import com.mb.android.preferences.PreferencesProvider;
@@ -51,6 +51,7 @@ import org.crosswalk.engine.XWalkCordovaView;
 import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
+import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
@@ -273,9 +274,16 @@ public class MainActivity extends CordovaActivity
     }
 
     @JavascriptInterface
-    public void playVideoVlc(String path) {
+    public void playVideoVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
 
+        Intent intent = new Intent(this, VideoPlayerActivity.class);
+        intent.setAction(VideoPlayerActivity.PLAY_FROM_VIDEOGRID);
+        intent.putExtra("itemLocation", path);
+        intent.putExtra("itemTitle", "title");
+        intent.putExtra("itemPosition", 0);
+        intent.putExtra("mediaSourceJson", mediaSourceJson);
 
+        startActivity(intent);
     }
 
     @JavascriptInterface
