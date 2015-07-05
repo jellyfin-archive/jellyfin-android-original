@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 
-import com.mb.android.media.Constants;
+import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 
 /**
  * Created by Luke on 6/23/2015.

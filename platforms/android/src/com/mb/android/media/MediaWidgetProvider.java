@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 import com.mb.android.R;
 
+import mediabrowser.apiinteraction.android.mediabrowser.Constants;
+
 /**
  * Created by Luke on 6/23/2015.
  */
