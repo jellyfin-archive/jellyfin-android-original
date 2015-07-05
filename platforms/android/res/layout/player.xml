@@ -7,88 +7,34 @@
      the double FrameLayout is necessary here to do cropping on the bottom right
      (which requires the surface not be centered), while keeping the result centered
     -->
-
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:fitsSystemWindows="true" >
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="false" >
 
         <FrameLayout
             android:id="@+id/player_surface_frame"
             android:layout_width="wrap_content"
-            android:layout_height="400dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:foregroundGravity="clip_horizontal|clip_vertical" >
 
             <SurfaceView
                 android:id="@+id/player_surface"
                 android:layout_width="1dp"
-                android:layout_height="400dp"
-                android:clickable="true" />
-       	<!-- PaintView draw a circle when touch screen -->
-            <easydarwin.android.videostreaming.PaintSurfaceView2
-            	android:id="@+id/drawView"
-          	  	android:layout_width="match_parent"
-            	android:layout_height="400dp" />
-        
+                android:layout_height="1dp" />
             <SurfaceView
                 android:id="@+id/subtitles_surface"
                 android:layout_width="1dp"
                 android:layout_height="1dp"
                 android:visibility="invisible" />
-            
         </FrameLayout>
-        <!--
-        <WebView
-            android:id="@+id/webview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/player_surface_frame" />
-        -->
-	 </FrameLayout>
-
-        <RelativeLayout
-            android:id="@+id/linear2"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent"
-            android:orientation="vertical" >
-
-            <EditText
-                android:id="@+id/edit_say_something"
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:layout_alignParentBottom="false"
-                android:layout_alignParentLeft="true"
-                android:layout_toLeftOf="@+id/btn_send_message"
-                android:hint="say something..."
-                android:imeOptions="actionSend"
-                android:inputType="textAutoCorrect" />
-
-            <Button
-                android:id="@+id/btn_send_message"
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:layout_alignParentBottom="false"
-                android:layout_alignParentRight="true"
-                android:text="send" />
-        </RelativeLayout>
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
         android:fitsSystemWindows="true" >
-
-        <!--
-        <include
-            android:id="@+id/player_overlay_tips"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            layout="@layout/player_tips" />
-        -->
 
         <ImageButton
             android:id="@+id/player_overlay_play"
@@ -100,10 +46,10 @@
 
         <ImageView
             android:id="@+id/player_overlay_loading"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_centerInParent="true"
-            android:src="@drawable/icon" />
+            android:src="@drawable/ic_cone_o" />
 
         <TextView
             android:id="@+id/player_overlay_loading_text"
@@ -111,8 +57,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/player_overlay_loading"
             android:layout_centerHorizontal="true"
-            android:text="@string/please_wait"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:text="@string/please_wait" />
 
         <TextView
             android:id="@+id/player_overlay_info"

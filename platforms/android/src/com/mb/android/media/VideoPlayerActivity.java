@@ -226,6 +226,8 @@ public class VideoPlayerActivity extends Activity implements IVideoPlayer {
 
         logger = createLogger();
 
+        eventHandler = new VideoPlayerEventHandler(this, logger);
+
         if (LibVlcUtil.isJellyBeanMR1OrLater()) {
             // Get the media router service (Miracast)
             mMediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
@@ -502,6 +504,8 @@ public class VideoPlayerActivity extends Activity implements IVideoPlayer {
             // Listen for changes to media routes.
             mediaRouterAddCallback(true);
         }
+
+        mHandler.sendEmptyMessage(AUDIO_SERVICE_CONNECTION_SUCCESS);
     }
     /**
      * Add or remove MediaRouter callbacks. This is provided for version targeting.
@@ -645,8 +649,16 @@ public class VideoPlayerActivity extends Activity implements IVideoPlayer {
     }
 
     @Override
-    public int configureSurface(Surface surface, int i, int i2, int i3) {
-        return 0;
+    public int configureSurface(Surface surface, int width, int height, int hal) {
+        logger.Debug("configureSurface: width = " + width + ", height = " + height);
+        if (LibVlcUtil.isICSOrLater() || surface == null)
+            return -1;
+        if (width * height == 0)
+            return 0;
+        if(hal != 0)
+            mSurfaceHolder.setFormat(hal);
+        mSurfaceHolder.setFixedSize(width, height);
+        return 1;
     }
 
     /**
@@ -785,7 +797,7 @@ public class VideoPlayerActivity extends Activity implements IVideoPlayer {
     /**
      *  Handle libvlc asynchronous events
      */
-    private final Handler eventHandler = new VideoPlayerEventHandler(this, logger);
+    private Handler eventHandler;
 
     private static class VideoPlayerEventHandler extends WeakHandler<VideoPlayerActivity> {
 
@@ -1877,6 +1889,8 @@ public class VideoPlayerActivity extends Activity implements IVideoPlayer {
                 mLibVLC.setHardwareAcceleration(LibVLC.HW_ACCELERATION_DISABLED);
             }
         }
+
+        mLibVLC.setVout(LibVLC.VOUT_ANDROID_WINDOW);
 
         mLibVLC.playMRL(new Media(mLibVLC, mLocation).getMrl());
         mCanSeek = false;
