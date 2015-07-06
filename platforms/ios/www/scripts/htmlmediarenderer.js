@@ -38,7 +38,7 @@ if(useNumericMode){allTracks[i].mode=mode;}else{allTracks[i].mode=modes[mode];}}
 var allTracks=mediaElement.textTracks;for(var i=0;i<allTracks.length;i++){var track=allTracks[i];try{while(track.cues.length){track.removeCue(track.cues[0]);}}catch(e){Logger.log('Error removing cue from textTrack');}}
 $('track',mediaElement).each(function(){this.src=replaceQueryString(this.src,'startPositionTicks',startPositionTicks);});};self.enableCustomVideoControls=function(){return self.canAutoPlayVideo()&&!$.browser.mobile;};self.canAutoPlayVideo=function(){if(AppInfo.isNativeApp){return true;}
 if($.browser.mobile){return false;}
-return true;};self.init=function(){var deferred=DeferredBuilder.Deferred();if(options.type=='video'&&enableViblast()){requirejs(['https://viblast.com/player/free-version/sdqsdx86/viblast.js'],function(){deferred.resolve();});}else{deferred.resolve();}
+return true;};self.init=function(){var deferred=DeferredBuilder.Deferred();if(options.type=='video'&&enableViblast()){requirejs(['thirdparty/viblast.js'],function(){deferred.resolve();});}else{deferred.resolve();}
 return deferred.promise();};if(options.type=='audio'){mediaElement=createAudioElement();}
 else{mediaElement=createVideoElement();}}
 if(!window.AudioRenderer){window.AudioRenderer=function(options){options=options||{};options.type='audio';return new htmlMediaRenderer(options);};}
