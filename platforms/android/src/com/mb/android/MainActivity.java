@@ -276,11 +276,12 @@ public class MainActivity extends CordovaActivity
     @JavascriptInterface
     public void playVideoVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
 
+        getLogger().Debug("Video path: %s", path);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
         intent.setAction(VideoPlayerActivity.PLAY_FROM_VIDEOGRID);
-        intent.putExtra("itemLocation", path);
-        intent.putExtra("itemTitle", "title");
-        intent.putExtra("itemPosition", 0);
+        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION, path);
+        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_TITLE, "Title");
+        //intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_OPENED_POSITION, 0);
         intent.putExtra("mediaSourceJson", mediaSourceJson);
 
         startActivity(intent);
