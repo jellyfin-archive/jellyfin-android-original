@@ -5,7 +5,7 @@ return query;},saveQueryValues:function(key,query){var values={};if(query.SortBy
 if(query.SortOrder){values.SortOrder=query.SortOrder;}
 try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId(),JSON.stringify(values));}catch(e){}},saveViewSetting:function(key,value){try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId()+'_view',value);}catch(e){}},getSavedViewSetting:function(key){var deferred=$.Deferred();var val=appStorage.getItem(key+'_'+Dashboard.getCurrentUserId()+'_view');deferred.resolveWith(null,[val]);return deferred.promise();},needsRefresh:function(elem){var last=parseInt(elem.getAttribute('data-lastrefresh')||'0');if(!last){return true;}
 if(NavHelper.isBack()){Logger.log('Not refreshing data because IsBack=true');return false;}
-var now=new Date().getTime();var cacheDuration;if(AppInfo.isNativeApp){cacheDuration=300000;}
+var now=new Date().getTime();var cacheDuration;if(AppInfo.isNativeApp){cacheDuration=600000;}
 else if($.browser.ipad||$.browser.iphone||$.browser.android){cacheDuration=10000;}
 else{cacheDuration=60000;}
 if((now-last)<cacheDuration){Logger.log('Not refreshing data due to age');return false;}
@@ -309,7 +309,7 @@ var minutes;if(item.RunTimeTicks&&item.Type!="Series"){if(item.Type=="Audio"){mi
 if(item.OfficialRating&&item.Type!=="Season"&&item.Type!=="Episode"){miscInfo.push(item.OfficialRating);}
 if(item.Video3DFormat){miscInfo.push("3D");}
 if(item.MediaType=='Photo'&&item.Width&&item.Height){miscInfo.push(item.Width+"x"+item.Height);}
-return miscInfo.join('&nbsp;&nbsp;&nbsp;&nbsp;');},renderOverview:function(elem,item){var overview=item.Overview||'';elem.innerHTML=overview;$('a',elem).each(function(){this.setAttribute("target","_blank");});if(overview){elem.classList.remove('empty');}else{elem.classList.add('empty');}},renderStudios:function(elem,item,context,isStatic){if(item.Studios&&item.Studios.length&&item.Type!="Series"){var html='';for(var i=0,length=item.Studios.length;i<length;i++){if(i>0){html+='&nbsp;&nbsp;/&nbsp;&nbsp;';}
+return miscInfo.join('&nbsp;&nbsp;&nbsp;&nbsp;');},renderOverview:function(elems,item){$(elems).each(function(){var elem=this;var overview=item.Overview||'';elem.innerHTML=overview;$('a',elem).each(function(){this.setAttribute("target","_blank");});if(overview){elem.classList.remove('empty');}else{elem.classList.add('empty');}});},renderStudios:function(elem,item,context,isStatic){if(item.Studios&&item.Studios.length&&item.Type!="Series"){var html='';for(var i=0,length=item.Studios.length;i<length;i++){if(i>0){html+='&nbsp;&nbsp;/&nbsp;&nbsp;';}
 if(isStatic){html+=item.Studios[i].Name;}else{html+='<a class="textlink" href="itembynamedetails.html?context='+context+'&id='+item.Studios[i].Id+'">'+item.Studios[i].Name+'</a>';}}
 var translationKey=item.Studios.length>1?"ValueStudios":"ValueStudio";html=Globalize.translate(translationKey,html);elem.show().html(html).trigger('create');}else{elem.hide();}},renderGenres:function(elem,item,context,limit,isStatic){var html='';var genres=item.Genres||[];for(var i=0,length=genres.length;i<length;i++){if(limit&&i>=limit){break;}
 if(i>0){html+='<span>&nbsp;&nbsp;/&nbsp;&nbsp;</span>';}
