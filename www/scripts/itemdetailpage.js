@@ -113,7 +113,8 @@ if(item.Type=="BoxSet"){var collectionItemTypes=[{name:Globalize.translate('Head
 else if(item.Type=="Series"){page.querySelector('#childrenTitle').innerHTML=Globalize.translate('HeaderSeasons');}
 else if(item.Type=="MusicAlbum"){page.querySelector('#childrenTitle').innerHTML=Globalize.translate('HeaderTracks');}
 else if(item.Type=="GameSystem"){page.querySelector('#childrenTitle').innerHTML=Globalize.translate('HeaderGames');}
-else{page.querySelector('#childrenTitle').innerHTML=Globalize.translate('HeaderItems');}}
+else{page.querySelector('#childrenTitle').innerHTML=Globalize.translate('HeaderItems');}
+if(item.Type=="MusicAlbum"){$('.childrenSectionHeader',page).hide();}else{$('.childrenSectionHeader',page).show();}}
 function renderCollectionItems(page,types,items,user){for(var i=0,length=types.length;i<length;i++){var type=types[i];var typeItems=items.filter(function(curr){return curr.Type==type.type;});if(typeItems.length){renderCollectionItemType(page,type,typeItems,user);}}
 var otherType={name:Globalize.translate('HeaderOtherItems')};var otherTypeItems=items.filter(function(curr){return!types.filter(function(t){return t.type==curr.Type;}).length;});if(otherTypeItems.length){renderCollectionItemType(page,otherType,otherTypeItems,user);}
 if(!items.length){renderCollectionItemType(page,{name:Globalize.translate('HeaderItems')},items,user);}
