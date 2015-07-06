@@ -8,7 +8,7 @@ else if(section=='librarytiles-automobile'){return Sections.loadLibraryTiles(ele
 else if(section=='librarybuttons'){return Sections.loadlibraryButtons(elem,userId,index);}
 else if(section=='resume'){return Sections.loadResume(elem,userId);}
 else if(section=='latesttvrecordings'){return Sections.loadLatestLiveTvRecordings(elem,userId);}
-else if(section=='latestchannelmedia'){return Sections.loadLatestChannelMedia(elem,userId);}else{elem.empty();var deferred=DeferredBuilder.Deferred();deferred.resolve();return deferred.promise();}}
+else if(section=='latestchannelmedia'){return Sections.loadLatestChannelMedia(elem,userId);}else{elem.innerHTML='';var deferred=DeferredBuilder.Deferred();deferred.resolve();return deferred.promise();}}
 function loadSections(page,user,displayPreferences){var i,length;var sectionCount=4;var elem=page.querySelector('.sections');if(!elem.innerHTML.length){var html='';for(i=0,length=sectionCount;i<length;i++){html+='<div class="homePageSection section'+i+'"></div>';}
 elem.innerHTML=html;}
 var promises=[];for(i=0,length=sectionCount;i<length;i++){promises.push(loadSection(page,user,displayPreferences,i));}
