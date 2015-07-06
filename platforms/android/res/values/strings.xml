@@ -34,4 +34,25 @@
     <string name="unlocked">Unlocked</string>
     <string name="please_wait">Please wait…</string>
     <string name="time_0" translatable="false">0:00</string>
+    <string name="sound_on">Sound On</string>
+    <string name="sound_off">Sound Off</string>
+    <string name="subtitle_select">Select subtitle file</string>
+    <string name="no_file_picker_found">No file picker was found on the system.</string>
+    <string name="open">Open</string>
+    <string name="confirm_resume">Resume from last position?</string>
+    <string name="resume_from_position">Resume from last position</string>
+    <string name="play_from_start">Play from start</string>
+    <string name="audio_delay">Audio delay</string>
+    <string name="spu_delay">Subtitle delay</string>
+    <string name="back_quit_lock">Press back again to quit video</string>
+    <string name="navmenu">navigation menu</string>
+    <string name="subtitles">Subtitles</string>
+    <string name="resize">Resize</string>
+    <string name="video_player_tips">Video player tips:</string>
+    <string name="seek">Seek</string>
+    <string name="lock">Lock</string>
+    <string name="ok_got_it">Got it, dismiss this</string>
+    <string name="options">Options</string>
+    <string name="audio_sub">Audio tracks\nand subtitles</string>
+    <string name="play">Play</string>
 </resources>

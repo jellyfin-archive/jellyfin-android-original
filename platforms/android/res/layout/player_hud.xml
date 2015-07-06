@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/progress_overlay"
+    android:layout_width="800dp"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:background="@drawable/rounded_corners"
+    android:paddingTop="@dimen/overlay_padding_top"
+    android:paddingBottom="@dimen/overlay_padding_bottom"
+    android:layout_marginBottom="@dimen/overlay_margin"
+    android:layout_marginRight="@dimen/overlay_margin"
+    android:layout_marginLeft="@dimen/overlay_margin">
+
+    <SeekBar
+        android:id="@+id/player_overlay_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="@dimen/seekbar_height"
+        android:minHeight="@dimen/seekbar_height"
+        android:paddingLeft="@dimen/time_margin_sides"
+        android:paddingRight="@dimen/time_margin_sides"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:layout_alignParentTop="true"
+        android:progressDrawable="@drawable/po_seekbar"
+        android:thumb="@drawable/seekbar_thumb"
+        android:splitTrack="false"
+        android:focusable="true"/>
+
+    <TextView
+        android:id="@+id/player_overlay_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/player_overlay_seekbar"
+        android:layout_alignLeft="@+id/player_overlay_seekbar"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="@dimen/time_margin_sides"
+        android:text="00:00"
+        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+        android:textColor="@color/orange500"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/player_overlay_length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/player_overlay_seekbar"
+        android:layout_alignParentRight="true"
+        android:layout_alignRight="@+id/player_overlay_seekbar"
+        android:layout_marginRight="@dimen/time_margin_sides"
+        android:text="00:00"
+        android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+        android:textSize="16sp" />
+
+    <!-- Media control buttons -->
+    <LinearLayout
+        android:id="@+id/player_overlay_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/player_overlay_length"
+        android:layout_marginRight="@dimen/images_margin_sides"
+        android:layout_marginLeft="@dimen/images_margin_sides"
+        android:weightSum="5">
+        <ImageView
+            android:id="@+id/lock_overlay_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_lock_circle"
+            android:scaleType="center"
+            android:focusable="true"/>
+
+        <ImageView
+            android:id="@+id/player_overlay_tracks"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="onAudioSubClick"
+            android:src="@drawable/ic_audiosub_circle"
+            android:scaleType="center"
+            android:focusable="true"/>
+
+        <ImageView
+            android:id="@+id/player_overlay_play"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:src="@drawable/ic_pause_circle"
+            android:scaleType="center"
+            android:focusable="true"/>
+
+        <ImageView
+            android:id="@+id/player_overlay_adv_function"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="showAdvancedOptions"
+            android:src="@drawable/ic_more_circle"
+            android:scaleType="center"
+            android:focusable="true"/>
+
+        <ImageView
+            android:id="@+id/player_overlay_size"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_crop_circle_o"
+            android:scaleType="center"
+            android:focusable="true" />
+    </LinearLayout>
+</RelativeLayout>
