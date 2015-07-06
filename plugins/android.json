@@ -15,14 +15,6 @@
                     ],
                     "/*": [
                         {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"StatusBar\"><param name=\"android-package\" value=\"org.apache.cordova.statusbar.StatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -76,6 +68,14 @@
                         },
                         {
                             "xml": "<feature name=\"SocialSharing\"><param name=\"android-package\" value=\"nl.xservices.plugins.SocialSharing\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -196,15 +196,6 @@
         "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-console": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -248,6 +239,15 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "nl.x-services.plugins.socialsharing": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-console": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
