@@ -2011,36 +2011,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 } else if (item.getItemId() == R.id.video_menu_subtitles) {
                     selectSubtitles();
                     return true;
-                } else if (item.getItemId() == R.id.video_menu_subtitles_picker) {
-                    Intent intent = new Intent("org.openintents.action.PICK_FILE");
-
-                    File file = new File(AndroidDevices.EXTERNAL_PUBLIC_DIRECTORY);
-                    intent.setData(Uri.fromFile(file));
-
-                    // Set fancy title and button (optional)
-                    intent.putExtra("org.openintents.extra.TITLE", context.getString(R.string.subtitle_select));
-                    intent.putExtra("org.openintents.extra.BUTTON_TEXT", context.getString(R.string.open));
-
-                    if (getPackageManager()
-                            .queryIntentActivities(intent,
-                                    PackageManager.MATCH_DEFAULT_ONLY).size() > 0) {
-                        startActivityForResult(intent, CommonDialogs.INTENT_SPECIFIC);
-                    } else {
-                        // OI intent not found, trying anything
-                        Intent intent2 = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent2.setType("*/*");
-                        intent2.addCategory(Intent.CATEGORY_OPENABLE);
-                        try {
-                            startActivityForResult(intent2, CommonDialogs.INTENT_GENERIC);
-                        } catch(ActivityNotFoundException e) {
-                            logger.Info("No file picker found on system");
-                            Toast.makeText(context,
-                                    R.string.no_file_picker_found,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    return true;
                 }
+
                 return false;
             }
         });
@@ -2365,7 +2337,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 if (mTracks != null)
                     mTracks.setVisibility(View.VISIBLE);
                 if (mAdvOptions !=null)
-                    mAdvOptions.setVisibility(View.VISIBLE);
+                    mAdvOptions.setVisibility(View.INVISIBLE);
                 mSize.setVisibility(View.VISIBLE);
                 dimStatusBar(false);
             }

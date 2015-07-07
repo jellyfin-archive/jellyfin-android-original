@@ -6,7 +6,7 @@
     <item
         android:id="@+id/video_menu_subtitles"
         android:title="@string/subtitles" />
-    <item
+<!--    <item
         android:id="@+id/video_menu_subtitles_picker"
-        android:title="@string/subtitle_select" />
+        android:title="@string/subtitle_select" />-->
 </menu>
