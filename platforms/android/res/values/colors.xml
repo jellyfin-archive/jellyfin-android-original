@@ -8,18 +8,12 @@
     Material color swatches
     The main color is always xxx500
 -->
-    <color name="orange50">#fff3e0</color>
-    <color name="orange100">#ffdfae</color>
-    <color name="orange200">#ffca7d</color>
-    <color name="orange300">#ffb54c</color>
-    <color name="orange400">#ffa11a</color>
-    <color name="orange500">#ff8800</color>
-    <color name="orange600">#ff7d00</color>
-    <color name="orange700">#ff7200</color>
-    <color name="orange800">#ff610a</color>
-    <color name="orange900">#ff5014</color>
+    <color name="orange400">#66BB6A</color>
+    <color name="orange500">#4CAF50</color>
+    <color name="orange700">#388E3C</color>
+    <color name="orange800">#2E7D32</color>
 
-    <color name="orange500transparent">#b4ff8800</color>
+    <color name="orange500transparent">#b44CAF50</color>
 
     <color name="grey50">#fafafa</color>
     <color name="grey100">#f5f5f5</color>
