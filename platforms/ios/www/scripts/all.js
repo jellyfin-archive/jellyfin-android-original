@@ -1226,9 +1226,9 @@ var requirejs, require, define;
         // If less than 200, this happens on the home page
         // Need to fix those before this can be set to 0
 
-        if (window.AppInfo && AppInfo.isNativeApp && $.browser.safari) {
-            return 7000;
-        }
+        //if (window.AppInfo && AppInfo.isNativeApp && $.browser.safari) {
+        //    return 7000;
+        //}
 
         var screens = $.browser.mobile ? 2.5 : 1;
 
@@ -1856,7 +1856,8 @@ define("sharingmanager",["scripts/sharingmanager"]);if(Dashboard.isRunningInCord
 $.extend(AppInfo,Dashboard.getAppInfo(appName,deviceId,deviceName));$(document).on('WebComponentsReady',function(){var drawer=document.querySelector('.mainDrawerPanel');drawer.classList.remove('mainDrawerPanelPreInit');drawer.forceNarrow=true;drawer.drawerWidth=screen.availWidth>=330?"310px":"270px";if($.browser.safari&&!AppInfo.isNativeApp){drawer.disableEdgeSwipe=true;}
 if(Dashboard.isConnectMode()){if(AppInfo.isNativeApp&&$.browser.android){require(['cordova/android/logging']);}
 require(['appstorage'],function(){capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){$(function(){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();});});});}else{createConnectionManager(capabilities);$(function(){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();});}});}
-function initCordovaWithDeviceId(deferred,deviceId){require(['cordova/imagestore']);var capablities=Dashboard.capabilities();init(deferred,capablities,"Emby Mobile",deviceId,device.model);}
+function initCordovaWithDeviceId(deferred,deviceId){if($.browser.android){require(['cordova/imagestore']);}
+var capablities=Dashboard.capabilities();init(deferred,capablities,"Emby Mobile",deviceId,device.model);}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}
 var initDeferred=$.Deferred();Dashboard.initPromise=initDeferred.promise();setAppInfo();setDocumentClasses();if(Dashboard.isRunningInCordova()){initCordova(initDeferred);}else{init(initDeferred,Dashboard.capabilities());}})();Dashboard.jQueryMobileInit();$(document).on('pagecreate',".page",function(){var page=$(this);var current=page.data('theme');if(!current){var newTheme;if(page.hasClass('libraryPage')){newTheme='b';}else{newTheme='a';}
 current=page.page("option","theme");if(current&&current!=newTheme){page.page("option","theme",newTheme);}
@@ -2221,7 +2222,7 @@ require(['actionsheet'],function(){ActionSheetElement.show({items:items,position
 case'edit':Dashboard.navigate('edititemmetadata.html?id='+itemId);break;case'refresh':ApiClient.refreshItem(itemId,{Recursive:true,ImageRefreshMode:'FullRefresh',MetadataRefreshMode:'FullRefresh',ReplaceAllImages:false,ReplaceAllMetadata:true});break;case'instantmix':MediaController.instantMix(itemId);break;case'shuffle':MediaController.shuffle(itemId);break;case'open':Dashboard.navigate(href);break;case'album':Dashboard.navigate('itemdetails.html?id='+albumid);break;case'artist':Dashboard.navigate('itembynamedetails.html?context=music&id='+artistid);break;case'play':MediaController.play(itemId);break;case'playallfromhere':$(card).parents('.itemsContainer').trigger('playallfromhere',[index]);break;case'queue':MediaController.queue(itemId);break;case'trailer':ApiClient.getLocalTrailers(Dashboard.getCurrentUserId(),itemId).done(function(trailers){MediaController.play({items:trailers});});break;case'resume':MediaController.play({ids:[itemId],startPositionTicks:playbackPositionTicks});break;case'queueallfromhere':$(card).parents('.itemsContainer').trigger('queueallfromhere',[index]);break;case'sync':SyncManager.showMenu({items:[{Id:itemId}]});break;case'externalplayer':LibraryBrowser.playInExternalPlayer(itemId);break;case'share':require(['sharingmanager'],function(){SharingManager.showMenu(Dashboard.getCurrentUserId(),itemId);});break;case'removefromplaylist':$(card).parents('.itemsContainer').trigger('removefromplaylist',[playlistItemId]);break;default:break;}}});});});}
 function onListViewMenuButtonClick(e){showContextMenu(this,{});e.preventDefault();return false;}
 function onListViewPlayButtonClick(e){var playButton=this;var card=this;if(!card.classList.contains('card')&&!card.classList.contains('listItem')){card=$(card).parents('.listItem,.card')[0];}
-var id=card.getAttribute('data-itemid');var type=card.getAttribute('data-itemtype');var isFolder=card.getAttribute('data-isfolder')=='true';var mediaType=card.getAttribute('data-mediatype');var resumePosition=parseInt(card.getAttribute('data-resumeposition'));if(type=='MusicAlbum'||type=='MusicArtist'){isFolder=true;}
+var id=card.getAttribute('data-itemid');var type=card.getAttribute('data-itemtype');var isFolder=card.getAttribute('data-isfolder')=='true';var mediaType=card.getAttribute('data-mediatype');var resumePosition=parseInt(card.getAttribute('data-resumeposition'));if(type=='MusicAlbum'||type=='MusicArtist'||type=='MusicGenre'||type=='Playlist'){isFolder=true;}
 LibraryBrowser.showPlayMenu(playButton,id,type,isFolder,mediaType,resumePosition);e.preventDefault();return false;}
 function isClickable(target){while(target!=null){var tagName=target.tagName||'';if(tagName=='A'||tagName.indexOf('BUTTON')!=-1){return true;}
 return false;}
@@ -2536,8 +2537,8 @@ profile.ContainerProfiles=[];var audioConditions=[];var maxAudioChannels=$.brows
 profile.ResponseProfiles=[];profile.ResponseProfiles.push({Type:'Video',Container:'m4v',MimeType:'video/mp4'});profile.ResponseProfiles.push({Type:'Video',Container:'mov',MimeType:'video/webm'});return profile;};var supportsTextTracks;self.supportsTextTracks=function(){if(supportsTextTracks==null){supportsTextTracks=document.createElement('video').textTracks!=null;}
 return supportsTextTracks;};self.updateCanClientSeek=function(mediaRenderer){var duration=mediaRenderer.duration();canClientSeek=duration&&!isNaN(duration)&&duration!=Number.POSITIVE_INFINITY&&duration!=Number.NEGATIVE_INFINITY;};self.getCurrentSrc=function(mediaRenderer){return mediaRenderer.currentSrc();};self.getCurrentTicks=function(mediaRenderer){var playerTime=Math.floor(10000*(mediaRenderer||self.currentMediaRenderer).currentTime());playerTime+=self.startTimeTicksOffset;return playerTime;};self.playNextAfterEnded=function(){self.nextTrack();};self.startProgressInterval=function(){clearProgressInterval();var intervalTime=ApiClient.isWebSocketOpen()?1200:5000;self.lastProgressReport=0;currentProgressInterval=setInterval(function(){if(self.currentMediaRenderer){if((new Date().getTime()-self.lastProgressReport)>intervalTime){self.lastProgressReport=new Date().getTime();sendProgressUpdate();}}},250);};self.getCurrentMediaExtension=function(currentSrc){currentSrc=currentSrc.split('?')[0];return currentSrc.substring(currentSrc.lastIndexOf('.'));};self.canPlayNativeHls=function(){var media=document.createElement('video');if(media.canPlayType('application/x-mpegURL').replace(/no/,'')||media.canPlayType('application/vnd.apple.mpegURL').replace(/no/,'')){return true;}
 return false;};self.canPlayHls=function(){if(self.canPlayNativeHls()){return true;}
-if($.browser.chrome){return window.MediaSource!=null;}
-if($.browser.msie){return window.MediaSource!=null;}
+if($.browser.chrome){}
+if($.browser.msie){}
 return false;};self.changeStream=function(ticks,params){var mediaRenderer=self.currentMediaRenderer;if(canClientSeek&&params==null){mediaRenderer.currentTime(ticks/10000);return;}
 params=params||{};var currentSrc=mediaRenderer.currentSrc();var playSessionId=getParameterByName('PlaySessionId',currentSrc);var liveStreamId=getParameterByName('LiveStreamId',currentSrc);if(params.AudioStreamIndex==null&&params.SubtitleStreamIndex==null&&params.Bitrate==null){currentSrc=replaceQueryString(currentSrc,'starttimeticks',ticks||0);changeStreamToUrl(mediaRenderer,playSessionId,currentSrc,ticks);return;}
 var deviceProfile=self.getDeviceProfile();var audioStreamIndex=params.AudioStreamIndex==null?(getParameterByName('AudioStreamIndex',currentSrc)||null):params.AudioStreamIndex;if(typeof(audioStreamIndex)=='string'){audioStreamIndex=parseInt(audioStreamIndex);}

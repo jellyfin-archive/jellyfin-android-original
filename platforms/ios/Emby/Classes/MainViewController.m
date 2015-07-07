@@ -68,6 +68,7 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     // Do any additional setup after loading the view from its nib.
     [[RemoteControls remoteControls] setWebView:self.webView];
+    self.webView.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 }
 
 - (void)viewDidUnload

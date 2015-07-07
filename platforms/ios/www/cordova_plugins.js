@@ -298,13 +298,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
-        "id": "com.telerik.plugins.wkwebview.wkwebview",
-        "clobbers": [
-            "wkwebview"
-        ]
-    },
-    {
         "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
         "id": "nl.x-services.plugins.actionsheet.ActionSheet",
         "clobbers": [
@@ -384,17 +377,16 @@ module.exports.metadata =
     "org.apache.cordova.speech.speechrecognition": "0.1.0",
     "cordova-plugin-file": "2.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
-    "com.telerik.plugins.wkwebview": "0.4.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "nl.x-services.plugins.socialsharing": "4.3.18",
     "cordova-plugin-device": "1.0.1",
     "cordova-plugin-dialogs": "1.1.1",
     "cordova-plugin-console": "1.0.1",
+    "cordova-plugin-webserver": "1.0.3",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
-    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
-    "cordova-plugin-webserver": "1.0.3"
+    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
 }
 // BOTTOM OF METADATA
 });
