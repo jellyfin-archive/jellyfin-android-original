@@ -15,7 +15,7 @@
     <string name="no_search_results">No search results.</string>
     <string name="random_queue_title">Random music</string>
     <string name="encountered_error_title">Playback error</string>
-    <string name="encountered_error_message">VLC encountered an error with this media.\nPlease try refreshing the media library.</string>
+    <string name="encountered_error_message">There was an error processing the request. Please try again later.</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="hardware_acceleration_error_title">HW acceleration error</string>
