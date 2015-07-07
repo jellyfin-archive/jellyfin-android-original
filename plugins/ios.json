@@ -65,10 +65,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"ActionSheet\"><param name=\"ios-package\" value=\"ActionSheet\" /></feature>",
                             "count": 1
                         },
@@ -129,12 +125,7 @@
                             "count": 3
                         }
                     ],
-                    "WebKit.framework": [
-                        {
-                            "xml": false,
-                            "count": 1
-                        }
-                    ],
+                    "WebKit.framework": [],
                     "libz.dylib": [
                         {
                             "xml": false,
@@ -250,9 +241,6 @@
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "nl.x-services.plugins.actionsheet": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -270,6 +258,9 @@
         },
         "cordova-plugin-console": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-webserver": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {
@@ -280,9 +271,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "de.appplant.cordova.common.registerusernotificationsettings": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     }

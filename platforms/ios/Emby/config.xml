@@ -54,9 +54,6 @@
     <feature name="FileTransfer">
         <param name="ios-package" value="CDVFileTransfer" />
     </feature>
-    <feature name="WKWebViewPolyfill">
-        <param name="ios-package" value="WKWebViewPolyfill" />
-    </feature>
     <feature name="ActionSheet">
         <param name="ios-package" value="ActionSheet" />
     </feature>

@@ -229,9 +229,6 @@
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "nl.x-services.plugins.actionsheet": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -248,6 +245,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-console": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

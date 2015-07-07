@@ -87,6 +87,13 @@
 
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
+    
+    int cacheSizeMemory = 16 * 1024 * 1014; // MB
+    int cacheSizeDisk = 256 * 1024 * 1024; // MB
+    
+    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:cacheSizeMemory diskCapacity:cacheSizeDisk diskPath:@"nsurlcache"];
+    
+    [NSURLCache setSharedURLCache:sharedCache];
 
     return YES;
 }
