@@ -486,24 +486,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.video_player, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onPrepareOptionsMenu(Menu menu){
-        MenuItem item = menu.findItem(R.id.pl_menu_nav);
-        if (mLibVLC != null && item != null) {
-            item.setVisible(mLibVLC.getChapterCountForTitle(0) > 1 && mLibVLC.getTitleCount() > 1 && mLibVLC.getTitle() != 0);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
-        }
         return super.onPrepareOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
-            case R.id.pl_menu_nav:
-                showNavMenu();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
