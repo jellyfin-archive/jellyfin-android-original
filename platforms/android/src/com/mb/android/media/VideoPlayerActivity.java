@@ -132,7 +132,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private LibVLC mLibVLC;
     private MediaWrapperListPlayer mMediaListPlayer;
     private String mLocation;
-    private boolean mAskResume = true;
     private GestureDetectorCompat mDetector;
 
     private static final int SURFACE_BEST_FIT = 0;
@@ -298,7 +297,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         super.onCreate(savedInstanceState);
 
         if (!VLCInstance.testCompatibleCPU(this)) {
-            finish();
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("error",true);
+            setResult(RESULT_CANCELED,returnIntent);
             return;
         }
 
@@ -400,7 +401,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mPlayPause.setOnClickListener(mPlayPauseListener);
 
         mTracks = (ImageView) findViewById(R.id.player_overlay_tracks);
-        mAdvOptions = (ImageView) findViewById(R.id.player_overlay_adv_function);
+        //mAdvOptions = (ImageView) findViewById(R.id.player_overlay_adv_function);
+        mAdvOptions = null;
         mLock = (ImageView) findViewById(R.id.lock_overlay_button);
         mLock.setOnClickListener(mLockListener);
 
@@ -443,8 +445,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mSwitchingView = false;
         mHardwareAccelerationError = false;
         mEndReached = false;
-
-        mAskResume = mSettings.getBoolean("dialog_confirm_resume", false);
 
         IntentFilter filter = new IntentFilter();
         if (mBattery != null)
@@ -533,6 +533,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onStop() {
+
         super.onStop();
 
         if (mAlertDialog != null && mAlertDialog.isShowing())
@@ -914,7 +915,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         } else if (isTv() && mShowing && !mIsLocked) {
             hideOverlay(true);
         } else
+        {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("position",mLibVLC.getTime());
+            returnIntent.putExtra("error",false);
+            setResult(RESULT_CANCELED,returnIntent);
             super.onBackPressed();
+        }
     }
 
     @Override
@@ -952,7 +959,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             case KeyEvent.KEYCODE_O:
             case KeyEvent.KEYCODE_BUTTON_Y:
             case KeyEvent.KEYCODE_MENU:
-                showAdvancedOptions(mAdvOptions);
+                //showAdvancedOptions(mAdvOptions);
                 return true;
             case KeyEvent.KEYCODE_V:
             case KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK:
@@ -971,6 +978,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 return true;
             case KeyEvent.KEYCODE_S:
             case KeyEvent.KEYCODE_MEDIA_STOP:
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("error",false);
+                returnIntent.putExtra("position",mLibVLC.getTime());
+                setResult(RESULT_CANCELED,returnIntent);
                 finish();
                 return true;
             case KeyEvent.KEYCODE_DPAD_UP:
@@ -1496,6 +1507,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     activity.startPlayback();
                     break;
                 case AUDIO_SERVICE_CONNECTION_FAILED:
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("error",true);
+                    activity.setResult(RESULT_CANCELED,returnIntent);
                     activity.finish();
                     break;
                 case RESET_BACK_LOCK:
@@ -1535,6 +1549,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         } else {
             /* Exit player when reaching the end */
             mEndReached = true;
+            Intent returnIntent = new Intent();
+            setResult(RESULT_OK,returnIntent);
             finish();
         }
     }
@@ -1547,6 +1563,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("error",true);
+                        setResult(RESULT_CANCELED,returnIntent);
                         finish();
                     }
                 })
@@ -2136,6 +2155,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private void seek(long position, float length) {
         mForcedTime = position;
         mLastTime = mLibVLC.getTime();
+
+        if (length == 0) {
+            if (currentMediaSource != null && currentMediaSource.getRunTimeTicks() != null){
+                length = (int)(currentMediaSource.getRunTimeTicks()/ 10000);
+            }
+        }
+
         if (length == 0f)
             mLibVLC.setTime(position);
         else
@@ -2503,7 +2529,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
      */
     @SuppressWarnings({ "unchecked" })
     private void loadMedia(boolean fromStart) {
-        mAskResume = false;
         getIntent().putExtra(PLAY_EXTRA_FROM_START, fromStart);
         loadMedia();
     }
@@ -2635,13 +2660,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             mLocation = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_LOCATION);
             itemTitle = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_TITLE);
             fromStart = getIntent().getExtras().getBoolean(PLAY_EXTRA_FROM_START);
+            intentPosition = getIntent().getExtras().getLong("position", -1);
 
             String mediaSourceJson = getIntent().getExtras().getString("mediaSourceJson");
             currentMediaSource = (MediaSourceInfo)jsonSerializer.DeserializeFromString(mediaSourceJson, MediaSourceInfo.class);
 
             if (getIntent().hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
                 mSubtitleSelectedFiles.add(getIntent().getExtras().getString(PLAY_EXTRA_SUBTITLES_LOCATION));
-            mAskResume &= !fromStart;
             openedPosition = getIntent().getExtras().getInt(PLAY_EXTRA_OPENED_POSITION, -1);
         }
 
@@ -2672,46 +2697,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mCanSeek = false;
 
         if (mLocation != null && mLocation.length() > 0) {
-            // restore last position
-            MediaWrapper media = null;
-            if(media != null) {
-                // in media library
-                if(media.getTime() > 0 && !fromStart && openedPosition == -1) {
-                    if (mAskResume) {
-                        showConfirmResumeDialog();
-                        return;
-                    } else {
-                        intentPosition = media.getTime();
-                        mediaLength = media.getLength();
-                    }
-                }
-                // Consume fromStart option after first use to prevent
-                // restarting again when playback is paused.
-                getIntent().putExtra(PLAY_EXTRA_FROM_START, false);
-
-                mLastAudioTrack = media.getAudioTrack();
-                mLastSpuTrack = media.getSpuTrack();
-            } else if (openedPosition == -1) {
-                // not in media library
-
-                if (intentPosition > 0 && mAskResume) {
-                    showConfirmResumeDialog();
-                    return;
-                } else {
-                    long rTime = mSettings.getLong(PreferencesActivity.VIDEO_RESUME_TIME, -1);
-                    if (rTime > 0 && !fromStart) {
-                        if (mAskResume) {
-                            showConfirmResumeDialog();
-                            return;
-                        } else {
-                            Editor editor = mSettings.edit();
-                            editor.putLong(PreferencesActivity.VIDEO_RESUME_TIME, -1);
-                            Util.commitPreferences(editor);
-                            intentPosition = rTime;
-                        }
-                    }
-                }
-            }
 
             // Start playback & seek
             if (openedPosition == -1) {
@@ -2836,28 +2821,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     return 0;
             }
         }
-    }
-
-    public void showConfirmResumeDialog() {
-        if (isFinishing())
-            return;
-        pause();
-        /* Encountered Error, exit player with a message */
-        mAlertDialog = new AlertDialog.Builder(VideoPlayerActivity.this)
-                .setMessage(R.string.confirm_resume)
-                .setPositiveButton(R.string.resume_from_position, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        loadMedia(false);
-                    }
-                })
-                .setNegativeButton(R.string.play_from_start, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        loadMedia(true);
-                    }
-                })
-                .create();
-        mAlertDialog.setCancelable(false);
-        mAlertDialog.show();
     }
 
     public void showAdvancedOptions(View v) {

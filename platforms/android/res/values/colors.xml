@@ -8,7 +8,6 @@
     Material color swatches
     The main color is always xxx500
 -->
-    <color name="orange400">#66BB6A</color>
     <color name="orange500">#4CAF50</color>
     <color name="orange700">#388E3C</color>
     <color name="orange800">#2E7D32</color>
@@ -29,9 +28,7 @@
     <color name="grey900">#212121</color>
 
     <color name="grey50transparent">#dcfafafa</color>
-    <color name="grey400transparent">#80bdbdbd</color>
     <color name="grey900transparent">#80212121</color>
 
     <color name="blacktransparent">#b4000000</color>
-    <color name="whitetransparent">#dcffffff</color>
 </resources>
