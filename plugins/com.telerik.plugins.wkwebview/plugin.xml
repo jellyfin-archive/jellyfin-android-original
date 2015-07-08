@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com.telerik.plugins.wkwebview"
+        version="0.4.0">
+
+  <name>WKWebView Polyfill</name>
+
+  <description>
+    A drop-in replacement of UIWebView for boosted performance and enhanced HTML5 support
+  </description>
+
+  <author>Eddy Verbruggen / Telerik</author>
+
+  <license>MIT</license>
+
+  <keywords>Webkit, Webkit webview, WKWebView Polyfill, WKWebView, WebView+</keywords>
+
+  <repo>https://github.com/Telerik-Verified-Plugins/WKWebView.git</repo>
+
+  <issue>https://github.com/Telerik-Verified-Plugins/WKWebView/issues</issue>
+
+  <engines>
+    <engine name="cordova" version=">=3.0.0"/>
+  </engines>
+
+  <!-- ios -->
+  <platform name="ios">
+
+    <js-module src="www/wkwebview.js" name="wkwebview">
+        <clobbers target="wkwebview" />
+    </js-module>
+
+    <config-file target="config.xml" parent="/*">
+      <feature name="WKWebViewPolyfill">
+        <param name="ios-package" value="WKWebViewPolyfill"/>
+      </feature>
+    </config-file>
+
+    <!-- For WKWebView -->
+    <framework src="WebKit.framework" />
+
+    <!-- the controller loading the WKWebView -->
+    <header-file src="src/ios/MyMainViewController.h"/>
+    <source-file src="src/ios/MyMainViewController.m"/>
+
+    <!-- the class which swaps in our controller and offers helper methods for the JS API -->
+    <source-file src="src/ios/AppDelegate+WKWebViewPolyfill.h"/>
+    <source-file src="src/ios/AppDelegate+WKWebViewPolyfill.m"/>
+
+    <!-- helper classes -->
+    <header-file src="src/ios/ReroutingUIWebView.h"/>
+    <source-file src="src/ios/ReroutingUIWebView.m"/>
+    <header-file src="src/ios/CDVWebViewOperationsDelegate.h"/>
+    <source-file src="src/ios/CDVWebViewOperationsDelegate.m"/>
+    <header-file src="src/ios/CDVWebViewUIDelegate.h"/>
+    <source-file src="src/ios/CDVWebViewUIDelegate.m"/>
+    
+    <dependency id="cordova-plugin-webserver" />
+
+  </platform>
+
+</plugin>

@@ -42,9 +42,9 @@
     NSHTTPCookieStorage* cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
 
     [cookieStorage setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-
+    
     int cacheSizeMemory = 8 * 1024 * 1024; // 8MB
-    int cacheSizeDisk = 32 * 1024 * 1024; // 32MB
+    int cacheSizeDisk = 512 * 1024 * 1024; // 32MB
 #if __has_feature(objc_arc)
         NSURLCache* sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:cacheSizeMemory diskCapacity:cacheSizeDisk diskPath:@"nsurlcache"];
 #else
@@ -87,13 +87,6 @@
 
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
-    
-    int cacheSizeMemory = 16 * 1024 * 1014; // MB
-    int cacheSizeDisk = 256 * 1024 * 1024; // MB
-    
-    NSURLCache *sharedCache = [[NSURLCache alloc] initWithMemoryCapacity:cacheSizeMemory diskCapacity:cacheSizeDisk diskPath:@"nsurlcache"];
-    
-    [NSURLCache setSharedURLCache:sharedCache];
 
     return YES;
 }

@@ -226,5 +226,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "com.telerik.plugins.wkwebview": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Telerik-Verified-Plugins/WKWebView",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
