@@ -390,6 +390,7 @@ module.exports.metadata =
     "cordova-plugin-dialogs": "1.1.1",
     "cordova-plugin-console": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",
+    "com.telerik.plugins.wkwebview": "0.4.0",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
