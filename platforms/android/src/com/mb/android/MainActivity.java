@@ -26,6 +26,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -62,6 +63,7 @@ public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_UNLOCK_REQUEST = 999;
     private final int REQUEST_DIRECTORY = 998;
+    private final int VIDEO_PLAYBACK = 997;
     private static IWebView webView;
 
     public static final String ACTION_SHOW_PLAYER = "com.mb.android.ShowPlayer";
@@ -156,6 +158,16 @@ public class MainActivity extends CordovaActivity
             else{
                 RespondToWebView("window.NativeDirectoryChooser.onChosen(null);");
             }
+        }
+
+        else if (requestCode == VIDEO_PLAYBACK) {
+
+            boolean completed = resultCode == RESULT_OK;
+            boolean error = resultCode == RESULT_OK ? false : (intent == null ? true : intent.getBooleanExtra("error", false));
+
+            long positionMs = intent == null || completed ? 0 : intent.getLongExtra("position", 0);
+
+            RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s);", !completed, error, positionMs));
         }
     }
 
@@ -274,17 +286,21 @@ public class MainActivity extends CordovaActivity
     }
 
     @JavascriptInterface
-    public void playVideoVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
+    public void playVideoVlc(String path, long startPositionMs, String itemName, String mediaSourceJson, String playbackStartInfo) {
 
         getLogger().Debug("Video path: %s", path);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
         intent.setAction(VideoPlayerActivity.PLAY_FROM_VIDEOGRID);
         intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION, path);
-        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_TITLE, "Title");
+        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_TITLE, itemName);
         //intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_OPENED_POSITION, 0);
         intent.putExtra("mediaSourceJson", mediaSourceJson);
 
-        startActivity(intent);
+        if (startPositionMs > 0){
+            intent.putExtra("position", 0);
+        }
+
+        startActivityForResult(intent, VIDEO_PLAYBACK);
     }
 
     @JavascriptInterface
@@ -389,6 +405,16 @@ public class MainActivity extends CordovaActivity
             }
         }
     };
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            RespondToWebView("LibraryMenu.onHardwareMenuButtonClick();");
+            return true;
+        } else {
+            return super.onKeyUp(keyCode, event);
+        }
+    }
 
     @Override
     public void onDestroy() {
