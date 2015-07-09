@@ -249,6 +249,9 @@
         },
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
+        },
+        "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {

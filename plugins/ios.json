@@ -87,6 +87,10 @@
                         {
                             "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -125,7 +129,12 @@
                             "count": 3
                         }
                     ],
-                    "WebKit.framework": [],
+                    "WebKit.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
                     "libz.dylib": [
                         {
                             "xml": false,
@@ -260,6 +269,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-webserver": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
