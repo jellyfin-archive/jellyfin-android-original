@@ -26,7 +26,6 @@
 //
 
 #import "MainViewController.h"
-#import "RemoteControls.h"
 
 @implementation MainViewController
 
@@ -65,9 +64,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    // Do any additional setup after loading the view from its nib.
-    [[RemoteControls remoteControls] setWebView:self.webView];
     self.webView.scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 }
 
@@ -78,11 +74,6 @@
     // e.g. self.myOutlet = nil;
     // Turn off remote control event delivery
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
-}
-
-//add this function
-- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
-    [[RemoteControls remoteControls] receiveRemoteEvent:receivedEvent];
 }
 
 #pragma mark View lifecycle
