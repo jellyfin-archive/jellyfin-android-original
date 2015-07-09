@@ -6,8 +6,10 @@ elem=$(getNowPlayingBarHtml()).insertBefore('#footerNotifications')[0];if(($.bro
 $.mobile.loadPage('nowplaying.html');bindEvents(elem);return elem;}
 function showButton(button){button.removeClass('hide');}
 function hideButton(button){button.addClass('hide');}
-function updatePlayerState(state){if(state.NowPlayingItem){showNowPlayingBar();}else{hideNowPlayingBar();return;}
-lastPlayerState=state;if(!muteButton){getNowPlayingBar();}
+var lastUpdateTime=0;function updatePlayerState(event,state){if(state.NowPlayingItem){showNowPlayingBar();}else{hideNowPlayingBar();return;}
+if(event.type=='positionchange'){var now=new Date().getTime();if((now-lastUpdateTime)<700){console.log('skipping UI update');return;}
+lastUpdateTime=now;}
+console.log(new Date().getTime());lastPlayerState=state;if(!muteButton){getNowPlayingBar();}
 var playerInfo=MediaController.getPlayerInfo();var playState=state.PlayState||{};if(playState.IsPaused){hideButton(pauseButton);showButton(unpauseButton);}else{showButton(pauseButton);hideButton(unpauseButton);}
 updatePlayerVolumeState(state,playerInfo);var nowPlayingItem=state.NowPlayingItem||{};if(!positionSlider.dragging){if(nowPlayingItem&&nowPlayingItem.RunTimeTicks){var pct=playState.PositionTicks/nowPlayingItem.RunTimeTicks;pct*=100;positionSlider.value=pct;}else{positionSlider.value=0;}
 positionSlider.disabled=!playState.CanSeek;}
@@ -24,7 +26,7 @@ if(showUnmuteButton){showButton(unmuteButton);}else{hideButton(unmuteButton);}
 $(volumeSlider).visible(showVolumeSlider);if(!volumeSlider.dragging){volumeSlider.value=playState.VolumeLevel||0;}}
 var currentImgUrl;function updateNowPlayingInfo(state){var nameHtml=MediaController.getNowPlayingNameHtml(state.NowPlayingItem)||'';if(nameHtml.indexOf('<br/>')!=-1){nowPlayingTextElement.addClass('nowPlayingDoubleText');}else{nowPlayingTextElement.removeClass('nowPlayingDoubleText');}
 if(state.NowPlayingItem.Id){nameHtml='<a style="color:inherit;text-decoration:none;" href="'+LibraryBrowser.getHref(state.NowPlayingItem)+'">'+nameHtml+'</a>';}
-nowPlayingTextElement.html(nameHtml);var url;var imgHeight=90;var nowPlayingItem=state.NowPlayingItem;if(nowPlayingItem.PrimaryImageTag){url=ApiClient.getScaledImageUrl(nowPlayingItem.PrimaryImageItemId,{type:"Primary",height:imgHeight,tag:nowPlayingItem.PrimaryImageTag});}
+nowPlayingTextElement.html(nameHtml);var url;var imgHeight=80;var nowPlayingItem=state.NowPlayingItem;if(nowPlayingItem.PrimaryImageTag){url=ApiClient.getScaledImageUrl(nowPlayingItem.PrimaryImageItemId,{type:"Primary",height:imgHeight,tag:nowPlayingItem.PrimaryImageTag});}
 else if(nowPlayingItem.BackdropImageTag){url=ApiClient.getScaledImageUrl(nowPlayingItem.BackdropItemId,{type:"Backdrop",height:imgHeight,tag:nowPlayingItem.BackdropImageTag,index:0});}else if(nowPlayingItem.ThumbImageTag){url=ApiClient.getScaledImageUrl(nowPlayingItem.ThumbImageItemId,{type:"Thumb",height:imgHeight,tag:nowPlayingItem.ThumbImageTag});}
 else if(nowPlayingItem.Type=="TvChannel"||nowPlayingItem.Type=="Recording"){url="css/images/items/detail/tv.png";}
 else if(nowPlayingItem.MediaType=="Audio"){url="css/images/items/detail/audio.png";}
@@ -36,7 +38,7 @@ function showNowPlayingBar(){var nowPlayingBar=getNowPlayingBar();$(nowPlayingBa
 function hideNowPlayingBar(){var elem=document.getElementsByClassName('nowPlayingBar')[0];if(elem){elem.style.display='none';}}
 function onPlaybackStopped(e,state){Logger.log('nowplaying event: '+e.type);var player=this;player.endPlayerUpdates();hideNowPlayingBar();}
 function onStateChanged(e,state){var player=this;if(player.isDefaultPlayer&&state.NowPlayingItem&&state.NowPlayingItem.MediaType=='Video'){return;}
-updatePlayerState(state);}
+updatePlayerState(e,state);}
 function releaseCurrentPlayer(){if(currentPlayer){$(currentPlayer).off('playbackstart',onPlaybackStart).off('playbackstop',onPlaybackStopped).off('volumechange',onVolumeChanged).off('playstatechange',onStateChanged).off('positionchange',onStateChanged);currentPlayer.endPlayerUpdates();currentPlayer=null;hideNowPlayingBar();}}
 function onVolumeChanged(e){var player=this;player.getPlayerState().done(function(state){if(player.isDefaultPlayer&&state.NowPlayingItem&&state.NowPlayingItem.MediaType=='Video'){return;}
 updatePlayerVolumeState(state);});}

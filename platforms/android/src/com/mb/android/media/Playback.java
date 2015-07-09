@@ -26,7 +26,7 @@ import java.util.Date;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.apiinteraction.android.mediabrowser.IPlayback;
 import mediabrowser.apiinteraction.android.mediabrowser.IPlaybackCallback;
-import mediabrowser.apiinteraction.android.mediabrowser.MusicProvider;
+import mediabrowser.apiinteraction.android.mediabrowser.MediaProvider;
 import mediabrowser.model.logging.ILogger;
 
 import static android.media.MediaPlayer.OnPreparedListener;
@@ -56,7 +56,7 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
     private int mState;
     private boolean mPlayOnFocusGain;
     private IPlaybackCallback mCallback;
-    private MusicProvider mMusicProvider;
+    private MediaProvider mMusicProvider;
     private volatile boolean mAudioNoisyReceiverRegistered;
     private volatile long mCurrentPosition;
     private volatile String mCurrentMediaId;
@@ -98,7 +98,7 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
         }
     };
 
-    public Playback(MediaService service, MusicProvider musicProvider, ILogger logger) {
+    public Playback(MediaService service, MediaProvider musicProvider, ILogger logger) {
         this.mService = service;
         this.mMusicProvider = musicProvider;
         this.logger = logger;
@@ -219,7 +219,7 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
             relaxResources(false); // release everything except MediaPlayer
             MediaMetadata track = mMusicProvider.getMusic(item.getDescription().getMediaId());
 
-            String source = track.getString(MusicProvider.CUSTOM_METADATA_TRACK_SOURCE);
+            String source = track.getString(MediaProvider.CUSTOM_METADATA_TRACK_SOURCE);
 
             try {
                 createMediaPlayerIfNeeded();

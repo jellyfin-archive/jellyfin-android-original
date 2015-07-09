@@ -23,7 +23,7 @@ public class MediaService extends BaseMediaBrowserService implements IPlaybackCa
 
     @Override
     protected IPlayback createPlayback() {
-        return new Playback(this, mMusicProvider, logger);
+        return new Playback(this, mMediaProvider, logger);
     }
 
     @Override
