@@ -20,8 +20,8 @@ return supportsTextTracks;};self.updateCanClientSeek=function(mediaRenderer){var
 self.lastProgressReport=0;currentProgressInterval=setInterval(function(){if(self.currentMediaRenderer){if((new Date().getTime()-self.lastProgressReport)>intervalTime){self.lastProgressReport=new Date().getTime();sendProgressUpdate();}}},250);};self.getCurrentMediaExtension=function(currentSrc){currentSrc=currentSrc.split('?')[0];return currentSrc.substring(currentSrc.lastIndexOf('.'));};self.canPlayNativeHls=function(){if($.browser.android&&AppInfo.isNativeApp){return true;}
 var media=document.createElement('video');if(media.canPlayType('application/x-mpegURL').replace(/no/,'')||media.canPlayType('application/vnd.apple.mpegURL').replace(/no/,'')){return true;}
 return false;};self.canPlayHls=function(){if(self.canPlayNativeHls()){return true;}
-if($.browser.chrome){}
-if($.browser.msie){}
+if($.browser.chrome){return window.MediaSource!=null;}
+if($.browser.msie){return window.MediaSource!=null;}
 return false;};self.changeStream=function(ticks,params){var mediaRenderer=self.currentMediaRenderer;if(canClientSeek&&params==null){mediaRenderer.currentTime(ticks/10000);return;}
 params=params||{};var currentSrc=mediaRenderer.currentSrc();var playSessionId=getParameterByName('PlaySessionId',currentSrc);var liveStreamId=getParameterByName('LiveStreamId',currentSrc);if(params.AudioStreamIndex==null&&params.SubtitleStreamIndex==null&&params.Bitrate==null){currentSrc=replaceQueryString(currentSrc,'starttimeticks',ticks||0);changeStreamToUrl(mediaRenderer,playSessionId,currentSrc,ticks);return;}
 var deviceProfile=self.getDeviceProfile();var audioStreamIndex=params.AudioStreamIndex==null?(getParameterByName('AudioStreamIndex',currentSrc)||null):params.AudioStreamIndex;if(typeof(audioStreamIndex)=='string'){audioStreamIndex=parseInt(audioStreamIndex);}
