@@ -3,7 +3,6 @@ package com.mb.android.media;
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.app.Presentation;
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,7 +11,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -32,14 +30,12 @@ import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.InputDevice;
@@ -72,7 +68,9 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mb.android.MainActivity;
 import com.mb.android.R;
+import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
 
 import org.videolan.libvlc.EventHandler;
@@ -99,7 +97,10 @@ import java.util.Date;
 import java.util.Map;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
+import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
+import mediabrowser.apiinteraction.http.IAsyncHttpClient;
+import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
@@ -193,6 +194,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private int mLastSpuTrack = -2;
     private int mOverlayTimeout = 0;
     private boolean mLockBackButton = false;
+
+    long resumePositionMs = 0;
 
     /**
      * For uninterrupted switching between audio and video mode
@@ -290,6 +293,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private MediaSourceInfo currentMediaSource;
     private ILogger logger;
     private IJsonSerializer jsonSerializer = new GsonJsonSerializer();
+    private IAsyncHttpClient httpClient;
 
     @Override
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -305,8 +309,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
         logger = AppLogger.getLogger(this);
         mHandler = new VideoPlayerHandler(this, logger);
-        mEventHandler = new VideoPlayerEventHandler(this, logger);
         mLibVLC = VLCInstance.get(getApplication(), this, logger);
+        mEventHandler = new VideoPlayerEventHandler(this, logger, mLibVLC);
+        httpClient = getHttpClient();
 
         if (LibVlcUtil.isJellyBeanMR1OrLater()) {
             // Get the media router service (Miracast)
@@ -485,6 +490,20 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
     }
 
+    protected IAsyncHttpClient getHttpClient() {
+
+        IAsyncHttpClient httpClient = null;
+        if (ApiClientBridge.Current != null) {
+            httpClient = ApiClientBridge.Current.httpClient;
+        }
+
+        if (httpClient == null) {
+            httpClient = new VolleyHttpClient(new ConsoleLogger(), getApplicationContext());
+        }
+
+        return httpClient;
+    }
+
     public boolean onCreateOptionsMenu(Menu menu){
         return super.onCreateOptionsMenu(menu);
     }
@@ -557,12 +576,12 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private void restoreBrightness() {
         if (mRestoreAutoBrightness != -1f) {
             int brightness = (int) (mRestoreAutoBrightness*255f);
-            Settings.System.putInt(getContentResolver(),
+            /*Settings.System.putInt(getContentResolver(),
                     Settings.System.SCREEN_BRIGHTNESS,
                     brightness);
             Settings.System.putInt(getContentResolver(),
                     Settings.System.SCREEN_BRIGHTNESS_MODE,
-                    Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
+                    Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);*/
         }
     }
 
@@ -1397,10 +1416,12 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private static class VideoPlayerEventHandler extends WeakHandler<VideoPlayerActivity> {
 
         private ILogger logger;
+        private LibVLC mLibVlc;
 
-        public VideoPlayerEventHandler(VideoPlayerActivity owner, ILogger logger) {
+        public VideoPlayerEventHandler(VideoPlayerActivity owner, ILogger logger, LibVLC mLibVlc) {
             super(owner);
             this.logger = logger;
+            this.mLibVlc = mLibVlc;
         }
 
         @Override
@@ -1420,6 +1441,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     break;
                 case EventHandler.MediaPlayerPaused:
                     logger.Info("MediaPlayerPaused");
+                    reportState("paused");
                     break;
                 case EventHandler.MediaPlayerStopped:
                     logger.Info("MediaPlayerStopped");
@@ -1450,6 +1472,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     break;
                 case EventHandler.MediaPlayerTimeChanged:
                     // avoid useless error logs
+                    reportState("positionchange");
                     break;
                 case EventHandler.MediaPlayerESAdded:
                 case EventHandler.MediaPlayerESDeleted:
@@ -1463,6 +1486,41 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     break;
             }
             activity.updateOverlayPausePlay();
+        }
+
+        private void reportState(String eventName) {
+
+            LibVLC vlc = mLibVlc;
+
+            int playerState = vlc.getPlayerState();
+
+            // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
+            boolean isPaused = eventName.equalsIgnoreCase("playbackstop") ?
+                    false :
+                    eventName.equalsIgnoreCase("paused") || playerState == 4;
+
+            logger.Debug("Vlc player state: %s", playerState);
+
+            long length = vlc.getLength() / 1000;
+
+            long time = vlc.getTime();
+
+            int volume = vlc.getVolume();
+
+            String js = String.format("window.VideoRenderer.Current.report('%s', %s, %s, %s, %s)",
+                    eventName,
+                    String.valueOf(length).toLowerCase(),
+                    String.valueOf(time).toLowerCase(),
+                    String.valueOf(isPaused).toLowerCase(),
+                    String.valueOf(volume).toLowerCase());
+
+            RespondToWebView(js);
+        }
+
+        private void RespondToWebView(final String js) {
+
+            //logger.Info("Sending url to webView: %s", js);
+            MainActivity.RespondToWebView(js);
         }
     };
 
@@ -1535,6 +1593,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         setESTracks();
         changeAudioFocus(true);
         updateNavStatus();
+
+        if (resumePositionMs > 0){
+            seek(resumePositionMs);
+        }
+        resumePositionMs = 0;
     }
 
     private void endReached() {
@@ -1937,9 +2000,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         try {
             if (LibVlcUtil.isFroyoOrLater() &&
                     Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
-                Settings.System.putInt(getContentResolver(),
+                /*Settings.System.putInt(getContentResolver(),
                         Settings.System.SCREEN_BRIGHTNESS_MODE,
-                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);*/
                 mRestoreAutoBrightness = android.provider.Settings.System.getInt(getContentResolver(),
                         android.provider.Settings.System.SCREEN_BRIGHTNESS) / 255.0f;
             } else {
@@ -2701,8 +2764,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             // Start playback & seek
             if (openedPosition == -1) {
                 VLCInstance.setAudioHdmiEnabled(this, mHasHdmiAudio);
+                resumePositionMs = intentPosition;
                 mMediaListPlayer.playIndex(savedIndexPosition, wasPaused);
-                seek(intentPosition, mediaLength);
             } else {
                 mLibVLC.setVideoTrack(-1);
                 mLibVLC.setVideoTrack(0);

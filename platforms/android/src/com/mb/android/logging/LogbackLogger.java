@@ -81,13 +81,23 @@ public class LogbackLogger implements ILogger {
 
     @Override
     public void FatalException(String message, Exception exception, Object... paramList) {
-        logException(String.format(message, paramList), exception, LogSeverity.Fatal);
+
+        String msg = paramList == null || paramList.length == 0 ?
+                message :
+                String.format(message, paramList);
+
+        logException(msg, exception, LogSeverity.Fatal);
     }
 
 
     @Override
     public void ErrorException(String message, Exception exception, Object... paramList) {
-        logException(String.format(message, paramList), exception, LogSeverity.Error);
+
+        String msg = paramList == null || paramList.length == 0 ?
+                message :
+                String.format(message, paramList);
+
+        logException(msg, exception, LogSeverity.Error);
     }
 
     private void logException(String message, Exception exception, LogSeverity severity) {

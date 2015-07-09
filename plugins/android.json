@@ -184,9 +184,6 @@
         "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.rd11.remote-controls": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-chrome-apps-common": {
             "PACKAGE_NAME": "com.mb.android"
         },

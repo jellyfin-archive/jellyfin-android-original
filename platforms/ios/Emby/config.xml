@@ -24,9 +24,6 @@
         <param name="onload" value="true" />
     </feature>
     <preference name="BackgroundColor" value="0xff000000" />
-    <feature name="RemoteControls">
-        <param name="ios-package" value="RemoteControls" />
-    </feature>
     <feature name="UniqueDeviceID">
         <param name="ios-package" value="CDVUniqueDeviceID" />
         <param name="onload" value="true" />
