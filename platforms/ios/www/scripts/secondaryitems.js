@@ -9,7 +9,7 @@ else if(view=="Banner"){html=LibraryBrowser.getPosterViewHtml({items:result.Item
 else if(view=="List"){html=LibraryBrowser.getListViewHtml({items:result.Items,sortBy:query.SortBy});trigger=true;}
 else{var posterOptions={items:result.Items,shape:"auto",centerText:true,lazy:true,overlayText:true};if(query.IncludeItemTypes=="MusicAlbum"){posterOptions.overlayText=false;posterOptions.showParentTitle=true;posterOptions.overlayPlayButton=true;}
 else if(query.IncludeItemTypes=="MusicArtist"){posterOptions.overlayText=false;posterOptions.overlayPlayButton=true;}
-else if(query.IncludeItemTypes=="Episode"){posterOptions.overlayText=false;posterOptions.showParentTitle=true;posterOptions.overlayPlayButton=true;}
+else if(query.IncludeItemTypes=="Episode"){posterOptions.overlayText=false;posterOptions.showParentTitle=true;posterOptions.overlayPlayButton=true;posterOptions.centerText=false;}
 html=LibraryBrowser.getPosterViewHtml(posterOptions);}
 var elem=page.querySelector('#items');elem.innerHTML=html+pagingHtml;ImageLoader.lazyChildren(elem);if(trigger){Events.trigger(elem,'create');}
 $('.btnNextPage',page).on('click',function(){query.StartIndex+=query.Limit;reloadItems(page);});$('.btnPreviousPage',page).on('click',function(){query.StartIndex-=query.Limit;reloadItems(page);});LibraryBrowser.setLastRefreshed(page);Dashboard.hideLoadingMsg();});}
