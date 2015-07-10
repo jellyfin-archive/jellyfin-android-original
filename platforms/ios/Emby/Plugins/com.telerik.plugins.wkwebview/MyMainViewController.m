@@ -8,7 +8,6 @@
 #import "CDVWebViewUIDelegate.h"
 #import "ReroutingUIWebView.h"
 #import "AppDelegate+WKWebViewPolyfill.h"
-#import "RemoteControls.h"
 
 @interface CDVViewController ()
 @property (nonatomic, readwrite, retain) NSArray *startupPluginNames;
@@ -531,18 +530,9 @@
 
 }
 
-//add this function
-- (void)remoteControlReceivedWithEvent:(UIEvent *)receivedEvent {
-    [[RemoteControls remoteControls] receiveRemoteEvent:receivedEvent];
-}
-
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-    // Turn off remote control event delivery
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 }
 
 - (WKWebView*)newCordovaWKWebViewWithFrame:(CGRect)bounds wkWebViewConfig:(WKWebViewConfiguration*) config
