@@ -23,7 +23,9 @@ hideChapterMenu(page);});$('.btnCommand,.btnToggleFullscreen',page).on('click',f
 var ticks=state.NowPlayingItem.RunTimeTicks;ticks/=100;ticks*=value;this.pinValue=Dashboard.getDisplayTime(ticks);};$(page).on('click','.lnkPlayFromIndex',function(){var index=parseInt(this.getAttribute('data-index'));MediaController.currentPlaylistIndex(index);loadPlaylist(page);}).on('click','.lnkRemoveFromPlaylist',function(){var index=parseInt(this.getAttribute('data-index'));MediaController.removeFromPlaylist(index);loadPlaylist(page);});Events.on(page,'click','.mediaItem',onListItemClick);}
 function onPlaybackStart(e,state){var player=this;player.beginPlayerUpdates();onStateChanged.call(player,e,state);loadPlaylist($($.mobile.activePage)[0]);}
 function onPlaybackStopped(e,state){var player=this;player.endPlayerUpdates();onStateChanged.call(player,e,{});loadPlaylist($($.mobile.activePage)[0]);}
-function onStateChanged(e,state){updatePlayerState($($.mobile.activePage)[0],state);}
+var lastUpdateTime=0;function onStateChanged(e,state){if(e.type=='positionchange'){var now=new Date().getTime();if((now-lastUpdateTime)<700){return;}
+lastUpdateTime=now;}
+updatePlayerState($($.mobile.activePage)[0],state);}
 function showButton(button){button.removeClass('hide');}
 function hideButton(button){button.addClass('hide');}
 function hasStreams(item,type){return item&&item.MediaStreams&&item.MediaStreams.filter(function(i){return i.Type==type;}).length>0;}
