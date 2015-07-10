@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04AD0C44B5E3402BB8C42B64 /* AppDelegate+WKWebViewPolyfill.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1D58F984A44FFB83C217CB /* AppDelegate+WKWebViewPolyfill.m */; };
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
@@ -91,6 +90,7 @@
 		EEF37D23C84B45748681E38B /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D240FC4E01DB4DD088BCEFEE /* CDVDevice.m */; };
 		F557CE787863413EA07159F0 /* AppDelegate+WKWebViewPolyfill.h in Sources */ = {isa = PBXBuildFile; fileRef = D0F325F759734AC098B86B75 /* AppDelegate+WKWebViewPolyfill.h */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -267,6 +267,8 @@
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FE1D58F984A44FFB83C217CB /* AppDelegate+WKWebViewPolyfill.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+WKWebViewPolyfill.m"; path = "com.telerik.plugins.wkwebview/AppDelegate+WKWebViewPolyfill.m"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
+		18D8241D42CE405FA82272BB /* SearchBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SearchBar.m"; path = "com.dieam.searchbar/SearchBar.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		16C12376B4DE4EFCB4F299C5 /* SearchBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SearchBar.h"; path = "com.dieam.searchbar/SearchBar.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -471,6 +473,8 @@
 				ED8D671664AB4C0BA9A2CBD9 /* ReroutingUIWebView.h */,
 				3AF33DE40173495C844B7DAF /* CDVWebViewOperationsDelegate.h */,
 				1134E9DE67FB4B1D8CCAC9F0 /* CDVWebViewUIDelegate.h */,
+				18D8241D42CE405FA82272BB /* SearchBar.m */,
+				16C12376B4DE4EFCB4F299C5 /* SearchBar.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -733,6 +737,7 @@
 				737D92CD063E444588530C35 /* ReroutingUIWebView.m in Sources */,
 				CAD5ADFF436C4D898BED18D2 /* CDVWebViewOperationsDelegate.m in Sources */,
 				C7EB8AA033404F3785FDB0CC /* CDVWebViewUIDelegate.m in Sources */,
+				001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

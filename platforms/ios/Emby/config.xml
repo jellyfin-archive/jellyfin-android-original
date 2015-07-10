@@ -139,4 +139,7 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
+    <feature name="SearchBar">
+        <param name="ios-package" value="SearchBar" />
+    </feature>
 </widget>

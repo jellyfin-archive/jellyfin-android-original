@@ -340,6 +340,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.dieam.searchbar/www/searchbar.js",
+        "id": "com.dieam.searchbar.searchbar",
+        "clobbers": [
+            "cordova.searchbar"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -384,6 +391,7 @@ module.exports.metadata =
     "cordova-plugin-console": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",
     "com.telerik.plugins.wkwebview": "0.4.0",
+    "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"

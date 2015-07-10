@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+                android:interpolator="@android:interpolator/accelerate_quint"
+                android:valueFrom="0"
+                android:valueTo="-1500"
+                android:valueType="floatType"
+                android:propertyName="y"
+                android:duration="1500" />

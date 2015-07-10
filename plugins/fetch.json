@@ -227,5 +227,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "com.dieam.searchbar": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zo0r/cordova-search-bar",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
