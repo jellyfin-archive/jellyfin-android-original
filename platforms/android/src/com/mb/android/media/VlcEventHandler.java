@@ -85,11 +85,11 @@ public class VlcEventHandler extends Handler {
                 logger.Debug("MediaPlayerTimeChanged");
 
                 // Avoid overly aggressive reporting
-                if ((new Date().getTime() - lastReportTime) < 500){
+                if ((System.currentTimeMillis() - lastReportTime) < 500){
                     return;
                 }
 
-                lastReportTime = new Date().getTime();
+                lastReportTime = System.currentTimeMillis();
                 reportState("positionchange");
                 break;
             case EventHandler.MediaPlayerVout:

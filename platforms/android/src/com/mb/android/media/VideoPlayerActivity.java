@@ -96,14 +96,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
+import mediabrowser.apiinteraction.ApiClient;
+import mediabrowser.apiinteraction.ApiEventListener;
+import mediabrowser.apiinteraction.EmptyResponse;
+import mediabrowser.apiinteraction.android.AndroidApiClient;
+import mediabrowser.apiinteraction.android.AndroidDevice;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
+import mediabrowser.apiinteraction.device.IDevice;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
+import mediabrowser.model.session.PlaybackProgressInfo;
 
 public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlayer, GestureDetector.OnDoubleTapListener, IDelayController {
 
@@ -1417,6 +1424,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
         private ILogger logger;
         private LibVLC mLibVlc;
+        private long lastReportTime;
 
         public VideoPlayerEventHandler(VideoPlayerActivity owner, ILogger logger, LibVLC mLibVlc) {
             super(owner);
@@ -1438,17 +1446,20 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 case EventHandler.MediaPlayerPlaying:
                     logger.Info("MediaPlayerPlaying");
                     activity.onPlaying();
+                    startTimer();
                     break;
                 case EventHandler.MediaPlayerPaused:
                     logger.Info("MediaPlayerPaused");
-                    reportState("paused");
+                    reportState("paused", false);
                     break;
                 case EventHandler.MediaPlayerStopped:
                     logger.Info("MediaPlayerStopped");
+                    stopTimer();
                     activity.changeAudioFocus(false);
                     break;
                 case EventHandler.MediaPlayerEndReached:
                     logger.Info("MediaPlayerEndReached");
+                    stopTimer();
                     activity.changeAudioFocus(false);
                     activity.endReached();
                     break;
@@ -1464,6 +1475,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     break;
                 case EventHandler.MediaPlayerEncounteredError:
                     logger.Info("MediaPlayerEncounteredError");
+                    stopTimer();
                     activity.encounteredError();
                     break;
                 case EventHandler.HardwareAccelerationError:
@@ -1471,8 +1483,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     activity.handleHardwareAccelerationError();
                     break;
                 case EventHandler.MediaPlayerTimeChanged:
-                    // avoid useless error logs
-                    reportState("positionchange");
+                    reportState("positionchange", true);
                     break;
                 case EventHandler.MediaPlayerESAdded:
                 case EventHandler.MediaPlayerESDeleted:
@@ -1488,7 +1499,28 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             activity.updateOverlayPausePlay();
         }
 
-        private void reportState(String eventName) {
+        private void startTimer(){
+
+        }
+
+        private void stopTimer(){
+
+        }
+
+        private void reportState(String eventName, boolean checkLastReportTime) {
+
+            if (checkLastReportTime){
+                // avoid useless error logs
+                // Avoid overly aggressive reporting
+                if ((System.currentTimeMillis() - lastReportTime) < 800){
+                    return;
+                }
+
+                lastReportTime = System.currentTimeMillis();
+            }
+
+            VideoPlayerActivity activity = getOwner();
+            if(activity == null) return;
 
             LibVLC vlc = mLibVlc;
 
@@ -1507,22 +1539,33 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
             int volume = vlc.getVolume();
 
-            String js = String.format("window.VideoRenderer.Current.report('%s', %s, %s, %s, %s)",
-                    eventName,
-                    String.valueOf(length).toLowerCase(),
-                    String.valueOf(time).toLowerCase(),
-                    String.valueOf(isPaused).toLowerCase(),
-                    String.valueOf(volume).toLowerCase());
-
-            RespondToWebView(js);
-        }
-
-        private void RespondToWebView(final String js) {
-
-            //logger.Info("Sending url to webView: %s", js);
-            MainActivity.RespondToWebView(js);
+            activity.ReportPlaybackProgress(length, time, volume, isPaused);
         }
     };
+
+    private void ReportPlaybackProgress(Long duration, Long time, int volume, boolean isPaused) {
+
+        ApiClient apiClient = getApiClient();
+
+        PlaybackProgressInfo info = getPlaybackProgressInfo();
+
+        info.setVolumeLevel(volume);
+        info.setIsPaused(isPaused);
+        info.setPositionTicks(time * 10000);
+
+        apiClient.ReportPlaybackProgressAsync(info, new EmptyResponse());
+    }
+
+    private PlaybackProgressInfo playbackStartInfo;
+    private PlaybackProgressInfo getPlaybackProgressInfo(){
+        return playbackStartInfo;
+    }
+
+    private ApiClient apiClient;
+    private ApiClient getApiClient(){
+
+        return apiClient;
+    }
 
     /**
      * Handle resize of the surface and the overlay
@@ -2727,6 +2770,21 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
             String mediaSourceJson = getIntent().getExtras().getString("mediaSourceJson");
             currentMediaSource = (MediaSourceInfo)jsonSerializer.DeserializeFromString(mediaSourceJson, MediaSourceInfo.class);
+
+            String apiAppName = getIntent().getExtras().getString("appName");
+            String apiAppVersion = getIntent().getExtras().getString("appVersion");
+            String apiDeviceId = getIntent().getExtras().getString("deviceId");
+            String apiDeviceName = getIntent().getExtras().getString("deviceName");
+            String apiUserId = getIntent().getExtras().getString("userId");
+            String apiAccessToken = getIntent().getExtras().getString("accessToken");
+            String apiServerUrl = getIntent().getExtras().getString("serverUrl");
+            String playbackStartInfoJson = getIntent().getExtras().getString("playbackStartInfoJson");
+
+            playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
+
+            IDevice device = new AndroidDevice(getApplicationContext(), apiDeviceId, apiDeviceName);
+            apiClient = new AndroidApiClient(httpClient, jsonSerializer, logger, apiServerUrl, apiAppName, device, apiAppVersion, new ApiEventListener());
+            apiClient.SetAuthenticationInfo(apiAccessToken, apiUserId);
 
             if (getIntent().hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
                 mSubtitleSelectedFiles.add(getIntent().getExtras().getString(PLAY_EXTRA_SUBTITLES_LOCATION));
