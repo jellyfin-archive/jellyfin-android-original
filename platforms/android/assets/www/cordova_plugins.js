@@ -355,6 +355,13 @@ module.exports = [
         "clobbers": [
             "console"
         ]
+    },
+    {
+        "file": "plugins/com.dieam.searchbar/www/searchbar.js",
+        "id": "com.dieam.searchbar.searchbar",
+        "clobbers": [
+            "cordova.searchbar"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -383,6 +390,7 @@ module.exports.metadata =
     "cordova-plugin-console": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",
     "com.telerik.plugins.wkwebview": "0.4.0",
+    "com.dieam.searchbar": "2.1.6",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

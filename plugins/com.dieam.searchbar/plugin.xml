@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.dieam.searchbar"
+    version="2.1.6">
+
+    <name>Cordova Native SearchBar Plugin</name>
+
+    <description>Displays a native search bar and sends the search String back to the JavaScript interface.</description>
+
+	<engines>
+		<engine name="cordova" version=">=3.0.0" />
+	</engines>
+
+    <!-- iOS -->
+    <platform name="ios">
+    	<config-file target="config.xml" parent="/*">
+    		<feature name="SearchBar">
+                <param name="ios-package" value="SearchBar"/>
+            </feature>
+        </config-file>
+
+        <js-module src="www/searchbar.js" name="searchbar">
+        	<clobbers target="cordova.searchbar" />
+    	</js-module>
+
+    	<header-file src="src/ios/SearchBar.h" />
+    	<source-file src="src/ios/SearchBar.m" />
+    </platform>
+
+    <!-- Android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SearchBar">
+                <param name="android-package" value="net.spantree.searchbar.SearchBar"/>
+            </feature>
+        </config-file>
+        
+        <js-module src="www/searchbar.js" name="searchbar">
+        	<clobbers target="cordova.searchbar" />
+    	</js-module>
+
+        <source-file src="src/android/SearchBar.java" target-dir="src/net/spantree/searchbar" />
+        <source-file src="src/android/slide_in.xml" target-dir="res/animator" />
+        <source-file src="src/android/slide_out.xml" target-dir="res/animator" />
+    </platform>
+</plugin>

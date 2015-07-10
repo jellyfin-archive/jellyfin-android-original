@@ -95,6 +95,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.ApiEventListener;
@@ -1425,6 +1427,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         private ILogger logger;
         private LibVLC mLibVlc;
         private long lastReportTime;
+        private Timer timer;
 
         public VideoPlayerEventHandler(VideoPlayerActivity owner, ILogger logger, LibVLC mLibVlc) {
             super(owner);
@@ -1501,10 +1504,22 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
         private void startTimer(){
 
+            timer = new Timer(true);
+
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    reportState("positionchange", true);
+                }
+            }, 0, 1000);
         }
 
         private void stopTimer(){
 
+            if (timer != null){
+                timer.cancel();
+                timer = null;
+            }
         }
 
         private void reportState(String eventName, boolean checkLastReportTime) {
