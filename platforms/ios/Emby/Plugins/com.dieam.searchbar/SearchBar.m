@@ -37,7 +37,8 @@ static int const BACK_BUTTON_WIDTH = 50;
     // Setting y-offset to -height since we will be sliding-in the view, or none if embedding within a UINavigationbar.
     nativeSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, asNavigation ? 0 : -barHeight, self.webView.superview.bounds.size.width, barHeight)];
     nativeSearchBar.delegate = self;
-    nativeSearchBar.barTintColor = RGB(139, 197, 63);
+    nativeSearchBar.barTintColor = RGB(28, 28, 28);
+    nativeSearchBar.showsCancelButton = true;
     
     if (ALLOW_EMPTY_SEARCH) {
         [self enableEmptySearch];
@@ -46,7 +47,7 @@ static int const BACK_BUTTON_WIDTH = 50;
     
 -(void)setupNavigation {
     nativeNavigationBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0, 20, self.webView.superview.bounds.size.width, 44)];
-    [nativeNavigationBar setBarTintColor: RGB(139, 197, 63)];
+    [nativeNavigationBar setBarTintColor: RGB(28, 28, 28)];
     [nativeNavigationBar setTintColor: [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:1]];
     [nativeNavigationBar setTranslucent: NO];
     [nativeNavigationBar addSubview:nativeSearchBar];
@@ -85,16 +86,22 @@ static int const BACK_BUTTON_WIDTH = 50;
     
     [self.webView.superview addSubview:nativeSearchBar];
     [self slideDown: nativeSearchBar];
+    [nativeSearchBar becomeFirstResponder];
 }
 
 -(void)hide:(CDVInvokedUrlCommand *)command {
+    [self hideInternal];
+}
+
+-(void)hideInternal {
     if (!isShowing || nativeSearchBar == nil) {
         return;
     }
-
+    
     isShowing = false;
     [nativeSearchBar resignFirstResponder];
     [self slideUp: nativeSearchBar];
+    [self writeJavascript:[NSString stringWithFormat:@"cordova.fireDocumentEvent('searchClosed', {})"]];
 }
     
 -(void)showNavigation:(CDVInvokedUrlCommand *)command {
@@ -238,6 +245,7 @@ static int const BACK_BUTTON_WIDTH = 50;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     searchBar.text=@"";
     [searchBar resignFirstResponder];
+    [self hideInternal];
 }
 
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
