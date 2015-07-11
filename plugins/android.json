@@ -77,10 +77,6 @@
                         {
                             "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"SearchBar\"><param name=\"android-package\" value=\"net.spantree.searchbar.SearchBar\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
