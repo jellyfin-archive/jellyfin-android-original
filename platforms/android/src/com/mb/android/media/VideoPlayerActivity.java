@@ -68,7 +68,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mb.android.MainActivity;
 import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
@@ -100,7 +99,6 @@ import java.util.TimerTask;
 
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.ApiEventListener;
-import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.android.AndroidApiClient;
 import mediabrowser.apiinteraction.android.AndroidDevice;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -109,6 +107,7 @@ import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.apiinteraction.device.IDevice;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.logging.ConsoleLogger;
+import mediabrowser.model.dlna.DeviceProfile;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
@@ -303,6 +302,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private ILogger logger;
     private IJsonSerializer jsonSerializer = new GsonJsonSerializer();
     private IAsyncHttpClient httpClient;
+    private VideoApiHelper apiHelper;
 
     @Override
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -321,6 +321,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mLibVLC = VLCInstance.get(getApplication(), this, logger);
         mEventHandler = new VideoPlayerEventHandler(this, logger, mLibVLC);
         httpClient = getHttpClient();
+        apiHelper = new VideoApiHelper(logger, jsonSerializer);
 
         if (LibVlcUtil.isJellyBeanMR1OrLater()) {
             // Get the media router service (Miracast)
@@ -944,6 +945,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             hideOverlay(true);
         } else
         {
+            // Stop this now to prevent progress reports from going out after the stop report goes out
+            apiHelper.enableProgressReporting = false;
+
             Intent returnIntent = new Intent();
             returnIntent.putExtra("position",mLibVLC.getTime());
             returnIntent.putExtra("error",false);
@@ -1504,6 +1508,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
         private void startTimer(){
 
+            VideoPlayerActivity activity = getOwner();
+            if(activity != null) {
+                activity.apiHelper.enableProgressReporting = true;
+            }
+
             timer = new Timer(true);
 
             timer.schedule(new TimerTask() {
@@ -1516,6 +1525,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
         private void stopTimer(){
 
+            VideoPlayerActivity activity = getOwner();
+            if(activity != null) {
+                activity.apiHelper.enableProgressReporting = false;
+            }
+
             if (timer != null){
                 timer.cancel();
                 timer = null;
@@ -1525,6 +1539,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         private void reportState(String eventName, boolean checkLastReportTime) {
 
             if (checkLastReportTime){
+
                 // avoid useless error logs
                 // Avoid overly aggressive reporting
                 if ((System.currentTimeMillis() - lastReportTime) < 800){
@@ -1554,33 +1569,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
             int volume = vlc.getVolume();
 
-            activity.ReportPlaybackProgress(length, time, volume, isPaused);
+            activity.apiHelper.ReportPlaybackProgress(length, time, volume, isPaused);
         }
     };
-
-    private void ReportPlaybackProgress(Long duration, Long time, int volume, boolean isPaused) {
-
-        ApiClient apiClient = getApiClient();
-
-        PlaybackProgressInfo info = getPlaybackProgressInfo();
-
-        info.setVolumeLevel(volume);
-        info.setIsPaused(isPaused);
-        info.setPositionTicks(time * 10000);
-
-        apiClient.ReportPlaybackProgressAsync(info, new EmptyResponse());
-    }
-
-    private PlaybackProgressInfo playbackStartInfo;
-    private PlaybackProgressInfo getPlaybackProgressInfo(){
-        return playbackStartInfo;
-    }
-
-    private ApiClient apiClient;
-    private ApiClient getApiClient(){
-
-        return apiClient;
-    }
 
     /**
      * Handle resize of the surface and the overlay
@@ -2131,7 +2122,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         final Context context = this;
         PopupMenu popupMenu = new PopupMenu(this, anchor);
         popupMenu.getMenuInflater().inflate(R.menu.audiosub_tracks, popupMenu.getMenu());
-        popupMenu.getMenu().findItem(R.id.video_menu_audio_track).setEnabled(mLibVLC.getAudioTracksCount() > 2);
+        popupMenu.getMenu().findItem(R.id.video_menu_audio_track).setEnabled(mLibVLC.getAudioTracksCount() > 0);
         popupMenu.getMenu().findItem(R.id.video_menu_subtitles).setEnabled(mLibVLC.getSpuTracksCount() > 0);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -2203,7 +2194,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     public boolean onTrackSelected(int trackID) {
                         if (trackID < 0)
                             return false;
-                        mLibVLC.setAudioTrack(trackID);
+                        apiHelper.setAudioStreamIndex(mLibVLC, trackID, mLocation, currentMediaSource);
                         return true;
                     }
                 });
@@ -2622,7 +2613,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     }
 
     private void setESTrackLists() {
-        if (mAudioTracksList == null && mLibVLC.getAudioTracksCount() > 1)
+        if (mAudioTracksList == null && mLibVLC.getAudioTracksCount() > 0)
             mAudioTracksList = mLibVLC.getAudioTrackDescription();
         if (mSubtitleTracksList == null && mLibVLC.getSpuTracksCount() > 0)
             mSubtitleTracksList = mLibVLC.getSpuTrackDescription();
@@ -2786,6 +2777,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             String mediaSourceJson = getIntent().getExtras().getString("mediaSourceJson");
             currentMediaSource = (MediaSourceInfo)jsonSerializer.DeserializeFromString(mediaSourceJson, MediaSourceInfo.class);
 
+            String deviceProfileJson = getIntent().getExtras().getString("deviceProfileJson");
+            DeviceProfile deviceProfile = (DeviceProfile)jsonSerializer.DeserializeFromString(deviceProfileJson, DeviceProfile.class);
+
             String apiAppName = getIntent().getExtras().getString("appName");
             String apiAppVersion = getIntent().getExtras().getString("appVersion");
             String apiDeviceId = getIntent().getExtras().getString("deviceId");
@@ -2795,11 +2789,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             String apiServerUrl = getIntent().getExtras().getString("serverUrl");
             String playbackStartInfoJson = getIntent().getExtras().getString("playbackStartInfoJson");
 
-            playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
+            PlaybackProgressInfo playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
 
             IDevice device = new AndroidDevice(getApplicationContext(), apiDeviceId, apiDeviceName);
-            apiClient = new AndroidApiClient(httpClient, jsonSerializer, logger, apiServerUrl, apiAppName, device, apiAppVersion, new ApiEventListener());
+            ApiClient apiClient = new AndroidApiClient(httpClient, jsonSerializer, logger, apiServerUrl, apiAppName, device, apiAppVersion, new ApiEventListener());
             apiClient.SetAuthenticationInfo(apiAccessToken, apiUserId);
+
+            apiHelper.setInitialInfo(apiClient, deviceProfile, playbackStartInfo);
 
             if (getIntent().hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
                 mSubtitleSelectedFiles.add(getIntent().getExtras().getString(PLAY_EXTRA_SUBTITLES_LOCATION));

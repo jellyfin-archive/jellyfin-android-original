@@ -297,7 +297,8 @@ public class MainActivity extends CordovaActivity
                              String deviceId,
                              String deviceName,
                              String userId,
-                             String accessToken) {
+                             String accessToken,
+                             String deviceProfileJson) {
 
         getLogger().Debug("Video path: %s", path);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
@@ -314,6 +315,7 @@ public class MainActivity extends CordovaActivity
         intent.putExtra("deviceName", deviceName);
         intent.putExtra("userId", userId);
         intent.putExtra("accessToken", accessToken);
+        intent.putExtra("deviceProfileJson", deviceProfileJson);
 
         if (startPositionMs > 0){
             intent.putExtra("position", startPositionMs);
