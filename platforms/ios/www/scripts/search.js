@@ -8,7 +8,7 @@ else if(hint.Type=="Episode"){return[Globalize.translate('LabelEpisode')];}
 else if(hint.Type=="Series"){return[Globalize.translate('LabelSeries')];}
 else if(hint.Type=="BoxSet"){return[Globalize.translate('LabelCollection')];}
 return[hint.Type];}
-function search(){var self=this;self.showSearchPanel=function(){showSearchMenu();$('.headerSearchInput').focus();};}
+function search(){var self=this;self.showSearchPanel=function(){showSearchMenu();};}
 window.Search=new search();function renderSearchResultsInOverlay(elem,hints){hints=hints.map(function(i){i.Id=i.ItemId;i.ImageTags={};i.UserData={};if(i.PrimaryImageTag){i.ImageTags.Primary=i.PrimaryImageTag;}
 return i;});var html=LibraryBrowser.getPosterViewHtml({items:hints,shape:"auto",lazy:true,overlayText:false,showTitle:true,coverImage:true,centerImage:true,textLines:getAdditionalTextLines});var itemsContainer=elem.querySelector('.itemsContainer');itemsContainer.innerHTML=html;ImageLoader.lazyChildren(itemsContainer);}
 function requestSearchHintsForOverlay(elem,searchTerm){var currentTimeout=searchHintTimeout;Dashboard.showLoadingMsg();ApiClient.getSearchHints({userId:Dashboard.getCurrentUserId(),searchTerm:searchTerm,limit:30}).done(function(result){if(currentTimeout==searchHintTimeout){renderSearchResultsInOverlay(elem,result.SearchHints);}
@@ -18,9 +18,8 @@ clearSearchHintTimeout();searchHintTimeout=setTimeout(function(){requestSearchHi
 function getSearchOverlay(createIfNeeded){var elem=document.querySelector('.searchResultsOverlay');if(createIfNeeded&&!elem){var html='<div class="searchResultsOverlay ui-page-theme-b smoothScrollY">';html+='<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';elem=$(html).appendTo(document.body).hide()[0];$(elem).createCardMenus();}
 return elem;}
 function onHeaderSearchChange(val){var elem;if(val){elem=getSearchOverlay(true);$(elem).show();elem.style.opacity='1';document.body.classList.add('bodyWithPopupOpen');updateSearchOverlay(elem,val);}else{elem=getSearchOverlay(false);if(elem){require(["jquery","velocity"],function($,Velocity){$(elem).velocity("fadeOut");document.body.classList.remove('bodyWithPopupOpen');});updateSearchOverlay(elem,'');}}}
-function bindSearchEvents(){$('.headerSearchInput').on("keyup",function(e){if(e.keyCode==40){return false;}else{onHeaderSearchChange(this.value);}}).on("search",function(e){if(!this.value){onHeaderSearchChange('');}});$('.btnCloseSearch').on('click',closeSearchOverlay);$('.viewMenuSearchForm').on('submit',function(){return false;});}
-function closeSearchOverlay(){$('.headerSearchInput').val('');onHeaderSearchChange('');hideSearchMenu();}
-function showSearchMenu(){require(["jquery","velocity"],function($,Velocity){$('.btnCloseSearch').hide();var elem=$('.viewMenuSearch').css({left:'100%'}).removeClass('hide')[0];Velocity.animate(elem,{"left":"0px"},{complete:function(){$('.headerSearchInput').focus();$('.btnCloseSearch').show();}});});}
-function hideSearchMenu(){var viewMenuSearch=document.querySelector('.viewMenuSearch');if(!viewMenuSearch){return;}
-if(!viewMenuSearch.classList.contains('hide')){require(["jquery","velocity"],function($,Velocity){$('.btnCloseSearch').hide();viewMenuSearch.style.left='0';Velocity.animate(viewMenuSearch,{"left":"100%"},{complete:function(){$('.viewMenuSearch').visible(false);}});});}}
-$(document).on('pagebeforehide',".libraryPage",function(){$('#txtSearch',this).val('');$('#searchHints',this).empty();}).on('pagecontainerbeforehide',closeSearchOverlay);$(document).on('headercreated',function(){bindSearchEvents();});})(jQuery,document,window,clearTimeout,setTimeout);
+function bindSearchEvents(){require(['searchmenu'],function(){Events.on(SearchMenu,'closed',closeSearchResults);Events.on(SearchMenu,'change',function(e,value){onHeaderSearchChange(value);});});}
+function closeSearchResults(){onHeaderSearchChange('');hideSearchMenu();}
+function showSearchMenu(){require(['searchmenu'],function(){SearchMenu.show();});}
+function hideSearchMenu(){require(['searchmenu'],function(){SearchMenu.hide();});}
+$(document).on('pagecontainerbeforehide',closeSearchResults);$(document).on('headercreated',function(){bindSearchEvents();});})(jQuery,document,window,clearTimeout,setTimeout);

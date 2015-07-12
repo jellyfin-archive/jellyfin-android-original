@@ -20,904 +20,890 @@ window.WebComponents=window.WebComponents||{},function(e){var t=e.flags||{},n="w
 
 (function(e,t,n){typeof define=="function"&&define.amd?define(["jquery"],function(r){return n(r,e,t),r.mobile}):n(e.jQuery,e,t)})(this,document,function(e,t,n,r){(function(e,t,r){"$:nomunge";function l(e){return e=e||location.href,"#"+e.replace(/^[^#]*#?(.*)$/,"$1")}var i="hashchange",s=n,o,u=e.event.special,a=s.documentMode,f="on"+i in t&&(a===r||a>7);e.fn[i]=function(e){return e?this.bind(i,e):this.trigger(i)},e.fn[i].delay=50,u[i]=e.extend(u[i],{setup:function(){if(f)return!1;e(o.start)},teardown:function(){if(f)return!1;e(o.stop)}}),o=function(){function p(){var n=l(),r=h(u);n!==u?(c(u=n,r),e(t).trigger(i)):r!==u&&(location.href=location.href.replace(/#.*/,"")+r),o=setTimeout(p,e.fn[i].delay)}var n={},o,u=l(),a=function(e){return e},c=a,h=a;return n.start=function(){o||p()},n.stop=function(){o&&clearTimeout(o),o=r},t.attachEvent&&!t.addEventListener&&!f&&function(){var t,r;n.start=function(){t||(r=e.fn[i].src,r=r&&r+l(),t=e('<iframe tabindex="-1" title="empty"/>').hide().one("load",function(){r||c(l()),p()}).attr("src",r||"javascript:0").insertAfter("body")[0].contentWindow,s.onpropertychange=function(){try{event.propertyName==="title"&&(t.document.title=s.title)}catch(e){}})},n.stop=a,h=function(){return l(t.location.href)},c=function(n,r){var o=t.document,u=e.fn[i].domain;n!==r&&(o.title=s.title,o.open(),u&&o.write('<script>document.domain="'+u+'"</script>'),o.close(),t.location.hash=n)}}(),n}()})(e,this),function(e){e.mobile={}}(e),function(e,t,n){e.extend(e.mobile,{version:"1.4.5",subPageUrlKey:"ui-page",hideUrlBar:!0,keepNative:":jqmData(role='none'), :jqmData(role='nojs')",activePageClass:"ui-page-active",activeBtnClass:"ui-btn-active",focusClass:"ui-focus",ajaxEnabled:!0,hashListeningEnabled:!0,linkBindingEnabled:!0,defaultPageTransition:"fade",maxTransitionWidth:!1,minScrollBack:0,defaultDialogTransition:"pop",pageLoadErrorMessage:"Error Loading Page",pageLoadErrorMessageTheme:"a",phonegapNavigationEnabled:!1,autoInitializePage:!0,pushStateEnabled:!0,ignoreContentEnabled:!1,buttonMarkup:{hoverDelay:200},dynamicBaseEnabled:!0,pageContainer:e(),allowCrossDomainPages:!1,dialogHashKey:"&ui-state=dialog"})}(e,this),function(e,t,n){var r={},i=e.find,s=/(?:\{[\s\S]*\}|\[[\s\S]*\])$/,o=/:jqmData\(([^)]*)\)/g;e.extend(e.mobile,{ns:"",getAttribute:function(t,n){var r;t=t.jquery?t[0]:t,t&&t.getAttribute&&(r=t.getAttribute("data-"+e.mobile.ns+n));try{r=r==="true"?!0:r==="false"?!1:r==="null"?null:+r+""===r?+r:s.test(r)?JSON.parse(r):r}catch(i){}return r},nsNormalizeDict:r,nsNormalize:function(t){return r[t]||(r[t]=e.camelCase(e.mobile.ns+t))},closestPageData:function(e){return e.closest(":jqmData(role='page'), :jqmData(role='dialog')").data("mobile-page")}}),e.fn.jqmData=function(t,r){var i;return typeof t!="undefined"&&(t&&(t=e.mobile.nsNormalize(t)),arguments.length<2||r===n?i=this.data(t):i=this.data(t,r)),i},e.jqmData=function(t,n,r){var i;return typeof n!="undefined"&&(i=e.data(t,n?e.mobile.nsNormalize(n):n,r)),i},e.fn.jqmRemoveData=function(t){return this.removeData(e.mobile.nsNormalize(t))},e.jqmRemoveData=function(t,n){return e.removeData(t,e.mobile.nsNormalize(n))},e.find=function(t,n,r,s){return t.indexOf(":jqmData")>-1&&(t=t.replace(o,"[data-"+(e.mobile.ns||"")+"$1]")),i.call(this,t,n,r,s)},e.extend(e.find,i)}(e,this),function(e,t){function s(t,n){var r,i,s,u=t.nodeName.toLowerCase();return"area"===u?(r=t.parentNode,i=r.name,!t.href||!i||r.nodeName.toLowerCase()!=="map"?!1:(s=e("img[usemap=#"+i+"]")[0],!!s&&o(s))):(/input|select|textarea|button|object/.test(u)?!t.disabled:"a"===u?t.href||n:n)&&o(t)}function o(t){return e.expr.filters.visible(t)&&!e(t).parents().addBack().filter(function(){return e.css(this,"visibility")==="hidden"}).length}var r=0,i=/^ui-id-\d+$/;e.ui=e.ui||{},e.extend(e.ui,{version:"c0ab71056b936627e8a7821f03c044aec6280a40",keyCode:{BACKSPACE:8,COMMA:188,DELETE:46,DOWN:40,END:35,ENTER:13,ESCAPE:27,HOME:36,LEFT:37,PAGE_DOWN:34,PAGE_UP:33,PERIOD:190,RIGHT:39,SPACE:32,TAB:9,UP:38}}),e.fn.extend({focus:function(t){return function(n,r){return typeof n=="number"?this.each(function(){var t=this;setTimeout(function(){e(t).focus(),r&&r.call(t)},n)}):t.apply(this,arguments)}}(e.fn.focus),scrollParent:function(){var t;return e.ui.ie&&/(static|relative)/.test(this.css("position"))||/absolute/.test(this.css("position"))?t=this.parents().filter(function(){return/(relative|absolute|fixed)/.test(e.css(this,"position"))&&/(auto|scroll)/.test(e.css(this,"overflow")+e.css(this,"overflow-y")+e.css(this,"overflow-x"))}).eq(0):t=this.parents().filter(function(){return/(auto|scroll)/.test(e.css(this,"overflow")+e.css(this,"overflow-y")+e.css(this,"overflow-x"))}).eq(0),/fixed/.test(this.css("position"))||!t.length?e(this[0].ownerDocument||n):t},uniqueId:function(){return this.each(function(){this.id||(this.id="ui-id-"+ ++r)})},removeUniqueId:function(){return this.each(function(){i.test(this.id)&&e(this).removeAttr("id")})}}),e.extend(e.expr[":"],{data:e.expr.createPseudo?e.expr.createPseudo(function(t){return function(n){return!!e.data(n,t)}}):function(t,n,r){return!!e.data(t,r[3])},focusable:function(t){return s(t,!isNaN(e.attr(t,"tabindex")))},tabbable:function(t){var n=e.attr(t,"tabindex"),r=isNaN(n);return(r||n>=0)&&s(t,!r)}}),e("<a>").outerWidth(1).jquery||e.each(["Width","Height"],function(n,r){function u(t,n,r,s){return e.each(i,function(){n-=parseFloat(e.css(t,"padding"+this))||0,r&&(n-=parseFloat(e.css(t,"border"+this+"Width"))||0),s&&(n-=parseFloat(e.css(t,"margin"+this))||0)}),n}var i=r==="Width"?["Left","Right"]:["Top","Bottom"],s=r.toLowerCase(),o={innerWidth:e.fn.innerWidth,innerHeight:e.fn.innerHeight,outerWidth:e.fn.outerWidth,outerHeight:e.fn.outerHeight};e.fn["inner"+r]=function(n){return n===t?o["inner"+r].call(this):this.each(function(){e(this).css(s,u(this,n)+"px")})},e.fn["outer"+r]=function(t,n){return typeof t!="number"?o["outer"+r].call(this,t):this.each(function(){e(this).css(s,u(this,t,!0,n)+"px")})}}),e.fn.addBack||(e.fn.addBack=function(e){return this.add(e==null?this.prevObject:this.prevObject.filter(e))}),e("<a>").data("a-b","a").removeData("a-b").data("a-b")&&(e.fn.removeData=function(t){return function(n){return arguments.length?t.call(this,e.camelCase(n)):t.call(this)}}(e.fn.removeData)),e.ui.ie=!!/msie [\w.]+/.exec(navigator.userAgent.toLowerCase()),e.support.selectstart="onselectstart"in n.createElement("div"),e.fn.extend({disableSelection:function(){return this.bind((e.support.selectstart?"selectstart":"mousedown")+".ui-disableSelection",function(e){e.preventDefault()})},enableSelection:function(){return this.unbind(".ui-disableSelection")},zIndex:function(r){if(r!==t)return this.css("zIndex",r);if(this.length){var i=e(this[0]),s,o;while(i.length&&i[0]!==n){s=i.css("position");if(s==="absolute"||s==="relative"||s==="fixed"){o=parseInt(i.css("zIndex"),10);if(!isNaN(o)&&o!==0)return o}i=i.parent()}}return 0}}),e.ui.plugin={add:function(t,n,r){var i,s=e.ui[t].prototype;for(i in r)s.plugins[i]=s.plugins[i]||[],s.plugins[i].push([n,r[i]])},call:function(e,t,n,r){var i,s=e.plugins[t];if(!s)return;if(!r&&(!e.element[0].parentNode||e.element[0].parentNode.nodeType===11))return;for(i=0;i<s.length;i++)e.options[s[i][0]]&&s[i][1].apply(e.element,n)}}}(e),function(e,t,r){var i=function(t,n){var r=t.parent(),i=[],s=function(){var t=e(this),n=e.mobile.toolbar&&t.data("mobile-toolbar")?t.toolbar("option"):{position:t.attr("data-"+e.mobile.ns+"position"),updatePagePadding:t.attr("data-"+e.mobile.ns+"update-page-padding")!==!1};return n.position!=="fixed"||n.updatePagePadding!==!0},o=r.children(":jqmData(role='header')").filter(s),u=t.children(":jqmData(role='header')"),a=r.children(":jqmData(role='footer')").filter(s),f=t.children(":jqmData(role='footer')");return u.length===0&&o.length>0&&(i=i.concat(o.toArray())),f.length===0&&a.length>0&&(i=i.concat(a.toArray())),e.each(i,function(t,r){n-=e(r).outerHeight()}),Math.max(0,n)};e.extend(e.mobile,{window:e(t),document:e(n),keyCode:e.ui.keyCode,behaviors:{},silentScroll:function(n){e.type(n)!=="number"&&(n=e.mobile.defaultHomeScroll),e.event.special.scrollstart.enabled=!1,setTimeout(function(){t.scrollTo(0,n),e.mobile.document.trigger("silentscroll",{x:0,y:n})},20),setTimeout(function(){e.event.special.scrollstart.enabled=!0},150)},getClosestBaseUrl:function(t){var n=e(t).closest(".ui-page").jqmData("url"),r=e.mobile.path.documentBase.hrefNoHash;if(!e.mobile.dynamicBaseEnabled||!n||!e.mobile.path.isPath(n))n=r;return e.mobile.path.makeUrlAbsolute(n,r)},removeActiveLinkClass:function(t){!!e.mobile.activeClickedLink&&(!e.mobile.activeClickedLink.closest("."+e.mobile.activePageClass).length||t)&&e.mobile.activeClickedLink.removeClass(e.mobile.activeBtnClass),e.mobile.activeClickedLink=null},getInheritedTheme:function(e,t){var n=e[0],r="",i=/ui-(bar|body|overlay)-([a-z])\b/,s,o;while(n){s=n.className||"";if(s&&(o=i.exec(s))&&(r=o[2]))break;n=n.parentNode}return r||t||"a"},enhanceable:function(e){return this.haveParents(e,"enhance")},hijackable:function(e){return this.haveParents(e,"ajax")},haveParents:function(t,n){if(!e.mobile.ignoreContentEnabled)return t;var r=t.length,i=e(),s,o,u,a,f;for(a=0;a<r;a++){o=t.eq(a),u=!1,s=t[a];while(s){f=s.getAttribute?s.getAttribute("data-"+e.mobile.ns+n):"";if(f==="false"){u=!0;break}s=s.parentNode}u||(i=i.add(o))}return i},getScreenHeight:function(){return t.innerHeight||e.mobile.window.height()},resetActivePageHeight:function(t){var n=e("."+e.mobile.activePageClass),r=n.height(),s=n.outerHeight(!0);t=i(n,typeof t=="number"?t:e.mobile.getScreenHeight()),n.css("min-height",""),n.height()<t&&n.css("min-height",t-(s-r))},loading:function(){var t=this.loading._widget||e(e.mobile.loader.prototype.defaultHtml).loader(),n=t.loader.apply(t,arguments);return this.loading._widget=t,n}}),e.addDependents=function(t,n){var r=e(t),i=r.jqmData("dependents")||e();r.jqmData("dependents",e(i).add(n))},e.fn.extend({removeWithDependents:function(){e.removeWithDependents(this)},enhanceWithin:function(){var t,n={},r=e.mobile.page.prototype.keepNativeSelector(),i=this;e.mobile.nojs&&e.mobile.nojs(this),e.mobile.links&&e.mobile.links(this),e.mobile.degradeInputsWithin&&e.mobile.degradeInputsWithin(this),e.fn.buttonMarkup&&this.find(e.fn.buttonMarkup.initSelector).not(r).jqmEnhanceable().buttonMarkup(),e.fn.fieldcontain&&this.find(":jqmData(role='fieldcontain')").not(r).jqmEnhanceable().fieldcontain(),e.each(e.mobile.widgets,function(t,s){if(s.initSelector){var o=e.mobile.enhanceable(i.find(s.initSelector));o.length>0&&(o=o.not(r)),o.length>0&&(n[s.prototype.widgetName]=o)}});for(t in n)n[t][t]();return this},addDependents:function(t){e.addDependents(this,t)},getEncodedText:function(){return e("<a>").text(this.text()).html()},jqmEnhanceable:function(){return e.mobile.enhanceable(this)},jqmHijackable:function(){return e.mobile.hijackable(this)}}),e.removeWithDependents=function(t){var n=e(t);(n.jqmData("dependents")||e()).remove(),n.remove()},e.addDependents=function(t,n){var r=e(t),i=r.jqmData("dependents")||e();r.jqmData("dependents",e(i).add(n))},e.find.matches=function(t,n){return e.find(t,null,null,n)},e.find.matchesSelector=function(t,n){return e.find(n,null,null,[t]).length>0}}(e,this),function(e,r){t.matchMedia=t.matchMedia||function(e,t){var n,r=e.documentElement,i=r.firstElementChild||r.firstChild,s=e.createElement("body"),o=e.createElement("div");return o.id="mq-test-1",o.style.cssText="position:absolute;top:-100em",s.style.background="none",s.appendChild(o),function(e){return o.innerHTML='&shy;<style media="'+e+'"> #mq-test-1 { width: 42px; }</style>',r.insertBefore(s,i),n=o.offsetWidth===42,r.removeChild(s),{matches:n,media:e}}}(n),e.mobile.media=function(e){return t.matchMedia(e).matches}}(e),function(e,t){var r={touch:"ontouchend"in n};e.mobile.support=e.mobile.support||{},e.extend(e.support,r),e.extend(e.mobile.support,r)}(e),function(e,n){e.extend(e.support,{orientation:"orientation"in t&&"onorientationchange"in t})}(e),function(e,r){function i(e){var t=e.charAt(0).toUpperCase()+e.substr(1),n=(e+" "+u.join(t+" ")+t).split(" "),i;for(i in n)if(o[n[i]]!==r)return!0}function h(){var n=t,r=!!n.document.createElementNS&&!!n.document.createElementNS("http://www.w3.org/2000/svg","svg").createSVGRect&&(!n.opera||navigator.userAgent.indexOf("Chrome")!==-1),i=function(t){(!t||!r)&&e("html").addClass("ui-nosvg")},s=new n.Image;s.onerror=function(){i(!1)},s.onload=function(){i(s.width===1&&s.height===1)},s.src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="}function p(){var i="transform-3d",o=e.mobile.media("(-"+u.join("-"+i+"),(-")+"-"+i+"),("+i+")"),a,f,l;if(o)return!!o;a=n.createElement("div"),f={MozTransform:"-moz-transform",transform:"transform"},s.append(a);for(l in f)a.style[l]!==r&&(a.style[l]="translate3d( 100px, 1px, 1px )",o=t.getComputedStyle(a).getPropertyValue(f[l]));return!!o&&o!=="none"}function d(){var t=location.protocol+"//"+location.host+location.pathname+"ui-dir/",n=e("head base"),r=null,i="",o,u;return n.length?i=n.attr("href"):n=r=e("<base>",{href:t}).appendTo("head"),o=e("<a href='testurl' />").prependTo(s),u=o[0].href,n[0].href=i||location.pathname,r&&r.remove(),u.indexOf(t)===0}function v(){var e=n.createElement("x"),r=n.documentElement,i=t.getComputedStyle,s;return"pointerEvents"in e.style?(e.style.pointerEvents="auto",e.style.pointerEvents="x",r.appendChild(e),s=i&&i(e,"").pointerEvents==="auto",r.removeChild(e),!!s):!1}function m(){var e=n.createElement("div");return typeof e.getBoundingClientRect!="undefined"}function g(){var e=t,n=navigator.userAgent,r=navigator.platform,i=n.match(/AppleWebKit\/([0-9]+)/),s=!!i&&i[1],o=n.match(/Fennec\/([0-9]+)/),u=!!o&&o[1],a=n.match(/Opera Mobi\/([0-9]+)/),f=!!a&&a[1];return(r.indexOf("iPhone")>-1||r.indexOf("iPad")>-1||r.indexOf("iPod")>-1)&&s&&s<534||e.operamini&&{}.toString.call(e.operamini)==="[object OperaMini]"||a&&f<7458||n.indexOf("Android")>-1&&s&&s<533||u&&u<6||"palmGetResource"in t&&s&&s<534||n.indexOf("MeeGo")>-1&&n.indexOf("NokiaBrowser/8.5.0")>-1?!1:!0}var s=e("<body>").prependTo("html"),o=s[0].style,u=["Webkit","Moz","O"],a="palmGetResource"in t,f=t.operamini&&{}.toString.call(t.operamini)==="[object OperaMini]",l=t.blackberry&&!i("-webkit-transform"),c;e.extend(e.mobile,{browser:{}}),e.mobile.browser.oldIE=function(){var e=3,t=n.createElement("div"),r=t.all||[];do t.innerHTML="<!--[if gt IE "+ ++e+"]><br><![endif]-->";while(r[0]);return e>4?e:!e}(),e.extend(e.support,{pushState:"pushState"in history&&"replaceState"in history&&!(t.navigator.userAgent.indexOf("Firefox")>=0&&t.top!==t)&&t.navigator.userAgent.search(/CriOS/)===-1,mediaquery:e.mobile.media("only all"),cssPseudoElement:!!i("content"),touchOverflow:!!i("overflowScrolling"),cssTransform3d:p(),boxShadow:!!i("boxShadow")&&!l,fixedPosition:g(),scrollTop:("pageXOffset"in t||"scrollTop"in n.documentElement||"scrollTop"in s[0])&&!a&&!f,dynamicBaseTag:d(),cssPointerEvents:v(),boundingRect:m(),inlineSVG:h}),s.remove(),c=function(){var e=t.navigator.userAgent;return e.indexOf("Nokia")>-1&&(e.indexOf("Symbian/3")>-1||e.indexOf("Series60/5")>-1)&&e.indexOf("AppleWebKit")>-1&&e.match(/(BrowserNG|NokiaBrowser)\/7\.[0-3]/)}(),e.mobile.gradeA=function(){return(e.support.mediaquery&&e.support.cssPseudoElement||e.mobile.browser.oldIE&&e.mobile.browser.oldIE>=8)&&(e.support.boundingRect||e.fn.jquery.match(/1\.[0-7+]\.[0-9+]?/)!==null)},e.mobile.ajaxBlacklist=t.blackberry&&!t.WebKitPoint||f||c,c&&e(function(){e("head link[rel='stylesheet']").attr("rel","alternate stylesheet").attr("rel","stylesheet")}),e.support.boxShadow||e("html").addClass("ui-noboxshadow")}(e),function(e,t){var n=e.mobile.window,r,i=function(){};e.event.special.beforenavigate={setup:function(){n.on("navigate",i)},teardown:function(){n.off("navigate",i)}},e.event.special.navigate=r={bound:!1,pushStateEnabled:!0,originalEventName:t,isPushStateEnabled:function(){return e.support.pushState&&e.mobile.pushStateEnabled===!0&&this.isHashChangeEnabled()},isHashChangeEnabled:function(){return e.mobile.hashListeningEnabled===!0},popstate:function(t){var r=new e.Event("navigate"),i=new e.Event("beforenavigate"),s=t.originalEvent.state||{};i.originalEvent=t,n.trigger(i);if(i.isDefaultPrevented())return;t.historyState&&e.extend(s,t.historyState),r.originalEvent=t,setTimeout(function(){n.trigger(r,{state:s})},0)},hashchange:function(t){var r=new e.Event("navigate"),i=new e.Event("beforenavigate");i.originalEvent=t,n.trigger(i);if(i.isDefaultPrevented())return;r.originalEvent=t,n.trigger(r,{state:t.hashchangeState||{}})},setup:function(){if(r.bound)return;r.bound=!0,r.isPushStateEnabled()?(r.originalEventName="popstate",n.bind("popstate.navigate",r.popstate)):r.isHashChangeEnabled()&&(r.originalEventName="hashchange",n.bind("hashchange.navigate",r.hashchange))}}}(e),function(e){e.event.special.throttledresize={setup:function(){e(this).bind("resize",n)},teardown:function(){e(this).unbind("resize",n)}};var t=250,n=function(){s=(new Date).getTime(),o=s-r,o>=t?(r=s,e(this).trigger("throttledresize")):(i&&clearTimeout(i),i=setTimeout(n,t-o))},r=0,i,s,o}(e),function(e,t){function p(){var e=s();e!==o&&(o=e,r.trigger(i))}var r=e(t),i="orientationchange",s,o,u,a,f={0:!0,180:!0},l,c,h;if(e.support.orientation){l=t.innerWidth||r.width(),c=t.innerHeight||r.height(),h=50,u=l>c&&l-c>h,a=f[t.orientation];if(u&&a||!u&&!a)f={"-90":!0,90:!0}}e.event.special.orientationchange=e.extend({},e.event.special.orientationchange,{setup:function(){if(e.support.orientation&&!e.event.special.orientationchange.disabled)return!1;o=s(),r.bind("throttledresize",p)},teardown:function(){if(e.support.orientation&&!e.event.special.orientationchange.disabled)return!1;r.unbind("throttledresize",p)},add:function(e){var t=e.handler;e.handler=function(e){return e.orientation=s(),t.apply(this,arguments)}}}),e.event.special.orientationchange.orientation=s=function(){var r=!0,i=n.documentElement;return e.support.orientation?r=f[t.orientation]:r=i&&i.clientWidth/i.clientHeight<1.1,r?"portrait":"landscape"},e.fn[i]=function(e){return e?this.bind(i,e):this.trigger(i)},e.attrFn&&(e.attrFn[i]=!0)}(e,this),function(e,t,n,r){function T(e){while(e&&typeof e.originalEvent!="undefined")e=e.originalEvent;return e}function N(t,n){var i=t.type,s,o,a,l,c,h,p,d,v;t=e.Event(t),t.type=n,s=t.originalEvent,o=e.event.props,i.search(/^(mouse|click)/)>-1&&(o=f);if(s)for(p=o.length,l;p;)l=o[--p],t[l]=s[l];i.search(/mouse(down|up)|click/)>-1&&!t.which&&(t.which=1);if(i.search(/^touch/)!==-1){a=T(s),i=a.touches,c=a.changedTouches,h=i&&i.length?i[0]:c&&c.length?c[0]:r;if(h)for(d=0,v=u.length;d<v;d++)l=u[d],t[l]=h[l]}return t}function C(t){var n={},r,s;while(t){r=e.data(t,i);for(s in r)r[s]&&(n[s]=n.hasVirtualBinding=!0);t=t.parentNode}return n}function k(t,n){var r;while(t){r=e.data(t,i);if(r&&(!n||r[n]))return t;t=t.parentNode}return null}function L(){g=!1}function A(){g=!0}function O(){E=0,v.length=0,m=!1,A()}function M(){L()}function _(){D(),c=setTimeout(function(){c=0,O()},e.vmouse.resetTimerDuration)}function D(){c&&(clearTimeout(c),c=0)}function P(t,n,r){var i;if(r&&r[t]||!r&&k(n.target,t))i=N(n,t),e(n.target).trigger(i);return i}function H(t){var n=e.data(t.target,s),r;!m&&(!E||E!==n)&&(r=P("v"+t.type,t),r&&(r.isDefaultPrevented()&&t.preventDefault(),r.isPropagationStopped()&&t.stopPropagation(),r.isImmediatePropagationStopped()&&t.stopImmediatePropagation()))}function B(t){var n=T(t).touches,r,i,o;n&&n.length===1&&(r=t.target,i=C(r),i.hasVirtualBinding&&(E=w++,e.data(r,s,E),D(),M(),d=!1,o=T(t).touches[0],h=o.pageX,p=o.pageY,P("vmouseover",t,i),P("vmousedown",t,i)))}function j(e){if(g)return;d||P("vmousecancel",e,C(e.target)),d=!0,_()}function F(t){if(g)return;var n=T(t).touches[0],r=d,i=e.vmouse.moveDistanceThreshold,s=C(t.target);d=d||Math.abs(n.pageX-h)>i||Math.abs(n.pageY-p)>i,d&&!r&&P("vmousecancel",t,s),P("vmousemove",t,s),_()}function I(e){if(g)return;A();var t=C(e.target),n,r;P("vmouseup",e,t),d||(n=P("vclick",e,t),n&&n.isDefaultPrevented()&&(r=T(e).changedTouches[0],v.push({touchID:E,x:r.clientX,y:r.clientY}),m=!0)),P("vmouseout",e,t),d=!1,_()}function q(t){var n=e.data(t,i),r;if(n)for(r in n)if(n[r])return!0;return!1}function R(){}function U(t){var n=t.substr(1);return{setup:function(){q(this)||e.data(this,i,{});var r=e.data(this,i);r[t]=!0,l[t]=(l[t]||0)+1,l[t]===1&&b.bind(n,H),e(this).bind(n,R),y&&(l.touchstart=(l.touchstart||0)+1,l.touchstart===1&&b.bind("touchstart",B).bind("touchend",I).bind("touchmove",F).bind("scroll",j))},teardown:function(){--l[t],l[t]||b.unbind(n,H),y&&(--l.touchstart,l.touchstart||b.unbind("touchstart",B).unbind("touchmove",F).unbind("touchend",I).unbind("scroll",j));var r=e(this),s=e.data(this,i);s&&(s[t]=!1),r.unbind(n,R),q(this)||r.removeData(i)}}}var i="virtualMouseBindings",s="virtualTouchID",o="vmouseover vmousedown vmousemove vmouseup vclick vmouseout vmousecancel".split(" "),u="clientX clientY pageX pageY screenX screenY".split(" "),a=e.event.mouseHooks?e.event.mouseHooks.props:[],f=e.event.props.concat(a),l={},c=0,h=0,p=0,d=!1,v=[],m=!1,g=!1,y="addEventListener"in n,b=e(n),w=1,E=0,S,x;e.vmouse={moveDistanceThreshold:10,clickDistanceThreshold:10,resetTimerDuration:1500};for(x=0;x<o.length;x++)e.event.special[o[x]]=U(o[x]);y&&n.addEventListener("click",function(t){var n=v.length,r=t.target,i,o,u,a,f,l;if(n){i=t.clientX,o=t.clientY,S=e.vmouse.clickDistanceThreshold,u=r;while(u){for(a=0;a<n;a++){f=v[a],l=0;if(u===r&&Math.abs(f.x-i)<S&&Math.abs(f.y-o)<S||e.data(u,s)===f.touchID){t.preventDefault(),t.stopPropagation();return}}u=u.parentNode}}},!0)}(e,t,n),function(e,t,r){function l(t,n,i,s){var o=i.type;i.type=n,s?e.event.trigger(i,r,t):e.event.dispatch.call(t,i),i.type=o}var i=e(n),s=e.mobile.support.touch,o="touchmove scroll",u=s?"touchstart":"mousedown",a=s?"touchend":"mouseup",f=s?"touchmove":"mousemove";e.each("touchstart touchmove touchend tap taphold swipe swipeleft swiperight scrollstart scrollstop".split(" "),function(t,n){e.fn[n]=function(e){return e?this.bind(n,e):this.trigger(n)},e.attrFn&&(e.attrFn[n]=!0)}),e.event.special.scrollstart={enabled:!0,setup:function(){function s(e,n){r=n,l(t,r?"scrollstart":"scrollstop",e)}var t=this,n=e(t),r,i;n.bind(o,function(t){if(!e.event.special.scrollstart.enabled)return;r||s(t,!0),clearTimeout(i),i=setTimeout(function(){s(t,!1)},50)})},teardown:function(){e(this).unbind(o)}},e.event.special.tap={tapholdThreshold:750,emitTapOnTaphold:!0,setup:function(){var t=this,n=e(t),r=!1;n.bind("vmousedown",function(s){function a(){clearTimeout(u)}function f(){a(),n.unbind("vclick",c).unbind("vmouseup",a),i.unbind("vmousecancel",f)}function c(e){f(),!r&&o===e.target?l(t,"tap",e):r&&e.preventDefault()}r=!1;if(s.which&&s.which!==1)return!1;var o=s.target,u;n.bind("vmouseup",a).bind("vclick",c),i.bind("vmousecancel",f),u=setTimeout(function(){e.event.special.tap.emitTapOnTaphold||(r=!0),l(t,"taphold",e.Event("taphold",{target:o}))},e.event.special.tap.tapholdThreshold)})},teardown:function(){e(this).unbind("vmousedown").unbind("vclick").unbind("vmouseup"),i.unbind("vmousecancel")}},e.event.special.swipe={scrollSupressionThreshold:30,durationThreshold:1e3,horizontalDistanceThreshold:30,verticalDistanceThreshold:30,getLocation:function(e){var n=t.pageXOffset,r=t.pageYOffset,i=e.clientX,s=e.clientY;if(e.pageY===0&&Math.floor(s)>Math.floor(e.pageY)||e.pageX===0&&Math.floor(i)>Math.floor(e.pageX))i-=n,s-=r;else if(s<e.pageY-r||i<e.pageX-n)i=e.pageX-n,s=e.pageY-r;return{x:i,y:s}},start:function(t){var n=t.originalEvent.touches?t.originalEvent.touches[0]:t,r=e.event.special.swipe.getLocation(n);return{time:(new Date).getTime(),coords:[r.x,r.y],origin:e(t.target)}},stop:function(t){var n=t.originalEvent.touches?t.originalEvent.touches[0]:t,r=e.event.special.swipe.getLocation(n);return{time:(new Date).getTime(),coords:[r.x,r.y]}},handleSwipe:function(t,n,r,i){if(n.time-t.time<e.event.special.swipe.durationThreshold&&Math.abs(t.coords[0]-n.coords[0])>e.event.special.swipe.horizontalDistanceThreshold&&Math.abs(t.coords[1]-n.coords[1])<e.event.special.swipe.verticalDistanceThreshold){var s=t.coords[0]>n.coords[0]?"swipeleft":"swiperight";return l(r,"swipe",e.Event("swipe",{target:i,swipestart:t,swipestop:n}),!0),l(r,s,e.Event(s,{target:i,swipestart:t,swipestop:n}),!0),!0}return!1},eventInProgress:!1,setup:function(){var t,n=this,r=e(n),s={};t=e.data(this,"mobile-events"),t||(t={length:0},e.data(this,"mobile-events",t)),t.length++,t.swipe=s,s.start=function(t){if(e.event.special.swipe.eventInProgress)return;e.event.special.swipe.eventInProgress=!0;var r,o=e.event.special.swipe.start(t),u=t.target,l=!1;s.move=function(t){if(!o||t.isDefaultPrevented())return;r=e.event.special.swipe.stop(t),l||(l=e.event.special.swipe.handleSwipe(o,r,n,u),l&&(e.event.special.swipe.eventInProgress=!1)),Math.abs(o.coords[0]-r.coords[0])>e.event.special.swipe.scrollSupressionThreshold&&t.preventDefault()},s.stop=function(){l=!0,e.event.special.swipe.eventInProgress=!1,i.off(f,s.move),s.move=null},i.on(f,s.move).one(a,s.stop)},r.on(u,s.start)},teardown:function(){var t,n;t=e.data(this,"mobile-events"),t&&(n=t.swipe,delete t.swipe,t.length--,t.length===0&&e.removeData(this,"mobile-events")),n&&(n.start&&e(this).off(u,n.start),n.move&&i.off(f,n.move),n.stop&&i.off(a,n.stop))}},e.each({scrollstop:"scrollstart",taphold:"tap",swipeleft:"swipe.left",swiperight:"swipe.right"},function(t,n){e.event.special[t]={setup:function(){e(this).bind(n,e.noop)},teardown:function(){e(this).unbind(n)}}})}(e,this),function(e,t){var r={animation:{},transition:{}},i=n.createElement("a"),s=["","webkit-","moz-","o-"];e.each(["animation","transition"],function(n,o){var u=n===0?o+"-"+"name":o;e.each(s,function(n,s){if(i.style[e.camelCase(s+u)]!==t)return r[o].prefix=s,!1}),r[o].duration=e.camelCase(r[o].prefix+o+"-"+"duration"),r[o].event=e.camelCase(r[o].prefix+o+"-"+"end"),r[o].prefix===""&&(r[o].event=r[o].event.toLowerCase())}),e.support.cssTransitions=r.transition.prefix!==t,e.support.cssAnimations=r.animation.prefix!==t,e(i).remove(),e.fn.animationComplete=function(i,s,o){var u,a,f=this,l=function(){clearTimeout(u),i.apply(this,arguments)},c=!s||s==="animation"?"animation":"transition";if(e.support.cssTransitions&&c==="transition"||e.support.cssAnimations&&c==="animation"){if(o===t){e(this).context!==n&&(a=parseFloat(e(this).css(r[c].duration))*3e3);if(a===0||a===t||isNaN(a))a=e.fn.animationComplete.defaultDuration}return u=setTimeout(function(){e(f).off(r[c].event,l),i.apply(f)},a),e(this).one(r[c].event,l)}return setTimeout(e.proxy(i,this),0),e(this)},e.fn.animationComplete.defaultDuration=1e3}(e),function(e,t){function s(e,t){var n=t?t:[];return n.push("ui-btn"),e.theme&&n.push("ui-btn-"+e.theme),e.icon&&(n=n.concat(["ui-icon-"+e.icon,"ui-btn-icon-"+e.iconpos]),e.iconshadow&&n.push("ui-shadow-icon")),e.inline&&n.push("ui-btn-inline"),e.shadow&&n.push("ui-shadow"),e.corners&&n.push("ui-corner-all"),e.mini&&n.push("ui-mini"),n}function o(e){var r,i,s,o=!1,u=!0,a={icon:"",inline:!1,shadow:!1,corners:!1,iconshadow:!1,mini:!1},f=[];e=e.split(" ");for(r=0;r<e.length;r++)s=!0,i=n[e[r]],i!==t?(s=!1,a[i]=!0):e[r].indexOf("ui-btn-icon-")===0?(s=!1,u=!1,a.iconpos=e[r].substring(12)):e[r].indexOf("ui-icon-")===0?(s=!1,a.icon=e[r].substring(8)):e[r].indexOf("ui-btn-")===0&&e[r].length===8?(s=!1,a.theme=e[r].substring(7)):e[r]==="ui-btn"&&(s=!1,o=!0),s&&f.push(e[r]);return u&&(a.icon=""),{options:a,unknownClasses:f,alreadyEnhanced:o}}function u(e){return"-"+e.toLowerCase()}var n={"ui-shadow":"shadow","ui-corner-all":"corners","ui-btn-inline":"inline","ui-shadow-icon":"iconshadow","ui-mini":"mini"},r=function(){var n=e.mobile.getAttribute.apply(this,arguments);return n==null?t:n},i=/[A-Z]/g;e.fn.buttonMarkup=function(n,a){var f,l,c,h,p,d=e.fn.buttonMarkup.defaults;for(f=0;f<this.length;f++){c=this[f],l=a?{alreadyEnhanced:!1,unknownClasses:[]}:o(c.className),h=e.extend({},l.alreadyEnhanced?l.options:{},n);if(!l.alreadyEnhanced)for(p in d)h[p]===t&&(h[p]=r(c,p.replace(i,u)));c.className=s(e.extend({},d,h),l.unknownClasses).join(" "),c.tagName.toLowerCase()!=="button"&&c.setAttribute("role","button")}return this},e.fn.buttonMarkup.defaults={icon:"",iconpos:"left",theme:null,inline:!1,shadow:!0,corners:!0,iconshadow:!1,mini:!1},e.extend(e.fn.buttonMarkup,{initSelector:"a:jqmData(role='button'), .ui-bar > a, .ui-bar > :jqmData(role='controlgroup') > a, button:not(:jqmData(role='navbar') button)"})}(e),function(e,t){var n=0,r=Array.prototype.slice,i=e.cleanData;e.cleanData=function(t){for(var n=0,r;(r=t[n])!=null;n++)try{e(r).triggerHandler("remove")}catch(s){}i(t)},e.widget=function(t,n,r){var i,s,o,u,a={},f=t.split(".")[0];return t=t.split(".")[1],i=f+"-"+t,r||(r=n,n=e.Widget),e.expr[":"][i.toLowerCase()]=function(t){return!!e.data(t,i)},e[f]=e[f]||{},s=e[f][t],o=e[f][t]=function(e,t){if(!this._createWidget)return new o(e,t);arguments.length&&this._createWidget(e,t)},e.extend(o,s,{version:r.version,_proto:e.extend({},r),_childConstructors:[]}),u=new n,u.options=e.widget.extend({},u.options),e.each(r,function(t,r){if(!e.isFunction(r)){a[t]=r;return}a[t]=function(){var e=function(){return n.prototype[t].apply(this,arguments)},i=function(e){return n.prototype[t].apply(this,e)};return function(){var t=this._super,n=this._superApply,s;return this._super=e,this._superApply=i,s=r.apply(this,arguments),this._super=t,this._superApply=n,s}}()}),o.prototype=e.widget.extend(u,{widgetEventPrefix:s?u.widgetEventPrefix||t:t},a,{constructor:o,namespace:f,widgetName:t,widgetFullName:i}),s?(e.each(s._childConstructors,function(t,n){var r=n.prototype;e.widget(r.namespace+"."+r.widgetName,o,n._proto)}),delete s._childConstructors):n._childConstructors.push(o),e.widget.bridge(t,o),o},e.widget.extend=function(n){var i=r.call(arguments,1),s=0,o=i.length,u,a;for(;s<o;s++)for(u in i[s])a=i[s][u],i[s].hasOwnProperty(u)&&a!==t&&(e.isPlainObject(a)?n[u]=e.isPlainObject(n[u])?e.widget.extend({},n[u],a):e.widget.extend({},a):n[u]=a);return n},e.widget.bridge=function(n,i){var s=i.prototype.widgetFullName||n;e.fn[n]=function(o){var u=typeof o=="string",a=r.call(arguments,1),f=this;return o=!u&&a.length?e.widget.extend.apply(null,[o].concat(a)):o,u?this.each(function(){var r,i=e.data(this,s);if(o==="instance")return f=i,!1;if(!i)return e.error("cannot call methods on "+n+" prior to initialization; "+"attempted to call method '"+o+"'");if(!e.isFunction(i[o])||o.charAt(0)==="_")return e.error("no such method '"+o+"' for "+n+" widget instance");r=i[o].apply(i,a);if(r!==i&&r!==t)return f=r&&r.jquery?f.pushStack(r.get()):r,!1}):this.each(function(){var t=e.data(this,s);t?t.option(o||{})._init():e.data(this,s,new i(o,this))}),f}},e.Widget=function(){},e.Widget._childConstructors=[],e.Widget.prototype={widgetName:"widget",widgetEventPrefix:"",defaultElement:"<div>",options:{disabled:!1,create:null},_createWidget:function(t,r){r=e(r||this.defaultElement||this)[0],this.element=e(r),this.uuid=n++,this.eventNamespace="."+this.widgetName+this.uuid,this.options=e.widget.extend({},this.options,this._getCreateOptions(),t),this.bindings=e(),this.hoverable=e(),this.focusable=e(),r!==this&&(e.data(r,this.widgetFullName,this),this._on(!0,this.element,{remove:function(e){e.target===r&&this.destroy()}}),this.document=e(r.style?r.ownerDocument:r.document||r),this.window=e(this.document[0].defaultView||this.document[0].parentWindow)),this._create(),this._trigger("create",null,this._getCreateEventData()),this._init()},_getCreateOptions:e.noop,_getCreateEventData:e.noop,_create:e.noop,_init:e.noop,destroy:function(){this._destroy(),this.element.unbind(this.eventNamespace).removeData(this.widgetFullName).removeData(e.camelCase(this.widgetFullName)),this.widget().unbind(this.eventNamespace).removeAttr("aria-disabled").removeClass(this.widgetFullName+"-disabled "+"ui-state-disabled"),this.bindings.unbind(this.eventNamespace),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")},_destroy:e.noop,widget:function(){return this.element},option:function(n,r){var i=n,s,o,u;if(arguments.length===0)return e.widget.extend({},this.options);if(typeof n=="string"){i={},s=n.split("."),n=s.shift();if(s.length){o=i[n]=e.widget.extend({},this.options[n]);for(u=0;u<s.length-1;u++)o[s[u]]=o[s[u]]||{},o=o[s[u]];n=s.pop();if(r===t)return o[n]===t?null:o[n];o[n]=r}else{if(r===t)return this.options[n]===t?null:this.options[n];i[n]=r}}return this._setOptions(i),this},_setOptions:function(e){var t;for(t in e)this._setOption(t,e[t]);return this},_setOption:function(e,t){return this.options[e]=t,e==="disabled"&&(this.widget().toggleClass(this.widgetFullName+"-disabled",!!t),this.hoverable.removeClass("ui-state-hover"),this.focusable.removeClass("ui-state-focus")),this},enable:function(){return this._setOptions({disabled:!1})},disable:function(){return this._setOptions({disabled:!0})},_on:function(t,n,r){var i,s=this;typeof t!="boolean"&&(r=n,n=t,t=!1),r?(n=i=e(n),this.bindings=this.bindings.add(n)):(r=n,n=this.element,i=this.widget()),e.each(r,function(r,o){function u(){if(!t&&(s.options.disabled===!0||e(this).hasClass("ui-state-disabled")))return;return(typeof o=="string"?s[o]:o).apply(s,arguments)}typeof o!="string"&&(u.guid=o.guid=o.guid||u.guid||e.guid++);var a=r.match(/^(\w+)\s*(.*)$/),f=a[1]+s.eventNamespace,l=a[2];l?i.delegate(l,f,u):n.bind(f,u)})},_off:function(e,t){t=(t||"").split(" ").join(this.eventNamespace+" ")+this.eventNamespace,e.unbind(t).undelegate(t)},_delay:function(e,t){function n(){return(typeof e=="string"?r[e]:e).apply(r,arguments)}var r=this;return setTimeout(n,t||0)},_hoverable:function(t){this.hoverable=this.hoverable.add(t),this._on(t,{mouseenter:function(t){e(t.currentTarget).addClass("ui-state-hover")},mouseleave:function(t){e(t.currentTarget).removeClass("ui-state-hover")}})},_focusable:function(t){this.focusable=this.focusable.add(t),this._on(t,{focusin:function(t){e(t.currentTarget).addClass("ui-state-focus")},focusout:function(t){e(t.currentTarget).removeClass("ui-state-focus")}})},_trigger:function(t,n,r){var i,s,o=this.options[t];r=r||{},n=e.Event(n),n.type=(t===this.widgetEventPrefix?t:this.widgetEventPrefix+t).toLowerCase(),n.target=this.element[0],s=n.originalEvent;if(s)for(i in s)i in n||(n[i]=s[i]);return this.element.trigger(n,r),!(e.isFunction(o)&&o.apply(this.element[0],[n].concat(r))===!1||n.isDefaultPrevented())}},e.each({show:"fadeIn",hide:"fadeOut"},function(t,n){e.Widget.prototype["_"+t]=function(r,i,s){typeof i=="string"&&(i={effect:i});var o,u=i?i===!0||typeof i=="number"?n:i.effect||n:t;i=i||{},typeof i=="number"&&(i={duration:i}),o=!e.isEmptyObject(i),i.complete=s,i.delay&&r.delay(i.delay),o&&e.effects&&e.effects.effect[u]?r[t](i):u!==t&&r[u]?r[u](i.duration,i.easing,s):r.queue(function(n){e(this)[t](),s&&s.call(r[0]),n()})}})}(e),function(e,t){var n=/[A-Z]/g,r=function(e){return"-"+e.toLowerCase()};e.extend(e.Widget.prototype,{_getCreateOptions:function(){var t,i,s=this.element[0],o={};if(!e.mobile.getAttribute(s,"defaults"))for(t in this.options)i=e.mobile.getAttribute(s,t.replace(n,r)),i!=null&&(o[t]=i);return o}}),e.mobile.widget=e.Widget}(e),function(e,t){e.mobile.widgets={};var n=e.widget,r=e.mobile.keepNative;e.widget=function(n){return function(){var r=n.apply(this,arguments),i=r.prototype.widgetName;return r.initSelector=r.prototype.initSelector!==t?r.prototype.initSelector:":jqmData(role='"+i+"')",e.mobile.widgets[i]=r,r}}(e.widget),e.extend(e.widget,n),e.mobile.document.on("create",function(t){e(t.target).enhanceWithin()}),e.widget("mobile.page",{options:{theme:"a",domCache:!1,keepNativeDefault:e.mobile.keepNative,contentTheme:null,enhanced:!1},_createWidget:function(){e.Widget.prototype._createWidget.apply(this,arguments),this._trigger("init")},_create:function(){if(this._trigger("beforecreate")===!1)return!1;this.options.enhanced||this._enhance(),this._on(this.element,{pagebeforehide:"removeContainerBackground",pagebeforeshow:"_handlePageBeforeShow"}),this.element.enhanceWithin(),e.mobile.getAttribute(this.element[0],"role")==="dialog"&&e.mobile.dialog&&this.element.dialog()},_enhance:function(){var n="data-"+e.mobile.ns,r=this;this.options.role&&this.element.attr("data-"+e.mobile.ns+"role",this.options.role),this.element.attr("tabindex","0").addClass("ui-page ui-page-theme-"+this.options.theme),this.element.find("["+n+"role='content']").each(function(){var i=e(this),s=this.getAttribute(n+"theme")||t;r.options.contentTheme=s||r.options.contentTheme||r.options.dialog&&r.options.theme||r.element.jqmData("role")==="dialog"&&r.options.theme,i.addClass("ui-content"),r.options.contentTheme&&i.addClass("ui-body-"+r.options.contentTheme),i.attr("role","main").addClass("ui-content")})},bindRemove:function(t){var n=this.element;!n.data("mobile-page").options.domCache&&n.is(":jqmData(external-page='true')")&&n.bind("pagehide.remove",t||function(t,n){if(!n.samePage){var r=e(this),i=new e.Event("pageremove");r.trigger(i),i.isDefaultPrevented()||r.removeWithDependents()}})},_setOptions:function(n){n.theme!==t&&this.element.removeClass("ui-page-theme-"+this.options.theme).addClass("ui-page-theme-"+n.theme),n.contentTheme!==t&&this.element.find("[data-"+e.mobile.ns+"='content']").removeClass("ui-body-"+this.options.contentTheme).addClass("ui-body-"+n.contentTheme)},_handlePageBeforeShow:function(){this.setContainerBackground()},removeContainerBackground:function(){this.element.closest(":mobile-pagecontainer").pagecontainer({theme:"none"})},setContainerBackground:function(e){this.element.parent().pagecontainer({theme:e||this.options.theme})},keepNativeSelector:function(){var t=this.options,n=e.trim(t.keepNative||""),i=e.trim(e.mobile.keepNative),s=e.trim(t.keepNativeDefault),o=r===i?"":i,u=o===""?s:"";return(n?[n]:[]).concat(o?[o]:[]).concat(u?[u]:[]).join(", ")}})}(e),function(e,t){e.mobile.degradeInputs={color:!1,date:!1,datetime:!1,"datetime-local":!1,email:!1,month:!1,number:!1,range:"number",search:"text",tel:!1,time:!1,url:!1,week:!1},e.mobile.page.prototype.options.degradeInputs=e.mobile.degradeInputs,e.mobile.degradeInputsWithin=function(t){t=e(t),t.find("input").not(e.mobile.page.prototype.keepNativeSelector()).each(function(){var t=e(this),n=this.getAttribute("type"),r=e.mobile.degradeInputs[n]||"text",i,s,o,u;e.mobile.degradeInputs[n]&&(i=e("<div>").html(t.clone()).html(),s=i.indexOf(" type=")>-1,o=s?/\s+type=["']?\w+['"]?/:/\/?>/,u=' type="'+r+'" data-'+e.mobile.ns+'type="'+n+'"'+(s?"":">"),t.replaceWith(i.replace(o,u)))})}}(e),function(e,t){e.fn.fieldcontain=function(){return this.addClass("ui-field-contain")}}(e),function(e,t){e.fn.grid=function(t){return this.each(function(){var n=e(this),r=e.extend({grid:null},t),i=n.children(),s={solo:1,a:2,b:3,c:4,d:5},o=r.grid,u,a;if(!o)if(i.length<=5)for(a in s)s[a]===i.length&&(o=a);else o="a",n.addClass("ui-grid-duo");u=s[o],n.addClass("ui-grid-"+o),i.filter(":nth-child("+u+"n+1)").addClass("ui-block-a"),u>1&&i.filter(":nth-child("+u+"n+2)").addClass("ui-block-b"),u>2&&i.filter(":nth-child("+u+"n+3)").addClass("ui-block-c"),u>3&&i.filter(":nth-child("+u+"n+4)").addClass("ui-block-d"),u>4&&i.filter(":nth-child("+u+"n+5)").addClass("ui-block-e")})}}(e),function(e,n){var r,i,s="&ui-state=dialog";e.mobile.path=r={uiStateKey:"&ui-state",urlParseRE:/^\s*(((([^:\/#\?]+:)?(?:(\/\/)((?:(([^:@\/#\?]+)(?:\:([^:@\/#\?]+))?)@)?(([^:\/#\?\]\[]+|\[[^\/\]@#?]+\])(?:\:([0-9]+))?))?)?)?((\/?(?:[^\/\?#]+\/+)*)([^\?#]*)))?(\?[^#]+)?)(#.*)?/,getLocation:function(e){var t=this.parseUrl(e||location.href),n=e?t:location,r=t.hash;return r=r==="#"?"":r,n.protocol+t.doubleSlash+n.host+(n.protocol!==""&&n.pathname.substring(0,1)!=="/"?"/":"")+n.pathname+n.search+r},getDocumentUrl:function(t){return t?e.extend({},r.documentUrl):r.documentUrl.href},parseLocation:function(){return this.parseUrl(this.getLocation())},parseUrl:function(t){if(e.type(t)==="object")return t;var n=r.urlParseRE.exec(t||"")||[];return{href:n[0]||"",hrefNoHash:n[1]||"",hrefNoSearch:n[2]||"",domain:n[3]||"",protocol:n[4]||"",doubleSlash:n[5]||"",authority:n[6]||"",username:n[8]||"",password:n[9]||"",host:n[10]||"",hostname:n[11]||"",port:n[12]||"",pathname:n[13]||"",directory:n[14]||"",filename:n[15]||"",search:n[16]||"",hash:n[17]||""}},makePathAbsolute:function(e,t){var n,r,i,s;if(e&&e.charAt(0)==="/")return e;e=e||"",t=t?t.replace(/^\/|(\/[^\/]*|[^\/]+)$/g,""):"",n=t?t.split("/"):[],r=e.split("/");for(i=0;i<r.length;i++){s=r[i];switch(s){case".":break;case"..":n.length&&n.pop();break;default:n.push(s)}}return"/"+n.join("/")},isSameDomain:function(e,t){return r.parseUrl(e).domain.toLowerCase()===r.parseUrl(t).domain.toLowerCase()},isRelativeUrl:function(e){return r.parseUrl(e).protocol===""},isAbsoluteUrl:function(e){return r.parseUrl(e).protocol!==""},makeUrlAbsolute:function(e,t){if(!r.isRelativeUrl(e))return e;t===n&&(t=this.documentBase);var i=r.parseUrl(e),s=r.parseUrl(t),o=i.protocol||s.protocol,u=i.protocol?i.doubleSlash:i.doubleSlash||s.doubleSlash,a=i.authority||s.authority,f=i.pathname!=="",l=r.makePathAbsolute(i.pathname||s.filename,s.pathname),c=i.search||!f&&s.search||"",h=i.hash;return o+u+a+l+c+h},addSearchParams:function(t,n){var i=r.parseUrl(t),s=typeof n=="object"?e.param(n):n,o=i.search||"?";return i.hrefNoSearch+o+(o.charAt(o.length-1)!=="?"?"&":"")+s+(i.hash||"")},convertUrlToDataUrl:function(e){var n=e,i=r.parseUrl(e);return r.isEmbeddedPage(i)?n=i.hash.split(s)[0].replace(/^#/,"").replace(/\?.*$/,""):r.isSameDomain(i,this.documentBase)&&(n=i.hrefNoHash.replace(this.documentBase.domain,"").split(s)[0]),t.decodeURIComponent(n)},get:function(e){return e===n&&(e=r.parseLocation().hash),r.stripHash(e).replace(/[^\/]*\.[^\/*]+$/,"")},set:function(e){location.hash=e},isPath:function(e){return/\//.test(e)},clean:function(e){return e.replace(this.documentBase.domain,"")},stripHash:function(e){return e.replace(/^#/,"")},stripQueryParams:function(e){return e.replace(/\?.*$/,"")},cleanHash:function(e){return r.stripHash(e.replace(/\?.*$/,"").replace(s,""))},isHashValid:function(e){return/^#[^#]+$/.test(e)},isExternal:function(e){var t=r.parseUrl(e);return!!t.protocol&&t.domain.toLowerCase()!==this.documentUrl.domain.toLowerCase()},hasProtocol:function(e){return/^(:?\w+:)/.test(e)},isEmbeddedPage:function(e){var t=r.parseUrl(e);return t.protocol!==""?!this.isPath(t.hash)&&t.hash&&(t.hrefNoHash===this.documentUrl.hrefNoHash||this.documentBaseDiffers&&t.hrefNoHash===this.documentBase.hrefNoHash):/^#/.test(t.href)},squash:function(e,t){var n,i,s,o,u,a=this.isPath(e),f=this.parseUrl(e),l=f.hash,c="";t||(a?t=r.getLocation():(u=r.getDocumentUrl(!0),r.isPath(u.hash)?t=r.squash(u.href):t=u.href)),i=a?r.stripHash(e):e,i=r.isPath(f.hash)?r.stripHash(f.hash):i,o=i.indexOf(this.uiStateKey),o>-1&&(c=i.slice(o),i=i.slice(0,o)),n=r.makeUrlAbsolute(i,t),s=this.parseUrl(n).search;if(a){if(r.isPath(l)||l.replace("#","").indexOf(this.uiStateKey)===0)l="";c&&l.indexOf(this.uiStateKey)===-1&&(l+=c),l.indexOf("#")===-1&&l!==""&&(l="#"+l),n=r.parseUrl(n),n=n.protocol+n.doubleSlash+n.host+n.pathname+s+l}else n+=n.indexOf("#")>-1?c:"#"+c;return n},isPreservableHash:function(e){return e.replace("#","").indexOf(this.uiStateKey)===0},hashToSelector:function(e){var t=e.substring(0,1)==="#";return t&&(e=e.substring(1)),(t?"#":"")+e.replace(/([!"#$%&'()*+,./:;<=>?@[\]^`{|}~])/g,"\\$1")},getFilePath:function(e){return e&&e.split(s)[0]},isFirstPageUrl:function(t){var i=r.parseUrl(r.makeUrlAbsolute(t,this.documentBase)),s=i.hrefNoHash===this.documentUrl.hrefNoHash||this.documentBaseDiffers&&i.hrefNoHash===this.documentBase.hrefNoHash,o=e.mobile.firstPage,u=o&&o[0]?o[0].id:n;return s&&(!i.hash||i.hash==="#"||u&&i.hash.replace(/^#/,"")===u)},isPermittedCrossDomainRequest:function(t,n){return e.mobile.allowCrossDomainPages&&(t.protocol==="file:"||t.protocol==="content:")&&n.search(/^https?:/)!==-1}},r.documentUrl=r.parseLocation(),i=e("head").find("base"),r.documentBase=i.length?r.parseUrl(r.makeUrlAbsolute(i.attr("href"),r.documentUrl.href)):r.documentUrl,r.documentBaseDiffers=r.documentUrl.hrefNoHash!==r.documentBase.hrefNoHash,r.getDocumentBase=function(t){return t?e.extend({},r.documentBase):r.documentBase.href},e.extend(e.mobile,{getDocumentUrl:r.getDocumentUrl,getDocumentBase:r.getDocumentBase})}(e),function(e,t){e.mobile.History=function(e,t){this.stack=e||[],this.activeIndex=t||0},e.extend(e.mobile.History.prototype,{getActive:function(){return this.stack[this.activeIndex]},getLast:function(){return this.stack[this.previousIndex]},getNext:function(){return this.stack[this.activeIndex+1]},getPrev:function(){return this.stack[this.activeIndex-1]},add:function(e,t){t=t||{},this.getNext()&&this.clearForward(),t.hash&&t.hash.indexOf("#")===-1&&(t.hash="#"+t.hash),t.url=e,this.stack.push(t),this.activeIndex=this.stack.length-1},clearForward:function(){this.stack=this.stack.slice(0,this.activeIndex+1)},find:function(e,t,n){t=t||this.stack;var r,i,s=t.length,o;for(i=0;i<s;i++){r=t[i];if(decodeURIComponent(e)===decodeURIComponent(r.url)||decodeURIComponent(e)===decodeURIComponent(r.hash)){o=i;if(n)return o}}return o},closest:function(e){var n,r=this.activeIndex;return n=this.find(e,this.stack.slice(0,r)),n===t&&(n=this.find(e,this.stack.slice(r),!0),n=n===t?n:n+r),n},direct:function(n){var r=this.closest(n.url),i=this.activeIndex;r!==t&&(this.activeIndex=r,this.previousIndex=i),r<i?(n.present||n.back||e.noop)(this.getActive(),"back"):r>i?(n.present||n.forward||e.noop)(this.getActive(),"forward"):r===t&&n.missing&&n.missing(this.getActive())}})}(e),function(e,r){var i=e.mobile.path,s=location.href;e.mobile.Navigator=function(t){this.history=t,this.ignoreInitialHashChange=!0,e.mobile.window.bind({"popstate.history":e.proxy(this.popstate,this),"hashchange.history":e.proxy(this.hashchange,this)})},e.extend(e.mobile.Navigator.prototype,{squash:function(r,s){var o,u,a=i.isPath(r)?i.stripHash(r):r;return u=i.squash(r),o=e.extend({hash:a,url:u},s),t.history.replaceState(o,o.title||n.title,u),o},hash:function(e,t){var n,r,s,o;return n=i.parseUrl(e),r=i.parseLocation(),r.pathname+r.search===n.pathname+n.search?s=n.hash?n.hash:n.pathname+n.search:i.isPath(e)?(o=i.parseUrl(t),s=o.pathname+o.search+(i.isPreservableHash(o.hash)?o.hash.replace("#",""):"")):s=e,s},go:function(r,s,o){var u,a,f,l,c=e.event.special.navigate.isPushStateEnabled();a=i.squash(r),f=this.hash(r,a),o&&f!==i.stripHash(i.parseLocation().hash)&&(this.preventNextHashChange=o),this.preventHashAssignPopState=!0,t.location.hash=f,this.preventHashAssignPopState=!1,u=e.extend({url:a,hash:f,title:n.title},s),c&&(l=new e.Event("popstate"),l.originalEvent={type:"popstate",state:null},this.squash(r,u),o||(this.ignorePopState=!0,e.mobile.window.trigger(l))),this.history.add(u.url,u)},popstate:function(t){var n,r;if(!e.event.special.navigate.isPushStateEnabled())return;if(this.preventHashAssignPopState){this.preventHashAssignPopState=!1,t.stopImmediatePropagation();return}if(this.ignorePopState){this.ignorePopState=!1;return}if(!t.originalEvent.state&&this.history.stack.length===1&&this.ignoreInitialHashChange){this.ignoreInitialHashChange=!1;if(location.href===s){t.preventDefault();return}}n=i.parseLocation().hash;if(!t.originalEvent.state&&n){r=this.squash(n),this.history.add(r.url,r),t.historyState=r;return}this.history.direct({url:(t.originalEvent.state||{}).url||n,present:function(n,r){t.historyState=e.extend({},n),t.historyState.direction=r}})},hashchange:function(t){var r,s;if(!e.event.special.navigate.isHashChangeEnabled()||e.event.special.navigate.isPushStateEnabled())return;if(this.preventNextHashChange){this.preventNextHashChange=!1,t.stopImmediatePropagation();return}r=this.history,s=i.parseLocation().hash,this.history.direct({url:s,present:function(n,r){t.hashchangeState=e.extend({},n),t.hashchangeState.direction=r},missing:function(){r.add(s,{hash:s,title:n.title})}})}})}(e),function(e,t){e.mobile.navigate=function(t,n,r){e.mobile.navigate.navigator.go(t,n,r)},e.mobile.navigate.history=new e.mobile.History,e.mobile.navigate.navigator=new e.mobile.Navigator(e.mobile.navigate.history);var n=e.mobile.path.parseLocation();e.mobile.navigate.history.add(n.href,{hash:n.hash})}(e),function(e,t){var n=e("head").children("base"),r={element:n.length?n:e("<base>",{href:e.mobile.path.documentBase.hrefNoHash}).prependTo(e("head")),linkSelector:"[src], link[href], a[rel='external'], :jqmData(ajax='false'), a[target]",set:function(t){if(!e.mobile.dynamicBaseEnabled)return;e.support.dynamicBaseTag&&r.element.attr("href",e.mobile.path.makeUrlAbsolute(t,e.mobile.path.documentBase))},rewrite:function(t,n){var i=e.mobile.path.get(t);n.find(r.linkSelector).each(function(t,n){var r=e(n).is("[href]")?"href":e(n).is("[src]")?"src":"action",s=e.mobile.path.parseLocation(),o=e(n).attr(r);o=o.replace(s.protocol+s.doubleSlash+s.host+s.pathname,""),/^(\w+:|#|\/)/.test(o)||e(n).attr(r,i+o)})},reset:function(){r.element.attr("href",e.mobile.path.documentBase.hrefNoSearch)}};e.mobile.base=r}(e),function(e,t,n){e.mobile.Transition=function(){this.init.apply(this,arguments)},e.extend(e.mobile.Transition.prototype,{toPreClass:" ui-page-pre-in",init:function(t,n,r,i){e.extend(this,{name:t,reverse:n,$to:r,$from:i,deferred:new e.Deferred})},cleanFrom:function(){this.$from.removeClass(e.mobile.activePageClass+" out in reverse "+this.name).height("")},beforeDoneIn:function(){},beforeDoneOut:function(){},beforeStartOut:function(){},doneIn:function(){this.beforeDoneIn(),this.$to.removeClass("out in reverse "+this.name).height(""),this.toggleViewportClass(),e.mobile.window.scrollTop()!==this.toScroll&&this.scrollPage(),this.sequential||this.$to.addClass(e.mobile.activePageClass),this.deferred.resolve(this.name,this.reverse,this.$to,this.$from,!0)},doneOut:function(e,t,n,r){this.beforeDoneOut(),this.startIn(e,t,n,r)},hideIn:function(e){this.$to.css("z-index",-10),e.call(this),this.$to.css("z-index","")},scrollPage:function(){e.event.special.scrollstart.enabled=!1,(e.mobile.hideUrlBar||this.toScroll!==e.mobile.defaultHomeScroll)&&t.scrollTo(0,this.toScroll),setTimeout(function(){e.event.special.scrollstart.enabled=!0},150)},startIn:function(t,n,r,i){this.hideIn(function(){this.$to.addClass(e.mobile.activePageClass+this.toPreClass),i||e.mobile.focusPage(this.$to),this.$to.height(t+this.toScroll),r||this.scrollPage()}),this.$to.removeClass(this.toPreClass).addClass(this.name+" in "+n),r?this.doneIn():this.$to.animationComplete(e.proxy(function(){this.doneIn()},this))},startOut:function(t,n,r){this.beforeStartOut(t,n,r),this.$from.height(t+e.mobile.window.scrollTop()).addClass(this.name+" out"+n)},toggleViewportClass:function(){e.mobile.pageContainer.toggleClass("ui-mobile-viewport-transitioning viewport-"+this.name)},transition:function(){var t,n=this.reverse?" reverse":"",r=e.mobile.getScreenHeight(),i=e.mobile.maxTransitionWidth!==!1&&e.mobile.window.width()>e.mobile.maxTransitionWidth;return this.toScroll=e.mobile.navigate.history.getActive().lastScroll||e.mobile.defaultHomeScroll,t=!e.support.cssTransitions||!e.support.cssAnimations||i||!this.name||this.name==="none"||Math.max(e.mobile.window.scrollTop(),this.toScroll)>e.mobile.getMaxScrollForTransition(),this.toggleViewportClass(),this.$from&&!t?this.startOut(r,n,t):this.doneOut(r,n,t,!0),this.deferred.promise()}})}(e,this),function(e){e.mobile.SerialTransition=function(){this.init.apply(this,arguments)},e.extend(e.mobile.SerialTransition.prototype,e.mobile.Transition.prototype,{sequential:!0,beforeDoneOut:function(){this.$from&&this.cleanFrom()},beforeStartOut:function(t,n,r){this.$from.animationComplete(e.proxy(function(){this.doneOut(t,n,r)},this))}})}(e),function(e){e.mobile.ConcurrentTransition=function(){this.init.apply(this,arguments)},e.extend(e.mobile.ConcurrentTransition.prototype,e.mobile.Transition.prototype,{sequential:!1,beforeDoneIn:function(){this.$from&&this.cleanFrom()},beforeStartOut:function(e,t,n){this.doneOut(e,t,n)}})}(e),function(e){var t=function(){return e.mobile.getScreenHeight()*3};e.mobile.transitionHandlers={sequential:e.mobile.SerialTransition,simultaneous:e.mobile.ConcurrentTransition},e.mobile.defaultTransitionHandler=e.mobile.transitionHandlers.sequential,e.mobile.transitionFallbacks={},e.mobile._maybeDegradeTransition=function(t){return t&&!e.support.cssTransform3d&&e.mobile.transitionFallbacks[t]&&(t=e.mobile.transitionFallbacks[t]),t},e.mobile.getMaxScrollForTransition=e.mobile.getMaxScrollForTransition||t}(e),function(e,r){e.widget("mobile.pagecontainer",{options:{theme:"a"},initSelector:!1,_create:function(){this._trigger("beforecreate"),this.setLastScrollEnabled=!0,this._on(this.window,{navigate:"_disableRecordScroll",scrollstop:"_delayedRecordScroll"}),this._on(this.window,{navigate:"_filterNavigateEvents"}),this._on({pagechange:"_afterContentChange"}),this.window.one("navigate",e.proxy(function(){this.setLastScrollEnabled=!0},this))},_setOptions:function(e){e.theme!==r&&e.theme!=="none"?this.element.removeClass("ui-overlay-"+this.options.theme).addClass("ui-overlay-"+e.theme):e.theme!==r&&this.element.removeClass("ui-overlay-"+this.options.theme),this._super(e)},_disableRecordScroll:function(){this.setLastScrollEnabled=!1},_enableRecordScroll:function(){this.setLastScrollEnabled=!0},_afterContentChange:function(){this.setLastScrollEnabled=!0,this._off(this.window,"scrollstop"),this._on(this.window,{scrollstop:"_delayedRecordScroll"})},_recordScroll:function(){if(!this.setLastScrollEnabled)return;var e=this._getActiveHistory(),t,n,r;e&&(t=this._getScroll(),n=this._getMinScroll(),r=this._getDefaultScroll(),e.lastScroll=t<n?r:t)},_delayedRecordScroll:function(){setTimeout(e.proxy(this,"_recordScroll"),100)},_getScroll:function(){return this.window.scrollTop()},_getMinScroll:function(){return e.mobile.minScrollBack},_getDefaultScroll:function(){return e.mobile.defaultHomeScroll},_filterNavigateEvents:function(t,n){var r;if(t.originalEvent&&t.originalEvent.isDefaultPrevented())return;r=t.originalEvent.type.indexOf("hashchange")>-1?n.state.hash:n.state.url,r||(r=this._getHash());if(!r||r==="#"||r.indexOf("#"+e.mobile.path.uiStateKey)===0)r=location.href;this._handleNavigate(r,n.state)},_getHash:function(){return e.mobile.path.parseLocation().hash},getActivePage:function(){return this.activePage},_getInitialContent:function(){return e.mobile.firstPage},_getHistory:function(){return e.mobile.navigate.history},_getActiveHistory:function(){return this._getHistory().getActive()},_getDocumentBase:function(){return e.mobile.path.documentBase},back:function(){this.go(-1)},forward:function(){this.go(1)},go:function(n){if(e.mobile.hashListeningEnabled)t.history.go(n);else{var r=e.mobile.navigate.history.activeIndex,i=r+parseInt(n,10),s=e.mobile.navigate.history.stack[i].url,o=n>=1?"forward":"back";e.mobile.navigate.history.activeIndex=i,e.mobile.navigate.history.previousIndex=r,this.change(s,{direction:o,changeHash:!1,fromHashChange:!0})}},_handleDestination:function(t){var n;return e.type(t)==="string"&&(t=e.mobile.path.stripHash(t)),t&&(n=this._getHistory(),t=e.mobile.path.isPath(t)?t:e.mobile.path.makeUrlAbsolute("#"+t,this._getDocumentBase())),t||this._getInitialContent()},_transitionFromHistory:function(e,t){var n=this._getHistory(),r=e==="back"?n.getLast():n.getActive();return r&&r.transition||t},_handleDialog:function(t,n){var r,i,s=this.getActivePage();return s&&!s.data("mobile-dialog")?(n.direction==="back"?this.back():this.forward(),!1):(r=n.pageUrl,i=this._getActiveHistory(),e.extend(t,{role:i.role,transition:this._transitionFromHistory(n.direction,t.transition),reverse:n.direction==="back"}),r)},_handleNavigate:function(t,n){var r=e.mobile.path.stripHash(t),i=this._getHistory(),s=i.stack.length===0?"none":this._transitionFromHistory(n.direction),o={changeHash:!1,fromHashChange:!0,reverse:n.direction==="back"};e.extend(o,n,{transition:s});if(i.activeIndex>0&&r.indexOf(e.mobile.dialogHashKey)>-1){r=this._handleDialog(o,n);if(r===!1)return}this._changeContent(this._handleDestination(r),o)},_changeContent:function(t,n){e.mobile.changePage(t,n)},_getBase:function(){return e.mobile.base},_getNs:function(){return e.mobile.ns},_enhance:function(e,t){return e.page({role:t})},_include:function(e,t){e.appendTo(this.element),this._enhance(e,t.role),e.page("bindRemove")},_find:function(t){var n=this._createFileUrl(t),r=this._createDataUrl(t),i,s=this._getInitialContent();return i=this.element.children("[data-"+this._getNs()+"url='"+e.mobile.path.hashToSelector(r)+"']"),i.length===0&&r&&!e.mobile.path.isPath(r)&&(i=this.element.children(e.mobile.path.hashToSelector("#"+r)).attr("data-"+this._getNs()+"url",r).jqmData("url",r)),i.length===0&&e.mobile.path.isFirstPageUrl(n)&&s&&s.parent().length&&(i=e(s)),i},_getLoader:function(){return e.mobile.loading()},_showLoading:function(t,n,r,i){if(this._loadMsg)return;this._loadMsg=setTimeout(e.proxy(function(){this._getLoader().loader("show",n,r,i),this._loadMsg=0},this),t)},_hideLoading:function(){clearTimeout(this._loadMsg),this._loadMsg=0,this._getLoader().loader("hide")},_showError:function(){this._hideLoading(),this._showLoading(0,e.mobile.pageLoadErrorMessageTheme,e.mobile.pageLoadErrorMessage,!0),setTimeout(e.proxy(this,"_hideLoading"),1500)},_parse:function(t,n){var r,i=e("<div></div>");return i.get(0).innerHTML=t,r=i.find(":jqmData(role='page'), :jqmData(role='dialog')").first(),r.length||(r=e("<div data-"+this._getNs()+"role='page'>"+(t.split(/<\/?body[^>]*>/gmi)[1]||"")+"</div>")),r.attr("data-"+this._getNs()+"url",this._createDataUrl(n)).attr("data-"+this._getNs()+"external-page",!0),r},_setLoadedTitle:function(t,n){var r=n.match(/<title[^>]*>([^<]*)/)&&RegExp.$1;r&&!t.jqmData("title")&&(r=e("<div>"+r+"</div>").text(),t.jqmData("title",r))},_isRewritableBaseTag:function(){return e.mobile.dynamicBaseEnabled&&!e.support.dynamicBaseTag},_createDataUrl:function(t){return e.mobile.path.convertUrlToDataUrl(t)},_createFileUrl:function(t){return e.mobile.path.getFilePath(t)},_triggerWithDeprecated:function(t,n,r){var i=e.Event("page"+t),s=e.Event(this.widgetName+t);return(r||this.element).trigger(i,n),this._trigger(t,s,n),{deprecatedEvent:i,event:s}},_loadSuccess:function(t,n,i,s){var o=this._createFileUrl(t);return e.proxy(function(u,a,f){var l,c=new RegExp("(<[^>]+\\bdata-"+this._getNs()+"role=[\"']?page[\"']?[^>]*>)"),h=new RegExp("\\bdata-"+this._getNs()+"url=[\"']?([^\"'>]*)[\"']?");c.test(u)&&RegExp.$1&&h.test(RegExp.$1)&&RegExp.$1&&(o=e.mobile.path.getFilePath(e("<div>"+RegExp.$1+"</div>").text()),o=this.window[0].encodeURIComponent(o)),i.prefetch===r&&this._getBase().set(o),l=this._parse(u,o),this._setLoadedTitle(l,u),n.xhr=f,n.textStatus=a,n.page=l,n.content=l,n.toPage=l;if(this._triggerWithDeprecated("load",n).event.isDefaultPrevented())return;this._isRewritableBaseTag()&&l&&this._getBase().rewrite(o,l),this._include(l,i),i.showLoadMsg&&this._hideLoading(),s.resolve(t,i,l)},this)},_loadDefaults:{type:"get",data:r,reloadPage:!1,reload:!1,role:r,showLoadMsg:!1,loadMsgDelay:50},load:function(t,n){var i=n&&n.deferred||e.Deferred(),s=n&&n.reload===r&&n.reloadPage!==r?{reload:n.reloadPage}:{},o=e.extend({},this._loadDefaults,n,s),u=null,a=e.mobile.path.makeUrlAbsolute(t,this._findBaseWithDefault()),f,l,c,h;return o.data&&o.type==="get"&&(a=e.mobile.path.addSearchParams(a,o.data),o.data=r),o.data&&o.type==="post"&&(o.reload=!0),f=this._createFileUrl(a),l=this._createDataUrl(a),u=this._find(a),u.length===0&&e.mobile.path.isEmbeddedPage(f)&&!e.mobile.path.isFirstPageUrl(f)?(i.reject(a,o),i.promise()):(this._getBase().reset(),u.length&&!o.reload?(this._enhance(u,o.role),i.resolve(a,o,u),o.prefetch||this._getBase().set(t),i.promise()):(h={url:t,absUrl:a,toPage:t,prevPage:n?n.fromPage:r,dataUrl:l,deferred:i,options:o},c=this._triggerWithDeprecated("beforeload",h),c.deprecatedEvent.isDefaultPrevented()||c.event.isDefaultPrevented()?i.promise():(o.showLoadMsg&&this._showLoading(o.loadMsgDelay),o.prefetch===r&&this._getBase().reset(),!e.mobile.allowCrossDomainPages&&!e.mobile.path.isSameDomain(e.mobile.path.documentUrl,a)?(i.reject(a,o),i.promise()):(e.ajax({url:f,type:o.type,data:o.data,contentType:o.contentType,dataType:"html",success:this._loadSuccess(a,h,o,i),error:this._loadError(a,h,o,i)}),i.promise()))))},_loadError:function(t,n,r,i){return e.proxy(function(s,o,u){this._getBase().set(e.mobile.path.get()),n.xhr=s,n.textStatus=o,n.errorThrown=u;var a=this._triggerWithDeprecated("loadfailed",n);if(a.deprecatedEvent.isDefaultPrevented()||a.event.isDefaultPrevented())return;r.showLoadMsg&&this._showError(),i.reject(t,r)},this)},_getTransitionHandler:function(t){return t=e.mobile._maybeDegradeTransition(t),e.mobile.transitionHandlers[t]||e.mobile.defaultTransitionHandler},_triggerCssTransitionEvents:function(t,n,r){var i=!1;r=r||"",n&&(t[0]===n[0]&&(i=!0),this._triggerWithDeprecated(r+"hide",{nextPage:t,toPage:t,prevPage:n,samePage:i},n)),this._triggerWithDeprecated(r+"show",{prevPage:n||e(""),toPage:t},t)},_cssTransition:function(t,n,r){var i=r.transition,s=r.reverse,o=r.deferred,u,a;this._triggerCssTransitionEvents(t,n,"before"),this._hideLoading(),u=this._getTransitionHandler(i),a=(new u(i,s,t,n)).transition(),a.done(e.proxy(function(){this._triggerCssTransitionEvents(t,n)},this)),a.done(function(){o.resolve.apply(o,arguments)})},_releaseTransitionLock:function(){s=!1,i.length>0&&e.mobile.changePage.apply(null,i.pop())},_removeActiveLinkClass:function(t){e.mobile.removeActiveLinkClass(t)},_loadUrl:function(t,n,r){r.target=t,r.deferred=e.Deferred(),this.load(t,r),r.deferred.done(e.proxy(function(e,t,r){s=!1,t.absUrl=n.absUrl,this.transition(r,n,t)},this)),r.deferred.fail(e.proxy(function(){this._removeActiveLinkClass(!0),this._releaseTransitionLock(),this._triggerWithDeprecated("changefailed",n)},this))},_triggerPageBeforeChange:function(t,n,r){var i;return n.prevPage=this.activePage,e.extend(n,{toPage:t,options:r}),e.type(t)==="string"?n.absUrl=e.mobile.path.makeUrlAbsolute(t,this._findBaseWithDefault()):n.absUrl=r.absUrl,i=this._triggerWithDeprecated("beforechange",n),i.event.isDefaultPrevented()||i.deprecatedEvent.isDefaultPrevented()?!1:!0},change:function(t,n){if(s){i.unshift(arguments);return}var r=e.extend({},e.mobile.changePage.defaults,n),o={};r.fromPage=r.fromPage||this.activePage;if(!this._triggerPageBeforeChange(t,o,r))return;t=o.toPage,e.type(t)==="string"?(s=!0,this._loadUrl(t,o,r)):this.transition(t,o,r)},transition:function(t,o,u){var a,f,l,c,h,p,d,v,m,g,y,b,w,E;if(s){i.unshift([t,u]);return}if(!this._triggerPageBeforeChange(t,o,u))return;o.prevPage=u.fromPage,E=this._triggerWithDeprecated("beforetransition",o);if(E.deprecatedEvent.isDefaultPrevented()||E.event.isDefaultPrevented())return;s=!0,t[0]===e.mobile.firstPage[0]&&!u.dataUrl&&(u.dataUrl=e.mobile.path.documentUrl.hrefNoHash),a=u.fromPage,f=u.dataUrl&&e.mobile.path.convertUrlToDataUrl(u.dataUrl)||t.jqmData("url"),l=f,c=e.mobile.path.getFilePath(f),h=e.mobile.navigate.history.getActive(),p=e.mobile.navigate.history.activeIndex===0,d=0,v=n.title,m=(u.role==="dialog"||t.jqmData("role")==="dialog")&&t.jqmData("dialog")!==!0;if(a&&a[0]===t[0]&&!u.allowSamePageTransition){s=!1,this._triggerWithDeprecated("transition",o),this._triggerWithDeprecated("change",o),u.fromHashChange&&e.mobile.navigate.history.direct({url:f});return}t.page({role:u.role}),u.fromHashChange&&(d=u.direction==="back"?-1:1);try{n.activeElement&&n.activeElement.nodeName.toLowerCase()!=="body"?e(n.activeElement).blur():e("input:focus, textarea:focus, select:focus").blur()}catch(S){}g=!1,m&&h&&(h.url&&h.url.indexOf(e.mobile.dialogHashKey)>-1&&this.activePage&&!this.activePage.hasClass("ui-dialog")&&e.mobile.navigate.history.activeIndex>0&&(u.changeHash=!1,g=!0),f=h.url||"",!g&&f.indexOf("#")>-1?f+=e.mobile.dialogHashKey:f+="#"+e.mobile.dialogHashKey),y=h?t.jqmData("title")||t.children(":jqmData(role='header')").find(".ui-title").text():v,!!y&&v===n.title&&(v=y),t.jqmData("title")||t.jqmData("title",v),u.transition=u.transition||(d&&!p?h.transition:r)||(m?e.mobile.defaultDialogTransition:e.mobile.defaultPageTransition),!d&&g&&(e.mobile.navigate.history.getActive().pageUrl=l),f&&!u.fromHashChange&&(!e.mobile.path.isPath(f)&&f.indexOf("#")<0&&(f="#"+f),b={transition:u.transition,title:v,pageUrl:l,role:u.role},u.changeHash!==!1&&e.mobile.hashListeningEnabled?e.mobile.navigate(this.window[0].encodeURI(f),b,!0):t[0]!==e.mobile.firstPage[0]&&e.mobile.navigate.history.add(f,b)),n.title=v,e.mobile.activePage=t,this.activePage=t,u.reverse=u.reverse||d<0,w=e.Deferred(),this._cssTransition(t,a,{transition:u.transition,reverse:u.reverse,deferred:w}),w.done(e.proxy(function(n,r,i,s,a){e.mobile.removeActiveLinkClass(),u.duplicateCachedPage&&u.duplicateCachedPage.remove(),a||e.mobile.focusPage(t),this._releaseTransitionLock(),this._triggerWithDeprecated("transition",o),this._triggerWithDeprecated("change",o)},this))},_findBaseWithDefault:function(){var t=this.activePage&&e.mobile.getClosestBaseUrl(this.activePage);return t||e.mobile.path.documentBase.hrefNoHash}}),e.mobile.navreadyDeferred=e.Deferred();var i=[],s=!1}(e),function(e,r){function f(e){while(e){if(typeof e.nodeName=="string"&&e.nodeName.toLowerCase()==="a")break;e=e.parentNode}return e}var i=e.Deferred(),s=e.Deferred(),o=function(){s.resolve(),s=null},u=e.mobile.path.documentUrl,a=null;e.mobile.loadPage=function(t,n){var r;return n=n||{},r=n.pageContainer||e.mobile.pageContainer,n.deferred=e.Deferred(),r.pagecontainer("load",t,n),n.deferred.promise()},e.mobile.back=function(){var n=t.navigator;this.phonegapNavigationEnabled&&n&&n.app&&n.app.backHistory?n.app.backHistory():e.mobile.pageContainer.pagecontainer("back")},e.mobile.focusPage=function(e){var t=e.find("[autofocus]"),n=e.find(".ui-title:eq(0)");if(t.length){t.focus();return}n.length?n.focus():e.focus()},e.mobile._maybeDegradeTransition=e.mobile._maybeDegradeTransition||function(e){return e},e.mobile.changePage=function(t,n){e.mobile.pageContainer.pagecontainer("change",t,n)},e.mobile.changePage.defaults={transition:r,reverse:!1,changeHash:!0,fromHashChange:!1,role:r,duplicateCachedPage:r,pageContainer:r,showLoadMsg:!0,dataUrl:r,fromPage:r,allowSamePageTransition:!1},e.mobile._registerInternalEvents=function(){var n=function(t,n){var r,i=!0,s,o,f;return!e.mobile.ajaxEnabled||t.is(":jqmData(ajax='false')")||!t.jqmHijackable().length||t.attr("target")?!1:(r=a&&a.attr("formaction")||t.attr("action"),f=(t.attr("method")||"get").toLowerCase(),r||(r=e.mobile.getClosestBaseUrl(t),f==="get"&&(r=e.mobile.path.parseUrl(r).hrefNoSearch),r===e.mobile.path.documentBase.hrefNoHash&&(r=u.hrefNoSearch)),r=e.mobile.path.makeUrlAbsolute(r,e.mobile.getClosestBaseUrl(t)),e.mobile.path.isExternal(r)&&!e.mobile.path.isPermittedCrossDomainRequest(u,r)?!1:(n||(s=t.serializeArray(),a&&a[0].form===t[0]&&(o=a.attr("name"),o&&(e.each(s,function(e,t){if(t.name===o)return o="",!1}),o&&s.push({name:o,value:a.attr("value")}))),i={url:r,options:{type:f,data:e.param(s),transition:t.jqmData("transition"),reverse:t.jqmData("direction")==="reverse",reloadPage:!0}}),i))};e.mobile.document.delegate("form","submit",function(t){var r;t.isDefaultPrevented()||(r=n(e(this)),r&&(e.mobile.changePage(r.url,r.options),t.preventDefault()))}),e.mobile.document.bind("vclick",function(t){var r,i,s=t.target,o=!1;if(t.which>1||!e.mobile.linkBindingEnabled)return;a=e(s);if(e.data(s,"mobile-button")){if(!n(e(s).closest("form"),!0))return;s.parentNode&&(s=s.parentNode)}else{s=f(s);if(!s||e.mobile.path.parseUrl(s.getAttribute("href")||"#").hash==="#")return;if(!e(s).jqmHijackable().length)return}~s.className.indexOf("ui-link-inherit")?s.parentNode&&(i=e.data(s.parentNode,"buttonElements")):i=e.data(s,"buttonElements"),i?s=i.outer:o=!0,r=e(s),o&&(r=r.closest(".ui-btn")),r.length>0&&!r.hasClass("ui-state-disabled")&&(e.mobile.removeActiveLinkClass(!0),e.mobile.activeClickedLink=r,e.mobile.activeClickedLink.addClass(e.mobile.activeBtnClass))}),e.mobile.document.bind("click",function(n){if(!e.mobile.linkBindingEnabled||n.isDefaultPrevented())return;var i=f(n.target),s=e(i),o=function(){t.setTimeout(function(){e.mobile.removeActiveLinkClass(!0)},200)},a,l,c,h,p,d,v;e.mobile.activeClickedLink&&e.mobile.activeClickedLink[0]===n.target.parentNode&&o();if(!i||n.which>1||!s.jqmHijackable().length)return;if(s.is(":jqmData(rel='back')"))return e.mobile.back(),!1;a=e.mobile.getClosestBaseUrl(s),l=e.mobile.path.makeUrlAbsolute(s.attr("href")||"#",a);if(!e.mobile.ajaxEnabled&&!e.mobile.path.isEmbeddedPage(l)){o();return}if(l.search("#")!==-1&&(!e.mobile.path.isExternal(l)||!e.mobile.path.isAbsoluteUrl(l))){l=l.replace(/[^#]*#/,"");if(!l){n.preventDefault();return}e.mobile.path.isPath(l)?l=e.mobile.path.makeUrlAbsolute(l,a):l=e.mobile.path.makeUrlAbsolute("#"+l,u.hrefNoHash)}c=s.is("[rel='external']")||s.is(":jqmData(ajax='false')")||s.is("[target]"),h=c||e.mobile.path.isExternal(l)&&!e.mobile.path.isPermittedCrossDomainRequest(u,l);if(h){o();return}p=s.jqmData("transition"),d=s.jqmData("direction")==="reverse"||s.jqmData("back"),v=s.attr("data-"+e.mobile.ns+"rel")||r,e.mobile.changePage(l,{transition:p,reverse:d,role:v,link:s}),n.preventDefault()}),e.mobile.document.delegate(".ui-page","pageshow.prefetch",function(){var t=[];e(this).find("a:jqmData(prefetch)").each(function(){var n=e(this),r=n.attr("href");r&&e.inArray(r,t)===-1&&(t.push(r),e.mobile.loadPage(r,{role:n.attr("data-"+e.mobile.ns+"rel"),prefetch:!0}))})}),e.mobile.pageContainer.pagecontainer(),e.mobile.document.bind("pageshow",function(){s?s.done(e.mobile.resetActivePageHeight):e.mobile.resetActivePageHeight()}),e.mobile.window.bind("throttledresize",e.mobile.resetActivePageHeight)},e(function(){i.resolve()}),n.readyState==="complete"?o():e.mobile.window.load(o),e.when(i,e.mobile.navreadyDeferred).done(function(){e.mobile._registerInternalEvents()})}(e),function(e){var t="ui-loader",n=e("html");e.widget("mobile.loader",{options:{theme:"a",textVisible:!1,html:"",text:"loading"},defaultHtml:"<div class='"+t+"'>"+"<span class='ui-icon-loading'></span>"+"<h1></h1>"+"</div>",fakeFixLoader:function(){var t=e("."+e.mobile.activeBtnClass).first();this.element.css({top:e.support.scrollTop&&this.window.scrollTop()+this.window.height()/2||t.length&&t.offset().top||100})},checkLoaderPosition:function(){var t=this.element.offset(),n=this.window.scrollTop(),r=e.mobile.getScreenHeight();if(t.top<n||t.top-n>r)this.element.addClass("ui-loader-fakefix"),this.fakeFixLoader(),this.window.unbind("scroll",this.checkLoaderPosition).bind("scroll",e.proxy(this.fakeFixLoader,this))},resetHtml:function(){this.element.html(e(this.defaultHtml).html())},show:function(r,i,s){var o,u,a;this.resetHtml(),e.type(r)==="object"?(a=e.extend({},this.options,r),r=a.theme):(a=this.options,r=r||a.theme),u=i||(a.text===!1?"":a.text),n.addClass("ui-loading"),o=a.textVisible,this.element.attr("class",t+" ui-corner-all ui-body-"+r+" ui-loader-"+(o||i||r.text?"verbose":"default")+(a.textonly||s?" ui-loader-textonly":"")),a.html?this.element.html(a.html):this.element.find("h1").text(u),this.element.appendTo(e.mobile.pagecontainer?e(":mobile-pagecontainer"):e("body")),this.checkLoaderPosition(),this.window.bind("scroll",e.proxy(this.checkLoaderPosition,this))},hide:function(){n.removeClass("ui-loading"),this.options.text&&this.element.removeClass("ui-loader-fakefix"),this.window.unbind("scroll",this.fakeFixLoader),this.window.unbind("scroll",this.checkLoaderPosition)}})}(e,this),function(e,t,r){function o(){i.removeClass("ui-mobile-rendering")}var i=e("html"),s=e.mobile.window;e(t.document).trigger("mobileinit");if(!e.mobile.gradeA())return;e.mobile.ajaxBlacklist&&(e.mobile.ajaxEnabled=!1),i.addClass("ui-mobile ui-mobile-rendering"),setTimeout(o,5e3),e.extend(e.mobile,{initializePage:function(){var t=e.mobile.path,i=e(":jqmData(role='page'), :jqmData(role='dialog')"),u=t.stripHash(t.stripQueryParams(t.parseLocation().hash)),a=e.mobile.path.parseLocation(),f=u?n.getElementById(u):r;i.length||(i=e("body").wrapInner("<div data-"+e.mobile.ns+"role='page'></div>").children(0)),i.each(function(){var n=e(this);n[0].getAttribute("data-"+e.mobile.ns+"url")||n.attr("data-"+e.mobile.ns+"url",n.attr("id")||t.convertUrlToDataUrl(a.pathname+a.search))}),e.mobile.firstPage=i.first(),e.mobile.pageContainer=e.mobile.firstPage.parent().addClass("ui-mobile-viewport").pagecontainer(),e.mobile.navreadyDeferred.resolve(),s.trigger("pagecontainercreate"),e.mobile.loading("show"),o(),!e.mobile.hashListeningEnabled||!e.mobile.path.isHashValid(location.hash)||!e(f).is(":jqmData(role='page')")&&!e.mobile.path.isPath(u)&&u!==e.mobile.dialogHashKey?(e.event.special.navigate.isPushStateEnabled()&&e.mobile.navigate.navigator.squash(t.parseLocation().href),e.mobile.changePage(e.mobile.firstPage,{transition:"none",reverse:!0,changeHash:!1,fromHashChange:!0})):e.event.special.navigate.isPushStateEnabled()?(e.mobile.navigate.history.stack=[],e.mobile.navigate(e.mobile.path.isPath(location.hash)?location.hash:location.href)):s.trigger("hashchange",[!0])}}),e(function(){e.support.inlineSVG(),e.mobile.hideUrlBar&&t.scrollTo(0,1),e.mobile.defaultHomeScroll=!e.support.scrollTop||e.mobile.window.scrollTop()===1?0:1,e.mobile.autoInitializePage&&e.mobile.initializePage(),e.mobile.hideUrlBar&&s.load(e.mobile.silentScroll),e.support.cssPointerEvents||e.mobile.document.delegate(".ui-state-disabled,.ui-disabled","vclick",function(e){e.preventDefault(),e.stopImmediatePropagation()})})}(e,this),function(e,t){e.mobile.links=function(t){e(t).find("a").jqmEnhanceable().filter(":jqmData(rel='popup')[href][href!='']").each(function(){var e=this,t=e.getAttribute("href").substring(1);t&&(e.setAttribute("aria-haspopup",!0),e.setAttribute("aria-owns",t),e.setAttribute("aria-expanded",!1))}).end().not(".ui-btn, :jqmData(role='none'), :jqmData(role='nojs')").addClass("ui-link")}}(e),function(e){var t=e("meta[name=viewport]"),n=t.attr("content"),r=n+",maximum-scale=1, user-scalable=no",i=n+",maximum-scale=10, user-scalable=yes",s=/(user-scalable[\s]*=[\s]*no)|(maximum-scale[\s]*=[\s]*1)[$,\s]/.test(n);e.mobile.zoom=e.extend({},{enabled:!s,locked:!1,disable:function(n){!s&&!e.mobile.zoom.locked&&(t.attr("content",r),e.mobile.zoom.enabled=!1,e.mobile.zoom.locked=n||!1)},enable:function(n){!s&&(!e.mobile.zoom.locked||n===!0)&&(t.attr("content",i),e.mobile.zoom.enabled=!0,e.mobile.zoom.locked=!1)},restore:function(){s||(t.attr("content",n),e.mobile.zoom.enabled=!0)}})}(e),function(e,t){function r(t){var r,i=t.length,s=[];for(r=0;r<i;r++)t[r].className.match(n)||s.push(t[r]);return e(s)}var n=/\bui-screen-hidden\b/;e.mobile.behaviors.addFirstLastClasses={_getVisibles:function(e,t){var n;return t?n=r(e):(n=e.filter(":visible"),n.length===0&&(n=r(e))),n},_addFirstLastClasses:function(e,t,n){e.removeClass("ui-first-child ui-last-child"),t.eq(0).addClass("ui-first-child").end().last().addClass("ui-last-child"),n||this.element.trigger("updatelayout")},_removeFirstLastClasses:function(e){e.removeClass("ui-first-child ui-last-child")}}}(e),function(e,t){var n=/([A-Z])/g,r=function(e){return"ui-btn-icon-"+(e===null?"left":e)};e.widget("mobile.collapsible",{options:{enhanced:!1,expandCueText:null,collapseCueText:null,collapsed:!0,heading:"h1,h2,h3,h4,h5,h6,legend",collapsedIcon:null,expandedIcon:null,iconpos:null,theme:null,contentTheme:null,inset:null,corners:null,mini:null},_create:function(){var t=this.element,n={accordion:t.closest(":jqmData(role='collapsible-set'),:jqmData(role='collapsibleset')"+(e.mobile.collapsibleset?", :mobile-collapsibleset":"")).addClass("ui-collapsible-set")};this._ui=n,this._renderedOptions=this._getOptions(this.options),this.options.enhanced?(n.heading=this.element.children(".ui-collapsible-heading"),n.content=n.heading.next(),n.anchor=n.heading.children(),n.status=n.anchor.children(".ui-collapsible-heading-status")):this._enhance(t,n),this._on(n.heading,{tap:function(){n.heading.find("a").first().addClass(e.mobile.activeBtnClass)},click:function(e){this._handleExpandCollapse(!n.heading.hasClass("ui-collapsible-heading-collapsed")),e.preventDefault(),e.stopPropagation()}})},_getOptions:function(t){var r,i=this._ui.accordion,s=this._ui.accordionWidget;t=e.extend({},t),i.length&&!s&&(this._ui.accordionWidget=s=i.data("mobile-collapsibleset"));for(r in t)t[r]=t[r]!=null?t[r]:s?s.options[r]:i.length?e.mobile.getAttribute(i[0],r.replace(n,"-$1").toLowerCase()):null,null==t[r]&&(t[r]=e.mobile.collapsible.defaults[r]);return t},_themeClassFromOption:function(e,t){return t?t==="none"?"":e+t:""},_enhance:function(t,n){var i,s=this._renderedOptions,o=this._themeClassFromOption("ui-body-",s.contentTheme);return t.addClass("ui-collapsible "+(s.inset?"ui-collapsible-inset ":"")+(s.inset&&s.corners?"ui-corner-all ":"")+(o?"ui-collapsible-themed-content ":"")),n.originalHeading=t.children(this.options.heading).first(),n.content=t.wrapInner("<div class='ui-collapsible-content "+o+"'></div>").children(".ui-collapsible-content"),n.heading=n.originalHeading,n.heading.is("legend")&&(n.heading=e("<div role='heading'>"+n.heading.html()+"</div>"),n.placeholder=e("<div><!-- placeholder for legend --></div>").insertBefore(n.originalHeading),n.originalHeading.remove()),i=s.collapsed?s.collapsedIcon?"ui-icon-"+s.collapsedIcon:"":s.expandedIcon?"ui-icon-"+s.expandedIcon:"",n.status=e("<span class='ui-collapsible-heading-status'></span>"),n.anchor=n.heading.detach().addClass("ui-collapsible-heading").append(n.status).wrapInner("<a href='#' class='ui-collapsible-heading-toggle'></a>").find("a").first().addClass("ui-btn "+(i?i+" ":"")+(i?r(s.iconpos)+" ":"")+this._themeClassFromOption("ui-btn-",s.theme)+" "+(s.mini?"ui-mini ":"")),n.heading.insertBefore(n.content),this._handleExpandCollapse(this.options.collapsed),n},refresh:function(){this._applyOptions(this.options),this._renderedOptions=this._getOptions(this.options)},_applyOptions:function(e){var n,i,s,o,u,a=this.element,f=this._renderedOptions,l=this._ui,c=l.anchor,h=l.status,p=this._getOptions(e);e.collapsed!==t&&this._handleExpandCollapse(e.collapsed),n=a.hasClass("ui-collapsible-collapsed"),n?p.expandCueText!==t&&h.text(p.expandCueText):p.collapseCueText!==t&&h.text(p.collapseCueText),u=p.collapsedIcon!==t?p.collapsedIcon!==!1:f.collapsedIcon!==!1;if(p.iconpos!==t||p.collapsedIcon!==t||p.expandedIcon!==t)c.removeClass([r(f.iconpos)].concat(f.expandedIcon?["ui-icon-"+f.expandedIcon]:[]).concat(f.collapsedIcon?["ui-icon-"+f.collapsedIcon]:[]).join(" ")),u&&c.addClass([r(p.iconpos!==t?p.iconpos:f.iconpos)].concat(n?["ui-icon-"+(p.collapsedIcon!==t?p.collapsedIcon:f.collapsedIcon)]:["ui-icon-"+(p.expandedIcon!==t?p.expandedIcon:f.expandedIcon)]).join(" "));p.theme!==t&&(s=this._themeClassFromOption("ui-btn-",f.theme),i=this._themeClassFromOption("ui-btn-",p.theme),c.removeClass(s).addClass(i)),p.contentTheme!==t&&(s=this._themeClassFromOption("ui-body-",f.contentTheme),i=this._themeClassFromOption("ui-body-",p.contentTheme),l.content.removeClass(s).addClass(i)),p.inset!==t&&(a.toggleClass("ui-collapsible-inset",p.inset),o=!(!p.inset||!p.corners&&!f.corners)),p.corners!==t&&(o=!(!p.corners||!p.inset&&!f.inset)),o!==t&&a.toggleClass("ui-corner-all",o),p.mini!==t&&c.toggleClass("ui-mini",p.mini)},_setOptions:function(e){this._applyOptions(e),this._super(e),this._renderedOptions=this._getOptions(this.options)},_handleExpandCollapse:function(t){var n=this._renderedOptions,r=this._ui;r.status.text(t?n.expandCueText:n.collapseCueText),r.heading.toggleClass("ui-collapsible-heading-collapsed",t).find("a").first().toggleClass("ui-icon-"+n.expandedIcon,!t).toggleClass("ui-icon-"+n.collapsedIcon,t||n.expandedIcon===n.collapsedIcon).removeClass(e.mobile.activeBtnClass),this.element.toggleClass("ui-collapsible-collapsed",t),r.content.toggleClass("ui-collapsible-content-collapsed",t).attr("aria-hidden",t).trigger("updatelayout"),this.options.collapsed=t,this._trigger(t?"collapse":"expand")},expand:function(){this._handleExpandCollapse(!1)},collapse:function(){this._handleExpandCollapse(!0)},_destroy:function(){var e=this._ui,t=this.options;if(t.enhanced)return;e.placeholder?(e.originalHeading.insertBefore(e.placeholder),e.placeholder.remove(),e.heading.remove()):(e.status.remove(),e.heading.removeClass("ui-collapsible-heading ui-collapsible-heading-collapsed").children().contents().unwrap()),e.anchor.contents().unwrap(),e.content.contents().unwrap(),this.element.removeClass("ui-collapsible ui-collapsible-collapsed ui-collapsible-themed-content ui-collapsible-inset ui-corner-all")}}),e.mobile.collapsible.defaults={expandCueText:" click to expand contents",collapseCueText:" click to collapse contents",collapsedIcon:"plus",contentTheme:"inherit",expandedIcon:"minus",iconpos:"left",inset:!0,corners:!0,theme:"inherit",mini:!1}}(e),function(e,t){e.widget("mobile.controlgroup",e.extend({options:{enhanced:!1,theme:null,shadow:!1,corners:!0,excludeInvisible:!0,type:"vertical",mini:!1},_create:function(){var t=this.element,n=this.options,r=e.mobile.page.prototype.keepNativeSelector();e.fn.buttonMarkup&&this.element.find(e.fn.buttonMarkup.initSelector).not(r).buttonMarkup(),e.each(this._childWidgets,e.proxy(function(t,n){e.mobile[n]&&this.element.find(e.mobile[n].initSelector).not(r)[n]()},this)),e.extend(this,{_ui:null,_initialRefresh:!0}),n.enhanced?this._ui={groupLegend:t.children(".ui-controlgroup-label").children(),childWrapper:t.children(".ui-controlgroup-controls")}:this._ui=this._enhance()},_childWidgets:["checkboxradio","selectmenu","button"],_themeClassFromOption:function(e){return e?e==="none"?"":"ui-group-theme-"+e:""},_enhance:function(){var t=this.element,n=this.options,r={groupLegend:t.children("legend"),childWrapper:t.addClass("ui-controlgroup ui-controlgroup-"+(n.type==="horizontal"?"horizontal":"vertical")+" "+this._themeClassFromOption(n.theme)+" "+(n.corners?"ui-corner-all ":"")+(n.mini?"ui-mini ":"")).wrapInner("<div class='ui-controlgroup-controls "+(n.shadow===!0?"ui-shadow":"")+"'></div>").children()};return r.groupLegend.length>0&&e("<div role='heading' class='ui-controlgroup-label'></div>").append(r.groupLegend).prependTo(t),r},_init:function(){this.refresh()},_setOptions:function(e){var n,r,i=this.element;return e.type!==t&&(i.removeClass("ui-controlgroup-horizontal ui-controlgroup-vertical").addClass("ui-controlgroup-"+(e.type==="horizontal"?"horizontal":"vertical")),n=!0),e.theme!==t&&i.removeClass(this._themeClassFromOption(this.options.theme)).addClass(this._themeClassFromOption(e.theme)),e.corners!==t&&i.toggleClass("ui-corner-all",e.corners),e.mini!==t&&i.toggleClass("ui-mini",e.mini),e.shadow!==t&&this._ui.childWrapper.toggleClass("ui-shadow",e.shadow),e.excludeInvisible!==t&&(this.options.excludeInvisible=e.excludeInvisible,n=!0),r=this._super(e),n&&this.refresh(),r},container:function(){return this._ui.childWrapper},refresh:function(){var t=this.container(),n=t.find(".ui-btn").not(".ui-slider-handle"),r=this._initialRefresh;e.mobile.checkboxradio&&t.find(":mobile-checkboxradio").checkboxradio("refresh"),this._addFirstLastClasses(n,this.options.excludeInvisible?this._getVisibles(n,r):n,r),this._initialRefresh=!1},_destroy:function(){var e,t,n=this.options;if(n.enhanced)return this;e=this._ui,t=this.element.removeClass("ui-controlgroup ui-controlgroup-horizontal ui-controlgroup-vertical ui-corner-all ui-mini "+this._themeClassFromOption(n.theme)).find(".ui-btn").not(".ui-slider-handle"),this._removeFirstLastClasses(t),e.groupLegend.unwrap(),e.childWrapper.children().unwrap()}},e.mobile.behaviors.addFirstLastClasses))}(e),function(e,t){e.widget("mobile.textinput",{initSelector:"input[type='text'],input[type='search'],:jqmData(type='search'),input[type='number'],:jqmData(type='number'),input[type='password'],input[type='email'],input[type='url'],input[type='tel'],textarea,input[type='time'],input[type='date'],input[type='month'],input[type='week'],input[type='datetime'],input[type='datetime-local'],input[type='color'],input:not([type]),input[type='file']",options:{theme:null,corners:!0,mini:!1,preventFocusZoom:/iPhone|iPad|iPod/.test(navigator.platform)&&navigator.userAgent.indexOf("AppleWebKit")>-1,wrapperClass:"",enhanced:!1},_create:function(){var t=this.options,n=this.element.is("[type='search'], :jqmData(type='search')"),r=this.element[0].tagName==="TEXTAREA",i=this.element.is("[data-"+(e.mobile.ns||"")+"type='range']"),s=(this.element.is("input")||this.element.is("[data-"+(e.mobile.ns||"")+"type='search']"))&&!i;this.element.prop("disabled")&&(t.disabled=!0),e.extend(this,{classes:this._classesFromOptions(),isSearch:n,isTextarea:r,isRange:i,inputNeedsWrap:s}),this._autoCorrect(),t.enhanced||this._enhance(),this._on({focus:"_handleFocus",blur:"_handleBlur"})},refresh:function(){this.setOptions({disabled:this.element.is(":disabled")})},_enhance:function(){var e=[];this.isTextarea&&e.push("ui-input-text"),(this.isTextarea||this.isRange)&&e.push("ui-shadow-inset"),this.inputNeedsWrap?this.element.wrap(this._wrap()):e=e.concat(this.classes),this.element.addClass(e.join(" "))},widget:function(){return this.inputNeedsWrap?this.element.parent():this.element},_classesFromOptions:function(){var e=this.options,t=[];return t.push("ui-body-"+(e.theme===null?"inherit":e.theme)),e.corners&&t.push("ui-corner-all"),e.mini&&t.push("ui-mini"),e.disabled&&t.push("ui-state-disabled"),e.wrapperClass&&t.push(e.wrapperClass),t},_wrap:function(){return e("<div class='"+(this.isSearch?"ui-input-search ":"ui-input-text ")+this.classes.join(" ")+" "+"ui-shadow-inset'></div>")},_autoCorrect:function(){typeof this.element[0].autocorrect!="undefined"&&!e.support.touchOverflow&&(this.element[0].setAttribute("autocorrect","off"),this.element[0].setAttribute("autocomplete","off"))},_handleBlur:function(){this.widget().removeClass(e.mobile.focusClass),this.options.preventFocusZoom&&e.mobile.zoom.enable(!0)},_handleFocus:function(){this.options.preventFocusZoom&&e.mobile.zoom.disable(!0),this.widget().addClass(e.mobile.focusClass)},_setOptions:function(e){var n=this.widget();this._super(e);if(e.disabled!==t||e.mini!==t||e.corners!==t||e.theme!==t||e.wrapperClass!==t)n.removeClass(this.classes.join(" ")),this.classes=this._classesFromOptions(),n.addClass(this.classes.join(" "));e.disabled!==t&&this.element.prop("disabled",!!e.disabled)},_destroy:function(){if(this.options.enhanced)return;this.inputNeedsWrap&&this.element.unwrap(),this.element.removeClass("ui-input-text "+this.classes.join(" "))}})}(e),function(e,t){e.widget("mobile.textinput",e.mobile.textinput,{options:{autogrow:!0,keyupTimeoutBuffer:100},_create:function(){this._super(),this.options.autogrow&&this.isTextarea&&this._autogrow()},_autogrow:function(){this.element.addClass("ui-textinput-autogrow"),this._on({keyup:"_timeout",change:"_timeout",input:"_timeout",paste:"_timeout"}),this._on(!0,this.document,{pageshow:"_handleShow",popupbeforeposition:"_handleShow",updatelayout:"_handleShow",panelopen:"_handleShow"})},_handleShow:function(t){e.contains(t.target,this.element[0])&&this.element.is(":visible")&&(t.type!=="popupbeforeposition"&&this.element.addClass("ui-textinput-autogrow-resize").animationComplete(e.proxy(function(){this.element.removeClass("ui-textinput-autogrow-resize")},this),"transition"),this._prepareHeightUpdate())},_unbindAutogrow:function(){this.element.removeClass("ui-textinput-autogrow"),this._off(this.element,"keyup change input paste"),this._off(this.document,"pageshow popupbeforeposition updatelayout panelopen")},keyupTimeout:null,_prepareHeightUpdate:function(e){this.keyupTimeout&&clearTimeout(this.keyupTimeout),e===t?this._updateHeight():this.keyupTimeout=this._delay("_updateHeight",e)},_timeout:function(){this._prepareHeightUpdate(this.options.keyupTimeoutBuffer)},_updateHeight:function(){var e,t,n,r,i,s,o,u,a,f=this.window.scrollTop();this.keyupTimeout=0,"onpage"in this.element[0]||this.element.css({height:0,"min-height":0,"max-height":0}),r=this.element[0].scrollHeight,i=this.element[0].clientHeight,s=parseFloat(this.element.css("border-top-width")),o=parseFloat(this.element.css("border-bottom-width")),u=s+o,a=r+u+15,i===0&&(e=parseFloat(this.element.css("padding-top")),t=parseFloat(this.element.css("padding-bottom")),n=e+t,a+=n),this.element.css({height:a,"min-height":"","max-height":""}),this.window.scrollTop(f)},refresh:function(){this.options.autogrow&&this.isTextarea&&this._updateHeight()},_setOptions:function(e){this._super(e),e.autogrow!==t&&this.isTextarea&&(e.autogrow?this._autogrow():this._unbindAutogrow())}})}(e),function(e,t){e.widget("mobile.button",{initSelector:"input[type='button'], input[type='submit'], input[type='reset']",options:{theme:null,icon:null,iconpos:"left",iconshadow:!1,corners:!0,shadow:!0,inline:null,mini:null,wrapperClass:null,enhanced:!1},_create:function(){this.element.is(":disabled")&&(this.options.disabled=!0),this.options.enhanced||this._enhance(),e.extend(this,{wrapper:this.element.parent()}),this._on({focus:function(){this.widget().addClass(e.mobile.focusClass)},blur:function(){this.widget().removeClass(e.mobile.focusClass)}}),this.refresh(!0)},_enhance:function(){this.element.wrap(this._button())},_button:function(){var t=this.options,n=this._getIconClasses(this.options);return e("<div class='ui-btn ui-input-btn"+(t.wrapperClass?" "+t.wrapperClass:"")+(t.theme?" ui-btn-"+t.theme:"")+(t.corners?" ui-corner-all":"")+(t.shadow?" ui-shadow":"")+(t.inline?" ui-btn-inline":"")+(t.mini?" ui-mini":"")+(t.disabled?" ui-state-disabled":"")+(n?" "+n:"")+"' >"+this.element.val()+"</div>")},widget:function(){return this.wrapper},_destroy:function(){this.element.insertBefore(this.wrapper),this.wrapper.remove()},_getIconClasses:function(e){return e.icon?"ui-icon-"+e.icon+(e.iconshadow?" ui-shadow-icon":"")+" ui-btn-icon-"+e.iconpos:""},_setOptions:function(n){var r=this.widget();n.theme!==t&&r.removeClass(this.options.theme).addClass("ui-btn-"+n.theme),n.corners!==t&&r.toggleClass("ui-corner-all",n.corners),n.shadow!==t&&r.toggleClass("ui-shadow",n.shadow),n.inline!==t&&r.toggleClass("ui-btn-inline",n.inline),n.mini!==t&&r.toggleClass("ui-mini",n.mini),n.disabled!==t&&(this.element.prop("disabled",n.disabled),r.toggleClass("ui-state-disabled",n.disabled)),(n.icon!==t||n.iconshadow!==t||n.iconpos!==t)&&r.removeClass(this._getIconClasses(this.options)).addClass(this._getIconClasses(e.extend({},this.options,n))),this._super(n)},refresh:function(t){var n,r=this.element.prop("disabled");this.options.icon&&this.options.iconpos==="notext"&&this.element.attr("title")&&this.element.attr("title",this.element.val()),t||(n=this.element.detach(),e(this.wrapper).text(this.element.val()).append(n)),this.options.disabled!==r&&this._setOptions({disabled:r})}})}(e),function(e,t){e.mobile.behaviors.formReset={_handleFormReset:function(){this._on(this.element.closest("form"),{reset:function(){this._delay("_reset")}})}}}(e),function(e,t){var n=e.mobile.path.hashToSelector;e.widget("mobile.checkboxradio",e.extend({initSelector:"input:not( :jqmData(role='flipswitch' ) )[type='checkbox'],input[type='radio']:not( :jqmData(role='flipswitch' ))",options:{theme:"inherit",mini:!1,wrapperClass:null,enhanced:!1,iconpos:"left"},_create:function(){var t=this.element,n=this.options,r=function(e,t){return e.jqmData(t)||e.closest("form, fieldset").jqmData(t)},i=this.options.enhanced?{element:this.element.siblings("label"),isParent:!1}:this._findLabel(),s=t[0].type,o="ui-"+s+"-on",u="ui-"+s+"-off";if(s!=="checkbox"&&s!=="radio")return;this.element[0].disabled&&(this.options.disabled=!0),n.iconpos=r(t,"iconpos")||i.element.attr("data-"+e.mobile.ns+"iconpos")||n.iconpos,n.mini=r(t,"mini")||n.mini,e.extend(this,{input:t,label:i.element,labelIsParent:i.isParent,inputtype:s,checkedClass:o,uncheckedClass:u}),this.options.enhanced||this._enhance(),this._on(i.element,{vmouseover:"_handleLabelVMouseOver",vclick:"_handleLabelVClick"}),this._on(t,{vmousedown:"_cacheVals",vclick:"_handleInputVClick",focus:"_handleInputFocus",blur:"_handleInputBlur"}),this._handleFormReset(),this.refresh()},_findLabel:function(){var t,r,i,s=this.element,o=s[0].labels;return o&&o.length>0?(r=e(o[0]),i=e.contains(r[0],s[0])):(t=s.closest("label"),i=t.length>0,r=i?t:e(this.document[0].getElementsByTagName("label")).filter("[for='"+n(s[0].id)+"']").first()),{element:r,isParent:i}},_enhance:function(){this.label.addClass("ui-btn ui-corner-all"),this.labelIsParent?this.input.add(this.label).wrapAll(this._wrapper()):(this.element.wrap(this._wrapper()),this.element.parent().prepend(this.label)),this._setOptions({theme:this.options.theme,iconpos:this.options.iconpos,mini:this.options.mini})},_wrapper:function(){return e("<div class='"+(this.options.wrapperClass?this.options.wrapperClass:"")+" ui-"+this.inputtype+(this.options.disabled?" ui-state-disabled":"")+"' ></div>")},_handleInputFocus:function(){this.label.addClass(e.mobile.focusClass)},_handleInputBlur:function(){this.label.removeClass(e.mobile.focusClass)},_handleInputVClick:function(){this.element.prop("checked",this.element.is(":checked")),this._getInputSet().not(this.element).prop("checked",!1),this._updateAll(!0)},_handleLabelVMouseOver:function(e){this.label.parent().hasClass("ui-state-disabled")&&e.stopPropagation()},_handleLabelVClick:function(e){var t=this.element;if(t.is(":disabled")){e.preventDefault();return}return this._cacheVals(),t.prop("checked",this.inputtype==="radio"&&!0||!t.prop("checked")),t.triggerHandler("click"),this._getInputSet().not(t).prop("checked",!1),this._updateAll(),!1},_cacheVals:function(){this._getInputSet().each(function(){e(this).attr("data-"+e.mobile.ns+"cacheVal",this.checked)})},_getInputSet:function(){var t,r,i=this.element[0],s=i.name,o=i.form,u=this.element.parents().last().get(0),a=this.element;return s&&this.inputtype==="radio"&&u&&(t="input[type='radio'][name='"+n(s)+"']",o?(r=o.getAttribute("id"),r&&(a=e(t+"[form='"+n(r)+"']",u)),a=e(o).find(t).filter(function(){return this.form===o}).add(a)):a=e(t,u).filter(function(){return!this.form})),a},_updateAll:function(t){var n=this;this._getInputSet().each(function(){var r=e(this);(this.checked||n.inputtype==="checkbox")&&!t&&r.trigger("change")}).checkboxradio("refresh")},_reset:function(){this.refresh()},_hasIcon:function(){var t,n,r=e.mobile.controlgroup;if(r){t=this.element.closest(":mobile-controlgroup,"+r.prototype.initSelector);if(t.length>0)return n=e.data(t[0],"mobile-controlgroup"),(n?n.options.type:t.attr("data-"+e.mobile.ns+"type"))!=="horizontal"}return!0},refresh:function(){var t=this.element[0].checked,n=e.mobile.activeBtnClass,r="ui-btn-icon-"+this.options.iconpos,i=[],s=[];this._hasIcon()?(s.push(n),i.push(r)):(s.push(r),(t?i:s).push(n)),t?(i.push(this.checkedClass),s.push(this.uncheckedClass)):(i.push(this.uncheckedClass),s.push(this.checkedClass)),this.widget().toggleClass("ui-state-disabled",this.element.prop("disabled")),this.label.addClass(i.join(" ")).removeClass(s.join(" "))},widget:function(){return this.label.parent()},_setOptions:function(e){var n=this.label,r=this.options,i=this.widget(),s=this._hasIcon();e.disabled!==t&&(this.input.prop("disabled",!!e.disabled),i.toggleClass("ui-state-disabled",!!e.disabled)),e.mini!==t&&i.toggleClass("ui-mini",!!e.mini),e.theme!==t&&n.removeClass("ui-btn-"+r.theme).addClass("ui-btn-"+e.theme),e.wrapperClass!==t&&i.removeClass(r.wrapperClass).addClass(e.wrapperClass),e.iconpos!==t&&s?n.removeClass("ui-btn-icon-"+r.iconpos).addClass("ui-btn-icon-"+e.iconpos):s||n.removeClass("ui-btn-icon-"+r.iconpos),this._super(e)}},e.mobile.behaviors.formReset))}(e),function(e,t){e.widget("mobile.flipswitch",e.extend({options:{onText:"On",offText:"Off",theme:null,enhanced:!1,wrapperClass:null,corners:!0,mini:!1},_create:function(){this.options.enhanced?e.extend(this,{flipswitch:this.element.parent(),on:this.element.find(".ui-flipswitch-on").eq(0),off:this.element.find(".ui-flipswitch-off").eq(0),type:this.element.get(0).tagName}):this._enhance(),this._handleFormReset(),this._originalTabIndex=this.element.attr("tabindex"),this._originalTabIndex!=null&&this.on.attr("tabindex",this._originalTabIndex),this.element.attr("tabindex","-1"),this._on({focus:"_handleInputFocus"}),this.element.is(":disabled")&&this._setOptions({disabled:!0}),this._on(this.flipswitch,{click:"_toggle",swipeleft:"_left",swiperight:"_right"}),this._on(this.on,{keydown:"_keydown"}),this._on({change:"refresh"})},_handleInputFocus:function(){this.on.focus()},widget:function(){return this.flipswitch},_left:function(){this.flipswitch.removeClass("ui-flipswitch-active"),this.type==="SELECT"?this.element.get(0).selectedIndex=0:this.element.prop("checked",!1),this.element.trigger("change")},_right:function(){this.flipswitch.addClass("ui-flipswitch-active"),this.type==="SELECT"?this.element.get(0).selectedIndex=1:this.element.prop("checked",!0),this.element.trigger("change")},_enhance:function(){var t=e("<div>"),n=this.options,r=this.element,i=n.theme?n.theme:"inherit",s=e("<a></a>",{href:"#"}),o=e("<span></span>"),u=r.get(0).tagName,a=u==="INPUT"?n.onText:r.find("option").eq(1).text(),f=u==="INPUT"?n.offText:r.find("option").eq(0).text();s.addClass("ui-flipswitch-on ui-btn ui-shadow ui-btn-inherit").text(a),o.addClass("ui-flipswitch-off").text(f),t.addClass("ui-flipswitch ui-shadow-inset ui-bar-"+i+" "+(n.wrapperClass?n.wrapperClass:"")+" "+(r.is(":checked")||r.find("option").eq(1).is(":selected")?"ui-flipswitch-active":"")+(r.is(":disabled")?" ui-state-disabled":"")+(n.corners?" ui-corner-all":"")+(n.mini?" ui-mini":"")).append(s,o),r.addClass("ui-flipswitch-input").after(t).appendTo(t),e.extend(this,{flipswitch:t,on:s,off:o,type:u})},_reset:function(){this.refresh()},refresh:function(){var e,t=this.flipswitch.hasClass("ui-flipswitch-active")?"_right":"_left";this.type==="SELECT"?e=this.element.get(0).selectedIndex>0?"_right":"_left":e=this.element.prop("checked")?"_right":"_left",e!==t&&this[e]()},_toggle:function(){var e=this.flipswitch.hasClass("ui-flipswitch-active")?"_left":"_right";this[e]()},_keydown:function(t){t.which===e.mobile.keyCode.LEFT?this._left():t.which===e.mobile.keyCode.RIGHT?this._right():t.which===e.mobile.keyCode.SPACE&&(this._toggle(),t.preventDefault())},_setOptions:function(e){if(e.theme!==t){var n=e.theme?e.theme:"inherit",r=e.theme?e.theme:"inherit";this.widget().removeClass("ui-bar-"+n).addClass("ui-bar-"+r)}e.onText!==t&&this.on.text(e.onText),e.offText!==t&&this.off.text(e.offText),e.disabled!==t&&this.widget().toggleClass("ui-state-disabled",e.disabled),e.mini!==t&&this.widget().toggleClass("ui-mini",e.mini),e.corners!==t&&this.widget().toggleClass("ui-corner-all",e.corners),this._super(e)},_destroy:function(){if(this.options.enhanced)return;this._originalTabIndex!=null?this.element.attr("tabindex",this._originalTabIndex):this.element.removeAttr("tabindex"),this.on.remove(),this.off.remove(),this.element.unwrap(),this.flipswitch.remove(),this.removeClass("ui-flipswitch-input")}},e.mobile.behaviors.formReset))}(e),function(e,r){e.widget("mobile.slider",e.extend({initSelector:"input[type='range'], :jqmData(type='range'), :jqmData(role='slider')",widgetEventPrefix:"slide",options:{theme:null,trackTheme:null,corners:!0,mini:!1,highlight:!1},_create:function(){var i=this,s=this.element,o=this.options.trackTheme||e.mobile.getAttribute(s[0],"theme"),u=o?" ui-bar-"+o:" ui-bar-inherit",a=this.options.corners||s.jqmData("corners")?" ui-corner-all":"",f=this.options.mini||s.jqmData("mini")?" ui-mini":"",l=s[0].nodeName.toLowerCase(),c=l==="select",h=s.parent().is(":jqmData(role='rangeslider')"),p=c?"ui-slider-switch":"",d=s.attr("id"),v=e("[for='"+d+"']"),m=v.attr("id")||d+"-label",g=c?0:parseFloat(s.attr("min")),y=c?s.find("option").length-1:parseFloat(s.attr("max")),b=t.parseFloat(s.attr("step")||1),w=n.createElement("a"),E=e(w),S=n.createElement("div"),x=e(S),T=this.options.highlight&&!c?function(){var t=n.createElement("div");return t.className="ui-slider-bg "+e.mobile.activeBtnClass,e(t).prependTo(x)}():!1,N,C,k,L,A,O,M,_,D,P;v.attr("id",m),this.isToggleSwitch=c,w.setAttribute("href","#"),S.setAttribute("role","application"),S.className=[this.isToggleSwitch?"ui-slider ui-slider-track ui-shadow-inset ":"ui-slider-track ui-shadow-inset ",p,u,a,f].join(""),w.className="ui-slider-handle",S.appendChild(w),E.attr({role:"slider","aria-valuemin":g,"aria-valuemax":y,"aria-valuenow":this._value(),"aria-valuetext":this._value(),title:this._value(),"aria-labelledby":m}),e.extend(this,{slider:x,handle:E,control:s,type:l,step:b,max:y,min:g,valuebg:T,isRangeslider:h,dragging:!1,beforeStart:null,userModified:!1,mouseMoved:!1});if(c){M=s.attr("tabindex"),M&&E.attr("tabindex",M),s.attr("tabindex","-1").focus(function(){e(this).blur(),E.focus()}),C=n.createElement("div"),C.className="ui-slider-inneroffset";for(k=0,L=S.childNodes.length;k<L;k++)C.appendChild(S.childNodes[k]);S.appendChild(C),E.addClass("ui-slider-handle-snapping"),N=s.find("option");for(A=0,O=N.length;A<O;A++)_=A?"a":"b",D=A?" "+e.mobile.activeBtnClass:"",P=n.createElement("span"),P.className=["ui-slider-label ui-slider-label-",_,D].join(""),P.setAttribute("role","img"),P.appendChild(n.createTextNode(N[A].innerHTML)),e(P).prependTo(x);i._labels=e(".ui-slider-label",x)}s.addClass(c?"ui-slider-switch":"ui-slider-input"),this._on(s,{change:"_controlChange",keyup:"_controlKeyup",blur:"_controlBlur",vmouseup:"_controlVMouseUp"}),x.bind("vmousedown",e.proxy(this._sliderVMouseDown,this)).bind("vclick",!1),this._on(n,{vmousemove:"_preventDocumentDrag"}),this._on(x.add(n),{vmouseup:"_sliderVMouseUp"}),x.insertAfter(s),!c&&!h&&(C=this.options.mini?"<div class='ui-slider ui-mini'>":"<div class='ui-slider'>",s.add(x).wrapAll(C)),this._on(this.handle,{vmousedown:"_handleVMouseDown",keydown:"_handleKeydown",keyup:"_handleKeyup"}),this.handle.bind("vclick",!1),this._handleFormReset(),this.refresh(r,r,!0)},_setOptions:function(e){e.theme!==r&&this._setTheme(e.theme),e.trackTheme!==r&&this._setTrackTheme(e.trackTheme),e.corners!==r&&this._setCorners(e.corners),e.mini!==r&&this._setMini(e.mini),e.highlight!==r&&this._setHighlight(e.highlight),e.disabled!==r&&this._setDisabled(e.disabled),this._super(e)},_controlChange:function(e){if(this._trigger("controlchange",e)===!1)return!1;this.mouseMoved||this.refresh(this._value(),!0)},_controlKeyup:function(){this.refresh(this._value(),!0,!0)},_controlBlur:function(){this.refresh(this._value(),!0)},_controlVMouseUp:function(){this._checkedRefresh()},_handleVMouseDown:function(){this.handle.focus()},_handleKeydown:function(t){var n=this._value();if(this.options.disabled)return;switch(t.keyCode){case e.mobile.keyCode.HOME:case e.mobile.keyCode.END:case e.mobile.keyCode.PAGE_UP:case e.mobile.keyCode.PAGE_DOWN:case e.mobile.keyCode.UP:case e.mobile.keyCode.RIGHT:case e.mobile.keyCode.DOWN:case e.mobile.keyCode.LEFT:t.preventDefault(),this._keySliding||(this._keySliding=!0,this.handle.addClass("ui-state-active"))}switch(t.keyCode){case e.mobile.keyCode.HOME:this.refresh(this.min);break;case e.mobile.keyCode.END:this.refresh(this.max);break;case e.mobile.keyCode.PAGE_UP:case e.mobile.keyCode.UP:case e.mobile.keyCode.RIGHT:this.refresh(n+this.step);break;case e.mobile.keyCode.PAGE_DOWN:case e.mobile.keyCode.DOWN:case e.mobile.keyCode.LEFT:this.refresh(n-this.step)}},_handleKeyup:function(){this._keySliding&&(this._keySliding=!1,this.handle.removeClass("ui-state-active"))},_sliderVMouseDown:function(e){return this.options.disabled||e.which!==1&&e.which!==0&&e.which!==r?!1:this._trigger("beforestart",e)===!1?!1:(this.dragging=!0,this.userModified=!1,this.mouseMoved=!1,this.isToggleSwitch&&(this.beforeStart=this.element[0].selectedIndex),this.refresh(e),this._trigger("start"),!1)},_sliderVMouseUp:function(){if(this.dragging)return this.dragging=!1,this.isToggleSwitch&&(this.handle.addClass("ui-slider-handle-snapping"),this.mouseMoved?this.userModified?this.refresh(this.beforeStart===0?1:0):this.refresh(this.beforeStart):this.refresh(this.beforeStart===0?1:0)),this.mouseMoved=!1,this._trigger("stop"),!1},_preventDocumentDrag:function(e){if(this._trigger("drag",e)===!1)return!1;if(this.dragging&&!this.options.disabled)return this.mouseMoved=!0,this.isToggleSwitch&&this.handle.removeClass("ui-slider-handle-snapping"),this.refresh(e),this.userModified=this.beforeStart!==this.element[0].selectedIndex,!1},_checkedRefresh:function(){this.value!==this._value()&&this.refresh(this._value())},_value:function(){return this.isToggleSwitch?this.element[0].selectedIndex:parseFloat(this.element.val())},_reset:function(){this.refresh(r,!1,!0)},refresh:function(t,r,i){var s=this,o=e.mobile.getAttribute(this.element[0],"theme"),u=this.options.theme||o,a=u?" ui-btn-"+u:"",f=this.options.trackTheme||o,l=f?" ui-bar-"+f:" ui-bar-inherit",c=this.options.corners?" ui-corner-all":"",h=this.options.mini?" ui-mini":"",p,d,v,m,g,y,b,w,E,S,x,T,N,C,k,L,A,O,M,_;s.slider[0].className=[this.isToggleSwitch?"ui-slider ui-slider-switch ui-slider-track ui-shadow-inset":"ui-slider-track ui-shadow-inset",l,c,h].join(""),(this.options.disabled||this.element.prop("disabled"))&&this.disable(),this.value=this._value(),this.options.highlight&&!this.isToggleSwitch&&this.slider.find(".ui-slider-bg").length===0&&(this.valuebg=function(){var t=n.createElement("div");return t.className="ui-slider-bg "+e.mobile.activeBtnClass,e(t).prependTo(s.slider)}()),this.handle.addClass("ui-btn"+a+" ui-shadow"),b=this.element,w=!this.isToggleSwitch,E=w?[]:b.find("option"),S=w?parseFloat(b.attr("min")):0,x=w?parseFloat(b.attr("max")):E.length-1,T=w&&parseFloat(b.attr("step"))>0?parseFloat(b.attr("step")):1;if(typeof t=="object"){v=t,m=8,p=this.slider.offset().left,d=this.slider.width(),g=d/((x-S)/T);if(!this.dragging||v.pageX<p-m||v.pageX>p+d+m)return;g>1?y=(v.pageX-p)/d*100:y=Math.round((v.pageX-p)/d*100)}else t==null&&(t=w?parseFloat(b.val()||0):b[0].selectedIndex),y=(parseFloat(t)-S)/(x-S)*100;if(isNaN(y))return;N=y/100*(x-S)+S,C=(N-S)%T,k=N-C,Math.abs(C)*2>=T&&(k+=C>0?T:-T),L=100/((x-S)/T),N=parseFloat(k.toFixed(5)),typeof g=="undefined"&&(g=d/((x-S)/T)),g>1&&w&&(y=(N-S)*L*(1/T)),y<0&&(y=0),y>100&&(y=100),N<S&&(N=S),N>x&&(N=x),this.handle.css("left",y+"%"),this.handle[0].setAttribute("aria-valuenow",w?N:E.eq(N).attr("value")),this.handle[0].setAttribute("aria-valuetext",w?N:E.eq(N).getEncodedText()),this.handle[0].setAttribute("title",w?N:E.eq(N).getEncodedText()),this.valuebg&&this.valuebg.css("width",y+"%"),this._labels&&(A=this.handle.width()/this.slider.width()*100,O=y&&A+(100-A)*y/100,M=y===100?0:Math.min(A+100-O,100),this._labels.each(function(){var t=e(this).hasClass("ui-slider-label-a");e(this).width((t?O:M)+"%")}));if(!i){_=!1,w?(_=parseFloat(b.val())!==N,b.val(N)):(_=b[0].selectedIndex!==N,b[0].selectedIndex=N);if(this._trigger("beforechange",t)===!1)return!1;!r&&_&&b.trigger("change")}},_setHighlight:function(e){e=!!e,e?(this.options.highlight=!!e,this.refresh()):this.valuebg&&(this.valuebg.remove(),this.valuebg=!1)},_setTheme:function(e){this.handle.removeClass("ui-btn-"+this.options.theme).addClass("ui-btn-"+e);var t=this.options.theme?this.options.theme:"inherit",n=e?e:"inherit";this.control.removeClass("ui-body-"+t).addClass("ui-body-"+n)},_setTrackTheme:function(e){var t=this.options.trackTheme?this.options.trackTheme:"inherit",n=e?e:"inherit";this.slider.removeClass("ui-body-"+t).addClass("ui-body-"+n)},_setMini:function(e){e=!!e,!this.isToggleSwitch&&!this.isRangeslider&&(this.slider.parent().toggleClass("ui-mini",e),this.element.toggleClass("ui-mini",e)),this.slider.toggleClass("ui-mini",e)},_setCorners:function(e){this.slider.toggleClass("ui-corner-all",e),this.isToggleSwitch||this.control.toggleClass("ui-corner-all",e)},_setDisabled:function(e){e=!!e,this.element.prop("disabled",e),this.slider.toggleClass("ui-state-disabled",e).attr("aria-disabled",e),this.element.toggleClass("ui-state-disabled",e)}},e.mobile.behaviors.formReset))}(e),function(e,t){e.widget("mobile.rangeslider",e.extend({options:{theme:null,trackTheme:null,corners:!0,mini:!1,highlight:!0},_create:function(){var t=this.element,n=this.options.mini?"ui-rangeslider ui-mini":"ui-rangeslider",r=t.find("input").first(),i=t.find("input").last(),s=t.find("label").first(),o=e.data(r.get(0),"mobile-slider")||e.data(r.slider().get(0),"mobile-slider"),u=e.data(i.get(0),"mobile-slider")||e.data(i.slider().get(0),"mobile-slider"),a=o.slider,f=u.slider,l=o.handle,c=e("<div class='ui-rangeslider-sliders' />").appendTo(t);r.addClass("ui-rangeslider-first"),i.addClass("ui-rangeslider-last"),t.addClass(n),a.appendTo(c),f.appendTo(c),s.insertBefore(t),l.prependTo(f),e.extend(this,{_inputFirst:r,_inputLast:i,_sliderFirst:a,_sliderLast:f,_label:s,_targetVal:null,_sliderTarget:!1,_sliders:c,_proxy:!1}),this.refresh(),this._on(this.element.find("input.ui-slider-input"),{slidebeforestart:"_slidebeforestart",slidestop:"_slidestop",slidedrag:"_slidedrag",slidebeforechange:"_change",blur:"_change",keyup:"_change"}),this._on({mousedown:"_change"}),this._on(this.element.closest("form"),{reset:"_handleReset"}),this._on(l,{vmousedown:"_dragFirstHandle"})},_handleReset:function(){var e=this;setTimeout(function(){e._updateHighlight()},0)},_dragFirstHandle:function(t){return e.data(this._inputFirst.get(0),"mobile-slider").dragging=!0,e.data(this._inputFirst.get(0),"mobile-slider").refresh(t),e.data(this._inputFirst.get(0),"mobile-slider")._trigger("start"),!1},_slidedrag:function(t){var n=e(t.target).is(this._inputFirst),r=n?this._inputLast:this._inputFirst;this._sliderTarget=!1;if(this._proxy==="first"&&n||this._proxy==="last"&&!n)return e.data(r.get(0),"mobile-slider").dragging=!0,e.data(r.get(0),"mobile-slider").refresh(t),!1},_slidestop:function(t){var n=e(t.target).is(this._inputFirst);this._proxy=!1,this.element.find("input").trigger("vmouseup"),this._sliderFirst.css("z-index",n?1:"")},_slidebeforestart:function(t){this._sliderTarget=!1,e(t.originalEvent.target).hasClass("ui-slider-track")&&(this._sliderTarget=!0,this._targetVal=e(t.target).val())},_setOptions:function(e){e.theme!==t&&this._setTheme(e.theme),e.trackTheme!==t&&this._setTrackTheme(e.trackTheme),e.mini!==t&&this._setMini(e.mini),e.highlight!==t&&this._setHighlight(e.highlight),e.disabled!==t&&this._setDisabled(e.disabled),this._super(e),this.refresh()},refresh:function(){var e=this.element,t=this.options;if(this._inputFirst.is(":disabled")||this._inputLast.is(":disabled"))this.options.disabled=!0;e.find("input").slider({theme:t.theme,trackTheme:t.trackTheme,disabled:t.disabled,corners:t.corners,mini:t.mini,highlight:t.highlight}).slider("refresh"),this._updateHighlight()},_change:function(t){if(t.type==="keyup")return this._updateHighlight(),!1;var n=this,r=parseFloat(this._inputFirst.val(),10),i=parseFloat(this._inputLast.val(),10),s=e(t.target).hasClass("ui-rangeslider-first"),o=s?this._inputFirst:this._inputLast,u=s?this._inputLast:this._inputFirst;if(this._inputFirst.val()>this._inputLast.val()&&t.type==="mousedown"&&!e(t.target).hasClass("ui-slider-handle"))o.blur();else if(t.type==="mousedown")return;r>i&&!this._sliderTarget?(o.val(s?i:r).slider("refresh"),this._trigger("normalize")):r>i&&(o.val(this._targetVal).slider("refresh"),setTimeout(function(){u.val(s?r:i).slider("refresh"),e.data(u.get(0),"mobile-slider").handle.focus(),n._sliderFirst.css("z-index",s?"":1),n._trigger("normalize")},0),this._proxy=s?"first":"last"),r===i?(e.data(o.get(0),"mobile-slider").handle.css("z-index",1),e.data(u.get(0),"mobile-slider").handle.css("z-index",0)):(e.data(u.get(0),"mobile-slider").handle.css("z-index",""),e.data(o.get(0),"mobile-slider").handle.css("z-index","")),this._updateHighlight();if(r>=i)return!1},_updateHighlight:function(){var t=parseInt(e.data(this._inputFirst.get(0),"mobile-slider").handle.get(0).style.left,10),n=parseInt(e.data(this._inputLast.get(0),"mobile-slider").handle.get(0).style.left,10),r=n-t;this.element.find(".ui-slider-bg").css({"margin-left":t+"%",width:r+"%"})},_setTheme:function(e){this._inputFirst.slider("option","theme",e),this._inputLast.slider("option","theme",e)},_setTrackTheme:function(e){this._inputFirst.slider("option","trackTheme",e),this._inputLast.slider("option","trackTheme",e)},_setMini:function(e){this._inputFirst.slider("option","mini",e),this._inputLast.slider("option","mini",e),this.element.toggleClass("ui-mini",!!e)},_setHighlight:function(e){this._inputFirst.slider("option","highlight",e),this._inputLast.slider("option","highlight",e)},_setDisabled:function(e){this._inputFirst.prop("disabled",e),this._inputLast.prop("disabled",e)},_destroy:function(){this._label.prependTo(this.element),this.element.removeClass("ui-rangeslider ui-mini"),this._inputFirst.after(this._sliderFirst),this._inputLast.after(this._sliderLast),this._sliders.remove(),this.element.find("input").removeClass("ui-rangeslider-first ui-rangeslider-last").slider("destroy")}},e.mobile.behaviors.formReset))}(e),function(e,r){e.widget("mobile.selectmenu",e.extend({initSelector:"select:not( :jqmData(role='slider')):not( :jqmData(role='flipswitch') )",options:{theme:null,icon:"carat-d",iconpos:"right",inline:!1,corners:!0,shadow:!0,iconshadow:!1,overlayTheme:null,dividerTheme:null,hidePlaceholderMenuItems:!0,closeText:"Close",nativeMenu:!0,preventFocusZoom:/iPhone|iPad|iPod/.test(navigator.platform)&&navigator.userAgent.indexOf("AppleWebKit")>-1,mini:!1},_button:function(){return e("<div/>")},_setDisabled:function(e){return this.element.attr("disabled",e),this.button.attr("aria-disabled",e),this._setOption("disabled",e)},_focusButton:function(){var e=this;setTimeout(function(){e.button.focus()},40)},_selectOptions:function(){return this.select.find("option")},_preExtension:function(){var t=this.options.inline||this.element.jqmData("inline"),n=this.options.mini||this.element.jqmData("mini"),r="";!~this.element[0].className.indexOf("ui-btn-left")||(r=" ui-btn-left"),!~this.element[0].className.indexOf("ui-btn-right")||(r=" ui-btn-right"),t&&(r+=" ui-btn-inline"),n&&(r+=" ui-mini"),this.select=this.element.removeClass("ui-btn-left ui-btn-right").wrap("<div class='ui-select"+r+"'>"),this.selectId=this.select.attr("id")||"select-"+this.uuid,this.buttonId=this.selectId+"-button",this.label=e("label[for='"+this.selectId+"']"),this.isMultiple=this.select[0].multiple},_destroy:function(){var e=this.element.parents(".ui-select");e.length>0&&(e.is(".ui-btn-left, .ui-btn-right")&&this.element.addClass(e.hasClass("ui-btn-left")?"ui-btn-left":"ui-btn-right"),this.element.insertAfter(e),e.remove())},_create:function(){this._preExtension(),this.button=this._button();var n=this,r=this.options,i=r.icon?r.iconpos||this.select.jqmData("iconpos"):!1,s=this.button.insertBefore(this.select).attr("id",this.buttonId).addClass("ui-btn"+(r.icon?" ui-icon-"+r.icon+" ui-btn-icon-"+i+(r.iconshadow?" ui-shadow-icon":""):"")+(r.theme?" ui-btn-"+r.theme:"")+(r.corners?" ui-corner-all":"")+(r.shadow?" ui-shadow":""));this.setButtonText(),r.nativeMenu&&t.opera&&t.opera.version&&s.addClass("ui-select-nativeonly"),this.isMultiple&&(this.buttonCount=e("<span>").addClass("ui-li-count ui-body-inherit").hide().appendTo(s.addClass("ui-li-has-count"))),(r.disabled||this.element.attr("disabled"))&&this.disable(),this.select.change(function(){n.refresh(),!r.nativeMenu||n._delay(function(){n.select.blur()})}),this._handleFormReset(),this._on(this.button,{keydown:"_handleKeydown"}),this.build()},build:function(){var t=this;this.select.appendTo(t.button).bind("vmousedown",function(){t.button.addClass(e.mobile.activeBtnClass)}).bind("focus",function(){t.button.addClass(e.mobile.focusClass)}).bind("blur",function(){t.button.removeClass(e.mobile.focusClass)}).bind("focus vmouseover",function(){t.button.trigger("vmouseover")}).bind("vmousemove",function(){t.button.removeClass(e.mobile.activeBtnClass)}).bind("change blur vmouseout",function(){t.button.trigger("vmouseout").removeClass(e.mobile.activeBtnClass)}),t.button.bind("vmousedown",function(){t.options.preventFocusZoom&&e.mobile.zoom.disable(!0)}),t.label.bind("click focus",function(){t.options.preventFocusZoom&&e.mobile.zoom.disable(!0)}),t.select.bind("focus",function(){t.options.preventFocusZoom&&e.mobile.zoom.disable(!0)}),t.button.bind("mouseup",function(){t.options.preventFocusZoom&&setTimeout(function(){e.mobile.zoom.enable(!0)},0)}),t.select.bind("blur",function(){t.options.preventFocusZoom&&e.mobile.zoom.enable(!0)})},selected:function(){return this._selectOptions().filter(":selected")},selectedIndices:function(){var e=this;return this.selected().map(function(){return e._selectOptions().index(this)}).get()},setButtonText:function(){var t=this,r=this.selected(),i=this.placeholder,s=e(n.createElement("span"));this.button.children("span").not(".ui-li-count").remove().end().end().prepend(function(){return r.length?i=r.map(function(){return e(this).text()}).get().join(", "):i=t.placeholder,i?s.text(i):s.html("&#160;"),s.addClass(t.select.attr("class")).addClass(r.attr("class")).removeClass("ui-screen-hidden")}())},setButtonCount:function(){var e=this.selected();this.isMultiple&&this.buttonCount[e.length>1?"show":"hide"]().text(e.length)},_handleKeydown:function(){this._delay("_refreshButton")},_reset:function(){this.refresh()},_refreshButton:function(){this.setButtonText(),this.setButtonCount()},refresh:function(){this._refreshButton()},open:e.noop,close:e.noop,disable:function(){this._setDisabled(!0),this.button.addClass("ui-state-disabled")},enable:function(){this._setDisabled(!1),this.button.removeClass("ui-state-disabled")}},e.mobile.behaviors.formReset))}(e),function(e,t){function r(){return n||(n=e("<div></div>",{"class":"ui-slider-popup ui-shadow ui-corner-all"})),n.clone()}var n;e.widget("mobile.slider",e.mobile.slider,{options:{popupEnabled:!1,showValue:!1},_create:function(){this._super(),e.extend(this,{_currentValue:null,_popup:null,_popupVisible:!1}),this._setOption("popupEnabled",this.options.popupEnabled),this._on(this.handle,{vmousedown:"_showPopup"}),this._on(this.slider.add(this.document),{vmouseup:"_hidePopup"}),this._refresh()},_positionPopup:function(){var e=this.handle.offset();this._popup.offset({left:e.left+(this.handle.width()-this._popup.width())/2,top:e.top-this._popup.outerHeight()-5})},_setOption:function(e,t){this._super(e,t),e==="showValue"?this.handle.html(t&&!this.options.mini?this._value():""):e==="popupEnabled"&&t&&!this._popup&&(this._popup=r().addClass("ui-body-"+(this.options.theme||"a")).hide().insertBefore(this.element))},refresh:function(){this._super.apply(this,arguments),this._refresh()},_refresh:function(){var e=this.options,t;e.popupEnabled&&this.handle.removeAttr("title"),t=this._value();if(t===this._currentValue)return;this._currentValue=t,e.popupEnabled&&this._popup&&(this._positionPopup(),this._popup.html(t)),e.showValue&&!this.options.mini&&this.handle.html(t)},_showPopup:function(){this.options.popupEnabled&&!this._popupVisible&&(this.handle.html(""),this._popup.show(),this._positionPopup(),this._popupVisible=!0)},_hidePopup:function(){var e=this.options;e.popupEnabled&&this._popupVisible&&(e.showValue&&!e.mini&&this.handle.html(this._value()),this._popup.hide(),this._popupVisible=!1)}})}(e),function(e,t){var n=e.mobile.getAttribute;e.widget("mobile.listview",e.extend({options:{theme:null,countTheme:null,dividerTheme:null,icon:"carat-r",splitIcon:"carat-r",splitTheme:null,corners:!0,shadow:!0,inset:!1},_create:function(){var e=this,t="";t+=e.options.inset?" ui-listview-inset":"",!e.options.inset||(t+=e.options.corners?" ui-corner-all":"",t+=e.options.shadow?" ui-shadow":""),e.element.addClass(" ui-listview"+t),e.refresh(!0)},_findFirstElementByTagName:function(e,t,n,r){var i={};i[n]=i[r]=!0;while(e){if(i[e.nodeName])return e;e=e[t]}return null},_addThumbClasses:function(t){var n,r,i=t.length;for(n=0;n<i;n++)r=e(this._findFirstElementByTagName(t[n].firstChild,"nextSibling","img","IMG")),r.length&&e(this._findFirstElementByTagName(r[0].parentNode,"parentNode","li","LI")).addClass(r.hasClass("ui-li-icon")?"ui-li-has-icon":"ui-li-has-thumb")},_getChildrenByTagName:function(t,n,r){var i=[],s={};s[n]=s[r]=!0,t=t.firstChild;while(t)s[t.nodeName]&&i.push(t),t=t.nextSibling;return e(i)},_beforeListviewRefresh:e.noop,_afterListviewRefresh:e.noop,refresh:function(t){var r,i,s,o,u,a,f,l,c,h,p,d,v,m,g,y,b,w,E,S,x=this.options,T=this.element,N=!!e.nodeName(T[0],"ol"),C=T.attr("start"),k={},L=T.find(".ui-li-count"),A=n(T[0],"counttheme")||this.options.countTheme,O=A?"ui-body-"+A:"ui-body-inherit";x.theme&&T.addClass("ui-group-theme-"+x.theme),N&&(C||C===0)&&(p=parseInt(C,10)-1,T.css("counter-reset","listnumbering "+p)),this._beforeListviewRefresh(),S=this._getChildrenByTagName(T[0],"li","LI");for(i=0,s=S.length;i<s;i++){o=S.eq(i),u="";if(t||o[0].className.search(/\bui-li-static\b|\bui-li-divider\b/)<0)c=this._getChildrenByTagName(o[0],"a","A"),h=n(o[0],"role")==="list-divider",v=o.attr("value"),a=n(o[0],"theme"),c.length&&c[0].className.search(/\bui-btn\b/)<0&&!h?(f=n(o[0],"icon"),l=f===!1?!1:f||x.icon,c.removeClass("ui-link"),r="ui-btn",a&&(r+=" ui-btn-"+a),c.length>1?(u="ui-li-has-alt",m=c.last(),g=n(m[0],"theme")||x.splitTheme||n(o[0],"theme",!0),y=g?" ui-btn-"+g:"",b=n(m[0],"icon")||n(o[0],"icon")||x.splitIcon,w="ui-btn ui-btn-icon-notext ui-icon-"+b+y,m.attr("title",e.trim(m.getEncodedText())).addClass(w).empty(),c=c.first()):l&&(r+=" ui-btn-icon-right ui-icon-"+l),c.addClass(r)):h?(E=n(o[0],"theme")||x.dividerTheme||x.theme,u="ui-li-divider ui-bar-"+(E?E:"inherit"),o.attr("role","heading")):c.length<=0&&(u="ui-li-static ui-body-"+(a?a:"inherit")),N&&v&&(d=parseInt(v,10)-1,o.css("counter-reset","listnumbering "+d));k[u]||(k[u]=[]),k[u].push(o[0])}for(u in k)e(k[u]).addClass(u);L.each(function(){e(this).closest("li").addClass("ui-li-has-count")}),O&&L.not("[class*='ui-body-']").addClass(O),this._addThumbClasses(S),this._addThumbClasses(S.find(".ui-btn")),this._afterListviewRefresh(),this._addFirstLastClasses(S,this._getVisibles(S,t),t)}},e.mobile.behaviors.addFirstLastClasses))}(e),function(e,t){e.widget("mobile.navbar",{options:{iconpos:"top",grid:null},_create:function(){var r=this.element,i=r.find("a, button"),s=i.filter(":jqmData(icon)").length?this.options.iconpos:t;r.addClass("ui-navbar").attr("role","navigation").find("ul").jqmEnhanceable().grid({grid:this.options.grid}),i.each(function(){var t=e.mobile.getAttribute(this,"icon"),n=e.mobile.getAttribute(this,"theme"),r="ui-btn";n&&(r+=" ui-btn-"+n),t&&(r+=" ui-icon-"+t+" ui-btn-icon-"+s),e(this).addClass(r)}),r.delegate("a","vclick",function(){var t=e(this);t.hasClass("ui-state-disabled")||t.hasClass("ui-disabled")||t.hasClass(e.mobile.activeBtnClass)||(i.removeClass(e.mobile.activeBtnClass),t.addClass(e.mobile.activeBtnClass),e(n).one("pagehide",function(){t.removeClass(e.mobile.activeBtnClass)}))}),r.closest(".ui-page").bind("pagebeforeshow",function(){i.filter(".ui-state-persist").addClass(e.mobile.activeBtnClass)})}})}(e),function(e,n){e.widget("mobile.panel",{options:{classes:{panel:"ui-panel",panelOpen:"ui-panel-open",panelClosed:"ui-panel-closed",panelFixed:"ui-panel-fixed",panelInner:"ui-panel-inner",modal:"ui-panel-dismiss",modalOpen:"ui-panel-dismiss-open",pageContainer:"ui-panel-page-container",pageWrapper:"ui-panel-wrapper",pageFixedToolbar:"ui-panel-fixed-toolbar",pageContentPrefix:"ui-panel-page-content",animate:"ui-panel-animate"},animate:!0,theme:null,position:"left",dismissible:!0,display:"reveal",swipeClose:!0,positionFixed:!1},_closeLink:null,_parentPage:null,_page:null,_modal:null,_panelInner:null,_wrapper:null,_fixedToolbars:null,_create:function(){var t=this.element,n=t.closest(".ui-page, :jqmData(role='page')");e.extend(this,{_closeLink:t.find(":jqmData(rel='close')"),_parentPage:n.length>0?n:!1,_openedPage:null,_page:this._getPage,_panelInner:this._getPanelInner(),_fixedToolbars:this._getFixedToolbars}),this.options.display!=="overlay"&&this._getWrapper(),this._addPanelClasses(),e.support.cssTransform3d&&!!this.options.animate&&this.element.addClass(this.options.classes.animate),this._bindUpdateLayout(),this._bindCloseEvents(),this._bindLinkListeners(),this._bindPageEvents(),!this.options.dismissible||this._createModal(),this._bindSwipeEvents()},_getPanelInner:function(){var e=this.element.find("."+this.options.classes.panelInner);return e.length===0&&(e=this.element.children().wrapAll("<div class='"+this.options.classes.panelInner+"' />").parent()),e},_createModal:function(){var t=this,n=t._parentPage?t._parentPage.parent():t.element.parent();t._modal=e("<div class='"+t.options.classes.modal+"'></div>").on("mousedown",function(){t.close()}).appendTo(n)},_getPage:function(){var t=this._openedPage||this._parentPage||e("."+e.mobile.activePageClass);return t},_getWrapper:function(){var e=this._page().find("."+this.options.classes.pageWrapper);e.length===0&&(e=this._page().children(".ui-header:not(.ui-header-fixed), .ui-content:not(.ui-popup), .ui-footer:not(.ui-footer-fixed)").wrapAll("<div class='"+this.options.classes.pageWrapper+"'></div>").parent()),this._wrapper=e},_getFixedToolbars:function(){var t=e("body").children(".ui-header-fixed, .ui-footer-fixed"),n=this._page().find(".ui-header-fixed, .ui-footer-fixed"),r=t.add(n).addClass(this.options.classes.pageFixedToolbar);return r},_getPosDisplayClasses:function(e){return e+"-position-"+this.options.position+" "+e+"-display-"+this.options.display},_getPanelClasses:function(){var e=this.options.classes.panel+" "+this._getPosDisplayClasses(this.options.classes.panel)+" "+this.options.classes.panelClosed+" "+"ui-body-"+(this.options.theme?this.options.theme:"inherit");return!this.options.positionFixed||(e+=" "+this.options.classes.panelFixed),e},_addPanelClasses:function(){this.element.addClass(this._getPanelClasses())},_handleCloseClick:function(e){e.isDefaultPrevented()||this.close()},_bindCloseEvents:function(){this._on(this._closeLink,{click:"_handleCloseClick"}),this._on({"click a:jqmData(ajax='false')":"_handleCloseClick"})},_positionPanel:function(t){var n=this,r=n._panelInner.outerHeight(),i=r>e.mobile.getScreenHeight();i||!n.options.positionFixed?(i&&(n._unfixPanel(),e.mobile.resetActivePageHeight(r)),t&&this.window[0].scrollTo(0,e.mobile.defaultHomeScroll)):n._fixPanel()},_bindFixListener:function(){this._on(e(t),{throttledresize:"_positionPanel"})},_unbindFixListener:function(){this._off(e(t),"throttledresize")},_unfixPanel:function(){!!this.options.positionFixed&&e.support.fixedPosition&&this.element.removeClass(this.options.classes.panelFixed)},_fixPanel:function(){!!this.options.positionFixed&&e.support.fixedPosition&&this.element.addClass(this.options.classes.panelFixed)},_bindUpdateLayout:function(){var e=this;e.element.on("updatelayout",function(){e._open&&e._positionPanel()})},_bindLinkListeners:function(){this._on("body",{"click a":"_handleClick"})},_handleClick:function(t){var r,i=this.element.attr("id");t.currentTarget.href.split("#")[1]===i&&i!==n&&(t.preventDefault(),r=e(t.target),r.hasClass("ui-btn")&&(r.addClass(e.mobile.activeBtnClass),this.element.one("panelopen panelclose",function(){r.removeClass(e.mobile.activeBtnClass)})),this.toggle())},_bindSwipeEvents:function(){var e=this,t=e._modal?e.element.add(e._modal):e.element;!e.options.swipeClose||(e.options.position==="left"?t.on("swipeleft.panel",function(){e.close()}):t.on("swiperight.panel",function(){e.close()}))},_bindPageEvents:function(){var e=this;this.document.on("panelbeforeopen",function(t){e._open&&t.target!==e.element[0]&&e.close()}).on("keyup.panel",function(t){t.keyCode===27&&e._open&&e.close()}),!this._parentPage&&this.options.display!=="overlay"&&this._on(this.document,{pageshow:function(){this._openedPage=null,this._getWrapper()}}),e._parentPage?this.document.on("pagehide",":jqmData(role='page')",function(){e._open&&e.close(!0)}):this.document.on("pagebeforehide",function(){e._open&&e.close(!0)})},_open:!1,_pageContentOpenClasses:null,_modalOpenClasses:null,open:function(t){if(!this._open){var n=this,r=n.options,i=function(){n._off(n.document,"panelclose"),n._page().jqmData("panel","open"),e.support.cssTransform3d&&!!r.animate&&r.display!=="overlay"&&(n._wrapper.addClass(r.classes.animate),n._fixedToolbars().addClass(r.classes.animate)),!t&&e.support.cssTransform3d&&!!r.animate?(n._wrapper||n.element).animationComplete(s,"transition"):setTimeout(s,0),r.theme&&r.display!=="overlay"&&n._page().parent().addClass(r.classes.pageContainer+"-themed "+r.classes.pageContainer+"-"+r.theme),n.element.removeClass(r.classes.panelClosed).addClass(r.classes.panelOpen),n._positionPanel(!0),n._pageContentOpenClasses=n._getPosDisplayClasses(r.classes.pageContentPrefix),r.display!=="overlay"&&(n._page().parent().addClass(r.classes.pageContainer),n._wrapper.addClass(n._pageContentOpenClasses),n._fixedToolbars().addClass(n._pageContentOpenClasses)),n._modalOpenClasses=n._getPosDisplayClasses(r.classes.modal)+" "+r.classes.modalOpen,n._modal&&n._modal.addClass(n._modalOpenClasses).height(Math.max(n._modal.height(),n.document.height()))},s=function(){if(!n._open)return;r.display!=="overlay"&&(n._wrapper.addClass(r.classes.pageContentPrefix+"-open"),n._fixedToolbars().addClass(r.classes.pageContentPrefix+"-open")),n._bindFixListener(),n._trigger("open"),n._openedPage=n._page()};n._trigger("beforeopen"),n._page().jqmData("panel")==="open"?n._on(n.document,{panelclose:i}):i(),n._open=!0}},close:function(t){if(this._open){var n=this,r=this.options,i=function(){n.element.removeClass(r.classes.panelOpen),r.display!=="overlay"&&(n._wrapper.removeClass(n._pageContentOpenClasses),n._fixedToolbars().removeClass(n._pageContentOpenClasses)),!t&&e.support.cssTransform3d&&!!r.animate?(n._wrapper||n.element).animationComplete(s,"transition"):setTimeout(s,0),n._modal&&n._modal.removeClass(n._modalOpenClasses).height("")},s=function(){r.theme&&r.display!=="overlay"&&n._page().parent().removeClass(r.classes.pageContainer+"-themed "+r.classes.pageContainer+"-"+r.theme),n.element.addClass(r.classes.panelClosed),r.display!=="overlay"&&(n._page().parent().removeClass(r.classes.pageContainer),n._wrapper.removeClass(r.classes.pageContentPrefix+"-open"),n._fixedToolbars().removeClass(r.classes.pageContentPrefix+"-open")),e.support.cssTransform3d&&!!r.animate&&r.display!=="overlay"&&(n._wrapper.removeClass(r.classes.animate),n._fixedToolbars().removeClass(r.classes.animate)),n._fixPanel(),n._unbindFixListener(),e.mobile.resetActivePageHeight(),n._page().jqmRemoveData("panel"),n._trigger("close"),n._openedPage=null};n._trigger("beforeclose"),i(),n._open=!1}},toggle:function(){this[this._open?"close":"open"]()},_destroy:function(){var t,n=this.options,r=e("body > :mobile-panel").length+e.mobile.activePage.find(":mobile-panel").length>1;n.display!=="overlay"&&(t=e("body > :mobile-panel").add(e.mobile.activePage.find(":mobile-panel")),t.not(".ui-panel-display-overlay").not(this.element).length===0&&this._wrapper.children().unwrap(),this._open&&(this._fixedToolbars().removeClass(n.classes.pageContentPrefix+"-open"),e.support.cssTransform3d&&!!n.animate&&this._fixedToolbars().removeClass(n.classes.animate),this._page().parent().removeClass(n.classes.pageContainer),n.theme&&this._page().parent().removeClass(n.classes.pageContainer+"-themed "+n.classes.pageContainer+"-"+n.theme))),r||this.document.off("panelopen panelclose"),this._open&&this._page().jqmRemoveData("panel"),this._panelInner.children().unwrap(),this.element.removeClass([this._getPanelClasses(),n.classes.panelOpen,n.classes.animate].join(" ")).off("swipeleft.panel swiperight.panel").off("panelbeforeopen").off("panelhide").off("keyup.panel").off("updatelayout"),this._modal&&this._modal.remove()}})}(e),function(e,n){function r(e,t,n,r){var i=r;return e<t?i=n+(e-t)/2:i=Math.min(Math.max(n,r-t/2),n+e-t),i}function i(e){return{x:e.scrollLeft(),y:e.scrollTop(),cx:e[0].innerWidth||e.width(),cy:e[0].innerHeight||e.height()}}e.widget("mobile.popup",{options:{wrapperClass:null,theme:null,overlayTheme:null,shadow:!0,corners:!0,transition:"none",positionTo:"origin",tolerance:null,closeLinkSelector:"a:jqmData(rel='back')",closeLinkEvents:"click.popup",navigateEvents:"navigate.popup",closeEvents:"navigate.popup pagebeforechange.popup",dismissible:!0,enhanced:!1,history:!e.mobile.browser.oldIE},_handleDocumentVmousedown:function(t){this._isOpen&&e.contains(this._ui.container[0],t.target)&&this._ignoreResizeEvents()},_create:function(){var t=this.element,n=t.attr("id"),r=this.options;r.history=r.history&&e.mobile.ajaxEnabled&&e.mobile.hashListeningEnabled,this._on(this.document,{vmousedown:"_handleDocumentVmousedown"}),e.extend(this,{_scrollTop:0,_page:t.closest(".ui-page"),_ui:null,_fallbackTransition:"",_currentTransition:!1,_prerequisites:null,_isOpen:!1,_tolerance:null,_resizeData:null,_ignoreResizeTo:0,_orientationchangeInProgress:!1}),this._page.length===0&&(this._page=e("body")),r.enhanced?this._ui={container:t.parent(),screen:t.parent().prev(),placeholder:e(this.document[0].getElementById(n+"-placeholder"))}:(this._ui=this._enhance(t,n),this._applyTransition(r.transition)),this._setTolerance(r.tolerance)._ui.focusElement=this._ui.container,this._on(this._ui.screen,{vclick:"_eatEventAndClose"}),this._on(this.window,{orientationchange:e.proxy(this,"_handleWindowOrientationchange"),resize:e.proxy(this,"_handleWindowResize"),keyup:e.proxy(this,"_handleWindowKeyUp")}),this._on(this.document,{focusin:"_handleDocumentFocusIn"})},_enhance:function(t,n){var r=this.options,i=r.wrapperClass,s={screen:e("<div class='ui-screen-hidden ui-popup-screen "+this._themeClassFromOption("ui-overlay-",r.overlayTheme)+"'></div>"),placeholder:e("<div style='display: none;'><!-- placeholder --></div>"),container:e("<div class='ui-popup-container ui-popup-hidden ui-popup-truncate"+(i?" "+i:"")+"'></div>")},o=this.document[0].createDocumentFragment();return o.appendChild(s.screen[0]),o.appendChild(s.container[0]),n&&(s.screen.attr("id",n+"-screen"),s.container.attr("id",n+"-popup"),s.placeholder.attr("id",n+"-placeholder").html("<!-- placeholder for "+n+" -->")),this._page[0].appendChild(o),s.placeholder.insertAfter(t),t.detach().addClass("ui-popup "+this._themeClassFromOption("ui-body-",r.theme)+" "+(r.shadow?"ui-overlay-shadow ":"")+(r.corners?"ui-corner-all ":"")).appendTo(s.container),s},_eatEventAndClose:function(e){return e.preventDefault(),e.stopImmediatePropagation(),this.options.dismissible&&this.close(),!1},_resizeScreen:function(){var e=this._ui.screen,t=this._ui.container.outerHeight(!0),n=e.removeAttr("style").height(),r=this.document.height()-1;n<r?e.height(r):t>n&&e.height(t)},_handleWindowKeyUp:function(t){if(this._isOpen&&t.keyCode===e.mobile.keyCode.ESCAPE)return this._eatEventAndClose(t)},_expectResizeEvent:function(){var e=i(this.window);if(this._resizeData){if(e.x===this._resizeData.windowCoordinates.x&&e.y===this._resizeData.windowCoordinates.y&&e.cx===this._resizeData.windowCoordinates.cx&&e.cy===this._resizeData.windowCoordinates.cy)return!1;clearTimeout(this._resizeData.timeoutId)}return this._resizeData={timeoutId:this._delay("_resizeTimeout",200),windowCoordinates:e},!0},_resizeTimeout:function(){this._isOpen?this._expectResizeEvent()||(this._ui.container.hasClass("ui-popup-hidden")&&(this._ui.container.removeClass("ui-popup-hidden ui-popup-truncate"),this.reposition({positionTo:"window"}),this._ignoreResizeEvents()),this._resizeScreen(),this._resizeData=null,this._orientationchangeInProgress=!1):(this._resizeData=null,this._orientationchangeInProgress=!1)},_stopIgnoringResizeEvents:function(){this._ignoreResizeTo=0},_ignoreResizeEvents:function(){this._ignoreResizeTo&&clearTimeout(this._ignoreResizeTo),this._ignoreResizeTo=this._delay("_stopIgnoringResizeEvents",1e3)},_handleWindowResize:function(){this._isOpen&&this._ignoreResizeTo===0&&(this._expectResizeEvent()||this._orientationchangeInProgress)&&!this._ui.container.hasClass("ui-popup-hidden")&&this._ui.container.addClass("ui-popup-hidden ui-popup-truncate").removeAttr("style")},_handleWindowOrientationchange:function(){!this._orientationchangeInProgress&&this._isOpen&&this._ignoreResizeTo===0&&(this._expectResizeEvent(),this._orientationchangeInProgress=!0)},_handleDocumentFocusIn:function(t){var n,r=t.target,i=this._ui;if(!this._isOpen)return;if(r!==i.container[0]){n=e(r);if(!e.contains(i.container[0],r))return e(this.document[0].activeElement).one("focus",e.proxy(function(){this._safelyBlur(r)},this)),i.focusElement.focus(),t.preventDefault(),t.stopImmediatePropagation(),!1;i.focusElement[0]===i.container[0]&&(i.focusElement=n)}this._ignoreResizeEvents()},_themeClassFromOption:function(e,t){return t?t==="none"?"":e+t:e+"inherit"},_applyTransition:function(t){return t&&(this._ui.container.removeClass(this._fallbackTransition),t!=="none"&&(this._fallbackTransition=e.mobile._maybeDegradeTransition(t),this._fallbackTransition==="none"&&(this._fallbackTransition=""),this._ui.container.addClass(this._fallbackTransition))),this},_setOptions:function(e){var t=this.options,r=this.element,i=this._ui.screen;return e.wrapperClass!==n&&this._ui.container.removeClass(t.wrapperClass).addClass(e.wrapperClass),e.theme!==n&&r.removeClass(this._themeClassFromOption("ui-body-",t.theme)).addClass(this._themeClassFromOption("ui-body-",e.theme)),e.overlayTheme!==n&&(i.removeClass(this._themeClassFromOption("ui-overlay-",t.overlayTheme)).addClass(this._themeClassFromOption("ui-overlay-",e.overlayTheme)),this._isOpen&&i.addClass("in")),e.shadow!==n&&r.toggleClass("ui-overlay-shadow",e.shadow),e.corners!==n&&r.toggleClass("ui-corner-all",e.corners),e.transition!==n&&(this._currentTransition||this._applyTransition(e.transition)),e.tolerance!==n&&this._setTolerance(e.tolerance),e.disabled!==n&&e.disabled&&this.close(),this._super(e)},_setTolerance:function(t){var r={t:30,r:15,b:30,l:15},i;if(t!==n){i=String(t).split(","),e.each(i,function(e,t){i[e]=parseInt(t,10)});switch(i.length){case 1:isNaN(i[0])||(r.t=r.r=r.b=r.l=i[0]);break;case 2:isNaN(i[0])||(r.t=r.b=i[0]),isNaN(i[1])||(r.l=r.r=i[1]);break;case 4:isNaN(i[0])||(r.t=i[0]),isNaN(i[1])||(r.r=i[1]),isNaN(i[2])||(r.b=i[2]),isNaN(i[3])||(r.l=i[3]);break;default:}}return this._tolerance=r,this},_clampPopupWidth:function(e){var t,n=i(this.window),r={x:this._tolerance.l,y:n.y+this._tolerance.t,cx:n.cx-this._tolerance.l-this._tolerance.r,cy:n.cy-this._tolerance.t-this._tolerance.b};return e||this._ui.container.css("max-width",r.cx),t={cx:this._ui.container.outerWidth(!0),cy:this._ui.container.outerHeight(!0)},{rc:r,menuSize:t}},_calculateFinalLocation:function(e,t){var n,i=t.rc,s=t.menuSize;return n={left:r(i.cx,s.cx,i.x,e.x),top:r(i.cy,s.cy,i.y,e.y)},n.top=Math.max(0,n.top),n.top-=Math.min(n.top,Math.max(0,n.top+s.cy-this.document.height())),n},_placementCoords:function(e){return this._calculateFinalLocation(e,this._clampPopupWidth())},_createPrerequisites:function(t,n,r){var i,s=this;i={screen:e.Deferred(),container:e.Deferred()},i.screen.then(function(){i===s._prerequisites&&t()}),i.container.then(function(){i===s._prerequisites&&n()}),e.when(i.screen,i.container).done(function(){i===s._prerequisites&&(s._prerequisites=null,r())}),s._prerequisites=i},_animate:function(t){this._ui.screen.removeClass(t.classToRemove).addClass(t.screenClassToAdd),t.prerequisites.screen.resolve();if(t.transition&&t.transition!=="none"){t.applyTransition&&this._applyTransition(t.transition);if(this._fallbackTransition){this._ui.container.addClass(t.containerClassToAdd).removeClass(t.classToRemove).animationComplete(e.proxy(t.prerequisites.container,"resolve"));return}}this._ui.container.removeClass(t.classToRemove),t.prerequisites.container.resolve()},_desiredCoords:function(t){var n,r=null,s=i(this.window),o=t.x,u=t.y,a=t.positionTo;if(a&&a!=="origin")if(a==="window")o=s.cx/2+s.x,u=s.cy/2+s.y;else{try{r=e(a)}catch(f){r=null}r&&(r.filter(":visible"),r.length===0&&(r=null))}r&&(n=r.offset(),o=n.left+r.outerWidth()/2,u=n.top+r.outerHeight()/2);if(e.type(o)!=="number"||isNaN(o))o=s.cx/2+s.x;if(e.type(u)!=="number"||isNaN(u))u=s.cy/2+s.y;return{x:o,y:u}},_reposition:function(e){e={x:e.x,y:e.y,positionTo:e.positionTo},this._trigger("beforeposition",n,e),this._ui.container.offset(this._placementCoords(this._desiredCoords(e)))},reposition:function(e){this._isOpen&&this._reposition(e)},_safelyBlur:function(t){t!==this.window[0]&&t.nodeName.toLowerCase()!=="body"&&e(t).blur()},_openPrerequisitesComplete:function(){var t=this.element.attr("id"),n=this._ui.container.find(":focusable").first();this._ui.container.addClass("ui-popup-active"),this._isOpen=!0,this._resizeScreen(),e.contains(this._ui.container[0],this.document[0].activeElement)||this._safelyBlur(this.document[0].activeElement),n.length>0&&(this._ui.focusElement=n),this._ignoreResizeEvents(),t&&this.document.find("[aria-haspopup='true'][aria-owns='"+t+"']").attr("aria-expanded",!0),this._trigger("afteropen")},_open:function(t){var n=e.extend({},this.options,t),r=function(){var e=navigator.userAgent,t=e.match(/AppleWebKit\/([0-9\.]+)/),n=!!t&&t[1],r=e.match(/Android (\d+(?:\.\d+))/),i=!!r&&r[1],s=e.indexOf("Chrome")>-1;return r!==null&&i==="4.0"&&n&&n>534.13&&!s?!0:!1}();this._createPrerequisites(e.noop,e.noop,e.proxy(this,"_openPrerequisitesComplete")),this._currentTransition=n.transition,this._applyTransition(n.transition),this._ui.screen.removeClass("ui-screen-hidden"),this._ui.container.removeClass("ui-popup-truncate"),this._reposition(n),this._ui.container.removeClass("ui-popup-hidden"),this.options.overlayTheme&&r&&this.element.closest(".ui-page").addClass("ui-popup-open"),this._animate({additionalCondition:!0,transition:n.transition,classToRemove:"",screenClassToAdd:"in",containerClassToAdd:"in",applyTransition:!1,prerequisites:this._prerequisites})},_closePrerequisiteScreen:function(){this._ui.screen.removeClass("out").addClass("ui-screen-hidden")},_closePrerequisiteContainer:function(){this._ui.container.removeClass("reverse out").addClass("ui-popup-hidden ui-popup-truncate").removeAttr("style")},_closePrerequisitesDone:function(){var t=this._ui.container,r=this.element.attr("id");e.mobile.popup.active=n,e(":focus",t[0]).add(t[0]).blur(),r&&this.document.find("[aria-haspopup='true'][aria-owns='"+r+"']").attr("aria-expanded",!1),this._trigger("afterclose")},_close:function(t){this._ui.container.removeClass("ui-popup-active"),this._page.removeClass("ui-popup-open"),this._isOpen=!1,this._createPrerequisites(e.proxy(this,"_closePrerequisiteScreen"),e.proxy(this,"_closePrerequisiteContainer"),e.proxy(this,"_closePrerequisitesDone")),this._animate({additionalCondition:this._ui.screen.hasClass("in"),transition:t?"none":this._currentTransition,classToRemove:"in",screenClassToAdd:"out",containerClassToAdd:"reverse out",applyTransition:!0,prerequisites:this._prerequisites})},_unenhance:function(){if(this.options.enhanced)return;this._setOptions({theme:e.mobile.popup.prototype.options.theme}),this.element.detach().insertAfter(this._ui.placeholder).removeClass("ui-popup ui-overlay-shadow ui-corner-all ui-body-inherit"),this._ui.screen.remove(),this._ui.container.remove(),this._ui.placeholder.remove()},_destroy:function(){return e.mobile.popup.active===this?(this.element.one("popupafterclose",e.proxy(this,"_unenhance")),this.close()):this._unenhance(),this},_closePopup:function(n,r){var i,s,o=this.options,u=!1;if(n&&n.isDefaultPrevented()||e.mobile.popup.active!==this)return;t.scrollTo(0,this._scrollTop),n&&n.type==="pagebeforechange"&&r&&(typeof r.toPage=="string"?i=r.toPage:i=r.toPage.jqmData("url"),i=e.mobile.path.parseUrl(i),s=i.pathname+i.search+i.hash,this._myUrl!==e.mobile.path.makeUrlAbsolute(s)?u=!0:n.preventDefault()),this.window.off(o.closeEvents),this.element.undelegate(o.closeLinkSelector,o.closeLinkEvents),this._close(u)},_bindContainerClose:function(){this.window.on(this.options.closeEvents,e.proxy(this,"_closePopup"))},widget:function(){return this._ui.container},open:function(t){var n,r,i,s,o,u,a=this,f=this.options;return e.mobile.popup.active||f.disabled?this:(e.mobile.popup.active=this,this._scrollTop=this.window.scrollTop(),f.history?(u=e.mobile.navigate.history,r=e.mobile.dialogHashKey,i=e.mobile.activePage,s=i?i.hasClass("ui-dialog"):!1,this._myUrl=n=u.getActive().url,o=n.indexOf(r)>-1&&!s&&u.activeIndex>0,o?(a._open(t),a._bindContainerClose(),this):(n.indexOf(r)===-1&&!s?n+=n.indexOf("#")>-1?r:"#"+r:n=e.mobile.path.parseLocation().hash+r,this.window.one("beforenavigate",function(e){e.preventDefault(),a._open(t),a._bindContainerClose()}),this.urlAltered=!0,e.mobile.navigate(n,{role:"dialog"}),this)):(a._open(t),a._bindContainerClose(),a.element.delegate(f.closeLinkSelector,f.closeLinkEvents,function(e){a.close(),e.preventDefault()}),this))},close:function(){return e.mobile.popup.active!==this?this:(this._scrollTop=this.window.scrollTop(),this.options.history&&this.urlAltered?(e.mobile.back(),this.urlAltered=!1):this._closePopup(),this)}}),e.mobile.popup.handleLink=function(t){var n,r=e.mobile.path,i=e(r.hashToSelector(r.parseUrl(t.attr("href")).hash)).first();i.length>0&&i.data("mobile-popup")&&(n=t.offset(),i.popup("open",{x:n.left+t.outerWidth()/2,y:n.top+t.outerHeight()/2,transition:t.jqmData("transition"),positionTo:t.jqmData("position-to")})),setTimeout(function(){t.removeClass(e.mobile.activeBtnClass)},300)},e.mobile.document.on("pagebeforechange",function(t,n){n.options.role==="popup"&&(e.mobile.popup.handleLink(n.options.link),t.preventDefault())})}(e),function(e,t){function i(){var e=r.clone(),t=e.eq(0),n=e.eq(1),i=n.children();return{arEls:n.add(t),gd:t,ct:n,ar:i}}var n=e.mobile.browser.oldIE&&e.mobile.browser.oldIE<=8,r=e("<div class='ui-popup-arrow-guide'></div><div class='ui-popup-arrow-container"+(n?" ie":"")+"'>"+"<div class='ui-popup-arrow'></div>"+"</div>");e.widget("mobile.popup",e.mobile.popup,{options:{arrow:""},_create:function(){var e,t=this._super();return this.options.arrow&&(this._ui.arrow=e=this._addArrow()),t},_addArrow:function(){var e,t=this.options,n=i();return e=this._themeClassFromOption("ui-body-",t.theme),n.ar.addClass(e+(t.shadow?" ui-overlay-shadow":"")),n.arEls.hide().appendTo(this.element),n},_unenhance:function(){var e=this._ui.arrow;return e&&e.arEls.remove(),this._super()},_tryAnArrow:function(e,t,n,r,i){var s,o,u,a={},f={};if(r.arFull[e.dimKey]>r.guideDims[e.dimKey])return i;a[e.fst]=n[e.fst]+(r.arHalf[e.oDimKey]+r.menuHalf[e.oDimKey])*e.offsetFactor-r.contentBox[e.fst]+(r.clampInfo.menuSize[e.oDimKey]-r.contentBox[e.oDimKey])*e.arrowOffsetFactor,a[e.snd]=n[e.snd],s=r.result||this._calculateFinalLocation(a,r.clampInfo),o={x:s.left,y:s.top},f[e.fst]=o[e.fst]+r.contentBox[e.fst]+e.tipOffset,f[e.snd]=Math.max(s[e.prop]+r.guideOffset[e.prop]+r.arHalf[e.dimKey],Math.min(s[e.prop]+r.guideOffset[e.prop]+r.guideDims[e.dimKey]-r.arHalf[e.dimKey],n[e.snd])),u=Math.abs(n.x-f.x)+Math.abs(n.y-f.y);if(!i||u<i.diff)f[e.snd]-=r.arHalf[e.dimKey]+s[e.prop]+r.contentBox[e.snd],i={dir:t,diff:u,result:s,posProp:e.prop,posVal:f[e.snd]};return i},_getPlacementState:function(e){var t,n,r=this._ui.arrow,i={clampInfo:this._clampPopupWidth(!e),arFull:{cx:r.ct.width(),cy:r.ct.height()},guideDims:{cx:r.gd.width(),cy:r.gd.height()},guideOffset:r.gd.offset()};return t=this.element.offset(),r.gd.css({left:0,top:0,right:0,bottom:0}),n=r.gd.offset(),i.contentBox={x:n.left-t.left,y:n.top-t.top,cx:r.gd.width(),cy:r.gd.height()},r.gd.removeAttr("style"),i.guideOffset={left:i.guideOffset.left-t.left,top:i.guideOffset.top-t.top},i.arHalf={cx:i.arFull.cx/2,cy:i.arFull.cy/2},i.menuHalf={cx:i.clampInfo.menuSize.cx/2,cy:i.clampInfo.menuSize.cy/2},i},_placementCoords:function(t){var r,i,s,o,u,a=this.options.arrow,f=this._ui.arrow;return f?(f.arEls.show(),u={},r=this._getPlacementState(!0),s={l:{fst:"x",snd:"y",prop:"top",dimKey:"cy",oDimKey:"cx",offsetFactor:1,tipOffset:-r.arHalf.cx,arrowOffsetFactor:0},r:{fst:"x",snd:"y",prop:"top",dimKey:"cy",oDimKey:"cx",offsetFactor:-1,tipOffset:r.arHalf.cx+r.contentBox.cx,arrowOffsetFactor:1},b:{fst:"y",snd:"x",prop:"left",dimKey:"cx",oDimKey:"cy",offsetFactor:-1,tipOffset:r.arHalf.cy+r.contentBox.cy,arrowOffsetFactor:1},t:{fst:"y",snd:"x",prop:"left",dimKey:"cx",oDimKey:"cy",offsetFactor:1,tipOffset:-r.arHalf.cy,arrowOffsetFactor:0}},e.each((a===!0?"l,t,r,b":a).split(","),e.proxy(function(e,n){i=this._tryAnArrow(s[n],n,t,r,i)},this)),i?(f.ct.removeClass("ui-popup-arrow-l ui-popup-arrow-t ui-popup-arrow-r ui-popup-arrow-b").addClass("ui-popup-arrow-"+i.dir).removeAttr("style").css(i.posProp,i.posVal).show(),n||(o=this.element.offset(),u[s[i.dir].fst]=f.ct.offset(),u[s[i.dir].snd]={left:o.left+r.contentBox.x,top:o.top+r.contentBox.y}),i.result):(f.arEls.hide(),this._super(t))):this._super(t)},_setOptions:function(e){var n,r=this.options.theme,i=this._ui.arrow,s=this._super(e);if(e.arrow!==t){if(!i&&e.arrow){this._ui.arrow=this._addArrow();return}i&&!e.arrow&&(i.arEls.remove(),this._ui.arrow=null)}return i=this._ui.arrow,i&&(e.theme!==t&&(r=this._themeClassFromOption("ui-body-",r),n=this._themeClassFromOption("ui-body-",e.theme),i.ar.removeClass(r).addClass(n)),e.shadow!==t&&i.ar.toggleClass("ui-overlay-shadow",e.shadow)),s},_destroy:function(){var e=this._ui.arrow;return e&&e.arEls.remove(),this._super()}})}(e),function(e,t){e.widget("mobile.table",{options:{classes:{table:"ui-table"},enhanced:!1},_create:function(){this.options.enhanced||this.element.addClass(this.options.classes.table),e.extend(this,{headers:t,allHeaders:t}),this._refresh(!0)},_setHeaders:function(){var e=this.element.find("thead tr");this.headers=this.element.find("tr:eq(0)").children(),this.allHeaders=this.headers.add(e.children())},refresh:function(){this._refresh()},rebuild:e.noop,_refresh:function(){var t=this.element,n=t.find("thead tr");this._setHeaders(),n.each(function(){var r=0;e(this).children().each(function(){var i=parseInt(this.getAttribute("colspan"),10),s=":nth-child("+(r+1)+")",o;this.setAttribute("data-"+e.mobile.ns+"colstart",r+1);if(i)for(o=0;o<i-1;o++)r++,s+=", :nth-child("+(r+1)+")";e(this).jqmData("cells",t.find("tr").not(n.eq(0)).not(this).children(s)),r++})})}})}(e),function(e,t){e.widget("mobile.table",e.mobile.table,{options:{mode:"reflow",classes:e.extend(e.mobile.table.prototype.options.classes,{reflowTable:"ui-table-reflow",cellLabels:"ui-table-cell-label"})},_create:function(){this._super();if(this.options.mode!=="reflow")return;this.options.enhanced||(this.element.addClass(this.options.classes.reflowTable),this._updateReflow())},rebuild:function(){this._super(),this.options.mode==="reflow"&&this._refresh(!1)},_refresh:function(e){this._super(e),!e&&this.options.mode==="reflow"&&this._updateReflow()},_updateReflow:function(){var t=this,n=this.options;e(t.allHeaders.get().reverse()).each(function(){var r=e(this).jqmData("cells"),i=e.mobile.getAttribute(this,"colstart"),s=r.not(this).filter("thead th").length&&" ui-table-cell-label-top",o=e(this).clone().contents(),u,a;o.length>0&&(s?(u=parseInt(this.getAttribute("colspan"),10),a="",u&&(a="td:nth-child("+u+"n + "+i+")"),t._addLabels(r.filter(a),n.classes.cellLabels+s,o)):t._addLabels(r,n.classes.cellLabels,o))})},_addLabels:function(t,n,r){r.length===1&&r[0].nodeName.toLowerCase()==="abbr"&&(r=r.eq(0).attr("title")),t.not(":has(b."+n+")").prepend(e("<b class='"+n+"'></b>").append(r))}})}(e)});
 // THIS FILE IS GENERATED - DO NOT EDIT!
-/*global module:false, define:false*/
 
-(function (define, undefined) {
-    define(function () {
-        'use strict';
+(function() {
+    
+    var impl = {};
 
-        var impl = {};
-
-        impl.mobileDetectRules = {
-            "phones": {
-                "iPhone": "\\biPhone\\b|\\biPod\\b",
-                "BlackBerry": "BlackBerry|\\bBB10\\b|rim[0-9]+",
-                "HTC": "HTC|HTC.*(Sensation|Evo|Vision|Explorer|6800|8100|8900|A7272|S510e|C110e|Legend|Desire|T8282)|APX515CKT|Qtek9090|APA9292KT|HD_mini|Sensation.*Z710e|PG86100|Z715e|Desire.*(A8181|HD)|ADR6200|ADR6400L|ADR6425|001HT|Inspire 4G|Android.*\\bEVO\\b|T-Mobile G1|Z520m",
-                "Nexus": "Nexus One|Nexus S|Galaxy.*Nexus|Android.*Nexus.*Mobile|Nexus 4|Nexus 5|Nexus 6",
-                "Dell": "Dell.*Streak|Dell.*Aero|Dell.*Venue|DELL.*Venue Pro|Dell Flash|Dell Smoke|Dell Mini 3iX|XCD28|XCD35|\\b001DL\\b|\\b101DL\\b|\\bGS01\\b",
-                "Motorola": "Motorola|DROIDX|DROID BIONIC|\\bDroid\\b.*Build|Android.*Xoom|HRI39|MOT-|A1260|A1680|A555|A853|A855|A953|A955|A956|Motorola.*ELECTRIFY|Motorola.*i1|i867|i940|MB200|MB300|MB501|MB502|MB508|MB511|MB520|MB525|MB526|MB611|MB612|MB632|MB810|MB855|MB860|MB861|MB865|MB870|ME501|ME502|ME511|ME525|ME600|ME632|ME722|ME811|ME860|ME863|ME865|MT620|MT710|MT716|MT720|MT810|MT870|MT917|Motorola.*TITANIUM|WX435|WX445|XT300|XT301|XT311|XT316|XT317|XT319|XT320|XT390|XT502|XT530|XT531|XT532|XT535|XT603|XT610|XT611|XT615|XT681|XT701|XT702|XT711|XT720|XT800|XT806|XT860|XT862|XT875|XT882|XT883|XT894|XT901|XT907|XT909|XT910|XT912|XT928|XT926|XT915|XT919|XT925",
-                "Samsung": "Samsung|SGH-I337|BGT-S5230|GT-B2100|GT-B2700|GT-B2710|GT-B3210|GT-B3310|GT-B3410|GT-B3730|GT-B3740|GT-B5510|GT-B5512|GT-B5722|GT-B6520|GT-B7300|GT-B7320|GT-B7330|GT-B7350|GT-B7510|GT-B7722|GT-B7800|GT-C3010|GT-C3011|GT-C3060|GT-C3200|GT-C3212|GT-C3212I|GT-C3262|GT-C3222|GT-C3300|GT-C3300K|GT-C3303|GT-C3303K|GT-C3310|GT-C3322|GT-C3330|GT-C3350|GT-C3500|GT-C3510|GT-C3530|GT-C3630|GT-C3780|GT-C5010|GT-C5212|GT-C6620|GT-C6625|GT-C6712|GT-E1050|GT-E1070|GT-E1075|GT-E1080|GT-E1081|GT-E1085|GT-E1087|GT-E1100|GT-E1107|GT-E1110|GT-E1120|GT-E1125|GT-E1130|GT-E1160|GT-E1170|GT-E1175|GT-E1180|GT-E1182|GT-E1200|GT-E1210|GT-E1225|GT-E1230|GT-E1390|GT-E2100|GT-E2120|GT-E2121|GT-E2152|GT-E2220|GT-E2222|GT-E2230|GT-E2232|GT-E2250|GT-E2370|GT-E2550|GT-E2652|GT-E3210|GT-E3213|GT-I5500|GT-I5503|GT-I5700|GT-I5800|GT-I5801|GT-I6410|GT-I6420|GT-I7110|GT-I7410|GT-I7500|GT-I8000|GT-I8150|GT-I8160|GT-I8190|GT-I8320|GT-I8330|GT-I8350|GT-I8530|GT-I8700|GT-I8703|GT-I8910|GT-I9000|GT-I9001|GT-I9003|GT-I9010|GT-I9020|GT-I9023|GT-I9070|GT-I9082|GT-I9100|GT-I9103|GT-I9220|GT-I9250|GT-I9300|GT-I9305|GT-I9500|GT-I9505|GT-M3510|GT-M5650|GT-M7500|GT-M7600|GT-M7603|GT-M8800|GT-M8910|GT-N7000|GT-S3110|GT-S3310|GT-S3350|GT-S3353|GT-S3370|GT-S3650|GT-S3653|GT-S3770|GT-S3850|GT-S5210|GT-S5220|GT-S5229|GT-S5230|GT-S5233|GT-S5250|GT-S5253|GT-S5260|GT-S5263|GT-S5270|GT-S5300|GT-S5330|GT-S5350|GT-S5360|GT-S5363|GT-S5369|GT-S5380|GT-S5380D|GT-S5560|GT-S5570|GT-S5600|GT-S5603|GT-S5610|GT-S5620|GT-S5660|GT-S5670|GT-S5690|GT-S5750|GT-S5780|GT-S5830|GT-S5839|GT-S6102|GT-S6500|GT-S7070|GT-S7200|GT-S7220|GT-S7230|GT-S7233|GT-S7250|GT-S7500|GT-S7530|GT-S7550|GT-S7562|GT-S7710|GT-S8000|GT-S8003|GT-S8500|GT-S8530|GT-S8600|SCH-A310|SCH-A530|SCH-A570|SCH-A610|SCH-A630|SCH-A650|SCH-A790|SCH-A795|SCH-A850|SCH-A870|SCH-A890|SCH-A930|SCH-A950|SCH-A970|SCH-A990|SCH-I100|SCH-I110|SCH-I400|SCH-I405|SCH-I500|SCH-I510|SCH-I515|SCH-I600|SCH-I730|SCH-I760|SCH-I770|SCH-I830|SCH-I910|SCH-I920|SCH-I959|SCH-LC11|SCH-N150|SCH-N300|SCH-R100|SCH-R300|SCH-R351|SCH-R400|SCH-R410|SCH-T300|SCH-U310|SCH-U320|SCH-U350|SCH-U360|SCH-U365|SCH-U370|SCH-U380|SCH-U410|SCH-U430|SCH-U450|SCH-U460|SCH-U470|SCH-U490|SCH-U540|SCH-U550|SCH-U620|SCH-U640|SCH-U650|SCH-U660|SCH-U700|SCH-U740|SCH-U750|SCH-U810|SCH-U820|SCH-U900|SCH-U940|SCH-U960|SCS-26UC|SGH-A107|SGH-A117|SGH-A127|SGH-A137|SGH-A157|SGH-A167|SGH-A177|SGH-A187|SGH-A197|SGH-A227|SGH-A237|SGH-A257|SGH-A437|SGH-A517|SGH-A597|SGH-A637|SGH-A657|SGH-A667|SGH-A687|SGH-A697|SGH-A707|SGH-A717|SGH-A727|SGH-A737|SGH-A747|SGH-A767|SGH-A777|SGH-A797|SGH-A817|SGH-A827|SGH-A837|SGH-A847|SGH-A867|SGH-A877|SGH-A887|SGH-A897|SGH-A927|SGH-B100|SGH-B130|SGH-B200|SGH-B220|SGH-C100|SGH-C110|SGH-C120|SGH-C130|SGH-C140|SGH-C160|SGH-C170|SGH-C180|SGH-C200|SGH-C207|SGH-C210|SGH-C225|SGH-C230|SGH-C417|SGH-C450|SGH-D307|SGH-D347|SGH-D357|SGH-D407|SGH-D415|SGH-D780|SGH-D807|SGH-D980|SGH-E105|SGH-E200|SGH-E315|SGH-E316|SGH-E317|SGH-E335|SGH-E590|SGH-E635|SGH-E715|SGH-E890|SGH-F300|SGH-F480|SGH-I200|SGH-I300|SGH-I320|SGH-I550|SGH-I577|SGH-I600|SGH-I607|SGH-I617|SGH-I627|SGH-I637|SGH-I677|SGH-I700|SGH-I717|SGH-I727|SGH-i747M|SGH-I777|SGH-I780|SGH-I827|SGH-I847|SGH-I857|SGH-I896|SGH-I897|SGH-I900|SGH-I907|SGH-I917|SGH-I927|SGH-I937|SGH-I997|SGH-J150|SGH-J200|SGH-L170|SGH-L700|SGH-M110|SGH-M150|SGH-M200|SGH-N105|SGH-N500|SGH-N600|SGH-N620|SGH-N625|SGH-N700|SGH-N710|SGH-P107|SGH-P207|SGH-P300|SGH-P310|SGH-P520|SGH-P735|SGH-P777|SGH-Q105|SGH-R210|SGH-R220|SGH-R225|SGH-S105|SGH-S307|SGH-T109|SGH-T119|SGH-T139|SGH-T209|SGH-T219|SGH-T229|SGH-T239|SGH-T249|SGH-T259|SGH-T309|SGH-T319|SGH-T329|SGH-T339|SGH-T349|SGH-T359|SGH-T369|SGH-T379|SGH-T409|SGH-T429|SGH-T439|SGH-T459|SGH-T469|SGH-T479|SGH-T499|SGH-T509|SGH-T519|SGH-T539|SGH-T559|SGH-T589|SGH-T609|SGH-T619|SGH-T629|SGH-T639|SGH-T659|SGH-T669|SGH-T679|SGH-T709|SGH-T719|SGH-T729|SGH-T739|SGH-T746|SGH-T749|SGH-T759|SGH-T769|SGH-T809|SGH-T819|SGH-T839|SGH-T919|SGH-T929|SGH-T939|SGH-T959|SGH-T989|SGH-U100|SGH-U200|SGH-U800|SGH-V205|SGH-V206|SGH-X100|SGH-X105|SGH-X120|SGH-X140|SGH-X426|SGH-X427|SGH-X475|SGH-X495|SGH-X497|SGH-X507|SGH-X600|SGH-X610|SGH-X620|SGH-X630|SGH-X700|SGH-X820|SGH-X890|SGH-Z130|SGH-Z150|SGH-Z170|SGH-ZX10|SGH-ZX20|SHW-M110|SPH-A120|SPH-A400|SPH-A420|SPH-A460|SPH-A500|SPH-A560|SPH-A600|SPH-A620|SPH-A660|SPH-A700|SPH-A740|SPH-A760|SPH-A790|SPH-A800|SPH-A820|SPH-A840|SPH-A880|SPH-A900|SPH-A940|SPH-A960|SPH-D600|SPH-D700|SPH-D710|SPH-D720|SPH-I300|SPH-I325|SPH-I330|SPH-I350|SPH-I500|SPH-I600|SPH-I700|SPH-L700|SPH-M100|SPH-M220|SPH-M240|SPH-M300|SPH-M305|SPH-M320|SPH-M330|SPH-M350|SPH-M360|SPH-M370|SPH-M380|SPH-M510|SPH-M540|SPH-M550|SPH-M560|SPH-M570|SPH-M580|SPH-M610|SPH-M620|SPH-M630|SPH-M800|SPH-M810|SPH-M850|SPH-M900|SPH-M910|SPH-M920|SPH-M930|SPH-N100|SPH-N200|SPH-N240|SPH-N300|SPH-N400|SPH-Z400|SWC-E100|SCH-i909|GT-N7100|GT-N7105|SCH-I535|SM-N900A|SGH-I317|SGH-T999L|GT-S5360B|GT-I8262|GT-S6802|GT-S6312|GT-S6310|GT-S5312|GT-S5310|GT-I9105|GT-I8510|GT-S6790N|SM-G7105|SM-N9005|GT-S5301|GT-I9295|GT-I9195|SM-C101|GT-S7392|GT-S7560|GT-B7610|GT-I5510|GT-S7582|GT-S7530E|GT-I8750|SM-G9006V|SM-G9008V|SM-G9009D|SM-G900A|SM-G900D|SM-G900F|SM-G900H|SM-G900I|SM-G900J|SM-G900K|SM-G900L|SM-G900M|SM-G900P|SM-G900R4|SM-G900S|SM-G900T|SM-G900V|SM-G900W8",
-                "LG": "\\bLG\\b;|LG[- ]?(C800|C900|E400|E610|E900|E-900|F160|F180K|F180L|F180S|730|855|L160|LS740|LS840|LS970|LU6200|MS690|MS695|MS770|MS840|MS870|MS910|P500|P700|P705|VM696|AS680|AS695|AX840|C729|E970|GS505|272|C395|E739BK|E960|L55C|L75C|LS696|LS860|P769BK|P350|P500|P509|P870|UN272|US730|VS840|VS950|LN272|LN510|LS670|LS855|LW690|MN270|MN510|P509|P769|P930|UN200|UN270|UN510|UN610|US670|US740|US760|UX265|UX840|VN271|VN530|VS660|VS700|VS740|VS750|VS910|VS920|VS930|VX9200|VX11000|AX840A|LW770|P506|P925|P999|E612|D955|D802)",
-                "Sony": "SonyST|SonyLT|SonyEricsson|SonyEricssonLT15iv|LT18i|E10i|LT28h|LT26w|SonyEricssonMT27i|C5303|C6902|C6903|C6906|C6943|D2533",
-                "Asus": "Asus.*Galaxy|PadFone.*Mobile",
-                "Micromax": "Micromax.*\\b(A210|A92|A88|A72|A111|A110Q|A115|A116|A110|A90S|A26|A51|A35|A54|A25|A27|A89|A68|A65|A57|A90)\\b",
-                "Palm": "PalmSource|Palm",
-                "Vertu": "Vertu|Vertu.*Ltd|Vertu.*Ascent|Vertu.*Ayxta|Vertu.*Constellation(F|Quest)?|Vertu.*Monika|Vertu.*Signature",
-                "Pantech": "PANTECH|IM-A850S|IM-A840S|IM-A830L|IM-A830K|IM-A830S|IM-A820L|IM-A810K|IM-A810S|IM-A800S|IM-T100K|IM-A725L|IM-A780L|IM-A775C|IM-A770K|IM-A760S|IM-A750K|IM-A740S|IM-A730S|IM-A720L|IM-A710K|IM-A690L|IM-A690S|IM-A650S|IM-A630K|IM-A600S|VEGA PTL21|PT003|P8010|ADR910L|P6030|P6020|P9070|P4100|P9060|P5000|CDM8992|TXT8045|ADR8995|IS11PT|P2030|P6010|P8000|PT002|IS06|CDM8999|P9050|PT001|TXT8040|P2020|P9020|P2000|P7040|P7000|C790",
-                "Fly": "IQ230|IQ444|IQ450|IQ440|IQ442|IQ441|IQ245|IQ256|IQ236|IQ255|IQ235|IQ245|IQ275|IQ240|IQ285|IQ280|IQ270|IQ260|IQ250",
-                "Wiko": "KITE 4G|HIGHWAY|GETAWAY|STAIRWAY|DARKSIDE|DARKFULL|DARKNIGHT|DARKMOON|SLIDE|WAX 4G|RAINBOW|BLOOM|SUNSET|GOA|LENNY|BARRY|IGGY|OZZY|CINK FIVE|CINK PEAX|CINK PEAX 2|CINK SLIM|CINK SLIM 2|CINK +|CINK KING|CINK PEAX|CINK SLIM|SUBLIM",
-                "iMobile": "i-mobile (IQ|i-STYLE|idea|ZAA|Hitz)",
-                "SimValley": "\\b(SP-80|XT-930|SX-340|XT-930|SX-310|SP-360|SP60|SPT-800|SP-120|SPT-800|SP-140|SPX-5|SPX-8|SP-100|SPX-8|SPX-12)\\b",
-                "Wolfgang": "AT-B24D|AT-AS50HD|AT-AS40W|AT-AS55HD|AT-AS45q2|AT-B26D|AT-AS50Q",
-                "Alcatel": "Alcatel",
-                "Nintendo": "Nintendo 3DS",
-                "Amoi": "Amoi",
-                "INQ": "INQ",
-                "GenericPhone": "Tapatalk|PDA;|SAGEM|\\bmmp\\b|pocket|\\bpsp\\b|symbian|Smartphone|smartfon|treo|up.browser|up.link|vodafone|\\bwap\\b|nokia|Series40|Series60|S60|SonyEricsson|N900|MAUI.*WAP.*Browser"
-            },
-            "tablets": {
-                "iPad": "iPad|iPad.*Mobile",
-                "NexusTablet": "Android.*Nexus[\\s]+(7|9|10)|^.*Android.*Nexus(?:(?!Mobile).)*$",
-                "SamsungTablet": "SAMSUNG.*Tablet|Galaxy.*Tab|SC-01C|GT-P1000|GT-P1003|GT-P1010|GT-P3105|GT-P6210|GT-P6800|GT-P6810|GT-P7100|GT-P7300|GT-P7310|GT-P7500|GT-P7510|SCH-I800|SCH-I815|SCH-I905|SGH-I957|SGH-I987|SGH-T849|SGH-T859|SGH-T869|SPH-P100|GT-P3100|GT-P3108|GT-P3110|GT-P5100|GT-P5110|GT-P6200|GT-P7320|GT-P7511|GT-N8000|GT-P8510|SGH-I497|SPH-P500|SGH-T779|SCH-I705|SCH-I915|GT-N8013|GT-P3113|GT-P5113|GT-P8110|GT-N8010|GT-N8005|GT-N8020|GT-P1013|GT-P6201|GT-P7501|GT-N5100|GT-N5105|GT-N5110|SHV-E140K|SHV-E140L|SHV-E140S|SHV-E150S|SHV-E230K|SHV-E230L|SHV-E230S|SHW-M180K|SHW-M180L|SHW-M180S|SHW-M180W|SHW-M300W|SHW-M305W|SHW-M380K|SHW-M380S|SHW-M380W|SHW-M430W|SHW-M480K|SHW-M480S|SHW-M480W|SHW-M485W|SHW-M486W|SHW-M500W|GT-I9228|SCH-P739|SCH-I925|GT-I9200|GT-I9205|GT-P5200|GT-P5210|GT-P5210X|SM-T311|SM-T310|SM-T310X|SM-T210|SM-T210R|SM-T211|SM-P600|SM-P601|SM-P605|SM-P900|SM-P901|SM-T217|SM-T217A|SM-T217S|SM-P6000|SM-T3100|SGH-I467|XE500|SM-T110|GT-P5220|GT-I9200X|GT-N5110X|GT-N5120|SM-P905|SM-T111|SM-T2105|SM-T315|SM-T320|SM-T320X|SM-T321|SM-T520|SM-T525|SM-T530NU|SM-T230NU|SM-T330NU|SM-T900|XE500T1C|SM-P605V|SM-P905V|SM-T337V|SM-T537V|SM-T707V|SM-T807V|SM-P600X|SM-P900X|SM-T210X|SM-T230|SM-T230X|SM-T325|GT-P7503|SM-T531|SM-T330|SM-T530|SM-T705C|SM-T535|SM-T331|SM-T800|SM-T700|SM-T537|SM-T807|SM-P907A|SM-T337A|SM-T537A|SM-T707A|SM-T807A|SM-T237P|SM-T807P|SM-P607T|SM-T217T|SM-T337T|SM-T807T",
-                "Kindle": "Kindle|Silk.*Accelerated|Android.*\\b(KFOT|KFTT|KFJWI|KFJWA|KFOTE|KFSOWI|KFTHWI|KFTHWA|KFAPWI|KFAPWA|WFJWAE|KFSAWA|KFSAWI|KFASWI)\\b",
-                "SurfaceTablet": "Windows NT [0-9.]+; ARM;.*(Tablet|ARMBJS)",
-                "HPTablet": "HP Slate (7|8|10)|HP ElitePad 900|hp-tablet|EliteBook.*Touch|HP 8|Slate 21|HP SlateBook 10",
-                "AsusTablet": "^.*PadFone((?!Mobile).)*$|Transformer|TF101|TF101G|TF300T|TF300TG|TF300TL|TF700T|TF700KL|TF701T|TF810C|ME171|ME301T|ME302C|ME371MG|ME370T|ME372MG|ME172V|ME173X|ME400C|Slider SL101|\\bK00F\\b|\\bK00C\\b|\\bK00E\\b|\\bK00L\\b|TX201LA|ME176C|ME102A|\\bM80TA\\b|ME372CL|ME560CG|ME372CG|ME302KL",
-                "BlackBerryTablet": "PlayBook|RIM Tablet",
-                "HTCtablet": "HTC_Flyer_P512|HTC Flyer|HTC Jetstream|HTC-P715a|HTC EVO View 4G|PG41200|PG09410",
-                "MotorolaTablet": "xoom|sholest|MZ615|MZ605|MZ505|MZ601|MZ602|MZ603|MZ604|MZ606|MZ607|MZ608|MZ609|MZ615|MZ616|MZ617",
-                "NookTablet": "Android.*Nook|NookColor|nook browser|BNRV200|BNRV200A|BNTV250|BNTV250A|BNTV400|BNTV600|LogicPD Zoom2",
-                "AcerTablet": "Android.*; \\b(A100|A101|A110|A200|A210|A211|A500|A501|A510|A511|A700|A701|W500|W500P|W501|W501P|W510|W511|W700|G100|G100W|B1-A71|B1-710|B1-711|A1-810|A1-811|A1-830)\\b|W3-810|\\bA3-A10\\b|\\bA3-A11\\b",
-                "ToshibaTablet": "Android.*(AT100|AT105|AT200|AT205|AT270|AT275|AT300|AT305|AT1S5|AT500|AT570|AT700|AT830)|TOSHIBA.*FOLIO",
-                "LGTablet": "\\bL-06C|LG-V909|LG-V900|LG-V700|LG-V510|LG-V500|LG-V410|LG-V400|LG-VK810\\b",
-                "FujitsuTablet": "Android.*\\b(F-01D|F-02F|F-05E|F-10D|M532|Q572)\\b",
-                "PrestigioTablet": "PMP3170B|PMP3270B|PMP3470B|PMP7170B|PMP3370B|PMP3570C|PMP5870C|PMP3670B|PMP5570C|PMP5770D|PMP3970B|PMP3870C|PMP5580C|PMP5880D|PMP5780D|PMP5588C|PMP7280C|PMP7280C3G|PMP7280|PMP7880D|PMP5597D|PMP5597|PMP7100D|PER3464|PER3274|PER3574|PER3884|PER5274|PER5474|PMP5097CPRO|PMP5097|PMP7380D|PMP5297C|PMP5297C_QUAD",
-                "LenovoTablet": "Idea(Tab|Pad)( A1|A10| K1|)|ThinkPad([ ]+)?Tablet|Lenovo.*(S2109|S2110|S5000|S6000|K3011|A3000|A3500|A1000|A2107|A2109|A1107|A5500|A7600|B6000|B8000|B8080)(-|)(FL|F|HV|H|)",
-                "DellTablet": "Venue 11|Venue 8|Venue 7|Dell Streak 10|Dell Streak 7",
-                "YarvikTablet": "Android.*\\b(TAB210|TAB211|TAB224|TAB250|TAB260|TAB264|TAB310|TAB360|TAB364|TAB410|TAB411|TAB420|TAB424|TAB450|TAB460|TAB461|TAB464|TAB465|TAB467|TAB468|TAB07-100|TAB07-101|TAB07-150|TAB07-151|TAB07-152|TAB07-200|TAB07-201-3G|TAB07-210|TAB07-211|TAB07-212|TAB07-214|TAB07-220|TAB07-400|TAB07-485|TAB08-150|TAB08-200|TAB08-201-3G|TAB08-201-30|TAB09-100|TAB09-211|TAB09-410|TAB10-150|TAB10-201|TAB10-211|TAB10-400|TAB10-410|TAB13-201|TAB274EUK|TAB275EUK|TAB374EUK|TAB462EUK|TAB474EUK|TAB9-200)\\b",
-                "MedionTablet": "Android.*\\bOYO\\b|LIFE.*(P9212|P9514|P9516|S9512)|LIFETAB",
-                "ArnovaTablet": "AN10G2|AN7bG3|AN7fG3|AN8G3|AN8cG3|AN7G3|AN9G3|AN7dG3|AN7dG3ST|AN7dG3ChildPad|AN10bG3|AN10bG3DT|AN9G2",
-                "IntensoTablet": "INM8002KP|INM1010FP|INM805ND|Intenso Tab|TAB1004",
-                "IRUTablet": "M702pro",
-                "MegafonTablet": "MegaFon V9|\\bZTE V9\\b|Android.*\\bMT7A\\b",
-                "EbodaTablet": "E-Boda (Supreme|Impresspeed|Izzycomm|Essential)",
-                "AllViewTablet": "Allview.*(Viva|Alldro|City|Speed|All TV|Frenzy|Quasar|Shine|TX1|AX1|AX2)",
-                "ArchosTablet": "\\b(101G9|80G9|A101IT)\\b|Qilive 97R|Archos5|\\bARCHOS (70|79|80|90|97|101|FAMILYPAD|)(b|)(G10| Cobalt| TITANIUM(HD|)| Xenon| Neon|XSK| 2| XS 2| PLATINUM| CARBON|GAMEPAD)\\b",
-                "AinolTablet": "NOVO7|NOVO8|NOVO10|Novo7Aurora|Novo7Basic|NOVO7PALADIN|novo9-Spark",
-                "SonyTablet": "Sony.*Tablet|Xperia Tablet|Sony Tablet S|SO-03E|SGPT12|SGPT13|SGPT114|SGPT121|SGPT122|SGPT123|SGPT111|SGPT112|SGPT113|SGPT131|SGPT132|SGPT133|SGPT211|SGPT212|SGPT213|SGP311|SGP312|SGP321|EBRD1101|EBRD1102|EBRD1201|SGP351|SGP341|SGP511|SGP512|SGP521|SGP541|SGP551|SGP621|SGP612",
-                "PhilipsTablet": "\\b(PI2010|PI3000|PI3100|PI3105|PI3110|PI3205|PI3210|PI3900|PI4010|PI7000|PI7100)\\b",
-                "CubeTablet": "Android.*(K8GT|U9GT|U10GT|U16GT|U17GT|U18GT|U19GT|U20GT|U23GT|U30GT)|CUBE U8GT",
-                "CobyTablet": "MID1042|MID1045|MID1125|MID1126|MID7012|MID7014|MID7015|MID7034|MID7035|MID7036|MID7042|MID7048|MID7127|MID8042|MID8048|MID8127|MID9042|MID9740|MID9742|MID7022|MID7010",
-                "MIDTablet": "M9701|M9000|M9100|M806|M1052|M806|T703|MID701|MID713|MID710|MID727|MID760|MID830|MID728|MID933|MID125|MID810|MID732|MID120|MID930|MID800|MID731|MID900|MID100|MID820|MID735|MID980|MID130|MID833|MID737|MID960|MID135|MID860|MID736|MID140|MID930|MID835|MID733",
-                "MSITablet": "MSI \\b(Primo 73K|Primo 73L|Primo 81L|Primo 77|Primo 93|Primo 75|Primo 76|Primo 73|Primo 81|Primo 91|Primo 90|Enjoy 71|Enjoy 7|Enjoy 10)\\b",
-                "SMiTTablet": "Android.*(\\bMID\\b|MID-560|MTV-T1200|MTV-PND531|MTV-P1101|MTV-PND530)",
-                "RockChipTablet": "Android.*(RK2818|RK2808A|RK2918|RK3066)|RK2738|RK2808A",
-                "FlyTablet": "IQ310|Fly Vision",
-                "bqTablet": "(bq)?.*(Elcano|Curie|Edison|Maxwell|Kepler|Pascal|Tesla|Hypatia|Platon|Newton|Livingstone|Cervantes|Avant|Aquaris E10)|Maxwell.*Lite|Maxwell.*Plus",
-                "HuaweiTablet": "MediaPad|MediaPad 7 Youth|IDEOS S7|S7-201c|S7-202u|S7-101|S7-103|S7-104|S7-105|S7-106|S7-201|S7-Slim",
-                "NecTablet": "\\bN-06D|\\bN-08D",
-                "PantechTablet": "Pantech.*P4100",
-                "BronchoTablet": "Broncho.*(N701|N708|N802|a710)",
-                "VersusTablet": "TOUCHPAD.*[78910]|\\bTOUCHTAB\\b",
-                "ZyncTablet": "z1000|Z99 2G|z99|z930|z999|z990|z909|Z919|z900",
-                "PositivoTablet": "TB07STA|TB10STA|TB07FTA|TB10FTA",
-                "NabiTablet": "Android.*\\bNabi",
-                "KoboTablet": "Kobo Touch|\\bK080\\b|\\bVox\\b Build|\\bArc\\b Build",
-                "DanewTablet": "DSlide.*\\b(700|701R|702|703R|704|802|970|971|972|973|974|1010|1012)\\b",
-                "TexetTablet": "NaviPad|TB-772A|TM-7045|TM-7055|TM-9750|TM-7016|TM-7024|TM-7026|TM-7041|TM-7043|TM-7047|TM-8041|TM-9741|TM-9747|TM-9748|TM-9751|TM-7022|TM-7021|TM-7020|TM-7011|TM-7010|TM-7023|TM-7025|TM-7037W|TM-7038W|TM-7027W|TM-9720|TM-9725|TM-9737W|TM-1020|TM-9738W|TM-9740|TM-9743W|TB-807A|TB-771A|TB-727A|TB-725A|TB-719A|TB-823A|TB-805A|TB-723A|TB-715A|TB-707A|TB-705A|TB-709A|TB-711A|TB-890HD|TB-880HD|TB-790HD|TB-780HD|TB-770HD|TB-721HD|TB-710HD|TB-434HD|TB-860HD|TB-840HD|TB-760HD|TB-750HD|TB-740HD|TB-730HD|TB-722HD|TB-720HD|TB-700HD|TB-500HD|TB-470HD|TB-431HD|TB-430HD|TB-506|TB-504|TB-446|TB-436|TB-416|TB-146SE|TB-126SE",
-                "PlaystationTablet": "Playstation.*(Portable|Vita)",
-                "TrekstorTablet": "ST10416-1|VT10416-1|ST70408-1|ST702xx-1|ST702xx-2|ST80208|ST97216|ST70104-2|VT10416-2|ST10216-2A|SurfTab",
-                "PyleAudioTablet": "\\b(PTBL10CEU|PTBL10C|PTBL72BC|PTBL72BCEU|PTBL7CEU|PTBL7C|PTBL92BC|PTBL92BCEU|PTBL9CEU|PTBL9CUK|PTBL9C)\\b",
-                "AdvanTablet": "Android.* \\b(E3A|T3X|T5C|T5B|T3E|T3C|T3B|T1J|T1F|T2A|T1H|T1i|E1C|T1-E|T5-A|T4|E1-B|T2Ci|T1-B|T1-D|O1-A|E1-A|T1-A|T3A|T4i)\\b ",
-                "DanyTechTablet": "Genius Tab G3|Genius Tab S2|Genius Tab Q3|Genius Tab G4|Genius Tab Q4|Genius Tab G-II|Genius TAB GII|Genius TAB GIII|Genius Tab S1",
-                "GalapadTablet": "Android.*\\bG1\\b",
-                "MicromaxTablet": "Funbook|Micromax.*\\b(P250|P560|P360|P362|P600|P300|P350|P500|P275)\\b",
-                "KarbonnTablet": "Android.*\\b(A39|A37|A34|ST8|ST10|ST7|Smart Tab3|Smart Tab2)\\b",
-                "AllFineTablet": "Fine7 Genius|Fine7 Shine|Fine7 Air|Fine8 Style|Fine9 More|Fine10 Joy|Fine11 Wide",
-                "PROSCANTablet": "\\b(PEM63|PLT1023G|PLT1041|PLT1044|PLT1044G|PLT1091|PLT4311|PLT4311PL|PLT4315|PLT7030|PLT7033|PLT7033D|PLT7035|PLT7035D|PLT7044K|PLT7045K|PLT7045KB|PLT7071KG|PLT7072|PLT7223G|PLT7225G|PLT7777G|PLT7810K|PLT7849G|PLT7851G|PLT7852G|PLT8015|PLT8031|PLT8034|PLT8036|PLT8080K|PLT8082|PLT8088|PLT8223G|PLT8234G|PLT8235G|PLT8816K|PLT9011|PLT9045K|PLT9233G|PLT9735|PLT9760G|PLT9770G)\\b",
-                "YONESTablet": "BQ1078|BC1003|BC1077|RK9702|BC9730|BC9001|IT9001|BC7008|BC7010|BC708|BC728|BC7012|BC7030|BC7027|BC7026",
-                "ChangJiaTablet": "TPC7102|TPC7103|TPC7105|TPC7106|TPC7107|TPC7201|TPC7203|TPC7205|TPC7210|TPC7708|TPC7709|TPC7712|TPC7110|TPC8101|TPC8103|TPC8105|TPC8106|TPC8203|TPC8205|TPC8503|TPC9106|TPC9701|TPC97101|TPC97103|TPC97105|TPC97106|TPC97111|TPC97113|TPC97203|TPC97603|TPC97809|TPC97205|TPC10101|TPC10103|TPC10106|TPC10111|TPC10203|TPC10205|TPC10503",
-                "GUTablet": "TX-A1301|TX-M9002|Q702|kf026",
-                "PointOfViewTablet": "TAB-P506|TAB-navi-7-3G-M|TAB-P517|TAB-P-527|TAB-P701|TAB-P703|TAB-P721|TAB-P731N|TAB-P741|TAB-P825|TAB-P905|TAB-P925|TAB-PR945|TAB-PL1015|TAB-P1025|TAB-PI1045|TAB-P1325|TAB-PROTAB[0-9]+|TAB-PROTAB25|TAB-PROTAB26|TAB-PROTAB27|TAB-PROTAB26XL|TAB-PROTAB2-IPS9|TAB-PROTAB30-IPS9|TAB-PROTAB25XXL|TAB-PROTAB26-IPS10|TAB-PROTAB30-IPS10",
-                "OvermaxTablet": "OV-(SteelCore|NewBase|Basecore|Baseone|Exellen|Quattor|EduTab|Solution|ACTION|BasicTab|TeddyTab|MagicTab|Stream|TB-08|TB-09)",
-                "HCLTablet": "HCL.*Tablet|Connect-3G-2.0|Connect-2G-2.0|ME Tablet U1|ME Tablet U2|ME Tablet G1|ME Tablet X1|ME Tablet Y2|ME Tablet Sync",
-                "DPSTablet": "DPS Dream 9|DPS Dual 7",
-                "VistureTablet": "V97 HD|i75 3G|Visture V4( HD)?|Visture V5( HD)?|Visture V10",
-                "CrestaTablet": "CTP(-)?810|CTP(-)?818|CTP(-)?828|CTP(-)?838|CTP(-)?888|CTP(-)?978|CTP(-)?980|CTP(-)?987|CTP(-)?988|CTP(-)?989",
-                "MediatekTablet": "\\bMT8125|MT8389|MT8135|MT8377\\b",
-                "ConcordeTablet": "Concorde([ ]+)?Tab|ConCorde ReadMan",
-                "GoCleverTablet": "GOCLEVER TAB|A7GOCLEVER|M1042|M7841|M742|R1042BK|R1041|TAB A975|TAB A7842|TAB A741|TAB A741L|TAB M723G|TAB M721|TAB A1021|TAB I921|TAB R721|TAB I720|TAB T76|TAB R70|TAB R76.2|TAB R106|TAB R83.2|TAB M813G|TAB I721|GCTA722|TAB I70|TAB I71|TAB S73|TAB R73|TAB R74|TAB R93|TAB R75|TAB R76.1|TAB A73|TAB A93|TAB A93.2|TAB T72|TAB R83|TAB R974|TAB R973|TAB A101|TAB A103|TAB A104|TAB A104.2|R105BK|M713G|A972BK|TAB A971|TAB R974.2|TAB R104|TAB R83.3|TAB A1042",
-                "ModecomTablet": "FreeTAB 9000|FreeTAB 7.4|FreeTAB 7004|FreeTAB 7800|FreeTAB 2096|FreeTAB 7.5|FreeTAB 1014|FreeTAB 1001 |FreeTAB 8001|FreeTAB 9706|FreeTAB 9702|FreeTAB 7003|FreeTAB 7002|FreeTAB 1002|FreeTAB 7801|FreeTAB 1331|FreeTAB 1004|FreeTAB 8002|FreeTAB 8014|FreeTAB 9704|FreeTAB 1003",
-                "VoninoTablet": "\\b(Argus[ _]?S|Diamond[ _]?79HD|Emerald[ _]?78E|Luna[ _]?70C|Onyx[ _]?S|Onyx[ _]?Z|Orin[ _]?HD|Orin[ _]?S|Otis[ _]?S|SpeedStar[ _]?S|Magnet[ _]?M9|Primus[ _]?94[ _]?3G|Primus[ _]?94HD|Primus[ _]?QS|Android.*\\bQ8\\b|Sirius[ _]?EVO[ _]?QS|Sirius[ _]?QS|Spirit[ _]?S)\\b",
-                "ECSTablet": "V07OT2|TM105A|S10OT1|TR10CS1",
-                "StorexTablet": "eZee[_']?(Tab|Go)[0-9]+|TabLC7|Looney Tunes Tab",
-                "VodafoneTablet": "SmartTab([ ]+)?[0-9]+|SmartTabII10|SmartTabII7",
-                "EssentielBTablet": "Smart[ ']?TAB[ ]+?[0-9]+|Family[ ']?TAB2",
-                "RossMoorTablet": "RM-790|RM-997|RMD-878G|RMD-974R|RMT-705A|RMT-701|RME-601|RMT-501|RMT-711",
-                "iMobileTablet": "i-mobile i-note",
-                "TolinoTablet": "tolino tab [0-9.]+|tolino shine",
-                "AudioSonicTablet": "\\bC-22Q|T7-QC|T-17B|T-17P\\b",
-                "AMPETablet": "Android.* A78 ",
-                "SkkTablet": "Android.* (SKYPAD|PHOENIX|CYCLOPS)",
-                "TecnoTablet": "TECNO P9",
-                "JXDTablet": "Android.*\\b(F3000|A3300|JXD5000|JXD3000|JXD2000|JXD300B|JXD300|S5800|S7800|S602b|S5110b|S7300|S5300|S602|S603|S5100|S5110|S601|S7100a|P3000F|P3000s|P101|P200s|P1000m|P200m|P9100|P1000s|S6600b|S908|P1000|P300|S18|S6600|S9100)\\b",
-                "iJoyTablet": "Tablet (Spirit 7|Essentia|Galatea|Fusion|Onix 7|Landa|Titan|Scooby|Deox|Stella|Themis|Argon|Unique 7|Sygnus|Hexen|Finity 7|Cream|Cream X2|Jade|Neon 7|Neron 7|Kandy|Scape|Saphyr 7|Rebel|Biox|Rebel|Rebel 8GB|Myst|Draco 7|Myst|Tab7-004|Myst|Tadeo Jones|Tablet Boing|Arrow|Draco Dual Cam|Aurix|Mint|Amity|Revolution|Finity 9|Neon 9|T9w|Amity 4GB Dual Cam|Stone 4GB|Stone 8GB|Andromeda|Silken|X2|Andromeda II|Halley|Flame|Saphyr 9,7|Touch 8|Planet|Triton|Unique 10|Hexen 10|Memphis 4GB|Memphis 8GB|Onix 10)",
-                "FX2Tablet": "FX2 PAD7|FX2 PAD10",
-                "XoroTablet": "KidsPAD 701|PAD[ ]?712|PAD[ ]?714|PAD[ ]?716|PAD[ ]?717|PAD[ ]?718|PAD[ ]?720|PAD[ ]?721|PAD[ ]?722|PAD[ ]?790|PAD[ ]?792|PAD[ ]?900|PAD[ ]?9715D|PAD[ ]?9716DR|PAD[ ]?9718DR|PAD[ ]?9719QR|PAD[ ]?9720QR|TelePAD1030|Telepad1032|TelePAD730|TelePAD731|TelePAD732|TelePAD735Q|TelePAD830|TelePAD9730|TelePAD795|MegaPAD 1331|MegaPAD 1851|MegaPAD 2151",
-                "ViewsonicTablet": "ViewPad 10pi|ViewPad 10e|ViewPad 10s|ViewPad E72|ViewPad7|ViewPad E100|ViewPad 7e|ViewSonic VB733|VB100a",
-                "OdysTablet": "LOOX|XENO10|ODYS[ -](Space|EVO|Xpress|NOON)|\\bXELIO\\b|Xelio10Pro|XELIO7PHONETAB|XELIO10EXTREME|XELIOPT2|NEO_QUAD10",
-                "CaptivaTablet": "CAPTIVA PAD",
-                "IconbitTablet": "NetTAB|NT-3702|NT-3702S|NT-3702S|NT-3603P|NT-3603P|NT-0704S|NT-0704S|NT-3805C|NT-3805C|NT-0806C|NT-0806C|NT-0909T|NT-0909T|NT-0907S|NT-0907S|NT-0902S|NT-0902S",
-                "TeclastTablet": "T98 4G|\\bP80\\b|\\bX90HD\\b|X98 Air|X98 Air 3G|\\bX89\\b|P80 3G|\\bX80h\\b|P98 Air|\\bX89HD\\b|P98 3G|\\bP90HD\\b|P89 3G|X98 3G|\\bP70h\\b|P79HD 3G|G18d 3G|\\bP79HD\\b|\\bP89s\\b|\\bA88\\b|\\bP10HD\\b|\\bP19HD\\b|G18 3G|\\bP78HD\\b|\\bA78\\b|\\bP75\\b|G17s 3G|G17h 3G|\\bP85t\\b|\\bP90\\b|\\bP11\\b|\\bP98t\\b|\\bP98HD\\b|\\bG18d\\b|\\bP85s\\b|\\bP11HD\\b|\\bP88s\\b|\\bA80HD\\b|\\bA80se\\b|\\bA10h\\b|\\bP89\\b|\\bP78s\\b|\\bG18\\b|\\bP85\\b|\\bA70h\\b|\\bA70\\b|\\bG17\\b|\\bP18\\b|\\bA80s\\b|\\bA11s\\b|\\bP88HD\\b|\\bA80h\\b|\\bP76s\\b|\\bP76h\\b|\\bP98\\b|\\bA10HD\\b|\\bP78\\b|\\bP88\\b|\\bA11\\b|\\bA10t\\b|\\bP76a\\b|\\bP76t\\b|\\bP76e\\b|\\bP85HD\\b|\\bP85a\\b|\\bP86\\b|\\bP75HD\\b|\\bP76v\\b|\\bA12\\b|\\bP75a\\b|\\bA15\\b|\\bP76Ti\\b|\\bP81HD\\b|\\bA10\\b|\\bT760VE\\b|\\bT720HD\\b|\\bP76\\b|\\bP73\\b|\\bP71\\b|\\bP72\\b|\\bT720SE\\b|\\bC520Ti\\b|\\bT760\\b|\\bT720VE\\b|T720-3GE|T720-WiFi",
-                "JaytechTablet": "TPC-PA762",
-                "BlaupunktTablet": "Endeavour 800NG|Endeavour 1010",
-                "DigmaTablet": "\\b(iDx10|iDx9|iDx8|iDx7|iDxD7|iDxD8|iDsQ8|iDsQ7|iDsQ8|iDsD10|iDnD7|3TS804H|iDsQ11|iDj7|iDs10)\\b",
-                "EvolioTablet": "ARIA_Mini_wifi|Aria[ _]Mini|Evolio X10|Evolio X7|Evolio X8|\\bEvotab\\b|\\bNeura\\b",
-                "LavaTablet": "QPAD E704|\\bIvoryS\\b|E-TAB IVORY",
-                "CelkonTablet": "CT695|CT888|CT[\\s]?910|CT7 Tab|CT9 Tab|CT3 Tab|CT2 Tab|CT1 Tab|C820|C720|\\bCT-1\\b",
-                "WolderTablet": "miTab \\b(DIAMOND|SPACE|BROOKLYN|NEO|FLY|MANHATTAN|FUNK|EVOLUTION|SKY|GOCAR|IRON|GENIUS|POP|MINT|EPSILON|BROADWAY|JUMP|HOP|LEGEND|NEW AGE|LINE|ADVANCE|FEEL|FOLLOW|LIKE|LINK|LIVE|THINK|FREEDOM|CHICAGO|CLEVELAND|BALTIMORE-GH|IOWA|BOSTON|SEATTLE|PHOENIX|DALLAS|IN 101|MasterChef)\\b",
-                "MiTablet": "\\bMI PAD\\b|\\bHM NOTE 1W\\b",
-                "NibiruTablet": "Nibiru M1|Nibiru Jupiter One",
-                "NexoTablet": "NEXO NOVA|NEXO 10|NEXO AVIO|NEXO FREE|NEXO GO|NEXO EVO|NEXO 3G|NEXO SMART|NEXO KIDDO|NEXO MOBI",
-                "UbislateTablet": "UbiSlate[\\s]?7C",
-                "PocketBookTablet": "Pocketbook",
-                "Hudl": "Hudl HT7S3",
-                "TelstraTablet": "T-Hub2",
-                "GenericTablet": "Android.*\\b97D\\b|Tablet(?!.*PC)|BNTV250A|MID-WCDMA|LogicPD Zoom2|\\bA7EB\\b|CatNova8|A1_07|CT704|CT1002|\\bM721\\b|rk30sdk|\\bEVOTAB\\b|M758A|ET904|ALUMIUM10|Smartfren Tab|Endeavour 1010|Tablet-PC-4|Tagi Tab|\\bM6pro\\b|CT1020W|arc 10HD|\\bJolla\\b"
-            },
-            "oss": {
-                "AndroidOS": "Android",
-                "BlackBerryOS": "blackberry|\\bBB10\\b|rim tablet os",
-                "PalmOS": "PalmOS|avantgo|blazer|elaine|hiptop|palm|plucker|xiino",
-                "SymbianOS": "Symbian|SymbOS|Series60|Series40|SYB-[0-9]+|\\bS60\\b",
-                "WindowsMobileOS": "Windows CE.*(PPC|Smartphone|Mobile|[0-9]{3}x[0-9]{3})|Window Mobile|Windows Phone [0-9.]+|WCE;",
-                "WindowsPhoneOS": "Windows Phone 8.0|Windows Phone OS|XBLWP7|ZuneWP7|Windows NT 6.[23]; ARM;",
-                "iOS": "\\biPhone.*Mobile|\\biPod|\\biPad",
-                "MeeGoOS": "MeeGo",
-                "MaemoOS": "Maemo",
-                "JavaOS": "J2ME\/|\\bMIDP\\b|\\bCLDC\\b",
-                "webOS": "webOS|hpwOS",
-                "badaOS": "\\bBada\\b",
-                "BREWOS": "BREW"
-            },
-            "uas": {
-                "Chrome": "\\bCrMo\\b|CriOS|Android.*Chrome\/[.0-9]* (Mobile)?",
-                "Dolfin": "\\bDolfin\\b",
-                "Opera": "Opera.*Mini|Opera.*Mobi|Android.*Opera|Mobile.*OPR\/[0-9.]+|Coast\/[0-9.]+",
-                "Skyfire": "Skyfire",
-                "IE": "IEMobile|MSIEMobile",
-                "Firefox": "fennec|firefox.*maemo|(Mobile|Tablet).*Firefox|Firefox.*Mobile",
-                "Bolt": "bolt",
-                "TeaShark": "teashark",
-                "Blazer": "Blazer",
-                "Safari": "Version.*Mobile.*Safari|Safari.*Mobile|MobileSafari",
-                "Tizen": "Tizen",
-                "UCBrowser": "UC.*Browser|UCWEB",
-                "baiduboxapp": "baiduboxapp",
-                "baidubrowser": "baidubrowser",
-                "DiigoBrowser": "DiigoBrowser",
-                "Puffin": "Puffin",
-                "Mercury": "\\bMercury\\b",
-                "ObigoBrowser": "Obigo",
-                "NetFront": "NF-Browser",
-                "GenericBrowser": "NokiaBrowser|OviBrowser|OneBrowser|TwonkyBeamBrowser|SEMC.*Browser|FlyFlow|Minimo|NetFront|Novarra-Vision|MQQBrowser|MicroMessenger"
-            },
-            "props": {
-                "Mobile": "Mobile\/[VER]",
-                "Build": "Build\/[VER]",
-                "Version": "Version\/[VER]",
-                "VendorID": "VendorID\/[VER]",
-                "iPad": "iPad.*CPU[a-z ]+[VER]",
-                "iPhone": "iPhone.*CPU[a-z ]+[VER]",
-                "iPod": "iPod.*CPU[a-z ]+[VER]",
-                "Kindle": "Kindle\/[VER]",
-                "Chrome": [
-                    "Chrome\/[VER]",
-                    "CriOS\/[VER]",
-                    "CrMo\/[VER]"
-                ],
-                "Coast": [
-                    "Coast\/[VER]"
-                ],
-                "Dolfin": "Dolfin\/[VER]",
-                "Firefox": "Firefox\/[VER]",
-                "Fennec": "Fennec\/[VER]",
-                "IE": [
-                    "IEMobile\/[VER];",
-                    "IEMobile [VER]",
-                    "MSIE [VER];"
-                ],
-                "NetFront": "NetFront\/[VER]",
-                "NokiaBrowser": "NokiaBrowser\/[VER]",
-                "Opera": [
-                    " OPR\/[VER]",
-                    "Opera Mini\/[VER]",
-                    "Version\/[VER]"
-                ],
-                "Opera Mini": "Opera Mini\/[VER]",
-                "Opera Mobi": "Version\/[VER]",
-                "UC Browser": "UC Browser[VER]",
-                "MQQBrowser": "MQQBrowser\/[VER]",
-                "MicroMessenger": "MicroMessenger\/[VER]",
-                "baiduboxapp": "baiduboxapp\/[VER]",
-                "baidubrowser": "baidubrowser\/[VER]",
-                "Iron": "Iron\/[VER]",
-                "Safari": [
-                    "Version\/[VER]",
-                    "Safari\/[VER]"
-                ],
-                "Skyfire": "Skyfire\/[VER]",
-                "Tizen": "Tizen\/[VER]",
-                "Webkit": "webkit[ \/][VER]",
-                "Gecko": "Gecko\/[VER]",
-                "Trident": "Trident\/[VER]",
-                "Presto": "Presto\/[VER]",
-                "iOS": " \\bi?OS\\b [VER][ ;]{1}",
-                "Android": "Android [VER]",
-                "BlackBerry": [
-                    "BlackBerry[\\w]+\/[VER]",
-                    "BlackBerry.*Version\/[VER]",
-                    "Version\/[VER]"
-                ],
-                "BREW": "BREW [VER]",
-                "Java": "Java\/[VER]",
-                "Windows Phone OS": [
-                    "Windows Phone OS [VER]",
-                    "Windows Phone [VER]"
-                ],
-                "Windows Phone": "Windows Phone [VER]",
-                "Windows CE": "Windows CE\/[VER]",
-                "Windows NT": "Windows NT [VER]",
-                "Symbian": [
-                    "SymbianOS\/[VER]",
-                    "Symbian\/[VER]"
-                ],
-                "webOS": [
-                    "webOS\/[VER]",
-                    "hpwOS\/[VER];"
-                ]
-            },
-            "utils": {
-                "Bot": "Googlebot|facebookexternalhit|AdsBot-Google|Google Keyword Suggestion|Facebot|YandexBot|bingbot|ia_archiver|AhrefsBot|Ezooms|GSLFbot|WBSearchBot|Twitterbot|TweetmemeBot|Twikle|PaperLiBot|Wotbox|UnwindFetchor",
-                "MobileBot": "Googlebot-Mobile|AdsBot-Google-Mobile|YahooSeeker\/M1A1-R2D2",
-                "DesktopMode": "WPDesktop",
-                "TV": "SonyDTV|HbbTV",
-                "WebKit": "(webkit)[ \/]([\\w.]+)",
-                "Console": "\\b(Nintendo|Nintendo WiiU|Nintendo 3DS|PLAYSTATION|Xbox)\\b",
-                "Watch": "SM-V700"
-            }
-        };
-
-        // following patterns come from http://detectmobilebrowsers.com/
-        impl.detectMobileBrowsers = {
-            fullPattern: /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i,
-            shortPattern: /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i
-        };
-
-        var hasOwnProp = Object.prototype.hasOwnProperty,
-            isArray;
-
-        impl.FALLBACK_PHONE = 'UnknownPhone';
-        impl.FALLBACK_TABLET = 'UnknownTablet';
-        impl.FALLBACK_MOBILE = 'UnknownMobile';
-
-        isArray = ('isArray' in Array) ?
-            Array.isArray : function (value) { return Object.prototype.toString.call(value) === '[object Array]'; };
-
-        function equalIC(a, b) {
-            return a != null && b != null && a.toLowerCase() === b.toLowerCase();
+    impl.mobileDetectRules = {
+        "phones": {
+            "iPhone": "\\biPhone\\b|\\biPod\\b",
+            "BlackBerry": "BlackBerry|\\bBB10\\b|rim[0-9]+",
+            "HTC": "HTC|HTC.*(Sensation|Evo|Vision|Explorer|6800|8100|8900|A7272|S510e|C110e|Legend|Desire|T8282)|APX515CKT|Qtek9090|APA9292KT|HD_mini|Sensation.*Z710e|PG86100|Z715e|Desire.*(A8181|HD)|ADR6200|ADR6400L|ADR6425|001HT|Inspire 4G|Android.*\\bEVO\\b|T-Mobile G1|Z520m",
+            "Nexus": "Nexus One|Nexus S|Galaxy.*Nexus|Android.*Nexus.*Mobile|Nexus 4|Nexus 5|Nexus 6",
+            "Dell": "Dell.*Streak|Dell.*Aero|Dell.*Venue|DELL.*Venue Pro|Dell Flash|Dell Smoke|Dell Mini 3iX|XCD28|XCD35|\\b001DL\\b|\\b101DL\\b|\\bGS01\\b",
+            "Motorola": "Motorola|DROIDX|DROID BIONIC|\\bDroid\\b.*Build|Android.*Xoom|HRI39|MOT-|A1260|A1680|A555|A853|A855|A953|A955|A956|Motorola.*ELECTRIFY|Motorola.*i1|i867|i940|MB200|MB300|MB501|MB502|MB508|MB511|MB520|MB525|MB526|MB611|MB612|MB632|MB810|MB855|MB860|MB861|MB865|MB870|ME501|ME502|ME511|ME525|ME600|ME632|ME722|ME811|ME860|ME863|ME865|MT620|MT710|MT716|MT720|MT810|MT870|MT917|Motorola.*TITANIUM|WX435|WX445|XT300|XT301|XT311|XT316|XT317|XT319|XT320|XT390|XT502|XT530|XT531|XT532|XT535|XT603|XT610|XT611|XT615|XT681|XT701|XT702|XT711|XT720|XT800|XT806|XT860|XT862|XT875|XT882|XT883|XT894|XT901|XT907|XT909|XT910|XT912|XT928|XT926|XT915|XT919|XT925",
+            "Samsung": "Samsung|SGH-I337|BGT-S5230|GT-B2100|GT-B2700|GT-B2710|GT-B3210|GT-B3310|GT-B3410|GT-B3730|GT-B3740|GT-B5510|GT-B5512|GT-B5722|GT-B6520|GT-B7300|GT-B7320|GT-B7330|GT-B7350|GT-B7510|GT-B7722|GT-B7800|GT-C3010|GT-C3011|GT-C3060|GT-C3200|GT-C3212|GT-C3212I|GT-C3262|GT-C3222|GT-C3300|GT-C3300K|GT-C3303|GT-C3303K|GT-C3310|GT-C3322|GT-C3330|GT-C3350|GT-C3500|GT-C3510|GT-C3530|GT-C3630|GT-C3780|GT-C5010|GT-C5212|GT-C6620|GT-C6625|GT-C6712|GT-E1050|GT-E1070|GT-E1075|GT-E1080|GT-E1081|GT-E1085|GT-E1087|GT-E1100|GT-E1107|GT-E1110|GT-E1120|GT-E1125|GT-E1130|GT-E1160|GT-E1170|GT-E1175|GT-E1180|GT-E1182|GT-E1200|GT-E1210|GT-E1225|GT-E1230|GT-E1390|GT-E2100|GT-E2120|GT-E2121|GT-E2152|GT-E2220|GT-E2222|GT-E2230|GT-E2232|GT-E2250|GT-E2370|GT-E2550|GT-E2652|GT-E3210|GT-E3213|GT-I5500|GT-I5503|GT-I5700|GT-I5800|GT-I5801|GT-I6410|GT-I6420|GT-I7110|GT-I7410|GT-I7500|GT-I8000|GT-I8150|GT-I8160|GT-I8190|GT-I8320|GT-I8330|GT-I8350|GT-I8530|GT-I8700|GT-I8703|GT-I8910|GT-I9000|GT-I9001|GT-I9003|GT-I9010|GT-I9020|GT-I9023|GT-I9070|GT-I9082|GT-I9100|GT-I9103|GT-I9220|GT-I9250|GT-I9300|GT-I9305|GT-I9500|GT-I9505|GT-M3510|GT-M5650|GT-M7500|GT-M7600|GT-M7603|GT-M8800|GT-M8910|GT-N7000|GT-S3110|GT-S3310|GT-S3350|GT-S3353|GT-S3370|GT-S3650|GT-S3653|GT-S3770|GT-S3850|GT-S5210|GT-S5220|GT-S5229|GT-S5230|GT-S5233|GT-S5250|GT-S5253|GT-S5260|GT-S5263|GT-S5270|GT-S5300|GT-S5330|GT-S5350|GT-S5360|GT-S5363|GT-S5369|GT-S5380|GT-S5380D|GT-S5560|GT-S5570|GT-S5600|GT-S5603|GT-S5610|GT-S5620|GT-S5660|GT-S5670|GT-S5690|GT-S5750|GT-S5780|GT-S5830|GT-S5839|GT-S6102|GT-S6500|GT-S7070|GT-S7200|GT-S7220|GT-S7230|GT-S7233|GT-S7250|GT-S7500|GT-S7530|GT-S7550|GT-S7562|GT-S7710|GT-S8000|GT-S8003|GT-S8500|GT-S8530|GT-S8600|SCH-A310|SCH-A530|SCH-A570|SCH-A610|SCH-A630|SCH-A650|SCH-A790|SCH-A795|SCH-A850|SCH-A870|SCH-A890|SCH-A930|SCH-A950|SCH-A970|SCH-A990|SCH-I100|SCH-I110|SCH-I400|SCH-I405|SCH-I500|SCH-I510|SCH-I515|SCH-I600|SCH-I730|SCH-I760|SCH-I770|SCH-I830|SCH-I910|SCH-I920|SCH-I959|SCH-LC11|SCH-N150|SCH-N300|SCH-R100|SCH-R300|SCH-R351|SCH-R400|SCH-R410|SCH-T300|SCH-U310|SCH-U320|SCH-U350|SCH-U360|SCH-U365|SCH-U370|SCH-U380|SCH-U410|SCH-U430|SCH-U450|SCH-U460|SCH-U470|SCH-U490|SCH-U540|SCH-U550|SCH-U620|SCH-U640|SCH-U650|SCH-U660|SCH-U700|SCH-U740|SCH-U750|SCH-U810|SCH-U820|SCH-U900|SCH-U940|SCH-U960|SCS-26UC|SGH-A107|SGH-A117|SGH-A127|SGH-A137|SGH-A157|SGH-A167|SGH-A177|SGH-A187|SGH-A197|SGH-A227|SGH-A237|SGH-A257|SGH-A437|SGH-A517|SGH-A597|SGH-A637|SGH-A657|SGH-A667|SGH-A687|SGH-A697|SGH-A707|SGH-A717|SGH-A727|SGH-A737|SGH-A747|SGH-A767|SGH-A777|SGH-A797|SGH-A817|SGH-A827|SGH-A837|SGH-A847|SGH-A867|SGH-A877|SGH-A887|SGH-A897|SGH-A927|SGH-B100|SGH-B130|SGH-B200|SGH-B220|SGH-C100|SGH-C110|SGH-C120|SGH-C130|SGH-C140|SGH-C160|SGH-C170|SGH-C180|SGH-C200|SGH-C207|SGH-C210|SGH-C225|SGH-C230|SGH-C417|SGH-C450|SGH-D307|SGH-D347|SGH-D357|SGH-D407|SGH-D415|SGH-D780|SGH-D807|SGH-D980|SGH-E105|SGH-E200|SGH-E315|SGH-E316|SGH-E317|SGH-E335|SGH-E590|SGH-E635|SGH-E715|SGH-E890|SGH-F300|SGH-F480|SGH-I200|SGH-I300|SGH-I320|SGH-I550|SGH-I577|SGH-I600|SGH-I607|SGH-I617|SGH-I627|SGH-I637|SGH-I677|SGH-I700|SGH-I717|SGH-I727|SGH-i747M|SGH-I777|SGH-I780|SGH-I827|SGH-I847|SGH-I857|SGH-I896|SGH-I897|SGH-I900|SGH-I907|SGH-I917|SGH-I927|SGH-I937|SGH-I997|SGH-J150|SGH-J200|SGH-L170|SGH-L700|SGH-M110|SGH-M150|SGH-M200|SGH-N105|SGH-N500|SGH-N600|SGH-N620|SGH-N625|SGH-N700|SGH-N710|SGH-P107|SGH-P207|SGH-P300|SGH-P310|SGH-P520|SGH-P735|SGH-P777|SGH-Q105|SGH-R210|SGH-R220|SGH-R225|SGH-S105|SGH-S307|SGH-T109|SGH-T119|SGH-T139|SGH-T209|SGH-T219|SGH-T229|SGH-T239|SGH-T249|SGH-T259|SGH-T309|SGH-T319|SGH-T329|SGH-T339|SGH-T349|SGH-T359|SGH-T369|SGH-T379|SGH-T409|SGH-T429|SGH-T439|SGH-T459|SGH-T469|SGH-T479|SGH-T499|SGH-T509|SGH-T519|SGH-T539|SGH-T559|SGH-T589|SGH-T609|SGH-T619|SGH-T629|SGH-T639|SGH-T659|SGH-T669|SGH-T679|SGH-T709|SGH-T719|SGH-T729|SGH-T739|SGH-T746|SGH-T749|SGH-T759|SGH-T769|SGH-T809|SGH-T819|SGH-T839|SGH-T919|SGH-T929|SGH-T939|SGH-T959|SGH-T989|SGH-U100|SGH-U200|SGH-U800|SGH-V205|SGH-V206|SGH-X100|SGH-X105|SGH-X120|SGH-X140|SGH-X426|SGH-X427|SGH-X475|SGH-X495|SGH-X497|SGH-X507|SGH-X600|SGH-X610|SGH-X620|SGH-X630|SGH-X700|SGH-X820|SGH-X890|SGH-Z130|SGH-Z150|SGH-Z170|SGH-ZX10|SGH-ZX20|SHW-M110|SPH-A120|SPH-A400|SPH-A420|SPH-A460|SPH-A500|SPH-A560|SPH-A600|SPH-A620|SPH-A660|SPH-A700|SPH-A740|SPH-A760|SPH-A790|SPH-A800|SPH-A820|SPH-A840|SPH-A880|SPH-A900|SPH-A940|SPH-A960|SPH-D600|SPH-D700|SPH-D710|SPH-D720|SPH-I300|SPH-I325|SPH-I330|SPH-I350|SPH-I500|SPH-I600|SPH-I700|SPH-L700|SPH-M100|SPH-M220|SPH-M240|SPH-M300|SPH-M305|SPH-M320|SPH-M330|SPH-M350|SPH-M360|SPH-M370|SPH-M380|SPH-M510|SPH-M540|SPH-M550|SPH-M560|SPH-M570|SPH-M580|SPH-M610|SPH-M620|SPH-M630|SPH-M800|SPH-M810|SPH-M850|SPH-M900|SPH-M910|SPH-M920|SPH-M930|SPH-N100|SPH-N200|SPH-N240|SPH-N300|SPH-N400|SPH-Z400|SWC-E100|SCH-i909|GT-N7100|GT-N7105|SCH-I535|SM-N900A|SGH-I317|SGH-T999L|GT-S5360B|GT-I8262|GT-S6802|GT-S6312|GT-S6310|GT-S5312|GT-S5310|GT-I9105|GT-I8510|GT-S6790N|SM-G7105|SM-N9005|GT-S5301|GT-I9295|GT-I9195|SM-C101|GT-S7392|GT-S7560|GT-B7610|GT-I5510|GT-S7582|GT-S7530E|GT-I8750|SM-G9006V|SM-G9008V|SM-G9009D|SM-G900A|SM-G900D|SM-G900F|SM-G900H|SM-G900I|SM-G900J|SM-G900K|SM-G900L|SM-G900M|SM-G900P|SM-G900R4|SM-G900S|SM-G900T|SM-G900V|SM-G900W8",
+            "LG": "\\bLG\\b;|LG[- ]?(C800|C900|E400|E610|E900|E-900|F160|F180K|F180L|F180S|730|855|L160|LS740|LS840|LS970|LU6200|MS690|MS695|MS770|MS840|MS870|MS910|P500|P700|P705|VM696|AS680|AS695|AX840|C729|E970|GS505|272|C395|E739BK|E960|L55C|L75C|LS696|LS860|P769BK|P350|P500|P509|P870|UN272|US730|VS840|VS950|LN272|LN510|LS670|LS855|LW690|MN270|MN510|P509|P769|P930|UN200|UN270|UN510|UN610|US670|US740|US760|UX265|UX840|VN271|VN530|VS660|VS700|VS740|VS750|VS910|VS920|VS930|VX9200|VX11000|AX840A|LW770|P506|P925|P999|E612|D955|D802)",
+            "Sony": "SonyST|SonyLT|SonyEricsson|SonyEricssonLT15iv|LT18i|E10i|LT28h|LT26w|SonyEricssonMT27i|C5303|C6902|C6903|C6906|C6943|D2533",
+            "Asus": "Asus.*Galaxy|PadFone.*Mobile",
+            "Micromax": "Micromax.*\\b(A210|A92|A88|A72|A111|A110Q|A115|A116|A110|A90S|A26|A51|A35|A54|A25|A27|A89|A68|A65|A57|A90)\\b",
+            "Palm": "PalmSource|Palm",
+            "Vertu": "Vertu|Vertu.*Ltd|Vertu.*Ascent|Vertu.*Ayxta|Vertu.*Constellation(F|Quest)?|Vertu.*Monika|Vertu.*Signature",
+            "Pantech": "PANTECH|IM-A850S|IM-A840S|IM-A830L|IM-A830K|IM-A830S|IM-A820L|IM-A810K|IM-A810S|IM-A800S|IM-T100K|IM-A725L|IM-A780L|IM-A775C|IM-A770K|IM-A760S|IM-A750K|IM-A740S|IM-A730S|IM-A720L|IM-A710K|IM-A690L|IM-A690S|IM-A650S|IM-A630K|IM-A600S|VEGA PTL21|PT003|P8010|ADR910L|P6030|P6020|P9070|P4100|P9060|P5000|CDM8992|TXT8045|ADR8995|IS11PT|P2030|P6010|P8000|PT002|IS06|CDM8999|P9050|PT001|TXT8040|P2020|P9020|P2000|P7040|P7000|C790",
+            "Fly": "IQ230|IQ444|IQ450|IQ440|IQ442|IQ441|IQ245|IQ256|IQ236|IQ255|IQ235|IQ245|IQ275|IQ240|IQ285|IQ280|IQ270|IQ260|IQ250",
+            "Wiko": "KITE 4G|HIGHWAY|GETAWAY|STAIRWAY|DARKSIDE|DARKFULL|DARKNIGHT|DARKMOON|SLIDE|WAX 4G|RAINBOW|BLOOM|SUNSET|GOA|LENNY|BARRY|IGGY|OZZY|CINK FIVE|CINK PEAX|CINK PEAX 2|CINK SLIM|CINK SLIM 2|CINK +|CINK KING|CINK PEAX|CINK SLIM|SUBLIM",
+            "iMobile": "i-mobile (IQ|i-STYLE|idea|ZAA|Hitz)",
+            "SimValley": "\\b(SP-80|XT-930|SX-340|XT-930|SX-310|SP-360|SP60|SPT-800|SP-120|SPT-800|SP-140|SPX-5|SPX-8|SP-100|SPX-8|SPX-12)\\b",
+            "Wolfgang": "AT-B24D|AT-AS50HD|AT-AS40W|AT-AS55HD|AT-AS45q2|AT-B26D|AT-AS50Q",
+            "Alcatel": "Alcatel",
+            "Nintendo": "Nintendo 3DS",
+            "Amoi": "Amoi",
+            "INQ": "INQ",
+            "GenericPhone": "Tapatalk|PDA;|SAGEM|\\bmmp\\b|pocket|\\bpsp\\b|symbian|Smartphone|smartfon|treo|up.browser|up.link|vodafone|\\bwap\\b|nokia|Series40|Series60|S60|SonyEricsson|N900|MAUI.*WAP.*Browser"
+        },
+        "tablets": {
+            "iPad": "iPad|iPad.*Mobile",
+            "NexusTablet": "Android.*Nexus[\\s]+(7|9|10)|^.*Android.*Nexus(?:(?!Mobile).)*$",
+            "SamsungTablet": "SAMSUNG.*Tablet|Galaxy.*Tab|SC-01C|GT-P1000|GT-P1003|GT-P1010|GT-P3105|GT-P6210|GT-P6800|GT-P6810|GT-P7100|GT-P7300|GT-P7310|GT-P7500|GT-P7510|SCH-I800|SCH-I815|SCH-I905|SGH-I957|SGH-I987|SGH-T849|SGH-T859|SGH-T869|SPH-P100|GT-P3100|GT-P3108|GT-P3110|GT-P5100|GT-P5110|GT-P6200|GT-P7320|GT-P7511|GT-N8000|GT-P8510|SGH-I497|SPH-P500|SGH-T779|SCH-I705|SCH-I915|GT-N8013|GT-P3113|GT-P5113|GT-P8110|GT-N8010|GT-N8005|GT-N8020|GT-P1013|GT-P6201|GT-P7501|GT-N5100|GT-N5105|GT-N5110|SHV-E140K|SHV-E140L|SHV-E140S|SHV-E150S|SHV-E230K|SHV-E230L|SHV-E230S|SHW-M180K|SHW-M180L|SHW-M180S|SHW-M180W|SHW-M300W|SHW-M305W|SHW-M380K|SHW-M380S|SHW-M380W|SHW-M430W|SHW-M480K|SHW-M480S|SHW-M480W|SHW-M485W|SHW-M486W|SHW-M500W|GT-I9228|SCH-P739|SCH-I925|GT-I9200|GT-I9205|GT-P5200|GT-P5210|GT-P5210X|SM-T311|SM-T310|SM-T310X|SM-T210|SM-T210R|SM-T211|SM-P600|SM-P601|SM-P605|SM-P900|SM-P901|SM-T217|SM-T217A|SM-T217S|SM-P6000|SM-T3100|SGH-I467|XE500|SM-T110|GT-P5220|GT-I9200X|GT-N5110X|GT-N5120|SM-P905|SM-T111|SM-T2105|SM-T315|SM-T320|SM-T320X|SM-T321|SM-T520|SM-T525|SM-T530NU|SM-T230NU|SM-T330NU|SM-T900|XE500T1C|SM-P605V|SM-P905V|SM-T337V|SM-T537V|SM-T707V|SM-T807V|SM-P600X|SM-P900X|SM-T210X|SM-T230|SM-T230X|SM-T325|GT-P7503|SM-T531|SM-T330|SM-T530|SM-T705C|SM-T535|SM-T331|SM-T800|SM-T700|SM-T537|SM-T807|SM-P907A|SM-T337A|SM-T537A|SM-T707A|SM-T807A|SM-T237P|SM-T807P|SM-P607T|SM-T217T|SM-T337T|SM-T807T",
+            "Kindle": "Kindle|Silk.*Accelerated|Android.*\\b(KFOT|KFTT|KFJWI|KFJWA|KFOTE|KFSOWI|KFTHWI|KFTHWA|KFAPWI|KFAPWA|WFJWAE|KFSAWA|KFSAWI|KFASWI)\\b",
+            "SurfaceTablet": "Windows NT [0-9.]+; ARM;.*(Tablet|ARMBJS)",
+            "HPTablet": "HP Slate (7|8|10)|HP ElitePad 900|hp-tablet|EliteBook.*Touch|HP 8|Slate 21|HP SlateBook 10",
+            "AsusTablet": "^.*PadFone((?!Mobile).)*$|Transformer|TF101|TF101G|TF300T|TF300TG|TF300TL|TF700T|TF700KL|TF701T|TF810C|ME171|ME301T|ME302C|ME371MG|ME370T|ME372MG|ME172V|ME173X|ME400C|Slider SL101|\\bK00F\\b|\\bK00C\\b|\\bK00E\\b|\\bK00L\\b|TX201LA|ME176C|ME102A|\\bM80TA\\b|ME372CL|ME560CG|ME372CG|ME302KL",
+            "BlackBerryTablet": "PlayBook|RIM Tablet",
+            "HTCtablet": "HTC_Flyer_P512|HTC Flyer|HTC Jetstream|HTC-P715a|HTC EVO View 4G|PG41200|PG09410",
+            "MotorolaTablet": "xoom|sholest|MZ615|MZ605|MZ505|MZ601|MZ602|MZ603|MZ604|MZ606|MZ607|MZ608|MZ609|MZ615|MZ616|MZ617",
+            "NookTablet": "Android.*Nook|NookColor|nook browser|BNRV200|BNRV200A|BNTV250|BNTV250A|BNTV400|BNTV600|LogicPD Zoom2",
+            "AcerTablet": "Android.*; \\b(A100|A101|A110|A200|A210|A211|A500|A501|A510|A511|A700|A701|W500|W500P|W501|W501P|W510|W511|W700|G100|G100W|B1-A71|B1-710|B1-711|A1-810|A1-811|A1-830)\\b|W3-810|\\bA3-A10\\b|\\bA3-A11\\b",
+            "ToshibaTablet": "Android.*(AT100|AT105|AT200|AT205|AT270|AT275|AT300|AT305|AT1S5|AT500|AT570|AT700|AT830)|TOSHIBA.*FOLIO",
+            "LGTablet": "\\bL-06C|LG-V909|LG-V900|LG-V700|LG-V510|LG-V500|LG-V410|LG-V400|LG-VK810\\b",
+            "FujitsuTablet": "Android.*\\b(F-01D|F-02F|F-05E|F-10D|M532|Q572)\\b",
+            "PrestigioTablet": "PMP3170B|PMP3270B|PMP3470B|PMP7170B|PMP3370B|PMP3570C|PMP5870C|PMP3670B|PMP5570C|PMP5770D|PMP3970B|PMP3870C|PMP5580C|PMP5880D|PMP5780D|PMP5588C|PMP7280C|PMP7280C3G|PMP7280|PMP7880D|PMP5597D|PMP5597|PMP7100D|PER3464|PER3274|PER3574|PER3884|PER5274|PER5474|PMP5097CPRO|PMP5097|PMP7380D|PMP5297C|PMP5297C_QUAD",
+            "LenovoTablet": "Idea(Tab|Pad)( A1|A10| K1|)|ThinkPad([ ]+)?Tablet|Lenovo.*(S2109|S2110|S5000|S6000|K3011|A3000|A3500|A1000|A2107|A2109|A1107|A5500|A7600|B6000|B8000|B8080)(-|)(FL|F|HV|H|)",
+            "DellTablet": "Venue 11|Venue 8|Venue 7|Dell Streak 10|Dell Streak 7",
+            "YarvikTablet": "Android.*\\b(TAB210|TAB211|TAB224|TAB250|TAB260|TAB264|TAB310|TAB360|TAB364|TAB410|TAB411|TAB420|TAB424|TAB450|TAB460|TAB461|TAB464|TAB465|TAB467|TAB468|TAB07-100|TAB07-101|TAB07-150|TAB07-151|TAB07-152|TAB07-200|TAB07-201-3G|TAB07-210|TAB07-211|TAB07-212|TAB07-214|TAB07-220|TAB07-400|TAB07-485|TAB08-150|TAB08-200|TAB08-201-3G|TAB08-201-30|TAB09-100|TAB09-211|TAB09-410|TAB10-150|TAB10-201|TAB10-211|TAB10-400|TAB10-410|TAB13-201|TAB274EUK|TAB275EUK|TAB374EUK|TAB462EUK|TAB474EUK|TAB9-200)\\b",
+            "MedionTablet": "Android.*\\bOYO\\b|LIFE.*(P9212|P9514|P9516|S9512)|LIFETAB",
+            "ArnovaTablet": "AN10G2|AN7bG3|AN7fG3|AN8G3|AN8cG3|AN7G3|AN9G3|AN7dG3|AN7dG3ST|AN7dG3ChildPad|AN10bG3|AN10bG3DT|AN9G2",
+            "IntensoTablet": "INM8002KP|INM1010FP|INM805ND|Intenso Tab|TAB1004",
+            "IRUTablet": "M702pro",
+            "MegafonTablet": "MegaFon V9|\\bZTE V9\\b|Android.*\\bMT7A\\b",
+            "EbodaTablet": "E-Boda (Supreme|Impresspeed|Izzycomm|Essential)",
+            "AllViewTablet": "Allview.*(Viva|Alldro|City|Speed|All TV|Frenzy|Quasar|Shine|TX1|AX1|AX2)",
+            "ArchosTablet": "\\b(101G9|80G9|A101IT)\\b|Qilive 97R|Archos5|\\bARCHOS (70|79|80|90|97|101|FAMILYPAD|)(b|)(G10| Cobalt| TITANIUM(HD|)| Xenon| Neon|XSK| 2| XS 2| PLATINUM| CARBON|GAMEPAD)\\b",
+            "AinolTablet": "NOVO7|NOVO8|NOVO10|Novo7Aurora|Novo7Basic|NOVO7PALADIN|novo9-Spark",
+            "SonyTablet": "Sony.*Tablet|Xperia Tablet|Sony Tablet S|SO-03E|SGPT12|SGPT13|SGPT114|SGPT121|SGPT122|SGPT123|SGPT111|SGPT112|SGPT113|SGPT131|SGPT132|SGPT133|SGPT211|SGPT212|SGPT213|SGP311|SGP312|SGP321|EBRD1101|EBRD1102|EBRD1201|SGP351|SGP341|SGP511|SGP512|SGP521|SGP541|SGP551|SGP621|SGP612",
+            "PhilipsTablet": "\\b(PI2010|PI3000|PI3100|PI3105|PI3110|PI3205|PI3210|PI3900|PI4010|PI7000|PI7100)\\b",
+            "CubeTablet": "Android.*(K8GT|U9GT|U10GT|U16GT|U17GT|U18GT|U19GT|U20GT|U23GT|U30GT)|CUBE U8GT",
+            "CobyTablet": "MID1042|MID1045|MID1125|MID1126|MID7012|MID7014|MID7015|MID7034|MID7035|MID7036|MID7042|MID7048|MID7127|MID8042|MID8048|MID8127|MID9042|MID9740|MID9742|MID7022|MID7010",
+            "MIDTablet": "M9701|M9000|M9100|M806|M1052|M806|T703|MID701|MID713|MID710|MID727|MID760|MID830|MID728|MID933|MID125|MID810|MID732|MID120|MID930|MID800|MID731|MID900|MID100|MID820|MID735|MID980|MID130|MID833|MID737|MID960|MID135|MID860|MID736|MID140|MID930|MID835|MID733",
+            "MSITablet": "MSI \\b(Primo 73K|Primo 73L|Primo 81L|Primo 77|Primo 93|Primo 75|Primo 76|Primo 73|Primo 81|Primo 91|Primo 90|Enjoy 71|Enjoy 7|Enjoy 10)\\b",
+            "SMiTTablet": "Android.*(\\bMID\\b|MID-560|MTV-T1200|MTV-PND531|MTV-P1101|MTV-PND530)",
+            "RockChipTablet": "Android.*(RK2818|RK2808A|RK2918|RK3066)|RK2738|RK2808A",
+            "FlyTablet": "IQ310|Fly Vision",
+            "bqTablet": "(bq)?.*(Elcano|Curie|Edison|Maxwell|Kepler|Pascal|Tesla|Hypatia|Platon|Newton|Livingstone|Cervantes|Avant|Aquaris E10)|Maxwell.*Lite|Maxwell.*Plus",
+            "HuaweiTablet": "MediaPad|MediaPad 7 Youth|IDEOS S7|S7-201c|S7-202u|S7-101|S7-103|S7-104|S7-105|S7-106|S7-201|S7-Slim",
+            "NecTablet": "\\bN-06D|\\bN-08D",
+            "PantechTablet": "Pantech.*P4100",
+            "BronchoTablet": "Broncho.*(N701|N708|N802|a710)",
+            "VersusTablet": "TOUCHPAD.*[78910]|\\bTOUCHTAB\\b",
+            "ZyncTablet": "z1000|Z99 2G|z99|z930|z999|z990|z909|Z919|z900",
+            "PositivoTablet": "TB07STA|TB10STA|TB07FTA|TB10FTA",
+            "NabiTablet": "Android.*\\bNabi",
+            "KoboTablet": "Kobo Touch|\\bK080\\b|\\bVox\\b Build|\\bArc\\b Build",
+            "DanewTablet": "DSlide.*\\b(700|701R|702|703R|704|802|970|971|972|973|974|1010|1012)\\b",
+            "TexetTablet": "NaviPad|TB-772A|TM-7045|TM-7055|TM-9750|TM-7016|TM-7024|TM-7026|TM-7041|TM-7043|TM-7047|TM-8041|TM-9741|TM-9747|TM-9748|TM-9751|TM-7022|TM-7021|TM-7020|TM-7011|TM-7010|TM-7023|TM-7025|TM-7037W|TM-7038W|TM-7027W|TM-9720|TM-9725|TM-9737W|TM-1020|TM-9738W|TM-9740|TM-9743W|TB-807A|TB-771A|TB-727A|TB-725A|TB-719A|TB-823A|TB-805A|TB-723A|TB-715A|TB-707A|TB-705A|TB-709A|TB-711A|TB-890HD|TB-880HD|TB-790HD|TB-780HD|TB-770HD|TB-721HD|TB-710HD|TB-434HD|TB-860HD|TB-840HD|TB-760HD|TB-750HD|TB-740HD|TB-730HD|TB-722HD|TB-720HD|TB-700HD|TB-500HD|TB-470HD|TB-431HD|TB-430HD|TB-506|TB-504|TB-446|TB-436|TB-416|TB-146SE|TB-126SE",
+            "PlaystationTablet": "Playstation.*(Portable|Vita)",
+            "TrekstorTablet": "ST10416-1|VT10416-1|ST70408-1|ST702xx-1|ST702xx-2|ST80208|ST97216|ST70104-2|VT10416-2|ST10216-2A|SurfTab",
+            "PyleAudioTablet": "\\b(PTBL10CEU|PTBL10C|PTBL72BC|PTBL72BCEU|PTBL7CEU|PTBL7C|PTBL92BC|PTBL92BCEU|PTBL9CEU|PTBL9CUK|PTBL9C)\\b",
+            "AdvanTablet": "Android.* \\b(E3A|T3X|T5C|T5B|T3E|T3C|T3B|T1J|T1F|T2A|T1H|T1i|E1C|T1-E|T5-A|T4|E1-B|T2Ci|T1-B|T1-D|O1-A|E1-A|T1-A|T3A|T4i)\\b ",
+            "DanyTechTablet": "Genius Tab G3|Genius Tab S2|Genius Tab Q3|Genius Tab G4|Genius Tab Q4|Genius Tab G-II|Genius TAB GII|Genius TAB GIII|Genius Tab S1",
+            "GalapadTablet": "Android.*\\bG1\\b",
+            "MicromaxTablet": "Funbook|Micromax.*\\b(P250|P560|P360|P362|P600|P300|P350|P500|P275)\\b",
+            "KarbonnTablet": "Android.*\\b(A39|A37|A34|ST8|ST10|ST7|Smart Tab3|Smart Tab2)\\b",
+            "AllFineTablet": "Fine7 Genius|Fine7 Shine|Fine7 Air|Fine8 Style|Fine9 More|Fine10 Joy|Fine11 Wide",
+            "PROSCANTablet": "\\b(PEM63|PLT1023G|PLT1041|PLT1044|PLT1044G|PLT1091|PLT4311|PLT4311PL|PLT4315|PLT7030|PLT7033|PLT7033D|PLT7035|PLT7035D|PLT7044K|PLT7045K|PLT7045KB|PLT7071KG|PLT7072|PLT7223G|PLT7225G|PLT7777G|PLT7810K|PLT7849G|PLT7851G|PLT7852G|PLT8015|PLT8031|PLT8034|PLT8036|PLT8080K|PLT8082|PLT8088|PLT8223G|PLT8234G|PLT8235G|PLT8816K|PLT9011|PLT9045K|PLT9233G|PLT9735|PLT9760G|PLT9770G)\\b",
+            "YONESTablet": "BQ1078|BC1003|BC1077|RK9702|BC9730|BC9001|IT9001|BC7008|BC7010|BC708|BC728|BC7012|BC7030|BC7027|BC7026",
+            "ChangJiaTablet": "TPC7102|TPC7103|TPC7105|TPC7106|TPC7107|TPC7201|TPC7203|TPC7205|TPC7210|TPC7708|TPC7709|TPC7712|TPC7110|TPC8101|TPC8103|TPC8105|TPC8106|TPC8203|TPC8205|TPC8503|TPC9106|TPC9701|TPC97101|TPC97103|TPC97105|TPC97106|TPC97111|TPC97113|TPC97203|TPC97603|TPC97809|TPC97205|TPC10101|TPC10103|TPC10106|TPC10111|TPC10203|TPC10205|TPC10503",
+            "GUTablet": "TX-A1301|TX-M9002|Q702|kf026",
+            "PointOfViewTablet": "TAB-P506|TAB-navi-7-3G-M|TAB-P517|TAB-P-527|TAB-P701|TAB-P703|TAB-P721|TAB-P731N|TAB-P741|TAB-P825|TAB-P905|TAB-P925|TAB-PR945|TAB-PL1015|TAB-P1025|TAB-PI1045|TAB-P1325|TAB-PROTAB[0-9]+|TAB-PROTAB25|TAB-PROTAB26|TAB-PROTAB27|TAB-PROTAB26XL|TAB-PROTAB2-IPS9|TAB-PROTAB30-IPS9|TAB-PROTAB25XXL|TAB-PROTAB26-IPS10|TAB-PROTAB30-IPS10",
+            "OvermaxTablet": "OV-(SteelCore|NewBase|Basecore|Baseone|Exellen|Quattor|EduTab|Solution|ACTION|BasicTab|TeddyTab|MagicTab|Stream|TB-08|TB-09)",
+            "HCLTablet": "HCL.*Tablet|Connect-3G-2.0|Connect-2G-2.0|ME Tablet U1|ME Tablet U2|ME Tablet G1|ME Tablet X1|ME Tablet Y2|ME Tablet Sync",
+            "DPSTablet": "DPS Dream 9|DPS Dual 7",
+            "VistureTablet": "V97 HD|i75 3G|Visture V4( HD)?|Visture V5( HD)?|Visture V10",
+            "CrestaTablet": "CTP(-)?810|CTP(-)?818|CTP(-)?828|CTP(-)?838|CTP(-)?888|CTP(-)?978|CTP(-)?980|CTP(-)?987|CTP(-)?988|CTP(-)?989",
+            "MediatekTablet": "\\bMT8125|MT8389|MT8135|MT8377\\b",
+            "ConcordeTablet": "Concorde([ ]+)?Tab|ConCorde ReadMan",
+            "GoCleverTablet": "GOCLEVER TAB|A7GOCLEVER|M1042|M7841|M742|R1042BK|R1041|TAB A975|TAB A7842|TAB A741|TAB A741L|TAB M723G|TAB M721|TAB A1021|TAB I921|TAB R721|TAB I720|TAB T76|TAB R70|TAB R76.2|TAB R106|TAB R83.2|TAB M813G|TAB I721|GCTA722|TAB I70|TAB I71|TAB S73|TAB R73|TAB R74|TAB R93|TAB R75|TAB R76.1|TAB A73|TAB A93|TAB A93.2|TAB T72|TAB R83|TAB R974|TAB R973|TAB A101|TAB A103|TAB A104|TAB A104.2|R105BK|M713G|A972BK|TAB A971|TAB R974.2|TAB R104|TAB R83.3|TAB A1042",
+            "ModecomTablet": "FreeTAB 9000|FreeTAB 7.4|FreeTAB 7004|FreeTAB 7800|FreeTAB 2096|FreeTAB 7.5|FreeTAB 1014|FreeTAB 1001 |FreeTAB 8001|FreeTAB 9706|FreeTAB 9702|FreeTAB 7003|FreeTAB 7002|FreeTAB 1002|FreeTAB 7801|FreeTAB 1331|FreeTAB 1004|FreeTAB 8002|FreeTAB 8014|FreeTAB 9704|FreeTAB 1003",
+            "VoninoTablet": "\\b(Argus[ _]?S|Diamond[ _]?79HD|Emerald[ _]?78E|Luna[ _]?70C|Onyx[ _]?S|Onyx[ _]?Z|Orin[ _]?HD|Orin[ _]?S|Otis[ _]?S|SpeedStar[ _]?S|Magnet[ _]?M9|Primus[ _]?94[ _]?3G|Primus[ _]?94HD|Primus[ _]?QS|Android.*\\bQ8\\b|Sirius[ _]?EVO[ _]?QS|Sirius[ _]?QS|Spirit[ _]?S)\\b",
+            "ECSTablet": "V07OT2|TM105A|S10OT1|TR10CS1",
+            "StorexTablet": "eZee[_']?(Tab|Go)[0-9]+|TabLC7|Looney Tunes Tab",
+            "VodafoneTablet": "SmartTab([ ]+)?[0-9]+|SmartTabII10|SmartTabII7",
+            "EssentielBTablet": "Smart[ ']?TAB[ ]+?[0-9]+|Family[ ']?TAB2",
+            "RossMoorTablet": "RM-790|RM-997|RMD-878G|RMD-974R|RMT-705A|RMT-701|RME-601|RMT-501|RMT-711",
+            "iMobileTablet": "i-mobile i-note",
+            "TolinoTablet": "tolino tab [0-9.]+|tolino shine",
+            "AudioSonicTablet": "\\bC-22Q|T7-QC|T-17B|T-17P\\b",
+            "AMPETablet": "Android.* A78 ",
+            "SkkTablet": "Android.* (SKYPAD|PHOENIX|CYCLOPS)",
+            "TecnoTablet": "TECNO P9",
+            "JXDTablet": "Android.*\\b(F3000|A3300|JXD5000|JXD3000|JXD2000|JXD300B|JXD300|S5800|S7800|S602b|S5110b|S7300|S5300|S602|S603|S5100|S5110|S601|S7100a|P3000F|P3000s|P101|P200s|P1000m|P200m|P9100|P1000s|S6600b|S908|P1000|P300|S18|S6600|S9100)\\b",
+            "iJoyTablet": "Tablet (Spirit 7|Essentia|Galatea|Fusion|Onix 7|Landa|Titan|Scooby|Deox|Stella|Themis|Argon|Unique 7|Sygnus|Hexen|Finity 7|Cream|Cream X2|Jade|Neon 7|Neron 7|Kandy|Scape|Saphyr 7|Rebel|Biox|Rebel|Rebel 8GB|Myst|Draco 7|Myst|Tab7-004|Myst|Tadeo Jones|Tablet Boing|Arrow|Draco Dual Cam|Aurix|Mint|Amity|Revolution|Finity 9|Neon 9|T9w|Amity 4GB Dual Cam|Stone 4GB|Stone 8GB|Andromeda|Silken|X2|Andromeda II|Halley|Flame|Saphyr 9,7|Touch 8|Planet|Triton|Unique 10|Hexen 10|Memphis 4GB|Memphis 8GB|Onix 10)",
+            "FX2Tablet": "FX2 PAD7|FX2 PAD10",
+            "XoroTablet": "KidsPAD 701|PAD[ ]?712|PAD[ ]?714|PAD[ ]?716|PAD[ ]?717|PAD[ ]?718|PAD[ ]?720|PAD[ ]?721|PAD[ ]?722|PAD[ ]?790|PAD[ ]?792|PAD[ ]?900|PAD[ ]?9715D|PAD[ ]?9716DR|PAD[ ]?9718DR|PAD[ ]?9719QR|PAD[ ]?9720QR|TelePAD1030|Telepad1032|TelePAD730|TelePAD731|TelePAD732|TelePAD735Q|TelePAD830|TelePAD9730|TelePAD795|MegaPAD 1331|MegaPAD 1851|MegaPAD 2151",
+            "ViewsonicTablet": "ViewPad 10pi|ViewPad 10e|ViewPad 10s|ViewPad E72|ViewPad7|ViewPad E100|ViewPad 7e|ViewSonic VB733|VB100a",
+            "OdysTablet": "LOOX|XENO10|ODYS[ -](Space|EVO|Xpress|NOON)|\\bXELIO\\b|Xelio10Pro|XELIO7PHONETAB|XELIO10EXTREME|XELIOPT2|NEO_QUAD10",
+            "CaptivaTablet": "CAPTIVA PAD",
+            "IconbitTablet": "NetTAB|NT-3702|NT-3702S|NT-3702S|NT-3603P|NT-3603P|NT-0704S|NT-0704S|NT-3805C|NT-3805C|NT-0806C|NT-0806C|NT-0909T|NT-0909T|NT-0907S|NT-0907S|NT-0902S|NT-0902S",
+            "TeclastTablet": "T98 4G|\\bP80\\b|\\bX90HD\\b|X98 Air|X98 Air 3G|\\bX89\\b|P80 3G|\\bX80h\\b|P98 Air|\\bX89HD\\b|P98 3G|\\bP90HD\\b|P89 3G|X98 3G|\\bP70h\\b|P79HD 3G|G18d 3G|\\bP79HD\\b|\\bP89s\\b|\\bA88\\b|\\bP10HD\\b|\\bP19HD\\b|G18 3G|\\bP78HD\\b|\\bA78\\b|\\bP75\\b|G17s 3G|G17h 3G|\\bP85t\\b|\\bP90\\b|\\bP11\\b|\\bP98t\\b|\\bP98HD\\b|\\bG18d\\b|\\bP85s\\b|\\bP11HD\\b|\\bP88s\\b|\\bA80HD\\b|\\bA80se\\b|\\bA10h\\b|\\bP89\\b|\\bP78s\\b|\\bG18\\b|\\bP85\\b|\\bA70h\\b|\\bA70\\b|\\bG17\\b|\\bP18\\b|\\bA80s\\b|\\bA11s\\b|\\bP88HD\\b|\\bA80h\\b|\\bP76s\\b|\\bP76h\\b|\\bP98\\b|\\bA10HD\\b|\\bP78\\b|\\bP88\\b|\\bA11\\b|\\bA10t\\b|\\bP76a\\b|\\bP76t\\b|\\bP76e\\b|\\bP85HD\\b|\\bP85a\\b|\\bP86\\b|\\bP75HD\\b|\\bP76v\\b|\\bA12\\b|\\bP75a\\b|\\bA15\\b|\\bP76Ti\\b|\\bP81HD\\b|\\bA10\\b|\\bT760VE\\b|\\bT720HD\\b|\\bP76\\b|\\bP73\\b|\\bP71\\b|\\bP72\\b|\\bT720SE\\b|\\bC520Ti\\b|\\bT760\\b|\\bT720VE\\b|T720-3GE|T720-WiFi",
+            "JaytechTablet": "TPC-PA762",
+            "BlaupunktTablet": "Endeavour 800NG|Endeavour 1010",
+            "DigmaTablet": "\\b(iDx10|iDx9|iDx8|iDx7|iDxD7|iDxD8|iDsQ8|iDsQ7|iDsQ8|iDsD10|iDnD7|3TS804H|iDsQ11|iDj7|iDs10)\\b",
+            "EvolioTablet": "ARIA_Mini_wifi|Aria[ _]Mini|Evolio X10|Evolio X7|Evolio X8|\\bEvotab\\b|\\bNeura\\b",
+            "LavaTablet": "QPAD E704|\\bIvoryS\\b|E-TAB IVORY",
+            "CelkonTablet": "CT695|CT888|CT[\\s]?910|CT7 Tab|CT9 Tab|CT3 Tab|CT2 Tab|CT1 Tab|C820|C720|\\bCT-1\\b",
+            "WolderTablet": "miTab \\b(DIAMOND|SPACE|BROOKLYN|NEO|FLY|MANHATTAN|FUNK|EVOLUTION|SKY|GOCAR|IRON|GENIUS|POP|MINT|EPSILON|BROADWAY|JUMP|HOP|LEGEND|NEW AGE|LINE|ADVANCE|FEEL|FOLLOW|LIKE|LINK|LIVE|THINK|FREEDOM|CHICAGO|CLEVELAND|BALTIMORE-GH|IOWA|BOSTON|SEATTLE|PHOENIX|DALLAS|IN 101|MasterChef)\\b",
+            "MiTablet": "\\bMI PAD\\b|\\bHM NOTE 1W\\b",
+            "NibiruTablet": "Nibiru M1|Nibiru Jupiter One",
+            "NexoTablet": "NEXO NOVA|NEXO 10|NEXO AVIO|NEXO FREE|NEXO GO|NEXO EVO|NEXO 3G|NEXO SMART|NEXO KIDDO|NEXO MOBI",
+            "UbislateTablet": "UbiSlate[\\s]?7C",
+            "PocketBookTablet": "Pocketbook",
+            "Hudl": "Hudl HT7S3",
+            "TelstraTablet": "T-Hub2",
+            "GenericTablet": "Android.*\\b97D\\b|Tablet(?!.*PC)|BNTV250A|MID-WCDMA|LogicPD Zoom2|\\bA7EB\\b|CatNova8|A1_07|CT704|CT1002|\\bM721\\b|rk30sdk|\\bEVOTAB\\b|M758A|ET904|ALUMIUM10|Smartfren Tab|Endeavour 1010|Tablet-PC-4|Tagi Tab|\\bM6pro\\b|CT1020W|arc 10HD|\\bJolla\\b"
+        },
+        "oss": {
+            "AndroidOS": "Android",
+            "BlackBerryOS": "blackberry|\\bBB10\\b|rim tablet os",
+            "PalmOS": "PalmOS|avantgo|blazer|elaine|hiptop|palm|plucker|xiino",
+            "SymbianOS": "Symbian|SymbOS|Series60|Series40|SYB-[0-9]+|\\bS60\\b",
+            "WindowsMobileOS": "Windows CE.*(PPC|Smartphone|Mobile|[0-9]{3}x[0-9]{3})|Window Mobile|Windows Phone [0-9.]+|WCE;",
+            "WindowsPhoneOS": "Windows Phone 8.0|Windows Phone OS|XBLWP7|ZuneWP7|Windows NT 6.[23]; ARM;",
+            "iOS": "\\biPhone.*Mobile|\\biPod|\\biPad",
+            "MeeGoOS": "MeeGo",
+            "MaemoOS": "Maemo",
+            "JavaOS": "J2ME\/|\\bMIDP\\b|\\bCLDC\\b",
+            "webOS": "webOS|hpwOS",
+            "badaOS": "\\bBada\\b",
+            "BREWOS": "BREW"
+        },
+        "uas": {
+            "Chrome": "\\bCrMo\\b|CriOS|Android.*Chrome\/[.0-9]* (Mobile)?",
+            "Dolfin": "\\bDolfin\\b",
+            "Opera": "Opera.*Mini|Opera.*Mobi|Android.*Opera|Mobile.*OPR\/[0-9.]+|Coast\/[0-9.]+",
+            "Skyfire": "Skyfire",
+            "IE": "IEMobile|MSIEMobile",
+            "Firefox": "fennec|firefox.*maemo|(Mobile|Tablet).*Firefox|Firefox.*Mobile",
+            "Bolt": "bolt",
+            "TeaShark": "teashark",
+            "Blazer": "Blazer",
+            "Safari": "Version.*Mobile.*Safari|Safari.*Mobile|MobileSafari",
+            "Tizen": "Tizen",
+            "UCBrowser": "UC.*Browser|UCWEB",
+            "baiduboxapp": "baiduboxapp",
+            "baidubrowser": "baidubrowser",
+            "DiigoBrowser": "DiigoBrowser",
+            "Puffin": "Puffin",
+            "Mercury": "\\bMercury\\b",
+            "ObigoBrowser": "Obigo",
+            "NetFront": "NF-Browser",
+            "GenericBrowser": "NokiaBrowser|OviBrowser|OneBrowser|TwonkyBeamBrowser|SEMC.*Browser|FlyFlow|Minimo|NetFront|Novarra-Vision|MQQBrowser|MicroMessenger"
+        },
+        "props": {
+            "Mobile": "Mobile\/[VER]",
+            "Build": "Build\/[VER]",
+            "Version": "Version\/[VER]",
+            "VendorID": "VendorID\/[VER]",
+            "iPad": "iPad.*CPU[a-z ]+[VER]",
+            "iPhone": "iPhone.*CPU[a-z ]+[VER]",
+            "iPod": "iPod.*CPU[a-z ]+[VER]",
+            "Kindle": "Kindle\/[VER]",
+            "Chrome": [
+                "Chrome\/[VER]",
+                "CriOS\/[VER]",
+                "CrMo\/[VER]"
+            ],
+            "Coast": [
+                "Coast\/[VER]"
+            ],
+            "Dolfin": "Dolfin\/[VER]",
+            "Firefox": "Firefox\/[VER]",
+            "Fennec": "Fennec\/[VER]",
+            "IE": [
+                "IEMobile\/[VER];",
+                "IEMobile [VER]",
+                "MSIE [VER];"
+            ],
+            "NetFront": "NetFront\/[VER]",
+            "NokiaBrowser": "NokiaBrowser\/[VER]",
+            "Opera": [
+                " OPR\/[VER]",
+                "Opera Mini\/[VER]",
+                "Version\/[VER]"
+            ],
+            "Opera Mini": "Opera Mini\/[VER]",
+            "Opera Mobi": "Version\/[VER]",
+            "UC Browser": "UC Browser[VER]",
+            "MQQBrowser": "MQQBrowser\/[VER]",
+            "MicroMessenger": "MicroMessenger\/[VER]",
+            "baiduboxapp": "baiduboxapp\/[VER]",
+            "baidubrowser": "baidubrowser\/[VER]",
+            "Iron": "Iron\/[VER]",
+            "Safari": [
+                "Version\/[VER]",
+                "Safari\/[VER]"
+            ],
+            "Skyfire": "Skyfire\/[VER]",
+            "Tizen": "Tizen\/[VER]",
+            "Webkit": "webkit[ \/][VER]",
+            "Gecko": "Gecko\/[VER]",
+            "Trident": "Trident\/[VER]",
+            "Presto": "Presto\/[VER]",
+            "iOS": " \\bi?OS\\b [VER][ ;]{1}",
+            "Android": "Android [VER]",
+            "BlackBerry": [
+                "BlackBerry[\\w]+\/[VER]",
+                "BlackBerry.*Version\/[VER]",
+                "Version\/[VER]"
+            ],
+            "BREW": "BREW [VER]",
+            "Java": "Java\/[VER]",
+            "Windows Phone OS": [
+                "Windows Phone OS [VER]",
+                "Windows Phone [VER]"
+            ],
+            "Windows Phone": "Windows Phone [VER]",
+            "Windows CE": "Windows CE\/[VER]",
+            "Windows NT": "Windows NT [VER]",
+            "Symbian": [
+                "SymbianOS\/[VER]",
+                "Symbian\/[VER]"
+            ],
+            "webOS": [
+                "webOS\/[VER]",
+                "hpwOS\/[VER];"
+            ]
+        },
+        "utils": {
+            "Bot": "Googlebot|facebookexternalhit|AdsBot-Google|Google Keyword Suggestion|Facebot|YandexBot|bingbot|ia_archiver|AhrefsBot|Ezooms|GSLFbot|WBSearchBot|Twitterbot|TweetmemeBot|Twikle|PaperLiBot|Wotbox|UnwindFetchor",
+            "MobileBot": "Googlebot-Mobile|AdsBot-Google-Mobile|YahooSeeker\/M1A1-R2D2",
+            "DesktopMode": "WPDesktop",
+            "TV": "SonyDTV|HbbTV",
+            "WebKit": "(webkit)[ \/]([\\w.]+)",
+            "Console": "\\b(Nintendo|Nintendo WiiU|Nintendo 3DS|PLAYSTATION|Xbox)\\b",
+            "Watch": "SM-V700"
         }
+    };
 
-        function convertPropsToRegExp(object) {
-            for (var key in object) {
-                if (hasOwnProp.call(object, key)) {
-                    object[key] = new RegExp(object[key], 'i');
-                }
+    // following patterns come from http://detectmobilebrowsers.com/
+    impl.detectMobileBrowsers = {
+        fullPattern: /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i,
+        shortPattern: /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i
+    };
+
+    var hasOwnProp = Object.prototype.hasOwnProperty,
+        isArray;
+
+    impl.FALLBACK_PHONE = 'UnknownPhone';
+    impl.FALLBACK_TABLET = 'UnknownTablet';
+    impl.FALLBACK_MOBILE = 'UnknownMobile';
+
+    isArray = ('isArray' in Array) ?
+        Array.isArray : function (value) { return Object.prototype.toString.call(value) === '[object Array]'; };
+
+    function equalIC(a, b) {
+        return a != null && b != null && a.toLowerCase() === b.toLowerCase();
+    }
+
+    function convertPropsToRegExp(object) {
+        for (var key in object) {
+            if (hasOwnProp.call(object, key)) {
+                object[key] = new RegExp(object[key], 'i');
             }
         }
+    }
 
-        (function init() {
-            var key, values, value, i, len, verPos, mobileDetectRules = impl.mobileDetectRules;
-            for (key in mobileDetectRules.props) {
-                if (hasOwnProp.call(mobileDetectRules.props, key)) {
-                    values = mobileDetectRules.props[key];
-                    if (!isArray(values)) {
-                        values = [values];
-                    }
-                    len = values.length;
-                    for (i = 0; i < len; ++i) {
-                        value = values[i];
-                        verPos = value.indexOf('[VER]');
-                        if (verPos >= 0) {
-                            value = value.substring(0, verPos) + '([\\w._\\+]+)' + value.substring(verPos + 5);
-                        }
-                        values[i] = new RegExp(value, 'i');
-                    }
-                    mobileDetectRules.props[key] = values;
+    (function init() {
+        var key, values, value, i, len, verPos, mobileDetectRules = impl.mobileDetectRules;
+        for (key in mobileDetectRules.props) {
+            if (hasOwnProp.call(mobileDetectRules.props, key)) {
+                values = mobileDetectRules.props[key];
+                if (!isArray(values)) {
+                    values = [values];
                 }
-            }
-            convertPropsToRegExp(mobileDetectRules.oss);
-            convertPropsToRegExp(mobileDetectRules.phones);
-            convertPropsToRegExp(mobileDetectRules.tablets);
-            convertPropsToRegExp(mobileDetectRules.uas);
-            convertPropsToRegExp(mobileDetectRules.utils);
-
-            // copy some patterns to oss0 which are tested first (see issue#15)
-            mobileDetectRules.oss0 = {
-                WindowsPhoneOS: mobileDetectRules.oss.WindowsPhoneOS,
-                WindowsMobileOS: mobileDetectRules.oss.WindowsMobileOS
-            };
-        }());
-
-        /**
-         * Test userAgent string against a set of rules and find the matched key.
-         * @param {Object} rules (key is String, value is RegExp)
-         * @param {String} userAgent the navigator.userAgent (or HTTP-Header 'User-Agent').
-         * @returns {String|null} the matched key if found, otherwise <tt>null</tt>
-         * @private
-         */
-        impl.findMatch = function (rules, userAgent) {
-            for (var key in rules) {
-                if (hasOwnProp.call(rules, key)) {
-                    if (rules[key].test(userAgent)) {
-                        return key;
-                    }
-                }
-            }
-            return null;
-        };
-
-        /**
-         * Check the version of the given property in the User-Agent.
-         *
-         * @param {String} propertyName
-         * @param {String} userAgent
-         * @return {String} version or <tt>null</tt> if version not found
-         * @private
-         */
-        impl.getVersionStr = function (propertyName, userAgent) {
-            var props = impl.mobileDetectRules.props, patterns, i, len, match;
-            if (hasOwnProp.call(props, propertyName)) {
-                patterns = props[propertyName];
-                len = patterns.length;
+                len = values.length;
                 for (i = 0; i < len; ++i) {
-                    match = patterns[i].exec(userAgent);
-                    if (match !== null) {
-                        return match[1];
+                    value = values[i];
+                    verPos = value.indexOf('[VER]');
+                    if (verPos >= 0) {
+                        value = value.substring(0, verPos) + '([\\w._\\+]+)' + value.substring(verPos + 5);
                     }
+                    values[i] = new RegExp(value, 'i');
+                }
+                mobileDetectRules.props[key] = values;
+            }
+        }
+        convertPropsToRegExp(mobileDetectRules.oss);
+        convertPropsToRegExp(mobileDetectRules.phones);
+        convertPropsToRegExp(mobileDetectRules.tablets);
+        convertPropsToRegExp(mobileDetectRules.uas);
+        convertPropsToRegExp(mobileDetectRules.utils);
+
+        // copy some patterns to oss0 which are tested first (see issue#15)
+        mobileDetectRules.oss0 = {
+            WindowsPhoneOS: mobileDetectRules.oss.WindowsPhoneOS,
+            WindowsMobileOS: mobileDetectRules.oss.WindowsMobileOS
+        };
+    }());
+
+    /**
+     * Test userAgent string against a set of rules and find the matched key.
+     * @param {Object} rules (key is String, value is RegExp)
+     * @param {String} userAgent the navigator.userAgent (or HTTP-Header 'User-Agent').
+     * @returns {String|null} the matched key if found, otherwise <tt>null</tt>
+     * @private
+     */
+    impl.findMatch = function (rules, userAgent) {
+        for (var key in rules) {
+            if (hasOwnProp.call(rules, key)) {
+                if (rules[key].test(userAgent)) {
+                    return key;
                 }
             }
-            return null;
-        };
+        }
+        return null;
+    };
+
+    /**
+     * Check the version of the given property in the User-Agent.
+     *
+     * @param {String} propertyName
+     * @param {String} userAgent
+     * @return {String} version or <tt>null</tt> if version not found
+     * @private
+     */
+    impl.getVersionStr = function (propertyName, userAgent) {
+        var props = impl.mobileDetectRules.props, patterns, i, len, match;
+        if (hasOwnProp.call(props, propertyName)) {
+            patterns = props[propertyName];
+            len = patterns.length;
+            for (i = 0; i < len; ++i) {
+                match = patterns[i].exec(userAgent);
+                if (match !== null) {
+                    return match[1];
+                }
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Check the version of the given property in the User-Agent.
+     * Will return a float number. (eg. 2_0 will return 2.0, 4.3.1 will return 4.31)
+     *
+     * @param {String} propertyName
+     * @param {String} userAgent
+     * @return {Number} version or <tt>NaN</tt> if version not found
+     * @private
+     */
+    impl.getVersion = function (propertyName, userAgent) {
+        var version = impl.getVersionStr(propertyName, userAgent);
+        return version ? impl.prepareVersionNo(version) : NaN;
+    };
+
+    /**
+     * Prepare the version number.
+     *
+     * @param {String} version
+     * @return {Number} the version number as a floating number
+     * @private
+     */
+    impl.prepareVersionNo = function (version) {
+        var numbers;
+
+        numbers = version.split(/[a-z._ \/\-]/i);
+        if (numbers.length === 1) {
+            version = numbers[0];
+        }
+        if (numbers.length > 1) {
+            version = numbers[0] + '.';
+            numbers.shift();
+            version += numbers.join('');
+        }
+        return Number(version);
+    };
+
+    impl.isMobileFallback = function (userAgent) {
+        return impl.detectMobileBrowsers.fullPattern.test(userAgent) ||
+            impl.detectMobileBrowsers.shortPattern.test(userAgent.substr(0, 4));
+    };
+
+    impl.prepareDetectionCache = function (cache, userAgent, maxPhoneWidth) {
+        if (cache.mobile !== undefined) {
+            return;
+        }
+        var phone, tablet, phoneSized;
+
+        // first check for stronger tablet rules, then phone (see issue#5)
+        tablet = impl.findMatch(impl.mobileDetectRules.tablets, userAgent);
+        if (tablet) {
+            cache.mobile = cache.tablet = tablet;
+            cache.phone = null;
+            return; // unambiguously identified as tablet
+        }
+
+        phone = impl.findMatch(impl.mobileDetectRules.phones, userAgent);
+        if (phone) {
+            cache.mobile = cache.phone = phone;
+            cache.tablet = null;
+            return; // unambiguously identified as phone
+        }
+
+        // our rules haven't found a match -> try more general fallback rules
+        if (impl.isMobileFallback(userAgent)) {
+            phoneSized = MobileDetect.isPhoneSized(maxPhoneWidth);
+            if (phoneSized === undefined) {
+                cache.mobile = impl.FALLBACK_MOBILE;
+                cache.tablet = cache.phone = null;
+            } else if (phoneSized) {
+                cache.mobile = cache.phone = impl.FALLBACK_PHONE;
+                cache.tablet = null;
+            } else {
+                cache.mobile = cache.tablet = impl.FALLBACK_TABLET;
+                cache.phone = null;
+            }
+        } else {
+            // not mobile at all!
+            cache.mobile = cache.tablet = cache.phone = null;
+        }
+    };
+
+    // t is a reference to a MobileDetect instance
+    impl.mobileGrade = function (t) {
+        // impl note:
+        // To keep in sync w/ Mobile_Detect.php easily, the following code is tightly aligned to the PHP version.
+        // When changes are made in Mobile_Detect.php, copy this method and replace:
+        //     $this-> / t.
+        //     self::MOBILE_GRADE_(.) / '$1'
+        //     , self::VERSION_TYPE_FLOAT / (nothing)
+        //     isIOS() / os('iOS')
+        //     [reg] / (nothing)   <-- jsdelivr complaining about unescaped unicode character U+00AE
+        var $isMobile = t.mobile() !== null;
+
+        if (
+            // Apple iOS 3.2-5.1 - Tested on the original iPad (4.3 / 5.0), iPad 2 (4.3), iPad 3 (5.1), original iPhone (3.1), iPhone 3 (3.2), 3GS (4.3), 4 (4.3 / 5.0), and 4S (5.1)
+            t.os('iOS') && t.version('iPad') >= 4.3 ||
+            t.os('iOS') && t.version('iPhone') >= 3.1 ||
+            t.os('iOS') && t.version('iPod') >= 3.1 ||
+
+            // Android 2.1-2.3 - Tested on the HTC Incredible (2.2), original Droid (2.2), HTC Aria (2.1), Google Nexus S (2.3). Functional on 1.5 & 1.6 but performance may be sluggish, tested on Google G1 (1.5)
+            // Android 3.1 (Honeycomb)  - Tested on the Samsung Galaxy Tab 10.1 and Motorola XOOM
+            // Android 4.0 (ICS)  - Tested on a Galaxy Nexus. Note: transition performance can be poor on upgraded devices
+            // Android 4.1 (Jelly Bean)  - Tested on a Galaxy Nexus and Galaxy 7
+            (t.version('Android') > 2.1 && t.is('Webkit')) ||
+
+            // Windows Phone 7-7.5 - Tested on the HTC Surround (7.0) HTC Trophy (7.5), LG-E900 (7.5), Nokia Lumia 800
+            t.version('Windows Phone OS') >= 7.0 ||
+
+            // Blackberry 7 - Tested on BlackBerry Torch 9810
+            // Blackberry 6.0 - Tested on the Torch 9800 and Style 9670
+            t.is('BlackBerry') && t.version('BlackBerry') >= 6.0 ||
+            // Blackberry Playbook (1.0-2.0) - Tested on PlayBook
+            t.match('Playbook.*Tablet') ||
+
+            // Palm WebOS (1.4-2.0) - Tested on the Palm Pixi (1.4), Pre (1.4), Pre 2 (2.0)
+            (t.version('webOS') >= 1.4 && t.match('Palm|Pre|Pixi')) ||
+            // Palm WebOS 3.0  - Tested on HP TouchPad
+            t.match('hp.*TouchPad') ||
+
+            // Firefox Mobile (12 Beta) - Tested on Android 2.3 device
+            (t.is('Firefox') && t.version('Firefox') >= 12) ||
+
+            // Chrome for Android - Tested on Android 4.0, 4.1 device
+            (t.is('Chrome') && t.is('AndroidOS') && t.version('Android') >= 4.0) ||
+
+            // Skyfire 4.1 - Tested on Android 2.3 device
+            (t.is('Skyfire') && t.version('Skyfire') >= 4.1 && t.is('AndroidOS') && t.version('Android') >= 2.3) ||
+
+            // Opera Mobile 11.5-12: Tested on Android 2.3
+            (t.is('Opera') && t.version('Opera Mobi') > 11 && t.is('AndroidOS')) ||
+
+            // Meego 1.2 - Tested on Nokia 950 and N9
+            t.is('MeeGoOS') ||
+
+            // Tizen (pre-release) - Tested on early hardware
+            t.is('Tizen') ||
+
+            // Samsung Bada 2.0 - Tested on a Samsung Wave 3, Dolphin browser
+            // @todo: more tests here!
+            t.is('Dolfin') && t.version('Bada') >= 2.0 ||
+
+            // UC Browser - Tested on Android 2.3 device
+            ((t.is('UC Browser') || t.is('Dolfin')) && t.version('Android') >= 2.3) ||
+
+            // Kindle 3 and Fire  - Tested on the built-in WebKit browser for each
+            (t.match('Kindle Fire') ||
+                t.is('Kindle') && t.version('Kindle') >= 3.0) ||
+
+            // Nook Color 1.4.1 - Tested on original Nook Color, not Nook Tablet
+            t.is('AndroidOS') && t.is('NookTablet') ||
+
+            // Chrome Desktop 11-21 - Tested on OS X 10.7 and Windows 7
+            t.version('Chrome') >= 11 && !$isMobile ||
+
+            // Safari Desktop 4-5 - Tested on OS X 10.7 and Windows 7
+            t.version('Safari') >= 5.0 && !$isMobile ||
+
+            // Firefox Desktop 4-13 - Tested on OS X 10.7 and Windows 7
+            t.version('Firefox') >= 4.0 && !$isMobile ||
+
+            // Internet Explorer 7-9 - Tested on Windows XP, Vista and 7
+            t.version('MSIE') >= 7.0 && !$isMobile ||
+
+            // Opera Desktop 10-12 - Tested on OS X 10.7 and Windows 7
+            // @reference: http://my.opera.com/community/openweb/idopera/
+            t.version('Opera') >= 10 && !$isMobile
+
+            ) {
+            return 'A';
+        }
+
+        if (
+            t.os('iOS') && t.version('iPad') < 4.3 ||
+            t.os('iOS') && t.version('iPhone') < 3.1 ||
+            t.os('iOS') && t.version('iPod') < 3.1 ||
+
+            // Blackberry 5.0: Tested on the Storm 2 9550, Bold 9770
+            t.is('Blackberry') && t.version('BlackBerry') >= 5 && t.version('BlackBerry') < 6 ||
+
+            //Opera Mini (5.0-6.5) - Tested on iOS 3.2/4.3 and Android 2.3
+            (t.version('Opera Mini') >= 5.0 && t.version('Opera Mini') <= 6.5 &&
+                (t.version('Android') >= 2.3 || t.is('iOS'))) ||
+
+            // Nokia Symbian^3 - Tested on Nokia N8 (Symbian^3), C7 (Symbian^3), also works on N97 (Symbian^1)
+            t.match('NokiaN8|NokiaC7|N97.*Series60|Symbian/3') ||
+
+            // @todo: report this (tested on Nokia N71)
+            t.version('Opera Mobi') >= 11 && t.is('SymbianOS')
+            ) {
+            return 'B';
+        }
+
+        if (
+            // Blackberry 4.x - Tested on the Curve 8330
+            t.version('BlackBerry') < 5.0 ||
+            // Windows Mobile - Tested on the HTC Leo (WinMo 5.2)
+            t.match('MSIEMobile|Windows CE.*Mobile') || t.version('Windows Mobile') <= 5.2
+
+            ) {
+            return 'C';
+        }
+
+        //All older smartphone platforms and featurephones - Any device that doesn't support media queries
+        //will receive the basic, C grade experience.
+        return 'C';
+    };
+
+    impl.detectOS = function (ua) {
+        return impl.findMatch(impl.mobileDetectRules.oss0, ua) ||
+            impl.findMatch(impl.mobileDetectRules.oss, ua);
+    };
+
+    impl.getDeviceSmallerSide = function () {
+        return window.screen.width < window.screen.height ?
+            window.screen.width :
+            window.screen.height;
+    };
+
+    /**
+     * Constructor for MobileDetect object.
+     * <br>
+     * Such an object will keep a reference to the given user-agent string and cache most of the detect queries.<br>
+     * <div style="background-color: #d9edf7; border: 1px solid #bce8f1; color: #3a87ad; padding: 14px; border-radius: 2px; margin-top: 20px">
+     *     <strong>Find information how to download and install:</strong>
+     *     <a href="https://github.com/hgoebl/mobile-detect.js/">github.com/hgoebl/mobile-detect.js/</a>
+     * </div>
+     *
+     * @example <pre>
+     *     var md = new MobileDetect(window.navigator.userAgent);
+     *     if (md.mobile()) {
+     *         location.href = (md.mobileGrade() === 'A') ? '/mobile/' : '/lynx/';
+     *     }
+     * </pre>
+     *
+     * @param {string} userAgent typically taken from window.navigator.userAgent or http_header['User-Agent']
+     * @param {number} [maxPhoneWidth=600] <strong>only for browsers</strong> specify a value for the maximum
+     *        width of smallest device side (in logical "CSS" pixels) until a device detected as mobile will be handled
+     *        as phone.
+     *        This is only used in cases where the device cannot be classified as phone or tablet.<br>
+     *        See <a href="http://developer.android.com/guide/practices/screens_support.html">Declaring Tablet Layouts
+     *        for Android</a>.<br>
+     *        If you provide a value < 0, then this "fuzzy" check is disabled.
+     * @constructor
+     * @global
+     */
+    function MobileDetect(userAgent, maxPhoneWidth) {
+        this.ua = userAgent || '';
+        this._cache = {};
+        //600dp is typical 7" tablet minimum width
+        this.maxPhoneWidth = maxPhoneWidth || 600;
+    }
+
+    MobileDetect.prototype = {
+        constructor: MobileDetect,
 
         /**
-         * Check the version of the given property in the User-Agent.
+         * Returns the detected phone or tablet type or <tt>null</tt> if it is not a mobile device.
+         * <br>
+         * For a list of possible return values see {@link MobileDetect#phone} and {@link MobileDetect#tablet}.<br>
+         * <br>
+         * If the device is not detected by the regular expressions from Mobile-Detect, a test is made against
+         * the patterns of <a href="http://detectmobilebrowsers.com/">detectmobilebrowsers.com</a>. If this test
+         * is positive, a value of <code>UnknownPhone</code>, <code>UnknownTablet</code> or
+         * <code>UnknownMobile</code> is returned.<br>
+         * When used in browser, the decision whether phone or tablet is made based on <code>screen.width/height</code>.<br>
+         * <br>
+         * When used server-side (node.js), there is no way to tell the difference between <code>UnknownTablet</code>
+         * and <code>UnknownMobile</code>, so you will get <code>UnknownMobile</code> here.<br>
+         * Be aware that since v1.0.0 in this special case you will get <code>UnknownMobile</code> only for:
+         * {@link MobileDetect#mobile}, not for {@link MobileDetect#phone} and {@link MobileDetect#tablet}.
+         * In versions before v1.0.0 all 3 methods returned <code>UnknownMobile</code> which was tedious to use.
+         * <br>
+         * In most cases you will use the return value just as a boolean.
+         *
+         * @returns {String} the key for the phone family or tablet family, e.g. "Nexus".
+         * @function MobileDetect#mobile
+         */
+        mobile: function () {
+            impl.prepareDetectionCache(this._cache, this.ua, this.maxPhoneWidth);
+            return this._cache.mobile;
+        },
+
+        /**
+         * Returns the detected phone type/family string or <tt>null</tt>.
+         * <br>
+         * The returned tablet (family or producer) is one of following keys:<br>
+         * <br><tt>iPhone, BlackBerry, HTC, Nexus, Dell, Motorola, Samsung, LG, Sony, Asus,
+         * Micromax, Palm, Vertu, Pantech, Fly, Wiko, iMobile, SimValley, Wolfgang,
+         * Alcatel, Nintendo, Amoi, INQ, GenericPhone</tt><br>
+         * <br>
+         * If the device is not detected by the regular expressions from Mobile-Detect, a test is made against
+         * the patterns of <a href="http://detectmobilebrowsers.com/">detectmobilebrowsers.com</a>. If this test
+         * is positive, a value of <code>UnknownPhone</code> or <code>UnknownMobile</code> is returned.<br>
+         * When used in browser, the decision whether phone or tablet is made based on <code>screen.width/height</code>.<br>
+         * <br>
+         * When used server-side (node.js), there is no way to tell the difference between <code>UnknownTablet</code>
+         * and <code>UnknownMobile</code>, so you will get <code>null</code> here, while {@link MobileDetect#mobile}
+         * will return <code>UnknownMobile</code>.<br>
+         * Be aware that since v1.0.0 in this special case you will get <code>UnknownMobile</code> only for:
+         * {@link MobileDetect#mobile}, not for {@link MobileDetect#phone} and {@link MobileDetect#tablet}.
+         * In versions before v1.0.0 all 3 methods returned <code>UnknownMobile</code> which was tedious to use.
+         * <br>
+         * In most cases you will use the return value just as a boolean.
+         *
+         * @returns {String} the key of the phone family or producer, e.g. "iPhone"
+         * @function MobileDetect#phone
+         */
+        phone: function () {
+            impl.prepareDetectionCache(this._cache, this.ua, this.maxPhoneWidth);
+            return this._cache.phone;
+        },
+
+        /**
+         * Returns the detected tablet type/family string or <tt>null</tt>.
+         * <br>
+         * The returned tablet (family or producer) is one of following keys:<br>
+         * <br><tt>iPad, NexusTablet, SamsungTablet, Kindle, SurfaceTablet, HPTablet, AsusTablet,
+         * BlackBerryTablet, HTCtablet, MotorolaTablet, NookTablet, AcerTablet,
+         * ToshibaTablet, LGTablet, FujitsuTablet, PrestigioTablet, LenovoTablet,
+         * DellTablet, YarvikTablet, MedionTablet, ArnovaTablet, IntensoTablet, IRUTablet,
+         * MegafonTablet, EbodaTablet, AllViewTablet, ArchosTablet, AinolTablet,
+         * SonyTablet, PhilipsTablet, CubeTablet, CobyTablet, MIDTablet, MSITablet,
+         * SMiTTablet, RockChipTablet, FlyTablet, bqTablet, HuaweiTablet, NecTablet,
+         * PantechTablet, BronchoTablet, VersusTablet, ZyncTablet, PositivoTablet,
+         * NabiTablet, KoboTablet, DanewTablet, TexetTablet, PlaystationTablet,
+         * TrekstorTablet, PyleAudioTablet, AdvanTablet, DanyTechTablet, GalapadTablet,
+         * MicromaxTablet, KarbonnTablet, AllFineTablet, PROSCANTablet, YONESTablet,
+         * ChangJiaTablet, GUTablet, PointOfViewTablet, OvermaxTablet, HCLTablet,
+         * DPSTablet, VistureTablet, CrestaTablet, MediatekTablet, ConcordeTablet,
+         * GoCleverTablet, ModecomTablet, VoninoTablet, ECSTablet, StorexTablet,
+         * VodafoneTablet, EssentielBTablet, RossMoorTablet, iMobileTablet, TolinoTablet,
+         * AudioSonicTablet, AMPETablet, SkkTablet, TecnoTablet, JXDTablet, iJoyTablet,
+         * FX2Tablet, XoroTablet, ViewsonicTablet, OdysTablet, CaptivaTablet,
+         * IconbitTablet, TeclastTablet, JaytechTablet, BlaupunktTablet, DigmaTablet,
+         * EvolioTablet, LavaTablet, CelkonTablet, WolderTablet, MiTablet, NibiruTablet,
+         * NexoTablet, UbislateTablet, PocketBookTablet, Hudl, TelstraTablet, GenericTablet</tt><br>
+         * <br>
+         * If the device is not detected by the regular expressions from Mobile-Detect, a test is made against
+         * the patterns of <a href="http://detectmobilebrowsers.com/">detectmobilebrowsers.com</a>. If this test
+         * is positive, a value of <code>UnknownTablet</code> or <code>UnknownMobile</code> is returned.<br>
+         * When used in browser, the decision whether phone or tablet is made based on <code>screen.width/height</code>.<br>
+         * <br>
+         * When used server-side (node.js), there is no way to tell the difference between <code>UnknownTablet</code>
+         * and <code>UnknownMobile</code>, so you will get <code>null</code> here, while {@link MobileDetect#mobile}
+         * will return <code>UnknownMobile</code>.<br>
+         * Be aware that since v1.0.0 in this special case you will get <code>UnknownMobile</code> only for:
+         * {@link MobileDetect#mobile}, not for {@link MobileDetect#phone} and {@link MobileDetect#tablet}.
+         * In versions before v1.0.0 all 3 methods returned <code>UnknownMobile</code> which was tedious to use.
+         * <br>
+         * In most cases you will use the return value just as a boolean.
+         *
+         * @returns {String} the key of the tablet family or producer, e.g. "SamsungTablet"
+         * @function MobileDetect#tablet
+         */
+        tablet: function () {
+            impl.prepareDetectionCache(this._cache, this.ua, this.maxPhoneWidth);
+            return this._cache.tablet;
+        },
+
+        /**
+         * Returns the detected user-agent string or <tt>null</tt>.
+         * <br>
+         * The returned user-agent is one of following keys:<br>
+         * <br><tt>Chrome, Dolfin, Opera, Skyfire, IE, Firefox, Bolt, TeaShark, Blazer, Safari,
+         * Tizen, UCBrowser, baiduboxapp, baidubrowser, DiigoBrowser, Puffin, Mercury,
+         * ObigoBrowser, NetFront, GenericBrowser</tt><br>
+         *
+         * @returns {String} the key for the detected user-agent or <tt>null</tt>
+         * @function MobileDetect#userAgent
+         */
+        userAgent: function () {
+            if (this._cache.userAgent === undefined) {
+                this._cache.userAgent = impl.findMatch(impl.mobileDetectRules.uas, this.ua);
+            }
+            return this._cache.userAgent;
+        },
+
+        /**
+         * Returns the detected operating system string or <tt>null</tt>.
+         * <br>
+         * The operating system is one of following keys:<br>
+         * <br><tt>AndroidOS, BlackBerryOS, PalmOS, SymbianOS, WindowsMobileOS, WindowsPhoneOS,
+         * iOS, MeeGoOS, MaemoOS, JavaOS, webOS, badaOS, BREWOS</tt><br>
+         *
+         * @returns {String} the key for the detected operating system.
+         * @function MobileDetect#os
+         */
+        os: function () {
+            if (this._cache.os === undefined) {
+                this._cache.os = impl.detectOS(this.ua);
+            }
+            return this._cache.os;
+        },
+
+        /**
+         * Get the version (as Number) of the given property in the User-Agent.
+         * <br>
          * Will return a float number. (eg. 2_0 will return 2.0, 4.3.1 will return 4.31)
          *
-         * @param {String} propertyName
-         * @param {String} userAgent
-         * @return {Number} version or <tt>NaN</tt> if version not found
-         * @private
-         */
-        impl.getVersion = function (propertyName, userAgent) {
-            var version = impl.getVersionStr(propertyName, userAgent);
-            return version ? impl.prepareVersionNo(version) : NaN;
-        };
-
-        /**
-         * Prepare the version number.
+         * @param {String} key a key defining a thing which has a version.<br>
+         *        You can use one of following keys:<br>
+         * <br><tt>Mobile, Build, Version, VendorID, iPad, iPhone, iPod, Kindle, Chrome, Coast,
+         * Dolfin, Firefox, Fennec, IE, NetFront, NokiaBrowser, Opera, Opera Mini, Opera
+         * Mobi, UC Browser, MQQBrowser, MicroMessenger, baiduboxapp, baidubrowser, Iron,
+         * Safari, Skyfire, Tizen, Webkit, Gecko, Trident, Presto, iOS, Android,
+         * BlackBerry, BREW, Java, Windows Phone OS, Windows Phone, Windows CE, Windows
+         * NT, Symbian, webOS</tt><br>
          *
-         * @param {String} version
-         * @return {Number} the version number as a floating number
-         * @private
+         * @returns {Number} the version as float or <tt>NaN</tt> if User-Agent doesn't contain this version.
+         *          Be careful when comparing this value with '==' operator!
+         * @function MobileDetect#version
          */
-        impl.prepareVersionNo = function (version) {
-            var numbers;
-
-            numbers = version.split(/[a-z._ \/\-]/i);
-            if (numbers.length === 1) {
-                version = numbers[0];
-            }
-            if (numbers.length > 1) {
-                version = numbers[0] + '.';
-                numbers.shift();
-                version += numbers.join('');
-            }
-            return Number(version);
-        };
-
-        impl.isMobileFallback = function (userAgent) {
-            return impl.detectMobileBrowsers.fullPattern.test(userAgent) ||
-                impl.detectMobileBrowsers.shortPattern.test(userAgent.substr(0, 4));
-        };
-
-        impl.prepareDetectionCache = function (cache, userAgent, maxPhoneWidth) {
-            if (cache.mobile !== undefined) {
-                return;
-            }
-            var phone, tablet, phoneSized;
-
-            // first check for stronger tablet rules, then phone (see issue#5)
-            tablet = impl.findMatch(impl.mobileDetectRules.tablets, userAgent);
-            if (tablet) {
-                cache.mobile = cache.tablet = tablet;
-                cache.phone = null;
-                return; // unambiguously identified as tablet
-            }
-
-            phone = impl.findMatch(impl.mobileDetectRules.phones, userAgent);
-            if (phone) {
-                cache.mobile = cache.phone = phone;
-                cache.tablet = null;
-                return; // unambiguously identified as phone
-            }
-
-            // our rules haven't found a match -> try more general fallback rules
-            if (impl.isMobileFallback(userAgent)) {
-                phoneSized = MobileDetect.isPhoneSized(maxPhoneWidth);
-                if (phoneSized === undefined) {
-                    cache.mobile = impl.FALLBACK_MOBILE;
-                    cache.tablet = cache.phone = null;
-                } else if (phoneSized) {
-                    cache.mobile = cache.phone = impl.FALLBACK_PHONE;
-                    cache.tablet = null;
-                } else {
-                    cache.mobile = cache.tablet = impl.FALLBACK_TABLET;
-                    cache.phone = null;
-                }
-            } else {
-                // not mobile at all!
-                cache.mobile = cache.tablet = cache.phone = null;
-            }
-        };
-
-        // t is a reference to a MobileDetect instance
-        impl.mobileGrade = function (t) {
-            // impl note:
-            // To keep in sync w/ Mobile_Detect.php easily, the following code is tightly aligned to the PHP version.
-            // When changes are made in Mobile_Detect.php, copy this method and replace:
-            //     $this-> / t.
-            //     self::MOBILE_GRADE_(.) / '$1'
-            //     , self::VERSION_TYPE_FLOAT / (nothing)
-            //     isIOS() / os('iOS')
-            //     [reg] / (nothing)   <-- jsdelivr complaining about unescaped unicode character U+00AE
-            var $isMobile = t.mobile() !== null;
-
-            if (
-                // Apple iOS 3.2-5.1 - Tested on the original iPad (4.3 / 5.0), iPad 2 (4.3), iPad 3 (5.1), original iPhone (3.1), iPhone 3 (3.2), 3GS (4.3), 4 (4.3 / 5.0), and 4S (5.1)
-                t.os('iOS') && t.version('iPad') >= 4.3 ||
-                t.os('iOS') && t.version('iPhone') >= 3.1 ||
-                t.os('iOS') && t.version('iPod') >= 3.1 ||
-
-                // Android 2.1-2.3 - Tested on the HTC Incredible (2.2), original Droid (2.2), HTC Aria (2.1), Google Nexus S (2.3). Functional on 1.5 & 1.6 but performance may be sluggish, tested on Google G1 (1.5)
-                // Android 3.1 (Honeycomb)  - Tested on the Samsung Galaxy Tab 10.1 and Motorola XOOM
-                // Android 4.0 (ICS)  - Tested on a Galaxy Nexus. Note: transition performance can be poor on upgraded devices
-                // Android 4.1 (Jelly Bean)  - Tested on a Galaxy Nexus and Galaxy 7
-                (t.version('Android') > 2.1 && t.is('Webkit')) ||
-
-                // Windows Phone 7-7.5 - Tested on the HTC Surround (7.0) HTC Trophy (7.5), LG-E900 (7.5), Nokia Lumia 800
-                t.version('Windows Phone OS') >= 7.0 ||
-
-                // Blackberry 7 - Tested on BlackBerry Torch 9810
-                // Blackberry 6.0 - Tested on the Torch 9800 and Style 9670
-                t.is('BlackBerry') && t.version('BlackBerry') >= 6.0 ||
-                // Blackberry Playbook (1.0-2.0) - Tested on PlayBook
-                t.match('Playbook.*Tablet') ||
-
-                // Palm WebOS (1.4-2.0) - Tested on the Palm Pixi (1.4), Pre (1.4), Pre 2 (2.0)
-                (t.version('webOS') >= 1.4 && t.match('Palm|Pre|Pixi')) ||
-                // Palm WebOS 3.0  - Tested on HP TouchPad
-                t.match('hp.*TouchPad') ||
-
-                // Firefox Mobile (12 Beta) - Tested on Android 2.3 device
-                (t.is('Firefox') && t.version('Firefox') >= 12) ||
-
-                // Chrome for Android - Tested on Android 4.0, 4.1 device
-                (t.is('Chrome') && t.is('AndroidOS') && t.version('Android') >= 4.0) ||
-
-                // Skyfire 4.1 - Tested on Android 2.3 device
-                (t.is('Skyfire') && t.version('Skyfire') >= 4.1 && t.is('AndroidOS') && t.version('Android') >= 2.3) ||
-
-                // Opera Mobile 11.5-12: Tested on Android 2.3
-                (t.is('Opera') && t.version('Opera Mobi') > 11 && t.is('AndroidOS')) ||
-
-                // Meego 1.2 - Tested on Nokia 950 and N9
-                t.is('MeeGoOS') ||
-
-                // Tizen (pre-release) - Tested on early hardware
-                t.is('Tizen') ||
-
-                // Samsung Bada 2.0 - Tested on a Samsung Wave 3, Dolphin browser
-                // @todo: more tests here!
-                t.is('Dolfin') && t.version('Bada') >= 2.0 ||
-
-                // UC Browser - Tested on Android 2.3 device
-                ((t.is('UC Browser') || t.is('Dolfin')) && t.version('Android') >= 2.3) ||
-
-                // Kindle 3 and Fire  - Tested on the built-in WebKit browser for each
-                (t.match('Kindle Fire') ||
-                    t.is('Kindle') && t.version('Kindle') >= 3.0) ||
-
-                // Nook Color 1.4.1 - Tested on original Nook Color, not Nook Tablet
-                t.is('AndroidOS') && t.is('NookTablet') ||
-
-                // Chrome Desktop 11-21 - Tested on OS X 10.7 and Windows 7
-                t.version('Chrome') >= 11 && !$isMobile ||
-
-                // Safari Desktop 4-5 - Tested on OS X 10.7 and Windows 7
-                t.version('Safari') >= 5.0 && !$isMobile ||
-
-                // Firefox Desktop 4-13 - Tested on OS X 10.7 and Windows 7
-                t.version('Firefox') >= 4.0 && !$isMobile ||
-
-                // Internet Explorer 7-9 - Tested on Windows XP, Vista and 7
-                t.version('MSIE') >= 7.0 && !$isMobile ||
-
-                // Opera Desktop 10-12 - Tested on OS X 10.7 and Windows 7
-                // @reference: http://my.opera.com/community/openweb/idopera/
-                t.version('Opera') >= 10 && !$isMobile
-
-                ) {
-                return 'A';
-            }
-
-            if (
-                t.os('iOS') && t.version('iPad') < 4.3 ||
-                t.os('iOS') && t.version('iPhone') < 3.1 ||
-                t.os('iOS') && t.version('iPod') < 3.1 ||
-
-                // Blackberry 5.0: Tested on the Storm 2 9550, Bold 9770
-                t.is('Blackberry') && t.version('BlackBerry') >= 5 && t.version('BlackBerry') < 6 ||
-
-                //Opera Mini (5.0-6.5) - Tested on iOS 3.2/4.3 and Android 2.3
-                (t.version('Opera Mini') >= 5.0 && t.version('Opera Mini') <= 6.5 &&
-                    (t.version('Android') >= 2.3 || t.is('iOS'))) ||
-
-                // Nokia Symbian^3 - Tested on Nokia N8 (Symbian^3), C7 (Symbian^3), also works on N97 (Symbian^1)
-                t.match('NokiaN8|NokiaC7|N97.*Series60|Symbian/3') ||
-
-                // @todo: report this (tested on Nokia N71)
-                t.version('Opera Mobi') >= 11 && t.is('SymbianOS')
-                ) {
-                return 'B';
-            }
-
-            if (
-                // Blackberry 4.x - Tested on the Curve 8330
-                t.version('BlackBerry') < 5.0 ||
-                // Windows Mobile - Tested on the HTC Leo (WinMo 5.2)
-                t.match('MSIEMobile|Windows CE.*Mobile') || t.version('Windows Mobile') <= 5.2
-
-                ) {
-                return 'C';
-            }
-
-            //All older smartphone platforms and featurephones - Any device that doesn't support media queries
-            //will receive the basic, C grade experience.
-            return 'C';
-        };
-
-        impl.detectOS = function (ua) {
-            return impl.findMatch(impl.mobileDetectRules.oss0, ua) ||
-                impl.findMatch(impl.mobileDetectRules.oss, ua);
-        };
-
-        impl.getDeviceSmallerSide = function () {
-            return window.screen.width < window.screen.height ?
-                window.screen.width :
-                window.screen.height;
-        };
+        version: function (key) {
+            return impl.getVersion(key, this.ua);
+        },
 
         /**
-         * Constructor for MobileDetect object.
+         * Get the version (as String) of the given property in the User-Agent.
          * <br>
-         * Such an object will keep a reference to the given user-agent string and cache most of the detect queries.<br>
-         * <div style="background-color: #d9edf7; border: 1px solid #bce8f1; color: #3a87ad; padding: 14px; border-radius: 2px; margin-top: 20px">
-         *     <strong>Find information how to download and install:</strong>
-         *     <a href="https://github.com/hgoebl/mobile-detect.js/">github.com/hgoebl/mobile-detect.js/</a>
-         * </div>
          *
-         * @example <pre>
-         *     var md = new MobileDetect(window.navigator.userAgent);
-         *     if (md.mobile()) {
-         *         location.href = (md.mobileGrade() === 'A') ? '/mobile/' : '/lynx/';
-         *     }
-         * </pre>
+         * @param {String} key a key defining a thing which has a version.<br>
+         *        You can use one of following keys:<br>
+         * <br><tt>Mobile, Build, Version, VendorID, iPad, iPhone, iPod, Kindle, Chrome, Coast,
+         * Dolfin, Firefox, Fennec, IE, NetFront, NokiaBrowser, Opera, Opera Mini, Opera
+         * Mobi, UC Browser, MQQBrowser, MicroMessenger, baiduboxapp, baidubrowser, Iron,
+         * Safari, Skyfire, Tizen, Webkit, Gecko, Trident, Presto, iOS, Android,
+         * BlackBerry, BREW, Java, Windows Phone OS, Windows Phone, Windows CE, Windows
+         * NT, Symbian, webOS</tt><br>
          *
-         * @param {string} userAgent typically taken from window.navigator.userAgent or http_header['User-Agent']
-         * @param {number} [maxPhoneWidth=600] <strong>only for browsers</strong> specify a value for the maximum
-         *        width of smallest device side (in logical "CSS" pixels) until a device detected as mobile will be handled
-         *        as phone.
-         *        This is only used in cases where the device cannot be classified as phone or tablet.<br>
-         *        See <a href="http://developer.android.com/guide/practices/screens_support.html">Declaring Tablet Layouts
-         *        for Android</a>.<br>
-         *        If you provide a value < 0, then this "fuzzy" check is disabled.
-         * @constructor
-         * @global
+         * @returns {String} the "raw" version as String or <tt>null</tt> if User-Agent doesn't contain this version.
+         *
+         * @function MobileDetect#versionStr
          */
-        function MobileDetect(userAgent, maxPhoneWidth) {
-            this.ua = userAgent || '';
-            this._cache = {};
-            //600dp is typical 7" tablet minimum width
-            this.maxPhoneWidth = maxPhoneWidth || 600;
-        }
+        versionStr: function (key) {
+            return impl.getVersionStr(key, this.ua);
+        },
 
-        MobileDetect.prototype = {
-            constructor: MobileDetect,
+        /**
+         * Global test key against userAgent, os, phone, tablet and some other properties of userAgent string.
+         *
+         * @param {String} key the key (case-insensitive) of a userAgent, an operating system, phone or
+         *        tablet family.<br>
+         *        For a complete list of possible values, see {@link MobileDetect#userAgent},
+         *        {@link MobileDetect#os}, {@link MobileDetect#phone}, {@link MobileDetect#tablet}.<br>
+         *        Additionally you have following keys:<br>
+         * <br><tt>Bot, MobileBot, DesktopMode, TV, WebKit, Console, Watch</tt><br>
+         *
+         * @returns {boolean} <tt>true</tt> when the given key is one of the defined keys of userAgent, os, phone,
+         *                    tablet or one of the listed additional keys, otherwise <tt>false</tt>
+         * @function MobileDetect#is
+         */
+        is: function (key) {
+            return equalIC(key, this.userAgent()) ||
+                   equalIC(key, this.os()) ||
+                   equalIC(key, this.phone()) ||
+                   equalIC(key, this.tablet()) ||
+                   equalIC(key, impl.findMatch(impl.mobileDetectRules.utils, this.ua));
+        },
 
-            /**
-             * Returns the detected phone or tablet type or <tt>null</tt> if it is not a mobile device.
-             * <br>
-             * For a list of possible return values see {@link MobileDetect#phone} and {@link MobileDetect#tablet}.<br>
-             * <br>
-             * If the device is not detected by the regular expressions from Mobile-Detect, a test is made against
-             * the patterns of <a href="http://detectmobilebrowsers.com/">detectmobilebrowsers.com</a>. If this test
-             * is positive, a value of <code>UnknownPhone</code>, <code>UnknownTablet</code> or
-             * <code>UnknownMobile</code> is returned.<br>
-             * When used in browser, the decision whether phone or tablet is made based on <code>screen.width/height</code>.<br>
-             * <br>
-             * When used server-side (node.js), there is no way to tell the difference between <code>UnknownTablet</code>
-             * and <code>UnknownMobile</code>, so you will get <code>UnknownMobile</code> here.<br>
-             * Be aware that since v1.0.0 in this special case you will get <code>UnknownMobile</code> only for:
-             * {@link MobileDetect#mobile}, not for {@link MobileDetect#phone} and {@link MobileDetect#tablet}.
-             * In versions before v1.0.0 all 3 methods returned <code>UnknownMobile</code> which was tedious to use.
-             * <br>
-             * In most cases you will use the return value just as a boolean.
-             *
-             * @returns {String} the key for the phone family or tablet family, e.g. "Nexus".
-             * @function MobileDetect#mobile
-             */
-            mobile: function () {
-                impl.prepareDetectionCache(this._cache, this.ua, this.maxPhoneWidth);
-                return this._cache.mobile;
-            },
-
-            /**
-             * Returns the detected phone type/family string or <tt>null</tt>.
-             * <br>
-             * The returned tablet (family or producer) is one of following keys:<br>
-             * <br><tt>iPhone, BlackBerry, HTC, Nexus, Dell, Motorola, Samsung, LG, Sony, Asus,
-             * Micromax, Palm, Vertu, Pantech, Fly, Wiko, iMobile, SimValley, Wolfgang,
-             * Alcatel, Nintendo, Amoi, INQ, GenericPhone</tt><br>
-             * <br>
-             * If the device is not detected by the regular expressions from Mobile-Detect, a test is made against
-             * the patterns of <a href="http://detectmobilebrowsers.com/">detectmobilebrowsers.com</a>. If this test
-             * is positive, a value of <code>UnknownPhone</code> or <code>UnknownMobile</code> is returned.<br>
-             * When used in browser, the decision whether phone or tablet is made based on <code>screen.width/height</code>.<br>
-             * <br>
-             * When used server-side (node.js), there is no way to tell the difference between <code>UnknownTablet</code>
-             * and <code>UnknownMobile</code>, so you will get <code>null</code> here, while {@link MobileDetect#mobile}
-             * will return <code>UnknownMobile</code>.<br>
-             * Be aware that since v1.0.0 in this special case you will get <code>UnknownMobile</code> only for:
-             * {@link MobileDetect#mobile}, not for {@link MobileDetect#phone} and {@link MobileDetect#tablet}.
-             * In versions before v1.0.0 all 3 methods returned <code>UnknownMobile</code> which was tedious to use.
-             * <br>
-             * In most cases you will use the return value just as a boolean.
-             *
-             * @returns {String} the key of the phone family or producer, e.g. "iPhone"
-             * @function MobileDetect#phone
-             */
-            phone: function () {
-                impl.prepareDetectionCache(this._cache, this.ua, this.maxPhoneWidth);
-                return this._cache.phone;
-            },
-
-            /**
-             * Returns the detected tablet type/family string or <tt>null</tt>.
-             * <br>
-             * The returned tablet (family or producer) is one of following keys:<br>
-             * <br><tt>iPad, NexusTablet, SamsungTablet, Kindle, SurfaceTablet, HPTablet, AsusTablet,
-             * BlackBerryTablet, HTCtablet, MotorolaTablet, NookTablet, AcerTablet,
-             * ToshibaTablet, LGTablet, FujitsuTablet, PrestigioTablet, LenovoTablet,
-             * DellTablet, YarvikTablet, MedionTablet, ArnovaTablet, IntensoTablet, IRUTablet,
-             * MegafonTablet, EbodaTablet, AllViewTablet, ArchosTablet, AinolTablet,
-             * SonyTablet, PhilipsTablet, CubeTablet, CobyTablet, MIDTablet, MSITablet,
-             * SMiTTablet, RockChipTablet, FlyTablet, bqTablet, HuaweiTablet, NecTablet,
-             * PantechTablet, BronchoTablet, VersusTablet, ZyncTablet, PositivoTablet,
-             * NabiTablet, KoboTablet, DanewTablet, TexetTablet, PlaystationTablet,
-             * TrekstorTablet, PyleAudioTablet, AdvanTablet, DanyTechTablet, GalapadTablet,
-             * MicromaxTablet, KarbonnTablet, AllFineTablet, PROSCANTablet, YONESTablet,
-             * ChangJiaTablet, GUTablet, PointOfViewTablet, OvermaxTablet, HCLTablet,
-             * DPSTablet, VistureTablet, CrestaTablet, MediatekTablet, ConcordeTablet,
-             * GoCleverTablet, ModecomTablet, VoninoTablet, ECSTablet, StorexTablet,
-             * VodafoneTablet, EssentielBTablet, RossMoorTablet, iMobileTablet, TolinoTablet,
-             * AudioSonicTablet, AMPETablet, SkkTablet, TecnoTablet, JXDTablet, iJoyTablet,
-             * FX2Tablet, XoroTablet, ViewsonicTablet, OdysTablet, CaptivaTablet,
-             * IconbitTablet, TeclastTablet, JaytechTablet, BlaupunktTablet, DigmaTablet,
-             * EvolioTablet, LavaTablet, CelkonTablet, WolderTablet, MiTablet, NibiruTablet,
-             * NexoTablet, UbislateTablet, PocketBookTablet, Hudl, TelstraTablet, GenericTablet</tt><br>
-             * <br>
-             * If the device is not detected by the regular expressions from Mobile-Detect, a test is made against
-             * the patterns of <a href="http://detectmobilebrowsers.com/">detectmobilebrowsers.com</a>. If this test
-             * is positive, a value of <code>UnknownTablet</code> or <code>UnknownMobile</code> is returned.<br>
-             * When used in browser, the decision whether phone or tablet is made based on <code>screen.width/height</code>.<br>
-             * <br>
-             * When used server-side (node.js), there is no way to tell the difference between <code>UnknownTablet</code>
-             * and <code>UnknownMobile</code>, so you will get <code>null</code> here, while {@link MobileDetect#mobile}
-             * will return <code>UnknownMobile</code>.<br>
-             * Be aware that since v1.0.0 in this special case you will get <code>UnknownMobile</code> only for:
-             * {@link MobileDetect#mobile}, not for {@link MobileDetect#phone} and {@link MobileDetect#tablet}.
-             * In versions before v1.0.0 all 3 methods returned <code>UnknownMobile</code> which was tedious to use.
-             * <br>
-             * In most cases you will use the return value just as a boolean.
-             *
-             * @returns {String} the key of the tablet family or producer, e.g. "SamsungTablet"
-             * @function MobileDetect#tablet
-             */
-            tablet: function () {
-                impl.prepareDetectionCache(this._cache, this.ua, this.maxPhoneWidth);
-                return this._cache.tablet;
-            },
-
-            /**
-             * Returns the detected user-agent string or <tt>null</tt>.
-             * <br>
-             * The returned user-agent is one of following keys:<br>
-             * <br><tt>Chrome, Dolfin, Opera, Skyfire, IE, Firefox, Bolt, TeaShark, Blazer, Safari,
-             * Tizen, UCBrowser, baiduboxapp, baidubrowser, DiigoBrowser, Puffin, Mercury,
-             * ObigoBrowser, NetFront, GenericBrowser</tt><br>
-             *
-             * @returns {String} the key for the detected user-agent or <tt>null</tt>
-             * @function MobileDetect#userAgent
-             */
-            userAgent: function () {
-                if (this._cache.userAgent === undefined) {
-                    this._cache.userAgent = impl.findMatch(impl.mobileDetectRules.uas, this.ua);
-                }
-                return this._cache.userAgent;
-            },
-
-            /**
-             * Returns the detected operating system string or <tt>null</tt>.
-             * <br>
-             * The operating system is one of following keys:<br>
-             * <br><tt>AndroidOS, BlackBerryOS, PalmOS, SymbianOS, WindowsMobileOS, WindowsPhoneOS,
-             * iOS, MeeGoOS, MaemoOS, JavaOS, webOS, badaOS, BREWOS</tt><br>
-             *
-             * @returns {String} the key for the detected operating system.
-             * @function MobileDetect#os
-             */
-            os: function () {
-                if (this._cache.os === undefined) {
-                    this._cache.os = impl.detectOS(this.ua);
-                }
-                return this._cache.os;
-            },
-
-            /**
-             * Get the version (as Number) of the given property in the User-Agent.
-             * <br>
-             * Will return a float number. (eg. 2_0 will return 2.0, 4.3.1 will return 4.31)
-             *
-             * @param {String} key a key defining a thing which has a version.<br>
-             *        You can use one of following keys:<br>
-             * <br><tt>Mobile, Build, Version, VendorID, iPad, iPhone, iPod, Kindle, Chrome, Coast,
-             * Dolfin, Firefox, Fennec, IE, NetFront, NokiaBrowser, Opera, Opera Mini, Opera
-             * Mobi, UC Browser, MQQBrowser, MicroMessenger, baiduboxapp, baidubrowser, Iron,
-             * Safari, Skyfire, Tizen, Webkit, Gecko, Trident, Presto, iOS, Android,
-             * BlackBerry, BREW, Java, Windows Phone OS, Windows Phone, Windows CE, Windows
-             * NT, Symbian, webOS</tt><br>
-             *
-             * @returns {Number} the version as float or <tt>NaN</tt> if User-Agent doesn't contain this version.
-             *          Be careful when comparing this value with '==' operator!
-             * @function MobileDetect#version
-             */
-            version: function (key) {
-                return impl.getVersion(key, this.ua);
-            },
-
-            /**
-             * Get the version (as String) of the given property in the User-Agent.
-             * <br>
-             *
-             * @param {String} key a key defining a thing which has a version.<br>
-             *        You can use one of following keys:<br>
-             * <br><tt>Mobile, Build, Version, VendorID, iPad, iPhone, iPod, Kindle, Chrome, Coast,
-             * Dolfin, Firefox, Fennec, IE, NetFront, NokiaBrowser, Opera, Opera Mini, Opera
-             * Mobi, UC Browser, MQQBrowser, MicroMessenger, baiduboxapp, baidubrowser, Iron,
-             * Safari, Skyfire, Tizen, Webkit, Gecko, Trident, Presto, iOS, Android,
-             * BlackBerry, BREW, Java, Windows Phone OS, Windows Phone, Windows CE, Windows
-             * NT, Symbian, webOS</tt><br>
-             *
-             * @returns {String} the "raw" version as String or <tt>null</tt> if User-Agent doesn't contain this version.
-             *
-             * @function MobileDetect#versionStr
-             */
-            versionStr: function (key) {
-                return impl.getVersionStr(key, this.ua);
-            },
-
-            /**
-             * Global test key against userAgent, os, phone, tablet and some other properties of userAgent string.
-             *
-             * @param {String} key the key (case-insensitive) of a userAgent, an operating system, phone or
-             *        tablet family.<br>
-             *        For a complete list of possible values, see {@link MobileDetect#userAgent},
-             *        {@link MobileDetect#os}, {@link MobileDetect#phone}, {@link MobileDetect#tablet}.<br>
-             *        Additionally you have following keys:<br>
-             * <br><tt>Bot, MobileBot, DesktopMode, TV, WebKit, Console, Watch</tt><br>
-             *
-             * @returns {boolean} <tt>true</tt> when the given key is one of the defined keys of userAgent, os, phone,
-             *                    tablet or one of the listed additional keys, otherwise <tt>false</tt>
-             * @function MobileDetect#is
-             */
-            is: function (key) {
-                return equalIC(key, this.userAgent()) ||
-                       equalIC(key, this.os()) ||
-                       equalIC(key, this.phone()) ||
-                       equalIC(key, this.tablet()) ||
-                       equalIC(key, impl.findMatch(impl.mobileDetectRules.utils, this.ua));
-            },
-
-            /**
-             * Do a quick test against navigator::userAgent.
-             *
-             * @param {String|RegExp} pattern the pattern, either as String or RegExp
-             *                        (a string will be converted to a case-insensitive RegExp).
-             * @returns {boolean} <tt>true</tt> when the pattern matches, otherwise <tt>false</tt>
-             * @function MobileDetect#match
-             */
-            match: function (pattern) {
-                if (!(pattern instanceof RegExp)) {
-                    pattern = new RegExp(pattern, 'i');
-                }
-                return pattern.test(this.ua);
-            },
-
-            /**
-             * Checks whether the mobile device can be considered as phone regarding <code>screen.width</code>.
-             * <br>
-             * Obviously this method makes sense in browser environments only (not for Node.js)!
-             * @param {number} [maxPhoneWidth] the maximum logical pixels (aka. CSS-pixels) to be considered as phone.<br>
-             *        The argument is optional and if not present or falsy, the value of the constructor is taken.
-             * @returns {boolean|undefined} <code>undefined</code> if screen size wasn't detectable, else <code>true</code>
-             *          when screen.width is less or equal to maxPhoneWidth, otherwise <code>false</code>.<br>
-             *          Will always return <code>undefined</code> server-side.
-             */
-            isPhoneSized: function (maxPhoneWidth) {
-                return MobileDetect.isPhoneSized(maxPhoneWidth || this.maxPhoneWidth);
-            },
-
-            /**
-             * Returns the mobile grade ('A', 'B', 'C').
-             *
-             * @returns {String} one of the mobile grades ('A', 'B', 'C').
-             * @function MobileDetect#mobileGrade
-             */
-            mobileGrade: function () {
-                if (this._cache.grade === undefined) {
-                    this._cache.grade = impl.mobileGrade(this);
-                }
-                return this._cache.grade;
+        /**
+         * Do a quick test against navigator::userAgent.
+         *
+         * @param {String|RegExp} pattern the pattern, either as String or RegExp
+         *                        (a string will be converted to a case-insensitive RegExp).
+         * @returns {boolean} <tt>true</tt> when the pattern matches, otherwise <tt>false</tt>
+         * @function MobileDetect#match
+         */
+        match: function (pattern) {
+            if (!(pattern instanceof RegExp)) {
+                pattern = new RegExp(pattern, 'i');
             }
-        };
+            return pattern.test(this.ua);
+        },
 
-        // environment-dependent
-        if (typeof window !== 'undefined' && window.screen) {
-            MobileDetect.isPhoneSized = function (maxPhoneWidth) {
-                return maxPhoneWidth < 0 ? undefined : impl.getDeviceSmallerSide() <= maxPhoneWidth;
-            };
-        } else {
-            MobileDetect.isPhoneSized = function () { };
+        /**
+         * Checks whether the mobile device can be considered as phone regarding <code>screen.width</code>.
+         * <br>
+         * Obviously this method makes sense in browser environments only (not for Node.js)!
+         * @param {number} [maxPhoneWidth] the maximum logical pixels (aka. CSS-pixels) to be considered as phone.<br>
+         *        The argument is optional and if not present or falsy, the value of the constructor is taken.
+         * @returns {boolean|undefined} <code>undefined</code> if screen size wasn't detectable, else <code>true</code>
+         *          when screen.width is less or equal to maxPhoneWidth, otherwise <code>false</code>.<br>
+         *          Will always return <code>undefined</code> server-side.
+         */
+        isPhoneSized: function (maxPhoneWidth) {
+            return MobileDetect.isPhoneSized(maxPhoneWidth || this.maxPhoneWidth);
+        },
+
+        /**
+         * Returns the mobile grade ('A', 'B', 'C').
+         *
+         * @returns {String} one of the mobile grades ('A', 'B', 'C').
+         * @function MobileDetect#mobileGrade
+         */
+        mobileGrade: function () {
+            if (this._cache.grade === undefined) {
+                this._cache.grade = impl.mobileGrade(this);
+            }
+            return this._cache.grade;
         }
+    };
 
-        // should not be replaced by a completely new object - just overwrite existing methods
-        MobileDetect._impl = impl;
-
-        return MobileDetect;
-    }); // end of call of define()
-})((function (undefined) {
-    if (typeof define === 'function' && define.amd) {
-        return define;
-    } else if (typeof module !== 'undefined' && module.exports) {
-        return function (factory) { module.exports = factory(); };
-    } else if (typeof window !== 'undefined') {
-        return function (factory) { window.MobileDetect = factory(); };
+    // environment-dependent
+    if (typeof window !== 'undefined' && window.screen) {
+        MobileDetect.isPhoneSized = function (maxPhoneWidth) {
+            return maxPhoneWidth < 0 ? undefined : impl.getDeviceSmallerSide() <= maxPhoneWidth;
+        };
     } else {
-        // please file a bug if you get this error!
-        throw new Error('unknown environment');
+        MobileDetect.isPhoneSized = function () { };
     }
-})());
+
+    // should not be replaced by a completely new object - just overwrite existing methods
+    MobileDetect._impl = impl;
+
+    window.MobileDetect = MobileDetect;
+
+})();
 
 (function (jQuery, window, undefined) {
     "use strict";
@@ -1354,7 +1340,7 @@ var requirejs, require, define;
 
 })();
 window.localizationGlossary={"SettingsSaved":"Settings saved.","AddUser":"Add User","Users":"Users","Delete":"Delete","Administrator":"Administrator","Password":"Password","DeleteImage":"Delete Image","MessageThankYouForSupporting":"Thank you for supporting Emby.","MessagePleaseSupportProject":"Please support Emby.","DeleteImageConfirmation":"Are you sure you wish to delete this image?","FileReadCancelled":"The file read has been canceled.","FileNotFound":"File not found.","FileReadError":"An error occurred while reading the file.","DeleteUser":"Delete User","DeleteUserConfirmation":"Are you sure you wish to delete this user?","PasswordResetHeader":"Reset Password","PasswordResetComplete":"The password has been reset.","PinCodeResetComplete":"The pin code has been reset.","PasswordResetConfirmation":"Are you sure you wish to reset the password?","PinCodeResetConfirmation":"Are you sure you wish to reset the pin code?","HeaderPinCodeReset":"Reset Pin Code","PasswordSaved":"Password saved.","PasswordMatchError":"Password and password confirmation must match.","OptionRelease":"Official Release","OptionBeta":"Beta","OptionDev":"Dev (Unstable)","UninstallPluginHeader":"Uninstall Plugin","UninstallPluginConfirmation":"Are you sure you wish to uninstall {0}?","NoPluginConfigurationMessage":"This plugin has nothing to configure.","NoPluginsInstalledMessage":"You have no plugins installed.","BrowsePluginCatalogMessage":"Browse our plugin catalog to view available plugins.","MessageKeyEmailedTo":"Key emailed to {0}.","MessageKeysLinked":"Keys linked.","HeaderConfirmation":"Confirmation","MessageKeyUpdated":"Thank you. Your supporter key has been updated.","MessageKeyRemoved":"Thank you. Your supporter key has been removed.","HeaderSupportTheTeam":"Support the Emby Team","TextEnjoyBonusFeatures":"Enjoy Bonus Features","TitleLiveTV":"Live TV","ButtonCancelSyncJob":"Cancel sync job","TitleSync":"Sync","HeaderSelectDate":"Select Date","ButtonDonate":"Donate","HeaderMyMedia":"My Media","TitleNotifications":"Notifications","ErrorLaunchingChromecast":"There was an error launching chromecast. Please ensure your device is connected to your wireless network.","MessageErrorLoadingSupporterInfo":"There was an error loading supporter information. Please try again later.","MessageLinkYourSupporterKey":"Link your supporter key with up to {0} Emby Connect members to enjoy free access to the following apps:","HeaderConfirmRemoveUser":"Remove User","MessageSwipeDownOnRemoteControl":"Welcome to remote control. Select the device to control by clicking the cast icon in the upper right corner. Swipe down anywhere on this screen to go back to where you came from.","MessageConfirmRemoveConnectSupporter":"Are you sure you wish to remove additional supporter benefits from this user?","ValueTimeLimitSingleHour":"Time limit: 1 hour","ValueTimeLimitMultiHour":"Time limit: {0} hours","HeaderUsers":"Users","PluginCategoryGeneral":"General","PluginCategoryContentProvider":"Content Providers","PluginCategoryScreenSaver":"Screen Savers","PluginCategoryTheme":"Themes","PluginCategorySync":"Sync","PluginCategorySocialIntegration":"Social Networks","PluginCategoryNotifications":"Notifications","PluginCategoryMetadata":"Metadata","PluginCategoryLiveTV":"Live TV","PluginCategoryChannel":"Channels","HeaderSearch":"Search","ValueDateCreated":"Date created: {0}","LabelArtist":"Artist","LabelMovie":"Movie","LabelMusicVideo":"Music Video","LabelEpisode":"Episode","LabelSeries":"Series","LabelStopping":"Stopping","LabelCancelled":"(cancelled)","LabelFailed":"(failed)","ButtonHelp":"Help","ButtonSave":"Save","ButtonDownload":"Download","SyncJobStatusQueued":"Queued","SyncJobStatusConverting":"Converting","SyncJobStatusFailed":"Failed","SyncJobStatusCancelled":"Cancelled","SyncJobStatusCompleted":"Synced","SyncJobStatusReadyToTransfer":"Ready to Transfer","SyncJobStatusTransferring":"Transferring","SyncJobStatusCompletedWithError":"Synced with errors","SyncJobItemStatusReadyToTransfer":"Ready to Transfer","LabelCollection":"Collection","HeaderAddToCollection":"Add to Collection","NewCollectionNameExample":"Example: Star Wars Collection","OptionSearchForInternetMetadata":"Search the internet for artwork and metadata","LabelSelectCollection":"Select collection:","HeaderDevices":"Devices","ButtonScheduledTasks":"Scheduled tasks","MessageItemsAdded":"Items added","ButtonAddToCollection":"Add to collection","HeaderSelectCertificatePath":"Select Certificate Path","ConfirmMessageScheduledTaskButton":"This operation normally runs automatically as a scheduled task. It can also be run manually here. To configure the scheduled task, see:","HeaderSupporterBenefit":"A supporter membership provides additional benefits such as access to sync, premium plugins, internet channel content, and more. {0}Learn more{1}.","LabelSyncNoTargetsHelp":"It looks like you don't currently have any apps that support sync.","HeaderWelcomeToProjectServerDashboard":"Welcome to the Emby Server Dashboard","HeaderWelcomeToProjectWebClient":"Welcome to Emby","ButtonTakeTheTour":"Take the tour","HeaderWelcomeBack":"Welcome back!","TitlePlugins":"Plugins","ButtonTakeTheTourToSeeWhatsNew":"Take the tour to see what's new","MessageNoSyncJobsFound":"No sync jobs found. Create sync jobs using the Sync buttons found throughout the web interface.","HeaderLibraryAccess":"Library Access","HeaderChannelAccess":"Channel Access","HeaderDeviceAccess":"Device Access","HeaderSelectDevices":"Select Devices","ButtonCancelItem":"Cancel item","ButtonQueueForRetry":"Queue for retry","ButtonReenable":"Re-enable","ButtonLearnMore":"Learn more","SyncJobItemStatusSyncedMarkForRemoval":"Marked for removal","LabelAbortedByServerShutdown":"(Aborted by server shutdown)","LabelScheduledTaskLastRan":"Last ran {0}, taking {1}.","HeaderDeleteTaskTrigger":"Delete Task Trigger","HeaderTaskTriggers":"Task Triggers","MessageDeleteTaskTrigger":"Are you sure you wish to delete this task trigger?","MessageNoPluginsInstalled":"You have no plugins installed.","LabelVersionInstalled":"{0} installed","LabelNumberReviews":"{0} Reviews","LabelFree":"Free","HeaderPlaybackError":"Playback Error","MessagePlaybackErrorNotAllowed":"You're currently not authorized to play this content. Please contact your system administrator for details.","MessagePlaybackErrorNoCompatibleStream":"No compatible streams are currently available. Please try again later or contact your system administrator for details.","MessagePlaybackErrorRateLimitExceeded":"Your playback rate limit has been exceeded. Please contact your system administrator for details.","MessagePlaybackErrorPlaceHolder":"The content chosen is not playable from this device.","HeaderSelectAudio":"Select Audio","HeaderSelectSubtitles":"Select Subtitles","ButtonMarkForRemoval":"Remove from device","ButtonUnmarkForRemoval":"Cancel removal from device","LabelDefaultStream":"(Default)","LabelForcedStream":"(Forced)","LabelDefaultForcedStream":"(Default/Forced)","LabelUnknownLanguage":"Unknown language","MessageConfirmSyncJobItemCancellation":"Are you sure you wish to cancel this item?","ButtonMute":"Mute","ButtonUnmute":"Unmute","ButtonStop":"Stop","ButtonNextTrack":"Next Track","ButtonPause":"Pause","ButtonPlay":"Play","ButtonEdit":"Edit","ButtonQueue":"Queue","ButtonPlayTrailer":"Play trailer","ButtonPlaylist":"Playlist","ButtonPreviousTrack":"Previous Track","LabelEnabled":"Enabled","LabelDisabled":"Disabled","ButtonMoreInformation":"More Information","LabelNoUnreadNotifications":"No unread notifications.","ButtonViewNotifications":"View notifications","ButtonMarkTheseRead":"Mark these read","ButtonClose":"Close","LabelAllPlaysSentToPlayer":"All plays will be sent to the selected player.","MessageInvalidUser":"Invalid username or password. Please try again.","HeaderLoginFailure":"Login Failure","HeaderAllRecordings":"All Recordings","RecommendationBecauseYouLike":"Because you like {0}","RecommendationBecauseYouWatched":"Because you watched {0}","RecommendationDirectedBy":"Directed by {0}","RecommendationStarring":"Starring {0}","HeaderConfirmRecordingCancellation":"Confirm Recording Cancellation","MessageConfirmRecordingCancellation":"Are you sure you wish to cancel this recording?","MessageRecordingCancelled":"Recording cancelled.","HeaderConfirmSeriesCancellation":"Confirm Series Cancellation","MessageConfirmSeriesCancellation":"Are you sure you wish to cancel this series?","MessageSeriesCancelled":"Series cancelled.","HeaderConfirmRecordingDeletion":"Confirm Recording Deletion","MessageConfirmRecordingDeletion":"Are you sure you wish to delete this recording?","MessageRecordingDeleted":"Recording deleted.","ButonCancelRecording":"Cancel Recording","MessageRecordingSaved":"Recording saved.","OptionSunday":"Sunday","OptionMonday":"Monday","OptionTuesday":"Tuesday","OptionWednesday":"Wednesday","OptionThursday":"Thursday","OptionFriday":"Friday","OptionSaturday":"Saturday","OptionEveryday":"Every day","OptionWeekend":"Weekends","OptionWeekday":"Weekdays","HeaderConfirmDeletion":"Confirm Deletion","MessageConfirmPathSubstitutionDeletion":"Are you sure you wish to delete this path substitution?","LiveTvUpdateAvailable":"(Update available)","LabelVersionUpToDate":"Up to date!","ButtonResetTuner":"Reset tuner","HeaderResetTuner":"Reset Tuner","MessageConfirmResetTuner":"Are you sure you wish to reset this tuner? Any active players or recordings will be abruptly stopped.","ButtonCancelSeries":"Cancel Series","HeaderSeriesRecordings":"Series Recordings","LabelAnytime":"Any time","StatusRecording":"Recording","StatusWatching":"Watching","StatusRecordingProgram":"Recording {0}","StatusWatchingProgram":"Watching {0}","HeaderSplitMedia":"Split Media Apart","MessageConfirmSplitMedia":"Are you sure you wish to split the media sources into separate items?","HeaderError":"Error","MessageChromecastConnectionError":"Your Chromecast receiver is unable to connect to your Emby Server. Please check their connections and try again.","MessagePleaseSelectOneItem":"Please select at least one item.","MessagePleaseSelectTwoItems":"Please select at least two items.","MessageTheFollowingItemsWillBeGrouped":"The following titles will be grouped into one item:","MessageConfirmItemGrouping":"Emby apps will automatically choose the optimal version to play based on device and network performance. Are you sure you wish to continue?","HeaderResume":"Resume","HeaderMyViews":"My Views","HeaderLibraryFolders":"Media Folders","HeaderLatestMedia":"Latest Media","ButtonMoreItems":"More...","ButtonMore":"More","HeaderFavoriteMovies":"Favorite Movies","HeaderFavoriteShows":"Favorite Shows","HeaderFavoriteEpisodes":"Favorite Episodes","HeaderFavoriteGames":"Favorite Games","HeaderRatingsDownloads":"Rating / Downloads","HeaderConfirmProfileDeletion":"Confirm Profile Deletion","MessageConfirmProfileDeletion":"Are you sure you wish to delete this profile?","HeaderSelectServerCachePath":"Select Server Cache Path","HeaderSelectTranscodingPath":"Select Transcoding Temporary Path","HeaderSelectImagesByNamePath":"Select Images By Name Path","HeaderSelectMetadataPath":"Select Metadata Path","HeaderSelectServerCachePathHelp":"Browse or enter the path to use for server cache files. The folder must be writeable.","HeaderSelectTranscodingPathHelp":"Browse or enter the path to use for transcoding temporary files. The folder must be writeable.","HeaderSelectImagesByNamePathHelp":"Browse or enter the path to your items by name folder. The folder must be writeable.","HeaderSelectMetadataPathHelp":"Browse or enter the path you'd like to store metadata within. The folder must be writeable.","HeaderSelectChannelDownloadPath":"Select Channel Download Path","HeaderSelectChannelDownloadPathHelp":"Browse or enter the path to use for storing channel cache files. The folder must be writeable.","OptionNewCollection":"New...","ButtonAdd":"Add","ButtonRemove":"Remove","LabelChapterDownloaders":"Chapter downloaders:","LabelChapterDownloadersHelp":"Enable and rank your preferred chapter downloaders in order of priority. Lower priority downloaders will only be used to fill in missing information.","HeaderFavoriteAlbums":"Favorite Albums","HeaderLatestChannelMedia":"Latest Channel Items","ButtonOrganizeFile":"Organize File","ButtonDeleteFile":"Delete File","HeaderOrganizeFile":"Organize File","HeaderDeleteFile":"Delete File","StatusSkipped":"Skipped","StatusFailed":"Failed","StatusSuccess":"Success","MessageFileWillBeDeleted":"The following file will be deleted:","MessageSureYouWishToProceed":"Are you sure you wish to proceed?","MessageDuplicatesWillBeDeleted":"In addition the following dupliates will be deleted:","MessageFollowingFileWillBeMovedFrom":"The following file will be moved from:","MessageDestinationTo":"to:","HeaderSelectWatchFolder":"Select Watch Folder","HeaderSelectWatchFolderHelp":"Browse or enter the path to your watch folder. The folder must be writeable.","OrganizePatternResult":"Result: {0}","HeaderRestart":"Restart","HeaderShutdown":"Shutdown","MessageConfirmRestart":"Are you sure you wish to restart Emby Server?","MessageConfirmShutdown":"Are you sure you wish to shutdown Emby Server?","ButtonUpdateNow":"Update Now","ValueItemCount":"{0} item","ValueItemCountPlural":"{0} items","NewVersionOfSomethingAvailable":"A new version of {0} is available!","VersionXIsAvailableForDownload":"Version {0} is now available for download.","LabelVersionNumber":"Version {0}","LabelPlayMethodTranscoding":"Transcoding","LabelPlayMethodDirectStream":"Direct Streaming","LabelPlayMethodDirectPlay":"Direct Playing","LabelAudioCodec":"Audio: {0}","LabelVideoCodec":"Video: {0}","LabelLocalAccessUrl":"Local access: {0}","LabelRemoteAccessUrl":"Remote access: {0}","LabelRunningOnPort":"Running on http port {0}.","LabelRunningOnPorts":"Running on http port {0}, and https port {1}.","HeaderLatestFromChannel":"Latest from {0}","LabelUnknownLanaguage":"Unknown language","HeaderCurrentSubtitles":"Current Subtitles","MessageDownloadQueued":"The download has been queued.","MessageAreYouSureDeleteSubtitles":"Are you sure you wish to delete this subtitle file?","ButtonRemoteControl":"Remote Control","HeaderLatestTvRecordings":"Latest Recordings","ButtonOk":"Ok","ButtonCancel":"Cancel","ButtonRefresh":"Refresh","LabelCurrentPath":"Current path:","HeaderSelectMediaPath":"Select Media Path","HeaderSelectPath":"Select Path","ButtonNetwork":"Network","MessageDirectoryPickerInstruction":"Network paths can be entered manually in the event the Network button fails to locate your devices. For example, {0} or {1}.","HeaderMenu":"Menu","ButtonOpen":"Open","ButtonOpenInNewTab":"Open in new tab","ButtonShuffle":"Shuffle","ButtonInstantMix":"Instant mix","ButtonResume":"Resume","HeaderScenes":"Scenes","HeaderAudioTracks":"Audio Tracks","HeaderLibraries":"Libraries","HeaderSubtitles":"Subtitles","HeaderVideoQuality":"Video Quality","MessageErrorPlayingVideo":"There was an error playing the video.","MessageEnsureOpenTuner":"Please ensure there is an open tuner availalble.","ButtonHome":"Home","ButtonDashboard":"Dashboard","ButtonReports":"Reports","ButtonMetadataManager":"Metadata Manager","HeaderTime":"Time","HeaderName":"Name","HeaderAlbum":"Album","HeaderAlbumArtist":"Album Artist","HeaderArtist":"Artist","LabelAddedOnDate":"Added {0}","ButtonStart":"Start","HeaderChannels":"Channels","HeaderMediaFolders":"Media Folders","HeaderBlockItemsWithNoRating":"Block content with no rating information:","OptionBlockOthers":"Others","OptionBlockTvShows":"TV Shows","OptionBlockTrailers":"Trailers","OptionBlockMusic":"Music","OptionBlockMovies":"Movies","OptionBlockBooks":"Books","OptionBlockGames":"Games","OptionBlockLiveTvPrograms":"Live TV Programs","OptionBlockLiveTvChannels":"Live TV Channels","OptionBlockChannelContent":"Internet Channel Content","ButtonRevoke":"Revoke","MessageConfirmRevokeApiKey":"Are you sure you wish to revoke this api key? The application's connection to Emby Server will be abruptly terminated.","HeaderConfirmRevokeApiKey":"Revoke Api Key","ValueContainer":"Container: {0}","ValueAudioCodec":"Audio Codec: {0}","ValueVideoCodec":"Video Codec: {0}","ValueCodec":"Codec: {0}","ValueConditions":"Conditions: {0}","LabelAll":"All","HeaderDeleteImage":"Delete Image","MessageFileNotFound":"File not found.","MessageFileReadError":"An error occurred reading this file.","ButtonNextPage":"Next Page","ButtonPreviousPage":"Previous Page","ButtonMoveLeft":"Move left","ButtonMoveRight":"Move right","ButtonBrowseOnlineImages":"Browse online images","HeaderDeleteItem":"Delete Item","ConfirmDeleteItem":"Deleting this item will delete it from both the file system and your media library. Are you sure you wish to continue?","MessagePleaseEnterNameOrId":"Please enter a name or an external Id.","MessageValueNotCorrect":"The value entered is not correct. Please try again.","MessageItemSaved":"Item saved.","MessagePleaseAcceptTermsOfServiceBeforeContinuing":"Please accept the terms of service before continuing.","OptionEnded":"Ended","OptionContinuing":"Continuing","OptionOff":"Off","OptionOn":"On","ButtonSettings":"Settings","ButtonUninstall":"Uninstall","HeaderFields":"Fields","HeaderFieldsHelp":"Slide a field to 'off' to lock it and prevent it's data from being changed.","HeaderLiveTV":"Live TV","MissingLocalTrailer":"Missing local trailer.","MissingPrimaryImage":"Missing primary image.","MissingBackdropImage":"Missing backdrop image.","MissingLogoImage":"Missing logo image.","MissingEpisode":"Missing episode.","OptionScreenshots":"Screenshots","OptionBackdrops":"Backdrops","OptionImages":"Images","OptionKeywords":"Keywords","OptionTags":"Tags","OptionStudios":"Studios","OptionName":"Name","OptionOverview":"Overview","OptionGenres":"Genres","OptionParentalRating":"Parental Rating","OptionPeople":"People","OptionRuntime":"Runtime","OptionProductionLocations":"Production Locations","OptionBirthLocation":"Birth Location","LabelAllChannels":"All channels","LabelLiveProgram":"LIVE","LabelNewProgram":"NEW","LabelPremiereProgram":"PREMIERE","LabelHDProgram":"HD","HeaderChangeFolderType":"Change Content Type","HeaderChangeFolderTypeHelp":"To change the type, please remove and rebuild the folder with the new type.","HeaderAlert":"Alert","MessagePleaseRestart":"Please restart to finish updating.","ButtonRestart":"Restart","MessagePleaseRefreshPage":"Please refresh this page to receive new updates from the server.","ButtonHide":"Hide","MessageSettingsSaved":"Settings saved.","ButtonSignOut":"Sign Out","ButtonMyProfile":"My Profile","ButtonMyPreferences":"My Preferences","MessageBrowserDoesNotSupportWebSockets":"This browser does not support web sockets. For a better experience, try a newer browser such as Chrome, Firefox, IE10+, Safari (iOS) or Opera.","LabelInstallingPackage":"Installing {0}","LabelPackageInstallCompleted":"{0} installation completed.","LabelPackageInstallFailed":"{0} installation failed.","LabelPackageInstallCancelled":"{0} installation cancelled.","TabServer":"Server","TabUsers":"Users","TabLibrary":"Library","TabMetadata":"Metadata","TabDLNA":"DLNA","TabLiveTV":"Live TV","TabAutoOrganize":"Auto-Organize","TabPlugins":"Plugins","TabAdvanced":"Advanced","TabHelp":"Help","TabScheduledTasks":"Scheduled Tasks","ButtonFullscreen":"Fullscreen","ButtonAudioTracks":"Audio Tracks","ButtonSubtitles":"Subtitles","ButtonScenes":"Scenes","ButtonQuality":"Quality","HeaderNotifications":"Notifications","HeaderSelectPlayer":"Select Player:","ButtonSelect":"Select","ButtonNew":"New","MessageInternetExplorerWebm":"For best results with Internet Explorer please install the WebM playback plugin.","HeaderVideoError":"Video Error","ButtonAddToPlaylist":"Add to playlist","HeaderAddToPlaylist":"Add to Playlist","LabelName":"Name:","ButtonSubmit":"Submit","LabelSelectPlaylist":"Playlist:","OptionNewPlaylist":"New playlist...","MessageAddedToPlaylistSuccess":"Ok","ButtonView":"View","ButtonViewSeriesRecording":"View series recording","ValueOriginalAirDate":"Original air date: {0}","ButtonRemoveFromPlaylist":"Remove from playlist","HeaderSpecials":"Specials","HeaderTrailers":"Trailers","HeaderAudio":"Audio","HeaderResolution":"Resolution","HeaderVideo":"Video","HeaderRuntime":"Runtime","HeaderCommunityRating":"Community rating","HeaderPasswordReset":"Password Reset","HeaderParentalRating":"Parental rating","HeaderReleaseDate":"Release date","HeaderDateAdded":"Date added","HeaderSeries":"Series","HeaderSeason":"Season","HeaderSeasonNumber":"Season number","HeaderNetwork":"Network","HeaderYear":"Year","HeaderGameSystem":"Game system","HeaderPlayers":"Players","HeaderEmbeddedImage":"Embedded image","HeaderTrack":"Track","HeaderDisc":"Disc","OptionMovies":"Movies","OptionCollections":"Collections","OptionSeries":"Series","OptionSeasons":"Seasons","OptionEpisodes":"Episodes","OptionGames":"Games","OptionGameSystems":"Game systems","OptionMusicArtists":"Music artists","OptionMusicAlbums":"Music albums","OptionMusicVideos":"Music videos","OptionSongs":"Songs","OptionHomeVideos":"Home videos","OptionBooks":"Books","OptionAdultVideos":"Adult videos","ButtonUp":"Up","ButtonDown":"Down","LabelMetadataReaders":"Metadata readers:","LabelMetadataReadersHelp":"Rank your preferred local metadata sources in order of priority. The first file found will be read.","LabelMetadataDownloaders":"Metadata downloaders:","LabelMetadataDownloadersHelp":"Enable and rank your preferred metadata downloaders in order of priority. Lower priority downloaders will only be used to fill in missing information.","LabelMetadataSavers":"Metadata savers:","LabelMetadataSaversHelp":"Choose the file formats to save your metadata to.","LabelImageFetchers":"Image fetchers:","LabelImageFetchersHelp":"Enable and rank your preferred image fetchers in order of priority.","ButtonQueueAllFromHere":"Queue all from here","ButtonPlayAllFromHere":"Play all from here","LabelDynamicExternalId":"{0} Id:","HeaderIdentify":"Identify Item","PersonTypePerson":"Person","LabelTitleDisplayOrder":"Title display order:","OptionSortName":"Sort name","OptionReleaseDate":"Release date","LabelSeasonNumber":"Season number:","LabelDiscNumber":"Disc number","LabelParentNumber":"Parent number","LabelEpisodeNumber":"Episode number:","LabelTrackNumber":"Track number:","LabelNumber":"Number:","LabelReleaseDate":"Release date:","LabelEndDate":"End date:","LabelYear":"Year:","LabelDateOfBirth":"Date of birth:","LabelBirthYear":"Birth year:","LabelBirthDate":"Birth date:","LabelDeathDate":"Death date:","HeaderRemoveMediaLocation":"Remove Media Location","MessageConfirmRemoveMediaLocation":"Are you sure you wish to remove this location?","HeaderRenameMediaFolder":"Rename Media Folder","LabelNewName":"New name:","HeaderAddMediaFolder":"Add Media Folder","HeaderAddMediaFolderHelp":"Name (Movies, Music, TV, etc):","HeaderRemoveMediaFolder":"Remove Media Folder","MessageTheFollowingLocationWillBeRemovedFromLibrary":"The following media locations will be removed from your library:","MessageAreYouSureYouWishToRemoveMediaFolder":"Are you sure you wish to remove this media folder?","ButtonRename":"Rename","ButtonChangeType":"Change type","HeaderMediaLocations":"Media Locations","LabelContentTypeValue":"Content type: {0}","LabelPathSubstitutionHelp":"Optional: Path substitution can map server paths to network shares that clients can access for direct playback.","FolderTypeUnset":"Unset (mixed content)","FolderTypeMovies":"Movies","FolderTypeMusic":"Music","FolderTypeAdultVideos":"Adult videos","FolderTypePhotos":"Photos","FolderTypeMusicVideos":"Music videos","FolderTypeHomeVideos":"Home videos","FolderTypeGames":"Games","FolderTypeBooks":"Books","FolderTypeTvShows":"TV","TabMovies":"Movies","TabSeries":"Series","TabEpisodes":"Episodes","TabTrailers":"Trailers","TabGames":"Games","TabAlbums":"Albums","TabSongs":"Songs","TabMusicVideos":"Music Videos","BirthPlaceValue":"Birth place: {0}","DeathDateValue":"Died: {0}","BirthDateValue":"Born: {0}","HeaderLatestReviews":"Latest Reviews","HeaderPluginInstallation":"Plugin Installation","MessageAlreadyInstalled":"This version is already installed.","ValueReviewCount":"{0} Reviews","MessageYouHaveVersionInstalled":"You currently have version {0} installed.","MessageTrialExpired":"The trial period for this feature has expired","MessageTrialWillExpireIn":"The trial period for this feature will expire in {0} day(s)","MessageInstallPluginFromApp":"This plugin must be installed from with in the app you intend to use it in.","ValuePriceUSD":"Price: {0} (USD)","MessageFeatureIncludedWithSupporter":"You are registered for this feature, and will be able to continue using it with an active supporter membership.","MessageSupporterMembershipExpiredOn":"Your supporter membership expired on {0}.","MessageYouHaveALifetimeMembership":"You have a lifetime supporter membership. You can provide additional donations on a one-time or recurring basis using the options below. Thank you for supporting Emby.","MessageYouHaveAnActiveRecurringMembership":"You have an active {0} membership. You can upgrade your plan using the options below.","ButtonDelete":"Delete","HeaderEmbyAccountAdded":"Emby Account Added","MessageEmbyAccountAdded":"The Emby account has been added to this user.","MessagePendingEmbyAccountAdded":"The Emby account has been added to this user. An email will be sent to the owner of the account. The invitation will need to be confirmed by clicking a link within the email.","HeaderEmbyAccountRemoved":"Emby Account Removed","MessageEmbyAccontRemoved":"The Emby account has been removed from this user.","TooltipLinkedToEmbyConnect":"Linked to Emby Connect","HeaderUnrated":"Unrated","ValueDiscNumber":"Disc {0}","HeaderUnknownDate":"Unknown Date","HeaderUnknownYear":"Unknown Year","ValueMinutes":"{0} min","ButtonPlayExternalPlayer":"Play with external player","HeaderSelectExternalPlayer":"Select External Player","HeaderExternalPlayerPlayback":"External Player Playback","ButtonImDone":"I'm Done","OptionWatched":"Watched","OptionUnwatched":"Unwatched","ExternalPlayerPlaystateOptionsHelp":"Specify how you would like to resume playing this video next time.","LabelMarkAs":"Mark as:","OptionInProgress":"In-Progress","LabelResumePoint":"Resume point:","ValueOneMovie":"1 movie","ValueMovieCount":"{0} movies","ValueOneTrailer":"1 trailer","ValueTrailerCount":"{0} trailers","ValueOneSeries":"1 series","ValueSeriesCount":"{0} series","ValueOneEpisode":"1 episode","ValueEpisodeCount":"{0} episodes","ValueOneGame":"1 game","ValueGameCount":"{0} games","ValueOneAlbum":"1 album","ValueAlbumCount":"{0} albums","ValueOneSong":"1 song","ValueSongCount":"{0} songs","ValueOneMusicVideo":"1 music video","ValueMusicVideoCount":"{0} music videos","HeaderOffline":"Offline","HeaderUnaired":"Unaired","HeaderMissing":"Missing","ButtonWebsite":"Website","TooltipFavorite":"Favorite","TooltipLike":"Like","TooltipDislike":"Dislike","TooltipPlayed":"Played","ValueSeriesYearToPresent":"{0}-Present","ValueAwards":"Awards: {0}","ValueBudget":"Budget: {0}","ValueRevenue":"Revenue: {0}","ValuePremiered":"Premiered {0}","ValuePremieres":"Premieres {0}","ValueStudio":"Studio: {0}","ValueStudios":"Studios: {0}","ValueStatus":"Status: {0}","ValueSpecialEpisodeName":"Special - {0}","LabelLimit":"Limit:","ValueLinks":"Links: {0}","HeaderPeople":"People","HeaderCastAndCrew":"Cast & Crew","ValueArtist":"Artist: {0}","ValueArtists":"Artists: {0}","HeaderTags":"Tags","MediaInfoCameraMake":"Camera make","MediaInfoCameraModel":"Camera model","MediaInfoAltitude":"Altitude","MediaInfoAperture":"Aperture","MediaInfoExposureTime":"Exposure time","MediaInfoFocalLength":"Focal length","MediaInfoOrientation":"Orientation","MediaInfoIsoSpeedRating":"Iso speed rating","MediaInfoLatitude":"Latitude","MediaInfoLongitude":"Longitude","MediaInfoShutterSpeed":"Shutter speed","MediaInfoSoftware":"Software","HeaderIfYouLikeCheckTheseOut":"If you like {0}, check these out...","HeaderPlotKeywords":"Plot Keywords","HeaderMovies":"Movies","HeaderAlbums":"Albums","HeaderGames":"Games","HeaderBooks":"Books","HeaderEpisodes":"Episodes","HeaderSeasons":"Seasons","HeaderTracks":"Tracks","HeaderItems":"Items","HeaderOtherItems":"Other Items","ButtonFullReview":"Full review","ValueAsRole":"as {0}","ValueGuestStar":"Guest star","MediaInfoSize":"Size","MediaInfoPath":"Path","MediaInfoFormat":"Format","MediaInfoContainer":"Container","MediaInfoDefault":"Default","MediaInfoForced":"Forced","MediaInfoExternal":"External","MediaInfoTimestamp":"Timestamp","MediaInfoPixelFormat":"Pixel format","MediaInfoBitDepth":"Bit depth","MediaInfoSampleRate":"Sample rate","MediaInfoBitrate":"Bitrate","MediaInfoChannels":"Channels","MediaInfoLayout":"Layout","MediaInfoLanguage":"Language","MediaInfoCodec":"Codec","MediaInfoProfile":"Profile","MediaInfoLevel":"Level","MediaInfoAspectRatio":"Aspect ratio","MediaInfoResolution":"Resolution","MediaInfoAnamorphic":"Anamorphic","MediaInfoInterlaced":"Interlaced","MediaInfoFramerate":"Framerate","MediaInfoStreamTypeAudio":"Audio","MediaInfoStreamTypeData":"Data","MediaInfoStreamTypeVideo":"Video","MediaInfoStreamTypeSubtitle":"Subtitle","MediaInfoStreamTypeEmbeddedImage":"Embedded Image","MediaInfoRefFrames":"Ref frames","TabPlayback":"Playback","TabNotifications":"Notifications","TabExpert":"Expert","HeaderSelectCustomIntrosPath":"Select Custom Intros Path","HeaderRateAndReview":"Rate and Review","HeaderThankYou":"Thank You","MessageThankYouForYourReview":"Thank you for your review.","LabelYourRating":"Your rating:","LabelFullReview":"Full review:","LabelShortRatingDescription":"Short rating summary:","OptionIRecommendThisItem":"I recommend this item","WebClientTourContent":"View your recently added media, next episodes, and more. The green circles indicate how many unplayed items you have.","WebClientTourMovies":"Play movies, trailers and more from any device with a web browser","WebClientTourMouseOver":"Hold the mouse over any poster for quick access to important information","WebClientTourTapHold":"Tap and hold or right click any poster for a context menu","WebClientTourMetadataManager":"Click edit to open the metadata manager","WebClientTourPlaylists":"Easily create playlists and instant mixes, and play them on any device","WebClientTourCollections":"Create movie collections to group box sets together","WebClientTourUserPreferences1":"User preferences allow you to customize the way your library is presented in all of your Emby apps","WebClientTourUserPreferences2":"Configure your audio and subtitle language settings once, for every Emby app","WebClientTourUserPreferences3":"Design the web client home page to your liking","WebClientTourUserPreferences4":"Configure backdrops, theme songs and external players","WebClientTourMobile1":"The web client works great on smartphones and tablets...","WebClientTourMobile2":"and easily controls other devices and Emby apps","WebClientTourMySync":"Sync your personal media to your devices for offline viewing.","MessageEnjoyYourStay":"Enjoy your stay","DashboardTourDashboard":"The server dashboard allows you to monitor your server and your users. You'll always know who is doing what and where they are.","DashboardTourHelp":"In-app help provides easy buttons to open wiki pages relating to the on-screen content.","DashboardTourUsers":"Easily create user accounts for your friends and family, each with their own permissions, library access, parental controls and more.","DashboardTourCinemaMode":"Cinema mode brings the theater experience straight to your living room with the ability to play trailers and custom intros before the main feature.","DashboardTourChapters":"Enable chapter image generation for your videos for a more pleasing presentation while viewing.","DashboardTourSubtitles":"Automatically download subtitles for your videos in any language.","DashboardTourPlugins":"Install plugins such as internet video channels, live tv, metadata scanners, and more.","DashboardTourNotifications":"Automatically send notifications of server events to your mobile device, email and more.","DashboardTourScheduledTasks":"Easily manage long running operations with scheduled tasks. Decide when they run, and how often.","DashboardTourMobile":"The Emby Server dashboard works great on smartphones and tablets. Manage your server from the palm of your hand anytime, anywhere.","DashboardTourSync":"Sync your personal media to your devices for offline viewing.","MessageRefreshQueued":"Refresh queued","TabDevices":"Devices","TabExtras":"Extras","DeviceLastUsedByUserName":"Last used by {0}","HeaderDeleteDevice":"Delete Device","DeleteDeviceConfirmation":"Are you sure you wish to delete this device? It will reappear the next time a user signs in with it.","LabelEnableCameraUploadFor":"Enable camera upload for:","HeaderSelectUploadPath":"Select Upload Path","LabelEnableCameraUploadForHelp":"Uploads will occur automatically in the background when signed into Emby.","ErrorMessageStartHourGreaterThanEnd":"End time must be greater than the start time.","ButtonLibraryAccess":"Library access","ButtonParentalControl":"Parental control","HeaderInvitationSent":"Invitation Sent","MessageInvitationSentToUser":"An email has been sent to {0}, inviting them to accept your sharing invitation.","MessageInvitationSentToNewUser":"An email has been sent to {0} inviting them to sign up with Emby.","HeaderConnectionFailure":"Connection Failure","MessageUnableToConnectToServer":"We're unable to connect to the selected server right now. Please ensure it is running and try again.","ButtonSelectServer":"Select Server","MessagePluginConfigurationRequiresLocalAccess":"To configure this plugin please sign in to your local server directly.","MessageLoggedOutParentalControl":"Access is currently restricted. Please try again later.","DefaultErrorMessage":"There was an error processing the request. Please try again later.","ButtonAccept":"Accept","ButtonReject":"Reject","HeaderForgotPassword":"Forgot Password","MessageContactAdminToResetPassword":"Please contact your system administrator to reset your password.","MessageForgotPasswordInNetworkRequired":"Please try again within your home network to initiate the password reset process.","MessageForgotPasswordFileCreated":"The following file has been created on your server and contains instructions on how to proceed:","MessageForgotPasswordFileExpiration":"The reset pin will expire at {0}.","MessageInvalidForgotPasswordPin":"An invalid or expired pin was entered. Please try again.","MessagePasswordResetForUsers":"Passwords have been removed for the following users:","HeaderInviteGuest":"Invite Guest","ButtonLinkMyEmbyAccount":"Link my account now","MessageConnectAccountRequiredToInviteGuest":"In order to invite guests you need to first link your Emby account to this server.","ButtonSync":"Sync","SyncMedia":"Sync Media","HeaderCancelSyncJob":"Cancel Sync","CancelSyncJobConfirmation":"Cancelling the sync job will remove synced media from the device during the next sync process. Are you sure you wish to proceed?","TabSync":"Sync","MessagePleaseSelectDeviceToSyncTo":"Please select a device to sync to.","MessageSyncJobCreated":"Sync job created.","LabelSyncTo":"Sync to:","LabelSyncJobName":"Sync job name:","LabelQuality":"Quality:","HeaderSettings":"Settings","OptionAutomaticallySyncNewContent":"Automatically sync new content","OptionAutomaticallySyncNewContentHelp":"New content added to will be automatically synced to the device.","OptionSyncUnwatchedVideosOnly":"Sync unwatched videos only","OptionSyncUnwatchedVideosOnlyHelp":"Only unwatched videos will be synced, and videos will be removed from the device as they are watched.","LabelItemLimit":"Item limit:","LabelItemLimitHelp":"Optional. Set a limit to the number of items that will be synced.","MessageBookPluginRequired":"Requires installation of the Bookshelf plugin","MessageGamePluginRequired":"Requires installation of the GameBrowser plugin","MessageUnsetContentHelp":"Content will be displayed as plain folders. For best results use the metadata manager to set the content types of sub-folders.","SyncJobItemStatusQueued":"Queued","SyncJobItemStatusConverting":"Converting","SyncJobItemStatusTransferring":"Transferring","SyncJobItemStatusSynced":"Synced","SyncJobItemStatusFailed":"Failed","SyncJobItemStatusRemovedFromDevice":"Removed from device","SyncJobItemStatusCancelled":"Cancelled","LabelProfile":"Profile:","LabelBitrateMbps":"Bitrate (Mbps):","EmbyIntroDownloadMessage":"To download and install Emby Server visit {0}.","ButtonNewServer":"New Server","ButtonSignInWithConnect":"Sign in with Emby Connect","HeaderNewServer":"New Server","MyDevice":"My Device","ButtonRemote":"Remote","TabInfo":"Info","TabCast":"Cast","TabScenes":"Scenes","HeaderUnlockApp":"Unlock App","MessageUnlockAppWithPurchase":"Unlock the full features of the app with a small one-time purchase.","MessageUnlockAppWithPurchaseOrSupporter":"Unlock the full features of the app with a small one-time purchase, or by signing in with an active Emby Supporter Membership.","MessageUnlockAppWithSupporter":"Unlock the full features of the app by signing in with an active Emby Supporter Membership.","MessageToValidateSupporter":"If you have an active Emby Supporter Membership, simply sign into the app using your Wifi connection within your home network.","MessagePaymentServicesUnavailable":"Payment services are currently unavailable. Please try again later.","ButtonUnlockWithSupporter":"Sign in with Emby Supporter Membership","MessagePleaseSignInLocalNetwork":"Before proceeding, please ensure that you're connected to your local network using a Wifi or LAN connection.","ButtonUnlockWithPurchase":"Unlock with Purchase","ButtonUnlockPrice":"Unlock {0}","MessageLiveTvGuideRequiresUnlock":"The Live TV Guide is currently limited to {0} channels. Click the unlock button to learn how to enjoy the full experience.","OptionEnableFullscreen":"Enable Fullscreen","ButtonServer":"Server","HeaderAdmin":"Admin","HeaderLibrary":"Library","HeaderMedia":"Media","ButtonInbox":"Inbox","HeaderAdvanced":"Advanced","HeaderGroupVersions":"Group Versions","HeaderSaySomethingLike":"Say Something Like...","ButtonTryAgain":"Try Again","HeaderYouSaid":"You Said...","MessageWeDidntRecognizeCommand":"We're sorry, we didn't recognize that command.","MessageIfYouBlockedVoice":"If you denied voice access to the app you'll need to reconfigure before trying again.","MessageNoItemsFound":"No items found.","ButtonManageServer":"Manage Server","ButtonPreferences":"Preferences","ButtonViewArtist":"View artist","ButtonViewAlbum":"View album","ErrorMessagePasswordNotMatchConfirm":"The password and password confirmation must match.","ErrorMessageUsernameInUse":"The username is already in use. Please choose a new name and try again.","ErrorMessageEmailInUse":"The email address is already in use. Please enter a new email address and try again, or use the forgot password feature.","MessageThankYouForConnectSignUp":"Thank you for signing up for Emby Connect. An email will be sent to your address with instructions on how to confirm your new account. Please confirm the account and then return here to sign in.","HeaderShare":"Share","ButtonShareHelp":"Share a web page containing media information with social media. Media files are never shared publicly.","ButtonShare":"Share","HeaderConfirm":"Confirm"}
-window.appMode='cordova';window.dashboardVersion='3.0.5666.3';
+window.appMode='cordova';window.dashboardVersion='3.0.5670.15135';
 var Logger={log:function(str){console.log(str);}};var CryptoJS=CryptoJS||function(s,p){var m={},l=m.lib={},n=function(){},r=l.Base={extend:function(b){n.prototype=this;var h=new n;b&&h.mixIn(b);h.hasOwnProperty("init")||(h.init=function(){h.$super.init.apply(this,arguments)});h.init.prototype=h;h.$super=this;return h},create:function(){var b=this.extend();b.init.apply(b,arguments);return b},init:function(){},mixIn:function(b){for(var h in b)b.hasOwnProperty(h)&&(this[h]=b[h]);b.hasOwnProperty("toString")&&(this.toString=b.toString)},clone:function(){return this.init.prototype.extend(this)}},q=l.WordArray=r.extend({init:function(b,h){b=this.words=b||[];this.sigBytes=h!=p?h:4*b.length},toString:function(b){return(b||t).stringify(this)},concat:function(b){var h=this.words,a=b.words,j=this.sigBytes;b=b.sigBytes;this.clamp();if(j%4)for(var g=0;g<b;g++)h[j+g>>>2]|=(a[g>>>2]>>>24-8*(g%4)&255)<<24-8*((j+g)%4);else if(65535<a.length)for(g=0;g<b;g+=4)h[j+g>>>2]=a[g>>>2];else h.push.apply(h,a);this.sigBytes+=b;return this},clamp:function(){var b=this.words,h=this.sigBytes;b[h>>>2]&=4294967295<<32-8*(h%4);b.length=s.ceil(h/4)},clone:function(){var b=r.clone.call(this);b.words=this.words.slice(0);return b},random:function(b){for(var h=[],a=0;a<b;a+=4)h.push(4294967296*s.random()|0);return new q.init(h,b)}}),v=m.enc={},t=v.Hex={stringify:function(b){var a=b.words;b=b.sigBytes;for(var g=[],j=0;j<b;j++){var k=a[j>>>2]>>>24-8*(j%4)&255;g.push((k>>>4).toString(16));g.push((k&15).toString(16))}return g.join("")},parse:function(b){for(var a=b.length,g=[],j=0;j<a;j+=2)g[j>>>3]|=parseInt(b.substr(j,2),16)<<24-4*(j%8);return new q.init(g,a/2)}},a=v.Latin1={stringify:function(b){var a=b.words;b=b.sigBytes;for(var g=[],j=0;j<b;j++)g.push(String.fromCharCode(a[j>>>2]>>>24-8*(j%4)&255));return g.join("")},parse:function(b){for(var a=b.length,g=[],j=0;j<a;j++)g[j>>>2]|=(b.charCodeAt(j)&255)<<24-8*(j%4);return new q.init(g,a)}},u=v.Utf8={stringify:function(b){try{return decodeURIComponent(escape(a.stringify(b)))}catch(g){throw Error("Malformed UTF-8 data");}},parse:function(b){return a.parse(unescape(encodeURIComponent(b)))}},g=l.BufferedBlockAlgorithm=r.extend({reset:function(){this._data=new q.init;this._nDataBytes=0},_append:function(b){"string"==typeof b&&(b=u.parse(b));this._data.concat(b);this._nDataBytes+=b.sigBytes},_process:function(b){var a=this._data,g=a.words,j=a.sigBytes,k=this.blockSize,m=j/(4*k),m=b?s.ceil(m):s.max((m|0)-this._minBufferSize,0);b=m*k;j=s.min(4*b,j);if(b){for(var l=0;l<b;l+=k)this._doProcessBlock(g,l);l=g.splice(0,b);a.sigBytes-=j}return new q.init(l,j)},clone:function(){var b=r.clone.call(this);b._data=this._data.clone();return b},_minBufferSize:0});l.Hasher=g.extend({cfg:r.extend(),init:function(b){this.cfg=this.cfg.extend(b);this.reset()},reset:function(){g.reset.call(this);this._doReset()},update:function(b){this._append(b);this._process();return this},finalize:function(b){b&&this._append(b);return this._doFinalize()},blockSize:16,_createHelper:function(b){return function(a,g){return(new b.init(g)).finalize(a)}},_createHmacHelper:function(b){return function(a,g){return(new k.HMAC.init(b,g)).finalize(a)}}});var k=m.algo={};return m}(Math);(function(s){function p(a,k,b,h,l,j,m){a=a+(k&b|~k&h)+l+m;return(a<<j|a>>>32-j)+k}function m(a,k,b,h,l,j,m){a=a+(k&h|b&~h)+l+m;return(a<<j|a>>>32-j)+k}function l(a,k,b,h,l,j,m){a=a+(k^b^h)+l+m;return(a<<j|a>>>32-j)+k}function n(a,k,b,h,l,j,m){a=a+(b^(k|~h))+l+m;return(a<<j|a>>>32-j)+k}for(var r=CryptoJS,q=r.lib,v=q.WordArray,t=q.Hasher,q=r.algo,a=[],u=0;64>u;u++)a[u]=4294967296*s.abs(s.sin(u+1))|0;q=q.MD5=t.extend({_doReset:function(){this._hash=new v.init([1732584193,4023233417,2562383102,271733878])},_doProcessBlock:function(g,k){for(var b=0;16>b;b++){var h=k+b,w=g[h];g[h]=(w<<8|w>>>24)&16711935|(w<<24|w>>>8)&4278255360}var b=this._hash.words,h=g[k+0],w=g[k+1],j=g[k+2],q=g[k+3],r=g[k+4],s=g[k+5],t=g[k+6],u=g[k+7],v=g[k+8],x=g[k+9],y=g[k+10],z=g[k+11],A=g[k+12],B=g[k+13],C=g[k+14],D=g[k+15],c=b[0],d=b[1],e=b[2],f=b[3],c=p(c,d,e,f,h,7,a[0]),f=p(f,c,d,e,w,12,a[1]),e=p(e,f,c,d,j,17,a[2]),d=p(d,e,f,c,q,22,a[3]),c=p(c,d,e,f,r,7,a[4]),f=p(f,c,d,e,s,12,a[5]),e=p(e,f,c,d,t,17,a[6]),d=p(d,e,f,c,u,22,a[7]),c=p(c,d,e,f,v,7,a[8]),f=p(f,c,d,e,x,12,a[9]),e=p(e,f,c,d,y,17,a[10]),d=p(d,e,f,c,z,22,a[11]),c=p(c,d,e,f,A,7,a[12]),f=p(f,c,d,e,B,12,a[13]),e=p(e,f,c,d,C,17,a[14]),d=p(d,e,f,c,D,22,a[15]),c=m(c,d,e,f,w,5,a[16]),f=m(f,c,d,e,t,9,a[17]),e=m(e,f,c,d,z,14,a[18]),d=m(d,e,f,c,h,20,a[19]),c=m(c,d,e,f,s,5,a[20]),f=m(f,c,d,e,y,9,a[21]),e=m(e,f,c,d,D,14,a[22]),d=m(d,e,f,c,r,20,a[23]),c=m(c,d,e,f,x,5,a[24]),f=m(f,c,d,e,C,9,a[25]),e=m(e,f,c,d,q,14,a[26]),d=m(d,e,f,c,v,20,a[27]),c=m(c,d,e,f,B,5,a[28]),f=m(f,c,d,e,j,9,a[29]),e=m(e,f,c,d,u,14,a[30]),d=m(d,e,f,c,A,20,a[31]),c=l(c,d,e,f,s,4,a[32]),f=l(f,c,d,e,v,11,a[33]),e=l(e,f,c,d,z,16,a[34]),d=l(d,e,f,c,C,23,a[35]),c=l(c,d,e,f,w,4,a[36]),f=l(f,c,d,e,r,11,a[37]),e=l(e,f,c,d,u,16,a[38]),d=l(d,e,f,c,y,23,a[39]),c=l(c,d,e,f,B,4,a[40]),f=l(f,c,d,e,h,11,a[41]),e=l(e,f,c,d,q,16,a[42]),d=l(d,e,f,c,t,23,a[43]),c=l(c,d,e,f,x,4,a[44]),f=l(f,c,d,e,A,11,a[45]),e=l(e,f,c,d,D,16,a[46]),d=l(d,e,f,c,j,23,a[47]),c=n(c,d,e,f,h,6,a[48]),f=n(f,c,d,e,u,10,a[49]),e=n(e,f,c,d,C,15,a[50]),d=n(d,e,f,c,s,21,a[51]),c=n(c,d,e,f,A,6,a[52]),f=n(f,c,d,e,q,10,a[53]),e=n(e,f,c,d,y,15,a[54]),d=n(d,e,f,c,w,21,a[55]),c=n(c,d,e,f,v,6,a[56]),f=n(f,c,d,e,D,10,a[57]),e=n(e,f,c,d,t,15,a[58]),d=n(d,e,f,c,B,21,a[59]),c=n(c,d,e,f,r,6,a[60]),f=n(f,c,d,e,z,10,a[61]),e=n(e,f,c,d,j,15,a[62]),d=n(d,e,f,c,x,21,a[63]);b[0]=b[0]+c|0;b[1]=b[1]+d|0;b[2]=b[2]+e|0;b[3]=b[3]+f|0},_doFinalize:function(){var a=this._data,k=a.words,b=8*this._nDataBytes,h=8*a.sigBytes;k[h>>>5]|=128<<24-h%32;var l=s.floor(b/4294967296);k[(h+64>>>9<<4)+15]=(l<<8|l>>>24)&16711935|(l<<24|l>>>8)&4278255360;k[(h+64>>>9<<4)+14]=(b<<8|b>>>24)&16711935|(b<<24|b>>>8)&4278255360;a.sigBytes=4*(k.length+1);this._process();a=this._hash;k=a.words;for(b=0;4>b;b++)h=k[b],k[b]=(h<<8|h>>>24)&16711935|(h<<24|h>>>8)&4278255360;return a},clone:function(){var a=t.clone.call(this);a._hash=this._hash.clone();return a}});r.MD5=t._createHelper(q);r.HmacMD5=t._createHmacHelper(q)})(Math);var CryptoJS=CryptoJS||function(e,m){var p={},j=p.lib={},l=function(){},f=j.Base={extend:function(a){l.prototype=this;var c=new l;a&&c.mixIn(a);c.hasOwnProperty("init")||(c.init=function(){c.$super.init.apply(this,arguments)});c.init.prototype=c;c.$super=this;return c},create:function(){var a=this.extend();a.init.apply(a,arguments);return a},init:function(){},mixIn:function(a){for(var c in a)a.hasOwnProperty(c)&&(this[c]=a[c]);a.hasOwnProperty("toString")&&(this.toString=a.toString)},clone:function(){return this.init.prototype.extend(this)}},n=j.WordArray=f.extend({init:function(a,c){a=this.words=a||[];this.sigBytes=c!=m?c:4*a.length},toString:function(a){return(a||h).stringify(this)},concat:function(a){var c=this.words,q=a.words,d=this.sigBytes;a=a.sigBytes;this.clamp();if(d%4)for(var b=0;b<a;b++)c[d+b>>>2]|=(q[b>>>2]>>>24-8*(b%4)&255)<<24-8*((d+b)%4);else if(65535<q.length)for(b=0;b<a;b+=4)c[d+b>>>2]=q[b>>>2];else c.push.apply(c,q);this.sigBytes+=a;return this},clamp:function(){var a=this.words,c=this.sigBytes;a[c>>>2]&=4294967295<<32-8*(c%4);a.length=e.ceil(c/4)},clone:function(){var a=f.clone.call(this);a.words=this.words.slice(0);return a},random:function(a){for(var c=[],b=0;b<a;b+=4)c.push(4294967296*e.random()|0);return new n.init(c,a)}}),b=p.enc={},h=b.Hex={stringify:function(a){var c=a.words;a=a.sigBytes;for(var b=[],d=0;d<a;d++){var f=c[d>>>2]>>>24-8*(d%4)&255;b.push((f>>>4).toString(16));b.push((f&15).toString(16))}return b.join("")},parse:function(a){for(var c=a.length,b=[],d=0;d<c;d+=2)b[d>>>3]|=parseInt(a.substr(d,2),16)<<24-4*(d%8);return new n.init(b,c/2)}},g=b.Latin1={stringify:function(a){var c=a.words;a=a.sigBytes;for(var b=[],d=0;d<a;d++)b.push(String.fromCharCode(c[d>>>2]>>>24-8*(d%4)&255));return b.join("")},parse:function(a){for(var c=a.length,b=[],d=0;d<c;d++)b[d>>>2]|=(a.charCodeAt(d)&255)<<24-8*(d%4);return new n.init(b,c)}},r=b.Utf8={stringify:function(a){try{return decodeURIComponent(escape(g.stringify(a)))}catch(c){throw Error("Malformed UTF-8 data");}},parse:function(a){return g.parse(unescape(encodeURIComponent(a)))}},k=j.BufferedBlockAlgorithm=f.extend({reset:function(){this._data=new n.init;this._nDataBytes=0},_append:function(a){"string"==typeof a&&(a=r.parse(a));this._data.concat(a);this._nDataBytes+=a.sigBytes},_process:function(a){var c=this._data,b=c.words,d=c.sigBytes,f=this.blockSize,h=d/(4*f),h=a?e.ceil(h):e.max((h|0)-this._minBufferSize,0);a=h*f;d=e.min(4*a,d);if(a){for(var g=0;g<a;g+=f)this._doProcessBlock(b,g);g=b.splice(0,a);c.sigBytes-=d}return new n.init(g,d)},clone:function(){var a=f.clone.call(this);a._data=this._data.clone();return a},_minBufferSize:0});j.Hasher=k.extend({cfg:f.extend(),init:function(a){this.cfg=this.cfg.extend(a);this.reset()},reset:function(){k.reset.call(this);this._doReset()},update:function(a){this._append(a);this._process();return this},finalize:function(a){a&&this._append(a);return this._doFinalize()},blockSize:16,_createHelper:function(a){return function(c,b){return(new a.init(b)).finalize(c)}},_createHmacHelper:function(a){return function(b,f){return(new s.HMAC.init(a,f)).finalize(b)}}});var s=p.algo={};return p}(Math);(function(){var e=CryptoJS,m=e.lib,p=m.WordArray,j=m.Hasher,l=[],m=e.algo.SHA1=j.extend({_doReset:function(){this._hash=new p.init([1732584193,4023233417,2562383102,271733878,3285377520])},_doProcessBlock:function(f,n){for(var b=this._hash.words,h=b[0],g=b[1],e=b[2],k=b[3],j=b[4],a=0;80>a;a++){if(16>a)l[a]=f[n+a]|0;else{var c=l[a-3]^l[a-8]^l[a-14]^l[a-16];l[a]=c<<1|c>>>31}c=(h<<5|h>>>27)+j+l[a];c=20>a?c+((g&e|~g&k)+1518500249):40>a?c+((g^e^k)+1859775393):60>a?c+((g&e|g&k|e&k)-1894007588):c+((g^e^k)-899497514);j=k;k=e;e=g<<30|g>>>2;g=h;h=c}b[0]=b[0]+h|0;b[1]=b[1]+g|0;b[2]=b[2]+e|0;b[3]=b[3]+k|0;b[4]=b[4]+j|0},_doFinalize:function(){var f=this._data,e=f.words,b=8*this._nDataBytes,h=8*f.sigBytes;e[h>>>5]|=128<<24-h%32;e[(h+64>>>9<<4)+14]=Math.floor(b/4294967296);e[(h+64>>>9<<4)+15]=b;f.sigBytes=4*e.length;this._process();return this._hash},clone:function(){var e=j.clone.call(this);e._hash=this._hash.clone();return e}});e.SHA1=j._createHelper(m);e.HmacSHA1=j._createHmacHelper(m)})();(function(globalScope,localStorage,sessionStorage){function myStore(defaultObject){var self=this;self.localData={};var isDefaultAvailable;if(defaultObject){try{defaultObject.setItem('_test','0');isDefaultAvailable=true;}catch(e){}}
 self.setItem=function(name,value){if(isDefaultAvailable){defaultObject.setItem(name,value);}else{self.localData[name]=value;}};self.getItem=function(name){if(isDefaultAvailable){return defaultObject.getItem(name);}
 return self.localData[name];};self.removeItem=function(name){if(isDefaultAvailable){defaultObject.removeItem(name);}else{self.localData[name]=null;}};}
@@ -1853,6 +1839,7 @@ if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["c
 else{define("audiorenderer",["scripts/htmlmediarenderer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
 define("connectservice",["apiclient/connectservice"]);define("paperbuttonstyle",[],function(){return{};});define("jqmicons",[],function(){Dashboard.importCss('thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.icons.css');return{};});define("livetvcss",[],function(){Dashboard.importCss('css/livetv.css');return{};});define("detailtablecss",[],function(){Dashboard.importCss('css/detailtable.css');return{};});define("tileitemcss",[],function(){Dashboard.importCss('css/tileitem.css');return{};});if(Dashboard.isRunningInCordova()&&$.browser.safari){define("actionsheet",["cordova/ios/actionsheet"]);}else{define("actionsheet",["scripts/actionsheet"]);}
 define("sharingmanager",["scripts/sharingmanager"]);if(Dashboard.isRunningInCordova()){define("sharingwidget",["cordova/sharingwidget"]);}else{define("sharingwidget",["scripts/sharingwidget"]);}
+if(Dashboard.isRunningInCordova()&&$.browser.safari){define("searchmenu",["cordova/searchmenu"]);}else{define("searchmenu",["scripts/searchmenu"]);}
 $.extend(AppInfo,Dashboard.getAppInfo(appName,deviceId,deviceName));$(document).on('WebComponentsReady',function(){var drawer=document.querySelector('.mainDrawerPanel');drawer.classList.remove('mainDrawerPanelPreInit');drawer.forceNarrow=true;drawer.drawerWidth=screen.availWidth>=330?"310px":"270px";if($.browser.safari&&!AppInfo.isNativeApp){drawer.disableEdgeSwipe=true;}
 if(Dashboard.isConnectMode()){if(AppInfo.isNativeApp&&$.browser.android){require(['cordova/android/logging']);}
 require(['appstorage'],function(){capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){$(function(){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();});});});}else{createConnectionManager(capabilities);$(function(){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();});}});}
@@ -1874,7 +1861,7 @@ try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId(),JSON.stringify(value
 if(NavHelper.isBack()){Logger.log('Not refreshing data because IsBack=true');return false;}
 var now=new Date().getTime();var cacheDuration;if(AppInfo.isNativeApp){cacheDuration=600000;}
 else if($.browser.ipad||$.browser.iphone||$.browser.android){cacheDuration=10000;}
-else{cacheDuration=180000;}
+else{cacheDuration=60000;}
 if((now-last)<cacheDuration){Logger.log('Not refreshing data due to age');return false;}
 return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},configureSwipeTabs:function(ownerpage,tabs,pages){var pageCount=pages.querySelectorAll('neon-animatable').length;function allowSwipe(e){var target=e.target;if(target.classList.contains('noSwipe')){return false;}
 if($(target).parents('.noSwipe').length){return false;}
@@ -2112,7 +2099,7 @@ if(item.Metascore&&metascore!==false){if(item.Metascore>=60){html+='<div class="
 else if(item.Metascore>=40){html+='<div class="metascore metascoremid" title="Metascore">'+item.Metascore+'</div>';}else{html+='<div class="metascore metascorelow" title="Metascore">'+item.Metascore+'</div>';}}
 return html;},getItemProgressBarHtml:function(item){if(item.Type=="Recording"&&item.CompletionPercentage){return'<progress class="itemProgressBar recordingProgressBar" min="0" max="100" value="'+item.CompletionPercentage+'"></progress>';}
 var pct=item.PlayedPercentage;if(pct&&pct<100){return'<progress class="itemProgressBar" min="0" max="100" value="'+pct+'"></progress>';}
-return null;},getUserDataButtonHtml:function(method,itemId,btnCssClass,icon,tooltip){return'<paper-icon-button data-itemid="'+itemId+'" icon="'+icon+'" class="'+btnCssClass+'" onclick="LibraryBrowser.'+method+'(this);return false;"></paper-icon-button>';btnCssClass+=" imageButton";return'<button data-itemid="'+itemId+'" class="'+btnCssClass+'" type="button" onclick="LibraryBrowser.'+method+'(this);return false;" title="'+tooltip+'" data-role="none"><i class="fa '+icon+'"></i></button>';},getUserDataIconsHtml:function(item,includePlayed){var html='';var userData=item.UserData||{};var itemId=item.Id;var type=item.Type;if(includePlayed!==false){var tooltipPlayed=Globalize.translate('TooltipPlayed');if(item.MediaType=='Video'||item.Type=='Series'||item.Type=='Season'||item.Type=='BoxSet'||item.Type=='Playlist'){if(userData.Played){html+=LibraryBrowser.getUserDataButtonHtml('markPlayed',itemId,'btnUserItemRating btnUserItemRatingOn','check',tooltipPlayed);}else{html+=LibraryBrowser.getUserDataButtonHtml('markPlayed',itemId,'btnUserItemRating','check',tooltipPlayed);}}}
+return null;},getUserDataButtonHtml:function(method,itemId,btnCssClass,icon,tooltip){return'<paper-icon-button data-itemid="'+itemId+'" icon="'+icon+'" class="'+btnCssClass+'" onclick="LibraryBrowser.'+method+'(this);return false;"></paper-icon-button>';},getUserDataIconsHtml:function(item,includePlayed){var html='';var userData=item.UserData||{};var itemId=item.Id;var type=item.Type;if(includePlayed!==false){var tooltipPlayed=Globalize.translate('TooltipPlayed');if(item.MediaType=='Video'||item.Type=='Series'||item.Type=='Season'||item.Type=='BoxSet'||item.Type=='Playlist'){if(userData.Played){html+=LibraryBrowser.getUserDataButtonHtml('markPlayed',itemId,'btnUserItemRating btnUserItemRatingOn','check',tooltipPlayed);}else{html+=LibraryBrowser.getUserDataButtonHtml('markPlayed',itemId,'btnUserItemRating','check',tooltipPlayed);}}}
 var tooltipLike=Globalize.translate('TooltipLike');var tooltipDislike=Globalize.translate('TooltipDislike');if(typeof userData.Likes=="undefined"){html+=LibraryBrowser.getUserDataButtonHtml('markDislike',itemId,'btnUserItemRating','thumb-down',tooltipDislike);html+=LibraryBrowser.getUserDataButtonHtml('markLike',itemId,'btnUserItemRating','thumb-up',tooltipLike);}
 else if(userData.Likes){html+=LibraryBrowser.getUserDataButtonHtml('markDislike',itemId,'btnUserItemRating','thumb-down',tooltipDislike);html+=LibraryBrowser.getUserDataButtonHtml('markLike',itemId,'btnUserItemRating btnUserItemRatingOn','thumb-up',tooltipLike);}
 else{html+=LibraryBrowser.getUserDataButtonHtml('markDislike',itemId,'btnUserItemRating btnUserItemRatingOn','thumb-down',tooltipDislike);html+=LibraryBrowser.getUserDataButtonHtml('markLike',itemId,'btnUserItemRating','thumb-up',tooltipLike);}
@@ -2376,14 +2363,14 @@ if(requiresViewMenuRefresh){if(viewMenuBar){viewMenuBar.parentNode.removeChild(v
 if(!viewMenuBar){renderHeader();updateViewMenuBarHeadroom(page,document.querySelector('.viewMenuBar'));updateCastIcon();updateLibraryNavLinks(page);requiresViewMenuRefresh=false;ConnectionManager.user(window.ApiClient).done(addUserToHeader);}else{viewMenuBar.classList.remove('hide');updateLibraryNavLinks(page);updateViewMenuBarHeadroom(page,viewMenuBar);requiresViewMenuRefresh=false;}}
 $(document).on('pagebeforeshowready',".page",function(){var page=this;requiresDashboardDrawerRefresh=true;onPageBeforeShowDocumentReady(page);}).on('pageshowready',".page",function(){var page=this;onPageShowDocumentReady(page);}).on('pagebeforehide',".page",function(){var headroomEnabled=document.querySelectorAll('.headroomEnabled');for(var i=0,length=headroomEnabled.length;i<length;i++){headroomEnabled[i].classList.add('headroomDisabled');}});function onPageBeforeShowDocumentReady(page){buildViewMenuBar(page);var isLibraryPage=page.classList.contains('libraryPage');var darkDrawer=false;var title=page.getAttribute('data-title')||page.getAttribute('data-contextname');if(title){LibraryMenu.setTitle(title);}
 var titleKey=getParameterByName('titlekey');if(titleKey){LibraryMenu.setTitle(Globalize.translate(titleKey));}
-if(page.getAttribute('data-menubutton')=='false'){document.querySelector('.mainDrawerButton').classList.add('hide');}else{document.querySelector('.mainDrawerButton').classList.remove('hide');}
-if(isLibraryPage){document.body.classList.add('libraryDocument');document.body.classList.remove('dashboardDocument');document.body.classList.remove('hideMainDrawer');if(AppInfo.enableBottomTabs){page.classList.add('noSecondaryNavPage');document.querySelector('.footer').classList.add('footerOverBottomTabs');}else{$('.libraryViewNav',page).each(function(){initHeadRoom(this);});}
-if(!AppInfo.isNativeApp){darkDrawer=true;}}
+var mainDrawerButton=document.querySelector('.mainDrawerButton');if(mainDrawerButton){if(page.getAttribute('data-menubutton')=='false'){mainDrawerButton.classList.add('hide');}else{mainDrawerButton.classList.remove('hide');}}
+if(isLibraryPage){document.body.classList.add('libraryDocument');document.body.classList.remove('dashboardDocument');document.body.classList.remove('hideMainDrawer');if(AppInfo.enableBottomTabs){page.classList.add('noSecondaryNavPage');document.querySelector('.footer').classList.add('footerOverBottomTabs');}else{$('.libraryViewNav',page).each(function(){initHeadRoom(this);});}}
 else if(page.classList.contains('type-interior')){document.body.classList.remove('libraryDocument');document.body.classList.add('dashboardDocument');document.body.classList.remove('hideMainDrawer');}else{document.body.classList.remove('libraryDocument');document.body.classList.remove('dashboardDocument');document.body.classList.add('hideMainDrawer');}
-if(darkDrawer){document.querySelector('.mainDrawerPanel #drawer').classList.add('darkDrawer');}else{document.querySelector('.mainDrawerPanel #drawer').classList.remove('darkDrawer');}
+if(!AppInfo.isNativeApp){darkDrawer=true;}
+var drawer=document.querySelector('.mainDrawerPanel #drawer');if(drawer){if(darkDrawer){drawer.classList.add('darkDrawer');}else{drawer.classList.remove('darkDrawer');}}
 updateBackButton(page);}
 function updateBackButton(page){var canGoBack=!page.classList.contains('homePage');var backButton=document.querySelector('.headerBackButton');var showBackButton=AppInfo.enableBackButton;if(!showBackButton){showBackButton=page.getAttribute('data-backbutton')=='true';}
-if(canGoBack&&showBackButton){backButton.classList.remove('hide');}else{backButton.classList.add('hide');}
+if(backButton){if(canGoBack&&showBackButton){backButton.classList.remove('hide');}else{backButton.classList.add('hide');}}
 if(canGoBack){}}
 function onPageSwipeLeft(e){var target=e.target;if(!target.classList.contains('hiddenScrollX')&&!$(target).parents('.hiddenScrollX').length){history.back();}}
 function onPageShowDocumentReady(page){if(!NavHelper.isBack()){var elems=page.querySelectorAll('.libraryViewNav .ui-btn-active');elems=$(elems).filter(':visible');if(elems.length){elems[0].scrollIntoView();window.scrollTo(0,0);}}}
@@ -2539,15 +2526,13 @@ profile.TranscodingProfiles.push({Container:'mp4',Type:'Video',AudioCodec:'aac',
 profile.ContainerProfiles=[];var audioConditions=[];var maxAudioChannels=$.browser.msie||$.browser.safari?'2':'6';audioConditions.push({Condition:'LessThanEqual',Property:'AudioChannels',Value:maxAudioChannels});profile.CodecProfiles=[];profile.CodecProfiles.push({Type:'Audio',Conditions:audioConditions});profile.CodecProfiles.push({Type:'VideoAudio',Codec:'mp3',Conditions:[{Condition:'LessThanEqual',Property:'AudioChannels',Value:maxAudioChannels}]});var isVlc=AppInfo.isNativeApp&&$.browser.android;if(!isVlc){profile.CodecProfiles.push({Type:'VideoAudio',Codec:'aac',Container:'mkv,mov',Conditions:[{Condition:'NotEquals',Property:'AudioProfile',Value:'HE-AAC'},{Condition:'NotEquals',Property:'AudioProfile',Value:'LC'}]});}
 profile.CodecProfiles.push({Type:'VideoAudio',Codec:'aac',Conditions:[{Condition:'LessThanEqual',Property:'AudioChannels',Value:maxAudioChannels}]});if(isVlc){profile.CodecProfiles.push({Type:'Video',Codec:'h264',Conditions:[{Condition:'EqualsAny',Property:'VideoProfile',Value:'high|main|baseline|constrained baseline'},{Condition:'LessThanEqual',Property:'VideoLevel',Value:'41'}]});}else{profile.CodecProfiles.push({Type:'Video',Codec:'h264',Conditions:[{Condition:'NotEquals',Property:'IsAnamorphic',Value:'true',IsRequired:false},{Condition:'EqualsAny',Property:'VideoProfile',Value:'high|main|baseline|constrained baseline'},{Condition:'LessThanEqual',Property:'VideoLevel',Value:'41'},{Condition:'LessThanEqual',Property:'Height',Value:maxHeight}]});}
 if(!isVlc){profile.CodecProfiles.push({Type:'Video',Codec:'vpx',Conditions:[{Condition:'NotEquals',Property:'IsAnamorphic',Value:'true',IsRequired:false},{Condition:'LessThanEqual',Property:'Height',Value:maxHeight}]});}
-profile.SubtitleProfiles=[];if(self.supportsTextTracks()){profile.SubtitleProfiles.push({Format:'vtt',Method:'External'});}
+profile.SubtitleProfiles=[];if(self.supportsTextTracks()){profile.SubtitleProfiles.push({Format:'vtt',Method:'External'});if(isVlc){profile.SubtitleProfiles.push({Format:'vtt',Method:'External'});}}
 profile.ResponseProfiles=[];profile.ResponseProfiles.push({Type:'Video',Container:'m4v',MimeType:'video/mp4'});profile.ResponseProfiles.push({Type:'Video',Container:'mov',MimeType:'video/webm'});return profile;};var supportsTextTracks;self.supportsTextTracks=function(){if(supportsTextTracks==null){supportsTextTracks=document.createElement('video').textTracks!=null;}
 return supportsTextTracks;};self.updateCanClientSeek=function(mediaRenderer){var duration=mediaRenderer.duration();canClientSeek=duration&&!isNaN(duration)&&duration!=Number.POSITIVE_INFINITY&&duration!=Number.NEGATIVE_INFINITY;};self.getCurrentSrc=function(mediaRenderer){return mediaRenderer.currentSrc();};self.getCurrentTicks=function(mediaRenderer){var playerTime=Math.floor(10000*(mediaRenderer||self.currentMediaRenderer).currentTime());playerTime+=self.startTimeTicksOffset;return playerTime;};self.playNextAfterEnded=function(){self.nextTrack();};self.startProgressInterval=function(){clearProgressInterval();var intervalTime=ApiClient.isWebSocketOpen()?1200:5000;if($.browser.safari){intervalTime=Math.max(intervalTime,5000);}
-self.lastProgressReport=0;currentProgressInterval=setInterval(function(){if(self.currentMediaRenderer){if((new Date().getTime()-self.lastProgressReport)>intervalTime){self.lastProgressReport=new Date().getTime();sendProgressUpdate();}}},250);};self.getCurrentMediaExtension=function(currentSrc){currentSrc=currentSrc.split('?')[0];return currentSrc.substring(currentSrc.lastIndexOf('.'));};self.canPlayNativeHls=function(){if($.browser.android&&AppInfo.isNativeApp){return true;}
+self.lastProgressReport=0;currentProgressInterval=setInterval(function(){if(self.currentMediaRenderer){if((new Date().getTime()-self.lastProgressReport)>intervalTime){self.lastProgressReport=new Date().getTime();sendProgressUpdate();}}},250);};self.getCurrentMediaExtension=function(currentSrc){currentSrc=currentSrc.split('?')[0];return currentSrc.substring(currentSrc.lastIndexOf('.'));};self.canPlayNativeHls=function(){if(AppInfo.isNativeApp){return true;}
 var media=document.createElement('video');if(media.canPlayType('application/x-mpegURL').replace(/no/,'')||media.canPlayType('application/vnd.apple.mpegURL').replace(/no/,'')){return true;}
 return false;};self.canPlayHls=function(){if(self.canPlayNativeHls()){return true;}
-if($.browser.chrome){return window.MediaSource!=null;}
-if($.browser.msie){return window.MediaSource!=null;}
-return false;};self.changeStream=function(ticks,params){var mediaRenderer=self.currentMediaRenderer;if(canClientSeek&&params==null){mediaRenderer.currentTime(ticks/10000);return;}
+return window.MediaSource!=null;};self.changeStream=function(ticks,params){var mediaRenderer=self.currentMediaRenderer;if(canClientSeek&&params==null){mediaRenderer.currentTime(ticks/10000);return;}
 params=params||{};var currentSrc=mediaRenderer.currentSrc();var playSessionId=getParameterByName('PlaySessionId',currentSrc);var liveStreamId=getParameterByName('LiveStreamId',currentSrc);if(params.AudioStreamIndex==null&&params.SubtitleStreamIndex==null&&params.Bitrate==null){currentSrc=replaceQueryString(currentSrc,'starttimeticks',ticks||0);changeStreamToUrl(mediaRenderer,playSessionId,currentSrc,ticks);return;}
 var deviceProfile=self.getDeviceProfile();var audioStreamIndex=params.AudioStreamIndex==null?(getParameterByName('AudioStreamIndex',currentSrc)||null):params.AudioStreamIndex;if(typeof(audioStreamIndex)=='string'){audioStreamIndex=parseInt(audioStreamIndex);}
 var subtitleStreamIndex=params.SubtitleStreamIndex==null?(getParameterByName('SubtitleStreamIndex',currentSrc)||null):params.SubtitleStreamIndex;if(typeof(subtitleStreamIndex)=='string'){subtitleStreamIndex=parseInt(subtitleStreamIndex);}
@@ -2825,7 +2810,7 @@ else if(hint.Type=="Episode"){return[Globalize.translate('LabelEpisode')];}
 else if(hint.Type=="Series"){return[Globalize.translate('LabelSeries')];}
 else if(hint.Type=="BoxSet"){return[Globalize.translate('LabelCollection')];}
 return[hint.Type];}
-function search(){var self=this;self.showSearchPanel=function(){showSearchMenu();$('.headerSearchInput').focus();};}
+function search(){var self=this;self.showSearchPanel=function(){showSearchMenu();};}
 window.Search=new search();function renderSearchResultsInOverlay(elem,hints){hints=hints.map(function(i){i.Id=i.ItemId;i.ImageTags={};i.UserData={};if(i.PrimaryImageTag){i.ImageTags.Primary=i.PrimaryImageTag;}
 return i;});var html=LibraryBrowser.getPosterViewHtml({items:hints,shape:"auto",lazy:true,overlayText:false,showTitle:true,coverImage:true,centerImage:true,textLines:getAdditionalTextLines});var itemsContainer=elem.querySelector('.itemsContainer');itemsContainer.innerHTML=html;ImageLoader.lazyChildren(itemsContainer);}
 function requestSearchHintsForOverlay(elem,searchTerm){var currentTimeout=searchHintTimeout;Dashboard.showLoadingMsg();ApiClient.getSearchHints({userId:Dashboard.getCurrentUserId(),searchTerm:searchTerm,limit:30}).done(function(result){if(currentTimeout==searchHintTimeout){renderSearchResultsInOverlay(elem,result.SearchHints);}
@@ -2835,12 +2820,11 @@ clearSearchHintTimeout();searchHintTimeout=setTimeout(function(){requestSearchHi
 function getSearchOverlay(createIfNeeded){var elem=document.querySelector('.searchResultsOverlay');if(createIfNeeded&&!elem){var html='<div class="searchResultsOverlay ui-page-theme-b smoothScrollY">';html+='<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';elem=$(html).appendTo(document.body).hide()[0];$(elem).createCardMenus();}
 return elem;}
 function onHeaderSearchChange(val){var elem;if(val){elem=getSearchOverlay(true);$(elem).show();elem.style.opacity='1';document.body.classList.add('bodyWithPopupOpen');updateSearchOverlay(elem,val);}else{elem=getSearchOverlay(false);if(elem){require(["jquery","velocity"],function($,Velocity){$(elem).velocity("fadeOut");document.body.classList.remove('bodyWithPopupOpen');});updateSearchOverlay(elem,'');}}}
-function bindSearchEvents(){$('.headerSearchInput').on("keyup",function(e){if(e.keyCode==40){return false;}else{onHeaderSearchChange(this.value);}}).on("search",function(e){if(!this.value){onHeaderSearchChange('');}});$('.btnCloseSearch').on('click',closeSearchOverlay);$('.viewMenuSearchForm').on('submit',function(){return false;});}
-function closeSearchOverlay(){$('.headerSearchInput').val('');onHeaderSearchChange('');hideSearchMenu();}
-function showSearchMenu(){require(["jquery","velocity"],function($,Velocity){$('.btnCloseSearch').hide();var elem=$('.viewMenuSearch').css({left:'100%'}).removeClass('hide')[0];Velocity.animate(elem,{"left":"0px"},{complete:function(){$('.headerSearchInput').focus();$('.btnCloseSearch').show();}});});}
-function hideSearchMenu(){var viewMenuSearch=document.querySelector('.viewMenuSearch');if(!viewMenuSearch){return;}
-if(!viewMenuSearch.classList.contains('hide')){require(["jquery","velocity"],function($,Velocity){$('.btnCloseSearch').hide();viewMenuSearch.style.left='0';Velocity.animate(viewMenuSearch,{"left":"100%"},{complete:function(){$('.viewMenuSearch').visible(false);}});});}}
-$(document).on('pagebeforehide',".libraryPage",function(){$('#txtSearch',this).val('');$('#searchHints',this).empty();}).on('pagecontainerbeforehide',closeSearchOverlay);$(document).on('headercreated',function(){bindSearchEvents();});})(jQuery,document,window,clearTimeout,setTimeout);(function(document){var currentOwnerId;var currentThemeIds=[];function playThemeSongs(items,ownerId){var player=getPlayer();if(items.length&&player.isDefaultPlayer&&player.canAutoPlayAudio()){if(!currentOwnerId&&player.isPlaying()){return;}
+function bindSearchEvents(){require(['searchmenu'],function(){Events.on(SearchMenu,'closed',closeSearchResults);Events.on(SearchMenu,'change',function(e,value){onHeaderSearchChange(value);});});}
+function closeSearchResults(){onHeaderSearchChange('');hideSearchMenu();}
+function showSearchMenu(){require(['searchmenu'],function(){SearchMenu.show();});}
+function hideSearchMenu(){require(['searchmenu'],function(){SearchMenu.hide();});}
+$(document).on('pagecontainerbeforehide',closeSearchResults);$(document).on('headercreated',function(){bindSearchEvents();});})(jQuery,document,window,clearTimeout,setTimeout);(function(document){var currentOwnerId;var currentThemeIds=[];function playThemeSongs(items,ownerId){var player=getPlayer();if(items.length&&player.isDefaultPlayer&&player.canAutoPlayAudio()){if(!currentOwnerId&&player.isPlaying()){return;}
 currentThemeIds=items.map(function(i){return i.Id;});currentOwnerId=ownerId;player.play({items:items});}else{currentOwnerId=null;}}
 function onPlayItem(item){if(currentThemeIds.indexOf(item.Id)==-1){currentOwnerId=null;}}
 function enabled(){var userId=Dashboard.getCurrentUserId();var val=appStorage.getItem('enableThemeSongs-'+userId);var localAutoPlayers=MediaController.getPlayers().filter(function(p){return p.isLocalPlayer&&p.canAutoPlayAudio();});return val=='1'||(val!='0'&&localAutoPlayers.length);}
