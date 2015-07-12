@@ -1,5 +1,6 @@
 ﻿(function(){var supportsTextTracks;var isViblastStarted;function htmlMediaRenderer(options){var mediaElement;var self=this;function onEnded(){$(self).trigger('ended');}
-function onTimeUpdate(){$(self).trigger('timeupdate');}
+function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=duration){MediaPlayer.nextTrack();return;}}}
+$(self).trigger('timeupdate');}
 function onVolumeChange(){$(self).trigger('volumechange');}
 function onOneAudioPlaying(){$('.mediaPlayerAudioContainer').hide();}
 function onPlaying(){$(self).trigger('playing');}
