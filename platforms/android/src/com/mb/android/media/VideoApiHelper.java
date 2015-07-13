@@ -123,7 +123,7 @@ public class VideoApiHelper {
         preferencesProvider.set("preferredVideoBitrate", String.valueOf(bitrate));
     }
 
-    private void changeStream(MediaSourceInfo currentMediaSource, final long positionTicks, Integer newAudioStreamIndex, Integer newSubtitleStreamIndex, Integer newMaxBitrate){
+    private void changeStream(MediaSourceInfo currentMediaSource, final long positionTicks, Integer newAudioStreamIndex, Integer newSubtitleStreamIndex, final Integer newMaxBitrate){
 
         final String playSessionId = playbackStartInfo.getPlaySessionId();
         String liveStreamId = playbackStartInfo.getLiveStreamId();
@@ -143,7 +143,7 @@ public class VideoApiHelper {
 
                     MediaSourceInfo newMediaSource = response.getMediaSources().get(0);
 
-                    setNewPlaybackInfo(itemId, newMediaSource, playSessionId, positionTicks);
+                    setNewPlaybackInfo(itemId, newMediaSource, playSessionId, response.getPlaySessionId(), positionTicks);
 
                     playbackStartInfo.setAudioStreamIndex(audioStreamIndex);
                 }
@@ -162,7 +162,7 @@ public class VideoApiHelper {
         return true;
     }
 
-    private void setNewPlaybackInfo(String itemId, MediaSourceInfo newMediaSource, String playSessionId, long positionTicks) {
+    private void setNewPlaybackInfo(String itemId, MediaSourceInfo newMediaSource, final String previousPlaySessionId, final String newPlaySessionId, long positionTicks) {
 
         String newMediaPath = null;
         PlayMethod playMethod = PlayMethod.Transcode;
@@ -182,7 +182,7 @@ public class VideoApiHelper {
         final PlayMethod method = playMethod;
 
         // First stop transcoding
-        apiClient.StopTranscodingProcesses(apiClient.getDeviceId(), playSessionId, new EmptyResponse(){
+        apiClient.StopTranscodingProcesses(apiClient.getDeviceId(), previousPlaySessionId, new EmptyResponse(){
 
             @Override
             public void onResponse(){
@@ -191,6 +191,7 @@ public class VideoApiHelper {
                 activity.changeLocation(path);
 
                 playbackStartInfo.setPlayMethod(method);
+                playbackStartInfo.setPlaySessionId(newPlaySessionId);
             }
         });
     }

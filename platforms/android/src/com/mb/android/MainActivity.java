@@ -166,8 +166,13 @@ public class MainActivity extends CordovaActivity
             boolean error = resultCode == RESULT_OK ? false : (intent == null ? true : intent.getBooleanExtra("error", false));
 
             long positionMs = intent == null || completed ? 0 : intent.getLongExtra("position", 0);
+            String currentSrc = intent == null ? null : intent.getStringExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION);
 
-            RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s);", !completed, error, positionMs));
+            if (currentSrc == null) {
+                currentSrc = "";
+            }
+
+            RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));
         }
     }
 

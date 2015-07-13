@@ -750,40 +750,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         changeAudioFocus(false);
 
         final boolean isPaused = !mLibVLC.isPlaying();
-        long time = getTime();
-        long length = mLibVLC.getLength();
-        //remove saved position if in the last 5 seconds
-        if (length - time < 5000)
-            time = 0;
-        else
-            time -= 5000; // go back 5 seconds, to compensate loading time
-        mLibVLC.stop();
 
-        SharedPreferences.Editor editor = mSettings.edit();
+        mLibVLC.stop();
 
         if(isPaused)
             logger.Debug("Video paused - saving flag");
 
-        // Save selected subtitles
-        String subtitleList_serialized = null;
-        if(mSubtitleSelectedFiles.size() > 0) {
-            logger.Debug("Saving selected subtitle files");
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            try {
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
-                oos.writeObject(mSubtitleSelectedFiles);
-                subtitleList_serialized = bos.toString();
-            } catch(IOException e) {}
-        }
-        editor.putString(PreferencesActivity.VIDEO_SUBTITLE_FILES, subtitleList_serialized);
-
-        editor.putString(PreferencesActivity.VIDEO_LAST, Uri.encode(mLocation));
-
-        // Save user playback speed and restore normal speed
-        editor.putFloat(PreferencesActivity.VIDEO_SPEED, mLibVLC.getRate());
         mLibVLC.setRate(1);
-
-        Util.commitPreferences(editor);
 
         // HW acceleration was temporarily disabled because of an error, restore the previous value.
         if (mDisabledHardwareAcceleration)
@@ -957,10 +930,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         {
             // Stop this now to prevent progress reports from going out after the stop report goes out
             apiHelper.enableProgressReporting = false;
-
+            
             Intent returnIntent = new Intent();
             returnIntent.putExtra("position",mLibVLC.getTime());
             returnIntent.putExtra("error",false);
+            returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,mLocation);
             setResult(RESULT_CANCELED,returnIntent);
             super.onBackPressed();
         }
@@ -1023,6 +997,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("error",false);
                 returnIntent.putExtra("position",mLibVLC.getTime());
+                returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,mLocation);
                 setResult(RESULT_CANCELED,returnIntent);
                 finish();
                 return true;
@@ -1626,6 +1601,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 case AUDIO_SERVICE_CONNECTION_FAILED:
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("error",true);
+                    returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,activity.mLocation);
                     activity.setResult(RESULT_CANCELED,returnIntent);
                     activity.finish();
                     break;
@@ -1672,6 +1648,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             /* Exit player when reaching the end */
             mEndReached = true;
             Intent returnIntent = new Intent();
+            returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,mLocation);
             setResult(RESULT_OK,returnIntent);
             finish();
         }
@@ -1687,6 +1664,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     public void onClick(DialogInterface dialog, int id) {
                         Intent returnIntent = new Intent();
                         returnIntent.putExtra("error",true);
+                        returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,mLocation);
                         setResult(RESULT_CANCELED,returnIntent);
                         finish();
                     }
@@ -1989,7 +1967,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             return;
         mTouchAction = TOUCH_SEEK;
 
-        long length = mLibVLC.getLength();
+        long length = getMediaLength();
         long time = getTime();
 
         // Size of the jump, 10 minutes max (600000), with a bi-cubic progression, for a 8cm gesture
@@ -2299,18 +2277,12 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     }
 
     private void seek(long position) {
-        seek(position, mLibVLC.getLength());
+        seek(position, getMediaLength());
     }
 
     private void seek(long position, float length) {
         mForcedTime = position;
         mLastTime = mLibVLC.getTime();
-
-        if (length == 0) {
-            if (currentMediaSource != null && currentMediaSource.getRunTimeTicks() != null){
-                length = (int)(currentMediaSource.getRunTimeTicks()/ 10000);
-            }
-        }
 
         if (length == 0f)
             mLibVLC.setTime(position);
@@ -2320,12 +2292,25 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
     private void seekDelta(int delta) {
         // unseekable stream
-        if(mLibVLC.getLength() <= 0 || !mCanSeek) return;
+        if(getMediaLength() <= 0 || !mCanSeek) return;
 
         long position = getTime() + delta;
         if (position < 0) position = 0;
         seek(position);
         showOverlay();
+    }
+
+    private long getMediaLength() {
+
+        long length = mLibVLC.getLength();
+
+        if (length == 0) {
+            if (currentMediaSource.getRunTimeTicks() != null){
+                length = (currentMediaSource.getRunTimeTicks()/ 10000);
+            }
+        }
+
+        return length;
     }
 
     /**
@@ -2608,12 +2593,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             return 0;
         }
         int time = (int) getTime();
-        int length = (int) mLibVLC.getLength();
-        if (length == 0) {
-            if (currentMediaSource.getRunTimeTicks() != null){
-                length = (int)(currentMediaSource.getRunTimeTicks()/ 10000);
-            }
-        }
+        int length = (int) getMediaLength();
 
         // Update all view elements
         mSeekbar.setMax(length);
@@ -3017,6 +2997,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mSubtitleTracksList = null;
         mQualityList = null;
 
+        mLibVLC.pause();
         mMediaListPlayer.playIndex(playlistIndex, false);
         mLocation = location;
     }
