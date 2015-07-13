@@ -93,7 +93,9 @@ import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -109,8 +111,14 @@ import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.dlna.DeviceProfile;
 import mediabrowser.model.dto.MediaSourceInfo;
+import mediabrowser.model.dto.NameValuePair;
+import mediabrowser.model.entities.MediaStream;
+import mediabrowser.model.entities.MediaStreamType;
+import mediabrowser.model.extensions.ListHelper;
+import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
+import mediabrowser.model.session.PlayMethod;
 import mediabrowser.model.session.PlaybackProgressInfo;
 
 public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlayer, GestureDetector.OnDoubleTapListener, IDelayController {
@@ -249,8 +257,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private float mRestoreAutoBrightness = -1f;
 
     // Tracks & Subtitles
-    private Map<Integer,String> mAudioTracksList;
-    private Map<Integer,String> mSubtitleTracksList;
+    private ArrayList<NameValuePair> mAudioTracksList;
+    private ArrayList<NameValuePair> mSubtitleTracksList;
+    private ArrayList<NameValuePair> mQualityList;
     /**
      * Used to store a selected subtitle; see onActivityResult.
      * It is possible to have multiple custom subs in one session
@@ -299,6 +308,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private boolean mHasHdmiAudio = false;
 
     private MediaSourceInfo currentMediaSource;
+    private String videoQualityOptionsJson;
     private ILogger logger;
     private IJsonSerializer jsonSerializer = new GsonJsonSerializer();
     private IAsyncHttpClient httpClient;
@@ -321,7 +331,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mLibVLC = VLCInstance.get(getApplication(), this, logger);
         mEventHandler = new VideoPlayerEventHandler(this, logger, mLibVLC);
         httpClient = getHttpClient();
-        apiHelper = new VideoApiHelper(logger, jsonSerializer);
+        apiHelper = new VideoApiHelper(this, logger, jsonSerializer);
 
         if (LibVlcUtil.isJellyBeanMR1OrLater()) {
             // Get the media router service (Miracast)
@@ -2124,6 +2134,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         popupMenu.getMenuInflater().inflate(R.menu.audiosub_tracks, popupMenu.getMenu());
         popupMenu.getMenu().findItem(R.id.video_menu_audio_track).setEnabled(mLibVLC.getAudioTracksCount() > 0);
         popupMenu.getMenu().findItem(R.id.video_menu_subtitles).setEnabled(mLibVLC.getSpuTracksCount() > 0);
+        popupMenu.getMenu().findItem(R.id.video_menu_quality).setEnabled(apiHelper.getPlaybackProgressInfo().getPlayMethod() != PlayMethod.DirectPlay);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -2132,6 +2143,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     return true;
                 } else if (item.getItemId() == R.id.video_menu_subtitles) {
                     selectSubtitles();
+                    return true;
+                }else if (item.getItemId() == R.id.video_menu_quality) {
+                    selectQuality();
                     return true;
                 }
 
@@ -2142,24 +2156,27 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     }
 
     private interface TrackSelectedListener {
-        public boolean onTrackSelected(int trackID);
+        public boolean onTrackSelected(String trackID);
     }
-    private void selectTrack(final Map<Integer,String> trackMap, int currentTrack, int titleId,
+    private void selectTrack(final ArrayList<NameValuePair> trackMap, String currentTrack, boolean checkCurrentTrackPrefix, int titleId,
                              final TrackSelectedListener listener) {
         if (listener == null)
             throw new IllegalArgumentException("listener must not be null");
         if (trackMap == null)
             return;
         final String[] nameList = new String[trackMap.size()];
-        final int[] idList = new int[trackMap.size()];
+        final String[] idList = new String[trackMap.size()];
         int i = 0;
         int listPosition = 0;
-        for(Map.Entry<Integer,String> entry : trackMap.entrySet()) {
-            idList[i] = entry.getKey();
-            nameList[i] = entry.getValue();
+        for(NameValuePair entry : trackMap) {
+            idList[i] = entry.getValue();
+            nameList[i] = entry.getName();
             // map the track position to the list position
-            if(entry.getKey() == currentTrack)
+            if(StringHelper.EqualsIgnoreCase(entry.getValue(), currentTrack))
                 listPosition = i;
+            else if (checkCurrentTrackPrefix && entry.getValue().indexOf(currentTrack+"-") == 0){
+                listPosition = i;
+            }
             i++;
         }
 
@@ -2168,11 +2185,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 .setSingleChoiceItems(nameList, listPosition, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int listPosition) {
-                        int trackID = -1;
+                        String trackID = null;
                         // Reverse map search...
-                        for (Map.Entry<Integer, String> entry : trackMap.entrySet()) {
-                            if (idList[listPosition] == entry.getKey()) {
-                                trackID = entry.getKey();
+                        for (NameValuePair entry : trackMap) {
+                            if (StringHelper.EqualsIgnoreCase(idList[listPosition], entry.getValue())) {
+                                trackID = entry.getValue();
                                 break;
                             }
                         }
@@ -2188,13 +2205,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
     private void selectAudioTrack() {
         setESTrackLists();
-        selectTrack(mAudioTracksList, mLibVLC.getAudioTrack(), R.string.track_audio,
+        selectTrack(mAudioTracksList, String.valueOf(mLibVLC.getAudioTrack()), false, R.string.track_audio,
                 new TrackSelectedListener() {
                     @Override
-                    public boolean onTrackSelected(int trackID) {
+                    public boolean onTrackSelected(String value) {
+                        if (value == null) return  false;
+                        int trackID = Integer.parseInt(value);
                         if (trackID < 0)
                             return false;
-                        apiHelper.setAudioStreamIndex(mLibVLC, trackID, mLocation, currentMediaSource);
+                        apiHelper.setAudioStreamIndex(mLibVLC, trackID, currentMediaSource);
                         return true;
                     }
                 });
@@ -2202,13 +2221,32 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
     private void selectSubtitles() {
         setESTrackLists();
-        selectTrack(mSubtitleTracksList, mLibVLC.getSpuTrack(), R.string.track_text,
+        selectTrack(mSubtitleTracksList, String.valueOf(mLibVLC.getSpuTrack()), false, R.string.track_text,
                 new TrackSelectedListener() {
                     @Override
-                    public boolean onTrackSelected(int trackID) {
+                    public boolean onTrackSelected(String value) {
+                        if (value == null) return  false;
+                        int trackID = Integer.parseInt(value);
                         if (trackID < -1)
                             return false;
                         mLibVLC.setSpuTrack(trackID);
+                        return true;
+                    }
+                });
+    }
+
+    private void selectQuality() {
+        setESTrackLists();
+
+        String currentValue = String.valueOf(apiHelper.getMaxBitrate());
+
+        selectTrack(mQualityList, currentValue, true, R.string.quality_text,
+                new TrackSelectedListener() {
+                    @Override
+                    public boolean onTrackSelected(String value) {
+                        if (value == null) return  false;
+                        String[] parts = value.split("-");
+                        apiHelper.setQuality(mLibVLC, Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), currentMediaSource);
                         return true;
                     }
                 });
@@ -2613,12 +2651,87 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     }
 
     private void setESTrackLists() {
-        if (mAudioTracksList == null && mLibVLC.getAudioTracksCount() > 0)
-            mAudioTracksList = mLibVLC.getAudioTrackDescription();
+
+        if (mAudioTracksList == null)
+        {
+            if (apiHelper.getPlaybackProgressInfo().getPlayMethod() == PlayMethod.Transcode) {
+
+                Map<Integer,String> audioTracks = new HashMap<Integer,String>();
+                for (MediaStream stream : currentMediaSource.getMediaStreams()){
+                    if (stream.getType() == MediaStreamType.Audio){
+
+                        audioTracks.put(stream.getIndex(), getAudioTrackName(stream));
+                    }
+                }
+
+                mAudioTracksList = GetNameValuePairs(audioTracks);
+            }
+            else if (mLibVLC.getAudioTracksCount() > 0) {
+                mAudioTracksList = GetNameValuePairs(mLibVLC.getAudioTrackDescription());
+            }
+        }
+
         if (mSubtitleTracksList == null && mLibVLC.getSpuTracksCount() > 0)
-            mSubtitleTracksList = mLibVLC.getSpuTrackDescription();
+            mSubtitleTracksList = GetNameValuePairs(mLibVLC.getSpuTrackDescription());
+
+        if (mQualityList == null)
+        {
+            mQualityList = getQualityOptions();
+        }
     }
 
+    private ArrayList<NameValuePair> GetNameValuePairs(Map<Integer,String> tracks) {
+
+        ArrayList<NameValuePair> list = new ArrayList<NameValuePair>();
+
+        for (Map.Entry<Integer,String> entry : tracks.entrySet()) {
+
+            list.add(new NameValuePair(entry.getValue(), String.valueOf(entry.getKey())));
+        }
+
+        return list;
+    }
+
+    private ArrayList<NameValuePair> getQualityOptions() {
+
+        NameValuePair[] result = jsonSerializer.DeserializeFromString(videoQualityOptionsJson, NameValuePair[].class);
+
+        ArrayList<NameValuePair> list = new ArrayList<NameValuePair>();
+
+        for (NameValuePair i : result){
+            list.add(i);
+        }
+
+        return list;
+    }
+
+    private String getAudioTrackName(MediaStream stream) {
+
+        ArrayList<String> attributes = new ArrayList<String>();
+
+        if (stream.getLanguage() != null){
+            attributes.add(stream.getLanguage());
+        }
+
+        if (stream.getCodec() != null) {
+            attributes.add(stream.getCodec());
+        }
+        if (stream.getProfile() != null) {
+            attributes.add(stream.getProfile());
+        }
+
+        if (stream.getChannels() != null) {
+            attributes.add(stream.getChannels() + " ch");
+        }
+
+        String name = tangible.DotNetToJavaStringHelper.join(" - ", attributes.toArray(new String[attributes.size()]));
+
+        if (stream.getIsDefault()) {
+            name += " (D)";
+        }
+
+        return name;
+    }
 
     /**
      *
@@ -2787,7 +2900,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             String apiUserId = getIntent().getExtras().getString("userId");
             String apiAccessToken = getIntent().getExtras().getString("accessToken");
             String apiServerUrl = getIntent().getExtras().getString("serverUrl");
+            String apiServerId = getIntent().getExtras().getString("serverId");
             String playbackStartInfoJson = getIntent().getExtras().getString("playbackStartInfoJson");
+            videoQualityOptionsJson = getIntent().getExtras().getString("videoQualityOptionsJson");
 
             PlaybackProgressInfo playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
 
@@ -2795,7 +2910,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             ApiClient apiClient = new AndroidApiClient(httpClient, jsonSerializer, logger, apiServerUrl, apiAppName, device, apiAppVersion, new ApiEventListener());
             apiClient.SetAuthenticationInfo(apiAccessToken, apiUserId);
 
-            apiHelper.setInitialInfo(apiClient, deviceProfile, playbackStartInfo);
+            apiHelper.setInitialInfo(apiServerId, false, apiClient, deviceProfile, playbackStartInfo);
 
             if (getIntent().hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
                 mSubtitleSelectedFiles.add(getIntent().getExtras().getString(PLAY_EXTRA_SUBTITLES_LOCATION));
@@ -2881,6 +2996,29 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         if (itemTitle != null)
             title = itemTitle;
         mTitle.setText(title);
+    }
+
+    public void changeLocation(String location) {
+
+        int playlistIndex = savedIndexPosition;
+        long currentTime = mLibVLC.getTime();
+
+        final Media media = new Media(mLibVLC, location);
+        media.parse(); // FIXME: parse should'nt be done asynchronously
+        media.release();
+
+        MediaWrapper mediaWrapper = new MediaWrapper(media);
+
+        mMediaListPlayer.getMediaList().setMedia(mediaWrapper, playlistIndex);
+
+        resumePositionMs = currentTime;
+
+        mAudioTracksList = null;
+        mSubtitleTracksList = null;
+        mQualityList = null;
+
+        mMediaListPlayer.playIndex(playlistIndex, false);
+        mLocation = location;
     }
 
     @SuppressWarnings("deprecation")

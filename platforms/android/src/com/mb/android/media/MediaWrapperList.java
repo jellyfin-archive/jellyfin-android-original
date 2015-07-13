@@ -140,6 +140,10 @@ public class MediaWrapperList {
         return mInternalList.get(position).getLocation();
     }
 
+    public void setMedia(MediaWrapper media, int position) {
+        mInternalList.set(position, media);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -6,6 +6,9 @@
     <item
         android:id="@+id/video_menu_subtitles"
         android:title="@string/subtitles" />
+    <item
+        android:id="@+id/video_menu_quality"
+        android:title="@string/quality" />
 <!--    <item
         android:id="@+id/video_menu_subtitles_picker"
         android:title="@string/subtitle_select" />-->

@@ -151,18 +151,36 @@
 
                 var serverUrl = ApiClient.serverAddress();
 
+                var videoStream = mediaSource.MediaStreams.filter(function (stream) {
+                    return stream.Type == "Video";
+                })[0];
+                var videoWidth = videoStream ? videoStream.Width : null;
+                var videoHeight = videoStream ? videoStream.Height : null;
+
+                var videoQualityOptions = MediaPlayer.getVideoQualityOptions(videoWidth, videoHeight).map(function(o) {
+                    return {
+                        Name: o.name,
+                        Value: o.bitrate + "-" + o.maxHeight
+                    };
+                });
+
+                var deviceProfile = MediaPlayer.getDeviceProfile();
+
                 AndroidVlcPlayer.playVideoVlc(val,
                     startPosMs,
                     item.Name,
                     JSON.stringify(mediaSource),
                     JSON.stringify(playbackStartInfo),
+                    ApiClient.serverInfo().Id,
                     serverUrl,
                     ApiClient.appName(),
                     ApiClient.appVersion(),
                     ApiClient.deviceId(),
                     ApiClient.deviceName(),
                     ApiClient.getCurrentUserId(),
-                    ApiClient.accessToken());
+                    ApiClient.accessToken(),
+                    JSON.stringify(deviceProfile),
+                    JSON.stringify(videoQualityOptions));
 
                 playerState.currentSrc = val;
                 self.report('playing', null, startPosMs, false, 100);

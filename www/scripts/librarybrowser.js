@@ -10,8 +10,11 @@ else if($.browser.ipad||$.browser.iphone||$.browser.android){cacheDuration=10000
 else{cacheDuration=60000;}
 if((now-last)<cacheDuration){Logger.log('Not refreshing data due to age');return false;}
 return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},configureSwipeTabs:function(ownerpage,tabs,pages){if(!$.browser.safari){pages.entryAnimation='slide-from-right-animation';pages.exitAnimation='slide-left-animation';}
-var pageCount=pages.querySelectorAll('neon-animatable').length;function allowSwipe(e){var target=e.target;if(target.classList.contains('noSwipe')){return false;}
-if($(target).parents('.noSwipe').length){return false;}
+var pageCount=pages.querySelectorAll('neon-animatable').length;function allowSwipeOn(elem){if(elem.tagName=='PAPER-SLIDER'){return false;}
+if(elem.classList){return!elem.classList.contains('hiddenScrollX')&&!elem.classList.contains('smoothScrollX');}
+return true;}
+function allowSwipe(e){var target=e.target;var parent=target.parentNode;while(parent!=null){if(!allowSwipeOn(parent)){return false;}
+parent=parent.parentNode;}
 return true;}
 $(ownerpage).on('swipeleft',function(e){if(allowSwipe(e)){var selected=parseInt(pages.selected||'0');if(selected<(pageCount-1)){pages.entryAnimation='slide-from-right-animation';pages.exitAnimation='slide-left-animation';tabs.selectNext();}}});$(ownerpage).on('swiperight',function(e){if(allowSwipe(e)){var selected=parseInt(pages.selected||'0');if(selected>0){pages.entryAnimation='slide-from-left-animation';pages.exitAnimation='slide-right-animation';tabs.selectPrevious();}}});},enableFullPaperTabs:function(){return AppInfo.isNativeApp;},navigateOnLibraryTabSelect:function(){return!LibraryBrowser.enableFullPaperTabs();},configurePaperLibraryTabs:function(ownerpage,tabs,pages){tabs.hideScrollButtons=true;if(AppInfo.enableBottomTabs){tabs.alignBottom=true;tabs.classList.add('bottomTabs');}
 tabs.noink=true;if(LibraryBrowser.enableFullPaperTabs()){$(tabs).show();if($.browser.safari){tabs.noSlide=true;tabs.noink=true;tabs.noBar=true;}

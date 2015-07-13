@@ -1,5 +1,9 @@
 package com.mb.android.media;
 
+import android.content.Context;
+
+import com.mb.android.preferences.PreferencesProvider;
+
 import org.videolan.libvlc.LibVLC;
 
 import java.util.ArrayList;
@@ -8,16 +12,20 @@ import java.util.HashMap;
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.Response;
+import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
 import mediabrowser.apiinteraction.playback.PlaybackManager;
+import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.model.dlna.DeviceProfile;
 import mediabrowser.model.dlna.StreamInfo;
 import mediabrowser.model.dlna.VideoOptions;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
+import mediabrowser.model.mediainfo.PlaybackInfoRequest;
 import mediabrowser.model.mediainfo.PlaybackInfoResponse;
 import mediabrowser.model.serialization.IJsonSerializer;
 import mediabrowser.model.session.PlayMethod;
 import mediabrowser.model.session.PlaybackProgressInfo;
+import mediabrowser.model.sync.LocalItem;
 
 /**
  * Created by Luke on 7/10/2015.
@@ -31,12 +39,20 @@ public class VideoApiHelper {
     private ApiClient apiClient;
     private String serverId;
     private boolean isOffline;
+    private Integer originalMaxBitrate;
+
+    private ILocalAssetManager localAssetManager;
+    private PreferencesProvider preferencesProvider;
 
     public boolean enableProgressReporting;
+    private VideoPlayerActivity activity;
 
-    public VideoApiHelper(ILogger logger, IJsonSerializer jsonSerializer) {
+    public VideoApiHelper(VideoPlayerActivity context, ILogger logger, IJsonSerializer jsonSerializer) {
         this.logger = logger;
         this.jsonSerializer = jsonSerializer;
+        this.activity = context;
+        localAssetManager = new AndroidAssetManager(context, logger, jsonSerializer);
+        preferencesProvider = new PreferencesProvider(context, logger);
     }
 
     public void ReportPlaybackProgress(Long duration, Long time, int volume, boolean isPaused) {
@@ -54,6 +70,14 @@ public class VideoApiHelper {
         apiClient.ReportPlaybackProgressAsync(info, new EmptyResponse());
     }
 
+    public int getMaxBitrate() {
+        return originalMaxBitrate;
+    }
+
+    public PlaybackProgressInfo getPlaybackProgressInfo() {
+        return playbackStartInfo;
+    }
+
     public void setInitialInfo(String serverId, boolean isOffline, ApiClient apiClient, DeviceProfile deviceProfile, PlaybackProgressInfo playbackStartInfo )
     {
         this.apiClient = apiClient;
@@ -61,9 +85,14 @@ public class VideoApiHelper {
         this.deviceProfile = deviceProfile;
         this.serverId = serverId;
         this.isOffline = isOffline;
+        originalMaxBitrate = deviceProfile.getMaxStreamingBitrate();
     }
 
     public void setAudioStreamIndex(LibVLC vlc, int index, MediaSourceInfo currentMediaSource){
+
+        if (playbackStartInfo.getAudioStreamIndex() != null && index == playbackStartInfo.getAudioStreamIndex()) {
+            return;
+        }
 
         if (playbackStartInfo.getPlayMethod() == PlayMethod.Transcode){
 
@@ -74,6 +103,7 @@ public class VideoApiHelper {
         }
         else{
             vlc.setAudioTrack(index);
+
             playbackStartInfo.setAudioStreamIndex(index);
         }
     }
@@ -82,32 +112,74 @@ public class VideoApiHelper {
 
     }
 
-    private void changeStream(MediaSourceInfo currentMediaSource, final long positionTicks, Integer newAudioStreamIndex, Integer newSubtitleStreamIndex, Long newMaxBitrate){
+    public void setQuality(LibVLC vlc, int bitrate, int maxHeight, MediaSourceInfo currentMediaSource) {
+
+        long positionTicks = vlc.getTime() * 10000;
+
+        logger.Info("Changing quality to %s", bitrate);
+        changeStream(currentMediaSource, positionTicks, null, null, bitrate);
+
+        originalMaxBitrate = bitrate;
+        preferencesProvider.set("preferredVideoBitrate", String.valueOf(bitrate));
+    }
+
+    private void changeStream(MediaSourceInfo currentMediaSource, final long positionTicks, Integer newAudioStreamIndex, Integer newSubtitleStreamIndex, Integer newMaxBitrate){
 
         final String playSessionId = playbackStartInfo.getPlaySessionId();
         String liveStreamId = playbackStartInfo.getLiveStreamId();
 
-        Integer audioStreamIndex = playbackStartInfo.getAudioStreamIndex();
-        final Integer subtitleStreamIndex = playbackStartInfo.getSubtitleStreamIndex();
+        final Integer audioStreamIndex = newAudioStreamIndex != null ? newAudioStreamIndex : playbackStartInfo.getAudioStreamIndex();
+        final Integer subtitleStreamIndex = newSubtitleStreamIndex != null ? newSubtitleStreamIndex : playbackStartInfo.getSubtitleStreamIndex();
 
-        String itemId = playbackStartInfo.getItemId();
+        final Integer maxBitrate = newMaxBitrate != null ? newMaxBitrate : originalMaxBitrate;
+        final String itemId = playbackStartInfo.getItemId();
 
-        getPlaybackInfo(itemId, positionTicks, currentMediaSource, audioStreamIndex, subtitleStreamIndex, liveStreamId, new Response<PlaybackInfoResponse>() {
+        getPlaybackInfo(itemId, positionTicks, currentMediaSource, audioStreamIndex, subtitleStreamIndex, maxBitrate, liveStreamId, new Response<PlaybackInfoResponse>() {
 
             @Override
             public void onResponse(PlaybackInfoResponse response) {
 
-                MediaSourceInfo newMediaSource = response.getMediaSources().get(0);
+                if (validatePlaybackInfoResult(response)) {
 
-                // TODO: Is this falsely assuming the new playback method is transcoding?
-                String newMediaPath = apiClient.GetApiUrl(newMediaSource.getTranscodingUrl());
+                    MediaSourceInfo newMediaSource = response.getMediaSources().get(0);
 
-                setNewPlaybackInfo(newMediaSource, newMediaPath, playSessionId, positionTicks);
+                    setNewPlaybackInfo(itemId, newMediaSource, playSessionId, positionTicks);
+
+                    playbackStartInfo.setAudioStreamIndex(audioStreamIndex);
+                }
             }
         });
     }
 
-    private void setNewPlaybackInfo(MediaSourceInfo newMediaSource, String newMediaPath, String playSessionId, long positionTicks) {
+    private boolean validatePlaybackInfoResult(PlaybackInfoResponse result) {
+
+        // TODO
+        if (result.getErrorCode() != null) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private void setNewPlaybackInfo(String itemId, MediaSourceInfo newMediaSource, String playSessionId, long positionTicks) {
+
+        String newMediaPath = null;
+        PlayMethod playMethod = PlayMethod.Transcode;
+
+        // TODO: Direct play ??
+
+        if (newMediaPath == null && newMediaSource.getSupportsDirectStream()){
+            newMediaPath =  apiClient.GetApiUrl("Videos/" + itemId + "/stream." + newMediaSource.getContainer() + "?Static=true&api_key="+apiClient.getAccessToken()+"&MediaSourceId=" + newMediaSource.getId());
+            playMethod = PlayMethod.DirectStream;
+        }
+
+        if (newMediaPath == null){
+            newMediaPath = apiClient.GetApiUrl(newMediaSource.getTranscodingUrl());
+        }
+
+        final String path = newMediaPath;
+        final PlayMethod method = playMethod;
 
         // First stop transcoding
         apiClient.StopTranscodingProcesses(apiClient.getDeviceId(), playSessionId, new EmptyResponse(){
@@ -116,53 +188,69 @@ public class VideoApiHelper {
             public void onResponse(){
 
                 // Tell VideoPlayerActivity to changeStream
+                activity.changeLocation(path);
 
-                // self.updateTextStreamUrls(newPositionTicks || 0);
+                playbackStartInfo.setPlayMethod(method);
             }
         });
     }
 
-    private void getPlaybackInfo(String itemId, long startPosition, MediaSourceInfo mediaSource, Integer audioStreamIndex, Integer subtitleStreamIndex, String liveStreamId, Response<PlaybackInfoResponse> response) {
+    private void getPlaybackInfo(String itemId, long startPosition, MediaSourceInfo mediaSource, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxBitrate, String liveStreamId, Response<PlaybackInfoResponse> response) {
 
-/*        var serverInfo = ApiClient.serverInfo();
+        MediaSourceInfo localMediaSource = getLocalMediaSource(serverId, itemId);
 
-        if (serverInfo.Id) {
-            var localMediaSource = window.LocalAssetManager.getLocalMediaSource(serverInfo.Id, itemId);
+        // Use the local media source if a specific one wasn't requested, or the same one was requested
+        if (localMediaSource != null && (mediaSource == null || mediaSource.getId() == localMediaSource.getId())) {
 
-            // Use the local media source if a specific one wasn't requested, or the smae one was requested
-            if (localMediaSource && (!mediaSource || mediaSource.Id == localMediaSource.Id)) {
+            localMediaSource.setSupportsDirectPlay(true);
 
-                var playbackInfo = getPlaybackInfoFromLocalMediaSource(itemId, deviceProfile, startPosition, localMediaSource);
+            PlaybackInfoResponse playbackInfoResponse = new PlaybackInfoResponse();
+            ArrayList<MediaSourceInfo> mediaSourceInfos = new ArrayList<MediaSourceInfo>();
+            mediaSourceInfos.add(localMediaSource);
+            playbackInfoResponse.setPlaySessionId(playbackStartInfo.getPlaySessionId());
+            playbackInfoResponse.setMediaSources(mediaSourceInfos);
+            response.onResponse(playbackInfoResponse);
+            return;
+        }
 
-                deferred.resolveWith(null, [playbackInfo]);
-                return;
-            }
-        }*/
-
-        PostClass postData = new PostClass();
-
-        postData.DeviceProfile = deviceProfile;
-        postData.UserId = apiClient.getCurrentUserId();
-        postData.StartTimeTicks = startPosition;
-        postData.AudioStreamIndex = audioStreamIndex;
-        postData.SubtitleStreamIndex = subtitleStreamIndex;
-        postData.MediaSourceId = mediaSource.getId();
-        postData.LiveStreamId = playbackStartInfo.getLiveStreamId();
+        getPlaybackInfoInternal(itemId, startPosition, mediaSource, audioStreamIndex, subtitleStreamIndex, maxBitrate, liveStreamId, response);
     }
 
-    private class PostClass{
-        public DeviceProfile DeviceProfile;
+    private void getPlaybackInfoInternal(String itemId, long startPosition, MediaSourceInfo mediaSource, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxBitrate, String liveStreamId, Response<PlaybackInfoResponse> response) {
 
-        public String UserId;
+        PlaybackInfoRequest request = new PlaybackInfoRequest();
 
-        public long StartTimeTicks;
+        request.setDeviceProfile(deviceProfile);
+        request.setUserId(apiClient.getCurrentUserId());
+        request.setStartTimeTicks(startPosition);
+        request.setAudioStreamIndex(audioStreamIndex);
+        request.setSubtitleStreamIndex(subtitleStreamIndex);
+        request.setMediaSourceId(mediaSource.getId());
+        request.setLiveStreamId(liveStreamId);
+        request.setId(itemId);
 
-        public Integer AudioStreamIndex;
+        // If null, that's ok, the value in the profile will be used
+        request.setMaxStreamingBitrate(maxBitrate);
 
-        public Integer SubtitleStreamIndex;
+        apiClient.GetPlaybackInfoWithPost(request, response);
+    }
 
-        public String MediaSourceId;
+    private MediaSourceInfo getLocalMediaSource(String serverId, String itemId) {
 
-        public String LiveStreamId;
+        LocalItem item = localAssetManager.getLocalItem(serverId, itemId);
+
+        if (item != null && item.getItem().getMediaSources().size() > 0) {
+
+            MediaSourceInfo mediaSourceInfo = item.getItem().getMediaSources().get(0);
+
+            boolean fileExists = localAssetManager.fileExists(mediaSourceInfo.getPath());
+
+            if (fileExists) {
+                return mediaSourceInfo;
+            }
+
+        }
+
+        return null;
     }
 }

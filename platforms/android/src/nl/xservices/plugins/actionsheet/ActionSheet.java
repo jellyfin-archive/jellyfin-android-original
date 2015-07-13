@@ -34,7 +34,7 @@ public class ActionSheet extends CordovaPlugin {
       JSONObject options = args.optJSONObject(0);
 
       String title = options.optString("title");
-      int theme = options.optInt("androidTheme", 1);
+      int theme = options.optInt("androidTheme", 5);
       JSONArray buttons = options.optJSONArray("buttonLabels");
 
       boolean androidEnableCancelButton = options.optBoolean("androidEnableCancelButton", false);
@@ -148,6 +148,8 @@ public class ActionSheet extends CordovaPlugin {
         });
 
         dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setOwnerActivity(cordova.getActivity());
         dialog.show();
       }
     };
