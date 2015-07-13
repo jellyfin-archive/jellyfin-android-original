@@ -157,7 +157,7 @@
                 var videoWidth = videoStream ? videoStream.Width : null;
                 var videoHeight = videoStream ? videoStream.Height : null;
 
-                var videoQualityOptions = MediaPlayer.getVideoQualityOptions(videoWidth, videoHeight).map(function(o) {
+                var videoQualityOptions = MediaPlayer.getVideoQualityOptions(videoWidth, videoHeight).map(function (o) {
                     return {
                         Name: o.name,
                         Value: o.bitrate + "-" + o.maxHeight
@@ -254,9 +254,13 @@
             return deferred.promise();
         };
 
-        self.onActivityClosed = function (wasStopped, hasError, endPositionMs) {
+        self.onActivityClosed = function (wasStopped, hasError, endPositionMs, currentSrc) {
 
             playerState.currentTime = endPositionMs;
+
+            if (currentSrc) {
+                playerState.currentSrc = currentSrc;
+            }
 
             if (wasStopped) {
                 MediaPlayer.stop(false);
