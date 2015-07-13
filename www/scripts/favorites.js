@@ -1,6 +1,6 @@
 ﻿(function($,document){function enableScrollX(){return $.browser.mobile&&AppInfo.enableAppLayouts;}
 function getThumbShape(){return enableScrollX()?'overflowBackdrop':'backdrop';}
-function getPosterShape(){return enableScrollX()?'overflowportrait':'portrait';}
+function getPosterShape(){return enableScrollX()?'overflowPortrait':'portrait';}
 function getSquareShape(){return enableScrollX()?'overflowSquare':'square';}
 function getSections(){return[{name:'HeaderFavoriteMovies',types:"Movie",id:"favoriteMovies",shape:getPosterShape(),showTitle:false},{name:'HeaderFavoriteShows',types:"Series",id:"favoriteShows",shape:getPosterShape(),showTitle:false},{name:'HeaderFavoriteEpisodes',types:"Episode",id:"favoriteEpisode",shape:getThumbShape(),preferThumb:false,showTitle:true,showParentTitle:true},{name:'HeaderFavoriteGames',types:"Game",id:"favoriteGames",shape:getSquareShape(),preferThumb:false,showTitle:true},{name:'HeaderFavoriteAlbums',types:"MusicAlbum",id:"favoriteAlbums",shape:getSquareShape(),preferThumb:false,showTitle:true,overlayText:false,showParentTitle:true,centerText:true,overlayPlayButton:true}];}
 function loadSection(elem,userId,section,isSingleSection){var screenWidth=$(window).width();var options={SortBy:"SortName",SortOrder:"Ascending",IncludeItemTypes:section.types,Filters:"IsFavorite",Limit:screenWidth>=1920?10:(screenWidth>=1440?8:6),Recursive:true,Fields:"PrimaryImageAspectRatio,SyncInfo",CollapseBoxSetItems:false,ExcludeLocationTypes:"Virtual"};if(isSingleSection){options.Limit=null;}

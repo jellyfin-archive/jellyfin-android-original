@@ -151,18 +151,22 @@
 
                 var serverUrl = ApiClient.serverAddress();
 
+                var deviceProfile = MediaPlayer.getDeviceProfile();
+
                 AndroidVlcPlayer.playVideoVlc(val,
                     startPosMs,
                     item.Name,
                     JSON.stringify(mediaSource),
                     JSON.stringify(playbackStartInfo),
+                    ApiClient.serverInfo().Id,
                     serverUrl,
                     ApiClient.appName(),
                     ApiClient.appVersion(),
                     ApiClient.deviceId(),
                     ApiClient.deviceName(),
                     ApiClient.getCurrentUserId(),
-                    ApiClient.accessToken());
+                    ApiClient.accessToken(),
+                    JSON.stringify(deviceProfile));
 
                 playerState.currentSrc = val;
                 self.report('playing', null, startPosMs, false, 100);
