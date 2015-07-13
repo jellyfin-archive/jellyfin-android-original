@@ -25,6 +25,7 @@
     <string name="brightness">Brightness</string>
     <string name="track_audio">Audio track</string>
     <string name="track_text">Subtitles track</string>
+    <string name="quality_text">Select quality</string>
     <string name="surface_best_fit">Best fit</string>
     <string name="surface_fit_horizontal">Fit horizontal</string>
     <string name="surface_fit_vertical">Fit vertical</string>
@@ -35,6 +36,7 @@
     <string name="please_wait">Please wait…</string>
     <string name="sound_on">Sound On</string>
     <string name="sound_off">Sound Off</string>
+    <string name="quality">Quality</string>
     <string name="confirm_resume">Resume from last position?</string>
     <string name="resume_from_position">Resume from last position</string>
     <string name="play_from_start">Play from start</string>

@@ -291,6 +291,7 @@ public class MainActivity extends CordovaActivity
                              String itemName,
                              String mediaSourceJson,
                              String playbackStartInfoJson,
+                             String serverId,
                              String serverUrl,
                              String appName,
                              String appVersion,
@@ -298,7 +299,8 @@ public class MainActivity extends CordovaActivity
                              String deviceName,
                              String userId,
                              String accessToken,
-                             String deviceProfileJson) {
+                             String deviceProfileJson,
+                             String videoQualityOptionsJson) {
 
         getLogger().Debug("Video path: %s", path);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
@@ -308,6 +310,7 @@ public class MainActivity extends CordovaActivity
         //intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_OPENED_POSITION, 0);
         intent.putExtra("mediaSourceJson", mediaSourceJson);
         intent.putExtra("playbackStartInfoJson", playbackStartInfoJson);
+        intent.putExtra("serverId", serverId);
         intent.putExtra("serverUrl", serverUrl);
         intent.putExtra("appName", appName);
         intent.putExtra("appVersion", appVersion);
@@ -316,6 +319,7 @@ public class MainActivity extends CordovaActivity
         intent.putExtra("userId", userId);
         intent.putExtra("accessToken", accessToken);
         intent.putExtra("deviceProfileJson", deviceProfileJson);
+        intent.putExtra("videoQualityOptionsJson", videoQualityOptionsJson);
 
         if (startPositionMs > 0){
             intent.putExtra("position", startPositionMs);
