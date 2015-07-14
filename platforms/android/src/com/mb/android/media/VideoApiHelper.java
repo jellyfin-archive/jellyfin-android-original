@@ -1,13 +1,22 @@
 package com.mb.android.media;
 
 import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
 
+import com.google.common.io.Files;
 import com.mb.android.preferences.PreferencesProvider;
 
 import org.videolan.libvlc.LibVLC;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.EmptyResponse;
@@ -17,8 +26,11 @@ import mediabrowser.apiinteraction.playback.PlaybackManager;
 import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.model.dlna.DeviceProfile;
 import mediabrowser.model.dlna.StreamInfo;
+import mediabrowser.model.dlna.SubtitleDeliveryMethod;
 import mediabrowser.model.dlna.VideoOptions;
 import mediabrowser.model.dto.MediaSourceInfo;
+import mediabrowser.model.entities.MediaStream;
+import mediabrowser.model.entities.MediaStreamType;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.mediainfo.PlaybackInfoRequest;
 import mediabrowser.model.mediainfo.PlaybackInfoResponse;
@@ -46,6 +58,7 @@ public class VideoApiHelper {
 
     public boolean enableProgressReporting;
     private VideoPlayerActivity activity;
+    private MediaSourceInfo currentMediaSource;
 
     public VideoApiHelper(VideoPlayerActivity context, ILogger logger, IJsonSerializer jsonSerializer) {
         this.logger = logger;
@@ -78,17 +91,22 @@ public class VideoApiHelper {
         return playbackStartInfo;
     }
 
-    public void setInitialInfo(String serverId, boolean isOffline, ApiClient apiClient, DeviceProfile deviceProfile, PlaybackProgressInfo playbackStartInfo )
+    public MediaSourceInfo getMediaSource() {
+        return currentMediaSource;
+    }
+
+    public void setInitialInfo(String serverId, boolean isOffline, ApiClient apiClient, DeviceProfile deviceProfile, PlaybackProgressInfo playbackStartInfo, MediaSourceInfo mediaSourceInfo)
     {
         this.apiClient = apiClient;
         this.playbackStartInfo = playbackStartInfo;
         this.deviceProfile = deviceProfile;
         this.serverId = serverId;
         this.isOffline = isOffline;
+        currentMediaSource = mediaSourceInfo;
         originalMaxBitrate = deviceProfile.getMaxStreamingBitrate();
     }
 
-    public void setAudioStreamIndex(LibVLC vlc, int index, MediaSourceInfo currentMediaSource){
+    public void setAudioStreamIndex(LibVLC vlc, int index){
 
         if (playbackStartInfo.getAudioStreamIndex() != null && index == playbackStartInfo.getAudioStreamIndex()) {
             return;
@@ -108,11 +126,170 @@ public class VideoApiHelper {
         }
     }
 
-    public void setSubtitleStreamIndex(int index){
+    public void setSubtitleStreamIndex(LibVLC vlc, int index){
+
+        if (index == -1){
+            vlc.setSpuTrack(index);
+            playbackStartInfo.setSubtitleStreamIndex(index);
+            return;
+        }
+
+        MediaStream stream = null;
+        for (MediaStream current : currentMediaSource.getMediaStreams()){
+            if (current.getType() == MediaStreamType.Subtitle && current.getIndex() == index){
+
+                stream = current;
+                break;
+            }
+        }
+
+        if (stream == null) {
+            return;
+        }
+
+        if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.Embed) {
+            enableEmbeddedSubtitleTrack(vlc, stream);
+        }
+        else if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.External) {
+            enableExternalSubtitleTrack(vlc, stream);
+        }
+    }
+
+    private void enableEmbeddedSubtitleTrack(LibVLC vlc, MediaStream stream) {
+
+        // This could be tracky. We have to map the Emby server index to the vlc trackID
+        // Let's assume they're at least in the same order
+
+        vlc.setSpuTrack(stream.getIndex());
+        playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+    }
+
+    private void enableExternalSubtitleTrack(final LibVLC vlc, final MediaStream stream) {
+
+        final File file = new File(getSubtitleDownloadPath(stream));
+
+        if (file.exists()){
+            Map<Integer,String> oldMap = vlc.getSpuTrackDescription();
+            vlc.addSubtitleTrack(file.getPath());
+            activateNewIndex(vlc, oldMap, vlc.getSpuTrackDescription());
+            playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+            return;
+        }
+
+        downloadSubtitles(stream, file, new Response<File>(){
+
+            @Override
+            public void onResponse(File newFile) {
+
+                if (newFile.exists()){
+                    Map<Integer,String> oldMap = vlc.getSpuTrackDescription();
+
+                    logger.Debug("Adding subtitle track to vlc %s", Uri.fromFile(newFile).getPath());
+                    int id = vlc.addSubtitleTrack(Uri.fromFile(newFile).getPath());
+                    //activateNewIndex(vlc, oldMap, vlc.getSpuTrackDescription());
+                    logger.Debug("New subtitle track list: %s", jsonSerializer.SerializeToString(vlc.getSpuTrackDescription()));
+                    logger.Debug("Setting new subtitle track id: %s", id);
+                    //vlc.setSpuTrack(id);
+                    //playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+                }
+                else{
+                    logger.Error("Subtitles were downloaded but file doens't exist!");
+                }
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                logger.ErrorException("Error downloading subtitles", ex);
+            }
+
+        });
+    }
+
+    private void activateNewIndex(LibVLC vlc, Map<Integer,String> oldMap, Map<Integer,String> newMap) {
+
+        logger.Debug("Activating downloaded subtitle track");
+
+        for (Map.Entry<Integer,String> entry : newMap.entrySet()) {
+
+            if (!oldMap.containsKey(entry.getKey())) {
+                logger.Debug("Setting spuTrack to %s", entry.getKey());
+                vlc.setSpuTrack(entry.getKey());
+                return;
+            }
+        }
+    }
+
+    private void downloadSubtitles(final MediaStream stream, final File file, final Response<File> response) {
+
+        String url = !stream.getIsExternalUrl() ? apiClient.GetApiUrl(stream.getDeliveryUrl()) : stream.getDeliveryUrl();
+
+        apiClient.getResponseStream(url, new Response<InputStream>(response){
+
+            @Override
+            public void onResponse(InputStream initialStream) {
+
+                try {
+                    Files.createParentDirs(file);
+
+                    OutputStream outStream = new FileOutputStream(file);
+
+                    try {
+                        byte[] buffer = new byte[8 * 1024];
+                        int bytesRead;
+                        while ((bytesRead = initialStream.read(buffer)) != -1) {
+                            outStream.write(buffer, 0, bytesRead);
+                        }
+
+                        response.onResponse(file);
+                    }
+                    finally {
+                        outStream.close();
+                    }
+                }
+                catch (Exception ex){
+                    response.onError(ex);
+                }
+            }
+        });
 
     }
 
-    public void setQuality(LibVLC vlc, int bitrate, int maxHeight, MediaSourceInfo currentMediaSource) {
+    private String getSubtitleDownloadPath(MediaStream stream) {
+
+        String filename = UUID.randomUUID().toString();
+
+        if (stream.getCodec() != null){
+            filename += "." + stream.getCodec().toLowerCase();
+        }
+
+        boolean mExternalStorageAvailable = false;
+        boolean mExternalStorageWriteable = false;
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // We can read and write the media
+            mExternalStorageAvailable = mExternalStorageWriteable = true;
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            // We can only read the media
+            mExternalStorageAvailable = true;
+            mExternalStorageWriteable = false;
+        } else {
+            // Something else is wrong. It may be one of many other states, but all we need
+            //  to know is we can neither read nor write
+            mExternalStorageAvailable = mExternalStorageWriteable = false;
+        }
+
+        if (mExternalStorageAvailable && mExternalStorageWriteable){
+            File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "emby");
+            directory = new File(directory, "subtitles");
+            return new File(directory, filename).getPath();
+        }
+        else{
+            return activity.getFileStreamPath(filename).getAbsolutePath();
+        }
+    }
+
+    public void setQuality(LibVLC vlc, int bitrate, int maxHeight) {
 
         long positionTicks = vlc.getTime() * 10000;
 
@@ -162,7 +339,7 @@ public class VideoApiHelper {
         return true;
     }
 
-    private void setNewPlaybackInfo(String itemId, MediaSourceInfo newMediaSource, final String previousPlaySessionId, final String newPlaySessionId, long positionTicks) {
+    private void setNewPlaybackInfo(String itemId, final MediaSourceInfo newMediaSource, final String previousPlaySessionId, final String newPlaySessionId, long positionTicks) {
 
         String newMediaPath = null;
         PlayMethod playMethod = PlayMethod.Transcode;
@@ -190,6 +367,7 @@ public class VideoApiHelper {
                 // Tell VideoPlayerActivity to changeStream
                 activity.changeLocation(path);
 
+                currentMediaSource = newMediaSource;
                 playbackStartInfo.setPlayMethod(method);
                 playbackStartInfo.setPlaySessionId(newPlaySessionId);
             }
