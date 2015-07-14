@@ -12,4 +12,4 @@ reloadItems(page);});$('#chkHD',this).on('change',function(){query.StartIndex=0;
 var viewkey=getSavedQueryKey();LibraryBrowser.loadSavedQueryValues(viewkey,query);var filters=getParameterByName('filters');if(filters){query.Filters=filters;}
 var sortby=getParameterByName('sortby');if(sortby){query.SortBy=sortby;}
 var sortorder=getParameterByName('sortorder');if(sortorder){query.SortOrder=sortorder;}
-LibraryBrowser.getSavedViewSetting(viewkey).done(function(val){if(val){Events.trigger($('#selectView',page).val(val).selectmenu('refresh')[0],'change');}else{reloadItems(page);}});updateFilterControls(this);});})(jQuery,document);
+LibraryBrowser.getSavedViewSetting(viewkey).done(function(val){if(val){Events.trigger($('#selectView',page).val(val).selectmenu('refresh')[0],'change');}else{reloadItems(page);}});updateFilterControls(this);Dashboard.getCurrentUser().done(function(user){if(user.Policy.IsAdministrator){$('.btnMergeVersions',page).show();}else{$('.btnMergeVersions',page).hide();}});});})(jQuery,document);
