@@ -1,5 +1,5 @@
 ﻿(function(){var supportsTextTracks;var isViblastStarted;var requiresSettingStartTimeOnStart;function htmlMediaRenderer(options){var mediaElement;var self=this;function onEnded(){$(self).trigger('ended');}
-function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=duration){MediaPlayer.nextTrack();return;}}}
+function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=(duration-1)){onEnded();return;}}}
 $(self).trigger('timeupdate');}
 function onVolumeChange(){$(self).trigger('volumechange');}
 function onOneAudioPlaying(){$('.mediaPlayerAudioContainer').hide();}

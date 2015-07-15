@@ -153,6 +153,9 @@ public class VideoApiHelper {
         else if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.External) {
             enableExternalSubtitleTrack(vlc, stream);
         }
+        else if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.Hls) {
+            enableEmbeddedSubtitleTrack(vlc, stream);
+        }
     }
 
     private void enableEmbeddedSubtitleTrack(LibVLC vlc, MediaStream stream) {
@@ -179,18 +182,24 @@ public class VideoApiHelper {
         downloadSubtitles(stream, file, new Response<File>(){
 
             @Override
-            public void onResponse(File newFile) {
+            public void onResponse(final File newFile) {
 
                 if (newFile.exists()){
-                    Map<Integer,String> oldMap = vlc.getSpuTrackDescription();
 
-                    logger.Debug("Adding subtitle track to vlc %s", Uri.fromFile(newFile).getPath());
-                    int id = vlc.addSubtitleTrack(Uri.fromFile(newFile).getPath());
-                    //activateNewIndex(vlc, oldMap, vlc.getSpuTrackDescription());
-                    logger.Debug("New subtitle track list: %s", jsonSerializer.SerializeToString(vlc.getSpuTrackDescription()));
-                    logger.Debug("Setting new subtitle track id: %s", id);
-                    //vlc.setSpuTrack(id);
-                    //playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Map<Integer,String> oldMap = vlc.getSpuTrackDescription();
+
+                            logger.Debug("Adding subtitle track to vlc %s", Uri.fromFile(newFile).getPath());
+                            int id = vlc.addSubtitleTrack(Uri.fromFile(newFile).getPath());
+                            //activateNewIndex(vlc, oldMap, vlc.getSpuTrackDescription());
+                            logger.Debug("New subtitle track list: %s", jsonSerializer.SerializeToString(vlc.getSpuTrackDescription()));
+                            logger.Debug("Setting new subtitle track id: %s", id);
+                            //vlc.setSpuTrack(id);
+                            //playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+                        }
+                    });
                 }
                 else{
                     logger.Error("Subtitles were downloaded but file doens't exist!");
