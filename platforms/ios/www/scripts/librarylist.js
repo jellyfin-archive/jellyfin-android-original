@@ -8,7 +8,7 @@ if(!isMiniItem){html+='<div style="margin:1em 0 .75em;">';if(isPortrait){html+='
 html+='</div>';}
 html+='<div>';var buttonMargin=isPortrait||isSquare?"margin:0 4px 0 0;":"margin:0 10px 0 0;";var buttonCount=0;if(MediaController.canPlay(item)){var resumePosition=(item.UserData||{}).PlaybackPositionTicks||0;html+='<paper-icon-button icon="play-circle-outline" class="btnPlayItem" data-itemid="'+item.Id+'" data-itemtype="'+item.Type+'" data-isfolder="'+item.IsFolder+'" data-mediatype="'+item.MediaType+'" data-resumeposition="'+resumePosition+'"></paper-icon-button>';buttonCount++;}
 if(commands.indexOf('trailer')!=-1){html+='<paper-icon-button icon="videocam" class="btnPlayTrailer" data-itemid="'+item.Id+'"></paper-icon-button>';buttonCount++;}
-html+='<paper-icon-button icon="more-vert" class="btnMoreCommands"></paper-icon-button>';buttonCount++;html+='</div>';html+='</div>';return html;}
+html+='<paper-icon-button icon="'+AppInfo.moreIcon+'" class="btnMoreCommands"></paper-icon-button>';buttonCount++;html+='</div>';html+='</div>';return html;}
 function onTrailerButtonClick(){var id=this.getAttribute('data-itemid');ApiClient.getLocalTrailers(Dashboard.getCurrentUserId(),id).done(function(trailers){MediaController.play({items:trailers});});return false;}
 function onPlayItemButtonClick(){var id=this.getAttribute('data-itemid');var type=this.getAttribute('data-itemtype');var isFolder=this.getAttribute('data-isfolder')=='true';var mediaType=this.getAttribute('data-mediatype');var resumePosition=parseInt(this.getAttribute('data-resumeposition'));LibraryBrowser.showPlayMenu(this,id,type,isFolder,mediaType,resumePosition);return false;}
 function onMoreButtonClick(){var card=$(this).parents('.card')[0];showContextMenu(card,{showPlayOptions:false});return false;}
@@ -37,7 +37,7 @@ function onListViewMenuButtonClick(e){showContextMenu(this,{});e.preventDefault(
 function onListViewPlayButtonClick(e){var playButton=this;var card=this;if(!card.classList.contains('card')&&!card.classList.contains('listItem')){card=$(card).parents('.listItem,.card')[0];}
 var id=card.getAttribute('data-itemid');var type=card.getAttribute('data-itemtype');var isFolder=card.getAttribute('data-isfolder')=='true';var mediaType=card.getAttribute('data-mediatype');var resumePosition=parseInt(card.getAttribute('data-resumeposition'));if(type=='MusicAlbum'||type=='MusicArtist'||type=='MusicGenre'||type=='Playlist'){isFolder=true;}
 LibraryBrowser.showPlayMenu(playButton,id,type,isFolder,mediaType,resumePosition);e.preventDefault();return false;}
-function isClickable(target){while(target!=null){var tagName=target.tagName||'';if(tagName=='A'||tagName.indexOf('BUTTON')!=-1){return true;}
+function isClickable(target){while(target!=null){var tagName=target.tagName||'';if(tagName=='A'||tagName.indexOf('BUTTON')!=-1||tagName.indexOf('INPUT')!=-1){return true;}
 return false;}
 return false;}
 function onGroupedCardClick(e){var card=this;var itemId=card.getAttribute('data-itemid');var context=card.getAttribute('data-context');var userId=Dashboard.getCurrentUserId();var options={Limit:parseInt($('.playedIndicator',card).html()||'10'),Fields:"PrimaryImageAspectRatio,DateCreated",ParentId:itemId,GroupItems:false};var target=e.target;if(isClickable(target)){return;}
@@ -61,12 +61,12 @@ contentHtml+='<paper-button raised class="secondary btnPlay"><iron-icon icon="pl
 contentHtml+='<paper-button data-href="'+LibraryBrowser.getHref(item,context)+'" raised class="submit btnSync" style="background-color: #673AB7;" onclick="Dashboard.navigate(this.getAttribute(\'data-href\'));"><iron-icon icon="folder-open"></iron-icon><span>'+Globalize.translate('ButtonOpen')+'</span></paper-button>';if(SyncManager.isAvailable(item,user)){contentHtml+='<paper-button raised class="submit btnSync"><iron-icon icon="refresh"></iron-icon><span>'+Globalize.translate('ButtonSync')+'</span></paper-button>';}
 contentHtml+='</div>';$('.detailsMenuContentInner',elem).html(contentHtml).trigger('create');$('.btnSync',elem).on('click',function(){$(elem).popup('close');SyncManager.showMenu({items:[item]});});$('.btnPlay',elem).on('click',function(){$(elem).popup('close');MediaController.play({items:[item]});});$('.btnResume',elem).on('click',function(){$(elem).popup('close');MediaController.play({items:[item],startPositionTicks:item.UserData.PlaybackPositionTicks});});});}
 function showItemsOverlay(options){var context=options.context;var elem=getItemsOverlay(options.ids,context);setItemIntoOverlay(elem,0);}
-function onCardClick(e){var targetElem=e.target;if(targetElem.classList.contains('itemSelectionPanel')||this.querySelector('.itemSelectionPanel')){return false;}
+function onCardClick(e){if(isClickable(targetElem)){return;}
+var targetElem=e.target;if(targetElem.classList.contains('itemSelectionPanel')||this.querySelector('.itemSelectionPanel')){return;}
 var info=LibraryBrowser.getListItemInfo(this);var itemId=info.id;var context=info.context;var card=this;if(card.classList.contains('itemWithAction')){return;}
 if(!card.classList.contains('card')){card=$(card).parents('.card')[0];}
 if(card.classList.contains('groupedCard')){return;}
 if(card.getAttribute('data-detailsmenu')!='true'){return;}
-if(isClickable(targetElem)){return;}
 var target=$(targetElem);if(target.parents('a').length||target.parents('button').length){return;}
 if(AppSettings.enableItemPreviews()){showItemsOverlay({ids:[itemId],context:context});return false;}}
 $.fn.createCardMenus=function(options){var preventHover=false;function onShowTimerExpired(elem){elem=elem.querySelector('a');if($('.itemSelectionPanel:visible',elem).length){return;}
