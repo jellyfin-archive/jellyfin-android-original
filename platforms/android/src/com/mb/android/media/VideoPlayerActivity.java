@@ -1535,7 +1535,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
                 // avoid useless error logs
                 // Avoid overly aggressive reporting
-                if ((System.currentTimeMillis() - lastReportTime) < 800){
+                if ((System.currentTimeMillis() - lastReportTime) < 1500){
                     return;
                 }
 

@@ -22,7 +22,7 @@ if(id=='livetv'){loadLiveTvChannels(id,openItems,callback);return;}
 if(id=='MediaFolders'){loadMediaFolders(page,scope,openItems,callback);return;}
 var query={ParentId:id,Fields:'Settings'};var itemtype=node.li_attr.itemtype;if(itemtype!="Season"&&itemtype!="Series"){query.SortBy="SortName";}
 ApiClient.getItems(Dashboard.getCurrentUserId(),query).done(function(result){var nodes=result.Items.map(function(n){var state=openItems.indexOf(n.Id)==-1?'closed':'open';return getNode(n,state,n.Id==selectedId);});callback.call(scope,nodes);for(var i=0,length=nodes.length;i<length;i++){if(nodes[i].state.opened){nodesToLoad.push(nodes[i].id);}}});}
-function scrollToNode(page,id){var elem=$('#'+id,page)[0];if(elem){}}
+function scrollToNode(page,id){var elem=$('#'+id,page)[0];if(elem){elem.scrollIntoView();}}
 function initializeTree(page,currentUser,openItems,selectedId){MetadataEditor.loadJsTree().done(function(){initializeTreeInternal(page,currentUser,openItems,selectedId);});}
 function onNodeSelect(event,data){var node=data.node;var eventData={id:node.id,itemType:node.li_attr.itemtype};if(eventData.itemType!='livetv'&&eventData.itemType!='mediafolders'){$(this).trigger('itemclicked',[eventData]);}}
 function onNodeOpen(event,data){var page=$(this).parents('.page')[0];var node=data.node;if(node.children&&node.children){loadNodesToLoad(page,node);}

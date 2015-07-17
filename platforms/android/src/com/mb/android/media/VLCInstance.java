@@ -120,11 +120,12 @@ public class VLCInstance {
             networkCaching = 60000;
         else if(networkCaching < 0)
             networkCaching = 0;
+        networkCaching = 6000;
         sLibVLC.setAout(aout);
         sLibVLC.setVout(vout);
         sLibVLC.setDeblocking(deblocking);
         sLibVLC.setNetworkCaching(networkCaching);
-        sLibVLC.setHardwareAcceleration(hardwareAcceleration);
+        sLibVLC.setHardwareAcceleration(LibVLC.HW_ACCELERATION_DISABLED);
         sLibVLC.setDevHardwareDecoder(devHardwareDecoder);
     }
 

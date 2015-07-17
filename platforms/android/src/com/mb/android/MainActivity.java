@@ -49,6 +49,7 @@ import net.rdrei.android.dirchooser.DirectoryChooserActivity;
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
+import org.crosswalk.engine.XWalkWebViewEngine;
 import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -101,7 +102,7 @@ public class MainActivity extends CordovaActivity
     @Override
     protected CordovaWebViewEngine makeWebViewEngine() {
 
-        CordovaWebViewEngine engine =  super.makeWebViewEngine();
+        CordovaWebViewEngine engine =  new XWalkWebViewEngine(this, preferences);
 
         View engineView = engine.getView();
         ILogger logger = getLogger();
