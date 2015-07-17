@@ -34,7 +34,8 @@ return mediaElement.volume;}};var currentSrc;self.setCurrentSrc=function(val,ite
 if(!val){currentSrc=null;elem.src=null;elem.src="";if($.browser.safari){elem.src='files/dummy.mp4';elem.play();}
 return;}
 requiresSettingStartTimeOnStart=false;var startTime=getStartTime(val);if(elem.tagName.toLowerCase()=='audio'){elem.src=val;elem.play();}
-else{if(startTime){try{elem.currentTime=startTime;}catch(err){}
+else{if(isViblastStarted){viblast(elem).stop();isViblastStarted=false;}
+if(startTime){try{elem.currentTime=startTime;}catch(err){}
 requiresSettingStartTimeOnStart=elem.currentTime==0;}
 if(enableViblast(val)){setTracks(elem,tracks||[]);viblast(elem).setup({key:getViblastKey(),stream:val});isViblastStarted=true;}else{elem.src=val;setTracks(elem,tracks||[]);$(elem).one("loadedmetadata",onLoadedMetadata);}}
 currentSrc=val;};function setTracks(elem,tracks){var html=tracks.map(function(t){var defaultAttribute=t.isDefault?' default':'';return'<track kind="subtitles" src="'+t.url+'" srclang="'+t.language+'"'+defaultAttribute+'></track>';}).join('');if(html){elem.innerHTML=html;}}
