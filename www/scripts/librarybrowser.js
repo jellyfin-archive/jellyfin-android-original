@@ -54,7 +54,7 @@ if(topParentId){href+=href.indexOf('?')==-1?"?topParentId=":"&topParentId=";href
 return href;},getHrefInternal:function(item,context){if(!item){throw new Error('item cannot be null');}
 if(item.url){return item.url;}
 var contextSuffix=context?('&context='+context):'';var id=item.Id||item.ItemId;if(item.CollectionType=='livetv'){return'livetvsuggested.html';}
-if(item.CollectionType=='channels'){if(AppInfo.enableLatestChannelItems){return'channelslatest.html';}else{return'channels.html';}}
+if(item.CollectionType=='channels'){return'channels.html';}
 if(context!='folders'){if(item.CollectionType=='movies'){return'moviesrecommended.html?topParentId='+item.Id;}
 if(item.CollectionType=='boxsets'){return'collections.html?topParentId='+item.Id;}
 if(item.CollectionType=='tvshows'){return'tvrecommended.html?topParentId='+item.Id;}
