@@ -41,6 +41,7 @@ public class MediaWrapperListPlayer {
             return;
         final MediaWrapper media = mMediaList.getMedia(position);
         String[] options = mLibVLC.getMediaOptions(flags | (media != null ? media.getFlags() : 0));
+
         mPlayerIndex = position;
         mLibVLC.playMRL(mrl, options);
     }

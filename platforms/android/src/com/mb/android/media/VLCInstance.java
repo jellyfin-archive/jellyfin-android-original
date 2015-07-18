@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.mb.android.R;
+import com.mb.android.api.SyncLoggerFactory;
 
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.LibVlcException;
@@ -120,7 +121,7 @@ public class VLCInstance {
             networkCaching = 60000;
         else if(networkCaching < 0)
             networkCaching = 0;
-        networkCaching = 6000;
+        networkCaching = 7000;
         sLibVLC.setAout(aout);
         sLibVLC.setVout(vout);
         sLibVLC.setDeblocking(deblocking);

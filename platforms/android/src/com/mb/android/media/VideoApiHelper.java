@@ -11,6 +11,7 @@ import org.videolan.libvlc.LibVLC;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -106,6 +107,60 @@ public class VideoApiHelper {
         originalMaxBitrate = deviceProfile.getMaxStreamingBitrate();
     }
 
+    public void loadExternalSubtitles(final LibVLC vlc, EmptyResponse response) {
+
+        loadExternalSubtitles(vlc, currentMediaSource.getMediaStreams(), 0, response);
+
+    }
+
+    public void loadExternalSubtitles(final LibVLC vlc, final ArrayList<MediaStream> streams, final int index, final EmptyResponse response) {
+
+        if (index >= streams.size()){
+            response.onResponse();
+            return;
+        }
+
+        MediaStream stream = streams.get(index);
+
+        if (stream.getType() != MediaStreamType.Subtitle){
+            loadExternalSubtitles(vlc, streams, index + 1, response);
+            return;
+        }
+
+        if (stream.getDeliveryMethod() != SubtitleDeliveryMethod.External){
+            loadExternalSubtitles(vlc, streams, index + 1, response);
+            return;
+        }
+
+        downloadExternalSubtitleTrack(stream, new Response<File>(){
+
+            @Override
+            public void onResponse(final File newFile) {
+
+                if (newFile.exists()) {
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            logger.Debug("Adding subtitle track to vlc %s", Uri.fromFile(newFile).getPath());
+                            int id = vlc.addSubtitleTrack(Uri.fromFile(newFile).getPath());
+                        }
+                    });
+                } else {
+                    logger.Error("Subtitles were downloaded but file doens't exist!");
+                }
+
+                loadExternalSubtitles(vlc, streams, index + 1, response);
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                logger.ErrorException("Error downloading subtitles", ex);
+                loadExternalSubtitles(vlc, streams, index + 1, response);
+            }
+        });
+    }
+
     public void setAudioStreamIndex(LibVLC vlc, int index){
 
         if (playbackStartInfo.getAudioStreamIndex() != null && index == playbackStartInfo.getAudioStreamIndex()) {
@@ -128,12 +183,6 @@ public class VideoApiHelper {
 
     public void setSubtitleStreamIndex(LibVLC vlc, int index){
 
-        if (index == -1){
-            vlc.setSpuTrack(index);
-            playbackStartInfo.setSubtitleStreamIndex(index);
-            return;
-        }
-
         MediaStream stream = null;
         for (MediaStream current : currentMediaSource.getMediaStreams()){
             if (current.getType() == MediaStreamType.Subtitle && current.getIndex() == index){
@@ -141,6 +190,23 @@ public class VideoApiHelper {
                 stream = current;
                 break;
             }
+        }
+
+        // Disable subtitles
+        if (index == -1){
+
+            if (stream != null && stream.getDeliveryMethod() == SubtitleDeliveryMethod.Encode) {
+
+                // if the current subtitle stream is being burned in, we're going to have to change the transcoding stream
+                long positionTicks = vlc.getTime() * 10000;
+                changeStream(currentMediaSource, positionTicks, null, index, null);
+                return;
+            }
+
+            // Just tell vlc to shut off subs
+            vlc.setSpuTrack(index);
+            playbackStartInfo.setSubtitleStreamIndex(index);
+            return;
         }
 
         if (stream == null) {
@@ -153,8 +219,11 @@ public class VideoApiHelper {
         else if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.External) {
             enableExternalSubtitleTrack(vlc, stream);
         }
-        else if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.Hls) {
-            enableEmbeddedSubtitleTrack(vlc, stream);
+        else {
+
+            // Subs have to be burned in
+            long positionTicks = vlc.getTime() * 10000;
+            changeStream(currentMediaSource, positionTicks, null, index, null);
         }
     }
 
@@ -169,27 +238,17 @@ public class VideoApiHelper {
 
     private void enableExternalSubtitleTrack(final LibVLC vlc, final MediaStream stream) {
 
-        final File file = new File(getSubtitleDownloadPath(stream));
-
-        if (file.exists()){
-            Map<Integer,String> oldMap = vlc.getSpuTrackDescription();
-            vlc.addSubtitleTrack(file.getPath());
-            activateNewIndex(vlc, oldMap, vlc.getSpuTrackDescription());
-            playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
-            return;
-        }
-
-        downloadSubtitles(stream, file, new Response<File>(){
+        downloadExternalSubtitleTrack(stream, new Response<File>() {
 
             @Override
             public void onResponse(final File newFile) {
 
-                if (newFile.exists()){
+                if (newFile.exists()) {
 
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Map<Integer,String> oldMap = vlc.getSpuTrackDescription();
+                            Map<Integer, String> oldMap = vlc.getSpuTrackDescription();
 
                             logger.Debug("Adding subtitle track to vlc %s", Uri.fromFile(newFile).getPath());
                             int id = vlc.addSubtitleTrack(Uri.fromFile(newFile).getPath());
@@ -200,8 +259,7 @@ public class VideoApiHelper {
                             //playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
                         }
                     });
-                }
-                else{
+                } else {
                     logger.Error("Subtitles were downloaded but file doens't exist!");
                 }
             }
@@ -214,18 +272,16 @@ public class VideoApiHelper {
         });
     }
 
-    private void activateNewIndex(LibVLC vlc, Map<Integer,String> oldMap, Map<Integer,String> newMap) {
+    private void downloadExternalSubtitleTrack(final MediaStream stream, Response<File> response) {
 
-        logger.Debug("Activating downloaded subtitle track");
+        final File file = new File(getSubtitleDownloadPath(stream));
 
-        for (Map.Entry<Integer,String> entry : newMap.entrySet()) {
-
-            if (!oldMap.containsKey(entry.getKey())) {
-                logger.Debug("Setting spuTrack to %s", entry.getKey());
-                vlc.setSpuTrack(entry.getKey());
-                return;
-            }
+        if (file.exists()){
+            response.onResponse(file);
+            return;
         }
+
+        downloadSubtitles(stream, file, response);
     }
 
     private void downloadSubtitles(final MediaStream stream, final File file, final Response<File> response) {
@@ -248,8 +304,6 @@ public class VideoApiHelper {
                         while ((bytesRead = initialStream.read(buffer)) != -1) {
                             outStream.write(buffer, 0, bytesRead);
                         }
-
-                        response.onResponse(file);
                     }
                     finally {
                         outStream.close();
@@ -257,7 +311,17 @@ public class VideoApiHelper {
                 }
                 catch (Exception ex){
                     response.onError(ex);
+                    return;
                 }
+                finally {
+                    try {
+                        initialStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                response.onResponse(file);
             }
         });
 
@@ -332,6 +396,7 @@ public class VideoApiHelper {
                     setNewPlaybackInfo(itemId, newMediaSource, playSessionId, response.getPlaySessionId(), positionTicks);
 
                     playbackStartInfo.setAudioStreamIndex(audioStreamIndex);
+                    playbackStartInfo.setSubtitleStreamIndex(subtitleStreamIndex);
                 }
             }
         });
@@ -367,20 +432,15 @@ public class VideoApiHelper {
         final String path = newMediaPath;
         final PlayMethod method = playMethod;
 
+        // Tell VideoPlayerActivity to changeStream
+        activity.changeLocation(path);
+
+        currentMediaSource = newMediaSource;
+        playbackStartInfo.setPlayMethod(method);
+        playbackStartInfo.setPlaySessionId(newPlaySessionId);
+
         // First stop transcoding
-        apiClient.StopTranscodingProcesses(apiClient.getDeviceId(), previousPlaySessionId, new EmptyResponse(){
-
-            @Override
-            public void onResponse(){
-
-                // Tell VideoPlayerActivity to changeStream
-                activity.changeLocation(path);
-
-                currentMediaSource = newMediaSource;
-                playbackStartInfo.setPlayMethod(method);
-                playbackStartInfo.setPlaySessionId(newPlaySessionId);
-            }
-        });
+        apiClient.StopTranscodingProcesses(apiClient.getDeviceId(), previousPlaySessionId, new EmptyResponse());
     }
 
     private void getPlaybackInfo(String itemId, long startPosition, MediaSourceInfo mediaSource, Integer audioStreamIndex, Integer subtitleStreamIndex, Integer maxBitrate, String liveStreamId, Response<PlaybackInfoResponse> response) {

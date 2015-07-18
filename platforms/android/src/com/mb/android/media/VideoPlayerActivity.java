@@ -101,6 +101,7 @@ import java.util.TimerTask;
 
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.ApiEventListener;
+import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.android.AndroidApiClient;
 import mediabrowser.apiinteraction.android.AndroidDevice;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -1640,6 +1641,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             seek(resumePositionMs);
         }
         resumePositionMs = 0;
+        if (apiHelper.getMediaSource().getDefaultSubtitleStreamIndex() == null) {
+            apiHelper.setSubtitleStreamIndex(mLibVLC, -1);
+        } else {
+            apiHelper.setSubtitleStreamIndex(mLibVLC, apiHelper.getMediaSource().getDefaultSubtitleStreamIndex());
+        }
     }
 
     private void endReached() {
@@ -2210,6 +2216,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     }
 
     private void selectSubtitles() {
+
         setESTrackLists();
         int currentIndex = apiHelper.getPlaybackProgressInfo().getSubtitleStreamIndex() == null ? -1 : apiHelper.getPlaybackProgressInfo().getSubtitleStreamIndex();
 
@@ -2968,7 +2975,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             if (openedPosition == -1) {
                 VLCInstance.setAudioHdmiEnabled(this, mHasHdmiAudio);
                 resumePositionMs = intentPosition;
+
                 mMediaListPlayer.playIndex(savedIndexPosition, wasPaused);
+
             } else {
                 mLibVLC.setVideoTrack(-1);
                 mLibVLC.setVideoTrack(0);
@@ -2981,7 +2990,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
 
             // Get possible subtitles
-            String subtitleList_serialized = mSettings.getString(PreferencesActivity.VIDEO_SUBTITLE_FILES, null);
+/*            String subtitleList_serialized = mSettings.getString(PreferencesActivity.VIDEO_SUBTITLE_FILES, null);
             ArrayList<String> prefsList = new ArrayList<String>();
             if(subtitleList_serialized != null) {
                 ByteArrayInputStream bis = new ByteArrayInputStream(subtitleList_serialized.getBytes());
@@ -2995,7 +3004,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             for(String x : prefsList){
                 if(!mSubtitleSelectedFiles.contains(x))
                     mSubtitleSelectedFiles.add(x);
-            }
+            }*/
 
             // Get the title
             if (itemTitle == null) {
