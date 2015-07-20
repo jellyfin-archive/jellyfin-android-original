@@ -4,20 +4,9 @@ name=getParameterByName('musicgenre');if(name){return ApiClient.getMusicGenre(na
 name=getParameterByName('gamegenre');if(name){return ApiClient.getGameGenre(name,Dashboard.getCurrentUserId());}
 name=getParameterByName('musicartist');if(name){return ApiClient.getArtist(name,Dashboard.getCurrentUserId());}
 else{throw new Error('Invalid request');}}
-function reload(page){Dashboard.showLoadingMsg();getPromise().done(function(item){var context=getParameterByName('context');var editQuery='?id='+item.Id;if(context){editQuery+='&context='+context;}
-currentItem=item;Backdrops.setBackdrops(page,[item]);renderHeader(page,item,context);var name=item.Name;Dashboard.setPageTitle(name);$('.itemName',page).html(name);renderDetails(page,item,context);renderTabs(page,item,context);$(page).trigger('displayingitem',[{item:item,context:context}]);Dashboard.getCurrentUser().done(function(user){if(MediaController.canPlay(item)){$('.btnPlay',page).visible(true);}else{$('.btnPlay',page).visible(false);}
+function reload(page){Dashboard.showLoadingMsg();getPromise().done(function(item){var context=getParameterByName('context');var editQuery='?id='+item.Id;currentItem=item;LibraryMenu.setTitle(item.Name);Backdrops.setBackdrops(page,[item]);var name=item.Name;Dashboard.setPageTitle(name);$('.itemName',page).html(name);renderDetails(page,item,context);renderTabs(page,item,context);$(page).trigger('displayingitem',[{item:item,context:context}]);Dashboard.getCurrentUser().done(function(user){if(MediaController.canPlay(item)){$('.btnPlay',page).visible(true);}else{$('.btnPlay',page).visible(false);}
 if(SyncManager.isAvailable(item,user)){$('.btnSync',page).removeClass('hide');}else{$('.btnSync',page).addClass('hide');}
 var editImagesHref=user.Policy.IsAdministrator?'edititemmetadata.html'+(editQuery+"&tab=3"):null;$('#itemImage',page).html(LibraryBrowser.getDetailImageHtml(item,editImagesHref,true));if(LibraryBrowser.getMoreCommands(item,user).length){$('.btnMoreCommands',page).visible(true);}else{$('.btnMoreCommands',page).visible(false);}});Dashboard.hideLoadingMsg();});}
-function renderHeader(page,item,context){$('.itemTabs',page).hide();if(context=="movies"&&item.Type=="Genre"){$('#movieGenreTabs',page).show();}
-if(context=="movies"&&item.Type=="Person"){$('#moviePeopleTabs',page).show();}
-if(context=="movies"&&item.Type=="Studio"){$('#movieStudioTabs',page).show();}
-if(context=="tv"&&item.Type=="Studio"){$('#tvStudioTabs',page).show();}
-if(context=="tv"&&item.Type=="Genre"){$('#tvGenreTabs',page).show();}
-if(context=="tv"&&item.Type=="Person"){$('#tvPeopleTabs',page).show();}
-if(context=="music"&&item.Type=="MusicGenre"){$('#musicGenreTabs',page).show();}
-if(context=="music"&&item.Type=="MusicArtist"){$('#artistTabs',page).show();}
-if(context=="games"&&item.Type=="GameGenre"){$('#gameGenreTabs',page).show();}
-if(context=="games"&&item.Type=="Studio"){$('#gameStudioTabs',page).show();}}
 function renderTabs(page,item,context){var html='<fieldset data-role="controlgroup" data-type="horizontal" class="libraryTabs">';html+='<legend></legend>';if(item.MovieCount){html+='<input type="radio" name="ibnItems" id="radioMovies" class="context-movies" value="on">';html+='<label for="radioMovies">'+Globalize.translate('TabMovies')+'</label>';}
 if(item.SeriesCount){html+='<input type="radio" name="ibnItems" id="radioShows" class="context-tv" value="on">';html+='<label for="radioShows">'+Globalize.translate('TabSeries')+'</label>';}
 if(item.EpisodeCount){html+='<input type="radio" name="ibnItems" id="radioEpisodes" class="context-tv" value="on">';html+='<label for="radioEpisodes">'+Globalize.translate('TabEpisodes')+'</label>';}
