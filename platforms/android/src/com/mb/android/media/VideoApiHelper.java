@@ -35,6 +35,7 @@ import mediabrowser.model.entities.MediaStreamType;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.mediainfo.PlaybackInfoRequest;
 import mediabrowser.model.mediainfo.PlaybackInfoResponse;
+import mediabrowser.model.mediainfo.SubtitleTrackInfo;
 import mediabrowser.model.serialization.IJsonSerializer;
 import mediabrowser.model.session.PlayMethod;
 import mediabrowser.model.session.PlaybackProgressInfo;
@@ -205,6 +206,7 @@ public class VideoApiHelper {
 
             // Just tell vlc to shut off subs
             vlc.setSpuTrack(index);
+            activity.updateExternalSubtitles(null);
             playbackStartInfo.setSubtitleStreamIndex(index);
             return;
         }
@@ -214,14 +216,27 @@ public class VideoApiHelper {
         }
 
         if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.Embed) {
+            activity.updateExternalSubtitles(null);
             enableEmbeddedSubtitleTrack(vlc, stream);
         }
         else if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.External) {
-            enableExternalSubtitleTrack(vlc, stream);
+
+            if (playbackStartInfo.getPlayMethod() == PlayMethod.Transcode) {
+
+                // Unfortunately we have to work around this vlc bug:
+                // https://trac.videolan.org/vlc/ticket/3075
+                enableManualExternalSubtitleTrack(vlc, stream);
+            }
+            else {
+                // Do it the normal way
+                activity.updateExternalSubtitles(null);
+                enableExternalSubtitleTrack(vlc, stream);
+            }
         }
         else {
 
             // Subs have to be burned in
+            activity.updateExternalSubtitles(null);
             long positionTicks = vlc.getTime() * 10000;
             changeStream(currentMediaSource, positionTicks, null, index, null);
         }
@@ -229,11 +244,31 @@ public class VideoApiHelper {
 
     private void enableEmbeddedSubtitleTrack(LibVLC vlc, MediaStream stream) {
 
-        // This could be tracky. We have to map the Emby server index to the vlc trackID
+        // This could be tricky. We have to map the Emby server index to the vlc trackID
         // Let's assume they're at least in the same order
 
         vlc.setSpuTrack(stream.getIndex());
         playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+    }
+
+    private void enableManualExternalSubtitleTrack(final LibVLC vlc, final MediaStream stream) {
+
+        String url = apiClient.GetApiUrl(stream.getDeliveryUrl()).replace("srt", "JSON");
+
+        apiClient.getSubtitles(url, new Response<SubtitleTrackInfo>(){
+
+            @Override
+            public void onResponse(final SubtitleTrackInfo trackInfo) {
+
+                activity.updateExternalSubtitles(trackInfo);
+                playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                logger.ErrorException("Error downloading subtitles", ex);
+            }
+        });
     }
 
     private void enableExternalSubtitleTrack(final LibVLC vlc, final MediaStream stream) {

@@ -34,6 +34,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.text.Html;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -92,6 +93,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -119,6 +121,8 @@ import mediabrowser.model.entities.MediaStreamType;
 import mediabrowser.model.extensions.ListHelper;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
+import mediabrowser.model.mediainfo.SubtitleTrackEvent;
+import mediabrowser.model.mediainfo.SubtitleTrackInfo;
 import mediabrowser.model.serialization.IJsonSerializer;
 import mediabrowser.model.session.PlayMethod;
 import mediabrowser.model.session.PlaybackProgressInfo;
@@ -315,6 +319,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
     private IAsyncHttpClient httpClient;
     private VideoApiHelper apiHelper;
 
+    private TextView subtitleText;
+
     @Override
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void onCreate(Bundle savedInstanceState) {
@@ -509,6 +515,20 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mDetector = new GestureDetectorCompat(this, mGestureListener);
         mDetector.setOnDoubleTapListener(this);
 
+        subtitleText = (TextView) findViewById(R.id.offLine_subtitleText);
+        updateManualSubtitlePosition(0);
+    }
+
+    private void updateManualSubtitlePosition(int topMargin) {
+
+        /*
+		 * Adjust subtitles margin based on Screen dimes
+		 */
+        FrameLayout.LayoutParams rl2 = (FrameLayout.LayoutParams) subtitleText.getLayoutParams();
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        rl2.topMargin = topMargin;
+        subtitleText.setLayoutParams(rl2);
     }
 
     protected IAsyncHttpClient getHttpClient() {
@@ -1443,7 +1463,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     break;
                 case EventHandler.MediaPlayerPaused:
                     logger.Info("MediaPlayerPaused");
-                    reportState("paused", false);
+                    reportState("paused", false, activity);
                     break;
                 case EventHandler.MediaPlayerStopped:
                     logger.Info("MediaPlayerStopped");
@@ -1476,7 +1496,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     activity.handleHardwareAccelerationError();
                     break;
                 case EventHandler.MediaPlayerTimeChanged:
-                    reportState("positionchange", true);
+                    reportState("positionchange", true, activity);
                     break;
                 case EventHandler.MediaPlayerESAdded:
                     logger.Debug("MediaPlayerESAdded");
@@ -1502,7 +1522,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
         private void startTimer(){
 
-            VideoPlayerActivity activity = getOwner();
+            final VideoPlayerActivity activity = getOwner();
             if(activity != null) {
                 activity.apiHelper.enableProgressReporting = true;
             }
@@ -1512,7 +1532,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    reportState("positionchange", true);
+                    reportState("positionchange", true, activity);
                 }
             }, 0, 1000);
         }
@@ -1530,23 +1550,26 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             }
         }
 
-        private void reportState(String eventName, boolean checkLastReportTime) {
+        private void reportState(String eventName, boolean checkLastReportTime, VideoPlayerActivity activity) {
+
+            LibVLC vlc = mLibVlc;
+
+            long time = vlc.getTime();
+
+            activity.updateSubtitles(time);
 
             if (checkLastReportTime){
 
                 // avoid useless error logs
                 // Avoid overly aggressive reporting
-                if ((System.currentTimeMillis() - lastReportTime) < 1500){
+                long currentTime = System.currentTimeMillis();
+
+                if ((currentTime - lastReportTime) < 1500){
                     return;
                 }
 
                 lastReportTime = System.currentTimeMillis();
             }
-
-            VideoPlayerActivity activity = getOwner();
-            if(activity == null) return;
-
-            LibVLC vlc = mLibVlc;
 
             int playerState = vlc.getPlayerState();
 
@@ -1558,8 +1581,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             logger.Debug("Vlc player state: %s", playerState);
 
             long length = vlc.getLength() / 1000;
-
-            long time = vlc.getTime();
 
             int volume = vlc.getVolume();
 
@@ -1846,6 +1867,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         lp.height = (int) Math.ceil(dh * mVideoHeight / mVideoVisibleHeight);
         surface.setLayoutParams(lp);
         subtitlesSurface.setLayoutParams(lp);
+        subtitlesSurface.setLayoutParams(lp);
+
+        int subtitleMargin = (lp.height / 2) - 70;
+        updateManualSubtitlePosition(subtitleMargin);
 
         // set frame size (crop if necessary)
         lp = surfaceFrame.getLayoutParams();
@@ -2936,6 +2961,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             ApiClient apiClient = new AndroidApiClient(httpClient, jsonSerializer, logger, apiServerUrl, apiAppName, device, apiAppVersion, new ApiEventListener());
             apiClient.SetAuthenticationInfo(apiAccessToken, apiUserId);
 
+            updateExternalSubtitles(null);
             apiHelper.setInitialInfo(apiServerId, false, apiClient, deviceProfile, playbackStartInfo, mediaSourceInfo);
 
             if (getIntent().hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
@@ -3321,4 +3347,68 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             return false;
         }
     };
+
+    private SubtitleTrackInfo timedTextObject;
+    private long lastReportedPositionMs = 0;
+
+    public void updateExternalSubtitles(SubtitleTrackInfo timedTextObject) {
+
+        lastReportedPositionMs = 0;
+        this.timedTextObject = timedTextObject;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                subtitleText.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    private void updateSubtitles(long positionMs) {
+
+        if (lastReportedPositionMs > 0){
+            if (Math.abs(lastReportedPositionMs - positionMs) < 500) {
+                return;
+            }
+        }
+        SubtitleTrackInfo info = timedTextObject;
+
+        if (info == null) {
+            return;
+        }
+
+        long positionTicks = positionMs * 10000;
+
+        for (SubtitleTrackEvent caption : info.getTrackEvents()) {
+            if (positionTicks >= caption.getStartPositionTicks() && positionTicks <= caption.getEndPositionTicks()) {
+                setTimedText(caption);
+                return;
+            }
+        }
+
+        setTimedText(null);
+    }
+
+    private void setTimedText(final SubtitleTrackEvent textObj) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (textObj == null) {
+                    subtitleText.setVisibility(View.INVISIBLE);
+                    return;
+                }
+
+                String text = textObj.getText();
+
+                if (text == null || text.length() == 0) {
+                    subtitleText.setVisibility(View.INVISIBLE);
+                    return;
+                }
+
+                subtitleText.setText(Html.fromHtml(text));
+                subtitleText.setVisibility(View.VISIBLE);
+            }
+        });
+    }
 }
