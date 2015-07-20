@@ -25,7 +25,12 @@ import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
 import mediabrowser.apiinteraction.playback.PlaybackManager;
 import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
+import mediabrowser.model.dlna.CodecProfile;
+import mediabrowser.model.dlna.CodecType;
 import mediabrowser.model.dlna.DeviceProfile;
+import mediabrowser.model.dlna.ProfileCondition;
+import mediabrowser.model.dlna.ProfileConditionType;
+import mediabrowser.model.dlna.ProfileConditionValue;
 import mediabrowser.model.dlna.StreamInfo;
 import mediabrowser.model.dlna.SubtitleDeliveryMethod;
 import mediabrowser.model.dlna.VideoOptions;
@@ -255,7 +260,7 @@ public class VideoApiHelper {
 
         String url = apiClient.GetApiUrl(stream.getDeliveryUrl()).replace("srt", "JSON");
 
-        apiClient.getSubtitles(url, new Response<SubtitleTrackInfo>(){
+        apiClient.getSubtitles(url, new Response<SubtitleTrackInfo>() {
 
             @Override
             public void onResponse(final SubtitleTrackInfo trackInfo) {
@@ -399,13 +404,30 @@ public class VideoApiHelper {
 
     public void setQuality(LibVLC vlc, int bitrate, int maxHeight) {
 
+        preferencesProvider.set("preferredVideoBitrate", String.valueOf(bitrate));
+
+        if (maxHeight >= 1080) {
+            // Work around vlc 1080p stutter for now
+            bitrate = Math.min(bitrate, 4000002);
+        }
+
+        for (CodecProfile codecProfile : deviceProfile.getCodecProfiles()) {
+
+            if (codecProfile.getType() == CodecType.Video) {
+                for (ProfileCondition profileCondition : codecProfile.getConditions()) {
+                    if (profileCondition.getProperty() == ProfileConditionValue.Height && profileCondition.getCondition() == ProfileConditionType.LessThanEqual) {
+                        profileCondition.setValue(String.valueOf(maxHeight));
+                    }
+                }
+            }
+        }
+
         long positionTicks = vlc.getTime() * 10000;
 
         logger.Info("Changing quality to %s", bitrate);
         changeStream(currentMediaSource, positionTicks, null, null, bitrate);
 
         originalMaxBitrate = bitrate;
-        preferencesProvider.set("preferredVideoBitrate", String.valueOf(bitrate));
     }
 
     private void changeStream(MediaSourceInfo currentMediaSource, final long positionTicks, Integer newAudioStreamIndex, Integer newSubtitleStreamIndex, final Integer newMaxBitrate){
