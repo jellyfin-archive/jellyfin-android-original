@@ -10,7 +10,7 @@ getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).done(fu
 function setDefault(page){getElement().style.backgroundImage="url(css/images/splash.jpg)";page.classList.add('backdropPage');page.classList.add('staticBackdropPage');}
 function isEnabledByDefault(){if(AppInfo.hasLowImageBandwidth){return false;}
 if($.browser.mobile){return false;}
-return true;}
+return!AppInfo.isTouchPreferred;}
 function enabled(){var userId=Dashboard.getCurrentUserId();var val=appStorage.getItem('enableBackdrops-'+userId);return val=='1'||(val!='0'&&isEnabledByDefault());}
 function setBackdrops(page,items){var images=items.map(function(i){if(i.BackdropImageTags.length>0){return{id:i.Id,tag:i.BackdropImageTags[0]};}
 if(i.ParentBackdropItemId&&i.ParentBackdropImageTags&&i.ParentBackdropImageTags.length){return{id:i.ParentBackdropItemId,tag:i.ParentBackdropImageTags[0]};}
