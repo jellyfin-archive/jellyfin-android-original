@@ -10,10 +10,10 @@ function onClick(){$(self).trigger('click');}
 function onDblClick(){$(self).trigger('dblclick');}
 function onError(){var errorCode=this.error?this.error.code:'';Logger.log('Media element error code: '+errorCode);$(self).trigger('error');}
 function onLoadedMetadata(){if(!isViblastStarted){this.play();}}
-var viblastKey='N8FjNTQ3NDdhZqZhNGI5NWU5ZTI=';function requireViblast(callback){require(['thirdparty/viblast/viblast.js'],function(){if(htmlMediaRenderer.customViblastKey){callback();}else{downloadViblastKey(callback);}});}
-function downloadViblastKey(callback){var savedKeyPropertyName='viblastkey';var savedKey=appStorage.getItem(savedKeyPropertyName);if(savedKey){var deferred=DeferredBuilder.Deferred();deferred.resolveWith(null,[savedKey]);return deferred.promise();}
+function requireViblast(callback){require(['thirdparty/viblast/viblast.js'],function(){if(htmlMediaRenderer.customViblastKey){callback();}else{downloadViblastKey(callback);}});}
+function downloadViblastKey(callback){var savedKeyPropertyName='vbk';var savedKey=appStorage.getItem(savedKeyPropertyName);if(savedKey){var deferred=DeferredBuilder.Deferred();deferred.resolveWith(null,[savedKey]);return deferred.promise();}
 var headers={};headers['X-Emby-Token']='EMBY_SERVER';HttpClient.send({type:'GET',url:'https://mb3admin.com/admin/service/registration/getViBlastKey',headers:headers}).done(function(key){appStorage.setItem(savedKeyPropertyName,key);htmlMediaRenderer.customViblastKey=key;callback();}).fail(function(){callback();});}
-function getViblastKey(){return htmlMediaRenderer.customViblastKey||viblastKey;}
+function getViblastKey(){return htmlMediaRenderer.customViblastKey||'N8FjNTQ3NDdhZqZhNGI5NWU5ZTI=';}
 function getStartTime(url){var src=url;var parts=src.split('#');if(parts.length>1){parts=parts[parts.length-1].split('=');if(parts.length==2){return parseFloat(parts[1]);}}
 return 0;}
 function onOneVideoPlaying(){var requiresNativeControls=!self.enableCustomVideoControls();if(requiresNativeControls){$(this).attr('controls','controls');}
