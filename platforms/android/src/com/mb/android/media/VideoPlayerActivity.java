@@ -521,10 +521,27 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
 
     private void updateManualSubtitlePosition(int topMargin) {
 
+        TextView element = subtitleText;
+
+        if (element == null) {
+            logger.Error("Cannot proceed with updateManualSubtitlePosition because subtitleText is null");
+        }
+
+        ViewGroup.LayoutParams layoutParams = element.getLayoutParams();
+
+        if (layoutParams == null) {
+            logger.Error("Cannot proceed with updateManualSubtitlePosition because layoutParams is null");
+        }
+
+        if (!(layoutParams instanceof FrameLayout.LayoutParams)) {
+            logger.Error("Cannot convert ViewGroup.LayoutParams to FrameLayout.LayoutParams");
+            return;
+        }
+
         /*
 		 * Adjust subtitles margin based on Screen dimes
 		 */
-        FrameLayout.LayoutParams rl2 = (FrameLayout.LayoutParams) subtitleText.getLayoutParams();
+        FrameLayout.LayoutParams rl2 = (FrameLayout.LayoutParams) layoutParams;
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         rl2.topMargin = topMargin;

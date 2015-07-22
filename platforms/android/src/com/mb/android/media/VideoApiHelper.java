@@ -233,9 +233,12 @@ public class VideoApiHelper {
                 enableManualExternalSubtitleTrack(vlc, stream);
             }
             else {
+
+                enableManualExternalSubtitleTrack(vlc, stream);
+
                 // Do it the normal way
-                activity.updateExternalSubtitles(null);
-                enableExternalSubtitleTrack(vlc, stream);
+                //activity.updateExternalSubtitles(null);
+                //enableExternalSubtitleTrack(vlc, stream);
             }
         }
         else {
@@ -300,7 +303,7 @@ public class VideoApiHelper {
                         }
                     });
                 } else {
-                    logger.Error("Subtitles were downloaded but file doens't exist!");
+                    logger.Error("Subtitles were downloaded but file doesn't exist!");
                 }
             }
 
@@ -405,11 +408,6 @@ public class VideoApiHelper {
     public void setQuality(LibVLC vlc, int bitrate, int maxHeight) {
 
         preferencesProvider.set("preferredVideoBitrate", String.valueOf(bitrate));
-
-        if (maxHeight >= 1080) {
-            // Work around vlc 1080p stutter for now
-            bitrate = Math.min(bitrate, 4000002);
-        }
 
         for (CodecProfile codecProfile : deviceProfile.getCodecProfiles()) {
 
@@ -533,6 +531,29 @@ public class VideoApiHelper {
         request.setMediaSourceId(mediaSource.getId());
         request.setLiveStreamId(liveStreamId);
         request.setId(itemId);
+
+        // Work around vlc 1080p stutter for now
+        if (maxBitrate != null) {
+
+            int maxHeight = 1080;
+
+            for (CodecProfile codecProfile : deviceProfile.getCodecProfiles()) {
+
+                if (codecProfile.getType() == CodecType.Video) {
+                    for (ProfileCondition profileCondition : codecProfile.getConditions()) {
+                        if (profileCondition.getProperty() == ProfileConditionValue.Height && profileCondition.getCondition() == ProfileConditionType.LessThanEqual) {
+                            if (profileCondition.getValue() != null && profileCondition.getValue().length() > 0) {
+                                maxHeight = Integer.parseInt(profileCondition.getValue());
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (maxHeight >= 1080) {
+                maxBitrate = Math.min(maxBitrate, 4000002);
+            }
+        }
 
         // If null, that's ok, the value in the profile will be used
         request.setMaxStreamingBitrate(maxBitrate);
