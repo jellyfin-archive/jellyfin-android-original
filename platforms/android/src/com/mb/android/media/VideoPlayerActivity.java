@@ -516,7 +516,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mDetector.setOnDoubleTapListener(this);
 
         subtitleText = (TextView) findViewById(R.id.offLine_subtitleText);
-        updateManualSubtitlePosition(0);
     }
 
     private void updateManualSubtitlePosition(int topMargin) {
