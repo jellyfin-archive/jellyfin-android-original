@@ -5,6 +5,6 @@ return parseInt(appStorage.getItem('chromecastBitrate')||'')||3000000;},enableCh
 return appStorage.getItem('enablechromecastac3')=='true';},enableExternalPlayers:function(val){if(val!=null){update('externalplayers',val.toString());}
 return appStorage.getItem('externalplayers')=='true';},enableItemPreviews:function(val){if(val!=null){update('enableItemPreviews',val.toString());}
 return appStorage.getItem('enableItemPreviews')=='true';},enableFullScreen:function(val){if(val!=null){update('enableFullScreen',val.toString());}
-return appStorage.getItem('enableFullScreen')=='true';},syncPath:function(val){if(val!=null){update('syncPath',val.toString());}
-return appStorage.getItem('syncPath');},displayPreferencesKey:function(){if(AppInfo.isNativeApp){return'Emby Mobile';}
+return appStorage.getItem('enableFullScreen')=='true';},enableSyncToExternalStorage:function(val){if(val!=null){update('enableSyncToExternalStorage',val.toString());}
+return appStorage.getItem('enableSyncToExternalStorage')=='true';},displayPreferencesKey:function(){if(AppInfo.isNativeApp){return'Emby Mobile';}
 return'webclient';}};})(window);

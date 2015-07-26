@@ -2,9 +2,12 @@ package com.mb.android.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import org.xwalk.core.JavascriptInterface;
+
+import java.io.File;
 
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.model.extensions.StringHelper;
@@ -51,7 +54,7 @@ public class PreferencesProvider {
             logger.Error("SharedPreferences.Editor failed to save %s!", key);
         }
 
-        if (key.equalsIgnoreCase("syncPath")){
+        if (key.equalsIgnoreCase("enableSyncToExternalStorage")){
             updateSyncPreferences();
         }
     }
@@ -59,7 +62,16 @@ public class PreferencesProvider {
     private void updateSyncPreferences() {
 
         // Need to take the app settings and copy them to where the sync services will read them
-        String syncPath = get("syncPath");
+        boolean enableSyncToExternalStorage = getSharedPreferences(context).getBoolean("enableSyncToExternalStorage", false);
+
+        String syncPath = null;
+
+        if (enableSyncToExternalStorage) {
+            File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "emby");
+            directory = new File(directory, "sync");
+            syncPath = directory.getPath();
+        }
+
         logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences with %s", syncPath);
         MediaSyncAdapter.updateSyncPreferences(context, syncPath);
     }
