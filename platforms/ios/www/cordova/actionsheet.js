@@ -24,10 +24,10 @@
                     switch (option.ironIcon) {
 
                         case 'check':
-                            //option.name = '\\u2713 ' + option.name;
+                            option.name = '\\u2713 ' + option.name;
                             break;
                         default:
-                            //option.name = '\\u2001 ' + option.name;
+                            option.name = '\\u2001 ' + option.name;
                             break;
                     }
                 }
