@@ -1,5 +1,5 @@
 ﻿(function(globalScope,JSON){if(!globalScope.MediaBrowser){globalScope.MediaBrowser={};}
-globalScope.MediaBrowser.CredentialProvider=function(key){var self=this;var credentials=null;key=key||'servercredentials3';function ensure(){if(!credentials){var json=appStorage.getItem(key)||'{}';Logger.log('credentials initialized with: '+json);credentials=JSON.parse(json);credentials.Servers=credentials.Servers||credentials.servers||[];credentials.servers=null;}}
+globalScope.MediaBrowser.CredentialProvider=function(key){var self=this;var credentials=null;key=key||'servercredentials3';function ensure(){if(!credentials){var json=appStorage.getItem(key)||'{}';Logger.log('credentials initialized with: '+json);credentials=JSON.parse(json);credentials.Servers=credentials.Servers||[];}}
 function get(){ensure();return credentials;}
 function set(data){if(data){credentials=data;appStorage.setItem(key,JSON.stringify(data));}else{self.clear();}
 Events.trigger(self,'credentialsupdated');}
