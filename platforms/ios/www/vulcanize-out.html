@@ -1,4 +1,12 @@
 <html><head><meta charset="UTF-8"><!--
+    @license
+    Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE
@@ -6716,6 +6724,8 @@ this.fire('dom-change');
       'space:keyup': '_spaceKeyUpHandler',
     },
 
+    _mouseEventRe: /^mouse/,
+
     _tapHandler: function() {
       if (this.toggles) {
        // a tap is needed to toggle the active state
@@ -6736,7 +6746,33 @@ this.fire('dom-change');
       this.fire('change');
     },
 
-    _downHandler: function() {
+    _eventSourceIsPrimaryInput: function(event) {
+      event = event.detail.sourceEvent || event;
+
+      // Always true for non-mouse events....
+      if (!this._mouseEventRe.test(event.type)) {
+        return true;
+      }
+
+      // http://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+      if ('buttons' in event) {
+        return event.buttons === 1;
+      }
+
+      // http://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/which
+      if (typeof event.which === 'number') {
+        return event.which < 2;
+      }
+
+      // http://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
+      return event.button < 1;
+    },
+
+    _downHandler: function(event) {
+      if (!this._eventSourceIsPrimaryInput(event)) {
+        return;
+      }
+
       this._setPointerDown(true);
       this._setPressed(true);
       this._setReceivedFocusFromKeyboard(false);
@@ -12315,6 +12351,10 @@ is separate from validation, and `allowed-pattern` does not affect how the input
 
 
 
+
+
+
+
 </head><body><div hidden="" by-vulcanize=""><dom-module id="paper-material" assetpath="bower_components/paper-material/">
   <style>
     :host {
@@ -17711,6 +17751,128 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </script>
 
 </dom-module>
+<dom-module id="paper-icon-item" assetpath="bower_components/paper-item/">
+
+  <style>
+/*
+    @license
+    Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+
+:host {
+  display: block;
+  min-height: var(--paper-item-min-height, 48px);
+  padding: 0px 16px;
+}
+
+:host > ::content > *:not(:first-child):not(:last-child) {
+  margin-right: 16px;
+}
+
+</style>
+
+  <style>
+
+    :host {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      @apply(--paper-font-subhead);
+
+      @apply(--paper-item);
+      @apply(--paper-icon-item);
+    }
+
+    .content-icon {
+      width: var(--paper-item-icon-width, 56px);
+    }
+
+  </style>
+
+  <template>
+    <div id="contentIcon" class="content-icon layout horizontal center">
+      <content select="[item-icon]"></content>
+    </div>
+    <content></content>
+  </template>
+
+</dom-module>
+
+<script>
+
+(function() {
+
+  Polymer({
+
+    is: 'paper-icon-item',
+
+    hostAttributes: {
+      'role': 'listitem'
+    }
+
+  });
+
+})();
+
+</script>
+<dom-module id="paper-item-body" assetpath="bower_components/paper-item/">
+
+  <style>
+
+    :host {
+      overflow: hidden; /* needed for text-overflow: ellipsis to work on ff */
+      @apply(--layout-vertical);
+      @apply(--layout-center-justified);
+      @apply(--layout-flex);
+    }
+
+    :host([two-line]) {
+      min-height: var(--paper-item-body-two-line-min-height, 72px);
+    }
+
+    :host([three-line]) {
+      min-height: var(--paper-item-body-three-line-min-height, 88px);
+    }
+
+    :host > ::content > * {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    :host > ::content [secondary] {
+      color: var(--paper-item-body-secondary-color, --secondary-text-color);
+      @apply(--paper-font-body1);
+
+      @apply(--paper-item-body-secondary);
+    }
+
+
+  </style>
+
+  <template>
+    <content></content>
+  </template>
+
+</dom-module>
+
+<script>
+
+(function() {
+
+  Polymer({
+
+    is: 'paper-item-body'
+
+  });
+
+})();
+
+</script>
 <iron-iconset-svg name="icons" size="24">
     <svg>
         <defs>
