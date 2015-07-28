@@ -4,9 +4,10 @@ function getDictionary(name,culture){return dictionaries[getUrl(name,culture)];}
 function loadDictionary(name,culture){var deferred=DeferredBuilder.Deferred();if(getDictionary(name,culture)){deferred.resolve();}else{var url=getUrl(name,culture);$.getJSON(url).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();}).fail(function(){$.getJSON(getUrl(name,'en-US')).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();});});}
 return deferred.promise();}
 var currentCulture='en-US';function setCulture(value){currentCulture=value;return $.when(loadDictionary('html',value),loadDictionary('javascript',value));}
-function ensure(){var culture;if(navigator.globalization&&navigator.globalization.getLocaleName){culture=(navigator.globalization.getLocaleName()||'').replace('_','-');}else{culture=document.documentElement.getAttribute('data-culture');}
-if(!culture){culture='en-US';}
-return setCulture(culture);}
+function getDeviceCulture(){var deferred=DeferredBuilder.Deferred();var culture;if(navigator.globalization&&navigator.globalization.getLocaleName){navigator.globalization.getLocaleName(function(locale){culture=(locale.value||'').replace('_','-');Logger.log('Device culture is '+culture);deferred.resolveWith(null,[culture]);},function(){deferred.resolveWith(null,[null]);});}else{culture=document.documentElement.getAttribute('data-culture');deferred.resolveWith(null,[culture]);}
+return deferred.promise();}
+function ensure(){var deferred=DeferredBuilder.Deferred();getDeviceCulture().done(function(culture){if(!culture){culture='en-US';}
+setCulture(culture).done(function(){deferred.resolve();});});return deferred.promise();}
 function translateDocument(html,dictionaryName){var glossary=getDictionary(dictionaryName,currentCulture)||{};return translateHtml(html,glossary);}
 function translateHtml(html,dictionary){var startIndex=html.indexOf('${');if(startIndex==-1){return html;}
 startIndex+=2;var endIndex=html.indexOf('}',startIndex);if(endIndex==-1){return html;}
