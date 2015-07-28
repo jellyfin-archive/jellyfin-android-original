@@ -362,6 +362,20 @@ module.exports = [
         "clobbers": [
             "cordova.searchbar"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-globalization/www/GlobalizationError.js",
+        "id": "cordova-plugin-globalization.GlobalizationError",
+        "clobbers": [
+            "window.GlobalizationError"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-globalization/www/globalization.js",
+        "id": "cordova-plugin-globalization.globalization",
+        "clobbers": [
+            "navigator.globalization"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -391,6 +405,7 @@ module.exports.metadata =
     "cordova-plugin-webserver": "1.0.3",
     "com.telerik.plugins.wkwebview": "0.4.0",
     "com.dieam.searchbar": "2.1.6",
+    "cordova-plugin-globalization": "1.0.1",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
