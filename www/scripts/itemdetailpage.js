@@ -16,14 +16,9 @@ setPeopleHeader(page,item);$(page).trigger('displayingitem',[{item:item,context:
 function renderImage(page,item,user){var imageHref=user.Policy.IsAdministrator&&item.MediaType!='Photo'?"edititemmetadata.html?tab=3&id="+item.Id:"";LibraryBrowser.renderDetailImage(page.querySelector('.detailImageContainer'),item,imageHref);}
 function onWebSocketMessage(e,data){var msg=data;var page=$($.mobile.activePage)[0];if(msg.MessageType==="UserDataChanged"){if(currentItem&&msg.Data.UserId==Dashboard.getCurrentUserId()){var key=currentItem.UserData.Key;var userData=msg.Data.UserDataList.filter(function(u){return u.Key==key;})[0];if(userData){currentItem.UserData=userData;renderUserDataIcons(page,currentItem);Dashboard.getCurrentUser().done(function(user){renderImage(page,currentItem,user);});}}}}
 function setPeopleHeader(page,item){if(item.Type=="Audio"||item.Type=="MusicAlbum"||item.MediaType=="Book"||item.MediaType=="Photo"){$('#peopleHeader',page).html(Globalize.translate('HeaderPeople'));}else{$('#peopleHeader',page).html(Globalize.translate('HeaderCastAndCrew'));}}
-function getContext(item){var context=getParameterByName('context');if(context){return context;}
-if(item.Type=="Episode"||item.Type=="Series"||item.Type=="Season"){return"tv";}
-if(item.Type=="Movie"||item.Type=="Trailer"){return"movies";}
-if(item.Type=="Audio"||item.Type=="MusicAlbum"||item.Type=="MusicArtist"||item.Type=="MusicVideo"){return"music";}
-if(item.MediaType=="Game"){return"games";}
-if(item.Type=="BoxSet"){return"boxsets";}
-return"";}
-function renderHeader(page,item,context){$('.itemTabs',page).hide();$(page).removeClass('noSecondaryNavPage');var elem;if(context=='home'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeHome',page).addClass('ui-btn-active');}
+function getContext(item){return getParameterByName('context');}
+function renderHeader(page,item,context){$('.itemTabs',page).hide();$(page).removeClass('noSecondaryNavPage');var elem;if(!context){$(page).addClass('noSecondaryNavPage');LibraryMenu.setBackButtonVisible(true);LibraryMenu.setMenuButtonVisible(false);}
+else if(context=='home'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeHome',page).addClass('ui-btn-active');}
 else if(context=='home-nextup'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeNextUp',page).addClass('ui-btn-active');}
 else if(context=='home-favorites'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeFavorites',page).addClass('ui-btn-active');}
 else if(context=='home-upcoming'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeUpcoming',page).addClass('ui-btn-active');}
@@ -33,15 +28,8 @@ else if(context=='photos-videos'){$('.lnkVideos',page).addClass('ui-btn-active')
 else if(context=='movies'||context=='movies-trailers'){elem=$('#movieTabs',page).show();$('a',elem).removeClass('ui-btn-active');if(item.Type=='BoxSet'){$('.lnkCollections',page).addClass('ui-btn-active');}
 else if(context=='movies-trailers'){$('.lnkMovieTrailers',page).addClass('ui-btn-active');}
 else{$('.lnkMovies',page).addClass('ui-btn-active');}}
-else if(context=='channels'){$(page).addClass('noSecondaryNavPage');LibraryMenu.setBackButtonVisible(true);LibraryMenu.setMenuButtonVisible(false);}
-else if(item.Type=="MusicAlbum"){$('#albumTabs',page).show();}
-else if(item.Type=="MusicVideo"){$('#musicVideoTabs',page).show();}
-else if(item.Type=="Audio"){$('#songTabs',page).show();}
-else if(item.Type=="ChannelVideoItem"||item.Type=="ChannelAudioItem"||item.Type=="ChannelFolderItem"){$(page).addClass('noSecondaryNavPage');LibraryMenu.setBackButtonVisible(true);LibraryMenu.setMenuButtonVisible(false);}
-else if(item.Type=="BoxSet"){$('#boxsetTabs',page).show();}
-else if(item.MediaType=="Game"){$('#gameTabs',page).show();}
-else if(item.Type=="GameSystem"){$('#gameSystemTabs',page).show();}
-else if(item.Type=="Episode"||item.Type=="Season"||item.Type=="Series"){$('#tvShowsTabs',page).show();}}
+else if(context=='tv'){elem=$('#tvShowsTabs',page).show();}
+else if(context=='games'){elem=$('#gameTabs',page).show();}}
 function setInitialCollapsibleState(page,item,context,user){$('.collectionItems',page).empty();if(item.IsFolder){if(item.Type=="BoxSet"){$('#childrenCollapsible',page).addClass('hide');}else{$('#childrenCollapsible',page).removeClass('hide');}
 renderChildren(page,item,user,context);}
 else{$('#childrenCollapsible',page).addClass('hide');}

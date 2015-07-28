@@ -2,4 +2,4 @@
 if(result.Action=='InNetworkRequired'){Dashboard.alert({message:Globalize.translate('MessageForgotPasswordInNetworkRequired'),title:Globalize.translate('HeaderForgotPassword')});return;}
 if(result.Action=='PinCode'){var msg=Globalize.translate('MessageForgotPasswordFileCreated');msg+="<br/>";msg+="<br/>";msg+=result.PinFile;msg+="<br/>";Dashboard.alert({message:msg,title:Globalize.translate('HeaderForgotPassword')});return;}}
 function onSubmit(){var page=$(this).parents('.page');ApiClient.ajax({type:'POST',url:ApiClient.getUrl('Users/ForgotPassword'),dataType:'json',data:{EnteredUsername:$('#txtName',page).val()}}).done(function(result){processForgotPasswordResult(page,result);});return false;}
-$(document).on('pageinitdepends','#forgotPasswordPage',function(){$('.forgotPasswordForm').off('submit',onSubmit).on('submit',onSubmit);});})(window);
+$(document).on('pageinitdepends','#forgotPasswordPage',function(){var page=this;$('.forgotPasswordForm',page).off('submit',onSubmit).on('submit',onSubmit);});})(window);
