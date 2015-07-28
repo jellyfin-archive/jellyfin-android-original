@@ -135,6 +135,17 @@ def computeBuildTargetName(debugBuild) {
     return ret + (debugBuild ? 'Debug' : 'Release')
 }
 
+afterEvaluate {
+    tasks.matching {
+        it.name.startsWith('dex')
+    }.each { dx ->
+        if (dx.additionalParameters == null) {
+            dx.additionalParameters = []
+        }
+        dx.additionalParameters += "--set-max-idx-number=55000" // default 60000
+    }
+}
+
 // Make cdvBuild a task that depends on the debug/arch-sepecific task.
 task cdvBuildDebug
 cdvBuildDebug.dependsOn {

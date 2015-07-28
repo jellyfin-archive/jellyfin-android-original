@@ -91,6 +91,10 @@
                         {
                             "xml": "<feature name=\"SearchBar\"><param name=\"ios-package\" value=\"SearchBar\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Globalization\"><param name=\"ios-package\" value=\"CDVGlobalization\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -267,6 +271,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.dieam.searchbar": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-globalization": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

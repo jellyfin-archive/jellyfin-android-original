@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 		04AD0C44B5E3402BB8C42B64 /* AppDelegate+WKWebViewPolyfill.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1D58F984A44FFB83C217CB /* AppDelegate+WKWebViewPolyfill.m */; };
@@ -92,6 +91,7 @@
 		EEF37D23C84B45748681E38B /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D240FC4E01DB4DD088BCEFEE /* CDVDevice.m */; };
 		F557CE787863413EA07159F0 /* AppDelegate+WKWebViewPolyfill.h in Sources */ = {isa = PBXBuildFile; fileRef = D0F325F759734AC098B86B75 /* AppDelegate+WKWebViewPolyfill.h */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		96C461EA659B4E31A53C530F /* CDVGlobalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 6826C127FA564CE0AED80C60 /* CDVGlobalization.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -270,6 +270,8 @@
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FE1D58F984A44FFB83C217CB /* AppDelegate+WKWebViewPolyfill.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+WKWebViewPolyfill.m"; path = "com.telerik.plugins.wkwebview/AppDelegate+WKWebViewPolyfill.m"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
+		6826C127FA564CE0AED80C60 /* CDVGlobalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVGlobalization.m"; path = "cordova-plugin-globalization/CDVGlobalization.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		3699C22440AD4F7A9D156F2A /* CDVGlobalization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVGlobalization.h"; path = "cordova-plugin-globalization/CDVGlobalization.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -476,6 +478,8 @@
 				1134E9DE67FB4B1D8CCAC9F0 /* CDVWebViewUIDelegate.h */,
 				18D8241D42CE405FA82272BB /* SearchBar.m */,
 				16C12376B4DE4EFCB4F299C5 /* SearchBar.h */,
+				6826C127FA564CE0AED80C60 /* CDVGlobalization.m */,
+				3699C22440AD4F7A9D156F2A /* CDVGlobalization.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -739,6 +743,7 @@
 				CAD5ADFF436C4D898BED18D2 /* CDVWebViewOperationsDelegate.m in Sources */,
 				C7EB8AA033404F3785FDB0CC /* CDVWebViewUIDelegate.m in Sources */,
 				001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */,
+				96C461EA659B4E31A53C530F /* CDVGlobalization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
