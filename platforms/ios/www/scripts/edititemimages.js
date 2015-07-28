@@ -11,7 +11,7 @@ else if(imageType=="Disc"){cssClass+=" remoteDiscImage";}
 else{if(currentItem.Type=="Episode"){cssClass+=" remoteBackdropImage";}
 else if(currentItem.Type=="MusicAlbum"||currentItem.Type=="MusicArtist"){cssClass+=" remoteDiscImage";}
 else{cssClass+=" remotePosterImage";}}
-var displayUrl=getDisplayUrl(image.ThumbnailUrl||image.Url);html+='<a target="_blank" href="'+getDisplayUrl(image.Url)+'" class="'+cssClass+'" style="background-image:url(\''+displayUrl+'\');">';html+='</a>';html+='<div class="remoteImageDetails">';html+=image.ProviderName;html+='</div>';if(image.Width||image.Height||image.Language){html+='<div class="remoteImageDetails">';if(image.Width||image.Height){html+=image.Width+' x '+image.Height;if(image.Language){html+=' • '+image.Language;}}else{if(image.Language){html+=image.Language;}}
+var displayUrl=getDisplayUrl(image.ThumbnailUrl||image.Url);html+='<a target="_blank" href="'+getDisplayUrl(image.Url)+'" class="'+cssClass+'" style="background-image:url(\''+displayUrl+'\');">';html+='</a>';html+='<div class="remoteImageDetails">';html+=image.ProviderName;html+='</div>';if(image.Width||image.Height||image.Language){html+='<div class="remoteImageDetails">';if(image.Width&&image.Height){html+=image.Width+' x '+image.Height;if(image.Language){html+=' • '+image.Language;}}else{if(image.Language){html+=image.Language;}}
 html+='</div>';}
 if(image.CommunityRating!=null){html+='<div class="remoteImageDetails">';if(image.RatingType=="Likes"){html+=image.CommunityRating+(image.CommunityRating==1?" like":" likes");}else{if(image.CommunityRating){html+=image.CommunityRating.toFixed(1);if(image.VoteCount){html+=' • '+image.VoteCount+(image.VoteCount==1?" vote":" votes");}}else{html+="Unrated";}}
 html+='</div>';}
