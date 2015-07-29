@@ -1,5 +1,5 @@
 ﻿(function($,document){var currentItem;var programs;function renderPrograms(page,result){var html='';var currentIndexValue;var now=new Date();for(var i=0,length=result.Items.length;i<length;i++){var program=result.Items[i];var startDate=parseISO8601Date(program.StartDate,{toLocal:true});var startDateText=LibraryBrowser.getFutureDateText(startDate);var endDate=parseISO8601Date(program.EndDate,{toLocal:true});if(startDateText!=currentIndexValue){html+='<h2 class="detailSectionHeader tvProgramSectionHeader">'+startDateText+'</h2>';currentIndexValue=startDateText;}
-html+='<a href="livetvprogram.html?id='+program.Id+'" class="tvProgram">';var cssClass="tvProgramTimeSlot";if(now>=startDate&&now<endDate){cssClass+=" tvProgramCurrentTimeSlot";}
+html+='<a href="itemdetails.html?id='+program.Id+'" class="tvProgram">';var cssClass="tvProgramTimeSlot";if(now>=startDate&&now<endDate){cssClass+=" tvProgramCurrentTimeSlot";}
 html+='<div class="'+cssClass+'">';html+='<div class="tvProgramTimeSlotInner">'+LibraryBrowser.getDisplayTime(startDate)+'</div>';html+='</div>';cssClass="tvProgramInfo";if(program.IsKids){cssClass+=" childProgramInfo";}
 else if(program.IsSports){cssClass+=" sportsProgramInfo";}
 else if(program.IsNews){cssClass+=" newsProgramInfo";}
