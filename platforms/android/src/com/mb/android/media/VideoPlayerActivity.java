@@ -523,13 +523,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         TextView element = subtitleText;
 
         if (element == null) {
-            logger.Error("Cannot proceed with updateManualSubtitlePosition because subtitleText is null");
+            logger.Error("Cannot proceed with updateManualSubtitlePosition because subtitleText element is null");
+            return;
         }
 
         ViewGroup.LayoutParams layoutParams = element.getLayoutParams();
 
         if (layoutParams == null) {
             logger.Error("Cannot proceed with updateManualSubtitlePosition because layoutParams is null");
+            return;
         }
 
         if (!(layoutParams instanceof FrameLayout.LayoutParams)) {
@@ -871,6 +873,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 mBattery.setText(String.format("%d%%", batteryLevel));
             }
             else if (action.equalsIgnoreCase(Constants.SLEEP_INTENT)) {
+                logger.Info("Stopping due to sleep intent");
                 finish();
             }
         }
@@ -1036,6 +1039,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                 returnIntent.putExtra("position",mLibVLC.getTime());
                 returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,mLocation);
                 setResult(RESULT_CANCELED,returnIntent);
+                logger.Info("Stopping due to stop key press");
                 finish();
                 return true;
             case KeyEvent.KEYCODE_DPAD_UP:
@@ -1649,6 +1653,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
                     returnIntent.putExtra("error",true);
                     returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,activity.mLocation);
                     activity.setResult(RESULT_CANCELED,returnIntent);
+                    logger.Info("Stopping due to AUDIO_SERVICE_CONNECTION_FAILED");
                     activity.finish();
                     break;
                 case RESET_BACK_LOCK:
@@ -1700,6 +1705,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
             Intent returnIntent = new Intent();
             returnIntent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION,mLocation);
             setResult(RESULT_OK,returnIntent);
+            logger.Info("End of video, finishing activity");
             finish();
         }
     }
@@ -1734,6 +1740,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         mHardwareAccelerationError = true;
         if (mSwitchingView)
             return;
+
+        logger.Info("Stopping due to HardwareAccelerationError");
+
         mLibVLC.stop();
 
         if(!isFinishing())

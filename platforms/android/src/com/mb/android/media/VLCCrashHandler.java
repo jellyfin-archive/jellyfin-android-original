@@ -48,7 +48,7 @@ public class VLCCrashHandler implements UncaughtExceptionHandler {
         printWriter.close();
         Log.e(TAG, stacktrace);
 
-        logger.Error("Unhandled Vlc Exception", stacktrace);
+        logger.Error("Unhandled Vlc Exception: %s", stacktrace);
 
         defaultUEH.uncaughtException(thread, ex);
     }

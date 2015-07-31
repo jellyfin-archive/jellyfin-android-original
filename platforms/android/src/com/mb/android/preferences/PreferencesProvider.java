@@ -62,7 +62,7 @@ public class PreferencesProvider {
     private void updateSyncPreferences() {
 
         // Need to take the app settings and copy them to where the sync services will read them
-        boolean enableSyncToExternalStorage = getSharedPreferences(context).getBoolean("enableSyncToExternalStorage", false);
+        boolean enableSyncToExternalStorage = getSharedPreferences(context).getBoolean("enableSyncToExternalStorage", true);
 
         String syncPath = null;
 
