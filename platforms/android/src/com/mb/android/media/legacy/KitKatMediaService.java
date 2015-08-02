@@ -38,7 +38,6 @@ import com.mb.android.MainActivity;
 import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
-import com.mb.android.media.MediaWidgetProvider;
 import com.mb.android.media.VlcEventHandler;
 
 import mediabrowser.apiinteraction.Response;
@@ -122,7 +121,6 @@ public class KitKatMediaService extends Service {
         filter.addAction(Constants.SLEEP_INTENT);
         filter.addAction(Constants.INCOMING_CALL_INTENT);
         filter.addAction(Constants.CALL_ENDED_INTENT);
-        filter.addAction(MediaWidgetProvider.ACTION_WIDGET_INIT);
         registerReceiver(serviceReceiver, filter);
     }
 
@@ -279,7 +277,6 @@ public class KitKatMediaService extends Service {
 
         handleIntent(this, intent);
 
-        updateWidget(this);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -432,8 +429,6 @@ public class KitKatMediaService extends Service {
 
             seek(intent.getLongExtra("position", 0));
 
-        }else if (action.equalsIgnoreCase(MediaWidgetProvider.ACTION_WIDGET_INIT)) {
-            updateWidget(context);
         }
 
             /*
@@ -571,13 +566,6 @@ public class KitKatMediaService extends Service {
                     break;
                 case EventHandler.MediaPlayerPositionChanged:
                     float pos = msg.getData().getFloat("data");
-
-                    LibVLC vlc = service.mLibVLC;
-                    // Make sure it hasn't been disposed
-                    if (vlc != null) {
-                        long length = vlc.getLength();
-                        service.updateWidgetPosition(service, pos, length);
-                    }
                     break;
                 case EventHandler.MediaPlayerEncounteredError:
                     /*service.showToast(service.getString(
@@ -618,8 +606,7 @@ public class KitKatMediaService extends Service {
     }
 
     private void executeUpdate(Boolean updateWidget) {
-        if (updateWidget)
-            updateWidget(this);
+
     }
 
     private void executeUpdateProgress() {
@@ -672,7 +659,7 @@ public class KitKatMediaService extends Service {
                     .setOngoing(true);
 
             Intent notificationIntent = new Intent(this, MainActivity.class);
-            notificationIntent.setAction(MainActivity.ACTION_SHOW_PLAYER);
+            notificationIntent.setAction(Constants.ACTION_SHOW_PLAYER);
             notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             notificationIntent.putExtra(START_FROM_NOTIFICATION, true);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -770,7 +757,6 @@ public class KitKatMediaService extends Service {
             setUpRemoteControlClient();
             mLibVLC.play();
             showNotification();
-            updateWidget(this);
         }
     }
 
@@ -799,95 +785,6 @@ public class KitKatMediaService extends Service {
         changeAudioFocus(false);
     }
 
-    private void updateWidget(Context context) {
-
-        Log.d(TAG, "Updating widget");
-        updateWidgetState(context);
-        updateWidgetCover(context);
-    }
-
-    private void updateWidgetState(Context context) {
-
-        Intent i = new Intent();
-        i.setClassName(MediaWidgetProvider.APP_PACKAGE, WIDGET_CLASS);
-        i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE);
-
-        LibVLC vlc = mLibVLC;
-
-        // Make sure vlc hasn't been disposed
-        if (hasCurrentMedia() && vlc != null) {
-
-            BaseItemDto item = currentItem;
-
-            String album = item.getAlbum() == null ? "" : item.getAlbum();
-            String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
-            String title = item.getName() == null ? "" : item.getName();
-            String itemId = item.getId();
-
-            i.putExtra("title", title);
-            i.putExtra("artist", artist);
-
-            int playerState = vlc.getPlayerState();
-
-            // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
-            boolean isPaused = playerState == 4;
-
-            i.putExtra("isplaying", !isPaused);
-        }
-        else {
-            i.putExtra("title", "Emby");
-            i.putExtra("artist", "");
-
-            i.putExtra("isplaying", false);
-        }
-
-        sendBroadcast(i);
-    }
-
-    private void updateWidgetCover(Context context)
-    {
-        if (posterUrl == null || posterUrl.length() == 0) {
-            return;
-        }
-
-        GetHttpClient().getBitmap(posterUrl, new Response<Bitmap>(){
-
-            @Override
-            public void onResponse(Bitmap bitmap) {
-                Intent i = new Intent();
-                i.setClassName(MediaWidgetProvider.APP_PACKAGE, WIDGET_CLASS);
-                i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE_COVER);
-                i.putExtra("cover", bitmap);
-                sendBroadcast(i);
-            }
-
-            @Override
-            public void onError(Exception ex) {
-
-            }
-        });
-    }
-
-    private void updateWidgetPosition(Context context, float positionMs, float durationMs)
-    {
-        // no more than one widget update for each 1/50 of the song
-        long timestamp = Calendar.getInstance().getTimeInMillis();
-        if (!hasCurrentMedia() || timestamp - mWidgetPositionTimestamp < durationMs / 50)
-            return;
-
-        updateWidgetState(context);
-
-        mWidgetPositionTimestamp = timestamp;
-        Intent i = new Intent();
-        i.setClassName(MediaWidgetProvider.APP_PACKAGE, WIDGET_CLASS);
-        i.setAction(MediaWidgetProvider.ACTION_WIDGET_UPDATE_POSITION);
-        i.putExtra("position", positionMs);
-        sendBroadcast(i);
-    }
-
-    /**
-     * A simple handler that stops the service if playback is not active (playing)
-     */
     private static class DelayedStopHandler extends Handler {
         private final WeakReference<KitKatMediaService> mWeakReference;
 

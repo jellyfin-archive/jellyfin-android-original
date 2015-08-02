@@ -67,8 +67,6 @@ public class MainActivity extends CordovaActivity
     private final int VIDEO_PLAYBACK = 997;
     private static IWebView webView;
 
-    public static final String ACTION_SHOW_PLAYER = "com.mb.android.ShowPlayer";
-
     private ILogger getLogger(){
         return AppLogger.getLogger(this);
     }
@@ -95,7 +93,7 @@ public class MainActivity extends CordovaActivity
 
         /* Prepare the progressBar */
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ACTION_SHOW_PLAYER);
+        filter.addAction(Constants.ACTION_SHOW_PLAYER);
         registerReceiver(messageReceiver, filter);
     }
 
@@ -431,7 +429,7 @@ public class MainActivity extends CordovaActivity
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if (action.equalsIgnoreCase(ACTION_SHOW_PLAYER)) {
+            if (action.equalsIgnoreCase(Constants.ACTION_SHOW_PLAYER)) {
 //                showAudioPlayer();
             }
         }
