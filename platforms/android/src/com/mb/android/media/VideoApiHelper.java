@@ -549,10 +549,6 @@ public class VideoApiHelper {
                     }
                 }
             }
-
-            if (maxHeight >= 1080) {
-                maxBitrate = Math.min(maxBitrate, 4000002);
-            }
         }
 
         // If null, that's ok, the value in the profile will be used
