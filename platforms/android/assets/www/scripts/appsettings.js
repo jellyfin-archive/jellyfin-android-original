@@ -6,5 +6,6 @@ return appStorage.getItem('enablechromecastac3')=='true';},enableExternalPlayers
 return appStorage.getItem('externalplayers')=='true';},enableItemPreviews:function(val){if(val!=null){update('enableItemPreviews',val.toString());}
 return appStorage.getItem('enableItemPreviews')=='true';},enableFullScreen:function(val){if(val!=null){update('enableFullScreen',val.toString());}
 return appStorage.getItem('enableFullScreen')=='true';},enableSyncToExternalStorage:function(val){if(val!=null){update('enableSyncToExternalStorage',val.toString());}
-return appStorage.getItem('enableSyncToExternalStorage')!='false';},displayPreferencesKey:function(){if(AppInfo.isNativeApp){return'Emby Mobile';}
+return appStorage.getItem('enableSyncToExternalStorage')!='false';},displayLanguage:function(val){if(val!=null){update('displayLanguage',val);}
+return appStorage.getItem('displayLanguage')||'en-US';},displayPreferencesKey:function(){if(AppInfo.isNativeApp){return'Emby Mobile';}
 return'webclient';}};})(window);

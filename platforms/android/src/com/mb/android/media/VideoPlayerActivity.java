@@ -3384,7 +3384,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVideoPlay
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                subtitleText.setVisibility(View.INVISIBLE);
+
+                if (subtitleText != null){
+                    subtitleText.setVisibility(View.INVISIBLE);
+                }
             }
         });
     }
