@@ -187,7 +187,7 @@ var castContent=page.querySelector('#castContent');castContent.innerHTML=html;Im
 function play(startPosition){MediaController.play({items:[currentItem],startPositionTicks:startPosition});}
 function splitVersions(page){var id=getParameterByName('id');Dashboard.confirm("Are you sure you wish to split the media sources into separate items?","Split Media Apart",function(confirmResult){if(confirmResult){Dashboard.showLoadingMsg();ApiClient.ajax({type:"DELETE",url:ApiClient.getUrl("Videos/"+id+"/AlternateSources")}).done(function(){Dashboard.hideLoadingMsg();reload(page);});}});}
 function playTrailer(page){ApiClient.getLocalTrailers(Dashboard.getCurrentUserId(),currentItem.Id).done(function(trailers){MediaController.play({items:trailers});});}
-function onItemDeleted(e,itemId){if(currentItem&&currentItem.Id==itemId){Dashboard.navigate('index.html');}}
+function onItemDeleted(e,itemId){if(currentItem&&currentItem.Id==itemId){if(currentItem.Type=='Recording'){Dashboard.navigate('livetv.html');}else{Dashboard.navigate('index.html');}}}
 function playCurrentItem(button){if(currentItem.Type=='Program'){ApiClient.getLiveTvChannel(currentItem.ChannelId,Dashboard.getCurrentUserId()).done(function(channel){LibraryBrowser.showPlayMenu(null,channel.Id,channel.Type,false,channel.MediaType,(channel.UserData||{}).PlaybackPositionTicks);});return;}
 var userdata=currentItem.UserData||{};var mediaType=currentItem.MediaType;if(currentItem.Type=="MusicArtist"||currentItem.Type=="MusicAlbum"){mediaType="Audio";}
 LibraryBrowser.showPlayMenu(button,currentItem.Id,currentItem.Type,currentItem.IsFolder,mediaType,userdata.PlaybackPositionTicks);}
