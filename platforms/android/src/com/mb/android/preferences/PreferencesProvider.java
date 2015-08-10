@@ -67,7 +67,8 @@ public class PreferencesProvider {
         String syncPath = null;
 
         if (enableSyncToExternalStorage) {
-            File directory = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "emby");
+            File directory = Environment.getExternalStorageDirectory();
+            directory = new File(directory, "emby");
             directory = new File(directory, "sync");
             syncPath = directory.getPath();
         }
