@@ -54,7 +54,7 @@ public class PreferencesProvider {
             logger.Error("SharedPreferences.Editor failed to save %s!", key);
         }
 
-        if (key.equalsIgnoreCase("enableSyncToExternalStorage")){
+        if (key.equalsIgnoreCase("syncPath")){
             updateSyncPreferences();
         }
     }
@@ -62,16 +62,7 @@ public class PreferencesProvider {
     private void updateSyncPreferences() {
 
         // Need to take the app settings and copy them to where the sync services will read them
-        boolean enableSyncToExternalStorage = getSharedPreferences(context).getBoolean("enableSyncToExternalStorage", true);
-
-        String syncPath = null;
-
-        if (enableSyncToExternalStorage) {
-            File directory = Environment.getExternalStorageDirectory();
-            directory = new File(directory, "emby");
-            directory = new File(directory, "sync");
-            syncPath = directory.getPath();
-        }
+        String syncPath = getSharedPreferences(context).getString("syncPath", null);
 
         logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences with %s", syncPath);
         MediaSyncAdapter.updateSyncPreferences(context, syncPath);
