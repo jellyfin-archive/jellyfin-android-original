@@ -119,6 +119,38 @@ get: function () {
 return (document._currentScript || document.currentScript).ownerDocument;
 }
 });
+Polymer.RenderStatus = {
+_ready: false,
+_callbacks: [],
+whenReady: function (cb) {
+if (this._ready) {
+cb();
+} else {
+this._callbacks.push(cb);
+}
+},
+_makeReady: function () {
+this._ready = true;
+this._callbacks.forEach(function (cb) {
+cb();
+});
+this._callbacks = [];
+},
+_catchFirstRender: function () {
+requestAnimationFrame(function () {
+Polymer.RenderStatus._makeReady();
+});
+}
+};
+if (window.HTMLImports) {
+HTMLImports.whenReady(function () {
+Polymer.RenderStatus._catchFirstRender();
+});
+} else {
+Polymer.RenderStatus._catchFirstRender();
+}
+Polymer.ImportStatus = Polymer.RenderStatus;
+Polymer.ImportStatus.whenLoaded = Polymer.ImportStatus.whenReady;
 Polymer.Base = {
 __isPolymerInstance__: true,
 _addFeature: function (feature) {
@@ -135,16 +167,21 @@ this._doBehavior('created');
 this._initFeatures();
 },
 attachedCallback: function () {
+Polymer.RenderStatus.whenReady(function () {
 this.isAttached = true;
 this._doBehavior('attached');
+}.bind(this));
 },
 detachedCallback: function () {
 this.isAttached = false;
 this._doBehavior('detached');
 },
 attributeChangedCallback: function (name) {
-this._setAttributeToProperty(this, name);
+this._attributeChangedImpl(name);
 this._doBehavior('attributeChanged', arguments);
+},
+_attributeChangedImpl: function (name) {
+this._setAttributeToProperty(this, name);
 },
 extend: function (prototype, api) {
 if (prototype && api) {
@@ -203,6 +240,7 @@ return Boolean(obj && obj.__isPolymerInstance__);
 Polymer.telemetry.instanceCount = 0;
 (function () {
 var modules = {};
+var lcModules = {};
 var DomModule = function () {
 return document.createElement('dom-module');
 };
@@ -217,10 +255,11 @@ var id = id || this.id || this.getAttribute('name') || this.getAttribute('is');
 if (id) {
 this.id = id;
 modules[id] = this;
+lcModules[id.toLowerCase()] = this;
 }
 },
 import: function (id, selector) {
-var m = modules[id];
+var m = modules[id] || lcModules[id.toLowerCase()];
 if (!m) {
 forceDocumentUpgrade();
 m = modules[id];
@@ -257,6 +296,9 @@ if (module.localName === 'dom-module') {
 var id = module.id || module.getAttribute('name') || module.getAttribute('is');
 this.is = id;
 }
+}
+if (this.is) {
+this.is = this.is.toLowerCase();
 }
 }
 });
@@ -545,7 +587,7 @@ debouncer.stop();
 }
 }
 });
-Polymer.version = '1.0.8';
+Polymer.version = '1.0.9';
 Polymer.Base._addFeature({
 _registerFeatures: function () {
 this._prepIs();
@@ -570,6 +612,10 @@ _prepTemplate: function () {
 this._template = this._template || Polymer.DomModule.import(this.is, 'template');
 if (this._template && this._template.hasAttribute('is')) {
 this._warn(this._logf('_prepTemplate', 'top-level Polymer template ' + 'must not be a type-extension, found', this._template, 'Move inside simple <template>.'));
+}
+if (this._template && !this._template.content && HTMLTemplateElement.bootstrap) {
+HTMLTemplateElement.decorate(this._template);
+HTMLTemplateElement.bootstrap(this._template.content);
 }
 },
 _stampTemplate: function () {
@@ -991,6 +1037,14 @@ if (this.patch) {
 this.patch();
 }
 };
+if (window.wrap && Settings.useShadow && !Settings.useNativeShadow) {
+DomApi = function (node) {
+this.node = wrap(node);
+if (this.patch) {
+this.patch();
+}
+};
+}
 DomApi.prototype = {
 flush: function () {
 Polymer.dom.flush();
@@ -1063,6 +1117,9 @@ replaceChild: function (node, ref_node) {
 this.insertBefore(node, ref_node);
 this.removeChild(ref_node);
 return node;
+},
+_hasCachedOwnerRoot: function (node) {
+return Boolean(node._ownerShadyRoot !== undefined);
 },
 getOwnerRoot: function () {
 return this._ownerShadyRootForNode(this.node);
@@ -1202,8 +1259,7 @@ children.splice(index, 1);
 node._lightParent = null;
 },
 _removeOwnerShadyRoot: function (node) {
-var hasCachedRoot = factory(node).getOwnerRoot() !== undefined;
-if (hasCachedRoot) {
+if (this._hasCachedOwnerRoot(node)) {
 var c$ = factory(node).childNodes;
 for (var i = 0, l = c$.length, n; i < l && (n = c$[i]); i++) {
 this._removeOwnerShadyRoot(n);
@@ -2435,6 +2491,19 @@ var MOUSE_EVENTS = [
 'mouseup',
 'click'
 ];
+var MOUSE_WHICH_TO_BUTTONS = [
+0,
+1,
+4,
+2
+];
+var MOUSE_HAS_BUTTONS = function () {
+try {
+return new MouseEvent('test', { buttons: 1 }).buttons === 1;
+} catch (e) {
+return false;
+}
+}();
 var IS_TOUCH_ONLY = navigator.userAgent.match(/iP(?:[oa]d|hone)|Android/);
 var mouseCanceller = function (mouseEvent) {
 mouseEvent[HANDLED_OBJ] = { skip: true };
@@ -2473,6 +2542,34 @@ POINTERSTATE.mouse.mouseIgnoreJob = null;
 };
 POINTERSTATE.mouse.mouseIgnoreJob = Polymer.Debounce(POINTERSTATE.mouse.mouseIgnoreJob, unset, MOUSE_TIMEOUT);
 }
+function hasLeftMouseButton(ev) {
+var type = ev.type;
+if (MOUSE_EVENTS.indexOf(type) === -1) {
+return false;
+}
+if (type === 'mousemove') {
+var buttons = ev.buttons === undefined ? 1 : ev.buttons;
+if (ev instanceof window.MouseEvent && !MOUSE_HAS_BUTTONS) {
+buttons = MOUSE_WHICH_TO_BUTTONS[ev.which] || 0;
+}
+return Boolean(buttons & 1);
+} else {
+var button = ev.button === undefined ? 0 : ev.button;
+return button === 0;
+}
+}
+function isSyntheticClick(ev) {
+if (ev.type === 'click') {
+if (ev.detail === 0) {
+return true;
+}
+var t = Gestures.findOriginalTarget(ev);
+var bcr = t.getBoundingClientRect();
+var x = ev.pageX, y = ev.pageY;
+return !(x >= bcr.left && x <= bcr.right && (y >= bcr.top && y <= bcr.bottom));
+}
+return false;
+}
 var POINTERSTATE = {
 mouse: {
 target: null,
@@ -2496,6 +2593,16 @@ break;
 }
 }
 return ta;
+}
+function trackDocument(stateObj, movefn, upfn) {
+stateObj.movefn = movefn;
+stateObj.upfn = upfn;
+document.addEventListener('mousemove', movefn);
+document.addEventListener('mouseup', upfn);
+}
+function untrackDocument(stateObj) {
+document.removeEventListener('mousemove', stateObj.movefn);
+document.removeEventListener('mouseup', stateObj.upfn);
 }
 var Gestures = {
 gestures: {},
@@ -2597,7 +2704,7 @@ prevent = dy > dx;
 prevent = dx > dy;
 }
 if (prevent) {
-// This prevents side scrolling in safari
+// This prevents horizontal scrolling in safari
 //ev.preventDefault();
 } else {
 Gestures.prevent('track');
@@ -2703,18 +2810,48 @@ deps: [
 'touchstart',
 'touchend'
 ],
+flow: {
+start: [
+'mousedown',
+'touchstart'
+],
+end: [
+'mouseup',
+'touchend'
+]
+},
 emits: [
 'down',
 'up'
 ],
+info: {
+movefn: function () {
+},
+upfn: function () {
+}
+},
+reset: function () {
+untrackDocument(this.info);
+},
 mousedown: function (e) {
+if (!hasLeftMouseButton(e)) {
+return;
+}
 var t = Gestures.findOriginalTarget(e);
 var self = this;
-var upfn = function upfn(e) {
+var movefn = function movefn(e) {
+if (!hasLeftMouseButton(e)) {
 self.fire('up', t, e);
-document.removeEventListener('mouseup', upfn);
+untrackDocument(self.info);
+}
 };
-document.addEventListener('mouseup', upfn);
+var upfn = function upfn(e) {
+if (hasLeftMouseButton(e)) {
+self.fire('up', t, e);
+}
+untrackDocument(self.info);
+};
+trackDocument(this.info, movefn, upfn);
 this.fire('down', t, e);
 },
 touchstart: function (e) {
@@ -2765,6 +2902,10 @@ this.moves.shift();
 }
 this.moves.push(move);
 },
+movefn: function () {
+},
+upfn: function () {
+},
 prevent: false
 },
 reset: function () {
@@ -2774,6 +2915,7 @@ this.info.moves = [];
 this.info.x = 0;
 this.info.y = 0;
 this.info.prevent = false;
+untrackDocument(this.info);
 },
 hasMovedEnough: function (x, y) {
 if (this.info.prevent) {
@@ -2787,6 +2929,9 @@ var dy = Math.abs(this.info.y - y);
 return dx >= TRACK_DISTANCE || dy >= TRACK_DISTANCE;
 },
 mousedown: function (e) {
+if (!hasLeftMouseButton(e)) {
+return;
+}
 var t = Gestures.findOriginalTarget(e);
 var self = this;
 var movefn = function movefn(e) {
@@ -2797,6 +2942,10 @@ self.info.addMove({
 x: x,
 y: y
 });
+if (!hasLeftMouseButton(e)) {
+self.info.state = 'end';
+untrackDocument(self.info);
+}
 self.fire(t, e);
 self.info.started = true;
 }
@@ -2806,11 +2955,9 @@ if (self.info.started) {
 Gestures.prevent('tap');
 movefn(e);
 }
-document.removeEventListener('mousemove', movefn);
-document.removeEventListener('mouseup', upfn);
+untrackDocument(self.info);
 };
-document.addEventListener('mousemove', movefn);
-document.addEventListener('mouseup', upfn);
+trackDocument(this.info, movefn, upfn);
 this.info.x = e.clientX;
 this.info.y = e.clientY;
 },
@@ -2905,10 +3052,14 @@ this.info.x = e.clientX;
 this.info.y = e.clientY;
 },
 mousedown: function (e) {
+if (hasLeftMouseButton(e)) {
 this.save(e);
+}
 },
 click: function (e) {
+if (hasLeftMouseButton(e)) {
 this.forward(e);
+}
 },
 touchstart: function (e) {
 this.save(e.changedTouches[0]);
@@ -2920,7 +3071,7 @@ forward: function (e) {
 var dx = Math.abs(e.clientX - this.info.x);
 var dy = Math.abs(e.clientY - this.info.y);
 var t = Gestures.findOriginalTarget(e);
-if (isNaN(dx) || isNaN(dy) || dx <= TAP_DISTANCE && dy <= TAP_DISTANCE) {
+if (isNaN(dx) || isNaN(dy) || dx <= TAP_DISTANCE && dy <= TAP_DISTANCE || isSyntheticClick(e)) {
 if (!this.info.prevent) {
 Gestures.fire(t, 'tap', {
 x: e.clientX,
@@ -3541,7 +3692,7 @@ trigger: trigger
 });
 },
 _parseMethod: function (expression) {
-var m = expression.match(/(\w*)\((.*)\)/);
+var m = expression.match(/([^\s]+)\((.*)\)/);
 if (m) {
 var sig = {
 method: m[1],
@@ -3635,6 +3786,10 @@ this._handlers = [];
 },
 _marshalAttributes: function () {
 this._takeAttributesToModel(this._config);
+},
+_attributeChangedImpl: function (name) {
+var model = this._clientsReadied ? this : this._config;
+this._setAttributeToProperty(model, name);
 },
 _configValue: function (name, value) {
 this._config[name] = value;
@@ -3915,36 +4070,56 @@ var array = this.get(path);
 var args = Array.prototype.slice.call(arguments, 1);
 var len = array.length;
 var ret = array.push.apply(array, args);
+if (args.length) {
 this._notifySplice(array, path, len, args.length, []);
+}
 return ret;
 },
 pop: function (path) {
 var array = this.get(path);
+var hadLength = Boolean(array.length);
 var args = Array.prototype.slice.call(arguments, 1);
-var rem = array.slice(-1);
 var ret = array.pop.apply(array, args);
-this._notifySplice(array, path, array.length, 0, rem);
+if (hadLength) {
+this._notifySplice(array, path, array.length, 0, [ret]);
+}
 return ret;
 },
 splice: function (path, start, deleteCount) {
 var array = this.get(path);
+if (start < 0) {
+start = array.length - Math.floor(-start);
+} else {
+start = Math.floor(start);
+}
+if (!start) {
+start = 0;
+}
 var args = Array.prototype.slice.call(arguments, 1);
 var ret = array.splice.apply(array, args);
-this._notifySplice(array, path, start, args.length - 2, ret);
+var addedCount = Math.max(args.length - 2, 0);
+if (addedCount || ret.length) {
+this._notifySplice(array, path, start, addedCount, ret);
+}
 return ret;
 },
 shift: function (path) {
 var array = this.get(path);
+var hadLength = Boolean(array.length);
 var args = Array.prototype.slice.call(arguments, 1);
 var ret = array.shift.apply(array, args);
+if (hadLength) {
 this._notifySplice(array, path, 0, 0, [ret]);
+}
 return ret;
 },
 unshift: function (path) {
 var array = this.get(path);
 var args = Array.prototype.slice.call(arguments, 1);
 var ret = array.unshift.apply(array, args);
+if (args.length) {
 this._notifySplice(array, path, 0, args.length, []);
+}
 return ret;
 }
 });
@@ -3967,7 +4142,7 @@ text = this._clean(text);
 return this._parseCss(this._lex(text), text);
 },
 _clean: function (cssText) {
-return cssText.replace(rx.comments, '').replace(rx.port, '');
+return cssText.replace(this._rx.comments, '').replace(this._rx.port, '');
 },
 _lex: function (text) {
 var root = {
@@ -4006,15 +4181,15 @@ var ss = node.previous ? node.previous.end : node.parent.start;
 t = text.substring(ss, node.start - 1);
 t = t.substring(t.lastIndexOf(';') + 1);
 var s = node.parsedSelector = node.selector = t.trim();
-node.atRule = s.indexOf(AT_START) === 0;
+node.atRule = s.indexOf(this.AT_START) === 0;
 if (node.atRule) {
-if (s.indexOf(MEDIA_START) === 0) {
+if (s.indexOf(this.MEDIA_START) === 0) {
 node.type = this.types.MEDIA_RULE;
-} else if (s.match(rx.keyframesRule)) {
+} else if (s.match(this._rx.keyframesRule)) {
 node.type = this.types.KEYFRAMES_RULE;
 }
 } else {
-if (s.indexOf(VAR_START) === 0) {
+if (s.indexOf(this.VAR_START) === 0) {
 node.type = this.types.MIXIN_RULE;
 } else {
 node.type = this.types.STYLE_RULE;
@@ -4034,12 +4209,12 @@ text = text || '';
 var cssText = '';
 if (node.cssText || node.rules) {
 var r$ = node.rules;
-if (r$ && (preserveProperties || !hasMixinRules(r$))) {
+if (r$ && (preserveProperties || !this._hasMixinRules(r$))) {
 for (var i = 0, l = r$.length, r; i < l && (r = r$[i]); i++) {
 cssText = this.stringify(r, preserveProperties, cssText);
 }
 } else {
-cssText = preserveProperties ? node.cssText : removeCustomProps(node.cssText);
+cssText = preserveProperties ? node.cssText : this.removeCustomProps(node.cssText);
 cssText = cssText.trim();
 if (cssText) {
 cssText = '  ' + cssText + '\n';
@@ -4057,6 +4232,19 @@ text += this.CLOSE_BRACE + '\n\n';
 }
 return text;
 },
+_hasMixinRules: function (rules) {
+return rules[0].selector.indexOf(this.VAR_START) >= 0;
+},
+removeCustomProps: function (cssText) {
+cssText = this.removeCustomPropAssignment(cssText);
+return this.removeCustomPropApply(cssText);
+},
+removeCustomPropAssignment: function (cssText) {
+return cssText.replace(this._rx.customProp, '').replace(this._rx.mixinProp, '');
+},
+removeCustomPropApply: function (cssText) {
+return cssText.replace(this._rx.mixinApply, '').replace(this._rx.varApply, '');
+},
 types: {
 STYLE_RULE: 1,
 KEYFRAMES_RULE: 7,
@@ -4064,18 +4252,8 @@ MEDIA_RULE: 4,
 MIXIN_RULE: 1000
 },
 OPEN_BRACE: '{',
-CLOSE_BRACE: '}'
-};
-function hasMixinRules(rules) {
-return rules[0].selector.indexOf(VAR_START) >= 0;
-}
-function removeCustomProps(cssText) {
-return cssText.replace(rx.customProp, '').replace(rx.mixinProp, '').replace(rx.mixinApply, '').replace(rx.varApply, '');
-}
-var VAR_START = '--';
-var MEDIA_START = '@media';
-var AT_START = '@';
-var rx = {
+CLOSE_BRACE: '}',
+_rx: {
 comments: /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//gim,
 port: /@import[^;]*;/gim,
 customProp: /(?:^|[\s;])--[^;{]*?:[^{};]*?(?:[;\n]|$)/gim,
@@ -4083,6 +4261,10 @@ mixinProp: /(?:^|[\s;])--[^;{]*?:[^{;]*?{[^}]*?}(?:[;\n]|$)?/gim,
 mixinApply: /@apply[\s]*\([^)]*?\)[\s]*(?:[;\n]|$)?/gim,
 varApply: /[^;:]*?:[^;]*var[^;]*(?:[;\n]|$)?/gim,
 keyframesRule: /^@[^\s]*keyframes/
+},
+VAR_START: '--',
+MEDIA_START: '@media',
+AT_START: '@'
 };
 return api;
 }();
@@ -4115,7 +4297,7 @@ clearStyleRules: function (style) {
 style.__cssRules = null;
 },
 forEachStyleRule: function (node, callback) {
-var s = node.selector;
+var s = node.parsedSelector;
 var skipRules = false;
 if (node.type === this.ruleTypes.STYLE_RULE) {
 callback(node);
@@ -4255,7 +4437,7 @@ var p$ = rule.selector.split(COMPLEX_SELECTOR_SEP);
 for (var i = 0, l = p$.length, p; i < l && (p = p$[i]); i++) {
 p$[i] = transformer.call(this, p, scope, hostScope);
 }
-rule.selector = p$.join(COMPLEX_SELECTOR_SEP);
+rule.selector = rule.transformedSelector = p$.join(COMPLEX_SELECTOR_SEP);
 },
 _transformComplexSelector: function (selector, scope, hostScope) {
 var stop = false;
@@ -4610,7 +4792,8 @@ return property && property.trim() || '';
 },
 valueForProperties: function (property, props) {
 var parts = property.split(';');
-for (var i = 0, p, m; i < parts.length && (p = parts[i]); i++) {
+for (var i = 0, p, m; i < parts.length; i++) {
+if (p = parts[i]) {
 m = p.match(this.rx.MIXIN_MATCH);
 if (m) {
 p = this.valueForProperty(props[m[1]], props);
@@ -4623,6 +4806,7 @@ pp[1] = this.valueForProperty(pp[1], props) || pp[1];
 p = pp.join(':');
 }
 parts[i] = p && p.lastIndexOf(';') === p.length - 1 ? p.slice(0, -1) : p || '';
+}
 }
 return parts.join(';');
 },
@@ -4643,7 +4827,7 @@ styleUtil.forRulesInStyles(styles, function (rule) {
 if (!rule.propertyInfo) {
 self.decorateRule(rule);
 }
-if (element && rule.propertyInfo.properties && matchesSelector.call(element, rule.selector)) {
+if (element && rule.propertyInfo.properties && matchesSelector.call(element, rule.transformedSelector || rule.parsedSelector)) {
 self.collectProperties(rule, props);
 addToBitMask(i, o);
 }
@@ -5041,9 +5225,9 @@ this._pushHost();
 this._stampTemplate();
 this._popHost();
 this._marshalAnnotationReferences();
-this._marshalHostAttributes();
 this._setupDebouncers();
 this._marshalInstanceEffects();
+this._marshalHostAttributes();
 this._marshalBehaviors();
 this._marshalAttributes();
 this._tryReady();
@@ -5056,6 +5240,7 @@ this._listenListeners(b.listeners);
 var nativeShadow = Polymer.Settings.useNativeShadow;
 var propertyUtils = Polymer.StyleProperties;
 var styleUtil = Polymer.StyleUtil;
+var cssParse = Polymer.CssParse;
 var styleDefaults = Polymer.StyleDefaults;
 var styleTransformer = Polymer.StyleTransformer;
 Polymer({
@@ -5093,7 +5278,7 @@ var self = this;
 e.textContent = styleUtil.toCssText(styleUtil.rulesForStyle(e), function (rule) {
 var css = rule.cssText = rule.parsedCssText;
 if (rule.propertyInfo && rule.propertyInfo.cssText) {
-css = css.replace(propertyUtils.rx.VAR_ASSIGN, '');
+css = cssParse.removeCustomPropAssignment(css);
 rule.cssText = propertyUtils.valueForProperties(css, props);
 }
 styleTransformer.documentRule(rule);
@@ -5141,10 +5326,24 @@ _showHideChildrenImpl: function (hide) {
 var c = this._children;
 for (var i = 0; i < c.length; i++) {
 var n = c[i];
-if (n.style) {
-n.style.display = hide ? 'none' : '';
-n.__hideTemplateChildren__ = hide;
+if (Boolean(hide) != Boolean(n.__hideTemplateChildren__)) {
+if (n.nodeType === Node.TEXT_NODE) {
+if (hide) {
+n.__polymerTextContent__ = n.textContent;
+n.textContent = '';
+} else {
+n.textContent = n.__polymerTextContent__;
 }
+} else if (n.style) {
+if (hide) {
+n.__polymerDisplay__ = n.style.display;
+n.style.display = 'none';
+} else {
+n.style.display = n.__polymerDisplay__;
+}
+}
+}
+n.__hideTemplateChildren__ = hide;
 }
 },
 _debounceTemplate: function (fn) {
@@ -5827,16 +6026,23 @@ is: 'array-selector',
 properties: {
 items: {
 type: Array,
-observer: '_itemsChanged'
+observer: '_resetSelection'
+},
+multi: {
+type: Boolean,
+value: false,
+observer: '_resetSelection'
 },
 selected: {
 type: Object,
 notify: true
 },
-toggle: Boolean,
-multi: Boolean
+toggle: {
+type: Boolean,
+value: false
+}
 },
-_itemsChanged: function () {
+_resetSelection: function () {
 if (Array.isArray(this.selected)) {
 for (var i = 0; i < this.selected.length; i++) {
 this.unlinkPaths('selected.' + i);
@@ -5845,20 +6051,28 @@ this.unlinkPaths('selected.' + i);
 this.unlinkPaths('selected');
 }
 if (this.multi) {
+if (!this.selected || this.selected.length) {
 this.selected = [];
+this._selectedColl = Polymer.Collection.get(this.selected);
+}
 } else {
 this.selected = null;
+this._selectedColl = null;
+}
+},
+isSelected: function (item) {
+if (this.multi) {
+return this._selectedColl.getKey(item) !== undefined;
+} else {
+return this.selected == item;
 }
 },
 deselect: function (item) {
 if (this.multi) {
-var scol = Polymer.Collection.get(this.selected);
-var sidx = this.selected.indexOf(item);
-if (sidx >= 0) {
-var skey = scol.getKey(item);
-this.splice('selected', sidx, 1);
+if (this.isSelected(item)) {
+var skey = this._selectedColl.getKey(item);
+this.arrayDelete('selected', item);
 this.unlinkPaths('selected.' + skey);
-return true;
 }
 } else {
 this.selected = null;
@@ -5869,18 +6083,14 @@ select: function (item) {
 var icol = Polymer.Collection.get(this.items);
 var key = icol.getKey(item);
 if (this.multi) {
-var scol = Polymer.Collection.get(this.selected);
-var skey = scol.getKey(item);
-if (skey >= 0) {
+if (this.isSelected(item)) {
 if (this.toggle) {
 this.deselect(item);
 }
 } else {
 this.push('selected', item);
-this.async(function () {
-skey = scol.getKey(item);
+skey = this._selectedColl.getKey(item);
 this.linkPaths('selected.' + skey, 'items.' + key);
-});
 }
 } else {
 if (this.toggle && item == this.selected) {
@@ -5925,7 +6135,6 @@ this._flushTemplates();
 _render: function () {
 if (this.if) {
 if (!this.ctor) {
-this._wrapTextNodes(this._content || this.content);
 this.templatize(this);
 }
 this._ensureInstance();
@@ -5961,16 +6170,6 @@ parent.removeChild(n);
 this._instance = null;
 }
 },
-_wrapTextNodes: function (root) {
-for (var n = root.firstChild; n; n = n.nextSibling) {
-if (n.nodeType === Node.TEXT_NODE && n.textContent.trim()) {
-var s = document.createElement('span');
-root.insertBefore(s, n);
-s.appendChild(n);
-n = s;
-}
-}
-},
 _showHideChildren: function () {
 var hidden = this.__hideTemplateChildren__ || !this.if;
 if (this._instance) {
@@ -5988,37 +6187,11 @@ this._instance.notifyPath(path, value, true);
 }
 }
 });
-Polymer.ImportStatus = {
-_ready: false,
-_callbacks: [],
-whenLoaded: function (cb) {
-if (this._ready) {
-cb();
-} else {
-this._callbacks.push(cb);
-}
-},
-_importsLoaded: function () {
-this._ready = true;
-this._callbacks.forEach(function (cb) {
-cb();
-});
-this._callbacks = [];
-}
-};
-window.addEventListener('load', function () {
-Polymer.ImportStatus._importsLoaded();
-});
-if (window.HTMLImports) {
-HTMLImports.whenReady(function () {
-Polymer.ImportStatus._importsLoaded();
-});
-}
 Polymer({
 is: 'dom-bind',
 extends: 'template',
 created: function () {
-Polymer.ImportStatus.whenLoaded(this._markImportsReady.bind(this));
+Polymer.RenderStatus.whenReady(this._markImportsReady.bind(this));
 },
 _ensureReady: function () {
 if (!this._readied) {
@@ -6599,11 +6772,6 @@ this.fire('dom-change');
     ],
 
     ready: function() {
-      // TODO(sjmiles): ensure read-only property is valued so the compound
-      // observer will fire
-      if (this.focused === undefined) {
-        this._setFocused(false);
-      }
       this.addEventListener('focus', this._boundFocusBlurHandler, true);
       this.addEventListener('blur', this._boundFocusBlurHandler, true);
     },
@@ -6614,7 +6782,6 @@ this.fire('dom-change');
         var focused = event.type === 'focus';
         this._setFocused(focused);
       } else if (!this.shadowRoot) {
-        event.stopPropagation();
         this.fire(event.type, {sourceEvent: event}, {
           node: this,
           bubbles: event.bubbles,
@@ -6683,8 +6850,7 @@ this.fire('dom-change');
         type: Boolean,
         value: false,
         notify: true,
-        reflectToAttribute: true,
-        observer: '_activeChanged'
+        reflectToAttribute: true
       },
 
       /**
@@ -6705,6 +6871,16 @@ this.fire('dom-change');
       receivedFocusFromKeyboard: {
         type: Boolean,
         readOnly: true
+      },
+
+      /**
+       * The aria attribute to be set if the button is a toggle and in the
+       * active state.
+       */
+      ariaActiveAttribute: {
+        type: String,
+        value: 'aria-pressed',
+        observer: '_ariaActiveAttributeChanged'
       }
     },
 
@@ -6715,7 +6891,8 @@ this.fire('dom-change');
     },
 
     observers: [
-      '_detectKeyboardFocus(focused)'
+      '_detectKeyboardFocus(focused)',
+      '_activeChanged(active, ariaActiveAttribute)'
     ],
 
     keyBindings: {
@@ -6742,8 +6919,10 @@ this.fire('dom-change');
     // to emulate native checkbox, (de-)activations from a user interaction fire
     // 'change' events
     _userActivate: function(active) {
-      this.active = active;
-      this.fire('change');
+      if (this.active !== active) {
+        this.active = active;
+        this.fire('change');
+      }
     },
 
     _eventSourceIsPrimaryInput: function(event) {
@@ -6811,11 +6990,18 @@ this.fire('dom-change');
       this._changedButtonState();
     },
 
-    _activeChanged: function(active) {
+    _ariaActiveAttributeChanged: function(value, oldValue) {
+      if (oldValue && oldValue != value && this.hasAttribute(oldValue)) {
+        this.removeAttribute(oldValue);
+      }
+    },
+
+    _activeChanged: function(active, ariaActiveAttribute) {
       if (this.toggles) {
-        this.setAttribute('aria-pressed', active ? 'true' : 'false');
+        this.setAttribute(this.ariaActiveAttribute,
+                          active ? 'true' : 'false');
       } else {
-        this.removeAttribute('aria-pressed');
+        this.removeAttribute(this.ariaActiveAttribute);
       }
       this._changedButtonState();
     },
@@ -7439,8 +7625,14 @@ this.fire('dom-change');
   }
 
 </style>
-<style is="custom-style">
+<style>
+  /* IE 10 support for HTML5 hidden attr */
+  [hidden] {
+    display: none !important;
+  }
+</style>
 
+<style is="custom-style">
   :root {
 
     --layout: {
@@ -7706,32 +7898,29 @@ this.fire('dom-change');
 
     /* fixed position */
 
-    --layout-fixed-bottom:,
-    --layout-fixed-left:,
-    --layout-fixed-right:,
     --layout-fixed-top: {
       position: fixed;
-    };
-
-    --layout-fixed-top: {
       top: 0;
       left: 0;
       right: 0;
     };
 
     --layout-fixed-right: {
+      position: fixed;
       top: 0;
       right: 0;
       bottom: 0;
     };
 
     --layout-fixed-bottom: {
+      position: fixed;
       right: 0;
       bottom: 0;
       left: 0;
     };
 
     --layout-fixed-left: {
+      position: fixed;
       top: 0;
       bottom: 0;
       left: 0;
@@ -11570,7 +11759,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
   /**
    * Use `Polymer.IronValidatableBehavior` to implement an element that validates user input.
    *
-   * ### Accessiblity
+   * ### Accessibility
    *
    * Changing the `invalid` property, either manually or by calling `validate()` will update the
    * `aria-invalid` attribute.
@@ -11641,19 +11830,35 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
     },
 
     /**
-     * @param {Object} values Passed to the validator's `validate()` function.
-     * @return {boolean} True if `values` is valid.
+     * Returns true if the `value` is valid, and updates `invalid`. If you want
+     * your element to have custom validation logic, do not override this method;
+     * override `_getValidity(value)` instead.
+
+     * @param {Object} value The value to be validated. By default, it is passed
+     * to the validator's `validate()` function, if a validator is set.
+     * @return {boolean} True if `value` is valid.
      */
-    validate: function(values) {
-      var valid = true;
+    validate: function(value) {
+      this.invalid = !this._getValidity(value);
+      return !this.invalid;
+    },
+
+    /**
+     * Returns true if `value` is valid.  By default, it is passed
+     * to the validator's `validate()` function, if a validator is set. You
+     * should override this method if you want to implement custom validity
+     * logic for your element.
+     *
+     * @param {Object} value The value to be validated.
+     * @return {boolean} True if `value` is valid.
+     */
+
+    _getValidity: function(value) {
       if (this.hasValidator()) {
-        valid = this._validator.validate(values);
+        return this._validator.validate(value);
       }
-
-      this.invalid = !valid;
-      return valid;
+      return true;
     }
-
   };
 
 </script>
@@ -11768,7 +11973,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
 
     _bindValueChanged: function() {
       if (this.value !== this.bindValue) {
-        this.value = !this.bindValue ? '' : this.bindValue;
+        this.value = !(this.bindValue || this.bindValue === 0) ? '' : this.bindValue;
       }
       // manually notify because we don't want to notify until after setting value
       this.fire('bind-value-changed', {value: this.bindValue});
@@ -11803,6 +12008,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       // For these keys, ASCII code == browser keycode.
       var anyNonPrintable =
         (event.keyCode == 8)   ||  // backspace
+        (event.keyCode == 9)   ||  // tab
         (event.keyCode == 13)  ||  // enter
         (event.keyCode == 27);     // escape
 
@@ -11886,14 +12092,13 @@ is separate from validation, and `allowed-pattern` does not affect how the input
   */
 
 </script>
-
 <script>
-
   /**
+  Polymer.IronFormElementBehavior enables a custom element to be included
+  in an `iron-form`.
 
   @demo demo/index.html
   @polymerBehavior
-
   */
   Polymer.IronFormElementBehavior = {
 
@@ -11923,6 +12128,19 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       value: {
         notify: true,
         type: String
+      },
+
+      /**
+       * Set to true to mark the input as required. If used in a form, a
+       * custom element that uses this behavior should also use
+       * Polymer.IronValidatableBehavior and define a custom validation method.
+       * Otherwise, a `required` element will always be considered valid.
+       * It's also strongly recomended to provide a visual style for the element
+       * when it's value is invalid.
+       */
+      required: {
+        type: Boolean,
+        value: false
       },
 
       /**
@@ -12048,14 +12266,6 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       },
 
       /**
-       * The maximum length of the input value. Bind this to the `<input is="iron-input">`'s
-       * `maxlength` property.
-       */
-      maxlength: {
-        type: Number
-      },
-
-      /**
        * The error message to display when the input is invalid. Bind this to the
        * `<paper-input-error>`'s content, if using.
        */
@@ -12135,6 +12345,39 @@ is separate from validation, and `allowed-pattern` does not affect how the input
        */
       minlength: {
         type: Number
+      },
+
+      /**
+       * The maximum length of the input value. Bind this to the `<input is="iron-input">`'s
+       * `maxlength` property.
+       */
+      maxlength: {
+        type: Number
+      },
+
+      /**
+       * The minimum (numeric or date-time) input value.
+       * Bind this to the `<input is="iron-input">`'s `min` property.
+       */
+      min: {
+        type: String
+      },
+
+      /**
+       * The maximum (numeric or date-time) input value.
+       * Can be a String (e.g. `"2000-1-1"`) or a Number (e.g. `2`).
+       * Bind this to the `<input is="iron-input">`'s `max` property.
+       */
+      max: {
+        type: String
+      },
+
+      /**
+       * Limits the numeric or date-time increments.
+       * Bind this to the `<input is="iron-input">`'s `step` property.
+       */
+      step: {
+        type: String
       },
 
       /**
@@ -12940,10 +13183,9 @@ is separate from validation, and `allowed-pattern` does not affect how the input
         }
       },
 
-      get shouldKeepAnimating() {
-        var ripples = this.ripples || [];
-        for (var index = 0; index < ripples.length; ++index) {
-          if (!ripples[index].isAnimationComplete) {
+      get shouldKeepAnimating () {
+        for (var index = 0; index < this.ripples.length; ++index) {
+          if (!this.ripples[index].isAnimationComplete) {
             return true;
           }
         }
@@ -12981,11 +13223,9 @@ is separate from validation, and `allowed-pattern` does not affect how the input
           return;
         }
 
-        if (this.ripples) {
-            this.ripples.forEach(function (ripple) {
-                ripple.upAction(event);
-            });
-        }
+        this.ripples.forEach(function(ripple) {
+          ripple.upAction(event);
+        });
 
         this.animate();
       },
@@ -13001,10 +13241,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
 
         Polymer.dom(this.$.waves).appendChild(ripple.waveContainer);
         this.$.background.style.backgroundColor = ripple.color;
-
-        if (this.ripples) {
-            this.ripples.push(ripple);
-        }
+        this.ripples.push(ripple);
 
         this._setAnimating(true);
 
@@ -13033,9 +13270,8 @@ is separate from validation, and `allowed-pattern` does not affect how the input
 
         this._animating = true;
 
-        var ripples = this.ripples || [];
-        for (index = 0; index < ripples.length; ++index) {
-            ripple = ripples[index];
+        for (index = 0; index < this.ripples.length; ++index) {
+          ripple = this.ripples[index];
 
           ripple.draw();
 
@@ -13046,7 +13282,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
           }
         }
 
-        if (!this.shouldKeepAnimating && ripples.length === 0) {
+        if (!this.shouldKeepAnimating && this.ripples.length === 0) {
           this.onAnimationComplete();
         } else {
           window.requestAnimationFrame(this._boundAnimate);
@@ -16129,6 +16365,8 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     :host([disabled]) {
       pointer-events: none;
       opacity: 0.33;
+
+      @apply(--paper-input-container-disabled);
     }
 
     .floated-label-placeholder {
@@ -16187,8 +16425,15 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       @apply(--paper-input-container-underline-disabled);
     }
 
+    .label-and-input-container {
+      @apply(--layout-flex);
+      @apply(--layout-relative);
+    }
+
     .input-content {
       position: relative;
+      @apply(--layout-horizontal);
+      @apply(--layout-end);
     }
 
     .input-content ::content label,
@@ -16250,6 +16495,16 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       @apply(--paper-input-container-input);
     }
 
+    ::content [prefix] {
+      @apply(--paper-font-subhead);
+      @apply(--paper-input-prefix);
+    }
+
+    ::content [suffix] {
+      @apply(--paper-font-subhead);
+      @apply(--paper-input-suffix);
+    }
+
     /* Firefox sets a min-width on the input, which can cause layout issues */
     .input-content ::content input {
       min-width: 0;
@@ -16276,7 +16531,11 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     </template>
 
     <div class$="[[_computeInputContentClass(noLabelFloat,alwaysFloatLabel,focused,invalid,_inputHasContent)]]">
-      <content select=":not([add-on])"></content>
+      <content select="[prefix]" id="prefix"></content>
+      <div class="label-and-input-container">
+        <content select=":not([add-on]):not([prefix]):not([suffix])"></content>
+      </div>
+      <content select="[suffix]"></content>
     </div>
 
     <div class$="[[_computeUnderlineClass(focused,invalid)]]">
@@ -16477,7 +16736,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       }
 
       // type="number" hack needed because this.value is empty until it's valid
-      if (value || (inputElement.type === 'number' && !inputElement.checkValidity())) {
+      if (value || value === 0 || (inputElement.type === 'number' && !inputElement.checkValidity())) {
         this._inputHasContent = true;
       } else {
         this._inputHasContent = false;
@@ -16513,12 +16772,25 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     _computeInputContentClass: function(noLabelFloat, alwaysFloatLabel, focused, invalid, _inputHasContent) {
       var cls = 'input-content';
       if (!noLabelFloat) {
+        var label = this.querySelector('label');
+
         if (alwaysFloatLabel || _inputHasContent) {
           cls += ' label-is-floating';
           if (invalid) {
             cls += ' is-invalid';
           } else if (focused) {
             cls += " label-is-highlighted";
+          }
+          // The label might have a horizontal offset if a prefix element exists
+          // which needs to be undone when displayed as a floating label.
+          if (this.$.prefix && label && label.offsetParent &&
+              Polymer.dom(this.$.prefix).getDistributedNodes().length > 0) {
+           label.style.left = -label.offsetParent.offsetLeft + 'px';
+          }
+        } else {
+          // When the label is not floating, it should overlap the input element.
+          if (label) {
+            label.style.left = 0;
           }
         }
       } else {
@@ -16710,9 +16982,13 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
     <paper-input-container no-label-float="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
 
+      <content select="[prefix]"></content>
+
       <label hidden$="[[!label]]">[[label]]</label>
 
-      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" maxlength$="[[maxlength]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]">
+      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]">
+
+      <content select="[suffix]"></content>
 
       <template is="dom-if" if="[[errorMessage]]">
         <paper-input-error>[[errorMessage]]</paper-input-error>
@@ -16749,7 +17025,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 </script>
 <dom-module id="paper-slider" assetpath="bower_components/paper-slider/">
 
-    <style>
+  <style>
 /**
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -16771,20 +17047,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-:host(:not([disabled])) #sliderBar::shadow #activeProgress {
-  background-color: var(--paper-slider-active-color, --google-blue-700);
+:host(:not([disabled])) #sliderBar {
+  --paper-progress-active-color: var(--paper-slider-active-color, --google-blue-700);
 }
 
-:host(:not([disabled])) #sliderBar::shadow #secondaryProgress {
-  background-color: var(--paper-slider-secondary-color, --google-blue-300);
+:host(:not([disabled])) #sliderBar {
+  --paper-progress-secondary-color: var(--paper-slider-secondary-color, --google-blue-300);
 }
 
-:host([disabled]) #sliderBar::shadow #activeProgress {
-  background-color: var(--paper-slider-disabled-active-color, --google-grey-500);
+:host([disabled]) #sliderBar {
+  --paper-progress-active-color: var(--paper-slider-disabled-active-color, --google-grey-500);
 }
 
-:host([disabled]) #sliderBar::shadow #secondaryProgress {
-  background-color: var(--paper-slider-disabled-secondary-color, --google-grey-300);
+:host([disabled]) #sliderBar {
+  --paper-progress-secondary-color: var(--paper-slider-disabled-secondary-color, --google-grey-300);
 }
 
 :host(:focus) {
@@ -16868,11 +17144,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   background-color: black;
 }
 
-.transiting #sliderBar::shadow #activeProgress {
-  -webkit-transition: -webkit-transform 0.08s ease;
-  transition: transform 0.08s ease;
-}
-
 #sliderKnob {
   @apply(--layout-center-justified);
   @apply(--layout-center);
@@ -16905,10 +17176,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 #sliderKnobInner {
   width: 12px;
   height: 12px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
   border-radius: 50%;
   background-color: var(--paper-slider-knob-color, --google-blue-700);
+
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+
   transition-property: height, width, background-color, border;
   transition-duration: 0.1s;
   transition-timing-function: ease;
@@ -16917,13 +17190,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 .expand:not(.pin) > #sliderKnob > #sliderKnobInner {
   width: 100%;
   height: 100%;
+
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
 }
 
 .ring > #sliderKnob > #sliderKnobInner {
-  background-color: transparent;
-  border: 2px solid #c8c8c8;
+  background-color: var(--paper-slider-knob-start-color, transparent);
+  border: 2px solid var(--paper-slider-knob-start-border-color, #c8c8c8);
 }
 
 #sliderKnobInner::before {
@@ -16939,6 +17213,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   height: 26px;
   margin-left: 3px;
   border-radius: 50% 50% 50% 0;
+
   -webkit-transform: rotate(-45deg) scale(0) translate(0);
   transform: rotate(-45deg) scale(0) translate(0);
 }
@@ -16950,7 +17225,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 .pin.ring > #sliderKnob > #sliderKnobInner::before {
-  background-color: #c8c8c8;
+  background-color: var(--paper-slider-pin-start-color, #c8c8c8);
 }
 
 .pin.expand > #sliderKnob > #sliderKnobInner::before {
@@ -16968,6 +17243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   text-align: center;
   color: var(--paper-slider-font-color, #fff);
   font-size: 10px;
+
   -webkit-transform: scale(0) translate(0);
   transform: scale(0) translate(0);
 }
@@ -16984,9 +17260,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   overflow: hidden;
 }
 
-.slider-input::shadow input {
-  /* FIXME(ffu): should one be able set text-align directly on paper-input? */
-  text-align: center;
+.slider-input {
+  --paper-input-container-input: {
+      text-align: center;
+  };
 }
 
 /* disabled state */
@@ -17010,414 +17287,421 @@ paper-ripple {
 
 </style>
 
-    <template>
-        <div id="sliderContainer" class$="[[_getClassNames(disabled, pin, snaps, immediateValue, min, expand, dragging, transiting, editable)]]">
+  <template>
+    <div id="sliderContainer" class$="[[_getClassNames(disabled, pin, snaps, immediateValue, min, expand, dragging, transiting, editable)]]">
 
-            <div class="bar-container">
-                <paper-progress id="sliderBar" aria-hidden="true" min="[[min]]" max="[[max]]" step="[[step]]" value="[[immediateValue]]" secondary-progress="[[secondaryProgress]]" on-down="_bardown" on-up="_resetKnob" on-track="_onTrack">
-                </paper-progress>
-            </div>
+      <div class="bar-container">
+        <paper-progress class$="[[_getProgressClass(transiting)]]" id="sliderBar" aria-hidden="true" min="[[min]]" max="[[max]]" step="[[step]]" value="[[immediateValue]]" secondary-progress="[[secondaryProgress]]" on-down="_bardown" on-up="_resetKnob" on-track="_onTrack">
+        </paper-progress>
+      </div>
 
-            <template is="dom-if" if="[[snaps]]">
-                <div class="slider-markers horizontal layout">
-                    <template is="dom-repeat" items="[[markers]]">
-                        <div class="slider-marker flex"></div>
-                    </template>
-                </div>
-            </template>
-
-            <div id="sliderKnob" class="center-justified center horizontal layout" on-down="_knobdown" on-up="_resetKnob" on-track="_onTrack" on-transitionend="_knobTransitionEnd">
-                <paper-ripple id="ink" class="circle" center="" hidden$="[[!receivedFocusFromKeyboard]]"></paper-ripple>
-                <div id="sliderKnobInner" value$="[[pinValue]]"></div>
-            </div>
+      <template is="dom-if" if="[[snaps]]">
+        <div class="slider-markers horizontal layout">
+          <template is="dom-repeat" items="[[markers]]">
+            <div class="slider-marker flex"></div>
+          </template>
         </div>
+      </template>
 
-        <template is="dom-if" if="[[editable]]">
-            <paper-input id="input" class="slider-input" disabled$="[[disabled]]" on-change="_inputChange">
-            </paper-input>
-        </template>
+      <div id="sliderKnob" class="center-justified center horizontal layout" on-down="_knobdown" on-up="_resetKnob" on-track="_onTrack" on-transitionend="_knobTransitionEnd">
+          <paper-ripple center="" id="ink" class="circle" hidden$="[[!receivedFocusFromKeyboard]]">
+          </paper-ripple>
+          <div id="sliderKnobInner" value$="[[pinValue]]"></div>
+      </div>
+    </div>
+
+    <template is="dom-if" if="[[editable]]">
+      <paper-input id="input" class="slider-input" disabled$="[[disabled]]" on-change="_inputChange" value="[[_fixForInput(immediateValue)]]">
+      </paper-input>
     </template>
+  </template>
 
 </dom-module>
 
 <script>
 
-    Polymer({
-        is: 'paper-slider',
+  Polymer({
+    is: 'paper-slider',
 
-        behaviors: [
-          Polymer.IronA11yKeysBehavior,
-          Polymer.PaperInkyFocusBehavior,
-          Polymer.IronFormElementBehavior,
-          Polymer.IronRangeBehavior
-        ],
+    behaviors: [
+      Polymer.IronFormElementBehavior,
+      Polymer.PaperInkyFocusBehavior,
+      Polymer.IronRangeBehavior
+    ],
 
-        properties: {
+    properties: {
 
-            /**
-             * If true, the slider thumb snaps to tick marks evenly spaced based
-             * on the `step` property value.
-             */
-            snaps: {
-                type: Boolean,
-                value: false,
-                notify: true
-            },
+      /**
+       * If true, the slider thumb snaps to tick marks evenly spaced based
+       * on the `step` property value.
+       */
+      snaps: {
+        type: Boolean,
+        value: false,
+        notify: true
+      },
 
-            /**
-             * If true, a pin with numeric value label is shown when the slider thumb
-             * is pressed. Use for settings for which users need to know the exact
-             * value of the setting.
-             */
-            pin: {
-                type: Boolean,
-                value: false,
-                notify: true
-            },
+      /**
+       * If true, a pin with numeric value label is shown when the slider thumb
+       * is pressed. Use for settings for which users need to know the exact
+       * value of the setting.
+       */
+      pin: {
+        type: Boolean,
+        value: false,
+        notify: true
+      },
 
-            /**
-             * The number that represents the current secondary progress.
-             */
-            secondaryProgress: {
-                type: Number,
-                value: 0,
-                notify: true,
-                observer: '_secondaryProgressChanged'
-            },
+      /**
+       * The number that represents the current secondary progress.
+       */
+      secondaryProgress: {
+        type: Number,
+        value: 0,
+        notify: true,
+        observer: '_secondaryProgressChanged'
+      },
 
-            /**
-             * If true, an input is shown and user can use it to set the slider value.
-             */
-            editable: {
-                type: Boolean,
-                value: false
-            },
+      /**
+       * If true, an input is shown and user can use it to set the slider value.
+       */
+      editable: {
+        type: Boolean,
+        value: false
+      },
 
-            /**
-             * The immediate value of the slider.  This value is updated while the user
-             * is dragging the slider.
-             */
-            immediateValue: {
-                type: Number,
-                value: 0,
-                readOnly: true
-            },
+      /**
+       * The immediate value of the slider.  This value is updated while the user
+       * is dragging the slider.
+       */
+      immediateValue: {
+        type: Number,
+        value: 0,
+        readOnly: true
+      },
 
-            /**
-             * The maximum number of markers
-             */
-            maxMarkers: {
-                type: Number,
-                value: 0,
-                notify: true,
-                observer: '_maxMarkersChanged'
-            },
+      /**
+       * The maximum number of markers
+       */
+      maxMarkers: {
+        type: Number,
+        value: 0,
+        notify: true,
+        observer: '_maxMarkersChanged'
+      },
 
-            /**
-             * If true, the knob is expanded
-             */
-            expand: {
-                type: Boolean,
-                value: false,
-                readOnly: true
-            },
+      /**
+       * If true, the knob is expanded
+       */
+      expand: {
+        type: Boolean,
+        value: false,
+        readOnly: true
+      },
 
-            /**
-             * True when the user is dragging the slider.
-             */
-            dragging: {
-                type: Boolean,
-                value: false,
-                readOnly: true
-            },
+      /**
+       * True when the user is dragging the slider.
+       */
+      dragging: {
+        type: Boolean,
+        value: false,
+        readOnly: true
+      },
 
-            transiting: {
-                type: Boolean,
-                value: false,
-                readOnly: true
-            },
+      transiting: {
+        type: Boolean,
+        value: false,
+        readOnly: true
+      },
 
-            markers: {
-                type: Array,
-                readOnly: true,
-                value: []
-            },
-        },
+      markers: {
+        type: Array,
+        readOnly: true,
+        value: []
+      },
+    },
 
-        observers: [
-          '_updateKnob(value, min, max, snaps, step)',
-          '_minChanged(min)',
-          '_maxChanged(max)',
-          '_valueChanged(value)',
-          '_immediateValueChanged(immediateValue)'
-        ],
+    observers: [
+      '_updateKnob(value, min, max, snaps, step)',
+      '_minChanged(min)',
+      '_maxChanged(max)',
+      '_valueChanged(value)',
+      '_immediateValueChanged(immediateValue)'
+    ],
 
-        hostAttributes: {
-            role: 'slider',
-            tabindex: 0
-        },
+    hostAttributes: {
+      role: 'slider',
+      tabindex: 0
+    },
 
-        keyBindings: {
-            'left down pagedown home': '_decrementKey',
-            'right up pageup end': '_incrementKey'
-        },
+    keyBindings: {
+      'left down pagedown home': '_decrementKey',
+      'right up pageup end': '_incrementKey'
+    },
 
-        ready: function () {
-            // issue polymer/polymer#1305
-            this.async(function () {
-                this._updateKnob(this.value);
-                this._updateInputValue();
-            }, 1);
-        },
+    ready: function() {
+      // issue polymer/polymer#1305
 
-        /**
-         * Increases value by `step` but not above `max`.
-         * @method increment
-         */
-        increment: function () {
-            this.value = this._clampValue(this.value + this.step);
-        },
-
-        /**
-         * Decreases value by `step` but not below `min`.
-         * @method decrement
-         */
-        decrement: function () {
-            this.value = this._clampValue(this.value - this.step);
-        },
-
-        _updateKnob: function (value) {
-            this._positionKnob(this._calcRatio(value));
-        },
-
-        _minChanged: function () {
-            this.setAttribute('aria-valuemin', this.min);
-        },
-
-        _maxChanged: function () {
-            this.setAttribute('aria-valuemax', this.max);
-        },
-
-        _valueChanged: function () {
-            this.setAttribute('aria-valuenow', this.value);
-            this.fire('value-change');
-        },
-
-        _immediateValueChanged: function () {
-            if (this.dragging) {
-                this.fire('immediate-value-change');
-            } else {
-                this.value = this.immediateValue;
-            }
-            this._updateInputValue();
-        },
-
-        _secondaryProgressChanged: function () {
-            this.secondaryProgress = this._clampValue(this.secondaryProgress);
-        },
-
-        _updateInputValue: function () {
-            if (this.editable) {
-                this.$$('#input').value = this.immediateValue.toString();
-            }
-        },
-
-        _expandKnob: function () {
-            this._setExpand(true);
-        },
-
-        _resetKnob: function () {
-            this.cancelDebouncer('expandKnob');
-            this._setExpand(false);
-        },
-
-        _positionKnob: function (ratio) {
-            this._setImmediateValue(this._calcStep(this._calcKnobPosition(ratio)));
-            this._setPinValue(this.immediateValue);
-
-            this._setRatio(this._calcRatio(this.immediateValue));
-
-            this.$.sliderKnob.style.left = (this.ratio * 100) + '%';
-        },
-
-        _inputChange: function () {
-            this.value = this.$$('#input').value;
-            this.fire('change');
-        },
-
-        _calcKnobPosition: function (ratio) {
-            return (this.max - this.min) * ratio + this.min;
-        },
-
-        _onTrack: function (event) {
-            switch (event.detail.state) {
-                case 'start':
-                    this._trackStart(event);
-                    break;
-                case 'track':
-                    this._trackX(event);
-                    break;
-                case 'end':
-                    this._trackEnd();
-                    break;
-            }
-        },
-
-        _trackStart: function (event) {
-            this._w = this.$.sliderBar.offsetWidth;
-            this._x = this.ratio * this._w;
-            this._startx = this._x || 0;
-            this._minx = -this._startx;
-            this._maxx = this._w - this._startx;
-            this.$.sliderKnob.classList.add('dragging');
-
-            this._setDragging(true);
-        },
-
-        _trackX: function (e) {
-            if (!this.dragging) {
-                this._trackStart(e);
-            }
-
-            var dx = Math.min(this._maxx, Math.max(this._minx, e.detail.dx));
-            this._x = this._startx + dx;
-
-            var immediateValue = this._calcStep(this._calcKnobPosition(this._x / this._w));
-            this._setImmediateValue(immediateValue);
-            this._setPinValue(immediateValue);
-
-            // update knob's position
-            var translateX = ((this._calcRatio(immediateValue) * this._w) - this._startx);
-            this.translate3d(translateX + 'px', 0, 0, this.$.sliderKnob);
-        },
-
-        _trackEnd: function () {
-            var s = this.$.sliderKnob.style;
-
-            this.$.sliderKnob.classList.remove('dragging');
-            this._setDragging(false);
-            this._resetKnob();
-            this.value = this.immediateValue;
-
-            s.transform = s.webkitTransform = '';
-
-            this.fire('change');
-        },
-
-        _knobdown: function (event) {
-            this._expandKnob();
-
-            // cancel selection
-            event.detail.sourceEvent.preventDefault();
-
-            // set the focus manually because we will called prevent default
-            this.focus();
-        },
-
-        _bardown: function (event) {
-            this._w = this.$.sliderBar.offsetWidth;
-            var rect = this.$.sliderBar.getBoundingClientRect();
-            var ratio = (event.detail.x - rect.left) / this._w;
-            var prevRatio = this.ratio;
-
-            this._setTransiting(true);
-
-            this._positionKnob(ratio);
-
-            this.debounce('expandKnob', this._expandKnob, 60);
-
-            // if the ratio doesn't change, sliderKnob's animation won't start
-            // and `_knobTransitionEnd` won't be called
-            // Therefore, we need to manually update the `transiting` state
-
-            if (prevRatio === this.ratio) {
-                this._setTransiting(false);
-            }
-
-            this.async(function () {
-                this.fire('change');
-            });
-
-            // cancel selection
-            event.detail.sourceEvent.preventDefault();
-        },
-
-        _knobTransitionEnd: function (event) {
-            if (event.target === this.$.sliderKnob) {
-                this._setTransiting(false);
-            }
-        },
-
-        _maxMarkersChanged: function (maxMarkers) {
-            var l = (this.max - this.min) / this.step;
-            if (!this.snaps && l > maxMarkers) {
-                this._setMarkers([]);
-            } else {
-                this._setMarkers(new Array(l));
-            }
-        },
-
-        _getClassNames: function () {
-            var classes = {};
-
-            classes.disabled = this.disabled;
-            classes.pin = this.pin;
-            classes.snaps = this.snaps;
-            classes.ring = this.immediateValue <= this.min;
-            classes.expand = this.expand;
-            classes.dragging = this.dragging;
-            classes.transiting = this.transiting;
-            classes.editable = this.editable;
-
-            return Object.keys(classes).filter(
-              function (className) {
-                  return classes[className];
-              }).join(' ');
-        },
-
-        _incrementKey: function (event) {
-            if (event.detail.key === 'end') {
-                this.value = this.max;
-            } else {
-                this.increment();
-            }
-            this.fire('change');
-        },
-
-        _decrementKey: function (event) {
-            if (event.detail.key === 'home') {
-                this.value = this.min;
-            } else {
-                this.decrement();
-            }
-            this.fire('change');
-        },
-
-        _setPinValue: function (value) {
-            this.pinValue = value;
-        }
-    });
+      this.async(function() {
+        this._updateKnob(this.value);
+      }, 1);
+    },
 
     /**
-     * Fired when the slider's value changes.
-     *
-     * @event value-change
+     * Increases value by `step` but not above `max`.
+     * @method increment
      */
+    increment: function() {
+      this.value = this._clampValue(this.value + this.step);
+    },
 
     /**
-     * Fired when the slider's immediateValue changes.
-     *
-     * @event immediate-value-change
+     * Decreases value by `step` but not below `min`.
+     * @method decrement
      */
+    decrement: function() {
+      this.value = this._clampValue(this.value - this.step);
+    },
 
-    /**
-     * Fired when the slider's value changes due to user interaction.
-     *
-     * Changes to the slider's value due to changes in an underlying
-     * bound variable will not trigger this event.
-     *
-     * @event change
-     */
+    _updateKnob: function(value) {
+      this._positionKnob(this._calcRatio(value));
+    },
+
+    _minChanged: function() {
+      this.setAttribute('aria-valuemin', this.min);
+    },
+
+    _maxChanged: function() {
+      this.setAttribute('aria-valuemax', this.max);
+    },
+
+    _valueChanged: function() {
+      this.setAttribute('aria-valuenow', this.value);
+      this.fire('value-change');
+    },
+
+    _immediateValueChanged: function() {
+      if (this.dragging) {
+        this.fire('immediate-value-change');
+      } else {
+        this.value = this.immediateValue;
+      }
+    },
+
+    _secondaryProgressChanged: function() {
+      this.secondaryProgress = this._clampValue(this.secondaryProgress);
+    },
+
+    _fixForInput: function(immediateValue) {
+      // paper-input/issues/114
+      return this.immediateValue.toString();
+    },
+
+    _expandKnob: function() {
+      this._setExpand(true);
+    },
+
+    _resetKnob: function() {
+      this.cancelDebouncer('expandKnob');
+      this._setExpand(false);
+    },
+
+    _positionKnob: function(ratio) {
+      this._setImmediateValue(this._calcStep(this._calcKnobPosition(ratio)));
+      this._setPinValue(this.immediateValue);
+      this._setRatio(this._calcRatio(this.immediateValue));
+
+      this.$.sliderKnob.style.left = (this.ratio * 100) + '%';
+    },
+
+    _inputChange: function() {
+      this.value = this.$$('#input').value;
+      this.fire('change');
+    },
+
+    _calcKnobPosition: function(ratio) {
+      return (this.max - this.min) * ratio + this.min;
+    },
+
+    _onTrack: function(event) {
+      event.stopPropagation();
+      switch (event.detail.state) {
+        case 'start':
+          this._trackStart(event);
+          break;
+        case 'track':
+          this._trackX(event);
+          break;
+        case 'end':
+          this._trackEnd();
+          break;
+      }
+    },
+
+    _trackStart: function(event) {
+      this._w = this.$.sliderBar.offsetWidth;
+      this._x = this.ratio * this._w;
+      this._startx = this._x || 0;
+      this._minx = - this._startx;
+      this._maxx = this._w - this._startx;
+      this.$.sliderKnob.classList.add('dragging');
+
+      this._setDragging(true);
+    },
+
+    _trackX: function(e) {
+      if (!this.dragging) {
+        this._trackStart(e);
+      }
+
+      var dx = Math.min(this._maxx, Math.max(this._minx, e.detail.dx));
+      this._x = this._startx + dx;
+
+      var immediateValue = this._calcStep(this._calcKnobPosition(this._x / this._w));
+      this._setImmediateValue(immediateValue);
+
+      // update knob's position
+      var translateX = ((this._calcRatio(immediateValue) * this._w) - this._startx);
+      this.translate3d(translateX + 'px', 0, 0, this.$.sliderKnob);
+      this._setPinValue(immediateValue);
+    },
+
+    _trackEnd: function() {
+      var s = this.$.sliderKnob.style;
+
+      this.$.sliderKnob.classList.remove('dragging');
+      this._setDragging(false);
+      this._resetKnob();
+      this.value = this.immediateValue;
+
+      s.transform = s.webkitTransform = '';
+
+      this.fire('change');
+    },
+
+    _knobdown: function(event) {
+      this._expandKnob();
+
+      // cancel selection
+      event.preventDefault();
+
+      // set the focus manually because we will called prevent default
+      this.focus();
+    },
+
+    _bardown: function(event) {
+      this._w = this.$.sliderBar.offsetWidth;
+      var rect = this.$.sliderBar.getBoundingClientRect();
+      var ratio = (event.detail.x - rect.left) / this._w;
+      var prevRatio = this.ratio;
+
+      this._setTransiting(true);
+
+      this._positionKnob(ratio);
+
+      this.debounce('expandKnob', this._expandKnob, 60);
+
+      // if the ratio doesn't change, sliderKnob's animation won't start
+      // and `_knobTransitionEnd` won't be called
+      // Therefore, we need to manually update the `transiting` state
+
+      if (prevRatio === this.ratio) {
+        this._setTransiting(false);
+      }
+
+      this.async(function() {
+        this.fire('change');
+      });
+
+      // cancel selection
+      event.preventDefault();
+    },
+
+    _knobTransitionEnd: function(event) {
+      if (event.target === this.$.sliderKnob) {
+        this._setTransiting(false);
+      }
+    },
+
+    _maxMarkersChanged: function(maxMarkers) {
+      var l = (this.max - this.min) / this.step;
+      if (!this.snaps && l > maxMarkers) {
+        this._setMarkers([]);
+      } else {
+        this._setMarkers(new Array(l));
+      }
+    },
+
+    _mergeClasses: function(classes) {
+      return Object.keys(classes).filter(
+        function(className) {
+          return classes[className];
+        }).join(' ');
+    },
+
+    _getClassNames: function() {
+      var classes = {};
+
+      classes.disabled = this.disabled;
+      classes.pin = this.pin;
+      classes.snaps = this.snaps;
+      classes.ring = this.immediateValue <= this.min;
+      classes.expand = this.expand;
+      classes.dragging = this.dragging;
+      classes.transiting = this.transiting;
+      classes.editable = this.editable;
+
+      return this._mergeClasses(classes);
+    },
+
+    _getProgressClass: function() {
+      return this._mergeClasses({
+        transiting: this.transiting
+      });
+    },
+
+    _incrementKey: function(event) {
+      if (event.detail.key === 'end') {
+        this.value = this.max;
+      } else {
+        this.increment();
+      }
+      this.fire('change');
+    },
+
+    _decrementKey: function(event) {
+      if (event.detail.key === 'home') {
+        this.value = this.min;
+      } else {
+        this.decrement();
+      }
+      this.fire('change');
+    },
+    _setPinValue: function (value) {
+        this.pinValue = value;
+    }
+  });
+
+  /**
+   * Fired when the slider's value changes.
+   *
+   * @event value-change
+   */
+
+  /**
+   * Fired when the slider's immediateValue changes.
+   *
+   * @event immediate-value-change
+   */
+
+  /**
+   * Fired when the slider's value changes due to user interaction.
+   *
+   * Changes to the slider's value due to changes in an underlying
+   * bound variable will not trigger this event.
+   *
+   * @event change
+   */
 
 </script>
 <dom-module id="paper-menu" assetpath="bower_components/paper-menu/">
@@ -17525,6 +17809,7 @@ paper-ripple {
       height: 100%;
       font-size: inherit;
       font-family: inherit;
+      line-height: inherit;
     }
 
     ::content textarea:invalid {
@@ -17604,8 +17889,8 @@ paper-ripple {
        * Bound to the textarea's `autofocus` attribute.
        */
       autofocus: {
-        type: String,
-        value: 'off'
+        type: Boolean,
+        value: false
       },
 
       /**
@@ -17756,7 +18041,7 @@ paper-ripple {
     _computeValue: function() {
       return this.bindValue;
     }
-  })
+  });
 </script>
 <dom-module id="paper-textarea" assetpath="bower_components/paper-input/">
   <template>
@@ -17847,7 +18132,8 @@ paper-ripple {
 </script>
 <dom-module id="paper-checkbox" assetpath="bower_components/paper-checkbox/">
   <style>
-/*
+/**
+@license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -18063,11 +18349,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       },
 
-      ready: function() {
-        if (Polymer.dom(this).textContent == '') {
+      attached: function() {
+        var trimmedText = Polymer.dom(this).textContent.trim();
+        if (trimmedText === '') {
           this.$.checkboxLabel.hidden = true;
-        } else {
-          this.setAttribute('aria-label', Polymer.dom(this).textContent);
+        }
+        // Don't stomp over a user-set aria-label.
+        if (trimmedText !== '' && !this.getAttribute('aria-label')) {
+          this.setAttribute('aria-label', trimmedText);
         }
         this._isReady = true;
       },
