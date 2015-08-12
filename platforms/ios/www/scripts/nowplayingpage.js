@@ -37,7 +37,7 @@ positionSlider.disabled=!playState.CanSeek;}
 if(playState.PositionTicks==null){$('.positionTime',page).html('--:--');}else{$('.positionTime',page).html(Dashboard.getDisplayTime(playState.PositionTicks));}
 if(item&&item.RunTimeTicks!=null){$('.runtime',page).html(Dashboard.getDisplayTime(item.RunTimeTicks));}else{$('.runtime',page).html('--:--');}
 if(item&&item.MediaType=='Video'){$('.videoButton',page).css('visibility','visible');}else{$('.videoButton',page).css('visibility','hidden');}
-if(playerInfo.isLocalPlayer&&AppInfo.hasPhysicalVolumeButtons){$('.volumeButton',page).css('visibility','hidden');$('.nowPlayingPageVolumeControl',page).hide();}else{$('.volumeButton',page).css('visibility','visible');$('.nowPlayingPageVolumeControl',page).show();}
+if(playerInfo.isLocalPlayer&&AppInfo.hasPhysicalVolumeButtons){$('.volumeButton',page).css('visibility','hidden');}else{$('.volumeButton',page).css('visibility','visible');}
 if(item&&item.MediaType=='Audio'){$('.buttonsRow2',page).hide();}else{$('.buttonsRow2',page).show();}
 var toggleRepeatButton=page.querySelector('.repeatToggleButton');if(playState.RepeatMode=='RepeatAll'){toggleRepeatButton.icon="repeat";toggleRepeatButton.classList.add('nowPlayingPageRepeatActive');}
 else if(playState.RepeatMode=='RepeatOne'){toggleRepeatButton.icon="repeat-one";toggleRepeatButton.classList.add('nowPlayingPageRepeatActive');}else{toggleRepeatButton.icon="repeat";toggleRepeatButton.classList.remove('nowPlayingPageRepeatActive');}

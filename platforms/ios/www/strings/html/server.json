@@ -544,8 +544,8 @@
     "LabelFriendlyServerName": "Friendly server name:",
     "LabelFriendlyServerNameHelp": "This name will be used to identify this server. If left blank, the computer name will be used.",
     "LabelPreferredDisplayLanguage": "Preferred display language:",
-    "LabelPreferredDisplayLanguageHelp": "Translating Emby is an ongoing project and is not yet complete.",
-    "LabelReadHowYouCanContribute": "Read about how you can contribute.",
+    "LabelPreferredDisplayLanguageHelp": "Translating Emby is an ongoing project.",
+    "LabelReadHowYouCanContribute": "Learn how you can contribute.",
     "HeaderNewCollection": "New Collection",
     "ButtonSubmit": "Submit",
     "ButtonCreate": "Create",
@@ -1516,5 +1516,8 @@
     "ButtonSyncSettingsHelp": "Configure your sync settings",
     "LabelTranscodingThreadCount": "Transcoding thread count:",
     "LabelTranscodingThreadCountHelp": "Select the maximum number of threads to use when transcoding. Reducing the thread count will lower cpu usage but may not convert fast enough for a smooth playback experience.",
-    "OptionMax": "Max"
+    "OptionMax": "Max",
+    "HeaderEmbyGuide": "Emby Guide",
+    "LabelSyncPath": "Sync path:",
+    "OptionSyncOnlyOnWifi": "Sync only on Wifi"
 }
