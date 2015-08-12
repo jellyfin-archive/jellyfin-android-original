@@ -7,6 +7,7 @@ else if(hint.Type=="MusicVideo"){return[Globalize.translate('LabelMusicVideo')];
 else if(hint.Type=="Episode"){return[Globalize.translate('LabelEpisode')];}
 else if(hint.Type=="Series"){return[Globalize.translate('LabelSeries')];}
 else if(hint.Type=="BoxSet"){return[Globalize.translate('LabelCollection')];}
+else if(hint.ChannelName){return[hint.ChannelName];}
 return[hint.Type];}
 function search(){var self=this;self.showSearchPanel=function(){showSearchMenu();};}
 window.Search=new search();function renderSearchResultsInOverlay(elem,hints){hints=hints.map(function(i){i.Id=i.ItemId;i.ImageTags={};i.UserData={};if(i.PrimaryImageTag){i.ImageTags.Primary=i.PrimaryImageTag;}
