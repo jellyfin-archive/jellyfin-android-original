@@ -26,8 +26,8 @@ if(words.indexOf('guide')!=-1){result.action='show';result.category='tvguide';re
 return result;}
 function processTextInternal(text,deferred){var result=parseText(text);switch(result.action){case'show':parseContext(text,result);showCommand(result);break;case'play':parseContext(text,result);playCommand(result);break;case'shuffle':parseContext(text,result);playCommand(result,true);break;case'search':parseContext(text,result);playCommand(result);break;case'control':parseContext(text,result);controlCommand(result);break;case'enable':parseContext(text,result);enableCommand(result);break;case'disable':parseContext(text,result);disableCommand(result);break;case'toggle':parseContext(text,result);toggleCommand(result);break;default:deferred.reject();return;}
 deferred.resolve();}
-function showCommand(result){if(result.category=='tvguide'){Dashboard.navigate('livetvsuggested.html');return;}
-if(result.category=='recordings'){Dashboard.navigate('livetvsuggested.html');return;}}
+function showCommand(result){if(result.category=='tvguide'){Dashboard.navigate('livetv.html?tab=1');return;}
+if(result.category=='recordings'){Dashboard.navigate('livetv.html?tab=3');return;}}
 function enableCommand(result){var what=result.what.toLowerCase();if(what.indexOf('mirror')!=-1){MediaController.enableDisplayMirroring(true);}}
 function disableCommand(result){var what=result.what.toLowerCase();if(what.indexOf('mirror')!=-1){MediaController.enableDisplayMirroring(false);}}
 function toggleCommand(result){var what=result.what.toLowerCase();if(what.indexOf('mirror')!=-1){MediaController.toggleDisplayMirroring();}}
