@@ -1,5 +1,6 @@
 package com.mb.android.preferences;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
@@ -54,7 +55,7 @@ public class PreferencesProvider {
             logger.Error("SharedPreferences.Editor failed to save %s!", key);
         }
 
-        if (key.equalsIgnoreCase("syncPath")){
+        if (key.equalsIgnoreCase("syncPath") || key.equalsIgnoreCase("syncOnlyOnWifi")){
             updateSyncPreferences();
         }
     }
@@ -64,8 +65,10 @@ public class PreferencesProvider {
         // Need to take the app settings and copy them to where the sync services will read them
         String syncPath = getSharedPreferences(context).getString("syncPath", null);
 
+        boolean syncOnOnWifi = getSharedPreferences(context).getBoolean("syncOnlyOnWifi", true);
+
         logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences with %s", syncPath);
-        MediaSyncAdapter.updateSyncPreferences(context, syncPath);
+        MediaSyncAdapter.updateSyncPreferences(context, syncPath, syncOnOnWifi);
     }
 
     private static SharedPreferences getSharedPreferences(Context context) {

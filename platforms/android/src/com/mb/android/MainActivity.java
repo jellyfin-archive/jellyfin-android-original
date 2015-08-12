@@ -20,6 +20,7 @@
 package com.mb.android;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -45,6 +46,7 @@ import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.NativeWebView;
 
 import net.rdrei.android.dirchooser.DirectoryChooserActivity;
+import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 
 import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
@@ -54,6 +56,8 @@ import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
+import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
+import mediabrowser.apiinteraction.android.sync.OnDemandSync;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
@@ -127,6 +131,7 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
         webView.addJavascriptInterface(this, "AndroidVlcPlayer");
+        webView.addJavascriptInterface(this, "AndroidSync");
         webView.addJavascriptInterface(new LoggingBridge(getLogger()), "LoggingBridge");
 
         PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
@@ -257,9 +262,13 @@ public class MainActivity extends CordovaActivity
 
         final Intent chooserIntent = new Intent(this, DirectoryChooserActivity.class);
 
-        // Optional: Allow users to create a new directory with a fixed name.
-        chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_NEW_DIR_NAME,
-                "NewFolder");
+        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                .newDirectoryName("EmbySync")
+                .allowReadOnlyDirectory(false)
+                .allowNewDirectoryNameModification(true)
+                .build();
+
+        chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_CONFIG, config);
 
         // REQUEST_DIRECTORY is a constant integer to identify the request, e.g. 0
         startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
@@ -443,6 +452,16 @@ public class MainActivity extends CordovaActivity
         } else {
             return super.onKeyUp(keyCode, event);
         }
+    }
+
+    @JavascriptInterface
+    public String getSyncStatus() {
+        return MediaSyncAdapter.isSyncActive() ? "Active" : MediaSyncAdapter.isSyncPending() ? "Pending" : "Idle";
+    }
+
+    @JavascriptInterface
+    public void startSync() {
+        new OnDemandSync(getApplicationContext()).Run();
     }
 
     @Override
