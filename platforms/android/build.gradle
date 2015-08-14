@@ -20,6 +20,7 @@
 // GENERATED FILE! DO NOT EDIT!
 
 apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 buildscript {
     repositories {
@@ -49,6 +50,7 @@ buildscript {
 // Allow plugins to declare Maven dependencies via build-extras.gradle.
 repositories {
     mavenCentral()
+	maven { url 'http://guardian.github.com/maven/repo-releases' }
     flatDir {
         dirs 'libs/aars'
     }
@@ -291,6 +293,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2+'
     compile fileTree(dir: 'libs', include: '*.jar')
 	compile 'com.android.support:support-v4:22.1.+'
+	compile 'com.gu:option:1.3'
     compile 'net.rdrei.android.dirchooser:library:3.0@aar'
 	compile "de.mrmaffen:vlc-android-sdk:1.0.6"
     compile 'org.slf4j:slf4j-api:1.7.10'
