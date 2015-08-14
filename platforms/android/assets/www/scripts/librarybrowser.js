@@ -218,9 +218,9 @@ return'';},getPlayedIndicatorHtml:function(item){if(item.Type=="Series"||item.Ty
 if(item.Type!='TvChannel'){if(item.UserData.PlayedPercentage&&item.UserData.PlayedPercentage>=100||(item.UserData&&item.UserData.Played)){return'<div class="playedIndicator"><iron-icon icon="check"></iron-icon></div>';}}}
 return'';},getGroupCountIndicator:function(item){if(item.ChildCount){return'<div class="playedIndicator textIndicator">'+item.ChildCount+'</div>';}
 return'';},getSyncIndicator:function(item){if(item.SyncPercent){if(item.SyncPercent>=100){return'<div class="syncIndicator"><i class="fa fa-refresh"></i></div>';}
-var degree=(item.SyncPercent/100)*360;return'<div class="pieIndicator"><i class="fa fa-refresh"></i><div class="pieBackground"></div><div class="hold"><div class="pie" style="-webkit-transform: rotate('+degree+'deg);-moz-transform: rotate('+degree+'deg);-o-transform: rotate('+degree+'deg);transform: rotate('+degree+'deg);"></div></div></div>';}
-if(item.SyncStatus){if(item.SyncStatus=='Queued'||item.SyncStatus=='Converting'||item.SyncStatus=='ReadyToTransfer'||item.SyncStatus=='Transferring'){return'<div class="syncIndicator syncWorkingIndicator"><i class="fa fa-refresh"></i></div>';}
-if(item.SyncStatus=='Synced'){return'<div class="syncIndicator"><i class="fa fa-refresh"></i></div>';}}
+var degree=(item.SyncPercent/100)*360;return'<div class="pieIndicator"><iron-icon icon="refresh"></iron-icon><div class="pieBackground"></div><div class="hold"><div class="pie" style="-webkit-transform: rotate('+degree+'deg);-moz-transform: rotate('+degree+'deg);-o-transform: rotate('+degree+'deg);transform: rotate('+degree+'deg);"></div></div></div>';}
+if(item.SyncStatus){if(item.SyncStatus=='Queued'||item.SyncStatus=='Converting'||item.SyncStatus=='ReadyToTransfer'||item.SyncStatus=='Transferring'){return'<div class="syncIndicator syncWorkingIndicator"><iron-icon icon="refresh"></iron-icon></div>';}
+if(item.SyncStatus=='Synced'){return'<div class="syncIndicator"><iron-icon icon="refresh"></iron-icon></div>';}}
 return'';},getAveragePrimaryImageAspectRatio:function(items){var values=[];for(var i=0,length=items.length;i<length;i++){var ratio=items[i].PrimaryImageAspectRatio||0;if(!ratio){continue;}
 values[values.length]=ratio;}
 if(!values.length){return null;}
