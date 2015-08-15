@@ -29,9 +29,6 @@ else if(context=='home-upcoming'){elem=$('.homeTabs',page).show();$('a',elem).re
 else if(context=='home-latest'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');}
 else if(context=='photos'||context=='photos-photos'){elem=$('.photoTabs',page).show();$('a',elem).removeClass('ui-btn-active');if(context=='photos-photos'){$('.lnkPhotos',page).addClass('ui-btn-active');}
 else if(context=='photos-videos'){$('.lnkVideos',page).addClass('ui-btn-active');}else{$('.lnkPhotoAlbums',page).addClass('ui-btn-active');}}
-else if(context=='movies'||context=='movies-trailers'){elem=$('#movieTabs',page).show();$('a',elem).removeClass('ui-btn-active');if(item.Type=='BoxSet'){$('.lnkCollections',page).addClass('ui-btn-active');}
-else if(context=='movies-trailers'){$('.lnkMovieTrailers',page).addClass('ui-btn-active');}
-else{$('.lnkMovies',page).addClass('ui-btn-active');}}
 else if(context=='tv'){elem=$('#tvShowsTabs',page).show();}
 else if(context=='games'){elem=$('#gameTabs',page).show();}}
 function setInitialCollapsibleState(page,item,context,user){$('.collectionItems',page).empty();if(item.IsFolder){if(item.Type=="BoxSet"){$('#childrenCollapsible',page).addClass('hide');}else{$('#childrenCollapsible',page).removeClass('hide');}
