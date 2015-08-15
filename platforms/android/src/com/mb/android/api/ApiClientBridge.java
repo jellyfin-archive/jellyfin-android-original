@@ -1,7 +1,6 @@
 package com.mb.android.api;
 
 import android.content.Context;
-import android.os.Handler;
 
 import com.mb.android.webviews.IWebView;
 
@@ -9,7 +8,6 @@ import org.xwalk.core.JavascriptInterface;
 
 import mediabrowser.apiinteraction.ApiEventListener;
 import mediabrowser.apiinteraction.IConnectionManager;
-import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.AndroidConnectionManager;
 import mediabrowser.apiinteraction.android.AndroidCredentialProvider;
 import mediabrowser.apiinteraction.android.AndroidDevice;
@@ -112,7 +110,7 @@ public class ApiClientBridge {
 
         HttpRequest request = jsonSerializer.DeserializeFromString(requestJson, HttpRequest.class);
 
-        httpClient.Send(request, new HttpRequestResponse(jsonSerializer, webView, callbackId));
+        httpClient.Send(request, new HttpRequestResponse(jsonSerializer, webView, callbackId, logger));
 
     }
 }
