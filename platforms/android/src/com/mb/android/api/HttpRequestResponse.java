@@ -5,6 +5,7 @@ import com.mb.android.webviews.IWebView;
 import java.util.Map;
 
 import mediabrowser.apiinteraction.Response;
+import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.net.HttpException;
 import mediabrowser.model.serialization.IJsonSerializer;
 
@@ -16,15 +17,19 @@ public class HttpRequestResponse extends Response<String> {
     private IJsonSerializer jsonSerializer;
     private IWebView webView;
     private String requestId;
+    private ILogger logger;
 
-    public HttpRequestResponse(IJsonSerializer jsonSerializer, IWebView webView, String requestId) {
+    public HttpRequestResponse(IJsonSerializer jsonSerializer, IWebView webView, String requestId, ILogger logger) {
         this.jsonSerializer = jsonSerializer;
         this.webView = webView;
         this.requestId = requestId;
+        this.logger = logger;
     }
 
     @Override
     public void onResponse(String response){
+
+        logger.Debug("Received success response for request id %s", requestId);
 
         if (response == null || response.length() == 0){
             response = "null";
@@ -36,6 +41,8 @@ public class HttpRequestResponse extends Response<String> {
 
     @Override
     public void onError(Exception ex){
+
+        logger.Debug("Received error response for request id %s", requestId);
 
         String jsResponse;
 
@@ -91,7 +98,7 @@ public class HttpRequestResponse extends Response<String> {
 
     private void RespondToWebView(final String js) {
 
-        //logger.Info("Sending url to webView: %s", js);
+        //logger.Debug("Sending url to webView: %s", js);
         webView.sendJavaScript(js);
     }
 }
