@@ -21,16 +21,10 @@ function renderImage(page,item,user){var imageHref=user.Policy.IsAdministrator&&
 function onWebSocketMessage(e,data){var msg=data;var page=$($.mobile.activePage)[0];if(msg.MessageType==="UserDataChanged"){if(currentItem&&msg.Data.UserId==Dashboard.getCurrentUserId()){var key=currentItem.UserData.Key;var userData=msg.Data.UserDataList.filter(function(u){return u.Key==key;})[0];if(userData){currentItem.UserData=userData;renderUserDataIcons(page,currentItem);Dashboard.getCurrentUser().done(function(user){renderImage(page,currentItem,user);});}}}}
 function setPeopleHeader(page,item){if(item.Type=="Audio"||item.Type=="MusicAlbum"||item.MediaType=="Book"||item.MediaType=="Photo"){$('#peopleHeader',page).html(Globalize.translate('HeaderPeople'));}else{$('#peopleHeader',page).html(Globalize.translate('HeaderCastAndCrew'));}}
 function getContext(item){return getParameterByName('context');}
-function renderHeader(page,item,context){$('.itemTabs',page).hide();$(page).removeClass('noSecondaryNavPage');var elem;if(!context){$(page).addClass('noSecondaryNavPage');LibraryMenu.setBackButtonVisible(true);LibraryMenu.setMenuButtonVisible(false);}
-else if(context=='home'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeHome',page).addClass('ui-btn-active');}
-else if(context=='home-nextup'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeNextUp',page).addClass('ui-btn-active');}
-else if(context=='home-favorites'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeFavorites',page).addClass('ui-btn-active');}
-else if(context=='home-upcoming'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');$('.lnkHomeUpcoming',page).addClass('ui-btn-active');}
-else if(context=='home-latest'){elem=$('.homeTabs',page).show();$('a',elem).removeClass('ui-btn-active');}
-else if(context=='photos'||context=='photos-photos'){elem=$('.photoTabs',page).show();$('a',elem).removeClass('ui-btn-active');if(context=='photos-photos'){$('.lnkPhotos',page).addClass('ui-btn-active');}
+function renderHeader(page,item,context){$('.itemTabs',page).hide();if(context=='photos'||context=='photos-photos'){$(page).removeClass('noSecondaryNavPage');var elem=$('.photoTabs',page).show();$('a',elem).removeClass('ui-btn-active');if(context=='photos-photos'){$('.lnkPhotos',page).addClass('ui-btn-active');}
 else if(context=='photos-videos'){$('.lnkVideos',page).addClass('ui-btn-active');}else{$('.lnkPhotoAlbums',page).addClass('ui-btn-active');}}
-else if(context=='tv'){elem=$('#tvShowsTabs',page).show();}
-else if(context=='games'){elem=$('#gameTabs',page).show();}}
+else if(context=='tv'){$(page).removeClass('noSecondaryNavPage');$('#tvShowsTabs',page).show();}
+else{$(page).addClass('noSecondaryNavPage');LibraryMenu.setBackButtonVisible(true);LibraryMenu.setMenuButtonVisible(false);}}
 function setInitialCollapsibleState(page,item,context,user){$('.collectionItems',page).empty();if(item.IsFolder){if(item.Type=="BoxSet"){$('#childrenCollapsible',page).addClass('hide');}else{$('#childrenCollapsible',page).removeClass('hide');}
 renderChildren(page,item,user,context);}
 else{$('#childrenCollapsible',page).addClass('hide');}
