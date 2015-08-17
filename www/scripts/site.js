@@ -112,7 +112,7 @@ deferred.resolve();}else{var apiClient=new MediaBrowser.ApiClient(Logger,Dashboa
 return deferred.promise();}
 function initFastClick(){require(["bower_components/fastclick/lib/fastclick"],function(FastClick){FastClick.attach(document.body,{tapDelay:0});$(document.body).on('touchstart','.ui-panel-dismiss',function(){$(this).trigger('click');});});}
 function setDocumentClasses(){var elem=document.documentElement;if(AppInfo.enableBottomTabs){elem.classList.add('bottomSecondaryNav');}
-if(AppInfo.isTouchPreferred){elem.classList.add('touch');}else{elem.classList.add('pointerInput');}
+if(AppInfo.isTouchPreferred){elem.classList.add('touch');}
 if(AppInfo.cardMargin){elem.classList.add(AppInfo.cardMargin);}
 if(!AppInfo.enableStudioTabs){elem.classList.add('studioTabDisabled');}
 if(!AppInfo.enablePeopleTabs){elem.classList.add('peopleTabDisabled');}
