@@ -206,7 +206,7 @@ paper-button.notext {
 }*/
 
 .bottomFab {
-    bottom: 30px;
+    bottom: 90px;
 }
 
 paper-dialog {
@@ -373,20 +373,27 @@ paper-menu-item {
     border-color: #2ad;
 }
 
-.ui-page-theme-b paper-input label {
+.paperCheckboxList paper-checkbox {
+    display: block;
+    padding: .5em 0;
+}
+
+.ui-page-theme-b paper-input label, .ui-page-theme-b paper-textarea label {
+    color: #ccc !important;
+    font-size: 20px !important;
+    font-family: inherit !important;
+}
+
+.ui-page-theme-b paper-input input, .ui-page-theme-b paper-textarea textarea {
     color: #fff !important;
 }
 
-.ui-page-theme-b paper-input input {
-    color: #fff !important;
-}
-
-.ui-page-theme-b paper-input .focused-line {
+paper-input .focused-line, .ui-page-theme-b paper-textarea .focused-line {
     background-color: #52B54B !important;
 }
 
-.ui-page-theme-b .unfocused-line.paper-input-container {
-    background: #858585;
+.ui-page-theme-b .unfocused-line.paper-input-container, .ui-page-theme-b .unfocused-line.paper-textarea-container {
+    background: #454545;
 }
 
 paper-textarea.mono textarea {
@@ -404,9 +411,13 @@ paper-textarea.mono textarea {
 
 .paperList {
     padding-top: 12px;
-    background-color: #303030;
     margin: 12px auto;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    background-color: #fff;
+}
+
+.ui-page-theme-b .paperList {
+    background-color: #303030;
 }
 
 paper-dropdown-menu {
@@ -416,6 +427,6 @@ paper-dropdown-menu {
     display: inline-block;
 }
 
-paper-dropdown-menu paper-item {
-    display: block;
-}
+    paper-dropdown-menu paper-item {
+        display: block;
+    }

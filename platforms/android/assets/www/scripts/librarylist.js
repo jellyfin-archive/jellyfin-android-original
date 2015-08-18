@@ -36,6 +36,7 @@ case'edit':Dashboard.navigate('edititemmetadata.html?id='+itemId);break;case'ref
 function onListViewMenuButtonClick(e){showContextMenu(this,{});e.preventDefault();return false;}
 function onListViewPlayButtonClick(e){var playButton=this;var card=this;if(!card.classList.contains('card')&&!card.classList.contains('listItem')){card=$(card).parents('.listItem,.card')[0];}
 var id=card.getAttribute('data-itemid');var type=card.getAttribute('data-itemtype');var isFolder=card.getAttribute('data-isfolder')=='true';var mediaType=card.getAttribute('data-mediatype');var resumePosition=parseInt(card.getAttribute('data-positionticks'));if(type=='MusicAlbum'||type=='MusicArtist'||type=='MusicGenre'||type=='Playlist'){isFolder=true;}
+if(type=='Program'){id=card.getAttribute('data-channelid');}
 LibraryBrowser.showPlayMenu(playButton,id,type,isFolder,mediaType,resumePosition);e.preventDefault();return false;}
 function isClickable(target){while(target!=null){var tagName=target.tagName||'';if(tagName=='A'||tagName.indexOf('BUTTON')!=-1||tagName.indexOf('INPUT')!=-1){return true;}
 return false;}

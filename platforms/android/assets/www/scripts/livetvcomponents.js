@@ -1,6 +1,6 @@
 ﻿(function(){window.LiveTvHelpers={getDaysOfWeek:function(){var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];return days.map(function(d){return{name:d,value:d};});},renderMiscProgramInfo:function(elem,obj){var html=[];if(obj.IsSeries&&!obj.IsRepeat){html.push('<span class="newTvProgram">'+Globalize.translate('LabelNewProgram')+'</span>');}
 if(obj.IsLive){html.push('<span class="liveTvProgram">'+Globalize.translate('LabelLiveProgram')+'</span>');}
-if(obj.ChannelId){html.push('<a class="textlink" href="livetvchannel.html?id='+obj.ChannelId+'">'+obj.ChannelName+'</a>');}
+if(obj.ChannelId){html.push('<a class="textlink" href="itemdetails.html?id='+obj.ChannelId+'">'+obj.ChannelName+'</a>');}
 if(obj.IsHD){html.push(Globalize.translate('LabelHDProgram'));}
 if(obj.Audio){html.push(obj.Audio);}
 html=html.join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');if(obj.SeriesTimerId){html+='<a href="livetvseriestimer.html?id='+obj.SeriesTimerId+'" title="'+Globalize.translate('ButtonViewSeriesRecording')+'">';html+='<div class="timerCircle seriesTimerCircle"></div>';html+='<div class="timerCircle seriesTimerCircle"></div>';html+='<div class="timerCircle seriesTimerCircle"></div>';html+='</a>';}
