@@ -1,6 +1,6 @@
 ﻿(function(window,$,document){var currentItem;function deleteTimer(page,id){Dashboard.confirm(Globalize.translate('MessageConfirmRecordingCancellation'),Globalize.translate('HeaderConfirmRecordingCancellation'),function(result){if(result){Dashboard.showLoadingMsg();ApiClient.cancelLiveTvTimer(id).done(function(){Dashboard.alert(Globalize.translate('MessageRecordingCancelled'));reload(page);});}});}
 function renderTimer(page,item){currentItem=item;$('.itemName',page).html(item.Name);$('#txtPrePaddingMinutes',page).val(item.PrePaddingSeconds/60);$('#txtPostPaddingMinutes',page).val(item.PostPaddingSeconds/60);$('#chkPrePaddingRequired',page).checked(item.IsPrePaddingRequired);$('#chkPostPaddingRequired',page).checked(item.IsPostPaddingRequired);$('#chkNewOnly',page).checked(item.RecordNewOnly);$('#chkAllChannels',page).checked(item.RecordAnyChannel);$('#chkAnyTime',page).checked(item.RecordAnyTime);var channelHtml='';if(item.RecordAnyChannel){channelHtml+=Globalize.translate('LabelAllChannels');}
-else if(item.ChannelId){channelHtml+='<a href="livetvchannel.html?id='+item.ChannelId+'">'+item.ChannelName+'</a>';}
+else if(item.ChannelId){channelHtml+='<a href="itemdetails.html?id='+item.ChannelId+'">'+item.ChannelName+'</a>';}
 $('.channel',page).html(channelHtml).trigger('create');selectDays(page,item.Days);if(item.RecordAnyTime){$('.time',page).html(Globalize.translate('LabelAnytime')).trigger('create');}
 else if(item.ChannelId){$('.time',page).html(LibraryBrowser.getDisplayTime(item.StartDate)).trigger('create');}
 Dashboard.hideLoadingMsg();}
