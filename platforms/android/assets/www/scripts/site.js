@@ -57,12 +57,12 @@ else if(msg.MessageType==="PackageInstallationCompleted"){Dashboard.getCurrentUs
 else if(msg.MessageType==="PackageInstallationFailed"){Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showPackageInstallNotification(msg.Data,"failed");Dashboard.refreshSystemInfoFromServer();}});}
 else if(msg.MessageType==="PackageInstallationCancelled"){Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showPackageInstallNotification(msg.Data,"cancelled");Dashboard.refreshSystemInfoFromServer();}});}
 else if(msg.MessaapiclientcgeType==="PackageInstalling"){Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showPackageInstallNotification(msg.Data,"progress");Dashboard.refreshSystemInfoFromServer();}});}
-else if(msg.MessageType==="GeneralCommand"){var cmd=msg.Data;}},onBrowseCommand:function(cmd){var url;var type=(cmd.ItemType||"").toLowerCase();if(type=="genre"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="musicgenre"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="gamegenre"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="studio"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="person"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="musicartist"){url="itembynamedetails.html?id="+cmd.ItemId;}
+else if(msg.MessageType==="GeneralCommand"){var cmd=msg.Data;}},onBrowseCommand:function(cmd){var url;var type=(cmd.ItemType||"").toLowerCase();if(type=="genre"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="musicgenre"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="gamegenre"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="studio"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="person"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="musicartist"){url="itemdetails.html?id="+cmd.ItemId;}
 if(url){Dashboard.navigate(url);return;}
 ApiClient.getItem(Dashboard.getCurrentUserId(),cmd.ItemId).done(function(item){Dashboard.navigate(LibraryBrowser.getHref(item,null,''));});},showPackageInstallNotification:function(installation,status){var html='';if(status=='completed'){html+='<img src="css/images/notifications/done.png" class="notificationIcon" />';}
 else if(status=='cancelled'){html+='<img src="css/images/notifications/info.png" class="notificationIcon" />';}
