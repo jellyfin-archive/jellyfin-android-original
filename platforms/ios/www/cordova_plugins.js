@@ -361,6 +361,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+        "id": "cc.fovea.cordova.purchase.InAppPurchase",
+        "clobbers": [
+            "store"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -407,6 +414,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.4.0",
     "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-globalization": "1.0.1",
+    "cc.fovea.cordova.purchase": "3.11.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"

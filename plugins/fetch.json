@@ -244,5 +244,15 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cc.fovea.cordova.purchase": {
+        "source": {
+            "type": "registry",
+            "id": "cc.fovea.cordova.purchase"
+        },
+        "is_top_level": true,
+        "variables": {
+            "BILLING_KEY": "none"
+        }
     }
 }
