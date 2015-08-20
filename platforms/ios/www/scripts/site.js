@@ -57,12 +57,12 @@ else if(msg.MessageType==="PackageInstallationCompleted"){Dashboard.getCurrentUs
 else if(msg.MessageType==="PackageInstallationFailed"){Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showPackageInstallNotification(msg.Data,"failed");Dashboard.refreshSystemInfoFromServer();}});}
 else if(msg.MessageType==="PackageInstallationCancelled"){Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showPackageInstallNotification(msg.Data,"cancelled");Dashboard.refreshSystemInfoFromServer();}});}
 else if(msg.MessaapiclientcgeType==="PackageInstalling"){Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showPackageInstallNotification(msg.Data,"progress");Dashboard.refreshSystemInfoFromServer();}});}
-else if(msg.MessageType==="GeneralCommand"){var cmd=msg.Data;}},onBrowseCommand:function(cmd){var url;var type=(cmd.ItemType||"").toLowerCase();if(type=="genre"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="musicgenre"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="gamegenre"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="studio"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="person"){url="itembynamedetails.html?id="+cmd.ItemId;}
-else if(type=="musicartist"){url="itembynamedetails.html?id="+cmd.ItemId;}
+else if(msg.MessageType==="GeneralCommand"){var cmd=msg.Data;}},onBrowseCommand:function(cmd){var url;var type=(cmd.ItemType||"").toLowerCase();if(type=="genre"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="musicgenre"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="gamegenre"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="studio"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="person"){url="itemdetails.html?id="+cmd.ItemId;}
+else if(type=="musicartist"){url="itemdetails.html?id="+cmd.ItemId;}
 if(url){Dashboard.navigate(url);return;}
 ApiClient.getItem(Dashboard.getCurrentUserId(),cmd.ItemId).done(function(item){Dashboard.navigate(LibraryBrowser.getHref(item,null,''));});},showPackageInstallNotification:function(installation,status){var html='';if(status=='completed'){html+='<img src="css/images/notifications/done.png" class="notificationIcon" />';}
 else if(status=='cancelled'){html+='<img src="css/images/notifications/info.png" class="notificationIcon" />';}
@@ -79,7 +79,7 @@ ApiClient.getItems(Dashboard.getCurrentUserId(),{Recursive:true,Limit:3,Filters:
 WebNotifications.show(notification);}});},ensurePageTitle:function(page){if(!page.classList.contains('type-interior')){return;}
 var pageElem=page;if(pageElem.querySelector('.pageTitle')){return;}
 var parent=pageElem.querySelector('.content-primary');if(!parent){parent=pageElem.getElementsByClassName('ui-content')[0];}
-var helpUrl=pageElem.getAttribute('data-helpurl');var html='<div>';html+='<h1 class="pageTitle" style="display:inline-block;">'+(document.title||'&nbsp;')+'</h1>';if(helpUrl){html+='<a href="'+helpUrl+'" target="_blank" class="clearLink" style="margin-top:-10px;display:inline-block;vertical-align:middle;margin-left:1em;"><paper-button raised class="secondary mini"><i class="fa fa-info-circle"></i>'+Globalize.translate('ButtonHelp')+'</paper-button></a>';}
+var helpUrl=pageElem.getAttribute('data-helpurl');var html='<div>';html+='<h1 class="pageTitle" style="display:inline-block;">'+(document.title||'&nbsp;')+'</h1>';if(helpUrl){html+='<a href="'+helpUrl+'" target="_blank" class="clearLink" style="margin-top:-10px;display:inline-block;vertical-align:middle;margin-left:1em;"><paper-button raised class="secondary mini"><iron-icon icon="info"></iron-icon><span>'+Globalize.translate('ButtonHelp')+'</span></paper-button></a>';}
 html+='</div>';$(parent).prepend(html);if(helpUrl){require(['paperbuttonstyle']);}},setPageTitle:function(title){var elem=$($.mobile.activePage)[0].querySelector('.pageTitle');if(elem){elem.innerHTML=title;}
 if(title){document.title=title;}},getDisplayTime:function(ticks){var ticksPerHour=36000000000;var ticksPerMinute=600000000;var ticksPerSecond=10000000;var parts=[];var hours=ticks/ticksPerHour;hours=Math.floor(hours);if(hours){parts.push(hours);}
 ticks-=(hours*ticksPerHour);var minutes=ticks/ticksPerMinute;minutes=Math.floor(minutes);ticks-=(minutes*ticksPerMinute);if(minutes<10&&hours){minutes='0'+minutes;}
@@ -88,7 +88,7 @@ parts.push(seconds);return parts.join(':');},populateLanguages:function(select,l
 $(select).html(html).selectmenu("refresh");},populateCountries:function(select,allCountries){var html="";html+="<option value=''></option>";for(var i=0,length=allCountries.length;i<length;i++){var culture=allCountries[i];html+="<option value='"+culture.TwoLetterISORegionName+"'>"+culture.DisplayName+"</option>";}
 $(select).html(html).selectmenu("refresh");},getSupportedRemoteCommands:function(){return["GoHome","GoToSettings","VolumeUp","VolumeDown","Mute","Unmute","ToggleMute","SetVolume","SetAudioStreamIndex","SetSubtitleStreamIndex","DisplayContent","GoToSearch","DisplayMessage","SetRepeatMode"];},isServerlessPage:function(){var url=getWindowUrl().toLowerCase();return url.indexOf('connectlogin.html')!=-1||url.indexOf('selectserver.html')!=-1||url.indexOf('login.html')!=-1||url.indexOf('forgotpassword.html')!=-1||url.indexOf('forgotpasswordpin.html')!=-1;},capabilities:function(){var caps={PlayableMediaTypes:['Audio','Video'],SupportedCommands:Dashboard.getSupportedRemoteCommands(),SupportsPersistentIdentifier:Dashboard.isRunningInCordova(),SupportsMediaControl:true,SupportedLiveMediaTypes:['Audio','Video']};if(Dashboard.isRunningInCordova()&&$.browser.android){caps.SupportsOfflineAccess=true;caps.SupportsSync=true;caps.SupportsContentUploading=true;}
 return caps;},getDefaultImageQuality:function(imageType){var quality=90;var isBackdrop=imageType.toLowerCase()=='backdrop';if(isBackdrop){quality-=10;}
-if(AppInfo.hasLowImageBandwidth){if(AppInfo.isNativeApp){quality-=15;if(isBackdrop){quality-=20;}}else{quality-=40;}}
+if(AppInfo.hasLowImageBandwidth){if(AppInfo.isNativeApp){quality-=10;if(isBackdrop){quality-=20;}}else{quality-=40;}}
 return quality;},normalizeImageOptions:function(options){if(AppInfo.hasLowImageBandwidth){options.enableImageEnhancers=false;}
 if(AppInfo.forcedImageFormat&&options.type!='Logo'){options.format=AppInfo.forcedImageFormat;options.backgroundColor='#1c1c1c';}},getAppInfo:function(appName,deviceId,deviceName){function generateDeviceName(){var name="Web Browser";if($.browser.chrome){name="Chrome";}else if($.browser.safari){name="Safari";}else if($.browser.msie){name="Internet Explorer";}else if($.browser.opera){name="Opera";}else if($.browser.mozilla){name="Firefox";}
 if($.browser.version){name+=" "+$.browser.version;}
@@ -103,8 +103,7 @@ if(!AppInfo.hasLowImageBandwidth){AppInfo.enableStudioTabs=true;AppInfo.enablePe
 if(isCordova){AppInfo.enableAppLayouts=true;AppInfo.hasKnownExternalPlayerSupport=true;AppInfo.isNativeApp=true;}
 else{AppInfo.enableFooterNotifications=true;AppInfo.enableSupporterMembership=true;if(!isAndroid&&!isIOS){AppInfo.enableAppLayouts=true;}}
 if(!$.browser.tv&&!isIOS){if(AppInfo.isNativeApp||window.navigator.standalone||!$.browser.mobile){AppInfo.enableHeadRoom=true;}}
-AppInfo.enableUserImage=true;AppInfo.hasPhysicalVolumeButtons=isCordova||isMobile;AppInfo.enableBackButton=isIOS&&(window.navigator.standalone||AppInfo.isNativeApp);AppInfo.supportsFullScreen=isCordova&&isAndroid;AppInfo.supportsSyncPathSetting=isCordova&&isAndroid;AppInfo.supportsUserDisplayLanguageSetting=Dashboard.isConnectMode()&&!isCordova;if(isCordova&&isAndroid){AppInfo.directPlayAudioContainers="flac,aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus".split(',');AppInfo.directPlayVideoContainers="m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm".split(',');}else{AppInfo.directPlayAudioContainers=[];AppInfo.directPlayVideoContainers=[];}
-if(isCordova&&isIOS){AppInfo.moreIcon='more-horiz';}else{AppInfo.moreIcon='more-vert';}}
+AppInfo.enableUserImage=true;AppInfo.hasPhysicalVolumeButtons=isCordova||isMobile;AppInfo.enableBackButton=isIOS&&(window.navigator.standalone||AppInfo.isNativeApp);AppInfo.supportsFullScreen=isCordova&&isAndroid;AppInfo.supportsSyncPathSetting=isCordova&&isAndroid;AppInfo.supportsUserDisplayLanguageSetting=Dashboard.isConnectMode()&&!isCordova;AppInfo.directPlayAudioContainers=[];AppInfo.directPlayVideoContainers=[];if(isCordova&&isIOS){AppInfo.moreIcon='more-horiz';}else{AppInfo.moreIcon='more-vert';}}
 function initializeApiClient(apiClient){apiClient.enableAppStorePolicy=AppInfo.enableAppStorePolicy;apiClient.getDefaultImageQuality=Dashboard.getDefaultImageQuality;apiClient.normalizeImageOptions=Dashboard.normalizeImageOptions;$(apiClient).off("websocketmessage",Dashboard.onWebSocketMessageReceived).off('requestfail',Dashboard.onRequestFail);$(apiClient).on("websocketmessage",Dashboard.onWebSocketMessageReceived).on('requestfail',Dashboard.onRequestFail);}
 function createConnectionManager(capabilities){var credentialKey=Dashboard.isConnectMode()?null:'servercredentials4';var credentialProvider=new MediaBrowser.CredentialProvider(credentialKey);window.ConnectionManager=new MediaBrowser.ConnectionManager(Logger,credentialProvider,AppInfo.appName,AppInfo.appVersion,AppInfo.deviceName,AppInfo.deviceId,capabilities);if(getWindowUrl().toLowerCase().indexOf('wizardstart.html')!=-1){window.ConnectionManager.clearData();}
 $(ConnectionManager).on('apiclientcreated',function(e,newApiClient){initializeApiClient(newApiClient);});var deferred=DeferredBuilder.Deferred();if(Dashboard.isConnectMode()){var server=ConnectionManager.getLastUsedServer();if(!Dashboard.isServerlessPage()){if(server&&server.UserId&&server.AccessToken){ConnectionManager.connectToServer(server).done(function(result){if(result.State==MediaBrowser.ConnectionState.SignedIn){window.ApiClient=result.ApiClient;}
@@ -113,7 +112,7 @@ deferred.resolve();}else{var apiClient=new MediaBrowser.ApiClient(Logger,Dashboa
 return deferred.promise();}
 function initFastClick(){require(["bower_components/fastclick/lib/fastclick"],function(FastClick){FastClick.attach(document.body,{tapDelay:0});$(document.body).on('touchstart','.ui-panel-dismiss',function(){$(this).trigger('click');});});}
 function setDocumentClasses(){var elem=document.documentElement;if(AppInfo.enableBottomTabs){elem.classList.add('bottomSecondaryNav');}
-if(AppInfo.isTouchPreferred){elem.classList.add('touch');}else{elem.classList.add('pointerInput');}
+if(AppInfo.isTouchPreferred){elem.classList.add('touch');}
 if(AppInfo.cardMargin){elem.classList.add(AppInfo.cardMargin);}
 if(!AppInfo.enableStudioTabs){elem.classList.add('studioTabDisabled');}
 if(!AppInfo.enablePeopleTabs){elem.classList.add('peopleTabDisabled');}
@@ -144,7 +143,9 @@ define("sharingmanager",["scripts/sharingmanager"]);if(Dashboard.isRunningInCord
 if(Dashboard.isRunningInCordova()&&$.browser.safari){define("searchmenu",["cordova/searchmenu"]);}else{define("searchmenu",["scripts/searchmenu"]);}
 $.extend(AppInfo,Dashboard.getAppInfo(appName,deviceId,deviceName));var drawer=document.querySelector('.mainDrawerPanel');drawer.classList.remove('mainDrawerPanelPreInit');drawer.forceNarrow=true;var drawerWidth=screen.availWidth-50;drawerWidth=Math.max(drawerWidth,240);drawerWidth=Math.min(drawerWidth,310);drawer.drawerWidth=drawerWidth+"px";if($.browser.safari&&!AppInfo.isNativeApp){drawer.disableEdgeSwipe=true;}
 var deps=[];if(AppInfo.isNativeApp&&$.browser.android){deps.push('cordova/android/logging');}
-deps.push('appstorage');require(deps,function(){capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){onConnectionManagerCreated(deferred);});});}
+deps.push('appstorage');require(deps,function(){if(Dashboard.isRunningInCordova()&&$.browser.android){AppInfo.directPlayAudioContainers="aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus".split(',');if(AppSettings.syncLosslessAudio()){AppInfo.directPlayAudioContainers.push('flac');}
+AppInfo.directPlayVideoContainers="m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm".split(',');}
+capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){onConnectionManagerCreated(deferred);});});}
 function onConnectionManagerCreated(deferred){Globalize.ensure().done(function(){document.title=Globalize.translateDocument(document.title,'html');$(function(){var mainDrawerPanelContent=document.querySelector('.mainDrawerPanelContent');if(mainDrawerPanelContent){var newHtml=mainDrawerPanelContent.innerHTML.substring(4);newHtml=newHtml.substring(0,newHtml.length-3);mainDrawerPanelContent.innerHTML=Globalize.translateDocument(newHtml,'html');}
 onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();});});}
 function initCordovaWithDeviceId(deferred,deviceId){require(['cordova/imagestore']);var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");init(deferred,capablities,name,deviceId,device.model);}
