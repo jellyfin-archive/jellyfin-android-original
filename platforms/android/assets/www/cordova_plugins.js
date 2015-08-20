@@ -376,6 +376,13 @@ module.exports = [
         "clobbers": [
             "navigator.globalization"
         ]
+    },
+    {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
+        "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
+        "clobbers": [
+            "store"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -406,6 +413,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.4.0",
     "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-globalization": "1.0.1",
+    "cc.fovea.cordova.purchase": "3.11.0",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

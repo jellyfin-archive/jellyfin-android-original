@@ -21,9 +21,6 @@
     <feature name="LocalNotification">
         <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
     </feature>
-    <feature name="InAppBillingPlugin">
-        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
-    </feature>
     <feature name="Launcher">
         <param name="android-package" value="com.hutchind.cordova.plugins.launcher.Launcher" />
     </feature>
@@ -55,6 +52,9 @@
     </feature>
     <feature name="Globalization">
         <param name="android-package" value="org.apache.cordova.globalization.Globalization" />
+    </feature>
+    <feature name="InAppBillingPlugin">
+        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
     </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="21" />
