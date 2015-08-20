@@ -64,7 +64,7 @@ if(item.CollectionType=='playlists'){return'playlists.html?topParentId='+item.Id
 if(item.CollectionType=='photos'){return'photos.html?topParentId='+item.Id;}}
 if(item.Type=='CollectionFolder'){return'itemlist.html?topParentId='+item.Id+'&parentid='+item.Id;}
 if(item.Type=="PhotoAlbum"&&context=='photos'){return"photos.html?parentId="+id;}
-if(item.Type=="Playlist"){return"playlistedit.html?id="+id;}
+if(item.Type=="Playlist"){return"itemdetails.html?id="+id;}
 if(item.Type=="TvChannel"){return"itemdetails.html?id="+id;}
 if(item.Type=="Channel"){return"channelitems.html?id="+id;}
 if(item.Type=="ChannelFolderItem"){return"channelitems.html?id="+item.ChannelId+'&folderId='+item.Id;}
@@ -310,6 +310,7 @@ if(item.Type!="Series"&&item.Type!="Episode"&&item.MediaType!='Photo'){if(item.P
 else if(item.PremiereDate){try{text=parseISO8601Date(item.PremiereDate,{toLocal:true}).getFullYear();miscInfo.push(text);}
 catch(e){Logger.log("Error parsing date: "+item.PremiereDate);}}}
 var minutes;if(item.RunTimeTicks&&item.Type!="Series"){if(item.Type=="Audio"){miscInfo.push(Dashboard.getDisplayTime(item.RunTimeTicks));}else{minutes=item.RunTimeTicks/600000000;minutes=minutes||1;miscInfo.push(Math.round(minutes)+"min");}}
+if(item.CumulativeRunTimeTicks&&item.Type!="Series"&&item.Type!="Season"){miscInfo.push(Dashboard.getDisplayTime(item.CumulativeRunTimeTicks));}
 if(item.OfficialRating&&item.Type!=="Season"&&item.Type!=="Episode"){miscInfo.push(item.OfficialRating);}
 if(item.IsHD){miscInfo.push(Globalize.translate('LabelHDProgram'));}
 if(item.Video3DFormat){miscInfo.push("3D");}

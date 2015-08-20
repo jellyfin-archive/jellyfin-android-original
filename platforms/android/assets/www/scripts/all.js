@@ -2108,7 +2108,7 @@ var requirejs, require, define;
 }(this));
 
 
-window.appMode='cordova';window.dashboardVersion='3.0.5709.969';
+window.appMode='cordova';window.dashboardVersion='3.0.5709.39082';
 (function(root,doc,factory){factory(root.jQuery,root,doc);}(this,document,function(jQuery,window,document,undefined){(function($,window,undefined){'$:nomunge';var str_hashchange='hashchange',doc=document,fake_onhashchange,special=$.event.special,doc_mode=doc.documentMode,supports_onhashchange='on'+str_hashchange in window&&(doc_mode===undefined||doc_mode>7);function get_fragment(url){url=url||location.href;return'#'+url.replace(/^[^#]*#?(.*)$/,'$1');};$.fn[str_hashchange]=function(fn){return fn?this.bind(str_hashchange,fn):this.trigger(str_hashchange);};$.fn[str_hashchange].delay=50;special[str_hashchange]=$.extend(special[str_hashchange],{setup:function(){if(supports_onhashchange){return false;}
 $(fake_onhashchange.start);},teardown:function(){if(supports_onhashchange){return false;}
 $(fake_onhashchange.stop);}});fake_onhashchange=(function(){var self={},timeout_id,last_hash=get_fragment(),fn_retval=function(val){return val;},history_set=fn_retval,history_get=fn_retval;self.start=function(){timeout_id||poll();};self.stop=function(){timeout_id&&clearTimeout(timeout_id);timeout_id=undefined;};function poll(){var hash=get_fragment(),history_hash=history_get(last_hash);if(hash!==last_hash){history_set(last_hash=hash,history_hash);$(window).trigger(str_hashchange);}else if(history_hash!==last_hash){location.href=location.href.replace(/#.*/,'')+history_hash;}
@@ -3263,7 +3263,7 @@ parts.push(seconds);return parts.join(':');},populateLanguages:function(select,l
 $(select).html(html).selectmenu("refresh");},populateCountries:function(select,allCountries){var html="";html+="<option value=''></option>";for(var i=0,length=allCountries.length;i<length;i++){var culture=allCountries[i];html+="<option value='"+culture.TwoLetterISORegionName+"'>"+culture.DisplayName+"</option>";}
 $(select).html(html).selectmenu("refresh");},getSupportedRemoteCommands:function(){return["GoHome","GoToSettings","VolumeUp","VolumeDown","Mute","Unmute","ToggleMute","SetVolume","SetAudioStreamIndex","SetSubtitleStreamIndex","DisplayContent","GoToSearch","DisplayMessage","SetRepeatMode"];},isServerlessPage:function(){var url=getWindowUrl().toLowerCase();return url.indexOf('connectlogin.html')!=-1||url.indexOf('selectserver.html')!=-1||url.indexOf('login.html')!=-1||url.indexOf('forgotpassword.html')!=-1||url.indexOf('forgotpasswordpin.html')!=-1;},capabilities:function(){var caps={PlayableMediaTypes:['Audio','Video'],SupportedCommands:Dashboard.getSupportedRemoteCommands(),SupportsPersistentIdentifier:Dashboard.isRunningInCordova(),SupportsMediaControl:true,SupportedLiveMediaTypes:['Audio','Video']};if(Dashboard.isRunningInCordova()&&$.browser.android){caps.SupportsOfflineAccess=true;caps.SupportsSync=true;caps.SupportsContentUploading=true;}
 return caps;},getDefaultImageQuality:function(imageType){var quality=90;var isBackdrop=imageType.toLowerCase()=='backdrop';if(isBackdrop){quality-=10;}
-if(AppInfo.hasLowImageBandwidth){if(AppInfo.isNativeApp){quality-=15;if(isBackdrop){quality-=20;}}else{quality-=40;}}
+if(AppInfo.hasLowImageBandwidth){if(AppInfo.isNativeApp){quality-=10;if(isBackdrop){quality-=20;}}else{quality-=40;}}
 return quality;},normalizeImageOptions:function(options){if(AppInfo.hasLowImageBandwidth){options.enableImageEnhancers=false;}
 if(AppInfo.forcedImageFormat&&options.type!='Logo'){options.format=AppInfo.forcedImageFormat;options.backgroundColor='#1c1c1c';}},getAppInfo:function(appName,deviceId,deviceName){function generateDeviceName(){var name="Web Browser";if($.browser.chrome){name="Chrome";}else if($.browser.safari){name="Safari";}else if($.browser.msie){name="Internet Explorer";}else if($.browser.opera){name="Opera";}else if($.browser.mozilla){name="Firefox";}
 if($.browser.version){name+=" "+$.browser.version;}
@@ -3398,7 +3398,7 @@ if(item.CollectionType=='playlists'){return'playlists.html?topParentId='+item.Id
 if(item.CollectionType=='photos'){return'photos.html?topParentId='+item.Id;}}
 if(item.Type=='CollectionFolder'){return'itemlist.html?topParentId='+item.Id+'&parentid='+item.Id;}
 if(item.Type=="PhotoAlbum"&&context=='photos'){return"photos.html?parentId="+id;}
-if(item.Type=="Playlist"){return"playlistedit.html?id="+id;}
+if(item.Type=="Playlist"){return"itemdetails.html?id="+id;}
 if(item.Type=="TvChannel"){return"itemdetails.html?id="+id;}
 if(item.Type=="Channel"){return"channelitems.html?id="+id;}
 if(item.Type=="ChannelFolderItem"){return"channelitems.html?id="+item.ChannelId+'&folderId='+item.Id;}
@@ -3644,6 +3644,7 @@ if(item.Type!="Series"&&item.Type!="Episode"&&item.MediaType!='Photo'){if(item.P
 else if(item.PremiereDate){try{text=parseISO8601Date(item.PremiereDate,{toLocal:true}).getFullYear();miscInfo.push(text);}
 catch(e){Logger.log("Error parsing date: "+item.PremiereDate);}}}
 var minutes;if(item.RunTimeTicks&&item.Type!="Series"){if(item.Type=="Audio"){miscInfo.push(Dashboard.getDisplayTime(item.RunTimeTicks));}else{minutes=item.RunTimeTicks/600000000;minutes=minutes||1;miscInfo.push(Math.round(minutes)+"min");}}
+if(item.CumulativeRunTimeTicks&&item.Type!="Series"&&item.Type!="Season"){miscInfo.push(Dashboard.getDisplayTime(item.CumulativeRunTimeTicks));}
 if(item.OfficialRating&&item.Type!=="Season"&&item.Type!=="Episode"){miscInfo.push(item.OfficialRating);}
 if(item.IsHD){miscInfo.push(Globalize.translate('LabelHDProgram'));}
 if(item.Video3DFormat){miscInfo.push("3D");}
