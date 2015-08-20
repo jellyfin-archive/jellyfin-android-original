@@ -41,10 +41,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Launcher\"><param name=\"ios-package\" value=\"Launcher\" /></feature>",
                             "count": 1
                         },
@@ -94,6 +90,10 @@
                         },
                         {
                             "xml": "<feature name=\"Globalization\"><param name=\"ios-package\" value=\"CDVGlobalization\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
                             "count": 1
                         }
                     ],
@@ -274,6 +274,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-globalization": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

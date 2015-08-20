@@ -1,0 +1,29 @@
+{
+    "version": "3.11.0",
+    "name": "cc.fovea.cordova.purchase",
+    "cordova_name": "Purchase",
+    "description": "Cordova Purchase plugin for iOS and Android (AppStore and PlayStore)",
+    "license": "MIT",
+    "repo": "https://github.com/j3k0/cordova-plugin-purchase.git",
+    "issue": "https://github.com/j3k0/cordova-plugin-purchase/issues",
+    "keywords": [
+        "cordova",
+        "phonegap",
+        "purchase",
+        "storekit",
+        "ios",
+        "android",
+        "play",
+        "appstore"
+    ],
+    "platforms": [
+        "ios",
+        "android"
+    ],
+    "engines": [
+        {
+            "name": "cordova",
+            "version": ">=2.4.0"
+        }
+    ]
+}
