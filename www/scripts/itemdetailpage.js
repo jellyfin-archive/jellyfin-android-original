@@ -30,6 +30,7 @@ function getContext(item){return getParameterByName('context');}
 function renderHeader(page,item,context){$('.itemTabs',page).hide();if(context=='tv'){$(page).removeClass('noSecondaryNavPage');$('#tvShowsTabs',page).show();LibraryMenu.setMenuButtonVisible(true);}
 else{$(page).addClass('noSecondaryNavPage');LibraryMenu.setBackButtonVisible(true);LibraryMenu.setMenuButtonVisible(false);}}
 function setInitialCollapsibleState(page,item,context,user){$('.collectionItems',page).empty();if(item.Type=='TvChannel'){$('#childrenCollapsible',page).removeClass('hide');renderChannelGuide(page,item,user);}
+else if(item.Type=='Playlist'){$('#childrenCollapsible',page).removeClass('hide');renderPlaylistItems(page,item,user);}
 else if(item.Type=='Studio'||item.Type=='Person'||item.Type=='Genre'||item.Type=='MusicGenre'||item.Type=='GameGenre'||item.Type=='MusicArtist'){$('#childrenCollapsible',page).removeClass('hide');renderItemsByName(page,item,user);}
 else if(item.IsFolder){if(item.Type=="BoxSet"){$('#childrenCollapsible',page).addClass('hide');}else{$('#childrenCollapsible',page).removeClass('hide');}
 renderChildren(page,item,user,context);}
@@ -104,6 +105,7 @@ else if(item.Type=="GameSystem"){page.querySelector('#childrenTitle').innerHTML=
 else{page.querySelector('#childrenTitle').innerHTML=Globalize.translate('HeaderItems');}
 if(item.Type=="MusicAlbum"){$('.childrenSectionHeader',page).hide();}else{$('.childrenSectionHeader',page).show();}}
 function renderItemsByName(page,item,user){require('scripts/itembynamedetailpage'.split(','),function(){window.ItemsByName.renderItems(page,item);});}
+function renderPlaylistItems(page,item,user){require('scripts/playlistedit'.split(','),function(){PlaylistViewer.render(page,item);});}
 function renderChannelGuide(page,item,user){require('scripts/livetvcomponents,scripts/livetvchannel,livetvcss'.split(','),function(){LiveTvChannelPage.renderPrograms(page,item.Id);});}
 function renderCollectionItems(page,types,items,user){for(var i=0,length=types.length;i<length;i++){var type=types[i];var typeItems=items.filter(function(curr){return curr.Type==type.type;});if(typeItems.length){renderCollectionItemType(page,type,typeItems,user);}}
 var otherType={name:Globalize.translate('HeaderOtherItems')};var otherTypeItems=items.filter(function(curr){return!types.filter(function(t){return t.type==curr.Type;}).length;});if(otherTypeItems.length){renderCollectionItemType(page,otherType,otherTypeItems,user);}
