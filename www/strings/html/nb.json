@@ -1508,5 +1508,9 @@
     "HeaderMetadata": "Metadata",
     "HeaderRecordingOptions": "Recording Options",
     "ButtonShare": "Share",
-    "HeaderUpcomingForKids": "Upcoming for Kids"
+    "HeaderUpcomingForKids": "Upcoming for Kids",
+    "HeaderSetupLiveTV": "Setup Live TV",
+    "LabelTunerType": "Tuner type:",
+    "HelpMoreTunersCanBeAdded": "More tuners can be added later within the Live TV section.",
+    "MessageActiveSupporterMembershipRequiredSeriesRecordings": "An active Emby Supporter membership is required in order to create automated series recordings."
 }
