@@ -165,11 +165,18 @@ paper-button.mini {
 }
 
     paper-button.mini .content {
-        padding: 0.3em 0.7em;
+        padding: 0.5em 0.7em;
     }
 
     paper-button.mini.noIcon .content {
         padding: 0.5em 0.7em;
+    }
+
+
+
+    paper-button.mini iron-icon {
+        height: 20px;
+        width: 20px;
     }
 
 
@@ -381,11 +388,14 @@ paper-menu-item {
 paper-input label, paper-textarea label {
     font-size: 18px !important;
     font-family: inherit !important;
-    color: #858585 !important;
 }
 
 .ui-page-theme-b paper-input label, .ui-page-theme-b paper-textarea label {
     color: #858585 !important;
+}
+
+.ui-page-theme-a paper-input label, .ui-page-theme-a paper-textarea label {
+    color: #333 !important;
 }
 
 .ui-page-theme-a .label-is-highlighted label {

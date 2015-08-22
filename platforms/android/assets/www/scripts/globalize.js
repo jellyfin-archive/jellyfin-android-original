@@ -10,7 +10,7 @@ function getDeviceCulture(){var deferred=DeferredBuilder.Deferred();var culture;
 return deferred.promise();}
 function ensure(){Logger.log('Entering Globalize.ensure');var deferred=DeferredBuilder.Deferred();getDeviceCulture().done(function(culture){if(!culture){culture='en-US';}
 setCulture(culture).done(function(){deferred.resolve();});});return deferred.promise();}
-function translateDocument(html,dictionaryName){var glossary=getDictionary(dictionaryName,currentCulture)||{};return translateHtml(html,glossary);}
+function translateDocument(html,dictionaryName){dictionaryName=dictionaryName||'html';var glossary=getDictionary(dictionaryName,currentCulture)||{};return translateHtml(html,glossary);}
 function translateHtml(html,dictionary){var startIndex=html.indexOf('${');if(startIndex==-1){return html;}
 startIndex+=2;var endIndex=html.indexOf('}',startIndex);if(endIndex==-1){return html;}
 var key=html.substring(startIndex,endIndex);var val=dictionary[key]||key;html=html.replace('${'+key+'}',val);return translateHtml(html,dictionary);}
