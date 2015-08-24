@@ -286,10 +286,10 @@ else{url="css/images/items/detail/video.png";shape='square';}
 html+='<div style="position:relative;">';if(href){html+="<a class='itemDetailGalleryLink' href='"+href+"'>";}
 if(detectRatio&&item.PrimaryImageAspectRatio){if(item.PrimaryImageAspectRatio>=1.48){shape='thumb';}else if(item.PrimaryImageAspectRatio>=.85&&item.PrimaryImageAspectRatio<=1.34){shape='square';}}
 html+="<img class='itemDetailImage' src='"+url+"' />";if(href){html+="</a>";}
-var progressHtml=item.IsFolder||!item.UserData?'':LibraryBrowser.getItemProgressBarHtml((item.Type=='Recording'?item:item.UserData));if(progressHtml){html+='<div class="detailImageProgressContainer">';html+=progressHtml;html+="</div>";}
-html+="</div>";elem.innerHTML=html;if(shape=='thumb'){elem.classList.add('thumbDetailImageContainer');elem.classList.remove('portraitDetailImageContainer');elem.classList.remove('squareDetailImageContainer');}
+var progressHtml=item.IsFolder||!item.UserData?'':LibraryBrowser.getItemProgressBarHtml((item.Type=='Recording'?item:item.UserData));html+='<div class="detailImageProgressContainer">';if(progressHtml){html+=progressHtml;}
+html+="</div>";html+="</div>";elem.innerHTML=html;if(shape=='thumb'){elem.classList.add('thumbDetailImageContainer');elem.classList.remove('portraitDetailImageContainer');elem.classList.remove('squareDetailImageContainer');}
 else if(shape=='square'){elem.classList.remove('thumbDetailImageContainer');elem.classList.remove('portraitDetailImageContainer');elem.classList.add('squareDetailImageContainer');}else{elem.classList.remove('thumbDetailImageContainer');elem.classList.add('portraitDetailImageContainer');elem.classList.remove('squareDetailImageContainer');}
-ImageLoader.lazyChildren(elem);},getDisplayTime:function(date){if((typeof date).toString().toLowerCase()==='string'){try{date=parseISO8601Date(date,{toLocal:true});}catch(err){return date;}}
+ImageLoader.lazyChildren(elem);},refreshDetailImageUserData:function(elem,item){var progressHtml=item.IsFolder||!item.UserData?'':LibraryBrowser.getItemProgressBarHtml((item.Type=='Recording'?item:item.UserData));var detailImageProgressContainer=elem.querySelector('.detailImageProgressContainer');detailImageProgressContainer.innerHTML=progressHtml||'';},getDisplayTime:function(date){if((typeof date).toString().toLowerCase()==='string'){try{date=parseISO8601Date(date,{toLocal:true});}catch(err){return date;}}
 var lower=date.toLocaleTimeString().toLowerCase();var hours=date.getHours();var minutes=date.getMinutes();var text;if(lower.indexOf('am')!=-1||lower.indexOf('pm')!=-1){var suffix=hours>11?'pm':'am';hours=(hours%12)||12;text=hours;if(minutes){text+=':';if(minutes<10){text+='0';}
 text+=minutes;}
 text+=suffix;}else{text=hours+':';if(minutes<10){text+='0';}

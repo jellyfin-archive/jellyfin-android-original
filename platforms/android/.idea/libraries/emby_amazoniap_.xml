@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="emby.amazoniap-">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/emby.amazoniap/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/emby.amazoniap/res" />
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/emby.amazoniap/libs/in-app-purchasing-2.0.61.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

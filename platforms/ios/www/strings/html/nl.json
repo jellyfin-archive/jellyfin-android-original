@@ -1508,5 +1508,9 @@
     "HeaderMetadata": "Metadata",
     "HeaderRecordingOptions": "Opnamen opties",
     "ButtonShare": "Delen",
-    "HeaderUpcomingForKids": "Binnenkort voor kinderen"
+    "HeaderUpcomingForKids": "Binnenkort voor kinderen",
+    "HeaderSetupLiveTV": "Configureer Live TV",
+    "LabelTunerType": "Soort Tuner:",
+    "HelpMoreTunersCanBeAdded": "In de Live TV sectie kunnen later meer tuners toegevoegd worden.",
+    "MessageActiveSupporterMembershipRequiredSeriesRecordings": "An active Emby Supporter membership is required in order to create automated series recordings."
 }
