@@ -4,7 +4,7 @@ function enableScrollX(){return $.browser.mobile&&AppInfo.enableAppLayouts;}
 function getThumbShape(){return enableScrollX()?'overflowBackdrop':'backdrop';}
 function renderUpcoming(elem,items){var groups=[];var currentGroupName='';var currentGroup=[];var i,length;for(i=0,length=items.length;i<length;i++){var item=items[i];var dateText='';if(item.PremiereDate){try{dateText=LibraryBrowser.getFutureDateText(parseISO8601Date(item.PremiereDate,{toLocal:true}),true);}catch(err){}}
 if(dateText!=currentGroupName){if(currentGroup.length){groups.push({name:currentGroupName,items:currentGroup});}
-currentGroupName=dateText;currentGroup=[];}else{currentGroup.push(item);}}
+currentGroupName=dateText;currentGroup=[item];}else{currentGroup.push(item);}}
 var html='';for(i=0,length=groups.length;i<length;i++){var group=groups[i];html+='<div class="homePageSection">';html+='<h1 class="listHeader">'+group.name+'</h1>';if(enableScrollX()){html+='<div class="itemsContainer hiddenScrollX">';}else{html+='<div class="itemsContainer">';}
 html+=LibraryBrowser.getPosterViewHtml({items:group.items,showLocationTypeIndicator:false,shape:getThumbShape(),showTitle:true,showPremiereDate:true,preferThumb:true,lazy:true,showDetailsMenu:true,centerText:true,context:'home-upcoming'});html+='</div>';html+='</div>';}
 elem.innerHTML=html;ImageLoader.lazyChildren(elem);}
