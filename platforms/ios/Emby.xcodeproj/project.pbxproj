@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 		04AD0C44B5E3402BB8C42B64 /* AppDelegate+WKWebViewPolyfill.m in Sources */ = {isa = PBXBuildFile; fileRef = FE1D58F984A44FFB83C217CB /* AppDelegate+WKWebViewPolyfill.m */; };
@@ -695,7 +694,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cordova/lib/copy-www-build-step.sh";
+			shellScript = "NODEJS_PATH=/usr/local/bin; NVM_NODE_PATH=~/.nvm/versions/node/`nvm version 2>/dev/null`/bin; N_NODE_PATH=`find /usr/local/n/versions/node/* -maxdepth 0 -type d 2>/dev/null | tail -1`/bin; XCODE_NODE_PATH=`xcode-select --print-path`/usr/share/xcs/Node/bin; PATH=$NODEJS_PATH:$NVM_NODE_PATH:$N_NODE_PATH:$XCODE_NODE_PATH:$PATH && node cordova/lib/copy-www-build-step.js";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

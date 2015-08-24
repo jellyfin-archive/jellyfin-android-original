@@ -11,7 +11,7 @@ else if(hint.ChannelName){return[hint.ChannelName];}
 return[hint.Type];}
 function search(){var self=this;self.showSearchPanel=function(){showSearchMenu();};}
 window.Search=new search();function renderSearchResultsInOverlay(elem,hints){hints=hints.map(function(i){i.Id=i.ItemId;i.ImageTags={};i.UserData={};if(i.PrimaryImageTag){i.ImageTags.Primary=i.PrimaryImageTag;}
-return i;});var html=LibraryBrowser.getPosterViewHtml({items:hints,shape:"auto",lazy:true,overlayText:false,showTitle:true,coverImage:true,centerImage:true,textLines:getAdditionalTextLines});var itemsContainer=elem.querySelector('.itemsContainer');itemsContainer.innerHTML=html;ImageLoader.lazyChildren(itemsContainer);}
+return i;});var html=LibraryBrowser.getPosterViewHtml({items:hints,shape:"auto",lazy:true,overlayText:false,showTitle:true,centerImage:true,centerText:true,textLines:getAdditionalTextLines});var itemsContainer=elem.querySelector('.itemsContainer');itemsContainer.innerHTML=html;ImageLoader.lazyChildren(itemsContainer);}
 function requestSearchHintsForOverlay(elem,searchTerm){var currentTimeout=searchHintTimeout;Dashboard.showLoadingMsg();ApiClient.getSearchHints({userId:Dashboard.getCurrentUserId(),searchTerm:searchTerm,limit:30}).done(function(result){if(currentTimeout==searchHintTimeout){renderSearchResultsInOverlay(elem,result.SearchHints);}
 Dashboard.hideLoadingMsg();}).fail(function(){Dashboard.hideLoadingMsg();});}
 function updateSearchOverlay(elem,searchTerm){if(!searchTerm){$('.itemsContainer',elem).empty();clearSearchHintTimeout();return;}
