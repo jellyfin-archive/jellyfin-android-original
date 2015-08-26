@@ -65,7 +65,8 @@ public class PreferencesProvider {
         // Need to take the app settings and copy them to where the sync services will read them
         String syncPath = getSharedPreferences(context).getString("syncPath", null);
 
-        boolean syncOnOnWifi = getSharedPreferences(context).getBoolean("syncOnlyOnWifi", true);
+        String syncOnOnWifiSetting = getSharedPreferences(context).getString("syncOnlyOnWifi", "true");
+        boolean syncOnOnWifi = !syncOnOnWifiSetting.equalsIgnoreCase("false");
 
         logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences with %s", syncPath);
         MediaSyncAdapter.updateSyncPreferences(context, syncPath, syncOnOnWifi);
