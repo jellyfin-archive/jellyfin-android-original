@@ -1512,9 +1512,12 @@
     "HeaderSetupLiveTV": "Setup Live TV",
     "LabelTunerType": "Tuner type:",
     "HelpMoreTunersCanBeAdded": "Additional tuners can be added later within the Live TV section.",
+    "AdditionalLiveTvProvidersCanBeInstalledLater": "Additional Live TV providers can be added later within the Live TV section.",
     "MessageActiveSupporterMembershipRequiredSeriesRecordings": "An active Emby Supporter membership is required in order to create automated series recordings.",
     "HeaderSetupTVGuide": "Setup TV Guide",
     "LabelDataProvider": "Data provider:",
     "OptionSendRecordingsToAutoOrganize": "Enable Auto-Organize for new recordings",
-    "OptionSendRecordingsToAutoOrganizeHelp": "New recordings will be sent to the Auto-Organize feature and imported into your regular TV library."
+    "OptionSendRecordingsToAutoOrganizeHelp": "New recordings will be sent to the Auto-Organize feature and imported into your media library.",
+    "HeaderDefaultPadding": "Default Padding",
+    "HeaderSubtitles": "Subt\u00edtulos"
 }
