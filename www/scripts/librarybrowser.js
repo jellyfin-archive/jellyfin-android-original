@@ -63,7 +63,7 @@ if(item.CollectionType=='games'){return'gamesrecommended.html?topParentId='+item
 if(item.CollectionType=='playlists'){return'playlists.html?topParentId='+item.Id;}
 if(item.CollectionType=='photos'){return'photos.html?topParentId='+item.Id;}}
 if(item.Type=='CollectionFolder'){return'itemlist.html?topParentId='+item.Id+'&parentid='+item.Id;}
-if(item.Type=="PhotoAlbum"&&context=='photos'){return"photos.html?parentId="+id;}
+if(item.Type=="PhotoAlbum"){return"itemlist.html?context=photos&parentId="+id;}
 if(item.Type=="Playlist"){return"itemdetails.html?id="+id;}
 if(item.Type=="TvChannel"){return"itemdetails.html?id="+id;}
 if(item.Type=="Channel"){return"channelitems.html?id="+id;}
@@ -163,7 +163,7 @@ cssClass+=" defaultBackground";}else if(item.MediaType=="Video"||item.Type=="Sea
 cssClass+=" defaultBackground";}else if(item.Type=="Person"){if(item.Name&&options.showTitle){icon='person';}
 cssClass+=" defaultBackground";}else{if(item.Name&&options.showTitle){icon='folder-open';}
 cssClass+=" defaultBackground";}
-cssClass+=' '+options.shape+'Card';var mediaSourceCount=item.MediaSourceCount||1;var href=options.linkItem===false?'#':(options.useSecondaryItemsPage&&item.IsFolder)?('secondaryitems.html?parentid='+item.Id):LibraryBrowser.getHref(item,options.context);if(item.UserData){cssClass+=' '+LibraryBrowser.getUserDataCssClass(item.UserData.Key);}
+cssClass+=' '+options.shape+'Card';var mediaSourceCount=item.MediaSourceCount||1;var href=options.linkItem===false?'#':LibraryBrowser.getHref(item,options.context);if(item.UserData){cssClass+=' '+LibraryBrowser.getUserDataCssClass(item.UserData.Key);}
 if(options.showChildCountIndicator&&item.ChildCount&&options.showLatestItemsPopup!==false){cssClass+=' groupedCard';}
 if(options.showTitle&&!options.overlayText){cssClass+=' bottomPaddedCard';}
 var dataAttributes=LibraryBrowser.getItemDataAttributes(item,options,index);var defaultAction=options.defaultAction;if(defaultAction=='play'||defaultAction=='playallfromhere'){if(item.PlayAccess!='Full'){defaultAction=null;}}
