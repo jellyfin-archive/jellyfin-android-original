@@ -50,6 +50,13 @@ html, body, .ui-btn, .pageTitle {
     margin: 0 auto 6px;
 }
 
+.libraryViewNav paper-tabs iron-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+    margin: 6px auto 6px;
+}
+
 .libraryViewNav #selectionBar {
     background-color: transparent !important;
 }
