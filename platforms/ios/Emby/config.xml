@@ -68,9 +68,6 @@
     <feature name="Console">
         <param name="ios-package" value="CDVLogger" />
     </feature>
-    <feature name="WKWebViewPolyfill">
-        <param name="ios-package" value="WKWebViewPolyfill" />
-    </feature>
     <feature name="SearchBar">
         <param name="ios-package" value="SearchBar" />
     </feature>
@@ -79,6 +76,9 @@
     </feature>
     <feature name="InAppPurchase">
         <param name="ios-package" value="InAppPurchase" />
+    </feature>
+    <feature name="WKWebViewPolyfill">
+        <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />

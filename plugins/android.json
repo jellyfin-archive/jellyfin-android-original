@@ -246,9 +246,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "com.dieam.searchbar": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -257,6 +254,9 @@
         },
         "cc.fovea.cordova.purchase": {
             "BILLING_KEY": "none",
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
