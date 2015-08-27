@@ -333,13 +333,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
-        "id": "com.telerik.plugins.wkwebview.wkwebview",
-        "clobbers": [
-            "wkwebview"
-        ]
-    },
-    {
         "file": "plugins/com.dieam.searchbar/www/searchbar.js",
         "id": "com.dieam.searchbar.searchbar",
         "clobbers": [
@@ -365,6 +358,13 @@ module.exports = [
         "id": "cc.fovea.cordova.purchase.InAppPurchase",
         "clobbers": [
             "store"
+        ]
+    },
+    {
+        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
+        "id": "com.telerik.plugins.wkwebview.wkwebview",
+        "clobbers": [
+            "wkwebview"
         ]
     },
     {
@@ -411,10 +411,10 @@ module.exports.metadata =
     "cordova-plugin-dialogs": "1.1.1",
     "cordova-plugin-console": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",
-    "com.telerik.plugins.wkwebview": "0.4.0",
     "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-globalization": "1.0.1",
     "cc.fovea.cordova.purchase": "3.11.0",
+    "com.telerik.plugins.wkwebview": "0.5.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
