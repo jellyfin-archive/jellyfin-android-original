@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 		03DE8F2F494A4174980E95F0 /* MyMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9766CA038E6741C0A3BCA658 /* MyMainViewController.m */; };

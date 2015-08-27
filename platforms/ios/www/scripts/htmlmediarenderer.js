@@ -30,18 +30,18 @@ html+='</video>';var elem=$('#videoElement','#mediaPlayer').prepend(html);return
 var _currentTime;self.currentTime=function(val){if(mediaElement){if(val!=null){mediaElement.currentTime=val/1000;return;}
 if(_currentTime){return _currentTime*1000;}
 return(mediaElement.currentTime||0)*1000;}};self.duration=function(val){if(mediaElement){return mediaElement.duration;}
-return null;};self.stop=function(){if(mediaElement){mediaElement.pause();if(isViblastStarted){_currentTime=mediaElement.currentTime;viblast(mediaElement).stop();isViblastStarted=false;}}};self.pause=function(){if(mediaElement){mediaElement.pause();}};self.unpause=function(){if(mediaElement){mediaElement.play();}};self.volume=function(val){if(mediaElement){if(val!=null){mediaElement.volume=val;return;}
+return null;};self.stop=function(){if(mediaElement){mediaElement.pause();if(isViblastStarted){_currentTime=mediaElement.currentTime;viblast('#'+mediaElement.id).stop();isViblastStarted=false;}}};self.pause=function(){if(mediaElement){mediaElement.pause();}};self.unpause=function(){if(mediaElement){mediaElement.play();}};self.volume=function(val){if(mediaElement){if(val!=null){mediaElement.volume=val;return;}
 return mediaElement.volume;}};var currentSrc;self.setCurrentSrc=function(val,item,mediaSource,tracks){var elem=mediaElement;if(!elem){currentSrc=null;return;}
 if(!val){currentSrc=null;elem.src=null;elem.src="";if($.browser.safari){elem.src='files/dummy.mp4';elem.play();}
 return;}
-requiresSettingStartTimeOnStart=false;var startTime=getStartTime(val);if(elem.tagName.toLowerCase()=='audio'){elem.src=val;elem.play();}
-else{if(isViblastStarted){viblast(elem).stop();isViblastStarted=false;}
+requiresSettingStartTimeOnStart=false;var startTime=getStartTime(val);var playNow=false;if(elem.tagName.toLowerCase()=='audio'){elem.src=val;playNow=true;}
+else{if(isViblastStarted){viblast('#'+elem.id).stop();isViblastStarted=false;}
 if(startTime){try{elem.currentTime=startTime;}catch(err){}
 requiresSettingStartTimeOnStart=elem.currentTime==0;}
-tracks=tracks||[];if(enableViblast(val)){setTracks(elem,tracks);viblast(elem).setup({key:getViblastKey(),stream:val});isViblastStarted=true;}else{elem.src=val;setTracks(elem,tracks);$(elem).one("loadedmetadata",onLoadedMetadata);}
+tracks=tracks||[];if(enableViblast(val)){setTracks(elem,tracks);viblast('#'+elem.id).setup({key:getViblastKey(),stream:val});isViblastStarted=true;}else{elem.src=val;elem.autoplay=true;setTracks(elem,tracks);$(elem).one("loadedmetadata",onLoadedMetadata);playNow=true;}
 var currentTrackIndex=-1;for(var i=0,length=tracks.length;i<length;i++){if(tracks[i].isDefault){currentTrackIndex=i;break;}}
 self.setCurrentTrackElement(currentTrackIndex);}
-currentSrc=val;};function setTracks(elem,tracks){var html=tracks.map(function(t){var defaultAttribute=t.isDefault?' default':'';return'<track kind="subtitles" src="'+t.url+'" srclang="'+t.language+'"'+defaultAttribute+'></track>';}).join('');if(html){elem.innerHTML=html;}}
+currentSrc=val;if(playNow){elem.play();}};function setTracks(elem,tracks){var html=tracks.map(function(t){var defaultAttribute=t.isDefault?' default':'';return'<track kind="subtitles" src="'+t.url+'" srclang="'+t.language+'"'+defaultAttribute+'></track>';}).join('');if(html){elem.innerHTML=html;}}
 self.currentSrc=function(){if(mediaElement){return currentSrc;}};self.paused=function(){if(mediaElement){return mediaElement.paused;}
 return false;};self.cleanup=function(destroyRenderer){self.setCurrentSrc(null);_currentTime=null;var elem=mediaElement;if(elem){if(elem.tagName=='AUDIO'){Events.off(elem,'timeupdate',onTimeUpdate);Events.off(elem,'ended',onEnded);Events.off(elem,'volumechange',onVolumeChange);Events.off(elem,'playing',onOneAudioPlaying);Events.off(elem,'play',onPlay);Events.off(elem,'pause',onPause);Events.off(elem,'playing',onPlaying);Events.off(elem,'error',onError);}else{Events.off(elem,'loadedmetadata',onLoadedMetadata);Events.off(elem,'playing',onOneVideoPlaying);Events.off(elem,'timeupdate',onTimeUpdate);Events.off(elem,'ended',onEnded);Events.off(elem,'volumechange',onVolumeChange);Events.off(elem,'play',onPlay);Events.off(elem,'pause',onPause);Events.off(elem,'playing',onPlaying);Events.off(elem,'click',onClick);Events.off(elem,'dblclick',onDblClick);Events.off(elem,'error',onError);}
 if(elem.tagName.toLowerCase()!='audio'){$(elem).remove();}}};self.supportsTextTracks=function(){if(supportsTextTracks==null){supportsTextTracks=document.createElement('video').textTracks!=null;}
