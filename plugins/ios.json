@@ -81,10 +81,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"SearchBar\"><param name=\"ios-package\" value=\"SearchBar\" /></feature>",
                             "count": 1
                         },
@@ -94,6 +90,10 @@
                         },
                         {
                             "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
                             "count": 1
                         }
                     ],
@@ -267,9 +267,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.dieam.searchbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -277,6 +274,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cc.fovea.cordova.purchase": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
