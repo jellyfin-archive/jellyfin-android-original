@@ -15,7 +15,7 @@ return i;});var html=LibraryBrowser.getPosterViewHtml({items:hints,shape:"auto",
 function requestSearchHintsForOverlay(elem,searchTerm){var currentTimeout=searchHintTimeout;Dashboard.showLoadingMsg();ApiClient.getSearchHints({userId:Dashboard.getCurrentUserId(),searchTerm:searchTerm,limit:30}).done(function(result){if(currentTimeout==searchHintTimeout){renderSearchResultsInOverlay(elem,result.SearchHints);}
 Dashboard.hideLoadingMsg();}).fail(function(){Dashboard.hideLoadingMsg();});}
 function updateSearchOverlay(elem,searchTerm){if(!searchTerm){$('.itemsContainer',elem).empty();clearSearchHintTimeout();return;}
-clearSearchHintTimeout();searchHintTimeout=setTimeout(function(){requestSearchHintsForOverlay(elem,searchTerm);},100);}
+clearSearchHintTimeout();searchHintTimeout=setTimeout(function(){requestSearchHintsForOverlay(elem,searchTerm);},300);}
 function getSearchOverlay(createIfNeeded){var elem=document.querySelector('.searchResultsOverlay');if(createIfNeeded&&!elem){var html='<div class="searchResultsOverlay ui-page-theme-b smoothScrollY">';html+='<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';elem=$(html).appendTo(document.body).hide()[0];$(elem).createCardMenus();}
 return elem;}
 function onHeaderSearchChange(val){var elem;if(val){elem=getSearchOverlay(true);$(elem).show();elem.style.opacity='1';document.body.classList.add('bodyWithPopupOpen');updateSearchOverlay(elem,val);}else{elem=getSearchOverlay(false);if(elem){require(["jquery","velocity"],function($,Velocity){$(elem).velocity("fadeOut");document.body.classList.remove('bodyWithPopupOpen');});updateSearchOverlay(elem,'');}}}

@@ -4,7 +4,7 @@ else if(item.Type=="MusicGenre"){query.Genres=item.Name;}
 else if(item.Type=="GameGenre"){query.Genres=item.Name;}
 else if(item.Type=="Studio"){query.StudioIds=item.Id;}
 else if(item.Type=="MusicArtist"){query.ArtistIds=item.Id;}else{query.ParentId=item.Id;}}
-function getQuery(parentItem){var key=getSavedQueryKey();var pageData=data[key];if(!pageData){pageData=data[key]={query:{SortBy:"SortName",SortOrder:"Ascending",Recursive:true,Fields:"PrimaryImageAspectRatio,SortName,SyncInfo",ImageTypeLimit:1,EnableImageTypes:"Primary,Backdrop,Banner,Thumb",StartIndex:0,Limit:LibraryBrowser.getDefaultPageSize()}};var type=getParameterByName('type');if(type){pageData.query.IncludeItemTypes=type;}
+function getQuery(parentItem){var key=getSavedQueryKey();var pageData=data[key];if(!pageData){pageData=data[key]={query:{SortBy:"SortName",SortOrder:"Ascending",Recursive:getParameterByName('recursive')!=='false',Fields:"PrimaryImageAspectRatio,SortName,SyncInfo",ImageTypeLimit:1,EnableImageTypes:"Primary,Backdrop,Banner,Thumb",StartIndex:0,Limit:LibraryBrowser.getDefaultPageSize()}};var type=getParameterByName('type');if(type){pageData.query.IncludeItemTypes=type;}
 var filters=getParameterByName('filters');if(type){pageData.query.Filters=filters;}
 if(parentItem){addCurrentItemToQuery(pageData.query,parentItem);}
 LibraryBrowser.loadSavedQueryValues(key,pageData.query);}
