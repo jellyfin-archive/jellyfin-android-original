@@ -12,9 +12,9 @@ html, body, .ui-btn, .pageTitle {
     background-color: rgba(28,28,28,.97);
 }
 
-.viewMenuBar.semiTransparent {
-    background-color: rgba(28, 28, 28, .8);
-}
+    .viewMenuBar.semiTransparent {
+        background-color: rgba(28, 28, 28, .8);
+    }
 
 .backdropPage.ui-page-theme-b {
     background-color: rgba(28,28,28,.92) !important;
@@ -51,9 +51,6 @@ html, body, .ui-btn, .pageTitle {
 }
 
 .libraryViewNav paper-tabs iron-icon {
-    width: 22px;
-    height: 22px;
-    display: block;
     margin: 6px auto 6px;
 }
 
@@ -62,7 +59,7 @@ html, body, .ui-btn, .pageTitle {
 }
 
 @media all and (max-width: 600px) {
-    
+
     .libraryViewNav a {
         padding-left: 10px;
         padding-right: 10px;
@@ -73,9 +70,9 @@ html, body, .ui-btn, .pageTitle {
     border-bottom: 0;
 }
 
-.libraryViewNav .ui-btn-active, .libraryViewNav .iron-selected, .barsMenuButton .fa, .btnActiveCast, .libraryViewNav a:not(.ui-btn-active):hover {
-    color: #FF2D55 !important;
-}
+    .libraryViewNav .ui-btn-active, .libraryViewNav .iron-selected, .barsMenuButton .fa, .btnActiveCast, .libraryViewNav a:not(.ui-btn-active):hover {
+        color: #FF2D55 !important;
+    }
 
 .viewMenuBar .headerButtonLeft {
     color: #FF2D55 !important;
@@ -140,10 +137,17 @@ paper-tab {
     box-shadow: none;
 }
 
-.visualCardBox .outerCardFooter {
-    padding: 0;
+    .visualCardBox .outerCardFooter {
+        padding: 0;
+    }
+
+.cardBox {
+    margin: 5px;
 }
 
+.cardImage {
+    border-radius: 10px;
+}
 
 .viewMenuSearch {
     background: #1c1c1c;
@@ -159,12 +163,12 @@ paper-tab {
 }
 
 @media (min-width: 600px) {
-    
+
     /* This needs a little extra space to account for the longer date format */
     .channelHeaderCell, .channelTimeslotHeader {
         width: 209px;
     }
-    
+
     .programGrid, .timeslotHeaders {
         margin-left: 210px;
     }
