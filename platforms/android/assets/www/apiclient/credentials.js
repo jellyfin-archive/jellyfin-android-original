@@ -13,5 +13,6 @@ if(server.LocalAddress){existing.LocalAddress=server.LocalAddress;}
 if(server.Name){existing.Name=server.Name;}
 if(server.WakeOnLanInfos&&server.WakeOnLanInfos.length){existing.WakeOnLanInfos=server.WakeOnLanInfos;}
 if(server.LastConnectionMode!=null){existing.LastConnectionMode=server.LastConnectionMode;}
+if(server.ConnectServerId){existing.ConnectServerId=server.ConnectServerId;}
 existing.DateLastLocalConnection=Math.max(existing.DateLastLocalConnection||0,server.DateLastLocalConnection||0);return existing;}
 else{list.push(server);return server;}};};})(window,window.JSON);

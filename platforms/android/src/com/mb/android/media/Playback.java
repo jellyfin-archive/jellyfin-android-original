@@ -5,20 +5,22 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
-import android.media.MediaPlayer;
 import android.media.session.PlaybackState;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 
-import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.LibVlcException;
 import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
 
 import java.io.IOException;
 import java.util.Date;
@@ -66,7 +68,9 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
     // Type of audio focus we have:
     private int mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
     private AudioManager mAudioManager;
-    private LibVLC mLibVLC;
+    private org.videolan.libvlc.MediaPlayer mMediaPlayer;
+    private boolean mIsAudioTrack = false;
+    private boolean mHasHdmiAudio = false;
 
     private IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -113,6 +117,23 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
         mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Playback");
     }
 
+    private org.videolan.libvlc.MediaPlayer newMediaPlayer(Context context) {
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        final org.videolan.libvlc.MediaPlayer mp = new org.videolan.libvlc.MediaPlayer(LibVLC(context, logger));
+        final String aout = VLCOptions.getAout(pref);
+        if (mp.setAudioOutput(aout) && aout.equals("android_audiotrack")) {
+            mIsAudioTrack = true;
+            if (mHasHdmiAudio)
+                mp.setAudioOutputDevice("hdmi");
+        } else
+            mIsAudioTrack = false;
+        return mp;
+    }
+
+    private static LibVLC LibVLC(Context context, ILogger logger) {
+        return VLCInstance.get(context, logger);
+    }
+
     public void start() {
     }
 
@@ -144,13 +165,13 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
     }
 
     public boolean isPlaying() {
-        return mPlayOnFocusGain || (mLibVLC != null && mLibVLC.isPlaying());
+        return mPlayOnFocusGain || (mMediaPlayer != null && mMediaPlayer.isPlaying());
     }
 
     @Override
     public long getCurrentPositionMs() {
-        return mLibVLC != null ?
-                mLibVLC.getTime() : mCurrentPosition;
+        return mMediaPlayer != null ?
+                mMediaPlayer.getTime() : mCurrentPosition;
     }
 
     public void play(String source) {
@@ -164,7 +185,7 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
             mCurrentMediaId = mediaId;
         }
 
-        if (mState == PlaybackState.STATE_PAUSED && !mediaHasChanged && getLibVlcInstance() != null) {
+        if (mState == PlaybackState.STATE_PAUSED && !mediaHasChanged && mMediaPlayer != null) {
             configMediaPlayerState();
         } else {
             mState = PlaybackState.STATE_STOPPED;
@@ -175,9 +196,16 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
 
                 mState = PlaybackState.STATE_BUFFERING;
 
-                Media media = new Media(getLibVlcInstance(), source);
-
-                getLibVlcInstance().playMRL(media.getMrl());
+                final MediaWrapper mw = new MediaWrapper(Uri.parse(source));
+                final Media media = new Media(VLCInstance.get(mService.getApplicationContext(), logger), mw.getUri());
+                VLCOptions.setMediaOptions(media, mService.getApplicationContext(), 0 | mw.getFlags());
+                //media.setEventListener(mMediaListener);
+                mMediaPlayer.setMedia(media);
+                media.release();
+                mMediaPlayer.setEqualizer(VLCOptions.getEqualizer(mService.getApplicationContext()));
+                mMediaPlayer.setVideoTitleDisplay(MediaPlayer.Position.Disable, 0);
+                mMediaPlayer.setEventListener(new VlcServiceEventHandler(logger, mMediaPlayer, this));
+                mMediaPlayer.play();
 
                 // If we are streaming from the internet, we want to hold a
                 // Wifi lock, which prevents the Wifi radio from going to
@@ -212,7 +240,7 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
             mCurrentMediaId = mediaId;
         }
 
-        if (mState == PlaybackState.STATE_PAUSED && !mediaHasChanged && getLibVlcInstance() != null) {
+        if (mState == PlaybackState.STATE_PAUSED && !mediaHasChanged && mMediaPlayer != null) {
             configMediaPlayerState();
         } else {
             mState = PlaybackState.STATE_STOPPED;
@@ -228,9 +256,9 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
 
                 logger.Debug("Vlc playing source %s");
 
-                Media media = new Media(getLibVlcInstance(), source);
+                //Media media = new Media(getLibVlcInstance(), source);
 
-                getLibVlcInstance().playMRL(media.getMrl());
+                //getLibVlcInstance().playMRL(media.getMrl());
 
                 // If we are streaming from the internet, we want to hold a
                 // Wifi lock, which prevents the Wifi radio from going to
@@ -257,9 +285,9 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
 
        if (mState == PlaybackState.STATE_PAUSED) {
             // Pause media player and cancel the 'foreground service' state.
-            if (mLibVLC != null) {
-                mLibVLC.play();
-                mCurrentPosition = mLibVLC.getTime();
+            if (mMediaPlayer != null) {
+                mMediaPlayer.play();
+                mCurrentPosition = mMediaPlayer.getTime();
             }
 
             // while paused, retain the MediaPlayer but give up audio focus
@@ -276,9 +304,9 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
     public void pause() {
         if (mState == PlaybackState.STATE_PLAYING) {
             // Pause media player and cancel the 'foreground service' state.
-            if (mLibVLC != null && mLibVLC.isPlaying()) {
-                mLibVLC.pause();
-                mCurrentPosition = mLibVLC.getTime();
+            if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
+                mMediaPlayer.pause();
+                mCurrentPosition = mMediaPlayer.getTime();
             }
 
             // while paused, retain the MediaPlayer but give up audio focus
@@ -295,14 +323,14 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
     public void seek(long positionMs) {
         logger.Debug("seekTo called with ", positionMs);
 
-        if (mLibVLC == null) {
+        if (mMediaPlayer == null) {
             // If we do not have a current media player, simply update the current position
             mCurrentPosition = positionMs;
         } else {
-            if (mLibVLC.isPlaying()) {
+            if (mMediaPlayer.isPlaying()) {
                 mState = PlaybackState.STATE_BUFFERING;
             }
-            mLibVLC.setTime(positionMs);
+            mMediaPlayer.setTime(positionMs);
             if (mCallback != null) {
                 mCallback.onPlaybackStatusChanged(mState);
             }
@@ -358,22 +386,22 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
             }
         } else {  // we have audio focus:
             if (mAudioFocus == AUDIO_NO_FOCUS_CAN_DUCK) {
-                mLibVLC.setVolume(VOLUME_DUCK); // we'll be relatively quiet
+                mMediaPlayer.setVolume(VOLUME_DUCK); // we'll be relatively quiet
             } else {
-                if (mLibVLC != null) {
-                    mLibVLC.setVolume(VOLUME_NORMAL); // we can be loud again
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.setVolume(VOLUME_NORMAL); // we can be loud again
                 } // else do something for remote client.
             }
             // If we were playing when we lost focus, we need to resume playing.
             if (mPlayOnFocusGain) {
-                if (mLibVLC != null && !mLibVLC.isPlaying()) {
+                if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
                     logger.Debug("configMediaPlayerState startMediaPlayer. seeking to ",
                             mCurrentPosition);
-                    if (mCurrentPosition == mLibVLC.getTime()) {
-                        mLibVLC.play();
+                    if (mCurrentPosition == mMediaPlayer.getTime()) {
+                        mMediaPlayer.play();
                         mState = PlaybackState.STATE_PLAYING;
                     } else {
-                        mLibVLC.setTime(mCurrentPosition);
+                        mMediaPlayer.setTime(mCurrentPosition);
                         mState = PlaybackState.STATE_BUFFERING;
                     }
                 }
@@ -424,27 +452,10 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
      */
     private void createMediaPlayerIfNeeded() {
 
-        logger.Debug("createMediaPlayerIfNeeded. needed? ", (mLibVLC == null));
-        if (mLibVLC == null) {
-            mLibVLC = getLibVlcInstance();
+        logger.Debug("createMediaPlayerIfNeeded. needed? ", (mMediaPlayer == null));
+        if (mMediaPlayer == null) {
+            mMediaPlayer = newMediaPlayer(mService.getApplicationContext());
         }
-    }
-
-    private LibVLC getLibVlcInstance() {
-
-        if (mLibVLC == null) {
-            mLibVLC = new LibVLC();
-            try {
-                mLibVLC.init(mService);
-                mVlcEventHandler = new VlcServiceEventHandler(logger, mLibVLC, this);
-                EventHandler.getInstance().addHandler(mVlcEventHandler);
-            } catch(LibVlcException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        return mLibVLC;
     }
 
     /**
@@ -461,10 +472,9 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
 
         // stop and release the Media Player, if it's available
         if (releaseMediaPlayer) {
-            if (mLibVLC != null){
-                EventHandler.getInstance().removeHandler(mVlcEventHandler);
-                mLibVLC.destroy();
-                mLibVLC = null;
+            if (mMediaPlayer != null){
+                mMediaPlayer.release();
+                mMediaPlayer = null;
             }
         }
 
@@ -492,54 +502,42 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
         }
     }
 
-    /**
-     * Handle libvlc asynchronous events
-     */
-    private Handler mVlcEventHandler;
-
     private static class VlcServiceEventHandler extends VlcEventHandler {
 
         private long lastReportTime;
         private Playback playback;
 
-        public VlcServiceEventHandler(ILogger logger, LibVLC mLibVLC, Playback playback) {
+        public VlcServiceEventHandler(ILogger logger, MediaPlayer mLibVLC, Playback playback) {
             super(logger, mLibVLC);
             this.playback = playback;
         }
 
         @Override
-        public void handleMessage(Message msg) {
+        public void onEvent(org.videolan.libvlc.MediaPlayer.Event event) {
 
-            super.handleMessage(msg);
+            super.onEvent(event);
 
-            int event = msg.getData().getInt("event");
-
-            switch (event) {
-                case EventHandler.MediaParsedChanged:
-                    break;
-                case EventHandler.MediaPlayerPlaying:
+            switch (event.type) {
+                case MediaPlayer.Event.Playing:
 
                     playback.mCallback.onPlaybackStatusChanged(PlaybackState.STATE_PLAYING);
                     break;
-                case EventHandler.MediaPlayerPaused:
+                case MediaPlayer.Event.Paused:
                     playback.mCallback.onPlaybackStatusChanged(PlaybackState.STATE_PAUSED);
                     break;
-                case EventHandler.MediaPlayerStopped:
+                case MediaPlayer.Event.Stopped:
                     playback.mCallback.onPlaybackStatusChanged(PlaybackState.STATE_STOPPED);
                     break;
-                case EventHandler.MediaPlayerEndReached:
+                case MediaPlayer.Event.EndReached:
                     if (playback.mCallback != null) {
                         playback.mCallback.onPlaybackCompletion();
                     }
                     break;
-                case EventHandler.MediaPlayerVout:
-                    if(msg.getData().getInt("data") > 0) {
-                        //service.handleVout();
-                    }
+                case MediaPlayer.Event.Vout:
                     break;
-                case EventHandler.MediaPlayerPositionChanged:
+                case MediaPlayer.Event.PositionChanged:
                     break;
-                case EventHandler.MediaPlayerEncounteredError:
+                case MediaPlayer.Event.EncounteredError:
                     /*service.showToast(service.getString(
                             R.string.invalid_location,
                             service.mLibVLC.getMediaList().getMRL(
@@ -548,7 +546,7 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
                         playback.mCallback.onPlaybackError("Vlc reported an error");
                     }
                     break;
-                case EventHandler.MediaPlayerTimeChanged:
+                case MediaPlayer.Event.TimeChanged:
 
                     // Avoid overly aggressive reporting
                     if ((new Date().getTime() - lastReportTime) < 500){

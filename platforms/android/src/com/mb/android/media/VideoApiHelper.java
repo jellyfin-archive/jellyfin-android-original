@@ -51,7 +51,7 @@ import mediabrowser.model.sync.LocalItem;
  */
 public class VideoApiHelper {
 
-    private DeviceProfile deviceProfile;
+    /*private DeviceProfile deviceProfile;
     private PlaybackProgressInfo playbackStartInfo;
     private ILogger logger;
     private IJsonSerializer jsonSerializer;
@@ -574,5 +574,5 @@ public class VideoApiHelper {
         }
 
         return null;
-    }
+    }*/
 }

@@ -9,9 +9,11 @@ import android.view.KeyEvent;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 
 /**
- * Created by Luke on 6/23/2015.
+ * Small class to receive events passed out by the remote controls (wired, bluetooth, lock screen, ...)
  */
 public class RemoteControlClientReceiver extends BroadcastReceiver {
+    @SuppressWarnings("unused")
+    private static final String TAG = "VLC/RemoteControlClientReceiver";
 
     /* It should be safe to use static variables here once registered via the AudioManager */
     private static long mHeadsetDownTime = 0;
@@ -23,7 +25,7 @@ public class RemoteControlClientReceiver extends BroadcastReceiver {
 
         if(action.equalsIgnoreCase(Intent.ACTION_MEDIA_BUTTON)) {
 
-            KeyEvent event = (KeyEvent) intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+            KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
             if (event == null)
                 return;
 
@@ -41,37 +43,35 @@ public class RemoteControlClientReceiver extends BroadcastReceiver {
              * double click => next
              */
                 case KeyEvent.KEYCODE_HEADSETHOOK:
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     long time = SystemClock.uptimeMillis();
-                    switch (event.getAction())
-                    {
+                    switch (event.getAction()) {
                         case KeyEvent.ACTION_DOWN:
-                            if (event.getRepeatCount() > 0)
-                                break;
-                            mHeadsetDownTime = time;
+                            if (event.getRepeatCount() <= 0)
+                                mHeadsetDownTime = time;
                             break;
                         case KeyEvent.ACTION_UP:
-                            // long click
-                            if (time - mHeadsetDownTime >= 1000) {
+                            if (time - mHeadsetDownTime >= 1000) { // long click
                                 i = new Intent(Constants.ACTION_PREVIOUS);
                                 time = 0;
-                                // double click
-                            } else if (time - mHeadsetUpTime <= 500) {
+                                break;
+                            } else if (time - mHeadsetUpTime <= 500) { // double click
                                 i = new Intent(Constants.ACTION_NEXT);
+                                break;
                             }
-                            // one click
                             else {
+                                // one click
                                 i = new Intent(Constants.ACTION_PLAYPAUSE);
                             }
                             mHeadsetUpTime = time;
                             break;
                     }
                     break;
-                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                    i = new Intent(Constants.ACTION_PLAYPAUSE);
-                    break;
                 case KeyEvent.KEYCODE_MEDIA_PLAY:
-                    i = new Intent(Constants.ACTION_PLAY);
-                    break;
+                    //i = new Intent(context, PlaybackService.class);
+                    //i.setAction(Constants.ACTION_PLAY);
+                    //context.startService(i);
+                    return;
                 case KeyEvent.KEYCODE_MEDIA_PAUSE:
                     i = new Intent(Constants.ACTION_PAUSE);
                     break;
@@ -90,6 +90,10 @@ public class RemoteControlClientReceiver extends BroadcastReceiver {
                 abortBroadcast();
             if(i != null)
                 context.sendBroadcast(i);
+        } else if (action.equals(Constants.ACTION_PLAYPAUSE)){
+            //intent = new Intent(context, PlaybackService.class);
+            //intent.setAction(PlaybackService.ACTION_REMOTE_PLAYPAUSE);
+            //context.startService(intent);
         }
     }
 }
