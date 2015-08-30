@@ -3,13 +3,15 @@ package com.mb.android.media;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.mb.android.MainActivity;
 import com.mb.android.webviews.IWebView;
 
 import org.apache.cordova.device.Device;
-import org.videolan.libvlc.EventHandler;
 import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
 
 import java.util.Date;
 
@@ -18,81 +20,63 @@ import mediabrowser.model.logging.ILogger;
 /**
  * Created by Luke on 6/10/2015.
  */
-public class VlcEventHandler extends Handler {
+public class VlcEventHandler implements MediaPlayer.EventListener {
 
     private ILogger logger;
-    protected LibVLC mLibVLC;
+    protected MediaPlayer mLibVLC;
 
     private long lastReportTime;
 
-    public VlcEventHandler(ILogger logger, LibVLC mLibVLC) {
+    public VlcEventHandler(ILogger logger, MediaPlayer mLibVLC) {
         this.logger = logger;
         this.mLibVLC = mLibVLC;
     }
 
     @Override
-    public void handleMessage(Message msg) {
-        /*VideoActivity player = mOwner.get();
+    public void onEvent(MediaPlayer.Event event) {
 
-        // SamplePlayer events
-        if (msg.what == VideoSizeChanged) {
-            player.setSize(msg.arg1, msg.arg2);
-            return;
-        }*/
-
-        // Libvlc events
-        Bundle b = msg.getData();
-        switch (b.getInt("event")) {
-            case EventHandler.HardwareAccelerationError:
-                logger.Debug("MediaPlayerStopped");
-                break;
-            case EventHandler.MediaMetaChanged:
-                logger.Debug("MediaMetaChanged");
-                break;
-            case EventHandler.MediaParsedChanged:
-                logger.Debug("MediaParsedChanged");
-                break;
-            case EventHandler.MediaPlayerEncounteredError:
+        switch (event.type) {
+            case MediaPlayer.Event.EncounteredError:
                 logger.Debug("MediaPlayerEncounteredError");
                 reportState("playbackstop");
                 break;
-            case EventHandler.MediaPlayerEndReached:
+            case MediaPlayer.Event.EndReached:
                 logger.Debug("MediaPlayerEndReached");
                 reportState("playbackstop");
                 break;
-            case EventHandler.MediaPlayerESAdded:
+            case MediaPlayer.Event.ESAdded:
                 logger.Debug("MediaPlayerESAdded");
                 break;
-            case EventHandler.MediaPlayerESDeleted:
+            case MediaPlayer.Event.ESDeleted:
                 logger.Debug("MediaPlayerESDeleted");
                 break;
-            case EventHandler.MediaPlayerPaused:
+            case MediaPlayer.Event.Paused:
                 logger.Debug("MediaPlayerPaused");
                 reportState("paused");
                 break;
-            case EventHandler.MediaPlayerPlaying:
+            case MediaPlayer.Event.Playing:
                 logger.Debug("MediaPlayerPlaying");
                 reportState("playing");
                 break;
-            case EventHandler.MediaPlayerPositionChanged:
+            case MediaPlayer.Event.PositionChanged:
                 logger.Debug("MediaPlayerPositionChanged");
                 break;
-            case EventHandler.MediaPlayerStopped:
+            case MediaPlayer.Event.Stopped:
                 logger.Debug("MediaPlayerStopped");
                 reportState("playbackstop");
                 break;
-            case EventHandler.MediaPlayerTimeChanged:
+            case MediaPlayer.Event.TimeChanged:
                 logger.Debug("MediaPlayerTimeChanged");
 
                 // Avoid overly aggressive reporting
-                if ((System.currentTimeMillis() - lastReportTime) < 500){
+                if ((System.currentTimeMillis() - lastReportTime) < 800){
                     return;
                 }
 
                 lastReportTime = System.currentTimeMillis();
                 reportState("positionchange");
                 break;
-            case EventHandler.MediaPlayerVout:
+            case MediaPlayer.Event.Vout:
                 logger.Debug("MediaPlayerVout");
                 break;
             default:

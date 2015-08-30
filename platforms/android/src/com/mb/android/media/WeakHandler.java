@@ -1,9 +1,8 @@
 package com.mb.android.media;
 
+import android.os.Handler;
 
 import java.lang.ref.WeakReference;
-
-import android.os.Handler;
 
 public abstract class WeakHandler<T> extends Handler {
     private WeakReference<T> mOwner;

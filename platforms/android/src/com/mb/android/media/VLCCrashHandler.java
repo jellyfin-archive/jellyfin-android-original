@@ -46,10 +46,39 @@ public class VLCCrashHandler implements UncaughtExceptionHandler {
         ex.printStackTrace(printWriter);
         String stacktrace = result.toString();
         printWriter.close();
-        Log.e(TAG, stacktrace);
+        logger.Error(stacktrace);
 
-        logger.Error("Unhandled Vlc Exception: %s", stacktrace);
+        // Save the log on SD card if available
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            writeLog(stacktrace, AndroidDevices.EXTERNAL_PUBLIC_DIRECTORY + "/vlc_crash");
+        }
 
         defaultUEH.uncaughtException(thread, ex);
+    }
+
+    private void writeLog(String log, String name) {
+        CharSequence timestamp = DateFormat.format("yyyyMMdd_kkmmss", System.currentTimeMillis());
+        String filename = name + "_" + timestamp + ".log";
+
+        FileOutputStream stream;
+        try {
+            stream = new FileOutputStream(filename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        OutputStreamWriter output = new OutputStreamWriter(stream);
+        BufferedWriter bw = new BufferedWriter(output);
+
+        try {
+            bw.write(log);
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            Util.close(bw);
+            Util.close(output);
+        }
     }
 }
