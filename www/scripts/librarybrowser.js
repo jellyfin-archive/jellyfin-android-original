@@ -109,6 +109,7 @@ textlines.push(displayName);var verticalTextLines=2;if(item.Type=='Audio'){textl
 if(item.Type=='Game'){textlines.push(item.GameSystem||'&nbsp;');}
 else if(item.Type=='MusicGenre'){textlines.push('&nbsp;');}
 else if(item.Type=='MusicArtist'){textlines.push('&nbsp;');}
+else if(item.Type=='TvChannel'){if(item.CurrentProgram){textlines.push(LibraryBrowser.getPosterViewDisplayName(item.CurrentProgram));}}
 else{textlines.push(LibraryBrowser.getMiscInfoHtml(item));}
 html+='<h3>';html+=textlines[0];html+='</h3>';if(textlines.length>1&&verticalTextLines>1){html+='<p>';html+=textlines[1]||'&nbsp;';html+='</p>';}
 if(textlines.length>2&&verticalTextLines>2){html+='<p>';html+=textlines[2]||'&nbsp;';html+='</p>';}
