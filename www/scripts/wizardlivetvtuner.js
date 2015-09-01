@@ -3,4 +3,4 @@ function reload(page){Dashboard.showLoadingMsg();var apiClient=ApiClient;apiClie
 function navigateToNextPage(config){if(config.LiveTvTunerPath&&config.LiveTvTunerType){Dashboard.navigate('wizardlivetvguide.html');}else{skip();}}
 function skip(){var apiClient=ApiClient;apiClient.getJSON(apiClient.getUrl('Startup/Info')).done(function(info){if(info.SupportsRunningAsService){Dashboard.navigate('wizardservice.html');}else{Dashboard.navigate('wizardagreement.html');}});}
 function onSubmit(){var form=this;save(form);return false;}
-$(document).on('pageinitdepends',"#wizardTunerPage",function(){var page=this;$('form',page).off('submit',onSubmit).on('submit',onSubmit);$('.btnSkip',page).on('click',skip);}).on('pageshowready',"#wizardTunerPage",function(){var page=this;reload(page);});})(jQuery,document,window);
+$(document).on('pageinit',"#wizardTunerPage",function(){var page=this;$('form',page).off('submit',onSubmit).on('submit',onSubmit);$('.btnSkip',page).on('click',skip);}).on('pageshowready',"#wizardTunerPage",function(){var page=this;reload(page);});})(jQuery,document,window);
