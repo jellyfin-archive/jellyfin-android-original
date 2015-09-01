@@ -51,11 +51,10 @@ import mediabrowser.model.sync.LocalItem;
  */
 public class VideoApiHelper {
 
-    /*private DeviceProfile deviceProfile;
+    private DeviceProfile deviceProfile;
     private PlaybackProgressInfo playbackStartInfo;
     private ILogger logger;
     private IJsonSerializer jsonSerializer;
-    private ApiClient apiClient;
     private String serverId;
     private boolean isOffline;
     private Integer originalMaxBitrate;
@@ -64,13 +63,14 @@ public class VideoApiHelper {
     private PreferencesProvider preferencesProvider;
 
     public boolean enableProgressReporting;
-    private VideoPlayerActivity activity;
+    private Context context;
     private MediaSourceInfo currentMediaSource;
+    private ApiClient apiClient;
 
-    public VideoApiHelper(VideoPlayerActivity context, ILogger logger, IJsonSerializer jsonSerializer) {
+    public VideoApiHelper(Context context, ILogger logger, IJsonSerializer jsonSerializer) {
         this.logger = logger;
         this.jsonSerializer = jsonSerializer;
-        this.activity = context;
+        this.context = context;
         localAssetManager = new AndroidAssetManager(context, logger, jsonSerializer);
         preferencesProvider = new PreferencesProvider(context, logger);
     }
@@ -113,7 +113,7 @@ public class VideoApiHelper {
         originalMaxBitrate = deviceProfile.getMaxStreamingBitrate();
     }
 
-    public void loadExternalSubtitles(final LibVLC vlc, EmptyResponse response) {
+    /*public void loadExternalSubtitles(final LibVLC vlc, EmptyResponse response) {
 
         loadExternalSubtitles(vlc, currentMediaSource.getMediaStreams(), 0, response);
 

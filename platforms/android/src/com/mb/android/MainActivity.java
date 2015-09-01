@@ -37,6 +37,7 @@ import com.mb.android.io.NativeFileSystem;
 import com.mb.android.logging.AppLogger;
 import com.mb.android.logging.LoggingBridge;
 import com.mb.android.media.MediaService;
+import com.mb.android.media.PlaybackService;
 import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
@@ -68,7 +69,7 @@ public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_UNLOCK_REQUEST = 999;
     private final int REQUEST_DIRECTORY = 998;
-    private final int VIDEO_PLAYBACK = 997;
+    public static final int VIDEO_PLAYBACK = 997;
     private static IWebView webView;
 
     private ILogger getLogger(){
@@ -302,6 +303,7 @@ public class MainActivity extends CordovaActivity
     public void playVideoVlc(String path,
                              long startPositionMs,
                              String itemName,
+                             String itemJson,
                              String mediaSourceJson,
                              String playbackStartInfoJson,
                              String serverId,
@@ -316,11 +318,12 @@ public class MainActivity extends CordovaActivity
                              String videoQualityOptionsJson) {
 
         getLogger().Debug("Video path: %s", path);
-        Intent intent = new Intent(this, VideoPlayerActivity.class);
-        intent.setAction(VideoPlayerActivity.PLAY_FROM_VIDEOGRID);
-        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION, path);
+        Intent intent = new Intent(this, PlaybackService.class);
+        intent.setAction(Constants.ACTION_PLAY);
+        intent.putExtra("path", path);
         intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_TITLE, itemName);
         //intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_OPENED_POSITION, 0);
+        intent.putExtra("item", itemJson);
         intent.putExtra("mediaSourceJson", mediaSourceJson);
         intent.putExtra("playbackStartInfoJson", playbackStartInfoJson);
         intent.putExtra("serverId", serverId);
@@ -338,7 +341,7 @@ public class MainActivity extends CordovaActivity
             intent.putExtra("position", startPositionMs);
         }
 
-        startActivityForResult(intent, VIDEO_PLAYBACK);
+        startService(intent);
     }
 
     @JavascriptInterface

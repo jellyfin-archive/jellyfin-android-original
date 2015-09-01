@@ -2,7 +2,7 @@
 function removeRecurringFields(page){$('.pprecurring',page).remove();$('#ppCmd',page).val('_xclick');}
 function setItemNumber(page,itemNumber){$('#ppItemNo',page).val(itemNumber);}
 function getDonationType(page){return $(".radioDonationType:checked",page).val();}
-var lifeTimeAmount=69.99;var dailyAmount=1;var monthlyAmount=4.99;var yearlyAmount=35.99;function getDonationAmount(page){var type=getDonationType(page);if(type=='once'){return $("#selectOneTimeDonationAmount",page).val();}
+var lifeTimeAmount=79.99;var dailyAmount=1;var monthlyAmount=4.99;var yearlyAmount=37.99;function getDonationAmount(page){var type=getDonationType(page);if(type=='once'){return $("#selectOneTimeDonationAmount",page).val();}
 if(type=='yearly'){return yearlyAmount;}
 if(type=='monthly'){return monthlyAmount;}
 if(type=='daily'){return dailyAmount;}
@@ -14,7 +14,7 @@ if(info.IsActiveSupporter&&info.PlanType=='Lifetime'){$('.planSummary',page).htm
 else if(info.IsActiveSupporter){$('.planSummary',page).html(Globalize.translate('MessageYouHaveAnActiveRecurringMembership').replace('{0}',info.PlanType)).css('color','green');}
 else if(info.IsExpiredSupporter){var expirationDate=info.ExpirationDate?parseISO8601Date(info.ExpirationDate,{toLocal:true}):new Date();expirationDate=expirationDate.toLocaleDateString();$('.planSummary',page).html(Globalize.translate('MessageSupporterMembershipExpiredOn').replace('{0}',expirationDate)).css('color','red');}});}
 function onSubmit(){var form=this;var page=$(form).parents('.page');if($('.hfIsActive',page).val()=='true'){var currentPlanType=$('.hfPlanType',page).val();if(currentPlanType!='Lifetime'){alert(Globalize.translate('MessageChangeRecurringPlanConfirm'));}}}
-$(document).on('pageinitdepends',"#supporterPage",function(){var page=this;$('.radioDonationType',page).on('change',function(){var donationType=getDonationType(page);updateSavedDonationAmount(page);if(donationType=='once'){$('.fldOneTimeDonationAmount',page).show();removeRecurringFields(page);setItemNumber(page,'MBDonation');$('#oneTimeDescription').show();}
+$(document).on('pageinit',"#supporterPage",function(){var page=this;$('.radioDonationType',page).on('change',function(){var donationType=getDonationType(page);updateSavedDonationAmount(page);if(donationType=='once'){$('.fldOneTimeDonationAmount',page).show();removeRecurringFields(page);setItemNumber(page,'MBDonation');$('#oneTimeDescription').show();}
 else if(donationType=='yearly'){$('.fldOneTimeDonationAmount',page).hide();addRecurringFields('Y',page);setItemNumber(page,'MBSClubYearly');$('#oneTimeDescription').hide();}
 else if(donationType=='monthly'){$('.fldOneTimeDonationAmount',page).hide();addRecurringFields('M',page);setItemNumber(page,'MBSClubMonthly');$('#oneTimeDescription').hide();}
 else if(donationType=='daily'){$('.fldOneTimeDonationAmount',page).hide();addRecurringFields('D',page);setItemNumber(page,'MBSClubDaily');$('#oneTimeDescription').hide();}
