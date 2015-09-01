@@ -7,7 +7,7 @@ function addUserToHeader(user){var header=document.querySelector('.viewMenuBar')
 var dashboardEntryHeaderButton=document.querySelector('.dashboardEntryHeaderButton');if(dashboardEntryHeaderButton){if(user.canManageServer){dashboardEntryHeaderButton.classList.remove('hide');}else{dashboardEntryHeaderButton.classList.add('hide');}}
 if(user.name){if(user.imageUrl&&AppInfo.enableUserImage){var userButtonHeight=26;var url=user.imageUrl;if(user.supportsImageParams){url+="&height="+(userButtonHeight*Math.max(devicePixelRatio||1,2));}
 var headerUserButton=header.querySelector('.headerUserButton');if(headerUserButton){headerUserButton.icon=null;headerUserButton.src=url;headerUserButton.classList.add('headerUserButtonRound');}}}}
-function bindMenuEvents(){if(AppInfo.isTouchPreferred){$('.mainDrawerButton').on('touchend',openMainDrawer).on('click',openMainDrawer);}else{$('.mainDrawerButton').createHoverTouch().on('hovertouch',openMainDrawer);}
+function bindMenuEvents(){if(AppInfo.isTouchPreferred){$('.mainDrawerButton').on('click',openMainDrawer);}else{$('.mainDrawerButton').createHoverTouch().on('hovertouch',openMainDrawer);}
 $('.headerBackButton').on('click',onBackClick);var viewMenuBar=document.getElementsByClassName("viewMenuBar")[0];initHeadRoom(viewMenuBar);}
 function updateViewMenuBarHeadroom(page,viewMenuBar){if(page.classList.contains('libraryPage')){setTimeout(reEnableHeadroom,700);}else{viewMenuBar.classList.add('headroomDisabled');}}
 function reEnableHeadroom(){var headroomDisabled=document.querySelectorAll('.headroomDisabled');for(var i=0,length=headroomDisabled.length;i<length;i++){headroomDisabled[i].classList.remove('headroomDisabled');}}
