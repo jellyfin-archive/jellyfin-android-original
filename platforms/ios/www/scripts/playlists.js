@@ -12,4 +12,4 @@ else if(view=="ThumbCard"){html=LibraryBrowser.getPosterViewHtml({items:result.I
 $('.noItemsMessage',page).hide();}else{$('.noItemsMessage',page).show();}
 var elem=page.querySelector('.itemsContainer');elem.innerHTML=html;ImageLoader.lazyChildren(elem);if(trigger){$(elem).trigger('create');}
 $('.btnNextPage',page).on('click',function(){query.StartIndex+=query.Limit;reloadItems(page);});$('.btnPreviousPage',page).on('click',function(){query.StartIndex-=query.Limit;reloadItems(page);});$('.btnChangeLayout',page).on('layoutchange',function(e,layout){getPageData().view=layout;LibraryBrowser.saveViewSetting(getSavedQueryKey(),layout);reloadItems(page);});LibraryBrowser.saveQueryValues(getSavedQueryKey(),query);hideLoadingMessage(page);});}
-$(document).on('pagebeforeshowready',"#playlistsPage",function(){var page=this;reloadItems(page);});})(jQuery,document);
+$(document).on('pagebeforeshow',"#playlistsPage",function(){var page=this;reloadItems(page);});})(jQuery,document);
