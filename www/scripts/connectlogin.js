@@ -9,7 +9,7 @@ function loadAppConnection(page){Dashboard.showModalLoadingMsg();ConnectionManag
 function loadPage(page){var mode=getParameterByName('mode')||'auto';if(mode=='auto'){if(AppInfo.isNativeApp){loadAppConnection(page);return;}
 mode='connect';}
 loadMode(page,mode);}
-function loadMode(page,mode){Backdrops.setDefault(page);if(mode=='welcome'){$('.connectLoginForm',page).hide();$('.welcomeContainer',page).show();$('.manualServerForm',page).hide();$('.signupForm',page).hide();}
+function loadMode(page,mode){if(mode=='welcome'){$('.connectLoginForm',page).hide();$('.welcomeContainer',page).show();$('.manualServerForm',page).hide();$('.signupForm',page).hide();}
 else if(mode=='connect'){$('.connectLoginForm',page).show();$('.welcomeContainer',page).hide();$('.manualServerForm',page).hide();$('.signupForm',page).hide();}
 else if(mode=='manualserver'){$('.manualServerForm',page).show();$('.connectLoginForm',page).hide();$('.welcomeContainer',page).hide();$('.signupForm',page).hide();}
 else if(mode=='signup'){$('.manualServerForm',page).hide();$('.connectLoginForm',page).hide();$('.welcomeContainer',page).hide();$('.signupForm',page).show();initSignup(page);}}

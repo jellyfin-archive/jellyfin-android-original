@@ -962,11 +962,6 @@ $.ui.plugin = {
 				$.mobile.links( this );
 			}
 
-			// Degrade inputs for styleing
-			if ( $.mobile.degradeInputsWithin ) {
-				$.mobile.degradeInputsWithin( this );
-			}
-
 		    var thisElem = this[0];
 
 			// Run buttonmarkup
@@ -3513,14 +3508,21 @@ $.widget( "mobile.page", {
 		}
 	},
 
-	_setOptions: function( o ) {
+	_setOptions: function (o) {
+
+	    var elem = this.element[0];
 		if ( o.theme !== undefined ) {
-			this.element.removeClass( "ui-page-theme-" + this.options.theme ).addClass( "ui-page-theme-" + o.theme );
+		    elem.classList.remove("ui-page-theme-" + this.options.theme);
+		    elem.classList.add("ui-page-theme-" + o.theme);
 		}
 
-		if ( o.contentTheme !== undefined ) {
-			this.element.find( "[data-" + $.mobile.ns + "='content']" ).removeClass( "ui-body-" + this.options.contentTheme )
-				.addClass( "ui-body-" + o.contentTheme );
+		if (o.contentTheme !== undefined) {
+		    var elems = elem.querySelectorAll("*[data-" + $.mobile.ns + "='content']");
+		    for (var i = 0, length = elems.length; i < length; i++) {
+		        var el = elems[i];
+		        el.classList.remove("ui-body-" + this.options.contentTheme);
+		        el.classList.add("ui-body-" + o.contentTheme);
+            }
 		}
 	},
 
@@ -3558,53 +3560,6 @@ $.widget( "mobile.page", {
 			.join( ", " ) );
 	}
 });
-})( jQuery );
-
-(function( $, undefined ) {
-
-$.mobile.degradeInputs = {
-	color: false,
-	date: false,
-	datetime: false,
-	"datetime-local": false,
-	email: false,
-	month: false,
-	number: false,
-	range: "number",
-	search: "text",
-	tel: false,
-	time: false,
-	url: false,
-	week: false
-};
-// Backcompat remove in 1.5
-$.mobile.page.prototype.options.degradeInputs = $.mobile.degradeInputs;
-
-// Auto self-init widgets
-$.mobile.degradeInputsWithin = function( target ) {
-
-	target = $( target );
-
-	// Degrade inputs to avoid poorly implemented native functionality
-	target.find( "input" ).not( $.mobile.page.prototype.keepNativeSelector() ).each(function() {
-		var element = $( this ),
-			type = this.getAttribute( "type" ),
-			optType = $.mobile.degradeInputs[ type ] || "text",
-			html, hasType, findstr, repstr;
-
-		if ( $.mobile.degradeInputs[ type ] ) {
-			html = $( "<div>" ).html( element.clone() ).html();
-			// In IE browsers, the type sometimes doesn't exist in the cloned markup, so we replace the closing tag instead
-			hasType = html.indexOf( " type=" ) > -1;
-			findstr = hasType ? /\s+type=["']?\w+['"]?/ : /\/?>/;
-			repstr = " type=\"" + optType + "\" data-" + $.mobile.ns + "type=\"" + type + "\"" + ( hasType ? "" : ">" );
-
-			element.replaceWith( html.replace( findstr, repstr ) );
-		}
-	});
-
-};
-
 })( jQuery );
 
 
@@ -4537,18 +4492,21 @@ $.fn.grid = function( options ) {
 (function( $, undefined ) {
 
 	// existing base tag?
-	var baseElement = $( "head" ).children( "base" ),
+    var baseElement = document.querySelector('head base');
 
+    if (!baseElement) {
+        baseElement = $( "<base>", { href: $.mobile.path.documentBase.hrefNoHash } ).prependTo( $( "head" ) ) ;
+        baseElement = baseElement[0];
+    }
 	// base element management, defined depending on dynamic base tag support
 	// TODO move to external widget
-	base = {
+	var base = {
 
 		// define base element, for use in routing asset urls that are referenced
 		// in Ajax-requested markup
-		element: ( baseElement.length ? baseElement :
-			$( "<base>", { href: $.mobile.path.documentBase.hrefNoHash } ).prependTo( $( "head" ) ) ),
+	    element: baseElement,
 
-		linkSelector: "[src], link[href], a[rel='external'], *[data-ajax='false'], a[target]",
+		linkSelector: "*[src], link[href], a[rel='external'], *[data-ajax='false'], a[target]",
 
 		// set the generated BASE element's href to a new page's base path
 		set: function( href ) {
@@ -4561,35 +4519,17 @@ $.fn.grid = function( options ) {
 
 			// we should use the base tag if we can manipulate it dynamically
 			if ( $.support.dynamicBaseTag ) {
-				base.element.attr( "href",
+			    base.element.setAttribute("href",
 					$.mobile.path.makeUrlAbsolute( href, $.mobile.path.documentBase ) );
 			}
 		},
 
 		rewrite: function( href, page ) {
-			var newPath = $.mobile.path.get( href );
-
-			page.find( base.linkSelector ).each(function( i, link ) {
-				var thisAttr = $( link ).is( "[href]" ) ? "href" :
-					$( link ).is( "[src]" ) ? "src" : "action",
-				theLocation = $.mobile.path.parseLocation(),
-				thisUrl = $( link ).attr( thisAttr );
-
-				// XXX_jblas: We need to fix this so that it removes the document
-				//            base URL, and then prepends with the new page URL.
-				// if full path exists and is same, chop it - helps IE out
-				thisUrl = thisUrl.replace( theLocation.protocol + theLocation.doubleSlash +
-					theLocation.host + theLocation.pathname, "" );
-
-				if ( !/^(\w+:|#|\/)/.test( thisUrl ) ) {
-					$( link ).attr( thisAttr, newPath + thisUrl );
-				}
-			});
 		},
 
 		// set the generated BASE element's href to a new page's base path
 		reset: function(/* href */) {
-			base.element.attr( "href", $.mobile.path.documentBase.hrefNoSearch );
+			base.element.setAttribute( "href", $.mobile.path.documentBase.hrefNoSearch );
 		}
 	};
 
@@ -5156,12 +5096,14 @@ $.fn.grid = function( options ) {
 		_include: function (page, jPage, settings) {
 
 		    // append to page and enhance
-		    this.element[0].appendChild(page);
+		    jPage.appendTo(this.element);
+		    //alert(jPage[0].parentNode == this.element[0]);
+		    //this.element[0].appendChild(page);
 
-			// use the page widget to enhance
+		    // use the page widget to enhance
 		    this._enhance(jPage, settings.role);
 
-			// remove page on hide
+		    // remove page on hide
 		    jPage.page("bindRemove");
 		},
 
@@ -6012,19 +5954,6 @@ $.fn.grid = function( options ) {
 
 	// Direct focus to the page title, or otherwise first focusable element
 	$.mobile.focusPage = function ( page ) {
-		var autofocus = page.find( "[autofocus]" ),
-			pageTitle = page.find( ".ui-title:eq(0)" );
-
-		if ( autofocus.length ) {
-			autofocus.focus();
-			return;
-		}
-
-		if ( pageTitle.length ) {
-			pageTitle.focus();
-		} else{
-			page.focus();
-		}
 	};
 
 	// No-op implementation of transition degradation
@@ -6330,17 +6259,18 @@ $.fn.grid = function( options ) {
 
 		//prefetch pages when anchors with data-prefetch are encountered
 		$.mobile.document.delegate( ".ui-page", "pageshow.prefetch", function() {
-			var urls = [];
-			$( this ).find( "a[data-prefetch]" ).each(function() {
-				var $link = $( this ),
-					url = $link.attr( "href" );
+		    var urls = [];
+		    var prefetchLinks = this.querySelectorAll("a[data-prefetch]");
+		    for (var i = 0, length = prefetchLinks.length; i < length; i++) {
+		        var prefetchLink = prefetchLinks[i];
+		        var url = prefetchLink.getAttribute("href");
 
-				if ( url && $.inArray( url, urls ) === -1 ) {
-					urls.push( url );
+		        if (url && $.inArray(url, urls) === -1) {
+		            urls.push(url);
 
-					$.mobile.loadPage( url, { role: $link.attr( "data-" + $.mobile.ns + "rel" ),prefetch: true } );
-				}
-			});
+		            $.mobile.loadPage(url, { role: prefetchLink.getAttribute("data-" + $.mobile.ns + "rel"), prefetch: true });
+		        }
+		    }
 		});
 
 		// TODO ensure that the navigate binding in the content widget happens at the right time
@@ -6542,24 +6472,26 @@ $.fn.grid = function( options ) {
 
 $.mobile.links = function( target ) {
 
+    target = target.length ? target[0] : target;
+
+    var links = $(target.getElementsByTagName('a'))
+        .jqmEnhanceable()
+        .filter("[data-rel='popup'][href][href!='']");
+
 	//links within content areas, tests included with page
-	$( target )
-		.find( "a" )
-		.jqmEnhanceable()
-		.filter( "[data-rel='popup'][href][href!='']" )
-		.each( function() {
+    links.each(function () {
 			// Accessibility info for popups
 			var element = this,
 				idref = element.getAttribute( "href" ).substring( 1 );
 
-			if ( idref ) {
+			if (idref) {
 				element.setAttribute( "aria-haspopup", true );
 				element.setAttribute( "aria-owns", idref );
 				element.setAttribute( "aria-expanded", false );
 			}
 		})
 		.end()
-		.not( ".ui-btn, [data-role='none'], [data-role='nojs']" )
+		.not( ".ui-btn, [data-role='none']" )
 		.addClass( "ui-link" );
 
 };
@@ -8027,847 +7959,6 @@ $.widget( "mobile.checkboxradio", $.extend( {
 
 (function( $, undefined ) {
 
-$.widget( "mobile.slider", $.extend( {
-	initSelector: "input[type='range'], *[data-type='range'], *[data-role='slider']",
-
-	widgetEventPrefix: "slide",
-
-	options: {
-		theme: null,
-		trackTheme: null,
-		corners: true,
-		mini: false,
-		highlight: false
-	},
-
-	_create: function() {
-
-		// TODO: Each of these should have comments explain what they're for
-		var self = this,
-			control = this.element,
-			trackTheme = this.options.trackTheme || $.mobile.getAttribute( control[ 0 ], "theme" ),
-			trackThemeClass = trackTheme ? " ui-bar-" + trackTheme : " ui-bar-inherit",
-			cornerClass = ( this.options.corners || control.jqmData( "corners" ) ) ? " ui-corner-all" : "",
-			miniClass = ( this.options.mini || control.jqmData( "mini" ) ) ? " ui-mini" : "",
-			cType = control[ 0 ].nodeName.toLowerCase(),
-			isToggleSwitch = ( cType === "select" ),
-			isRangeslider = control.parent().is( ":jqmData(role='rangeslider')" ),
-			selectClass = ( isToggleSwitch ) ? "ui-slider-switch" : "",
-			controlID = control.attr( "id" ),
-			$label = $( "[for='" + controlID + "']" ),
-			labelID = $label.attr( "id" ) || controlID + "-label",
-			min = !isToggleSwitch ? parseFloat( control.attr( "min" ) ) : 0,
-			max =  !isToggleSwitch ? parseFloat( control.attr( "max" ) ) : control.find( "option" ).length-1,
-			step = window.parseFloat( control.attr( "step" ) || 1 ),
-			domHandle = document.createElement( "a" ),
-			handle = $( domHandle ),
-			domSlider = document.createElement( "div" ),
-			slider = $( domSlider ),
-			valuebg = this.options.highlight && !isToggleSwitch ? (function() {
-				var bg = document.createElement( "div" );
-				bg.className = "ui-slider-bg " + $.mobile.activeBtnClass;
-				return $( bg ).prependTo( slider );
-			})() : false,
-			options,
-			wrapper,
-			j, length,
-			i, optionsCount, origTabIndex,
-			side, activeClass, sliderImg;
-
-		$label.attr( "id", labelID );
-		this.isToggleSwitch = isToggleSwitch;
-
-		domHandle.setAttribute( "href", "#" );
-		domSlider.setAttribute( "role", "application" );
-		domSlider.className = [ this.isToggleSwitch ? "ui-slider ui-slider-track ui-shadow-inset " : "ui-slider-track ui-shadow-inset ", selectClass, trackThemeClass, cornerClass, miniClass ].join( "" );
-		domHandle.className = "ui-slider-handle";
-		domSlider.appendChild( domHandle );
-
-		handle.attr({
-			"role": "slider",
-			"aria-valuemin": min,
-			"aria-valuemax": max,
-			"aria-valuenow": this._value(),
-			"aria-valuetext": this._value(),
-			"title": this._value(),
-			"aria-labelledby": labelID
-		});
-
-		$.extend( this, {
-			slider: slider,
-			handle: handle,
-			control: control,
-			type: cType,
-			step: step,
-			max: max,
-			min: min,
-			valuebg: valuebg,
-			isRangeslider: isRangeslider,
-			dragging: false,
-			beforeStart: null,
-			userModified: false,
-			mouseMoved: false
-		});
-
-		if ( isToggleSwitch ) {
-			// TODO: restore original tabindex (if any) in a destroy method
-			origTabIndex = control.attr( "tabindex" );
-			if ( origTabIndex ) {
-				handle.attr( "tabindex", origTabIndex );
-			}
-			control.attr( "tabindex", "-1" ).focus(function() {
-				$( this ).blur();
-				handle.focus();
-			});
-
-			wrapper = document.createElement( "div" );
-			wrapper.className = "ui-slider-inneroffset";
-
-			for ( j = 0, length = domSlider.childNodes.length; j < length; j++ ) {
-				wrapper.appendChild( domSlider.childNodes[j] );
-			}
-
-			domSlider.appendChild( wrapper );
-
-			// slider.wrapInner( "<div class='ui-slider-inneroffset'></div>" );
-
-			// make the handle move with a smooth transition
-			handle.addClass( "ui-slider-handle-snapping" );
-
-			options = control.find( "option" );
-
-			for ( i = 0, optionsCount = options.length; i < optionsCount; i++ ) {
-				side = !i ? "b" : "a";
-				activeClass = !i ? "" : " " + $.mobile.activeBtnClass;
-				sliderImg = document.createElement( "span" );
-
-				sliderImg.className = [ "ui-slider-label ui-slider-label-", side, activeClass ].join( "" );
-				sliderImg.setAttribute( "role", "img" );
-				sliderImg.appendChild( document.createTextNode( options[i].innerHTML ) );
-				$( sliderImg ).prependTo( slider );
-			}
-
-			self._labels = $( ".ui-slider-label", slider );
-
-		}
-
-		// monitor the input for updated values
-		control.addClass( isToggleSwitch ? "ui-slider-switch" : "ui-slider-input" );
-
-		this._on( control, {
-			"change": "_controlChange",
-			"keyup": "_controlKeyup",
-			"blur": "_controlBlur",
-			"vmouseup": "_controlVMouseUp"
-		});
-
-		slider.bind( "vmousedown", $.proxy( this._sliderVMouseDown, this ) )
-			.bind( "vclick", false );
-
-		// We have to instantiate a new function object for the unbind to work properly
-		// since the method itself is defined in the prototype (causing it to unbind everything)
-		this._on( document, { "vmousemove": "_preventDocumentDrag" });
-		this._on( slider.add( document ), { "vmouseup": "_sliderVMouseUp" });
-
-		slider.insertAfter( control );
-
-		// wrap in a div for styling purposes
-		if ( !isToggleSwitch && !isRangeslider ) {
-			wrapper = this.options.mini ? "<div class='ui-slider ui-mini'>" : "<div class='ui-slider'>";
-
-			control.add( slider ).wrapAll( wrapper );
-		}
-
-		// bind the handle event callbacks and set the context to the widget instance
-		this._on( this.handle, {
-			"vmousedown": "_handleVMouseDown",
-			"keydown": "_handleKeydown",
-			"keyup": "_handleKeyup"
-		});
-
-		this.handle.bind( "vclick", false );
-
-		this._handleFormReset();
-
-		this.refresh( undefined, undefined, true );
-	},
-
-	_setOptions: function( options ) {
-		if ( options.theme !== undefined ) {
-			this._setTheme( options.theme );
-		}
-
-		if ( options.trackTheme !== undefined ) {
-			this._setTrackTheme( options.trackTheme );
-		}
-
-		if ( options.corners !== undefined ) {
-			this._setCorners( options.corners );
-		}
-
-		if ( options.mini !== undefined ) {
-			this._setMini( options.mini );
-		}
-
-		if ( options.highlight !== undefined ) {
-			this._setHighlight( options.highlight );
-		}
-
-		if ( options.disabled !== undefined ) {
-			this._setDisabled( options.disabled );
-		}
-		this._super( options );
-	},
-
-	_controlChange: function( event ) {
-		// if the user dragged the handle, the "change" event was triggered from inside refresh(); don't call refresh() again
-		if ( this._trigger( "controlchange", event ) === false ) {
-			return false;
-		}
-		if ( !this.mouseMoved ) {
-			this.refresh( this._value(), true );
-		}
-	},
-
-	_controlKeyup: function(/* event */) { // necessary?
-		this.refresh( this._value(), true, true );
-	},
-
-	_controlBlur: function(/* event */) {
-		this.refresh( this._value(), true );
-	},
-
-	// it appears the clicking the up and down buttons in chrome on
-	// range/number inputs doesn't trigger a change until the field is
-	// blurred. Here we check thif the value has changed and refresh
-	_controlVMouseUp: function(/* event */) {
-		this._checkedRefresh();
-	},
-
-	// NOTE force focus on handle
-	_handleVMouseDown: function(/* event */) {
-		this.handle.focus();
-	},
-
-	_handleKeydown: function( event ) {
-		var index = this._value();
-		if ( this.options.disabled ) {
-			return;
-		}
-
-		// In all cases prevent the default and mark the handle as active
-		switch ( event.keyCode ) {
-			case $.mobile.keyCode.HOME:
-			case $.mobile.keyCode.END:
-			case $.mobile.keyCode.PAGE_UP:
-			case $.mobile.keyCode.PAGE_DOWN:
-			case $.mobile.keyCode.UP:
-			case $.mobile.keyCode.RIGHT:
-			case $.mobile.keyCode.DOWN:
-			case $.mobile.keyCode.LEFT:
-				event.preventDefault();
-
-				if ( !this._keySliding ) {
-					this._keySliding = true;
-					this.handle.addClass( "ui-state-active" ); /* TODO: We don't use this class for styling. Do we need to add it? */
-				}
-
-				break;
-		}
-
-		// move the slider according to the keypress
-		switch ( event.keyCode ) {
-			case $.mobile.keyCode.HOME:
-				this.refresh( this.min );
-				break;
-			case $.mobile.keyCode.END:
-				this.refresh( this.max );
-				break;
-			case $.mobile.keyCode.PAGE_UP:
-			case $.mobile.keyCode.UP:
-			case $.mobile.keyCode.RIGHT:
-				this.refresh( index + this.step );
-				break;
-			case $.mobile.keyCode.PAGE_DOWN:
-			case $.mobile.keyCode.DOWN:
-			case $.mobile.keyCode.LEFT:
-				this.refresh( index - this.step );
-				break;
-		}
-	}, // remove active mark
-
-	_handleKeyup: function(/* event */) {
-		if ( this._keySliding ) {
-			this._keySliding = false;
-			this.handle.removeClass( "ui-state-active" ); /* See comment above. */
-		}
-	},
-
-	_sliderVMouseDown: function( event ) {
-		// NOTE: we don't do this in refresh because we still want to
-		//       support programmatic alteration of disabled inputs
-		if ( this.options.disabled || !( event.which === 1 || event.which === 0 || event.which === undefined ) ) {
-			return false;
-		}
-		if ( this._trigger( "beforestart", event ) === false ) {
-			return false;
-		}
-		this.dragging = true;
-		this.userModified = false;
-		this.mouseMoved = false;
-
-		if ( this.isToggleSwitch ) {
-			this.beforeStart = this.element[0].selectedIndex;
-		}
-
-		this.refresh( event );
-		this._trigger( "start" );
-		return false;
-	},
-
-	_sliderVMouseUp: function() {
-		if ( this.dragging ) {
-			this.dragging = false;
-
-			if ( this.isToggleSwitch ) {
-				// make the handle move with a smooth transition
-				this.handle.addClass( "ui-slider-handle-snapping" );
-
-				if ( this.mouseMoved ) {
-					// this is a drag, change the value only if user dragged enough
-					if ( this.userModified ) {
-						this.refresh( this.beforeStart === 0 ? 1 : 0 );
-					} else {
-						this.refresh( this.beforeStart );
-					}
-				} else {
-					// this is just a click, change the value
-					this.refresh( this.beforeStart === 0 ? 1 : 0 );
-				}
-			}
-
-			this.mouseMoved = false;
-			this._trigger( "stop" );
-			return false;
-		}
-	},
-
-	_preventDocumentDrag: function( event ) {
-			// NOTE: we don't do this in refresh because we still want to
-			//       support programmatic alteration of disabled inputs
-			if ( this._trigger( "drag", event ) === false) {
-				return false;
-			}
-			if ( this.dragging && !this.options.disabled ) {
-
-				// this.mouseMoved must be updated before refresh() because it will be used in the control "change" event
-				this.mouseMoved = true;
-
-				if ( this.isToggleSwitch ) {
-					// make the handle move in sync with the mouse
-					this.handle.removeClass( "ui-slider-handle-snapping" );
-				}
-
-				this.refresh( event );
-
-				// only after refresh() you can calculate this.userModified
-				this.userModified = this.beforeStart !== this.element[0].selectedIndex;
-				return false;
-			}
-		},
-
-	_checkedRefresh: function() {
-		if ( this.value !== this._value() ) {
-			this.refresh( this._value() );
-		}
-	},
-
-	_value: function() {
-		return  this.isToggleSwitch ? this.element[0].selectedIndex : parseFloat( this.element.val() ) ;
-	},
-
-	_reset: function() {
-		this.refresh( undefined, false, true );
-	},
-
-	refresh: function( val, isfromControl, preventInputUpdate ) {
-		// NOTE: we don't return here because we want to support programmatic
-		//       alteration of the input value, which should still update the slider
-
-		var self = this,
-			parentTheme = $.mobile.getAttribute( this.element[ 0 ], "theme" ),
-			theme = this.options.theme || parentTheme,
-			themeClass =  theme ? " ui-btn-" + theme : "",
-			trackTheme = this.options.trackTheme || parentTheme,
-			trackThemeClass = trackTheme ? " ui-bar-" + trackTheme : " ui-bar-inherit",
-			cornerClass = this.options.corners ? " ui-corner-all" : "",
-			miniClass = this.options.mini ? " ui-mini" : "",
-			left, width, data, tol,
-			pxStep, percent,
-			control, isInput, optionElements, min, max, step,
-			newval, valModStep, alignValue, percentPerStep,
-			handlePercent, aPercent, bPercent,
-			valueChanged;
-
-		self.slider[0].className = [ this.isToggleSwitch ? "ui-slider ui-slider-switch ui-slider-track ui-shadow-inset" : "ui-slider-track ui-shadow-inset", trackThemeClass, cornerClass, miniClass ].join( "" );
-		if ( this.options.disabled || this.element.prop( "disabled" ) ) {
-			this.disable();
-		}
-
-		// set the stored value for comparison later
-		this.value = this._value();
-		if ( this.options.highlight && !this.isToggleSwitch && this.slider.find( ".ui-slider-bg" ).length === 0 ) {
-			this.valuebg = (function() {
-				var bg = document.createElement( "div" );
-				bg.className = "ui-slider-bg " + $.mobile.activeBtnClass;
-				return $( bg ).prependTo( self.slider );
-			})();
-		}
-		this.handle.addClass( "ui-btn" + themeClass + " ui-shadow" );
-
-		control = this.element;
-		isInput = !this.isToggleSwitch;
-		optionElements = isInput ? [] : control.find( "option" );
-		min =  isInput ? parseFloat( control.attr( "min" ) ) : 0;
-		max = isInput ? parseFloat( control.attr( "max" ) ) : optionElements.length - 1;
-		step = ( isInput && parseFloat( control.attr( "step" ) ) > 0 ) ? parseFloat( control.attr( "step" ) ) : 1;
-
-		if ( typeof val === "object" ) {
-			data = val;
-			// a slight tolerance helped get to the ends of the slider
-			tol = 8;
-
-			left = this.slider.offset().left;
-			width = this.slider.width();
-			pxStep = width/((max-min)/step);
-			if ( !this.dragging ||
-					data.pageX < left - tol ||
-					data.pageX > left + width + tol ) {
-				return;
-			}
-			if ( pxStep > 1 ) {
-				percent = ( ( data.pageX - left ) / width ) * 100;
-			} else {
-				percent = Math.round( ( ( data.pageX - left ) / width ) * 100 );
-			}
-		} else {
-			if ( val == null ) {
-				val = isInput ? parseFloat( control.val() || 0 ) : control[0].selectedIndex;
-			}
-			percent = ( parseFloat( val ) - min ) / ( max - min ) * 100;
-		}
-
-		if ( isNaN( percent ) ) {
-			return;
-		}
-
-		newval = ( percent / 100 ) * ( max - min ) + min;
-
-		//from jQuery UI slider, the following source will round to the nearest step
-		valModStep = ( newval - min ) % step;
-		alignValue = newval - valModStep;
-
-		if ( Math.abs( valModStep ) * 2 >= step ) {
-			alignValue += ( valModStep > 0 ) ? step : ( -step );
-		}
-
-		percentPerStep = 100/((max-min)/step);
-		// Since JavaScript has problems with large floats, round
-		// the final value to 5 digits after the decimal point (see jQueryUI: #4124)
-		newval = parseFloat( alignValue.toFixed(5) );
-
-		if ( typeof pxStep === "undefined" ) {
-			pxStep = width / ( (max-min) / step );
-		}
-		if ( pxStep > 1 && isInput ) {
-			percent = ( newval - min ) * percentPerStep * ( 1 / step );
-		}
-		if ( percent < 0 ) {
-			percent = 0;
-		}
-
-		if ( percent > 100 ) {
-			percent = 100;
-		}
-
-		if ( newval < min ) {
-			newval = min;
-		}
-
-		if ( newval > max ) {
-			newval = max;
-		}
-
-		this.handle.css( "left", percent + "%" );
-
-		this.handle[0].setAttribute( "aria-valuenow", isInput ? newval : optionElements.eq( newval ).attr( "value" ) );
-
-		this.handle[0].setAttribute( "aria-valuetext", isInput ? newval : optionElements.eq( newval ).getEncodedText() );
-
-		this.handle[0].setAttribute( "title", isInput ? newval : optionElements.eq( newval ).getEncodedText() );
-
-		if ( this.valuebg ) {
-			this.valuebg.css( "width", percent + "%" );
-		}
-
-		// drag the label widths
-		if ( this._labels ) {
-			handlePercent = this.handle.width() / this.slider.width() * 100;
-			aPercent = percent && handlePercent + ( 100 - handlePercent ) * percent / 100;
-			bPercent = percent === 100 ? 0 : Math.min( handlePercent + 100 - aPercent, 100 );
-
-			this._labels.each(function() {
-				var ab = $( this ).hasClass( "ui-slider-label-a" );
-				$( this ).width( ( ab ? aPercent : bPercent  ) + "%" );
-			});
-		}
-
-		if ( !preventInputUpdate ) {
-			valueChanged = false;
-
-			// update control"s value
-			if ( isInput ) {
-				valueChanged = parseFloat( control.val() ) !== newval;
-				control.val( newval );
-			} else {
-				valueChanged = control[ 0 ].selectedIndex !== newval;
-				control[ 0 ].selectedIndex = newval;
-			}
-			if ( this._trigger( "beforechange", val ) === false) {
-					return false;
-			}
-			if ( !isfromControl && valueChanged ) {
-				control.trigger( "change" );
-			}
-		}
-	},
-
-	_setHighlight: function( value ) {
-		value = !!value;
-		if ( value ) {
-			this.options.highlight = !!value;
-			this.refresh();
-		} else if ( this.valuebg ) {
-			this.valuebg.remove();
-			this.valuebg = false;
-		}
-	},
-
-	_setTheme: function( value ) {
-		this.handle
-			.removeClass( "ui-btn-" + this.options.theme )
-			.addClass( "ui-btn-" + value );
-
-		var currentTheme = this.options.theme ? this.options.theme : "inherit",
-			newTheme = value ? value : "inherit";
-
-		this.control
-			.removeClass( "ui-body-" + currentTheme )
-			.addClass( "ui-body-" + newTheme );
-	},
-
-	_setTrackTheme: function( value ) {
-		var currentTrackTheme = this.options.trackTheme ? this.options.trackTheme : "inherit",
-			newTrackTheme = value ? value : "inherit";
-
-		this.slider
-			.removeClass( "ui-body-" + currentTrackTheme )
-			.addClass( "ui-body-" + newTrackTheme );
-	},
-
-	_setMini: function( value ) {
-		value = !!value;
-		if ( !this.isToggleSwitch && !this.isRangeslider ) {
-			this.slider.parent().toggleClass( "ui-mini", value );
-			this.element.toggleClass( "ui-mini", value );
-		}
-		this.slider.toggleClass( "ui-mini", value );
-	},
-
-	_setCorners: function( value ) {
-		this.slider.toggleClass( "ui-corner-all", value );
-
-		if ( !this.isToggleSwitch ) {
-			this.control.toggleClass( "ui-corner-all", value );
-		}
-	},
-
-	_setDisabled: function( value ) {
-		value = !!value;
-		this.element.prop( "disabled", value );
-		this.slider
-			.toggleClass( "ui-state-disabled", value )
-			.attr( "aria-disabled", value );
-
-		this.element.toggleClass( "ui-state-disabled", value );
-	}
-
-}, $.mobile.behaviors.formReset ) );
-
-})( jQuery );
-
-(function( $, undefined ) {
-	$.widget( "mobile.rangeslider", $.extend( {
-
-		options: {
-			theme: null,
-			trackTheme: null,
-			corners: true,
-			mini: false,
-			highlight: true
-		},
-
-		_create: function() {
-			var $el = this.element,
-			elClass = this.options.mini ? "ui-rangeslider ui-mini" : "ui-rangeslider",
-			_inputFirst = $el.find( "input" ).first(),
-			_inputLast = $el.find( "input" ).last(),
-			_label = $el.find( "label" ).first(),
-			_sliderWidgetFirst = $.data( _inputFirst.get( 0 ), "mobile-slider" ) ||
-				$.data( _inputFirst.slider().get( 0 ), "mobile-slider" ),
-			_sliderWidgetLast = $.data( _inputLast.get(0), "mobile-slider" ) ||
-				$.data( _inputLast.slider().get( 0 ), "mobile-slider" ),
-			_sliderFirst = _sliderWidgetFirst.slider,
-			_sliderLast = _sliderWidgetLast.slider,
-			firstHandle = _sliderWidgetFirst.handle,
-			_sliders = $( "<div class='ui-rangeslider-sliders' />" ).appendTo( $el );
-
-			_inputFirst.addClass( "ui-rangeslider-first" );
-			_inputLast.addClass( "ui-rangeslider-last" );
-			$el.addClass( elClass );
-
-			_sliderFirst.appendTo( _sliders );
-			_sliderLast.appendTo( _sliders );
-			_label.insertBefore( $el );
-			firstHandle.prependTo( _sliderLast );
-
-			$.extend( this, {
-				_inputFirst: _inputFirst,
-				_inputLast: _inputLast,
-				_sliderFirst: _sliderFirst,
-				_sliderLast: _sliderLast,
-				_label: _label,
-				_targetVal: null,
-				_sliderTarget: false,
-				_sliders: _sliders,
-				_proxy: false
-			});
-
-			this.refresh();
-			this._on( this.element.find( "input.ui-slider-input" ), {
-				"slidebeforestart": "_slidebeforestart",
-				"slidestop": "_slidestop",
-				"slidedrag": "_slidedrag",
-				"slidebeforechange": "_change",
-				"blur": "_change",
-				"keyup": "_change"
-			});
-			this._on({
-				"mousedown":"_change"
-			});
-			this._on( this.element.closest( "form" ), {
-				"reset":"_handleReset"
-			});
-			this._on( firstHandle, {
-				"vmousedown": "_dragFirstHandle"
-			});
-		},
-		_handleReset: function() {
-			var self = this;
-			//we must wait for the stack to unwind before updateing other wise sliders will not have updated yet
-			setTimeout( function() {
-				self._updateHighlight();
-			},0);
-		},
-
-		_dragFirstHandle: function( event ) {
-			//if the first handle is dragged send the event to the first slider
-			$.data( this._inputFirst.get(0), "mobile-slider" ).dragging = true;
-			$.data( this._inputFirst.get(0), "mobile-slider" ).refresh( event );
-			$.data( this._inputFirst.get(0), "mobile-slider" )._trigger( "start" );
-			return false;
-		},
-
-		_slidedrag: function( event ) {
-			var first = $( event.target ).is( this._inputFirst ),
-				otherSlider = ( first ) ? this._inputLast : this._inputFirst;
-
-			this._sliderTarget = false;
-			//if the drag was initiated on an extreme and the other handle is focused send the events to
-			//the closest handle
-			if ( ( this._proxy === "first" && first ) || ( this._proxy === "last" && !first ) ) {
-				$.data( otherSlider.get(0), "mobile-slider" ).dragging = true;
-				$.data( otherSlider.get(0), "mobile-slider" ).refresh( event );
-				return false;
-			}
-		},
-
-		_slidestop: function( event ) {
-			var first = $( event.target ).is( this._inputFirst );
-
-			this._proxy = false;
-			//this stops dragging of the handle and brings the active track to the front
-			//this makes clicks on the track go the the last handle used
-			this.element.find( "input" ).trigger( "vmouseup" );
-			this._sliderFirst.css( "z-index", first ? 1 : "" );
-		},
-
-		_slidebeforestart: function( event ) {
-			this._sliderTarget = false;
-			//if the track is the target remember this and the original value
-			if ( $( event.originalEvent.target ).hasClass( "ui-slider-track" ) ) {
-				this._sliderTarget = true;
-				this._targetVal = $( event.target ).val();
-			}
-		},
-
-		_setOptions: function( options ) {
-			if ( options.theme !== undefined ) {
-				this._setTheme( options.theme );
-			}
-
-			if ( options.trackTheme !== undefined ) {
-				this._setTrackTheme( options.trackTheme );
-			}
-
-			if ( options.mini !== undefined ) {
-				this._setMini( options.mini );
-			}
-
-			if ( options.highlight !== undefined ) {
-				this._setHighlight( options.highlight );
-			}
-
-			if ( options.disabled !== undefined ) {
-				this._setDisabled( options.disabled );
-			}
-
-			this._super( options );
-			this.refresh();
-		},
-
-		refresh: function() {
-			var $el = this.element,
-				o = this.options;
-
-			if ( this._inputFirst.is( ":disabled" ) || this._inputLast.is( ":disabled" ) ) {
-				this.options.disabled = true;
-			}
-
-			$el.find( "input" ).slider({
-				theme: o.theme,
-				trackTheme: o.trackTheme,
-				disabled: o.disabled,
-				corners: o.corners,
-				mini: o.mini,
-				highlight: o.highlight
-			}).slider( "refresh" );
-			this._updateHighlight();
-		},
-
-		_change: function( event ) {
-			if ( event.type === "keyup" ) {
-				this._updateHighlight();
-				return false;
-			}
-
-			var self = this,
-				min = parseFloat( this._inputFirst.val(), 10 ),
-				max = parseFloat( this._inputLast.val(), 10 ),
-				first = $( event.target ).hasClass( "ui-rangeslider-first" ),
-				thisSlider = first ? this._inputFirst : this._inputLast,
-				otherSlider = first ? this._inputLast : this._inputFirst;
-
-			if ( ( this._inputFirst.val() > this._inputLast.val() && event.type === "mousedown" && !$(event.target).hasClass("ui-slider-handle")) ) {
-				thisSlider.blur();
-			} else if ( event.type === "mousedown" ) {
-				return;
-			}
-			if ( min > max && !this._sliderTarget ) {
-				//this prevents min from being greater then max
-				thisSlider.val( first ? max: min ).slider( "refresh" );
-				this._trigger( "normalize" );
-			} else if ( min > max ) {
-				//this makes it so clicks on the target on either extreme go to the closest handle
-				thisSlider.val( this._targetVal ).slider( "refresh" );
-
-				//You must wait for the stack to unwind so first slider is updated before updating second
-				setTimeout( function() {
-					otherSlider.val( first ? min: max ).slider( "refresh" );
-					$.data( otherSlider.get(0), "mobile-slider" ).handle.focus();
-					self._sliderFirst.css( "z-index", first ? "" : 1 );
-					self._trigger( "normalize" );
-				}, 0 );
-				this._proxy = ( first ) ? "first" : "last";
-			}
-			//fixes issue where when both _sliders are at min they cannot be adjusted
-			if ( min === max ) {
-				$.data( thisSlider.get(0), "mobile-slider" ).handle.css( "z-index", 1 );
-				$.data( otherSlider.get(0), "mobile-slider" ).handle.css( "z-index", 0 );
-			} else {
-				$.data( otherSlider.get(0), "mobile-slider" ).handle.css( "z-index", "" );
-				$.data( thisSlider.get(0), "mobile-slider" ).handle.css( "z-index", "" );
-			}
-
-			this._updateHighlight();
-
-			if ( min >= max ) {
-				return false;
-			}
-		},
-
-		_updateHighlight: function() {
-			var min = parseInt( $.data( this._inputFirst.get(0), "mobile-slider" ).handle.get(0).style.left, 10 ),
-				max = parseInt( $.data( this._inputLast.get(0), "mobile-slider" ).handle.get(0).style.left, 10 ),
-				width = (max - min);
-
-			this.element.find( ".ui-slider-bg" ).css({
-				"margin-left": min + "%",
-				"width": width + "%"
-			});
-		},
-
-		_setTheme: function( value ) {
-			this._inputFirst.slider( "option", "theme", value );
-			this._inputLast.slider( "option", "theme", value );
-		},
-
-		_setTrackTheme: function( value ) {
-			this._inputFirst.slider( "option", "trackTheme", value );
-			this._inputLast.slider( "option", "trackTheme", value );
-		},
-
-		_setMini: function( value ) {
-			this._inputFirst.slider( "option", "mini", value );
-			this._inputLast.slider( "option", "mini", value );
-			this.element.toggleClass( "ui-mini", !!value );
-		},
-
-		_setHighlight: function( value ) {
-			this._inputFirst.slider( "option", "highlight", value );
-			this._inputLast.slider( "option", "highlight", value );
-		},
-
-		_setDisabled: function( value ) {
-			this._inputFirst.prop( "disabled", value );
-			this._inputLast.prop( "disabled", value );
-		},
-
-		_destroy: function() {
-			this._label.prependTo( this.element );
-			this.element.removeClass( "ui-rangeslider ui-mini" );
-			this._inputFirst.after( this._sliderFirst );
-			this._inputLast.after( this._sliderLast );
-			this._sliders.remove();
-			this.element.find( "input" ).removeClass( "ui-rangeslider-first ui-rangeslider-last" ).slider( "destroy" );
-		}
-
-	}, $.mobile.behaviors.formReset ) );
-
-})( jQuery );
-
-(function( $, undefined ) {
-
 $.widget( "mobile.selectmenu", $.extend( {
     initSelector: "select:not( [data-role='slider'])",
 
@@ -9159,123 +8250,6 @@ $.widget( "mobile.selectmenu", $.extend( {
 		this.button.removeClass( "ui-state-disabled" );
 	}
 }, $.mobile.behaviors.formReset ) );
-
-})( jQuery );
-
-(function( $, undefined ) {
-
-var popup;
-
-function getPopup() {
-	if ( !popup ) {
-		popup = $( "<div></div>", {
-			"class": "ui-slider-popup ui-shadow ui-corner-all"
-		});
-	}
-	return popup.clone();
-}
-
-$.widget( "mobile.slider", $.mobile.slider, {
-	options: {
-		popupEnabled: false,
-		showValue: false
-	},
-
-	_create: function() {
-		this._super();
-
-		$.extend( this, {
-			_currentValue: null,
-			_popup: null,
-			_popupVisible: false
-		});
-
-		this._setOption( "popupEnabled", this.options.popupEnabled );
-
-		this._on( this.handle, { "vmousedown" : "_showPopup" } );
-		this._on( this.slider.add( this.document ), { "vmouseup" : "_hidePopup" } );
-		this._refresh();
-	},
-
-	// position the popup centered 5px above the handle
-	_positionPopup: function() {
-		var dstOffset = this.handle.offset();
-
-		this._popup.offset( {
-			left: dstOffset.left + ( this.handle.width() - this._popup.width() ) / 2,
-			top: dstOffset.top - this._popup.outerHeight() - 5
-		});
-	},
-
-	_setOption: function( key, value ) {
-		this._super( key, value );
-
-		if ( key === "showValue" ) {
-			this.handle.html( value && !this.options.mini ? this._value() : "" );
-		} else if ( key === "popupEnabled" ) {
-			if ( value && !this._popup ) {
-				this._popup = getPopup()
-					.addClass( "ui-body-" + ( this.options.theme || "a" ) )
-					.hide()
-					.insertBefore( this.element );
-			}
-		}
-	},
-
-	// show value on the handle and in popup
-	refresh: function() {
-		this._super.apply( this, arguments );
-		this._refresh();
-	},
-
-	_refresh: function() {
-		var o = this.options, newValue;
-
-		if ( o.popupEnabled ) {
-			// remove the title attribute from the handle (which is
-			// responsible for the annoying tooltip); NB we have
-			// to do it here as the jqm slider sets it every time
-			// the slider's value changes :(
-			this.handle.removeAttr( "title" );
-		}
-
-		newValue = this._value();
-		if ( newValue === this._currentValue ) {
-			return;
-		}
-		this._currentValue = newValue;
-
-		if ( o.popupEnabled && this._popup ) {
-			this._positionPopup();
-			this._popup.html( newValue );
-		}
-
-		if ( o.showValue && !this.options.mini ) {
-			this.handle.html( newValue );
-		}
-	},
-
-	_showPopup: function() {
-		if ( this.options.popupEnabled && !this._popupVisible ) {
-			this.handle.html( "" );
-			this._popup.show();
-			this._positionPopup();
-			this._popupVisible = true;
-		}
-	},
-
-	_hidePopup: function() {
-		var o = this.options;
-
-		if ( o.popupEnabled && this._popupVisible ) {
-			if ( o.showValue && !o.mini ) {
-				this.handle.html( this._value() );
-			}
-			this._popup.hide();
-			this._popupVisible = false;
-		}
-	}
-});
 
 })( jQuery );
 
@@ -11166,174 +10140,6 @@ $.widget( "mobile.popup", $.mobile.popup, {
 
 })( jQuery );
 
-
-(function( $, undefined ) {
-
-$.widget( "mobile.table", {
-	options: {
-		classes: {
-			table: "ui-table"
-		},
-		enhanced: false
-	},
-
-	_create: function() {
-		if ( !this.options.enhanced ) {
-			this.element.addClass( this.options.classes.table );
-		}
-
-		// extend here, assign on refresh > _setHeaders
-		$.extend( this, {
-
-			// Expose headers and allHeaders properties on the widget
-			// headers references the THs within the first TR in the table
-			headers: undefined,
-
-			// allHeaders references headers, plus all THs in the thead, which may
-			// include several rows, or not
-			allHeaders: undefined
-		});
-
-		this._refresh( true );
-	},
-
-	_setHeaders: function() {
-		var trs = this.element.find( "thead tr" );
-
-		this.headers = this.element.find( "tr:eq(0)" ).children();
-		this.allHeaders = this.headers.add( trs.children() );
-	},
-
-	refresh: function() {
-		this._refresh();
-	},
-
-	rebuild: $.noop,
-
-	_refresh: function( /* create */ ) {
-		var table = this.element,
-			trs = table.find( "thead tr" );
-
-		// updating headers on refresh (fixes #5880)
-		this._setHeaders();
-
-		// Iterate over the trs
-		trs.each( function() {
-			var columnCount = 0;
-
-			// Iterate over the children of the tr
-			$( this ).children().each( function() {
-				var span = parseInt( this.getAttribute( "colspan" ), 10 ),
-					selector = ":nth-child(" + ( columnCount + 1 ) + ")",
-					j;
-
-				this.setAttribute( "data-" + $.mobile.ns + "colstart", columnCount + 1 );
-
-				if ( span ) {
-					for( j = 0; j < span - 1; j++ ) {
-						columnCount++;
-						selector += ", :nth-child(" + ( columnCount + 1 ) + ")";
-					}
-				}
-
-				// Store "cells" data on header as a reference to all cells in the
-				// same column as this TH
-				$( this ).jqmData( "cells", table.find( "tr" ).not( trs.eq( 0 ) ).not( this ).children( selector ) );
-
-				columnCount++;
-			});
-		});
-	}
-});
-
-})( jQuery );
-
-
-(function( $, undefined ) {
-
-$.widget( "mobile.table", $.mobile.table, {
-	options: {
-		mode: "reflow",
-		classes: $.extend( $.mobile.table.prototype.options.classes, {
-			reflowTable: "ui-table-reflow",
-			cellLabels: "ui-table-cell-label"
-		})
-	},
-
-	_create: function() {
-		this._super();
-
-		// If it's not reflow mode, return here.
-		if ( this.options.mode !== "reflow" ) {
-			return;
-		}
-
-		if ( !this.options.enhanced ) {
-			this.element.addClass( this.options.classes.reflowTable );
-
-			this._updateReflow();
-		}
-	},
-
-	rebuild: function() {
-		this._super();
-
-		if ( this.options.mode === "reflow" ) {
-			this._refresh( false );
-		}
-	},
-
-	_refresh: function( create ) {
-		this._super( create );
-		if ( !create && this.options.mode === "reflow" ) {
-			this._updateReflow( );
-		}
-	},
-
-	_updateReflow: function() {
-		var table = this,
-			opts = this.options;
-
-		// get headers in reverse order so that top-level headers are appended last
-		$( table.allHeaders.get().reverse() ).each( function() {
-			var cells = $( this ).jqmData( "cells" ),
-				colstart = $.mobile.getAttribute( this, "colstart" ),
-				hierarchyClass = cells.not( this ).filter( "thead th" ).length && " ui-table-cell-label-top",
-				contents = $( this ).clone().contents(),
-				iteration, filter;
-
-				if ( contents.length > 0  ) {
-
-					if ( hierarchyClass ) {
-						iteration = parseInt( this.getAttribute( "colspan" ), 10 );
-						filter = "";
-
-						if ( iteration ) {
-							filter = "td:nth-child("+ iteration +"n + " + ( colstart ) +")";
-						}
-
-						table._addLabels( cells.filter( filter ),
-							opts.classes.cellLabels + hierarchyClass, contents );
-					} else {
-						table._addLabels( cells, opts.classes.cellLabels, contents );
-					}
-
-				}
-		});
-	},
-
-	_addLabels: function( cells, label, contents ) {
-		if ( contents.length === 1 && contents[ 0 ].nodeName.toLowerCase() === "abbr" ) {
-			contents = contents.eq( 0 ).attr( "title" );
-		}
-		// .not fixes #6006
-		cells
-			.not( ":has(b." + label + ")" )
-				.prepend( $( "<b class='" + label + "'></b>" ).append( contents ) );
-	}
-});
-
-})( jQuery );
 
 
 }));
