@@ -24,6 +24,8 @@
         </activity>
         <activity android:configChanges="orientation|screenSize" android:name=".media.VideoPlayerActivity" android:theme="@style/Theme.VLC.Player">
         </activity>
+        <activity android:configChanges="orientation|screenSize" android:name=".media.PlaybackServiceActivity" android:theme="@style/Theme.VLC.Player">
+        </activity>
         <activity android:name="net.rdrei.android.dirchooser.DirectoryChooserActivity" />
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
         <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver" />
@@ -52,6 +54,7 @@
         </service>
         <service android:name=".media.RemotePlayerService" />
         <service android:name=".media.legacy.KitKatMediaService" />
+        <service android:name=".media.PlaybackService" />
         <service android:name=".media.MediaService" />
         <receiver android:name=".media.legacy.RemoteControlClientReceiver">
             <intent-filter>

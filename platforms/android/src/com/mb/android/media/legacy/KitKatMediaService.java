@@ -662,7 +662,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
                     changeAudioFocus(false);
                     break;
                 case MediaPlayer.Event.EncounteredError:
-                    //showToast(getString(R.string.invalid_location, mMediaList.getMRL(mCurrentIndex)), Toast.LENGTH_SHORT);
+                    showToast(getString(R.string.invalid_location, mMediaList.getMRL(mCurrentIndex)), Toast.LENGTH_SHORT);
                     executeUpdate();
                     executeUpdateProgress();
                     next();
@@ -934,7 +934,8 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
             // Compat library is wrong on 3.2
             // http://code.google.com/p/android/issues/detail?id=36359
             // http://code.google.com/p/android/issues/detail?id=36502
-        }    }
+        }
+    }
 
     private void hideNotification() {
         hideNotification(true);

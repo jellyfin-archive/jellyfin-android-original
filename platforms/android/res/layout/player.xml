@@ -30,19 +30,7 @@
             <SurfaceView
                 android:id="@+id/subtitles_surface"
                 android:layout_width="1dp"
-                android:layout_height="1dp"
-                android:layout_marginBottom="5dp"/>
-
-            <TextView
-                android:id="@+id/offLine_subtitleText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:ellipsize="middle"
-                android:gravity="center"
-                android:background="#A0000000"
-                android:padding="3dp"/>
-
+                android:layout_height="1dp" />
         </FrameLayout>
     </FrameLayout>
 
@@ -65,75 +53,69 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerHorizontal="true"
-            android:layout_above="@+id/player_overlay_loading_text"
+            android:layout_centerInParent="true"
             android:src="@drawable/ic_cone_o" />
 
-        <TextView
-            android:id="@+id/player_overlay_loading_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/player_overlay_info"
-            android:layout_centerHorizontal="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title" />
-
-        <TextView
+        <LinearLayout
             android:id="@+id/player_overlay_info"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
             android:layout_above="@+id/progress_overlay"
             android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:background="@drawable/video_list_length_bg"
-            android:padding="5dp"
-            android:gravity="center_horizontal"
-            android:textColor="#ffffff"
-            android:textSize="36sp"
-            android:visibility="invisible" />
-
-        <FrameLayout android:id="@+id/verticalbar"
-            android:layout_width="28dp"
-            android:layout_height="100dp"
-            android:layout_above="@+id/progress_overlay"
-            android:layout_toLeftOf="@+id/player_overlay_info"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="-16dp"
-            android:background="@drawable/video_list_length_bg"
-            android:visibility="invisible">
-
-            <LinearLayout android:layout_width="match_parent"
+            android:layout_marginBottom="@dimen/default_margin">
+            <FrameLayout
+                android:id="@+id/verticalbar"
+                android:layout_width="20dp"
                 android:layout_height="match_parent"
-                android:layout_margin="7dp"
-                android:background="@drawable/verticalbar_border"
-                android:orientation="vertical"
-                android:weightSum="100"
-                android:gravity="bottom">
+                android:background="@drawable/video_list_length_bg"
+                android:visibility="gone">
 
-                <View android:id="@+id/verticalbar_progress"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_margin="2dp"
-                    android:background="@color/orange500transparent" />
-            </LinearLayout>
-        </FrameLayout>
+                    android:layout_height="match_parent"
+                    android:padding="4dp"
+                    android:orientation="vertical"
+                    android:weightSum="100"
+                    android:gravity="bottom">
+
+                    <View android:id="@+id/verticalbar_progress"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:background="@color/orange500transparent" />
+                </LinearLayout>
+            </FrameLayout>
+            <TextView
+                android:id="@+id/player_overlay_textinfo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/video_list_length_bg"
+                android:layout_marginLeft="@dimen/half_default_margin"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="36sp"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/player_delay_minus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
             android:layout_above="@+id/progress_overlay"
             android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/default_margin"
             android:src="@drawable/ic_minus_circle"
+            android:focusable="true"
             android:visibility="invisible"/>
         <ImageView
             android:id="@+id/player_delay_plus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="@dimen/default_margin"
             android:layout_above="@+id/player_delay_minus"
             android:layout_alignParentRight="true"
             android:src="@drawable/ic_plus_circle"
+            android:focusable="true"
             android:visibility="invisible"/>
 
         <include layout="@layout/player_hud"/>
