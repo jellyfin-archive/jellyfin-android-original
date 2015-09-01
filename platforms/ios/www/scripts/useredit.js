@@ -8,4 +8,4 @@ function saveUser(user,page){user.Name=$('#txtUserName',page).val();user.Policy.
 function onSubmit(){var page=$(this).parents('.page');Dashboard.showLoadingMsg();getUser().done(function(result){saveUser(result,page);});return false;}
 function getUser(){var userId=getParameterByName("userId");return ApiClient.getUser(userId);}
 function loadData(page){Dashboard.showLoadingMsg();getUser().done(function(user){loadUser(page,user);});}
-$(document).on('pageinitdepends',"#editUserPage",function(){$('.editUserProfileForm').off('submit',onSubmit).on('submit',onSubmit);}).on('pagebeforeshowready',"#editUserPage",function(){var page=this;loadData(page);});})(jQuery,window,document);
+$(document).on('pageinit',"#editUserPage",function(){$('.editUserProfileForm').off('submit',onSubmit).on('submit',onSubmit);}).on('pagebeforeshow',"#editUserPage",function(){var page=this;loadData(page);});})(jQuery,window,document);
