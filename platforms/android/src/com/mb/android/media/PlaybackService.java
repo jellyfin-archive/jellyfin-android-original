@@ -192,8 +192,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         logger = AppLogger.getLogger(getApplicationContext());
 
-        apiHelper = new VideoApiHelper(this, logger, jsonSerializer);
-
         mMediaPlayer = newMediaPlayer();
         mMediaPlayer.getVLCVout().addCallback(this);
 
@@ -299,7 +297,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         int state = intent.getIntExtra("state", 0);
         if( mMediaPlayer == null ) {
-            Log.w(TAG, "Intent received, but VLC is not loaded, skipping.");
+            logger.Warn("Intent received, but VLC is not loaded, skipping.");
             return;
         }
 
@@ -441,6 +439,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         load(mw);
         switchToVideo();
+    }
+
+    public void setApiHelper(VideoApiHelper helper){
+        this.apiHelper = helper;
     }
 
     @Override
@@ -617,6 +619,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @Override
     public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
+        logger.Debug("PlaybackService.OnNewLayout width=%1 height=%2 visibleWidth=%3 visibleHeight=%4 sarNum=%5 sarDen=%6");
     }
 
     @Override
@@ -1209,7 +1212,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void updateRemoteControlClientMetadata() {
-        if (!AndroidUtil.isICSOrLater()) // NOP check
+        /*if (!AndroidUtil.isICSOrLater()) // NOP check
             return;
 
         BaseItemDto item = currentItem;
@@ -1261,7 +1264,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     editor.apply();
                 }
             });
-        }
+        }*/
     }
 
     private VolleyHttpClient GetHttpClient() {
@@ -1521,6 +1524,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         playIndex(mCurrentIndex, 0);
         saveMediaList();
         onMediaChanged();
+    }
+
+    @MainThread
+    public void setMedia(Uri uri, int index) {
+
+        final Media media = new Media(VLCInstance.get(getApplicationContext(), logger), uri);
+        mMediaList.set(index, new MediaWrapper(media));
     }
 
     @MainThread
@@ -1838,6 +1848,12 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         mMediaPlayer.setEqualizer(equalizer);
     }
 
+    @MainThread
+    public MediaPlayer getMediaPlayer() {
+        return  mMediaPlayer;
+    }
+
+
     /**
      * Expand the current media.
      * @return the index of the media was expanded, and -1 if no media was expanded
@@ -1865,13 +1881,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         }
         ml.release();
         return ret;
-    }
-
-    public void restartMediaPlayer() {
-        stop();
-        mMediaPlayer.release();
-        mMediaPlayer = newMediaPlayer();
-        /* TODO RESUME */
     }
 
     public static class Client {

@@ -78,6 +78,10 @@ public class MediaWrapperList {
         signalEventListeners(EVENT_ADDED, position, -1, media.getLocation());
     }
 
+    public void set(int position, MediaWrapper media) {
+        mInternalList.set(position, media);
+    }
+
     /**
      * Move a media from one position to another
      *
