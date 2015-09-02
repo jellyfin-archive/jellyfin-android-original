@@ -758,7 +758,18 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         private void reportState(String eventName, boolean checkLastReportTime) {
 
-            long time = getTime();
+            if (!apiHelper.enableProgressReporting) {
+                return;
+            }
+
+            long time = 0;
+
+            try {
+                time = getTime();
+            }
+            catch (IllegalStateException ex) {
+                return;
+            }
 
             //activity.updateSubtitles(time);
 
