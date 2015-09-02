@@ -167,7 +167,7 @@ public class MainActivity extends CordovaActivity
 
         else if (requestCode == VIDEO_PLAYBACK) {
 
-            boolean completed = resultCode == RESULT_OK;
+            /*boolean completed = resultCode == RESULT_OK;
             boolean error = resultCode == RESULT_OK ? false : (intent == null ? true : intent.getBooleanExtra("error", false));
 
             long positionMs = intent == null || completed ? 0 : intent.getLongExtra("position", 0);
@@ -177,7 +177,7 @@ public class MainActivity extends CordovaActivity
                 currentSrc = "";
             }
 
-            RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));
+            RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));*/
         }
     }
 
@@ -318,9 +318,9 @@ public class MainActivity extends CordovaActivity
                              String videoQualityOptionsJson) {
 
         getLogger().Debug("Video path: %s", path);
-        Intent intent = new Intent(this, PlaybackService.class);
-        intent.setAction(Constants.ACTION_PLAY);
-        intent.putExtra("path", path);
+        Intent intent = new Intent(this, VideoPlayerActivity.class);
+        intent.setAction(VideoPlayerActivity.PLAY_FROM_VIDEOGRID);
+        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION, path);
         intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_TITLE, itemName);
         //intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_OPENED_POSITION, 0);
         intent.putExtra("item", itemJson);
@@ -341,7 +341,7 @@ public class MainActivity extends CordovaActivity
             intent.putExtra("position", startPositionMs);
         }
 
-        startService(intent);
+        startActivityForResult(intent, VIDEO_PLAYBACK);
     }
 
     @JavascriptInterface

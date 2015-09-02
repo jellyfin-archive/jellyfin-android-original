@@ -8,6 +8,7 @@ import com.google.common.io.Files;
 import com.mb.android.preferences.PreferencesProvider;
 
 import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.MediaPlayer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,14 +64,14 @@ public class VideoApiHelper {
     private PreferencesProvider preferencesProvider;
 
     public boolean enableProgressReporting;
-    private Context context;
+    private VideoPlayerActivity activity;
     private MediaSourceInfo currentMediaSource;
     private ApiClient apiClient;
 
-    public VideoApiHelper(Context context, ILogger logger, IJsonSerializer jsonSerializer) {
+    public VideoApiHelper(VideoPlayerActivity context, ILogger logger, IJsonSerializer jsonSerializer) {
         this.logger = logger;
         this.jsonSerializer = jsonSerializer;
-        this.context = context;
+        this.activity = context;
         localAssetManager = new AndroidAssetManager(context, logger, jsonSerializer);
         preferencesProvider = new PreferencesProvider(context, logger);
     }
@@ -113,61 +114,7 @@ public class VideoApiHelper {
         originalMaxBitrate = deviceProfile.getMaxStreamingBitrate();
     }
 
-    /*public void loadExternalSubtitles(final LibVLC vlc, EmptyResponse response) {
-
-        loadExternalSubtitles(vlc, currentMediaSource.getMediaStreams(), 0, response);
-
-    }
-
-    public void loadExternalSubtitles(final LibVLC vlc, final ArrayList<MediaStream> streams, final int index, final EmptyResponse response) {
-
-        if (index >= streams.size()){
-            response.onResponse();
-            return;
-        }
-
-        MediaStream stream = streams.get(index);
-
-        if (stream.getType() != MediaStreamType.Subtitle){
-            loadExternalSubtitles(vlc, streams, index + 1, response);
-            return;
-        }
-
-        if (stream.getDeliveryMethod() != SubtitleDeliveryMethod.External){
-            loadExternalSubtitles(vlc, streams, index + 1, response);
-            return;
-        }
-
-        downloadExternalSubtitleTrack(stream, new Response<File>(){
-
-            @Override
-            public void onResponse(final File newFile) {
-
-                if (newFile.exists()) {
-
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            logger.Debug("Adding subtitle track to vlc %s", Uri.fromFile(newFile).getPath());
-                            int id = vlc.addSubtitleTrack(Uri.fromFile(newFile).getPath());
-                        }
-                    });
-                } else {
-                    logger.Error("Subtitles were downloaded but file doens't exist!");
-                }
-
-                loadExternalSubtitles(vlc, streams, index + 1, response);
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                logger.ErrorException("Error downloading subtitles", ex);
-                loadExternalSubtitles(vlc, streams, index + 1, response);
-            }
-        });
-    }
-
-    public void setAudioStreamIndex(LibVLC vlc, int index){
+    public void setAudioStreamIndex(MediaPlayer vlc, int index){
 
         if (playbackStartInfo.getAudioStreamIndex() != null && index == playbackStartInfo.getAudioStreamIndex()) {
             return;
@@ -187,7 +134,7 @@ public class VideoApiHelper {
         }
     }
 
-    public void setSubtitleStreamIndex(LibVLC vlc, int index){
+    public void setSubtitleStreamIndex(MediaPlayer vlc, int index){
 
         MediaStream stream = null;
         for (MediaStream current : currentMediaSource.getMediaStreams()){
@@ -250,7 +197,7 @@ public class VideoApiHelper {
         }
     }
 
-    private void enableEmbeddedSubtitleTrack(LibVLC vlc, MediaStream stream) {
+    private void enableEmbeddedSubtitleTrack(MediaPlayer vlc, MediaStream stream) {
 
         // This could be tricky. We have to map the Emby server index to the vlc trackID
         // Let's assume they're at least in the same order
@@ -259,7 +206,7 @@ public class VideoApiHelper {
         playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
     }
 
-    private void enableManualExternalSubtitleTrack(final LibVLC vlc, final MediaStream stream) {
+    private void enableManualExternalSubtitleTrack(final MediaPlayer vlc, final MediaStream stream) {
 
         String url = apiClient.GetApiUrl(stream.getDeliveryUrl()).replace("srt", "JSON");
 
@@ -276,42 +223,6 @@ public class VideoApiHelper {
             public void onError(Exception ex) {
                 logger.ErrorException("Error downloading subtitles", ex);
             }
-        });
-    }
-
-    private void enableExternalSubtitleTrack(final LibVLC vlc, final MediaStream stream) {
-
-        downloadExternalSubtitleTrack(stream, new Response<File>() {
-
-            @Override
-            public void onResponse(final File newFile) {
-
-                if (newFile.exists()) {
-
-                    activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Map<Integer, String> oldMap = vlc.getSpuTrackDescription();
-
-                            logger.Debug("Adding subtitle track to vlc %s", Uri.fromFile(newFile).getPath());
-                            int id = vlc.addSubtitleTrack(Uri.fromFile(newFile).getPath());
-                            //activateNewIndex(vlc, oldMap, vlc.getSpuTrackDescription());
-                            logger.Debug("New subtitle track list: %s", jsonSerializer.SerializeToString(vlc.getSpuTrackDescription()));
-                            logger.Debug("Setting new subtitle track id: %s", id);
-                            //vlc.setSpuTrack(id);
-                            //playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
-                        }
-                    });
-                } else {
-                    logger.Error("Subtitles were downloaded but file doesn't exist!");
-                }
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                logger.ErrorException("Error downloading subtitles", ex);
-            }
-
         });
     }
 
@@ -405,7 +316,7 @@ public class VideoApiHelper {
         }
     }
 
-    public void setQuality(LibVLC vlc, int bitrate, int maxHeight) {
+    public void setQuality(MediaPlayer vlc, int bitrate, int maxHeight) {
 
         preferencesProvider.set("preferredVideoBitrate", String.valueOf(bitrate));
 
@@ -574,5 +485,5 @@ public class VideoApiHelper {
         }
 
         return null;
-    }*/
+    }
 }

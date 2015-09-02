@@ -36,6 +36,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
@@ -72,6 +73,7 @@ import android.widget.Toast;
 
 import com.mb.android.BuildConfig;
 import com.mb.android.R;
+import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
 
 import org.videolan.libvlc.IVLCVout;
@@ -94,9 +96,30 @@ import java.io.StreamCorruptedException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import mediabrowser.apiinteraction.ApiClient;
+import mediabrowser.apiinteraction.ApiEventListener;
+import mediabrowser.apiinteraction.android.AndroidApiClient;
+import mediabrowser.apiinteraction.android.AndroidDevice;
+import mediabrowser.apiinteraction.android.GsonJsonSerializer;
+import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
+import mediabrowser.apiinteraction.device.IDevice;
+import mediabrowser.apiinteraction.http.IAsyncHttpClient;
+import mediabrowser.model.dlna.DeviceProfile;
+import mediabrowser.model.dto.MediaSourceInfo;
+import mediabrowser.model.dto.NameValuePair;
+import mediabrowser.model.entities.MediaStream;
+import mediabrowser.model.entities.MediaStreamType;
+import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
+import mediabrowser.model.mediainfo.SubtitleTrackEvent;
+import mediabrowser.model.mediainfo.SubtitleTrackInfo;
+import mediabrowser.model.serialization.IJsonSerializer;
+import mediabrowser.model.session.PlayMethod;
+import mediabrowser.model.session.PlaybackProgressInfo;
 
 public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.Callback,
         GestureDetector.OnDoubleTapListener, IDelayController, LibVLC.HardwareAccelerationError,
@@ -239,9 +262,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     private boolean mIsFirstBrightnessGesture = true;
     private float mRestoreAutoBrightness = -1f;
 
-    // Tracks & Subtitles
-    private MediaPlayer.TrackDescription[] mAudioTracksList;
-    private MediaPlayer.TrackDescription[] mSubtitleTracksList;
     /**
      * Used to store a selected subtitle; see onActivityResult.
      * It is possible to have multiple custom subs in one session
@@ -273,7 +293,18 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     private OnLayoutChangeListener mOnLayoutChangeListener;
     private AlertDialog mAlertDialog;
 
+    private String videoQualityOptionsJson;
     private ILogger logger;
+    private IJsonSerializer jsonSerializer = new GsonJsonSerializer();
+    private IAsyncHttpClient httpClient;
+    private VideoApiHelper apiHelper;
+
+    // Tracks & Subtitles
+    private ArrayList<NameValuePair> mAudioTracksList;
+    private ArrayList<NameValuePair> mSubtitleTracksList;
+    private ArrayList<NameValuePair> mQualityList;
+
+    private TextView subtitleText;
 
     private static LibVLC LibVLC(Context context, ILogger logger) {
         return VLCInstance.get(context, logger);
@@ -289,6 +320,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         }
 
         logger = AppLogger.getLogger(getApplicationContext());
+        httpClient = getHttpClient();
+        apiHelper = new VideoApiHelper(this, logger, jsonSerializer);
 
         if (AndroidUtil.isJellyBeanMR1OrLater()) {
             // Get the media router service (Miracast)
@@ -297,14 +330,14 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 @Override
                 public void onRoutePresentationDisplayChanged(
                         MediaRouter router, MediaRouter.RouteInfo info) {
-                    Log.d(TAG, "onRoutePresentationDisplayChanged: info=" + info);
+                    logger.Debug("onRoutePresentationDisplayChanged: info=" + info);
                     final Display presentationDisplay = info.getPresentationDisplay();
                     final int newDisplayId = presentationDisplay != null ? presentationDisplay.getDisplayId() : -1;
                     if (newDisplayId != mPresentationDisplayId)
                         removePresentation();
                 }
             };
-            Log.d(TAG, "MediaRouter information : " + mMediaRouter  .toString());
+            logger.Debug("MediaRouter information : " + mMediaRouter.toString());
         }
 
         mSettings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -453,6 +486,53 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         resetHudLayout();
         mDetector = new GestureDetectorCompat(this, mGestureListener);
         mDetector.setOnDoubleTapListener(this);
+
+        subtitleText = (TextView) findViewById(R.id.offLine_subtitleText);
+    }
+
+    private void updateManualSubtitlePosition(int topMargin) {
+
+        TextView element = subtitleText;
+
+        if (element == null) {
+            logger.Error("Cannot proceed with updateManualSubtitlePosition because subtitleText element is null");
+            return;
+        }
+
+        ViewGroup.LayoutParams layoutParams = element.getLayoutParams();
+
+        if (layoutParams == null) {
+            logger.Error("Cannot proceed with updateManualSubtitlePosition because layoutParams is null");
+            return;
+        }
+
+        if (!(layoutParams instanceof FrameLayout.LayoutParams)) {
+            logger.Error("Cannot convert ViewGroup.LayoutParams to FrameLayout.LayoutParams");
+            return;
+        }
+
+        /*
+		 * Adjust subtitles margin based on Screen dimes
+		 */
+        FrameLayout.LayoutParams rl2 = (FrameLayout.LayoutParams) layoutParams;
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        rl2.topMargin = topMargin;
+        subtitleText.setLayoutParams(rl2);
+    }
+
+    protected IAsyncHttpClient getHttpClient() {
+
+        IAsyncHttpClient httpClient = null;
+        if (ApiClientBridge.Current != null) {
+            httpClient = ApiClientBridge.Current.httpClient;
+        }
+
+        if (httpClient == null) {
+            httpClient = new VolleyHttpClient(logger, getApplicationContext());
+        }
+
+        return httpClient;
     }
 
     @Override
@@ -544,7 +624,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         // Dismiss the presentation when the activity is not visible.
         if (mPresentation != null) {
-            Log.i(TAG, "Dismissing presentation because the activity is no longer visible.");
+            logger.Info("Dismissing presentation because the activity is no longer visible.");
             mPresentation.dismiss();
             mPresentation = null;
         }
@@ -651,7 +731,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         // Add any selected subtitle file from the file picker
         if(mSubtitleSelectedFiles.size() > 0) {
             for(String file : mSubtitleSelectedFiles) {
-                Log.i(TAG, "Adding user-selected subtitle " + file);
+                logger.Info("Adding user-selected subtitle " + file);
                 mService.addSubtitleTrack(file);
             }
         }
@@ -674,7 +754,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         vlcVout.removeCallback(this);
         vlcVout.detachViews();
         if(mSwitchingView && mService != null) {
-            Log.d(TAG, "mLocation = \"" + mUri + "\"");
+            logger.Debug("mLocation = \"" + mUri + "\"");
             mService.showWithoutParse(savedIndexPosition);
             return;
         }
@@ -710,7 +790,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         if(data == null) return;
 
         if(data.getData() == null)
-            Log.d(TAG, "Subtitle selection dialog was cancelled");
+            logger.Debug("Subtitle selection dialog was cancelled");
 
         String subtitlesPath = data.getData().getPath();
         mSubtitleSelectedFiles.add(subtitlesPath);
@@ -1058,7 +1138,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     }
 
     public void delaySubs(long delta){
-        Log.d(TAG, "delaySubs " + delta);
+        logger.Debug("delaySubs " + delta);
         long delay = mService.getSpuDelay()+delta;
         mService.setSpuDelay(delay);
         mInfo.setText(getString(R.string.spu_delay) + "\n" + (delay / 1000l) + " ms");
@@ -1255,6 +1335,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 encounteredError();
                 break;
             case MediaPlayer.Event.TimeChanged:
+                updateSubtitles(mService.getTime());
                 break;
             case MediaPlayer.Event.PositionChanged:
                 if (!mCanSeek)
@@ -1310,8 +1391,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                     break;
                 case CHECK_VIDEO_TRACKS:
                     if (mService.getVideoTracksCount() < 1 && mService.getAudioTracksCount() > 0) {
-                        Log.i(TAG, "No video track, open in audio mode");
-                        switchToAudioMode(true);
+                        //logger.Info("No video track, open in audio mode");
+                        //switchToAudioMode(true);
                     }
                     break;
                 case HW_ERROR:
@@ -1342,7 +1423,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         }
         if(mService.expand() == 0) {
             startLoading();
-            Log.d(TAG, "Found a video playlist, expanding it");
+            logger.Debug("Found a video playlist, expanding it");
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1423,7 +1504,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         final IVLCVout vlcVout = mService.getVLCVout();
         if (vlcVout.areViewsAttached() && voutCount == 0 && !mEndReached) {
             /* Video track lost, open in audio mode */
-            Log.i(TAG, "Video track lost, switching to audio");
+            logger.Info("Video track lost, switching to audio");
             mSwitchingView = true;
             exit(RESULT_VIDEO_TRACK_LOST);
         }
@@ -1484,7 +1565,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         // sanity check
         if (dw * dh == 0 || mVideoWidth * mVideoHeight == 0) {
-            Log.e(TAG, "Invalid surface size");
+            logger.Error("Invalid surface size");
             return;
         }
 
@@ -1559,6 +1640,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         surface.setLayoutParams(lp);
         if (subtitlesSurface != null)
             subtitlesSurface.setLayoutParams(lp);
+
+        int subtitleMargin = (lp.height / 2) - 70;
+        updateManualSubtitlePosition(subtitleMargin);
 
         // set frame size (crop if necessary)
         lp = surfaceFrame.getLayoutParams();
@@ -1842,11 +1926,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     };
 
     public void onAudioSubClick(View anchor){
+
+        setESTrackLists();
+
         final AppCompatActivity context = this;
         PopupMenu popupMenu = new PopupMenu(this, anchor);
         popupMenu.getMenuInflater().inflate(R.menu.audiosub_tracks, popupMenu.getMenu());
-        popupMenu.getMenu().findItem(R.id.video_menu_audio_track).setEnabled(mService.getAudioTracksCount() > 0);
-        popupMenu.getMenu().findItem(R.id.video_menu_subtitles).setEnabled(mService.getSpuTracksCount() > 0);
+        popupMenu.getMenu().findItem(R.id.video_menu_audio_track).setEnabled(mAudioTracksList != null && mAudioTracksList.size() > 0);
+        popupMenu.getMenu().findItem(R.id.video_menu_subtitles).setEnabled(mSubtitleTracksList != null && mSubtitleTracksList.size() > 1);
+        popupMenu.getMenu().findItem(R.id.video_menu_quality).setEnabled(apiHelper.getPlaybackProgressInfo().getPlayMethod() != PlayMethod.DirectPlay);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -1856,6 +1944,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 } else if (item.getItemId() == R.id.video_menu_subtitles) {
                     selectSubtitles();
                     return true;
+                }else if (item.getItemId() == R.id.video_menu_quality) {
+                    selectQuality();
+                    return true;
                 }
                 return false;
             }
@@ -1864,25 +1955,27 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     }
 
     private interface TrackSelectedListener {
-        boolean onTrackSelected(int trackID);
+        public boolean onTrackSelected(String trackID);
     }
-
-    private void selectTrack(final MediaPlayer.TrackDescription[] tracks, int currentTrack, int titleId,
+    private void selectTrack(final ArrayList<NameValuePair> trackMap, String currentTrack, boolean checkCurrentTrackPrefix, int titleId,
                              final TrackSelectedListener listener) {
         if (listener == null)
             throw new IllegalArgumentException("listener must not be null");
-        if (tracks == null)
+        if (trackMap == null)
             return;
-        final String[] nameList = new String[tracks.length];
-        final int[] idList = new int[tracks.length];
+        final String[] nameList = new String[trackMap.size()];
+        final String[] idList = new String[trackMap.size()];
         int i = 0;
         int listPosition = 0;
-        for (MediaPlayer.TrackDescription track : tracks) {
-            idList[i] = track.id;
-            nameList[i] = track.name;
+        for(NameValuePair entry : trackMap) {
+            idList[i] = entry.getValue();
+            nameList[i] = entry.getName();
             // map the track position to the list position
-            if (track.id == currentTrack)
+            if(StringHelper.EqualsIgnoreCase(entry.getValue(), currentTrack))
                 listPosition = i;
+            else if (checkCurrentTrackPrefix && entry.getValue().indexOf(currentTrack+"-") == 0){
+                listPosition = i;
+            }
             i++;
         }
 
@@ -1891,11 +1984,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 .setSingleChoiceItems(nameList, listPosition, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int listPosition) {
-                        int trackID = -1;
+                        String trackID = null;
                         // Reverse map search...
-                        for (MediaPlayer.TrackDescription track : tracks) {
-                            if (idList[listPosition] == track.id) {
-                                trackID = track.id;
+                        for (NameValuePair entry : trackMap) {
+                            if (StringHelper.EqualsIgnoreCase(idList[listPosition], entry.getValue())) {
+                                trackID = entry.getValue();
                                 break;
                             }
                         }
@@ -1911,31 +2004,76 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     private void selectAudioTrack() {
         setESTrackLists();
-        selectTrack(mAudioTracksList, mService.getAudioTrack(), R.string.track_audio,
+        int currentIndex = apiHelper.getPlaybackProgressInfo().getAudioStreamIndex() == null ? -1 : apiHelper.getPlaybackProgressInfo().getAudioStreamIndex();
+
+        selectTrack(mAudioTracksList, String.valueOf(currentIndex), false, R.string.track_audio,
                 new TrackSelectedListener() {
                     @Override
-                    public boolean onTrackSelected(int trackID) {
-                        if (trackID < -1 || mService == null)
+                    public boolean onTrackSelected(String value) {
+                        if (value == null) return false;
+                        int trackID = Integer.parseInt(value);
+                        if (trackID < 0)
                             return false;
-                        mService.setAudioTrack(trackID);
+                        apiHelper.setAudioStreamIndex(mService.getMediaPlayer(), trackID);
                         return true;
                     }
                 });
     }
 
     private void selectSubtitles() {
+
         setESTrackLists();
-        selectTrack(mSubtitleTracksList, mService.getSpuTrack(), R.string.track_text,
+        int currentIndex = apiHelper.getPlaybackProgressInfo().getSubtitleStreamIndex() == null ? -1 : apiHelper.getPlaybackProgressInfo().getSubtitleStreamIndex();
+
+        selectTrack(mSubtitleTracksList, String.valueOf(currentIndex), false, R.string.track_text,
                 new TrackSelectedListener() {
                     @Override
-                    public boolean onTrackSelected(int trackID) {
-                        if (trackID < -1 || mService == null)
+                    public boolean onTrackSelected(String value) {
+                        if (value == null) return  false;
+                        int trackID = Integer.parseInt(value);
+                        if (trackID < -1)
                             return false;
-
-                        mService.setSpuTrack(trackID);
+                        apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), trackID);
                         return true;
                     }
                 });
+    }
+
+    private void selectQuality() {
+        setESTrackLists();
+
+        String currentValue = String.valueOf(apiHelper.getMaxBitrate());
+
+        selectTrack(mQualityList, currentValue, true, R.string.quality_text,
+                new TrackSelectedListener() {
+                    @Override
+                    public boolean onTrackSelected(String value) {
+                        if (value == null) return  false;
+                        String[] parts = value.split("-");
+                        apiHelper.setQuality(mService.getMediaPlayer(), Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+                        return true;
+                    }
+                });
+    }
+
+    public void changeLocation(String location) {
+
+        int playlistIndex = savedIndexPosition;
+        long currentTime = mService.getTime();
+
+        Uri newUri = Uri.parse(location);
+
+        mService.setMedia(newUri, 0);
+
+        //resumePositionMs = currentTime;
+
+        mAudioTracksList = null;
+        mSubtitleTracksList = null;
+        mQualityList = null;
+
+        mService.pause();
+        mService.playIndex(playlistIndex, 0);
+        mUri = newUri;
     }
 
     private void showNavMenu() {
@@ -2158,7 +2296,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         if (mShowing) {
             mHandler.removeMessages(FADE_OUT);
             mHandler.removeMessages(SHOW_PROGRESS);
-            Log.i(TAG, "remove View!");
+            logger.Info("remove View!");
             if (mOverlayTips != null) mOverlayTips.setVisibility(View.INVISIBLE);
             if (!fromUser && !mIsLocked) {
                 mOverlayProgress.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
@@ -2275,12 +2413,132 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     }
 
     private void setESTrackLists() {
-        if (mAudioTracksList == null && mService.getAudioTracksCount() > 0)
-            mAudioTracksList = mService.getAudioTracks();
-        if (mSubtitleTracksList == null && mService.getSpuTracksCount() > 0)
-            mSubtitleTracksList = mService.getSpuTracks();
+        if (mAudioTracksList == null)
+        {
+            if (apiHelper.getPlaybackProgressInfo().getPlayMethod() == PlayMethod.Transcode) {
+
+                Map<Integer,String> audioTracks = new HashMap<Integer,String>();
+                for (MediaStream stream : apiHelper.getMediaSource().getMediaStreams()){
+                    if (stream.getType() == MediaStreamType.Audio){
+
+                        audioTracks.put(stream.getIndex(), getAudioTrackName(stream));
+                    }
+                }
+
+                mAudioTracksList = GetNameValuePairs(audioTracks);
+            }
+            else if (mService.getAudioTracksCount() > 0) {
+                mAudioTracksList = GetNameValuePairs(mService.getAudioTracks());
+            }
+        }
+
+        if (mSubtitleTracksList == null) {
+            ArrayList<NameValuePair> subs = new ArrayList<NameValuePair>();
+            subs.add(new NameValuePair("None", "-1"));
+            for (MediaStream stream : apiHelper.getMediaSource().getMediaStreams()){
+                if (stream.getType() == MediaStreamType.Subtitle){
+
+                    subs.add(new NameValuePair(getSubtitleTrackName(stream), String.valueOf(stream.getIndex())));
+                }
+            }
+            mSubtitleTracksList = subs;
+        }
+
+        if (mQualityList == null)
+        {
+            mQualityList = getQualityOptions();
+        }
     }
 
+    private ArrayList<NameValuePair> GetNameValuePairs(MediaPlayer.TrackDescription[] tracks) {
+
+        ArrayList<NameValuePair> list = new ArrayList<NameValuePair>();
+
+        for (MediaPlayer.TrackDescription entry : tracks) {
+
+            list.add(new NameValuePair(entry.name, String.valueOf(entry.id)));
+        }
+
+        return list;
+    }
+
+    private ArrayList<NameValuePair> GetNameValuePairs(Map<Integer,String> tracks) {
+
+        ArrayList<NameValuePair> list = new ArrayList<NameValuePair>();
+
+        for (Map.Entry<Integer,String> entry : tracks.entrySet()) {
+
+            list.add(new NameValuePair(entry.getValue(), String.valueOf(entry.getKey())));
+        }
+
+        return list;
+    }
+
+    private ArrayList<NameValuePair> getQualityOptions() {
+
+        NameValuePair[] result = jsonSerializer.DeserializeFromString(videoQualityOptionsJson, NameValuePair[].class);
+
+        ArrayList<NameValuePair> list = new ArrayList<NameValuePair>();
+
+        for (NameValuePair i : result){
+            list.add(i);
+        }
+
+        return list;
+    }
+
+    private String getAudioTrackName(MediaStream stream) {
+
+        ArrayList<String> attributes = new ArrayList<String>();
+
+        if (stream.getLanguage() != null){
+            attributes.add(stream.getLanguage());
+        }
+
+        if (stream.getCodec() != null) {
+            attributes.add(stream.getCodec());
+        }
+        if (stream.getProfile() != null) {
+            attributes.add(stream.getProfile());
+        }
+
+        if (stream.getChannels() != null) {
+            attributes.add(stream.getChannels() + " ch");
+        }
+
+        String name = tangible.DotNetToJavaStringHelper.join(" - ", attributes.toArray(new String[attributes.size()]));
+
+        if (stream.getIsDefault()) {
+            name += " (D)";
+        }
+
+        return name;
+    }
+
+    private String getSubtitleTrackName(MediaStream stream) {
+
+        ArrayList<String> attributes = new ArrayList<String>();
+
+        if (stream.getLanguage() != null){
+            attributes.add(stream.getLanguage());
+        }
+
+        if (stream.getCodec() != null) {
+            attributes.add(stream.getCodec());
+        }
+
+        String name = tangible.DotNetToJavaStringHelper.join(" - ", attributes.toArray(new String[attributes.size()]));
+
+        if (stream.getIsDefault()) {
+            name += " (D)";
+        }
+
+        if (stream.getIsForced()) {
+            name += " (F)";
+        }
+
+        return name;
+    }
 
     /**
      *
@@ -2345,13 +2603,43 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         else
             wasPaused = mSettings.getBoolean(PreferencesActivity.VIDEO_PAUSED, false);
         if (wasPaused)
-            Log.d(TAG, "Video was previously paused, resuming in paused mode");
+            logger.Debug("Video was previously paused, resuming in paused mode");
 
         if(TextUtils.equals(action, PLAY_FROM_VIDEOGRID) && extras != null) {
-            mUri = extras.getParcelable(PLAY_EXTRA_ITEM_LOCATION);
-            fromStart = extras.getBoolean(PLAY_EXTRA_FROM_START);
-            mAskResume &= !fromStart;
-            openedPosition = extras.getInt(PLAY_EXTRA_OPENED_POSITION, -1);
+            mUri = Uri.parse(getIntent().getExtras().getString(PLAY_EXTRA_ITEM_LOCATION));
+            itemTitle = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_TITLE);
+            fromStart = getIntent().getExtras().getBoolean(PLAY_EXTRA_FROM_START);
+            intentPosition = getIntent().getExtras().getLong("position", -1);
+
+            String mediaSourceJson = getIntent().getExtras().getString("mediaSourceJson");
+            MediaSourceInfo mediaSourceInfo = (MediaSourceInfo)jsonSerializer.DeserializeFromString(mediaSourceJson, MediaSourceInfo.class);
+
+            String deviceProfileJson = getIntent().getExtras().getString("deviceProfileJson");
+            DeviceProfile deviceProfile = (DeviceProfile)jsonSerializer.DeserializeFromString(deviceProfileJson, DeviceProfile.class);
+
+            String apiAppName = getIntent().getExtras().getString("appName");
+            String apiAppVersion = getIntent().getExtras().getString("appVersion");
+            String apiDeviceId = getIntent().getExtras().getString("deviceId");
+            String apiDeviceName = getIntent().getExtras().getString("deviceName");
+            String apiUserId = getIntent().getExtras().getString("userId");
+            String apiAccessToken = getIntent().getExtras().getString("accessToken");
+            String apiServerUrl = getIntent().getExtras().getString("serverUrl");
+            String apiServerId = getIntent().getExtras().getString("serverId");
+            String playbackStartInfoJson = getIntent().getExtras().getString("playbackStartInfoJson");
+            videoQualityOptionsJson = getIntent().getExtras().getString("videoQualityOptionsJson");
+
+            PlaybackProgressInfo playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
+
+            IDevice device = new AndroidDevice(getApplicationContext(), apiDeviceId, apiDeviceName);
+            ApiClient apiClient = new AndroidApiClient(httpClient, jsonSerializer, logger, apiServerUrl, apiAppName, device, apiAppVersion, new ApiEventListener());
+            apiClient.SetAuthenticationInfo(apiAccessToken, apiUserId);
+
+            updateExternalSubtitles(null);
+            apiHelper.setInitialInfo(apiServerId, false, apiClient, deviceProfile, playbackStartInfo, mediaSourceInfo);
+
+            if (getIntent().hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
+                mSubtitleSelectedFiles.add(getIntent().getExtras().getString(PLAY_EXTRA_SUBTITLES_LOCATION));
+            openedPosition = getIntent().getExtras().getInt(PLAY_EXTRA_OPENED_POSITION, -1);
         }
 
         if (intent.hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
@@ -2361,7 +2649,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         if (openedPosition != -1) {
             // Provided externally from AudioService
-            Log.d(TAG, "Continuing playback from AudioService at index " + openedPosition);
+            logger.Debug("Continuing playback from AudioService at index " + openedPosition);
             MediaWrapper openedMedia = mService.getCurrentMediaWrapper();
             if (openedMedia == null) {
                 encounteredError();
@@ -2532,19 +2820,19 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         if (presentationDisplay != null) {
             // Show a new presentation if possible.
-            Log.i(TAG, "Showing presentation on display: " + presentationDisplay);
-            mPresentation = new SecondaryDisplay(this, LibVLC(getApplicationContext(), logger), presentationDisplay);
+            logger.Info("Showing presentation on display: " + presentationDisplay);
+            mPresentation = new SecondaryDisplay(this, LibVLC(getApplicationContext(), logger), presentationDisplay, logger);
             mPresentation.setOnDismissListener(mOnDismissListener);
             try {
                 mPresentation.show();
                 mPresentationDisplayId = presentationDisplay.getDisplayId();
             } catch (WindowManager.InvalidDisplayException ex) {
-                Log.w(TAG, "Couldn't show presentation!  Display was removed in "
+                logger.Warn("Couldn't show presentation!  Display was removed in "
                         + "the meantime.", ex);
                 mPresentation = null;
             }
         } else
-            Log.i(TAG, "No secondary display detected");
+            logger.Info("No secondary display detected");
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -2553,7 +2841,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             return;
 
         // Dismiss the current presentation if the display has changed.
-        Log.i(TAG, "Dismissing presentation because the current route no longer "
+        logger.Info("Dismissing presentation because the current route no longer "
                 + "has a presentation display.");
         if (mPresentation != null) mPresentation.dismiss();
         mPresentation = null;
@@ -2570,7 +2858,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         @Override
         public void onDismiss(DialogInterface dialog) {
             if (dialog == mPresentation) {
-                Log.i(TAG, "Presentation was dismissed.");
+                logger.Info("Presentation was dismissed.");
                 mPresentation = null;
             }
         }
@@ -2583,9 +2871,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         private SurfaceView mSurfaceView;
         private SurfaceView mSubtitlesSurfaceView;
         private FrameLayout mSurfaceFrame;
+        private ILogger logger;
 
-        public SecondaryDisplay(Context context, LibVLC libVLC, Display display) {
+        public SecondaryDisplay(Context context, LibVLC libVLC, Display display, ILogger logger) {
             super(context, display);
+            this.logger = logger;
             if (context instanceof AppCompatActivity) {
                 setOwnerActivity((AppCompatActivity) context);
             }
@@ -2607,11 +2897,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 mSubtitlesSurfaceView.setVisibility(View.GONE);
             VideoPlayerActivity activity = (VideoPlayerActivity)getOwnerActivity();
             if (activity == null) {
-                Log.e(TAG, "Failed to get the VideoPlayerActivity instance, secondary display won't work");
+                logger.Error("Failed to get the VideoPlayerActivity instance, secondary display won't work");
                 return;
             }
 
-            Log.i(TAG, "Secondary display created");
+            logger.Info("Secondary display created");
         }
     }
 
@@ -2718,6 +3008,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     @Override
     public void onConnected(PlaybackService service) {
         mService = service;
+        mService.setApiHelper(apiHelper);
         logger.Debug("Connected to PlaybackService");
         mHandler.sendEmptyMessage(START_PLAYBACK);
     }
@@ -2730,6 +3021,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     @Override
     public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
+
+        logger.Debug("VideoPlayerActivity.OnNewLayout width=%1 height=%2 visibleWidth=%3 visibleHeight=%4 sarNum=%5 sarDen=%6");
+
         if (width * height == 0)
             return;
 
@@ -2749,5 +3043,72 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     @Override
     public void onSurfacesDestroyed(IVLCVout vlcVout) {
+    }
+
+    private SubtitleTrackInfo timedTextObject;
+    private long lastReportedPositionMs = 0;
+
+    public void updateExternalSubtitles(SubtitleTrackInfo timedTextObject) {
+
+        lastReportedPositionMs = 0;
+        this.timedTextObject = timedTextObject;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                if (subtitleText != null) {
+                    subtitleText.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+    }
+
+    private void updateSubtitles(long positionMs) {
+
+        if (lastReportedPositionMs > 0){
+            if (Math.abs(lastReportedPositionMs - positionMs) < 500) {
+                return;
+            }
+        }
+        SubtitleTrackInfo info = timedTextObject;
+
+        if (info == null) {
+            return;
+        }
+
+        long positionTicks = positionMs * 10000;
+
+        for (SubtitleTrackEvent caption : info.getTrackEvents()) {
+            if (positionTicks >= caption.getStartPositionTicks() && positionTicks <= caption.getEndPositionTicks()) {
+                setTimedText(caption);
+                return;
+            }
+        }
+
+        setTimedText(null);
+    }
+
+    private void setTimedText(final SubtitleTrackEvent textObj) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (textObj == null) {
+                    subtitleText.setVisibility(View.INVISIBLE);
+                    return;
+                }
+
+                String text = textObj.getText();
+
+                if (text == null || text.length() == 0) {
+                    subtitleText.setVisibility(View.INVISIBLE);
+                    return;
+                }
+
+                subtitleText.setText(Html.fromHtml(text));
+                subtitleText.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }
