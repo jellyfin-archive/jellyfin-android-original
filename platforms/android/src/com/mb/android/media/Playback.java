@@ -230,55 +230,10 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
 
     @TargetApi(21)
     public void play(QueueItem item) {
-        mPlayOnFocusGain = true;
-        tryToGetAudioFocus();
-        registerAudioNoisyReceiver();
-        String mediaId = item.getDescription().getMediaId();
-        boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
-        if (mediaHasChanged) {
-            mCurrentPosition = 0;
-            mCurrentMediaId = mediaId;
-        }
+        MediaMetadata track = mMusicProvider.getMusic(item.getDescription().getMediaId());
 
-        if (mState == PlaybackState.STATE_PAUSED && !mediaHasChanged && mMediaPlayer != null) {
-            configMediaPlayerState();
-        } else {
-            mState = PlaybackState.STATE_STOPPED;
-            relaxResources(false); // release everything except MediaPlayer
-            MediaMetadata track = mMusicProvider.getMusic(item.getDescription().getMediaId());
-
-            String source = track.getString(MediaProvider.CUSTOM_METADATA_TRACK_SOURCE);
-
-            try {
-                createMediaPlayerIfNeeded();
-
-                mState = PlaybackState.STATE_BUFFERING;
-
-                logger.Debug("Vlc playing source %s");
-
-                //Media media = new Media(getLibVlcInstance(), source);
-
-                //getLibVlcInstance().playMRL(media.getMrl());
-
-                // If we are streaming from the internet, we want to hold a
-                // Wifi lock, which prevents the Wifi radio from going to
-                // sleep while the song is playing.
-                mWifiLock.acquire();
-                mWakeLock.acquire();
-
-                if (mCallback != null) {
-                    mCallback.onPlaybackStatusChanged(mState);
-                }
-
-                configMediaPlayerState();
-
-            } catch (Exception ex) {
-                logger.ErrorException("Exception playing media", ex);
-                if (mCallback != null) {
-                    mCallback.onPlaybackError(ex.getMessage());
-                }
-            }
-        }
+        String source = track.getString(MediaProvider.CUSTOM_METADATA_TRACK_SOURCE);
+        play(source);
     }
 
     public void unPause() {
