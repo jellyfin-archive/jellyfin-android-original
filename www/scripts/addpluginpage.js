@@ -3,7 +3,7 @@ $('#revisionHistory',page).html(html);}
 function populateVersions(packageInfo,page,installedPlugin){var html='';for(var i=0,length=packageInfo.versions.length;i<length;i++){var version=packageInfo.versions[i];html+='<option value="'+version.versionStr+'|'+version.classification+'">'+version.versionStr+' ('+version.classification+')</option>';}
 var selectmenu=$('#selectVersion',page).html(html);if(!installedPlugin){$('#pCurrentVersion',page).hide().html("");}
 var packageVersion=packageInfo.versions.filter(function(current){return current.classification=="Release";})[0];if(!packageVersion){packageVersion=packageInfo.versions.filter(function(current){return current.classification=="Beta";})[0];}
-selectmenu.selectmenu('refresh');if(packageVersion){var val=packageVersion.versionStr+'|'+packageVersion.classification;selectmenu.val(val).selectmenu('refresh');}}
+if(packageVersion){var val=packageVersion.versionStr+'|'+packageVersion.classification;selectmenu.val(val);}}
 function populateReviews(id,page){ApiClient.getPackageReviews(id,null,null,3).done(function(positive){var html='';if(positive&&positive.length>0){html+='<div data-role="collapsible" data-collapsed="true" style="margin-top: 2em;" >';html+='<h3>'+Globalize.translate('HeaderLatestReviews')+'</h3>';html+="<div><br/>";for(var i=0;i<positive.length;i++){var review=positive[i];html+="<div>";html+="<span class='storeItemReviewText'>";html+=new Date(review.timestamp).toDateString();html+=" "+RatingHelpers.getStoreRatingHtml(review.rating,review.id,review.name,true);html+=" "+review.title;html+="</span>";if(review.review){html+="<p class='storeItemReviewText'>";html+=review.review;html+="</p>";}
 html+="</div>";html+="<hr/>";}
 html+="</div>";html+="</div>";}
