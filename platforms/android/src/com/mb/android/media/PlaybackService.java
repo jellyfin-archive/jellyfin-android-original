@@ -1353,7 +1353,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     private void broadcastMetadata() {
-        MediaWrapper media = getCurrentMedia();
+        /*MediaWrapper media = getCurrentMedia();
         if (media == null || media.getType() != MediaWrapper.TYPE_AUDIO)
             return;
 
@@ -1366,7 +1366,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         broadcast.putExtra("duration", media.getLength());
         broadcast.putExtra("playing", playing);
 
-        sendBroadcast(broadcast);
+        sendBroadcast(broadcast);*/
     }
 
     private synchronized void saveCurrentMedia() {
@@ -1530,12 +1530,16 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     public void setMedia(Uri uri, int index) {
 
         final Media media = new Media(VLCInstance.get(getApplicationContext(), logger), uri);
-        mMediaList.set(index, new MediaWrapper(media));
+        MediaWrapper mediaWrapper = new MediaWrapper(media);
+        mediaWrapper.removeFlags(MediaWrapper.MEDIA_FORCE_AUDIO);
+        mediaWrapper.addFlags(MediaWrapper.MEDIA_VIDEO);
+        mMediaList.set(index,mediaWrapper);
     }
 
     @MainThread
     public void load(MediaWrapper media) {
         ArrayList<MediaWrapper> arrayList = new ArrayList<MediaWrapper>();
+
         arrayList.add(media);
         load(arrayList, 0);
     }
