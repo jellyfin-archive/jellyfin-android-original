@@ -636,7 +636,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     @TargetApi(android.os.Build.VERSION_CODES.FROYO)
     private void restoreBrightness() {
-        if (mRestoreAutoBrightness != -1f) {
+        /*if (mRestoreAutoBrightness != -1f) {
             int brightness = (int) (mRestoreAutoBrightness*255f);
             Settings.System.putInt(getContentResolver(),
                     Settings.System.SCREEN_BRIGHTNESS,
@@ -644,7 +644,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             Settings.System.putInt(getContentResolver(),
                     Settings.System.SCREEN_BRIGHTNESS_MODE,
                     Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
-        }
+        }*/
     }
 
     @Override
@@ -1412,6 +1412,12 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         showOverlay();
         setESTracks();
         updateNavStatus();
+
+        if (apiHelper.getMediaSource().getDefaultSubtitleStreamIndex() == null) {
+            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), -1);
+        } else {
+            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), apiHelper.getMediaSource().getDefaultSubtitleStreamIndex());
+        }
     }
 
     private void endReached() {
@@ -1857,9 +1863,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         try {
             if (AndroidUtil.isFroyoOrLater() &&
                     Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
-                Settings.System.putInt(getContentResolver(),
+                /*Settings.System.putInt(getContentResolver(),
                         Settings.System.SCREEN_BRIGHTNESS_MODE,
-                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+                        Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);*/
                 mRestoreAutoBrightness = android.provider.Settings.System.getInt(getContentResolver(),
                         android.provider.Settings.System.SCREEN_BRIGHTNESS) / 255.0f;
             } else {
