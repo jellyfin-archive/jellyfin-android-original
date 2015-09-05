@@ -116,11 +116,11 @@ public class VideoApiHelper {
 
     public void setAudioStreamIndex(MediaPlayer vlc, int index){
 
-        if (playbackStartInfo.getAudioStreamIndex() != null && index == playbackStartInfo.getAudioStreamIndex()) {
-            return;
-        }
-
         if (playbackStartInfo.getPlayMethod() == PlayMethod.Transcode){
+
+            if (playbackStartInfo.getAudioStreamIndex() != null && index == playbackStartInfo.getAudioStreamIndex()) {
+                return;
+            }
 
             // If transcoding, we're going to need to stop and restart the stream
 
@@ -128,7 +128,22 @@ public class VideoApiHelper {
             changeStream(currentMediaSource, positionTicks, index, null, null);
         }
         else{
-            vlc.setAudioTrack(index);
+
+            // We need to figure out the index in vlc
+            int trackNumber = 0;
+            for (MediaStream stream : currentMediaSource.getMediaStreams()) {
+                if (stream.getType() == MediaStreamType.Audio){
+                    if (index == stream.getIndex()){
+                        break;
+                    }
+                    trackNumber++;
+                }
+            }
+
+            MediaPlayer.TrackDescription[] audioTracks = vlc.getAudioTracks();
+
+            // Increment by one to account for the "Disabled" entry
+            vlc.setAudioTrack(audioTracks[trackNumber+1].id);
 
             playbackStartInfo.setAudioStreamIndex(index);
         }

@@ -6,7 +6,7 @@ $.when(promise,parentPathPromise).done(function(response1,response2){var folders
 for(var i=0,length=folders.length;i<length;i++){var folder=folders[i];var cssClass=folder.Type=="File"?"lnkPath lnkFile":"lnkPath lnkDirectory";html+='<li><a class="'+cssClass+'" data-type="'+folder.Type+'" data-path="'+folder.Path+'" href="#">'+folder.Name+'</a></li>';}
 if(!path){html+='<li><a class="lnkPath lnkDirectory" data-path="Network" href="#">'+Globalize.translate('ButtonNetwork')+'</a></li>';}
 $('#ulDirectoryPickerList',page).html(html).listview('refresh');Dashboard.hideLoadingMsg();}).fail(function(){$('#txtDirectoryPickerPath',page).val("");$('#ulDirectoryPickerList',page).html('').listview('refresh');Dashboard.hideLoadingMsg();});}
-var systemInfo;function getSystemInfo(){var deferred=DeferredBuilder.Deferred();if(systemInfo){deferred.resolveWith(null,[systemInfo]);}else{ApiClient.getSystemInfo().done(function(info){systemInfo=info;deferred.resolveWith(null,[systemInfo]);});}
+var systemInfo;function getSystemInfo(){var deferred=DeferredBuilder.Deferred();if(systemInfo){deferred.resolveWith(null,[systemInfo]);}else{ApiClient.getPublicSystemInfo().done(function(info){systemInfo=info;deferred.resolveWith(null,[systemInfo]);});}
 return deferred.promise();}
 function show(directoryBrowser,page,options,systemInfo){options=options||{};var fileOptions={includeDirectories:true};if(options.includeDirectories!=null){fileOptions.includeDirectories=options.includeDirectories;}
 if(options.includeFiles!=null){fileOptions.includeFiles=options.includeFiles;}
