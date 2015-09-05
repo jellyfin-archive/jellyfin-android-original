@@ -240,9 +240,6 @@
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-console": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         },
