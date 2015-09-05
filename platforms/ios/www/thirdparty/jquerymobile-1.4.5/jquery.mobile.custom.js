@@ -4068,7 +4068,8 @@ $.fn.fieldcontain = function(/* options */) {
 				    dependencies = dependencies || [];
 				    dependencies.push('jqmicons');
 				    dependencies.push('jqmpopup');
-				}
+				    dependencies.push('jqmlistview');
+                }
 
 				var currentSelf = this;
 
@@ -4328,14 +4329,6 @@ $.fn.fieldcontain = function(/* options */) {
 			}, this ));
 		},
 
-		_releaseTransitionLock: function() {
-			//release transition lock so navigation is free again
-			isPageTransitioning = false;
-			if ( pageTransitionQueue.length > 0 ) {
-				$.mobile.changePage.apply( null, pageTransitionQueue.pop() );
-			}
-		},
-
 		_removeActiveLinkClass: function( force ) {
 			//clear out the active button state
 			$.mobile.removeActiveLinkClass( force );
@@ -4353,7 +4346,6 @@ $.fn.fieldcontain = function(/* options */) {
 			this.load( to, settings );
 
 			settings.deferred.done($.proxy(function( url, options, content ) {
-				isPageTransitioning = false;
 
 				// store the original absolute url so that it can be provided
 				// to events in the triggerData of the subsequent changePage call
@@ -4364,7 +4356,6 @@ $.fn.fieldcontain = function(/* options */) {
 
 			settings.deferred.fail($.proxy(function(/* url, options */) {
 				this._removeActiveLinkClass( true );
-				this._releaseTransitionLock();
 				this._triggerWithDeprecated( "changefailed", triggerData );
 			}, this));
 		},
@@ -4392,28 +4383,12 @@ $.fn.fieldcontain = function(/* options */) {
 				triggerData.absUrl = settings.absUrl;
 			}
 
-			// Let listeners know we're about to change the current page.
-			returnEvents = this._triggerWithDeprecated( "beforechange", triggerData );
-
-			// If the default behavior is prevented, stop here!
-			if ( returnEvents.event.isDefaultPrevented() ||
-				returnEvents.deprecatedEvent.isDefaultPrevented() ) {
-				return false;
-			}
-
 			return true;
 		},
 
 		change: function( to, options ) {
-			// If we are in the midst of a transition, queue the current request.
-			// We'll call changePage() once we're done with the current transition
-			// to service the request.
-			if ( isPageTransitioning ) {
-				pageTransitionQueue.unshift( arguments );
-				return;
-			}
 
-			var settings = $.extend( {}, $.mobile.changePage.defaults, options ),
+		    var settings = $.extend({}, $.mobile.changePage.defaults, options),
 				triggerData = {};
 
 			// Make sure we have a fromPage.
@@ -4435,11 +4410,6 @@ $.fn.fieldcontain = function(/* options */) {
 			// to the promise object it returns so we know when
 			// it is done loading or if an error ocurred.
 			if ( $.type(to) === "string" ) {
-				// Set the isPageTransitioning flag to prevent any requests from
-				// entering this method while we are in the midst of loading a page
-				// or transitioning.
-				isPageTransitioning = true;
-
 				this._loadUrl( to, triggerData, settings );
 			} else {
 				this.transition( to, triggerData, settings );
@@ -4454,22 +4424,7 @@ $.fn.fieldcontain = function(/* options */) {
 				params,	cssTransitionDeferred,
 				beforeTransition;
 
-			// If we are in the midst of a transition, queue the current request.
-			// We'll call changePage() once we're done with the current transition
-			// to service the request.
-			if ( isPageTransitioning ) {
-				// make sure to only queue the to and settings values so the arguments
-				// work with a call to the change method
-				pageTransitionQueue.unshift( [toPage, settings] );
-				return;
-			}
-
 			triggerData.prevPage = settings.fromPage;
-
-			// Set the isPageTransitioning flag to prevent any requests from
-			// entering this method while we are in the midst of loading a page
-			// or transitioning.
-			isPageTransitioning = true;
 
 			// If we are going to the first-page of the application, we need to make
 			// sure settings.dataUrl is set to the application document url. This allows
@@ -4511,7 +4466,6 @@ $.fn.fieldcontain = function(/* options */) {
 			if ( fromPage && fromPage[0] === toPage[0] &&
 				!settings.allowSamePageTransition ) {
 
-				isPageTransitioning = false;
 				this._triggerWithDeprecated( "transition", triggerData );
 				this._triggerWithDeprecated( "change", triggerData );
 
@@ -4588,9 +4542,7 @@ $.fn.fieldcontain = function(/* options */) {
 			}
 
 			// Make sure we have a transition defined.
-			settings.transition = settings.transition ||
-				( ( historyDir && !activeIsInitialPage ) ? active.transition : undefined ) ||
-				( isDialog ? $.mobile.defaultDialogTransition : $.mobile.defaultPageTransition );
+			settings.transition = "none";
 
 			//add page to history stack if it's not back or forward
 			if ( !historyDir && alreadyThere ) {
@@ -4639,20 +4591,6 @@ $.fn.fieldcontain = function(/* options */) {
 			});
 
 			$.mobile.removeActiveLinkClass();
-
-		    //if there's a duplicateCachedPage, remove it from the DOM now that it's hidden
-			if (settings.duplicateCachedPage) {
-			    settings.duplicateCachedPage.remove();
-			}
-
-		    // despite visibility: hidden addresses issue #2965
-		    // https://github.com/jquery/jquery-mobile/issues/2965
-			//if (!alreadyFocused) {
-			//    $.mobile.focusPage(toPage);
-			//}
-
-			this._releaseTransitionLock();
-			this._triggerWithDeprecated("transition", triggerData);
 		},
 
 		// determine the current base url
@@ -4670,10 +4608,7 @@ $.fn.fieldcontain = function(/* options */) {
 
 	//these variables make all page containers use the same queue and only navigate one at a time
 	// queue to hold simultanious page transitions
-	var pageTransitionQueue = [],
-
-		// indicates whether or not page is in process of transitioning
-		isPageTransitioning = false;
+	var pageTransitionQueue = [];
 
 })( jQuery );
 
@@ -6229,210 +6164,6 @@ $.widget( "mobile.checkboxradio", $.extend( {
     $.fn.selectmenu = function() {
         return this;
     };
-})( jQuery );
-
-(function( $, undefined ) {
-
-var getAttr = $.mobile.getAttribute;
-
-$.widget( "mobile.listview", $.extend( {
-
-	options: {
-		theme: null,
-		countTheme: null, /* Deprecated in 1.4 */
-		dividerTheme: null,
-		icon: "carat-r",
-		splitIcon: "carat-r",
-		splitTheme: null,
-		corners: true,
-		shadow: true,
-		inset: false
-	},
-
-	_create: function() {
-		var t = this,
-			listviewClasses = "";
-
-		listviewClasses += t.options.inset ? " ui-listview-inset" : "";
-
-		if ( !!t.options.inset ) {
-			listviewClasses += t.options.corners ? " ui-corner-all" : "";
-			listviewClasses += t.options.shadow ? " ui-shadow" : "";
-		}
-
-		// create listview markup
-		t.element.addClass( " ui-listview" + listviewClasses );
-
-		t.refresh( true );
-	},
-
-	// TODO: Remove in 1.5
-	_findFirstElementByTagName: function( ele, nextProp, lcName, ucName ) {
-		var dict = {};
-		dict[ lcName ] = dict[ ucName ] = true;
-		while ( ele ) {
-			if ( dict[ ele.nodeName ] ) {
-				return ele;
-			}
-			ele = ele[ nextProp ];
-		}
-		return null;
-	},
-	// TODO: Remove in 1.5
-	_addThumbClasses: function( containers ) {
-		var i, img, len = containers.length;
-		for ( i = 0; i < len; i++ ) {
-			img = $( this._findFirstElementByTagName( containers[ i ].firstChild, "nextSibling", "img", "IMG" ) );
-			if ( img.length ) {
-				$( this._findFirstElementByTagName( img[ 0 ].parentNode, "parentNode", "li", "LI" ) ).addClass( img.hasClass( "ui-li-icon" ) ? "ui-li-has-icon" : "ui-li-has-thumb" );
-			}
-		}
-	},
-
-	_getChildrenByTagName: function( ele, lcName, ucName ) {
-		var results = [],
-			dict = {};
-		dict[ lcName ] = dict[ ucName ] = true;
-		ele = ele.firstChild;
-		while ( ele ) {
-			if ( dict[ ele.nodeName ] ) {
-				results.push( ele );
-			}
-			ele = ele.nextSibling;
-		}
-		return $( results );
-	},
-
-	_beforeListviewRefresh: $.noop,
-	_afterListviewRefresh: $.noop,
-
-	refresh: function( create ) {
-		var buttonClass, pos, numli, item, itemClass, itemTheme, itemIcon, icon, a,
-			isDivider, startCount, newStartCount, value, last, splittheme, splitThemeClass, spliticon,
-			altButtonClass, dividerTheme, li,
-			o = this.options,
-			$list = this.element,
-			ol = !!$.nodeName( $list[ 0 ], "ol" ),
-			start = $list.attr( "start" ),
-			itemClassDict = {},
-			countBubbles = $list.find( ".ui-li-count" ),
-			countTheme = getAttr( $list[ 0 ], "counttheme" ) || this.options.countTheme,
-			countThemeClass = countTheme ? "ui-body-" + countTheme : "ui-body-inherit";
-
-		if ( o.theme ) {
-			$list.addClass( "ui-group-theme-" + o.theme );
-		}
-
-		// Check if a start attribute has been set while taking a value of 0 into account
-		if ( ol && ( start || start === 0 ) ) {
-			startCount = parseInt( start, 10 ) - 1;
-			$list.css( "counter-reset", "listnumbering " + startCount );
-		}
-
-		this._beforeListviewRefresh();
-
-		li = this._getChildrenByTagName( $list[ 0 ], "li", "LI" );
-
-		for ( pos = 0, numli = li.length; pos < numli; pos++ ) {
-			item = li.eq( pos );
-			itemClass = "";
-
-			if ( create || item[ 0 ].className.search( /\bui-li-static\b|\bui-li-divider\b/ ) < 0 ) {
-				a = this._getChildrenByTagName( item[ 0 ], "a", "A" );
-				isDivider = ( getAttr( item[ 0 ], "role" ) === "list-divider" );
-				value = item.attr( "value" );
-				itemTheme = getAttr( item[ 0 ], "theme" );
-
-				if ( a.length && a[ 0 ].className.search( /\bui-btn\b/ ) < 0 && !isDivider ) {
-					itemIcon = getAttr( item[ 0 ], "icon" );
-					icon = ( itemIcon === false ) ? false : ( itemIcon || o.icon );
-
-					// TODO: Remove in 1.5 together with links.js (links.js / .ui-link deprecated in 1.4)
-					a.removeClass( "ui-link" );
-
-					buttonClass = "ui-btn";
-
-					if ( itemTheme ) {
-						buttonClass += " ui-btn-" + itemTheme;
-					}
-
-					if ( a.length > 1 ) {
-						itemClass = "ui-li-has-alt";
-
-						last = a.last();
-						splittheme = getAttr( last[ 0 ], "theme" ) || o.splitTheme || getAttr( item[ 0 ], "theme", true );
-						splitThemeClass = splittheme ? " ui-btn-" + splittheme : "";
-						spliticon = getAttr( last[ 0 ], "icon" ) || getAttr( item[ 0 ], "icon" ) || o.splitIcon;
-						altButtonClass = "ui-btn ui-btn-icon-notext ui-icon-" + spliticon + splitThemeClass;
-
-						last
-							.attr( "title", $.trim( last.getEncodedText() ) )
-							.addClass( altButtonClass )
-							.empty();
-
-						// Reduce to the first anchor, because only the first gets the buttonClass
-						a = a.first();
-					} else if ( icon ) {
-						buttonClass += " ui-btn-icon-right ui-icon-" + icon;
-					}
-
-					// Apply buttonClass to the (first) anchor
-					a.addClass( buttonClass );
-				} else if ( isDivider ) {
-					dividerTheme = ( getAttr( item[ 0 ], "theme" ) || o.dividerTheme || o.theme );
-
-					itemClass = "ui-li-divider ui-bar-" + ( dividerTheme ? dividerTheme : "inherit" );
-
-					item.attr( "role", "heading" );
-				} else if ( a.length <= 0 ) {
-					itemClass = "ui-li-static ui-body-" + ( itemTheme ? itemTheme : "inherit" );
-				}
-				if ( ol && value ) {
-					newStartCount = parseInt( value , 10 ) - 1;
-
-					item.css( "counter-reset", "listnumbering " + newStartCount );
-				}
-			}
-
-			// Instead of setting item class directly on the list item
-			// at this point in time, push the item into a dictionary
-			// that tells us what class to set on it so we can do this after this
-			// processing loop is finished.
-
-			if ( !itemClassDict[ itemClass ] ) {
-				itemClassDict[ itemClass ] = [];
-			}
-
-			itemClassDict[ itemClass ].push( item[ 0 ] );
-		}
-
-		// Set the appropriate listview item classes on each list item.
-		// The main reason we didn't do this
-		// in the for-loop above is because we can eliminate per-item function overhead
-		// by calling addClass() and children() once or twice afterwards. This
-		// can give us a significant boost on platforms like WP7.5.
-
-		for ( itemClass in itemClassDict ) {
-			$( itemClassDict[ itemClass ] ).addClass( itemClass );
-		}
-
-		countBubbles.each( function() {
-			$( this ).closest( "li" ).addClass( "ui-li-has-count" );
-		});
-		if ( countThemeClass ) {
-			countBubbles.not( "[class*='ui-body-']" ).addClass( countThemeClass );
-		}
-
-		// Deprecated in 1.4. From 1.5 you have to add class ui-li-has-thumb or ui-li-has-icon to the LI.
-		this._addThumbClasses( li );
-		this._addThumbClasses( li.find( ".ui-btn" ) );
-
-		this._afterListviewRefresh();
-
-		this._addFirstLastClasses( li, this._getVisibles( li, create ), create );
-	}
-}, $.mobile.behaviors.addFirstLastClasses ) );
-
 })( jQuery );
 
 (function( $, undefined ) {
