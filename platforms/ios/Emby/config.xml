@@ -65,9 +65,6 @@
     <feature name="Notification">
         <param name="ios-package" value="CDVNotification" />
     </feature>
-    <feature name="Console">
-        <param name="ios-package" value="CDVLogger" />
-    </feature>
     <feature name="SearchBar">
         <param name="ios-package" value="SearchBar" />
     </feature>

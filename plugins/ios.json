@@ -77,10 +77,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Console\"><param name=\"ios-package\" value=\"CDVLogger\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"SearchBar\"><param name=\"ios-package\" value=\"SearchBar\" /></feature>",
                             "count": 1
                         },
@@ -259,9 +255,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-console": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-webserver": {
