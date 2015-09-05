@@ -110,6 +110,7 @@ import mediabrowser.apiinteraction.device.IDevice;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.model.dlna.DeviceProfile;
 import mediabrowser.model.dto.MediaSourceInfo;
+import mediabrowser.model.dto.NameIdPair;
 import mediabrowser.model.dto.NameValuePair;
 import mediabrowser.model.entities.MediaStream;
 import mediabrowser.model.entities.MediaStreamType;
@@ -2048,9 +2049,17 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     private void selectQuality() {
         setESTrackLists();
 
-        String currentValue = String.valueOf(apiHelper.getMaxBitrate());
+        int maxBitrate= apiHelper.getMaxBitrate();
 
-        selectTrack(mQualityList, currentValue, true, R.string.quality_text,
+        String selectedValue = "";
+        for (NameValuePair pair : mQualityList) {
+            if (maxBitrate >= Integer.parseInt( pair.getValue())) {
+                selectedValue = pair.getValue();
+                break;
+            }
+        }
+
+        selectTrack(mQualityList, selectedValue, true, R.string.quality_text,
                 new TrackSelectedListener() {
                     @Override
                     public boolean onTrackSelected(String value) {
