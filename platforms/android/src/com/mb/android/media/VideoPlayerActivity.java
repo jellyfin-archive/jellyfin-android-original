@@ -2421,21 +2421,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     private void setESTrackLists() {
         if (mAudioTracksList == null)
         {
-            if (apiHelper.getPlaybackProgressInfo().getPlayMethod() == PlayMethod.Transcode) {
+            Map<Integer,String> audioTracks = new HashMap<Integer,String>();
+            for (MediaStream stream : apiHelper.getMediaSource().getMediaStreams()){
+                if (stream.getType() == MediaStreamType.Audio){
 
-                Map<Integer,String> audioTracks = new HashMap<Integer,String>();
-                for (MediaStream stream : apiHelper.getMediaSource().getMediaStreams()){
-                    if (stream.getType() == MediaStreamType.Audio){
-
-                        audioTracks.put(stream.getIndex(), getAudioTrackName(stream));
-                    }
+                    audioTracks.put(stream.getIndex(), getAudioTrackName(stream));
                 }
+            }
 
-                mAudioTracksList = GetNameValuePairs(audioTracks);
-            }
-            else if (mService.getAudioTracksCount() > 0) {
-                mAudioTracksList = GetNameValuePairs(mService.getAudioTracks());
-            }
+            mAudioTracksList = GetNameValuePairs(audioTracks);
         }
 
         if (mSubtitleTracksList == null) {
@@ -2454,18 +2448,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         {
             mQualityList = getQualityOptions();
         }
-    }
-
-    private ArrayList<NameValuePair> GetNameValuePairs(MediaPlayer.TrackDescription[] tracks) {
-
-        ArrayList<NameValuePair> list = new ArrayList<NameValuePair>();
-
-        for (MediaPlayer.TrackDescription entry : tracks) {
-
-            list.add(new NameValuePair(entry.name, String.valueOf(entry.id)));
-        }
-
-        return list;
     }
 
     private ArrayList<NameValuePair> GetNameValuePairs(Map<Integer,String> tracks) {
