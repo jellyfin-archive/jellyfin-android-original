@@ -54,7 +54,7 @@ div.ui-mobile-viewport {
 	border: 0;
 }
 .ui-page {
-    position: static !important;
+    /*position: static !important;*/
 }
 /* On ios4, setting focus on the page element causes flashing during transitions when there is an outline, so we turn off outlines */
 .ui-page {
@@ -101,32 +101,6 @@ div.ui-mobile-viewport {
 	font-size: 1em;
 	display: inline-block;
 }
-.ui-header,
-.ui-footer {
-	border-width: 1px 0;
-	border-style: solid;
-	position: relative;
-}
-.ui-header:empty,
-.ui-footer:empty {
-	min-height: 2.6875em;
-}
-.ui-header .ui-title,
-.ui-footer .ui-title {
-	font-size: 1em;
-	min-height: 1.1em;
-	text-align: center;
-	display: block;
-	margin: 0 30%;
-	padding: .7em 0;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
-	outline: 0 !important;
-}
-.ui-footer .ui-title {
-	margin: 0 1em;
-}
 .ui-content {
 	border-width: 0;
 	overflow: visible;
@@ -134,17 +108,13 @@ div.ui-mobile-viewport {
 	padding: 1em;
 }
 /* Corner styling for dialogs and popups */
-.ui-corner-all > .ui-header:first-child,
-.ui-corner-all > .ui-content:first-child,
-.ui-corner-all > .ui-footer:first-child {
+.ui-corner-all > .ui-content:first-child {
 	-webkit-border-top-left-radius: inherit;
 	border-top-left-radius: inherit;
 	-webkit-border-top-right-radius: inherit;
 	border-top-right-radius: inherit;
 }
-.ui-corner-all > .ui-header:last-child,
-.ui-corner-all > .ui-content:last-child,
-.ui-corner-all > .ui-footer:last-child {
+.ui-corner-all > .ui-content:last-child {
 	-webkit-border-bottom-left-radius: inherit;
 	border-bottom-left-radius: inherit;
 	-webkit-border-bottom-right-radius: inherit;
@@ -168,9 +138,7 @@ div.ui-mobile-viewport {
 	-ms-user-select: none;
 	user-select: none;
 }
-.ui-btn-icon-notext,
-.ui-header button.ui-btn.ui-btn-icon-notext,
-.ui-footer button.ui-btn.ui-btn-icon-notext {
+.ui-btn-icon-notext {
 	padding: 0;
 	width: 1.75em;
 	height: 1.75em;
@@ -183,27 +151,8 @@ div.ui-mobile-viewport {
 .ui-mini .ui-btn {
 	font-size: inherit;
 }
-/* Make buttons in toolbars default to mini and inline. */
-.ui-header .ui-btn,
-.ui-footer .ui-btn {
-	font-size: 12.5px;
-	display: inline-block;
-	vertical-align: middle;
-}
-.ui-header .ui-controlgroup .ui-btn-icon-notext,
-.ui-footer .ui-controlgroup .ui-btn-icon-notext {
-    font-size: 12.5px;
-}
-
-/* To ensure same top and left/right position when ui-btn-left/right are added to something other than buttons. */
-.ui-header .ui-btn-left,
-.ui-header .ui-btn-right {
-	font-size: 12.5px;
-}
 .ui-mini.ui-btn-icon-notext,
-.ui-mini .ui-btn-icon-notext,
-.ui-header .ui-btn-icon-notext,
-.ui-footer .ui-btn-icon-notext {
+.ui-mini .ui-btn-icon-notext {
 	font-size: 16px;	
 	padding: 0;
 }
@@ -223,13 +172,6 @@ div.ui-mobile-viewport {
 }
 .ui-btn-icon-bottom {
 	padding-bottom: 2.5em;
-}
-.ui-header .ui-btn-icon-top,
-.ui-footer .ui-btn-icon-top,
-.ui-header .ui-btn-icon-bottom,
-.ui-footer .ui-btn-icon-bottom {
-	padding-left: .3125em;
-	padding-right: .3125em;
 }
 .ui-btn-icon-left:after,
 .ui-btn-icon-right:after,
@@ -255,15 +197,11 @@ div.ui-mobile-viewport {
 	right: .5625em;
 }
 .ui-mini.ui-btn-icon-left:after,
-.ui-mini .ui-btn-icon-left:after,
-.ui-header .ui-btn-icon-left:after,
-.ui-footer .ui-btn-icon-left:after {
+.ui-mini .ui-btn-icon-left:after {
 	left: .37em;
 }
 .ui-mini.ui-btn-icon-right:after,
-.ui-mini .ui-btn-icon-right:after,
-.ui-header .ui-btn-icon-right:after,
-.ui-footer .ui-btn-icon-right:after {
+.ui-mini .ui-btn-icon-right:after {
 	right: .37em;
 }
 .ui-btn-icon-notext:after,
@@ -280,8 +218,6 @@ div.ui-mobile-viewport {
 	bottom: .5625em;
 }
 /* Buttons in header position classes */
-.ui-header .ui-btn-left,
-.ui-header .ui-btn-right,
 .ui-btn-left > [class*="ui-"],
 .ui-btn-right > [class*="ui-"] {
 	margin: 0;
@@ -316,9 +252,7 @@ button.ui-btn,
 	-moz-appearance: none;
 	width: 100%;
 }
-button.ui-btn-inline,
-.ui-header button.ui-btn,
-.ui-footer button.ui-btn {
+button.ui-btn-inline {
 	width: auto;
 }
 /* Firefox adds a 1px border in a button element. We negate this to make sure they have the same height as other buttons in controlgroups. */
@@ -480,9 +414,7 @@ li.ui-block-e {
 [class*="ui-block-"] > .ui-checkbox,
 [class*="ui-block-"] > .ui-radio,
 [class*="ui-block-"] > button.ui-btn-inline,
-[class*="ui-block-"] > button.ui-btn-icon-notext,
-.ui-header [class*="ui-block-"] > button.ui-btn,
-.ui-footer [class*="ui-block-"] > button.ui-btn {
+[class*="ui-block-"] > button.ui-btn-icon-notext {
 	margin-right: .3125em;
 	margin-left: .3125em;
 }
@@ -612,144 +544,6 @@ li.ui-block-e {
 	animation-name: fadein;
 }
 
-
-.ui-controlgroup,
-fieldset.ui-controlgroup {
-	padding: 0;
-	margin: .5em 0;
-}
-.ui-field-contain .ui-controlgroup,
-.ui-field-contain fieldset.ui-controlgroup {
-	margin: 0;
-}
-.ui-mini .ui-controlgroup-label {
-	font-size: 16px;
-}
-.ui-controlgroup.ui-mini .ui-btn-icon-notext,
-.ui-controlgroup .ui-mini.ui-btn-icon-notext {
-	font-size: inherit;
-}
-.ui-controlgroup-controls .ui-btn,
-.ui-controlgroup-controls .ui-checkbox,
-.ui-controlgroup-controls .ui-radio,
-.ui-controlgroup-controls .ui-select {
-	margin: 0;
-}
-.ui-controlgroup-controls .ui-btn:focus,
-.ui-controlgroup-controls .ui-btn.ui-focus {
-	z-index: 1;
-}
-.ui-controlgroup-controls li {
-	list-style: none;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls {
-	display: inline-block;
-	vertical-align: middle;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls:before,
-.ui-controlgroup-horizontal .ui-controlgroup-controls:after {
-	content: "";
-	display: table;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls:after {
-	clear: both;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls > .ui-btn,
-.ui-controlgroup-horizontal .ui-controlgroup-controls li > .ui-btn,
-.ui-controlgroup-horizontal .ui-controlgroup-controls .ui-checkbox,
-.ui-controlgroup-horizontal .ui-controlgroup-controls .ui-radio,
-.ui-controlgroup-horizontal .ui-controlgroup-controls .ui-select {
-	float: left;
-	clear: none;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls button.ui-btn,
-.ui-controlgroup-controls .ui-btn-icon-notext {
-	width: auto;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls .ui-btn-icon-notext,
-.ui-controlgroup-horizontal .ui-controlgroup-controls button.ui-btn-icon-notext {
-	width: 1.5em;
-}
- .ui-controlgroup-controls .ui-btn-icon-notext {
-	height: auto;
-	padding: .7em 1em;
-}
-.ui-controlgroup-vertical .ui-controlgroup-controls .ui-btn {
-	border-bottom-width: 0;
-}
-.ui-controlgroup-vertical .ui-controlgroup-controls .ui-btn.ui-last-child {
-	border-bottom-width: 1px;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls .ui-btn {
-	border-right-width: 0;
-}
-.ui-controlgroup-horizontal .ui-controlgroup-controls .ui-btn.ui-last-child {
-	border-right-width: 1px;
-}
-.ui-controlgroup-controls .ui-btn-corner-all,
-.ui-controlgroup-controls .ui-btn.ui-corner-all {
-	-webkit-border-radius: 0;
-	border-radius: 0;
-}
-.ui-controlgroup-controls,
-.ui-controlgroup-controls .ui-radio,
-.ui-controlgroup-controls .ui-checkbox,
-.ui-controlgroup-controls .ui-select,
-.ui-controlgroup-controls li {
-	-webkit-border-radius: inherit;
-	border-radius: inherit;
-}
-.ui-controlgroup-vertical .ui-btn.ui-first-child {
-	-webkit-border-top-left-radius: inherit;
-	border-top-left-radius: inherit;
-	-webkit-border-top-right-radius: inherit;
-	border-top-right-radius: inherit;
-}
-.ui-controlgroup-vertical .ui-btn.ui-last-child {
-	-webkit-border-bottom-left-radius: inherit;
-	border-bottom-left-radius: inherit;
-	-webkit-border-bottom-right-radius: inherit;
-	border-bottom-right-radius: inherit;
-}
-.ui-controlgroup-horizontal .ui-btn.ui-first-child {
-	-webkit-border-top-left-radius: inherit;
-	border-top-left-radius: inherit;
-	-webkit-border-bottom-left-radius: inherit;
-	border-bottom-left-radius: inherit;
-}
-.ui-controlgroup-horizontal .ui-btn.ui-last-child {
-	-webkit-border-top-right-radius: inherit;
-	border-top-right-radius: inherit;
-	-webkit-border-bottom-right-radius: inherit;
-	border-bottom-right-radius: inherit;
-}
-.ui-controlgroup-controls a.ui-shadow:not(:focus),
-.ui-controlgroup-controls button.ui-shadow:not(:focus),
-.ui-controlgroup-controls div.ui-shadow:not(.ui-focus) {
-	-moz-box-shadow: none;
-	-webkit-box-shadow: none;
-	box-shadow: none;
-}
-/* Fixes legend not wrapping on IE10 */
-.ui-controlgroup-label legend {
-	max-width: 100%;
-}
-.ui-controlgroup-controls > label {
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	clip: rect(1px,1px,1px,1px);
-}
-
-.ui-textinput-autogrow-resize {
-	-webkit-transition: height 0.25s;
-	-o-transition: height 0.25s;
-	-moz-transition: height 0.25s;
-	transition: height 0.25s;
-}
-
-
 /* Hide the native input element */
 .ui-input-btn input {
 	position: absolute;
@@ -780,297 +574,4 @@ fieldset.ui-controlgroup {
 	width: 1px;
 	overflow: hidden;
 	clip: rect(1px,1px,1px,1px);
-}
-
-
-.ui-checkbox,
-.ui-radio {
-	margin: .5em 0;
-	position: relative;
-}
-.ui-checkbox .ui-btn,
-.ui-radio .ui-btn {
-	margin: 0;
-	text-align: left;
-	white-space: normal; /* Nowrap + ellipsis doesn't work on label. Issue #1419. */
-	z-index: 2;
-}
-.ui-controlgroup .ui-checkbox .ui-btn.ui-focus,
-.ui-controlgroup .ui-radio .ui-btn.ui-focus {
-	z-index: 3;
-}
-.ui-checkbox .ui-btn-icon-top,
-.ui-radio .ui-btn-icon-top,
-.ui-checkbox .ui-btn-icon-bottom,
-.ui-radio .ui-btn-icon-bottom {
-	text-align: center;
-}
-.ui-controlgroup-horizontal .ui-checkbox .ui-btn:after,
-.ui-controlgroup-horizontal .ui-radio .ui-btn:after {
-	content: none;
-	display: none;
-}
-/* Native input positioning */
-.ui-checkbox input,
-.ui-radio input {
-	position: absolute;
-	left: .466em;
-	top: 50%;
-	width: 22px;
-	height: 22px;
-	margin: -11px 0 0 0;
-	outline: 0 !important;
-	z-index: 1;
-}
-.ui-controlgroup-horizontal .ui-checkbox input,
-.ui-controlgroup-horizontal .ui-radio input {
-	left: 50%;
-	margin-left: -9px;
-}
-.ui-checkbox input:disabled,
-.ui-radio input:disabled {
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	clip: rect(1px,1px,1px,1px);
-}
-
-/* Panel */
-.ui-panel {
-	width: 17em;
-	min-height: 100%;
-	max-height: none;
-	border-width: 0;
-	position: absolute;
-	top: 0;
-	display: block;
-}
-.ui-panel-closed {
-	width: 0;
-	max-height: 100%;
-	overflow: hidden;
-	visibility: hidden;
-	left: 0;
-	clip: rect(1px,1px,1px,1px);
-}
-.ui-panel-fixed {
-	position: fixed;
-	bottom: -1px; /* Fixes gap on Chrome for Android */
-	padding-bottom: 1px;
-}
-.ui-panel-display-reveal {
-	z-index: 1;
-}
-.ui-panel-display-push {
-	z-index: 999;
-}
-.ui-panel-display-overlay {
-	z-index: 1001; /* Fixed toolbars have z-index 1000 */
-}
-.ui-panel-inner {
-	padding: 1em;
-}
-
-/* Container, page and wrapper */
-.ui-panel-page-container {
-	overflow-x: visible;
-}
-.ui-panel-page-container-themed .ui-page-active {
-	background: none;
-}
-.ui-panel-wrapper {
-	position: relative;
-	min-height: inherit;
-	border: 0;
-	overflow-x: hidden;
-	z-index: 999;
-}
-
-/* Fixed toolbars */
-.ui-panel-fixed-toolbar {
-	overflow-x: hidden;
-}
-
-/* Dismiss */
-.ui-panel-dismiss {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 100%;
-	z-index: 1002;
-	display: none;
-}
-.ui-panel-dismiss-open {
-	display: block;
-}
-
-/* Animate class is added to panel, wrapper and fixed toolbars */
-.ui-panel-animate {
-	-webkit-transition: -webkit-transform 300ms ease;
-	-webkit-transition-duration: 300ms;
-	-moz-transition: -moz-transform 300ms ease;
-	transition: transform 300ms ease;
-}
-
-/* Fix for Windows Phone issue #6349: unset the transition for transforms in case of fixed toolbars. */
-@media screen and ( max-device-width: 768px ) {
-	.ui-page-header-fixed .ui-panel-animate.ui-panel-wrapper,
-	.ui-page-footer-fixed .ui-panel-animate.ui-panel-wrapper,
-	.ui-panel-animate.ui-panel-fixed-toolbar {
-		-ms-transition: none;
-	}
-	/* We need a transitionend event ... */
-	.ui-panel-animate.ui-panel-fixed-toolbar {
-		-ms-transition: -ms-transform 1ms;
-		-ms-transform: rotate(0deg);
-	}
-}
-
-/* Hardware acceleration for smoother transitions on WebKit browsers */
-.ui-panel-animate.ui-panel:not(.ui-panel-display-reveal) {
-	-webkit-backface-visibility: hidden;
-	-webkit-transform: translate3d(0,0,0);
-}
-
-/* Panel positioning (for overlay and push) */
-/* Panel left closed */
-.ui-panel-position-left {
-	left: -17em;
-}
-/* Panel left closed animated */
-.ui-panel-animate.ui-panel-position-left.ui-panel-display-overlay,
-.ui-panel-animate.ui-panel-position-left.ui-panel-display-push {
-	left: 0;
-	-webkit-transform: translate3d(-17em,0,0);
-	-moz-transform: translate3d(-17em,0,0);
-	transform: translate3d(-17em,0,0);
-}
-/* Panel left open */
-.ui-panel-position-left.ui-panel-display-reveal, /* Unset "panel left closed" for reveal */
-.ui-panel-open.ui-panel-position-left {
-	left: 0;
-}
-/* Panel left open animated */
-.ui-panel-animate.ui-panel-open.ui-panel-position-left.ui-panel-display-overlay,
-.ui-panel-animate.ui-panel-open.ui-panel-position-left.ui-panel-display-push {
-	-webkit-transform: translate3d(0,0,0);
-	transform: translate3d(0,0,0);
-	-moz-transform: none;
-}
-/* Panel right closed */
-.ui-panel-position-right {
-	right: -17em;
-}
-/* Panel right closed animated */
-.ui-panel-animate.ui-panel-position-right.ui-panel-display-overlay,
-.ui-panel-animate.ui-panel-position-right.ui-panel-display-push {
-	right: 0;
-	-webkit-transform: translate3d(17em,0,0);
-	-moz-transform: translate3d(17em,0,0);
-	transform: translate3d(17em,0,0);
-}
-/* Panel right open */
-.ui-panel-position-right.ui-panel-display-reveal, /* Unset "panel right closed" for reveal */
-.ui-panel-position-right.ui-panel-open {
-	right: 0;
-}
-/* Panel right open animated */
-.ui-panel-animate.ui-panel-open.ui-panel-position-right.ui-panel-display-overlay,
-.ui-panel-animate.ui-panel-open.ui-panel-position-right.ui-panel-display-push {
-	-webkit-transform: translate3d(0,0,0);
-	transform: translate3d(0,0,0);
-	-moz-transform: none;
-}
-
-/* Wrapper and fixed toolbars positioning (for reveal and push) */
-/* Panel left open */
-.ui-panel-page-content-position-left {
-	left: 17em;
-	right: -17em;
-}
-/* Panel left open animated */
-.ui-panel-animate.ui-panel-page-content-position-left {
-	left: 0;
-	right: 0;
-	-webkit-transform: translate3d(17em,0,0);
-	-moz-transform: translate3d(17em,0,0);
-	transform: translate3d(17em,0,0);
-}
-/* Panel right open */
-.ui-panel-page-content-position-right {
-	left: -17em;
-	right: 17em;
-}
-/* Panel right open animated */
-.ui-panel-animate.ui-panel-page-content-position-right {
-	left: 0;
-	right: 0;
-	-webkit-transform: translate3d(-17em,0,0);
-	-moz-transform: translate3d(-17em,0,0);
-	transform: translate3d(-17em,0,0);
-}
-
-/* Dismiss model open */
-.ui-panel-dismiss-open.ui-panel-dismiss-position-left {
-	left: 17em;
-}
-.ui-panel-dismiss-open.ui-panel-dismiss-position-right {
-	right: 17em;
-}
-
-/* Shadows and borders */
-.ui-panel-display-reveal {
-	-webkit-box-shadow: inset -5px 0 5px rgba(0,0,0,.15);
-	-moz-box-shadow: inset -5px 0 5px rgba(0,0,0,.15);
-	box-shadow: inset -5px 0 5px rgba(0,0,0,.15);
-}
-.ui-panel-position-right.ui-panel-display-reveal {
-	-webkit-box-shadow: inset 5px 0 5px rgba(0,0,0,.15);
-	-moz-box-shadow: inset 5px 0 5px rgba(0,0,0,.15);
-	box-shadow: inset 5px 0 5px rgba(0,0,0,.15);
-}
-.ui-panel-display-overlay {
-	-webkit-box-shadow: 5px 0 5px rgba(0,0,0,.15);
-	-moz-box-shadow: 5px 0 5px rgba(0,0,0,.15);
-	box-shadow: 5px 0 5px rgba(0,0,0,.15);
-}
-.ui-panel-position-right.ui-panel-display-overlay {
-	-webkit-box-shadow: -5px 0 5px rgba(0,0,0,.15);
-	-moz-box-shadow: -5px 0 5px rgba(0,0,0,.15);
-	box-shadow: -5px 0 5px rgba(0,0,0,.15);
-}
-.ui-panel-open.ui-panel-position-left.ui-panel-display-push {
-	border-right-width: 1px;
-	margin-right: -1px;
-}
-.ui-panel-page-content-position-left.ui-panel-page-content-display-push {
-	margin-left: 1px;
-	width: auto;
-}
-.ui-panel-open.ui-panel-position-right.ui-panel-display-push {
-	border-left-width: 1px;
-	margin-left: -1px;
-}
-.ui-panel-page-content-position-right.ui-panel-page-content-display-push {
-	margin-right: 1px;
-	width: auto;
-}
-
-/* Responsive: wrap on wide viewports once open */
-@media (min-width:55em) {
-	.ui-responsive-panel .ui-panel-page-content-open.ui-panel-page-content-position-left {
-		margin-right: 17em;
-	}
-	.ui-responsive-panel .ui-panel-page-content-open.ui-panel-page-content-position-right {
-		margin-left: 17em;
-	}
-	.ui-responsive-panel .ui-panel-page-content-open {
-		width: auto;	
-	}
-	.ui-responsive-panel .ui-panel-dismiss-display-push,
-	.ui-responsive-panel.ui-page-active ~ .ui-panel-dismiss-display-push {
-		display: none;
-	}
 }
