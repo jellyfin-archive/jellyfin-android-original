@@ -1,5 +1,7 @@
 ﻿(function(window){function update(key,val){appStorage.setItem(key,val);Events.trigger(AppSettings,'settingupdated',[key]);}
-window.AppSettings={maxStreamingBitrate:function(val){if(val!=null){update('preferredVideoBitrate',val);}
+window.AppSettings={enableAutomaticBitrateDetection:function(val){if(val!=null){update('enableAutomaticBitrateDetection',val.toString());}
+var savedVal=appStorage.getItem('enableAutomaticBitrateDetection');if(!savedVal){if(AppInfo.isNativeApp){}}
+return appStorage.getItem('enableAutomaticBitrateDetection')!='false';},maxStreamingBitrate:function(val){if(val!=null){update('preferredVideoBitrate',val);}
 return parseInt(appStorage.getItem('preferredVideoBitrate')||'')||1500000;},maxChromecastBitrate:function(val){if(val!=null){update('chromecastBitrate',val);}
 return parseInt(appStorage.getItem('chromecastBitrate')||'')||3000000;},enableChromecastAc3:function(val){if(val!=null){update('enablechromecastac3',val.toString());}
 return appStorage.getItem('enablechromecastac3')=='true';},enableExternalPlayers:function(val){if(val!=null){update('externalplayers',val.toString());}
