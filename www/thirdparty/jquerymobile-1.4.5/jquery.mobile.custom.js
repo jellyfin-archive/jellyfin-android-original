@@ -331,7 +331,7 @@
 		hideUrlBar: true,
 
 		// Keepnative Selector
-		keepNative: ":jqmData(role='none'), :jqmData(role='nojs')",
+		keepNative: "[data-role='none']",
 
 		// Deprecated in 1.4 remove in 1.5
 		// Class assigned to page currently in view, and during transitions
@@ -660,79 +660,6 @@ $.extend( $.expr[ ":" ], {
 // deprecated
 $.ui.ie = !!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() );
 
-$.support.selectstart = "onselectstart" in document.createElement( "div" );
-$.fn.extend({
-	disableSelection: function() {
-		return this.bind( ( $.support.selectstart ? "selectstart" : "mousedown" ) +
-			".ui-disableSelection", function( event ) {
-				event.preventDefault();
-			});
-	},
-
-	enableSelection: function() {
-		return this.unbind( ".ui-disableSelection" );
-	},
-
-	zIndex: function( zIndex ) {
-		if ( zIndex !== undefined ) {
-			return this.css( "zIndex", zIndex );
-		}
-
-		if ( this.length ) {
-			var elem = $( this[ 0 ] ), position, value;
-			while ( elem.length && elem[ 0 ] !== document ) {
-				// Ignore z-index if position is set to a value where z-index is ignored by the browser
-				// This makes behavior of this function consistent across browsers
-				// WebKit always returns auto if the element is positioned
-				position = elem.css( "position" );
-				if ( position === "absolute" || position === "relative" || position === "fixed" ) {
-					// IE returns 0 when zIndex is not specified
-					// other browsers return a string
-					// we ignore the case of nested elements with an explicit value of 0
-					// <div style="z-index: -10;"><div style="z-index: 0;"></div></div>
-					value = parseInt( elem.css( "zIndex" ), 10 );
-					if ( !isNaN( value ) && value !== 0 ) {
-						return value;
-					}
-				}
-				elem = elem.parent();
-			}
-		}
-
-		return 0;
-	}
-});
-
-// $.ui.plugin is deprecated. Use $.widget() extensions instead.
-$.ui.plugin = {
-	add: function( module, option, set ) {
-		var i,
-			proto = $.ui[ module ].prototype;
-		for ( i in set ) {
-			proto.plugins[ i ] = proto.plugins[ i ] || [];
-			proto.plugins[ i ].push( [ option, set[ i ] ] );
-		}
-	},
-	call: function( instance, name, args, allowDisconnected ) {
-		var i,
-			set = instance.plugins[ name ];
-
-		if ( !set ) {
-			return;
-		}
-
-		if ( !allowDisconnected && ( !instance.element[ 0 ].parentNode || instance.element[ 0 ].parentNode.nodeType === 11 ) ) {
-			return;
-		}
-
-		for ( i = 0; i < set.length; i++ ) {
-			if ( instance.options[ set[ i ][ 0 ] ] ) {
-				set[ i ][ 1 ].apply( instance.element, args );
-			}
-		}
-	}
-};
-
 })( jQuery );
 
 (function( $, window, undefined ) {
@@ -785,31 +712,6 @@ $.ui.plugin = {
 			return $.mobile.path.makeUrlAbsolute( url, base );
 		},
 		removeActiveLinkClass: function( forceRemoval ) {
-		},
-
-		// DEPRECATED in 1.4
-		// Find the closest parent with a theme class on it. Note that
-		// we are not using $.fn.closest() on purpose here because this
-		// method gets called quite a bit and we need it to be as fast
-		// as possible.
-		getInheritedTheme: function( el, defaultTheme ) {
-			var e = el[ 0 ],
-				ltr = "",
-				re = /ui-(bar|body|overlay)-([a-z])\b/,
-				c, m;
-			while ( e ) {
-				c = e.className || "";
-				if ( c && ( m = re.exec( c ) ) && ( ltr = m[ 2 ] ) ) {
-					// We found a parent with a theme class
-					// on it so bail from this loop.
-					break;
-				}
-
-				e = e.parentNode;
-			}
-			// Return the theme letter we found, if none, return the
-			// specified default.
-			return ltr || defaultTheme || "a";
 		},
 
 		enhanceable: function( elements ) {
@@ -903,12 +805,7 @@ $.ui.plugin = {
 
 			// Run buttonmarkup
 			if ( $.fn.buttonMarkup ) {
-			    $(thisElem.querySelectorAll($.fn.buttonMarkup.initSelector)).not(keepNative).jqmEnhanceable().buttonMarkup();
-			}
-
-			// Add classes for fieldContain
-			if ( $.fn.fieldcontain ) {
-			    $(thisElem.querySelectorAll("*[data-role='fieldcontain']")).not(keepNative).jqmEnhanceable().fieldcontain();
+			    $(thisElem.querySelectorAll($.fn.buttonMarkup.initSelector)).jqmEnhanceable().buttonMarkup();
 			}
 
 			// Enhance widgets
@@ -1692,7 +1589,7 @@ $.fn.buttonMarkup.defaults = {
 };
 
 $.extend( $.fn.buttonMarkup, {
-    initSelector: "a[data-role='button'], .ui-bar > a, .ui-bar > *[data-role='controlgroup'] > a, button"
+    initSelector: "a[data-role='button'], button:not([data-role='none'])"
 });
 
 })( jQuery );
@@ -2408,16 +2305,6 @@ $.widget( "mobile.page", {
 			.join( ", " ) );
 	}
 });
-})( jQuery );
-
-
-(function( $, undefined ) {
-
-// Deprecated in 1.4
-$.fn.fieldcontain = function(/* options */) {
-	return this.addClass( "ui-field-contain" );
-};
-
 })( jQuery );
 
 
@@ -4037,7 +3924,9 @@ $.fn.fieldcontain = function(/* options */) {
 			        if ($.mobile.filterHtml) {
 			            html = $.mobile.filterHtml(html);
 			        }
-			        pageCache[absUrl.split('?')[0]] = html;
+			        if (absUrl.toLowerCase().indexOf('/configurationpage?') == -1) {
+                        pageCache[absUrl.split('?')[0]] = html;
+                    }
                 }
 
 				//dont update the base tag if we are prefetching
@@ -4071,6 +3960,8 @@ $.fn.fieldcontain = function(/* options */) {
 				    dependencies.push('jqmpopup');
 				    dependencies.push('jqmlistview');
 				    dependencies.push('jqmcollapsible');
+				    dependencies.push('jqmcontrolgroup');
+				    dependencies.push('jqmcheckbox');
                 }
 
 				var currentSelf = this;
@@ -4866,13 +4757,7 @@ $.fn.fieldcontain = function(/* options */) {
 
 
 (function( $, window, undefined ) {
-	var	$html = $( "html" ),
-		$window = $.mobile.window;
-
-	//remove initial build class (only present on first pageshow)
-	function hideRenderingClass() {
-		$html.removeClass( "ui-mobile-rendering" );
-	}
+	var	$window = $.mobile.window;
 
 	// trigger mobileinit event - useful hook for configuring $.mobile settings before they're used
 	$( window.document ).trigger( "mobileinit" );
@@ -4890,27 +4775,15 @@ $.fn.fieldcontain = function(/* options */) {
 		$.mobile.ajaxEnabled = false;
 	}
 
-	// Add mobile, initial load "rendering" classes to docEl
-	$html.addClass( "ui-mobile ui-mobile-rendering" );
-
-	// This is a fallback. If anything goes wrong (JS errors, etc), or events don't fire,
-	// this ensures the rendering class is removed after 5 seconds, so content is visible and accessible
-	setTimeout( hideRenderingClass, 5000 );
-
 	$.extend( $.mobile, {
 		// find and enhance the pages in the dom and transition to the first page.
 		initializePage: function() {
 			// find present pages
 			var path = $.mobile.path,
-				$pages = $("*[data-role='page'], *[data-role='dialog']"),
+				$pages = $("div[data-role='page']"),
 				hash = path.stripHash( path.stripQueryParams(path.parseLocation().hash) ),
 				theLocation = $.mobile.path.parseLocation(),
 				hashPage = hash ? document.getElementById( hash ) : undefined;
-
-			// if no pages are found, create one with body's inner html
-			if ( !$pages.length ) {
-				$pages = $( "body" ).wrapInner( "<div data-" + $.mobile.ns + "role='page'></div>" ).children( 0 );
-			}
 
 			// add dialogs, set data-url attrs
 			$pages.each(function() {
@@ -4935,16 +4808,6 @@ $.fn.fieldcontain = function(/* options */) {
 			// initialize navigation events now, after mobileinit has occurred and the page container
 			// has been created but before the rest of the library is alerted to that fact
 			$.mobile.navreadyDeferred.resolve();
-
-			// alert listeners that the pagecontainer has been determined for binding
-			// to events triggered on it
-			$window.trigger( "pagecontainercreate" );
-
-			// cue page loading message
-			$.mobile.loading( "show" );
-
-			//remove initial build class (only present on first pageshow)
-			hideRenderingClass();
 
 			// if hashchange listening is disabled, there's no hash deeplink,
 			// the hash is not valid (contains more than one # or does not start with #)
@@ -5109,181 +4972,6 @@ $.mobile.behaviors.addFirstLastClasses = {
 
 (function( $, undefined ) {
 
-$.widget( "mobile.controlgroup", $.extend( {
-	options: {
-		enhanced: false,
-		theme: null,
-		shadow: false,
-		corners: true,
-		excludeInvisible: true,
-		type: "vertical",
-		mini: false
-	},
-
-	_create: function() {
-		var elem = this.element,
-			opts = this.options,
-			keepNative = $.mobile.page.prototype.keepNativeSelector();
-
-		// Run buttonmarkup
-		if ( $.fn.buttonMarkup ) {
-			this.element
-				.find( $.fn.buttonMarkup.initSelector )
-				.not( keepNative )
-				.buttonMarkup();
-		}
-		// Enhance child widgets
-		$.each( this._childWidgets, $.proxy( function( number, widgetName ) {
-			if ( $.mobile[ widgetName ] ) {
-				this.element
-					.find( $.mobile[ widgetName ].initSelector )
-					.not( keepNative )[ widgetName ]();
-			}
-		}, this ));
-
-		$.extend( this, {
-			_ui: null,
-			_initialRefresh: true
-		});
-
-		if ( opts.enhanced ) {
-			this._ui = {
-				groupLegend: elem.children( ".ui-controlgroup-label" ).children(),
-				childWrapper: elem.children( ".ui-controlgroup-controls" )
-			};
-		} else {
-			this._ui = this._enhance();
-		}
-
-	},
-
-	_childWidgets: [ "checkboxradio", "selectmenu", "button" ],
-
-	_themeClassFromOption: function( value ) {
-		return ( value ? ( value === "none" ? "" : "ui-group-theme-" + value ) : "" );
-	},
-
-	_enhance: function() {
-		var elem = this.element,
-			opts = this.options,
-			ui = {
-				groupLegend: elem.children( "legend" ),
-				childWrapper: elem
-					.addClass( "ui-controlgroup " +
-						"ui-controlgroup-" +
-							( opts.type === "horizontal" ? "horizontal" : "vertical" ) + " " +
-						this._themeClassFromOption( opts.theme ) + " " +
-						( opts.corners ? "ui-corner-all " : "" ) +
-						( opts.mini ? "ui-mini " : "" ) )
-					.wrapInner( "<div " +
-						"class='ui-controlgroup-controls " +
-							( opts.shadow === true ? "ui-shadow" : "" ) + "'></div>" )
-					.children()
-			};
-
-		if ( ui.groupLegend.length > 0 ) {
-			$( "<div role='heading' class='ui-controlgroup-label'></div>" )
-				.append( ui.groupLegend )
-				.prependTo( elem );
-		}
-
-		return ui;
-	},
-
-	_init: function() {
-		this.refresh();
-	},
-
-	_setOptions: function( options ) {
-		var callRefresh, returnValue,
-			elem = this.element;
-
-		// Must have one of horizontal or vertical
-		if ( options.type !== undefined ) {
-			elem
-				.removeClass( "ui-controlgroup-horizontal ui-controlgroup-vertical" )
-				.addClass( "ui-controlgroup-" + ( options.type === "horizontal" ? "horizontal" : "vertical" ) );
-			callRefresh = true;
-		}
-
-		if ( options.theme !== undefined ) {
-			elem
-				.removeClass( this._themeClassFromOption( this.options.theme ) )
-				.addClass( this._themeClassFromOption( options.theme ) );
-		}
-
-		if ( options.corners !== undefined ) {
-			elem.toggleClass( "ui-corner-all", options.corners );
-		}
-
-		if ( options.mini !== undefined ) {
-			elem.toggleClass( "ui-mini", options.mini );
-		}
-
-		if ( options.shadow !== undefined ) {
-			this._ui.childWrapper.toggleClass( "ui-shadow", options.shadow );
-		}
-
-		if ( options.excludeInvisible !== undefined ) {
-			this.options.excludeInvisible = options.excludeInvisible;
-			callRefresh = true;
-		}
-
-		returnValue = this._super( options );
-
-		if ( callRefresh ) {
-			this.refresh();
-		}
-
-		return returnValue;
-	},
-
-	container: function() {
-		return this._ui.childWrapper;
-	},
-
-	refresh: function() {
-		var $el = this.container(),
-			els = $el.find( ".ui-btn" ).not( ".ui-slider-handle" ),
-			create = this._initialRefresh;
-		if ( $.mobile.checkboxradio ) {
-			$el.find( ":mobile-checkboxradio" ).checkboxradio( "refresh" );
-		}
-		this._addFirstLastClasses( els,
-			this.options.excludeInvisible ? this._getVisibles( els, create ) : els,
-			create );
-		this._initialRefresh = false;
-	},
-
-	// Caveat: If the legend is not the first child of the controlgroup at enhance
-	// time, it will be after _destroy().
-	_destroy: function() {
-		var ui, buttons,
-			opts = this.options;
-
-		if ( opts.enhanced ) {
-			return this;
-		}
-
-		ui = this._ui;
-		buttons = this.element
-			.removeClass( "ui-controlgroup " +
-				"ui-controlgroup-horizontal ui-controlgroup-vertical ui-corner-all ui-mini " +
-				this._themeClassFromOption( opts.theme ) )
-			.find( ".ui-btn" )
-			.not( ".ui-slider-handle" );
-
-		this._removeFirstLastClasses( buttons );
-
-		ui.groupLegend.unwrap();
-		ui.childWrapper.children().unwrap();
-	}
-}, $.mobile.behaviors.addFirstLastClasses ) );
-
-})(jQuery);
-
-(function( $, undefined ) {
-
 $.mobile.behaviors.formReset = {
 	_handleFormReset: function() {
 		this._on( this.element.closest( "form" ), {
@@ -5293,358 +4981,6 @@ $.mobile.behaviors.formReset = {
 		});
 	}
 };
-
-})( jQuery );
-
-/*
-* "checkboxradio" plugin
-*/
-
-(function( $, undefined ) {
-
-var escapeId = $.mobile.path.hashToSelector;
-
-$.widget( "mobile.checkboxradio", $.extend( {
-
-    initSelector: "input[type='checkbox'],input[type='radio']",
-
-	options: {
-		theme: "inherit",
-		mini: false,
-		wrapperClass: null,
-		enhanced: false,
-		iconpos: "left"
-
-	},
-	_create: function() {
-		var input = this.element,
-			o = this.options,
-			inheritAttr = function( input, dataAttr ) {
-				return input.jqmData( dataAttr ) ||
-					input.closest( "form, fieldset" ).jqmData( dataAttr );
-			},
-			label = this.options.enhanced ?
-				{
-					element: this.element.siblings( "label" ),
-					isParent: false
-				} :
-				this._findLabel(),
-			inputtype = input[0].type,
-			checkedClass = "ui-" + inputtype + "-on",
-			uncheckedClass = "ui-" + inputtype + "-off";
-
-		if ( inputtype !== "checkbox" && inputtype !== "radio" ) {
-			return;
-		}
-
-		if ( this.element[0].disabled ) {
-			this.options.disabled = true;
-		}
-
-		o.iconpos = inheritAttr( input, "iconpos" ) ||
-			label.element.attr( "data-" + $.mobile.ns + "iconpos" ) || o.iconpos,
-
-		// Establish options
-		o.mini = inheritAttr( input, "mini" ) || o.mini;
-
-		// Expose for other methods
-		$.extend( this, {
-			input: input,
-			label: label.element,
-			labelIsParent: label.isParent,
-			inputtype: inputtype,
-			checkedClass: checkedClass,
-			uncheckedClass: uncheckedClass
-		});
-
-		if ( !this.options.enhanced ) {
-			this._enhance();
-		}
-
-		this._on( label.element, {
-			mouseover: "_handleLabelVMouseOver",
-			click: "_handleLabelVClick"
-		});
-
-		this._on( input, {
-			mousedown: "_cacheVals",
-			click: "_handleInputVClick",
-			focus: "_handleInputFocus",
-			blur: "_handleInputBlur"
-		});
-
-		this._handleFormReset();
-		this.refresh();
-	},
-
-	_findLabel: function() {
-		var parentLabel, label, isParent,
-			input = this.element,
-			labelsList = input[ 0 ].labels;
-
-		if( labelsList && labelsList.length > 0 ) {
-			label = $( labelsList[ 0 ] );
-			isParent = $.contains( label[ 0 ], input[ 0 ] );
-		} else {
-			parentLabel = input.closest( "label" );
-			isParent = ( parentLabel.length > 0 );
-
-			// NOTE: Windows Phone could not find the label through a selector
-			// filter works though.
-			label = isParent ? parentLabel :
-				$( this.document[ 0 ].getElementsByTagName( "label" ) )
-					.filter( "[for='" + escapeId( input[ 0 ].id ) + "']" )
-					.first();
-		}
-
-		return {
-			element: label,
-			isParent: isParent
-		};
-	},
-
-	_enhance: function() {
-		this.label.addClass( "ui-btn ui-corner-all");
-
-		if ( this.labelIsParent ) {
-			this.input.add( this.label ).wrapAll( this._wrapper() );
-		} else {
-			//this.element.replaceWith( this.input.add( this.label ).wrapAll( this._wrapper() ) );
-			this.element.wrap( this._wrapper() );
-			this.element.parent().prepend( this.label );
-		}
-
-		// Wrap the input + label in a div
-
-		this._setOptions({
-			"theme": this.options.theme,
-			"iconpos": this.options.iconpos,
-			"mini": this.options.mini
-		});
-
-	},
-
-	_wrapper: function() {
-		return $( "<div class='"  +
-			( this.options.wrapperClass ? this.options.wrapperClass : "" ) +
-			" ui-" + this.inputtype +
-			( this.options.disabled ? " ui-state-disabled" : "" ) + "' ></div>" );
-	},
-
-	_handleInputFocus: function() {
-		this.label.addClass( $.mobile.focusClass );
-	},
-
-	_handleInputBlur: function() {
-		this.label.removeClass( $.mobile.focusClass );
-	},
-
-	_handleInputVClick: function() {
-		// Adds checked attribute to checked input when keyboard is used
-		this.element.prop( "checked", this.element.is( ":checked" ) );
-		this._getInputSet().not( this.element ).prop( "checked", false );
-		this._updateAll( true );
-	},
-
-	_handleLabelVMouseOver: function( event ) {
-		if ( this.label.parent().hasClass( "ui-state-disabled" ) ) {
-			event.stopPropagation();
-		}
-	},
-
-	_handleLabelVClick: function( event ) {
-		var input = this.element;
-
-		if ( input.is( ":disabled" ) ) {
-			event.preventDefault();
-			return;
-		}
-
-		this._cacheVals();
-
-		input.prop( "checked", this.inputtype === "radio" && true || !input.prop( "checked" ) );
-
-		// trigger click handler's bound directly to the input as a substitute for
-		// how label clicks behave normally in the browsers
-		// TODO: it would be nice to let the browser's handle the clicks and pass them
-		//       through to the associate input. we can swallow that click at the parent
-		//       wrapper element level
-		input.triggerHandler( "click" );
-
-		// Input set for common radio buttons will contain all the radio
-		// buttons, but will not for checkboxes. clearing the checked status
-		// of other radios ensures the active button state is applied properly
-		this._getInputSet().not( input ).prop( "checked", false );
-
-		this._updateAll();
-		return false;
-	},
-
-	_cacheVals: function() {
-		this._getInputSet().each( function() {
-			$( this ).attr("data-" + $.mobile.ns + "cacheVal", this.checked );
-		});
-	},
-
-	// Returns those radio buttons that are supposed to be in the same group as
-	// this radio button. In the case of a checkbox or a radio lacking a name
-	// attribute, it returns this.element.
-	_getInputSet: function() {
-		var selector, formId,
-			radio = this.element[ 0 ],
-			name = radio.name,
-			form = radio.form,
-			doc = this.element.parents().last().get( 0 ),
-
-			// A radio is always a member of its own group
-			radios = this.element;
-
-		// Only start running selectors if this is an attached radio button with a name
-		if ( name && this.inputtype === "radio" && doc ) {
-			selector = "input[type='radio'][name='" + escapeId( name ) + "']";
-
-			// If we're inside a form
-			if ( form ) {
-				formId = form.getAttribute( "id" );
-
-				// If the form has an ID, collect radios scattered throught the document which
-				// nevertheless are part of the form by way of the value of their form attribute
-				if ( formId ) {
-					radios = $( selector + "[form='" + escapeId( formId ) + "']", doc );
-				}
-
-				// Also add to those the radios in the form itself
-				radios = $( form ).find( selector ).filter( function() {
-
-					// Some radios inside the form may belong to some other form by virtue of
-					// having a form attribute defined on them, so we must filter them out here
-					return ( this.form === form );
-				}).add( radios );
-
-			// If we're outside a form
-			} else {
-
-				// Collect all those radios which are also outside of a form and match our name
-				radios = $( selector, doc ).filter( function() {
-					return !this.form;
-				});
-			}
-		}
-		return radios;
-	},
-
-	_updateAll: function( changeTriggered ) {
-		var self = this;
-
-		this._getInputSet().each( function() {
-			var $this = $( this );
-
-			if ( ( this.checked || self.inputtype === "checkbox" ) && !changeTriggered ) {
-				$this.trigger( "change" );
-			}
-		})
-		.checkboxradio( "refresh" );
-	},
-
-	_reset: function() {
-		this.refresh();
-	},
-
-	// Is the widget supposed to display an icon?
-	_hasIcon: function() {
-		var controlgroup, controlgroupWidget,
-			controlgroupConstructor = $.mobile.controlgroup;
-
-		// If the controlgroup widget is defined ...
-		if ( controlgroupConstructor ) {
-			controlgroup = this.element.closest(
-				":mobile-controlgroup," +
-				controlgroupConstructor.prototype.initSelector );
-
-			// ... and the checkbox is in a controlgroup ...
-			if ( controlgroup.length > 0 ) {
-
-				// ... look for a controlgroup widget instance, and ...
-				controlgroupWidget = $.data( controlgroup[ 0 ], "mobile-controlgroup" );
-
-				// ... if found, decide based on the option value, ...
-				return ( ( controlgroupWidget ? controlgroupWidget.options.type :
-
-					// ... otherwise decide based on the "type" data attribute.
-					controlgroup.attr( "data-" + $.mobile.ns + "type" ) ) !== "horizontal" );
-			}
-		}
-
-		// Normally, the widget displays an icon.
-		return true;
-	},
-
-	refresh: function() {
-		var isChecked = this.element[ 0 ].checked,
-			active = $.mobile.activeBtnClass,
-			iconposClass = "ui-btn-icon-" + this.options.iconpos,
-			addClasses = [],
-			removeClasses = [];
-
-		if ( this._hasIcon() ) {
-			removeClasses.push( active );
-			addClasses.push( iconposClass );
-		} else {
-			removeClasses.push( iconposClass );
-			( isChecked ? addClasses : removeClasses ).push( active );
-		}
-
-		if ( isChecked ) {
-			addClasses.push( this.checkedClass );
-			removeClasses.push( this.uncheckedClass );
-		} else {
-			addClasses.push( this.uncheckedClass );
-			removeClasses.push( this.checkedClass );
-		}
-
-		this.widget().toggleClass( "ui-state-disabled", this.element.prop( "disabled" ) );
-
-		this.label
-			.addClass( addClasses.join( " " ) )
-			.removeClass( removeClasses.join( " " ) );
-	},
-
-	widget: function() {
-		return this.label.parent();
-	},
-
-	_setOptions: function( options ) {
-		var label = this.label,
-			currentOptions = this.options,
-			outer = this.widget(),
-			hasIcon = this._hasIcon();
-
-		if ( options.disabled !== undefined ) {
-			this.input.prop( "disabled", !!options.disabled );
-			outer.toggleClass( "ui-state-disabled", !!options.disabled );
-		}
-		if ( options.mini !== undefined ) {
-			outer.toggleClass( "ui-mini", !!options.mini );
-		}
-		if ( options.theme !== undefined ) {
-			label
-				.removeClass( "ui-btn-" + currentOptions.theme )
-				.addClass( "ui-btn-" + options.theme );
-		}
-		if ( options.wrapperClass !== undefined ) {
-			outer
-				.removeClass( currentOptions.wrapperClass )
-				.addClass( options.wrapperClass );
-		}
-		if ( options.iconpos !== undefined && hasIcon ) {
-			label.removeClass( "ui-btn-icon-" + currentOptions.iconpos ).addClass( "ui-btn-icon-" + options.iconpos );
-		} else if ( !hasIcon ) {
-			label.removeClass( "ui-btn-icon-" + currentOptions.iconpos );
-		}
-		this._super( options );
-	}
-
-}, $.mobile.behaviors.formReset ) );
 
 })( jQuery );
 

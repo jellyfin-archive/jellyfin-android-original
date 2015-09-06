@@ -6,8 +6,14 @@ import com.mb.android.webviews.IWebView;
 
 import org.xwalk.core.JavascriptInterface;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import mediabrowser.apiinteraction.ApiEventListener;
 import mediabrowser.apiinteraction.IConnectionManager;
+import mediabrowser.apiinteraction.QueryStringDictionary;
 import mediabrowser.apiinteraction.android.AndroidConnectionManager;
 import mediabrowser.apiinteraction.android.AndroidCredentialProvider;
 import mediabrowser.apiinteraction.android.AndroidDevice;
@@ -112,5 +118,79 @@ public class ApiClientBridge {
 
         httpClient.Send(request, new HttpRequestResponse(jsonSerializer, webView, callbackId, logger));
 
+    }
+
+    @JavascriptInterface
+    public void getDownloadSpeed(final long downloadBytes, final String address) {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getDownloadSpeedInternal(downloadBytes, address);
+            }
+        });
+
+        thread.start();
+    }
+
+    private void getDownloadSpeedInternal(long downloadBytes, String address) {
+
+        HttpURLConnection conn = null;
+
+        try
+        {
+            logger.Info("Bitrate test url: %s", address);
+            URL url = new URL(address);
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoInput(true); // Allow Inputs
+            conn.setUseCaches(false); // Don't use a Cached Copy
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+
+            final long startTime = System.currentTimeMillis();
+
+            InputStream inputStream = conn.getInputStream();
+
+            try {
+
+                byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
+                int n;
+
+                while ( (n = inputStream.read(byteChunk)) > 0 ) {
+
+                }
+
+                double time = System.currentTimeMillis() - startTime;
+                double bitrate = downloadBytes;
+                bitrate /= time;
+                bitrate *= 1000;
+                bitrate *= 8;
+
+                long result = Math.round(bitrate);
+                logger.Info("Detected download speed of %s", result);
+                RespondToWebView(String.format("AndroidAjax.onDownloadSpeedResponse(%s);", result));
+            }
+            catch (IOException ioException){
+
+                logger.ErrorException("Error performing download speed test", ioException);
+                RespondToWebView("AndroidAjax.onDownloadSpeedResponse(0);");
+                return;
+            }
+            finally {
+                inputStream.close();
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.ErrorException("Error performing download speed test", ex);
+            RespondToWebView("AndroidAjax.onDownloadSpeedResponse(0);");
+        }
+    }
+
+    private void RespondToWebView(final String js) {
+
+        //logger.Debug("Sending url to webView: %s", js);
+        webView.sendJavaScript(js);
     }
 }

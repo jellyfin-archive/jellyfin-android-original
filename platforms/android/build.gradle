@@ -315,13 +315,11 @@ dependencies {
     amazonarmv7Compile(name: 'emby.amazoniap', ext: 'aar')
     amazonx86Compile files('libs/in-app-purchasing-2.0.61.jar')
     amazonarmv7Compile files('libs/in-app-purchasing-2.0.61.jar')
-    
-	googlex86Compile files('libs/libvlc_x86.jar')
+    googlex86Compile files('libs/libvlc_x86.jar')
     googlearmv7Compile files('libs/libvlc_arm.jar')
     amazonx86Compile files('libs/libvlc_x86.jar')
     amazonarmv7Compile files('libs/libvlc_arm.jar')
-    
-	// FLAVOR-SPECIFIC DEPENDENCIES END
+    // FLAVOR-SPECIFIC DEPENDENCIES END
 }
 
 def promptForReleaseKeyPassword() {
