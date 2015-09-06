@@ -293,76 +293,6 @@ button.ui-btn-icon-notext,
 }
 
 
-.ui-field-contain,
-.ui-mobile fieldset.ui-field-contain {
-	display: block;
-	position: relative;
-	overflow: visible;
-	clear: both;
-	padding: .8em 0;
-}
-.ui-field-contain > label ~ [class*="ui-"],
-.ui-field-contain .ui-controlgroup-controls {
-	margin: 0;
-}
-.ui-field-contain:last-child {
-	border-bottom-width: 0;
-}
-@media (min-width: 28em) {
-	.ui-field-contain,
-	.ui-mobile fieldset.ui-field-contain {
-		padding: 0;
-		margin: 1em 0;
-		border-bottom-width: 0;
-	}
-	.ui-field-contain:before,
-	.ui-field-contain:after {
-		content: "";
-		display: table;
-	}
-	.ui-field-contain:after {
-		clear: both;
-	}
-	.ui-field-contain > label,
-	.ui-field-contain .ui-controlgroup-label,
-	.ui-field-contain > .ui-rangeslider > label {
-		float: left;
-		width: 20%;
-		margin: .5em 2% 0 0;
-	}
-	.ui-popup .ui-field-contain > label,
-	.ui-popup .ui-field-contain .ui-controlgroup-label,
-	.ui-popup .ui-field-contain > .ui-rangeslider > label {
-		float: none;
-		width: auto;
-		margin: 0 0 .4em;
-	}
-	.ui-field-contain > label ~ [class*="ui-"],
-	.ui-field-contain .ui-controlgroup-controls {
-		float: left;
-		width: 78%;
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
-		box-sizing: border-box;
-	}
-	/* ui-hide-label deprecated in 1.4. TODO: Remove in 1.5 */
-	.ui-hide-label > label ~ [class*="ui-"],
-	.ui-hide-label .ui-controlgroup-controls,
-	.ui-popup .ui-field-contain > label ~ [class*="ui-"],
-	.ui-popup .ui-field-contain .ui-controlgroup-controls {
-		float: none;
-		width: 100%;
-	}
-	.ui-field-contain > label ~ .ui-btn-inline {
-		width: auto;
-		margin-right: .625em;
-	}
-	.ui-field-contain > label ~ .ui-btn-inline.ui-btn-icon-notext {
-		width: 1.75em;
-	}
-}
-
-
 /* content configurations. */
 .ui-grid-a,
 .ui-grid-b,
@@ -569,60 +499,6 @@ li.ui-block-e {
 }
 /* Fixes IE/WP filter alpha opacity bugs */
 .ui-input-btn.ui-state-disabled input {
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	clip: rect(1px,1px,1px,1px);
-}
-
-
-.ui-checkbox,
-.ui-radio {
-	margin: .5em 0;
-	position: relative;
-}
-.ui-checkbox .ui-btn,
-.ui-radio .ui-btn {
-	margin: 0;
-	text-align: left;
-	white-space: normal; /* Nowrap + ellipsis doesn't work on label. Issue #1419. */
-	z-index: 2;
-}
-.ui-controlgroup .ui-checkbox .ui-btn.ui-focus,
-.ui-controlgroup .ui-radio .ui-btn.ui-focus {
-	z-index: 3;
-}
-.ui-checkbox .ui-btn-icon-top,
-.ui-radio .ui-btn-icon-top,
-.ui-checkbox .ui-btn-icon-bottom,
-.ui-radio .ui-btn-icon-bottom {
-	text-align: center;
-}
-.ui-controlgroup-horizontal .ui-checkbox .ui-btn:after,
-.ui-controlgroup-horizontal .ui-radio .ui-btn:after {
-	content: none;
-	display: none;
-}
-/* Native input positioning */
-.ui-checkbox input,
-.ui-radio input {
-	position: absolute;
-	left: .466em;
-	top: 50%;
-	width: 22px;
-	height: 22px;
-	margin: -11px 0 0 0;
-	outline: 0 !important;
-	z-index: 1;
-}
-.ui-controlgroup-horizontal .ui-checkbox input,
-.ui-controlgroup-horizontal .ui-radio input {
-	left: 50%;
-	margin-left: -9px;
-}
-.ui-checkbox input:disabled,
-.ui-radio input:disabled {
 	position: absolute !important;
 	height: 1px;
 	width: 1px;
