@@ -11,6 +11,6 @@ var minutes=program.RunTimeTicks/600000000;minutes=Math.round(minutes||1)+' min'
 if(program.SeriesTimerId){html+='<div class="timerCircle seriesTimerCircle"></div>';html+='<div class="timerCircle seriesTimerCircle"></div>';html+='<div class="timerCircle seriesTimerCircle"></div>';}
 else if(program.TimerId){html+='<div class="timerCircle"></div>';}
 html+='</div>';html+='<div class="programAccent"></div>';html+='</div>';html+='</a>';}
-$('#childrenContent',page).html(html).trigger('create').createGuideHoverMenu('.tvProgramInfo');}
+$('#childrenContent',page).html(html).createGuideHoverMenu('.tvProgramInfo');}
 function loadPrograms(page,channelId){ApiClient.getLiveTvPrograms({ChannelIds:channelId,UserId:Dashboard.getCurrentUserId(),HasAired:false,SortBy:"StartDate"}).done(function(result){renderPrograms(page,result);Dashboard.hideLoadingMsg();});}
 window.LiveTvChannelPage={renderPrograms:loadPrograms};})(jQuery,document);

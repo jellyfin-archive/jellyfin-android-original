@@ -181,7 +181,7 @@ public class MainActivity extends CordovaActivity
         }
     }
 
-    @JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void beginPurchase(String id) {
 
         try {
