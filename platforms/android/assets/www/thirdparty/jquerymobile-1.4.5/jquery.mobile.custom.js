@@ -3711,6 +3711,10 @@ $.widget( "mobile.page", {
 
 			if (from) {
 			    from[0].style.display = 'none';
+			    //var pages = document.querySelectorAll("div[data-role='page']");
+                //for (var i = 0, length = pages.length; i < length; i++) {
+                //    pages[i].style.display = 'none';
+                //}
 			}
 			to[0].style.display = 'block';
 			this._triggerCssTransitionEvents(to, from);
@@ -4221,9 +4225,6 @@ $.widget( "mobile.page", {
 
 (function( $, window, undefined ) {
 	var	$window = $.mobile.window;
-
-	// trigger mobileinit event - useful hook for configuring $.mobile settings before they're used
-	$( window.document ).trigger( "mobileinit" );
 
 	// support conditions
 	// if device support condition(s) aren't met, leave things as they are -> a basic, usable experience,
