@@ -16,7 +16,6 @@
   <preference name="UIWebViewBounce" value="false" />
   <preference name="DisallowOverscroll" value="true" />
   <preference name="webviewbounce" value="false" />
-  <preference name="BackgroundColor" value="0xff222222" />
   <preference name="BackupWebStorage" value="local" />
   <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
   <preference name="SplashScreen" value="res/icon.png" /> <!-- defaults to "img/logo.png" -->
@@ -73,6 +72,7 @@
 	<preference name="StatusBarBackgroundColor" value="#1c1c1c" />
 	<preference name="StatusBarStyle" value="blacktranslucent" />
 	<preference name="SplashScreenBackgroundColor" value="#1c1c1c" /> <!-- defaults to "#464646" -->
+	<preference name="BackgroundColor" value="0xff000000" />
   </platform>
   <platform name="android">
 	<preference name="android-minSdkVersion" value="14" />
@@ -99,5 +99,6 @@
     <splash src="res/android/xxhdpi/splash-port.png" density="port-xxhdpi"/>
     <splash src="res/android/xxxhdpi/splash-port.png" density="port-xxxhdpi"/>
 	<preference name="SplashScreenBackgroundColor" value="#1f1f1f" /> <!-- defaults to "#464646" -->
+	<preference name="BackgroundColor" value="0xff222222" />
   </platform>
 </widget>
