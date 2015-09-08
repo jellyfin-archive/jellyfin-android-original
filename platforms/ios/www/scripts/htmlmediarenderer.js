@@ -1,5 +1,5 @@
-﻿(function(){var supportsTextTracks;var isViblastStarted;var requiresSettingStartTimeOnStart;function htmlMediaRenderer(options){var mediaElement;var self=this;function hideStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.hide();}}
-function showStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.show();}}
+﻿(function(){var supportsTextTracks;var isViblastStarted;var requiresSettingStartTimeOnStart;function htmlMediaRenderer(options){var mediaElement;var self=this;function hideStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.backgroundColorByName("black");StatusBar.overlaysWebView(true);StatusBar.hide();}}
+function showStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.show();StatusBar.overlaysWebView(false);}}
 function onEnded(){showStatusBar();$(self).trigger('ended');}
 function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=(duration-1)){onEnded();return;}}}
 $(self).trigger('timeupdate');}
