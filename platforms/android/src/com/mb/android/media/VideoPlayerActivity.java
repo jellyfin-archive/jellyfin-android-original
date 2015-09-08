@@ -1315,6 +1315,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     public void onMediaPlayerEvent(MediaPlayer.Event event) {
         switch (event.type) {
             case MediaPlayer.Event.Playing:
+                mForcedTime = -1;
+                mLastTime = -1;
                 if (mService.getCurrentMediaWrapper().getType() == MediaWrapper.TYPE_PLAYLIST){
                     mIgnorePlaylistEnd = true;
                 } else
@@ -2053,8 +2055,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         String selectedValue = "";
         for (NameValuePair pair : mQualityList) {
-            if (maxBitrate >= Integer.parseInt( pair.getValue())) {
-                selectedValue = pair.getValue();
+            String[] parts = pair.getValue().split("-");
+            if (maxBitrate >= Integer.parseInt(parts[0])) {
+                selectedValue = parts[0];
                 break;
             }
         }
@@ -2071,10 +2074,12 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 });
     }
 
-    public void changeLocation(String location) {
+    public void changeLocation(String location, MediaSourceInfo mediaSourceInfo, PlayMethod playMethod, long startPositionTicks) {
+
+        location = normalizeLocation(location, mediaSourceInfo, playMethod, startPositionTicks);
 
         int playlistIndex = savedIndexPosition;
-        long currentTime = mService.getTime();
+        //long currentTime = mService.getTime();
 
         Uri newUri = Uri.parse(location);
 
@@ -2086,9 +2091,25 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         mSubtitleTracksList = null;
         mQualityList = null;
 
-        mService.pause();
-        mService.playIndex(playlistIndex, 0);
+        mService.restartIndex(playlistIndex, 0);
         mUri = newUri;
+        mService.addCallback(this);
+    }
+
+    private String normalizeLocation(String location, MediaSourceInfo mediaSourceInfo, PlayMethod playMethod, long startPositionTicks) {
+
+        if (playMethod == PlayMethod.Transcode && mediaSourceInfo.getRunTimeTicks() != null && mediaSourceInfo.getRunTimeTicks() > 0) {
+
+            mService.setEnableServerSeek(true);
+            mService.setTranscodingOffsetPositionTicks(startPositionTicks);
+
+            // If transcoding with a known runtime, switch to .ts to work around the Vlc seek issue with HLS
+            return location.replace("master.m3u8", "stream.ts") + "&StartTimeTicks=" + String.valueOf(startPositionTicks);
+        }
+
+        mService.setEnableServerSeek(false);
+        mService.setTranscodingOffsetPositionTicks(0);
+        return location;
     }
 
     private void showNavMenu() {
@@ -2134,6 +2155,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     private long getTime() {
         long time = mService.getTime();
+
         if (mForcedTime != -1 && mLastTime != -1) {
             /* XXX: After a seek, mService.getTime can return the position before or after
              * the seek position. Therefore we return mForcedTime in order to avoid the seekBar
@@ -2156,9 +2178,23 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         seek(position, mService.getLength());
     }
 
+    private long lastServerSeekTime = 0;
     private void seek(long position, float length) {
+
         mForcedTime = position;
         mLastTime = mService.getTime();
+
+        if (mService.getEnableServerSeek()) {
+
+            long now = System.currentTimeMillis();
+
+            if ((now - lastServerSeekTime) > 50) {
+                apiHelper.seekTranscode(position * 10000);
+                lastServerSeekTime = now;
+                //mForcedTime = -1;
+            }
+            return;
+        }
         if (length == 0f)
             mService.setTime(position);
         else
@@ -2576,7 +2612,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         }
         mUri = null;
         String title = getResources().getString(R.string.title);
-        boolean fromStart = false;
         int openedPosition = -1;
         Uri data;
         String itemTitle = null;
@@ -2603,13 +2638,20 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             logger.Debug("Video was previously paused, resuming in paused mode");
 
         if(TextUtils.equals(action, PLAY_FROM_VIDEOGRID) && extras != null) {
-            mUri = Uri.parse(getIntent().getExtras().getString(PLAY_EXTRA_ITEM_LOCATION));
-            itemTitle = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_TITLE);
-            fromStart = getIntent().getExtras().getBoolean(PLAY_EXTRA_FROM_START);
-            intentPosition = getIntent().getExtras().getLong("position", -1);
 
             String mediaSourceJson = getIntent().getExtras().getString("mediaSourceJson");
             MediaSourceInfo mediaSourceInfo = (MediaSourceInfo)jsonSerializer.DeserializeFromString(mediaSourceJson, MediaSourceInfo.class);
+
+            String playbackStartInfoJson = getIntent().getExtras().getString("playbackStartInfoJson");
+            PlaybackProgressInfo playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
+
+            intentPosition = getIntent().getExtras().getLong("position", 0);
+
+            String location = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_LOCATION);
+            location = normalizeLocation(location, mediaSourceInfo, playbackStartInfo.getPlayMethod(), intentPosition * 10000);
+            mUri = Uri.parse(location);
+
+            itemTitle = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_TITLE);
 
             String deviceProfileJson = getIntent().getExtras().getString("deviceProfileJson");
             DeviceProfile deviceProfile = (DeviceProfile)jsonSerializer.DeserializeFromString(deviceProfileJson, DeviceProfile.class);
@@ -2622,10 +2664,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             String apiAccessToken = getIntent().getExtras().getString("accessToken");
             String apiServerUrl = getIntent().getExtras().getString("serverUrl");
             String apiServerId = getIntent().getExtras().getString("serverId");
-            String playbackStartInfoJson = getIntent().getExtras().getString("playbackStartInfoJson");
             videoQualityOptionsJson = getIntent().getExtras().getString("videoQualityOptionsJson");
-
-            PlaybackProgressInfo playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
 
             IDevice device = new AndroidDevice(getApplicationContext(), apiDeviceId, apiDeviceName);
             ApiClient apiClient = new AndroidApiClient(httpClient, jsonSerializer, logger, apiServerUrl, apiAppName, device, apiAppVersion, new ApiEventListener());
@@ -2644,18 +2683,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         if (intent.hasExtra(PLAY_EXTRA_ITEM_TITLE))
             itemTitle = extras.getString(PLAY_EXTRA_ITEM_TITLE);
 
-        if (openedPosition != -1) {
-            // Provided externally from AudioService
-            logger.Debug("Continuing playback from AudioService at index " + openedPosition);
-            MediaWrapper openedMedia = mService.getCurrentMediaWrapper();
-            if (openedMedia == null) {
-                encounteredError();
-                return;
-            }
-            mUri = openedMedia.getUri();
-            itemTitle = openedMedia.getTitle();
-            savedIndexPosition = openedPosition;
-        }
         mCanSeek = false;
 
         if (mUri != null) {
@@ -2674,8 +2701,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 mService.addCallback(this);
                 mService.load(mw);
                 savedIndexPosition = mService.getCurrentMediaPosition();
-                if (intentPosition > 0 && mediaLength >= 0l)
-                    seek(intentPosition, mediaLength);
+                if (intentPosition > 0 && mediaLength >= 0l) {
+                    if (!mService.getEnableServerSeek()) {
+                        seek(intentPosition, mediaLength);
+                    }
+                }
             } else {
                 mService.addCallback(this);
                 // AudioService-transitioned playback for item after sleep and resume
