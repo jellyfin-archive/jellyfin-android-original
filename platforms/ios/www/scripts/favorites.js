@@ -9,8 +9,8 @@ html+='</div>';if(enableScrollX()){html+='<div class="itemsContainer hiddenScrol
 html+=LibraryBrowser.getPosterViewHtml({items:result.Items,preferThumb:section.preferThumb,shape:section.shape,overlayText:section.overlayText!==false,showTitle:section.showTitle,showParentTitle:section.showParentTitle,lazy:true,showDetailsMenu:true,centerText:section.centerText,overlayPlayButton:section.overlayPlayButton,context:'home-favorites'});html+='</div>';}
 elem.innerHTML=html;ImageLoader.lazyChildren(elem);$(elem).createCardMenus();});}
 function loadSections(page,userId){Dashboard.showLoadingMsg();var sections=getSections();var sectionid=getParameterByName('sectionid');if(sectionid){sections=sections.filter(function(s){return s.id==sectionid;});}
-var i,length;var elem=$('.sections',page);if(!elem.html().length){var html='';for(i=0,length=sections.length;i<length;i++){html+='<div class="homePageSection section'+sections[i].id+'"></div>';}
-elem.html(html);}
+var i,length;var elem=page.querySelector('.sections');if(!elem.innerHTML){var html='';for(i=0,length=sections.length;i<length;i++){html+='<div class="homePageSection section'+sections[i].id+'"></div>';}
+elem.innerHTML=html;}
 var promises=[];for(i=0,length=sections.length;i<length;i++){var section=sections[i];elem=page.querySelector('.section'+section.id);promises.push(loadSection(elem,userId,section,sections.length==1));}
 $.when(promises).done(function(){Dashboard.hideLoadingMsg();LibraryBrowser.setLastRefreshed(page);});}
 window.HomePage.renderFavorites=function(page,tabContent){if(LibraryBrowser.needsRefresh(tabContent)){loadSections(tabContent,Dashboard.getCurrentUserId());}};})(jQuery,document);
