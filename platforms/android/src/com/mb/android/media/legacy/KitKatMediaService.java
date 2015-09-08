@@ -48,6 +48,7 @@ import com.mb.android.media.MediaWrapperList;
 import com.mb.android.media.Util;
 import com.mb.android.media.VLCInstance;
 import com.mb.android.media.VLCOptions;
+import com.mb.android.media.VlcEventHandler;
 import com.mb.android.media.WeakHandler;
 
 import org.videolan.libvlc.IVLCVout;
@@ -150,6 +151,8 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
     private long mWidgetPositionTimestamp = Calendar.getInstance().getTimeInMillis();
     private ComponentName mRemoteControlClientReceiverComponent;
 
+    private PlayerListener mMediaPlayerListener;
+
     private static LibVLC LibVLC(Context context, ILogger logger) {
         return VLCInstance.get(context, logger);
     }
@@ -184,6 +187,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
         logger = AppLogger.getLogger(getApplicationContext());
 
         mMediaPlayer = newMediaPlayer();
+        mMediaPlayerListener = new PlayerListener(logger, mMediaPlayer);
         mMediaPlayer.getVLCVout().addCallback(this);
 
         if (!VLCInstance.testCompatibleCPU(this)) {
@@ -284,6 +288,10 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
     private void handleIntent(Context context, Intent intent) {
 
         String action = intent.getAction();
+
+        if (action == null) {
+            action = "";
+        }
         int state = intent.getIntExtra("state", 0);
         if( mMediaPlayer == null ) {
             Log.w(TAG, "Intent received, but VLC is not loaded, skipping.");
@@ -618,9 +626,17 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
         }
     };
 
-    private final MediaPlayer.EventListener mMediaPlayerListener = new MediaPlayer.EventListener() {
+    private class PlayerListener extends VlcEventHandler {
+
+        public PlayerListener(ILogger logger, MediaPlayer mLibVLC) {
+            super(logger, mLibVLC);
+        }
+
         @Override
         public void onEvent(MediaPlayer.Event event) {
+
+            super.onEvent(event);
+
             switch (event.type) {
                 case MediaPlayer.Event.Playing:
                     Log.i(TAG, "MediaPlayer.Event.Playing");

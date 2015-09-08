@@ -88,11 +88,71 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="IDelayController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/IDelayController.java">
+      <file leaf-file-name="ApiClientBridge.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
-              <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="2166" max-vertical-offset="3434">
+              <caret line="159" column="34" selection-start-line="159" selection-start-column="34" selection-end-line="159" selection-end-column="34" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HttpRequestResponse.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/HttpRequestResponse.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1632" max-vertical-offset="1870">
+              <caret line="96" column="5" selection-start-line="96" selection-start-column="5" selection-end-line="102" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NativeWebView.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/webviews/NativeWebView.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="935">
+              <caret line="3" column="29" selection-start-line="3" selection-start-column="7" selection-end-line="3" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CordovaActivity.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CordovaLib/src/org/apache/cordova/CordovaActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="544" max-vertical-offset="8449">
+              <caret line="32" column="26" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="VideoApiHelper.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VideoApiHelper.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1513" max-vertical-offset="8755">
+              <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MediaService.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="714" max-vertical-offset="1275">
+              <caret line="42" column="45" selection-start-line="42" selection-start-column="45" selection-end-line="42" selection-end-column="45" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="KitKatMediaService.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/legacy/KitKatMediaService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.30147782" vertical-offset="9384" max-vertical-offset="27438">
+              <caret line="661" column="60" selection-start-line="661" selection-start-column="60" selection-end-line="661" selection-end-column="60" />
               <folding />
             </state>
           </provider>
@@ -101,11 +161,9 @@
       <file leaf-file-name="VlcEventHandler.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="832" max-vertical-offset="2125">
-              <caret line="75" column="60" selection-start-line="75" selection-start-column="60" selection-end-line="75" selection-end-column="60" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state vertical-scroll-proportion="0.0" vertical-offset="374" max-vertical-offset="2125">
+              <caret line="22" column="22" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -113,328 +171,19 @@
       <file leaf-file-name="Playback.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/Playback.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-14.071428" vertical-offset="3040" max-vertical-offset="9605">
-              <caret line="207" column="21" selection-start-line="207" selection-start-column="21" selection-end-line="207" selection-end-column="21" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#6318#6319#0" expanded="true" />
-                <element signature="e#6347#6348#0" expanded="true" />
-                <element signature="e#12728#12729#0" expanded="true" />
-                <element signature="e#12769#12770#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-21.76" vertical-offset="4743" max-vertical-offset="7701">
-              <caret line="330" column="50" selection-start-line="330" selection-start-column="50" selection-end-line="330" selection-end-column="50" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VideoPlayerActivity.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VideoPlayerActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-49.793938" vertical-offset="49976" max-vertical-offset="50966">
-              <caret line="40" column="20" selection-start-line="40" selection-start-column="20" selection-end-line="40" selection-end-column="20" />
-              <folding>
-                <element signature="e#9402#9410#0" expanded="true" />
-                <element signature="e#10208#10209#0" expanded="true" />
-                <element signature="e#10248#10249#0" expanded="true" />
-                <element signature="e#10790#11415#0" expanded="true" />
-                <element signature="e#11400#11401#0" expanded="true" />
-                <element signature="e#12147#12694#0" expanded="true" />
-                <element signature="e#12671#12672#0" expanded="true" />
-                <element signature="e#13234#13438#0" expanded="true" />
-                <element signature="e#13427#13428#0" expanded="true" />
-                <element signature="e#25209#25402#0" expanded="true" />
-                <element signature="e#25379#25380#0" expanded="true" />
-                <element signature="e#30254#30255#0" expanded="true" />
-                <element signature="e#30306#30307#0" expanded="true" />
-                <element signature="e#31402#32262#0" expanded="true" />
-                <element signature="e#32255#32256#0" expanded="true" />
-                <element signature="e#32746#32747#0" expanded="true" />
-                <element signature="e#32777#32778#0" expanded="true" />
-                <element signature="e#34949#34983#0" expanded="true" />
-                <element signature="e#40762#40793#0" expanded="true" />
-                <element signature="e#40922#40951#0" expanded="true" />
-                <element signature="e#41583#42257#0" expanded="true" />
-                <element signature="e#42250#42251#0" expanded="true" />
-                <element signature="e#42414#42445#0" expanded="true" />
-                <element signature="e#42789#42818#0" expanded="true" />
-                <element signature="e#43452#43467#0" expanded="true" />
-                <element signature="e#43983#44000#0" expanded="true" />
-                <element signature="e#46169#46170#0" expanded="true" />
-                <element signature="e#46239#46240#0" expanded="true" />
-                <element signature="e#46312#46313#0" expanded="true" />
-                <element signature="e#46339#46340#0" expanded="true" />
-                <element signature="e#47020#47021#0" expanded="true" />
-                <element signature="e#47048#47049#0" expanded="true" />
-                <element signature="e#47351#47352#0" expanded="true" />
-                <element signature="e#47379#47380#0" expanded="true" />
-                <element signature="e#49782#51322#0" expanded="true" />
-                <element signature="e#51315#51316#0" expanded="true" />
-                <element signature="e#51953#52096#0" expanded="true" />
-                <element signature="e#52081#52082#0" expanded="true" />
-                <element signature="e#52494#52724#0" expanded="true" />
-                <element signature="e#52705#52706#0" expanded="true" />
-                <element signature="e#52761#52772#0" expanded="true" />
-                <element signature="e#52774#53010#0" expanded="true" />
-                <element signature="e#52991#52992#0" expanded="true" />
-                <element signature="e#53038#53070#0" expanded="true" />
-                <element signature="e#53100#53134#0" expanded="true" />
-                <element signature="e#53262#53263#0" expanded="true" />
-                <element signature="e#53313#53314#0" expanded="true" />
-                <element signature="e#53632#53643#0" expanded="true" />
-                <element signature="e#53645#53927#0" expanded="true" />
-                <element signature="e#53908#53909#0" expanded="true" />
-                <element signature="e#53964#53979#0" expanded="true" />
-                <element signature="e#53981#54230#0" expanded="true" />
-                <element signature="e#54211#54212#0" expanded="true" />
-                <element signature="e#54269#54512#0" expanded="true" />
-                <element signature="e#54493#54494#0" expanded="true" />
-                <element signature="e#54540#54582#0" expanded="true" />
-                <element signature="e#54612#54656#0" expanded="true" />
-                <element signature="e#65801#65827#0" expanded="true" />
-                <element signature="e#66870#66896#0" expanded="true" />
-                <element signature="e#67215#67233#0" expanded="true" />
-                <element signature="e#67236#67253#0" expanded="true" />
-                <element signature="e#69425#69455#0" expanded="true" />
-                <element signature="e#70867#71877#0" expanded="true" />
-                <element signature="e#71866#71867#0" expanded="true" />
-                <element signature="e#72969#73645#0" expanded="true" />
-                <element signature="e#73626#73627#0" expanded="true" />
-                <element signature="e#73958#73978#0" expanded="true" />
-                <element signature="e#73996#74580#0" expanded="true" />
-                <element signature="e#74561#74562#0" expanded="true" />
-                <element signature="e#74719#74738#0" expanded="true" />
-                <element signature="e#74756#75337#0" expanded="true" />
-                <element signature="e#75318#75319#0" expanded="true" />
-                <element signature="e#75536#75658#0" expanded="true" />
-                <element signature="e#75651#75652#0" expanded="true" />
-                <element signature="e#75729#76304#0" expanded="true" />
-                <element signature="e#76297#76298#0" expanded="true" />
-                <element signature="e#77535#77536#0" expanded="true" />
-                <element signature="e#77587#77588#0" expanded="true" />
-                <element signature="e#78193#78484#0" expanded="true" />
-                <element signature="e#78477#78478#0" expanded="true" />
-                <element signature="e#78560#78683#0" expanded="true" />
-                <element signature="e#78676#78677#0" expanded="true" />
-                <element signature="e#78974#78999#0" expanded="true" />
-                <element signature="e#79097#79128#0" expanded="true" />
-                <element signature="e#79224#79253#0" expanded="true" />
-                <element signature="e#79341#79362#0" expanded="true" />
-                <element signature="e#79640#79665#0" expanded="true" />
-                <element signature="e#79796#79978#0" expanded="true" />
-                <element signature="e#79971#79972#0" expanded="true" />
-                <element signature="e#80336#80337#0" expanded="true" />
-                <element signature="e#80370#80371#0" expanded="true" />
-                <element signature="e#87536#87570#0" expanded="true" />
-                <element signature="e#87873#87907#0" expanded="true" />
-                <element signature="e#88033#88073#0" expanded="true" />
-                <element signature="e#99219#99227#0" expanded="true" />
-                <element signature="e#100101#100133#0" expanded="true" />
-                <element signature="e#101329#101361#1" expanded="true" />
-                <element signature="e#103963#103986#0" expanded="true" />
-                <element signature="e#104023#104052#0" expanded="true" />
-                <element signature="e#104054#104249#0" expanded="true" />
-                <element signature="e#104230#104231#0" expanded="true" />
-                <element signature="e#104286#104310#0" expanded="true" />
-                <element signature="e#104312#104506#0" expanded="true" />
-                <element signature="e#104487#104488#0" expanded="true" />
-                <element signature="e#104832#105015#0" expanded="true" />
-                <element signature="e#105004#105005#0" expanded="true" />
-                <element signature="e#107020#107305#0" expanded="true" />
-                <element signature="e#107298#107299#0" expanded="true" />
-                <element signature="e#109975#109976#0" expanded="true" />
-                <element signature="e#110028#110029#0" expanded="true" />
-                <element signature="e#111310#111311#0" expanded="true" />
-                <element signature="e#111346#111347#0" expanded="true" />
-                <element signature="e#111488#111489#0" expanded="true" />
-                <element signature="e#111524#111525#0" expanded="true" />
-                <element signature="e#111966#111967#0" expanded="true" />
-                <element signature="e#111996#111997#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VideoApiHelper.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VideoApiHelper.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="7909" max-vertical-offset="9180">
-              <caret line="515" column="19" selection-start-line="515" selection-start-column="19" selection-end-line="515" selection-end-column="19" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="8058" max-vertical-offset="8925">
+              <caret line="474" column="12" selection-start-line="472" selection-start-column="12" selection-end-line="474" selection-end-column="12" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VLCCrashHandler.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VLCCrashHandler.java">
+      <file leaf-file-name="PlaybackService.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/PlaybackService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="43" max-vertical-offset="1275">
-              <caret line="55" column="41" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="15232" max-vertical-offset="34170">
+              <caret line="896" column="17" selection-start-line="896" selection-start-column="17" selection-end-line="896" selection-end-column="17" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="KitKatMediaService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/legacy/KitKatMediaService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.785714" vertical-offset="520" max-vertical-offset="30294">
-              <caret line="50" column="27" selection-start-line="50" selection-start-column="27" selection-end-line="50" selection-end-column="27" />
-              <folding>
-                <element signature="e#3587#3588#0" expanded="true" />
-                <element signature="e#3641#3642#0" expanded="true" />
-                <element signature="e#4121#4131#0" expanded="true" />
-                <element signature="e#6258#6259#0" expanded="true" />
-                <element signature="e#6310#6311#0" expanded="true" />
-                <element signature="e#16024#16025#0" expanded="true" />
-                <element signature="e#16054#16055#0" expanded="true" />
-                <element signature="e#16091#16092#0" expanded="true" />
-                <element signature="e#16139#16140#0" expanded="true" />
-                <element signature="e#21626#22252#0" expanded="true" />
-                <element signature="e#22245#22246#0" expanded="true" />
-                <element signature="e#22310#22476#0" expanded="true" />
-                <element signature="e#22469#22470#0" expanded="true" />
-                <element signature="e#22699#22700#0" expanded="true" />
-                <element signature="e#22727#22728#0" expanded="true" />
-                <element signature="e#22798#22799#0" expanded="true" />
-                <element signature="e#22826#22827#0" expanded="true" />
-                <element signature="e#22884#23632#0" expanded="true" />
-                <element signature="e#23625#23626#0" expanded="true" />
-                <element signature="e#23702#26825#0" expanded="true" />
-                <element signature="e#26818#26819#0" expanded="true" />
-                <element signature="e#29564#29565#0" expanded="true" />
-                <element signature="e#29599#29600#0" expanded="true" />
-                <element signature="e#30073#30074#0" expanded="true" />
-                <element signature="e#30130#30131#0" expanded="true" />
-                <element signature="e#30599#30600#0" expanded="true" />
-                <element signature="e#30638#30639#0" expanded="true" />
-                <element signature="e#31889#31890#0" expanded="true" />
-                <element signature="e#31945#31946#0" expanded="true" />
-                <element signature="e#36098#36099#0" expanded="true" />
-                <element signature="e#36136#36137#0" expanded="true" />
-                <element signature="e#37869#37870#0" expanded="true" />
-                <element signature="e#37919#37920#0" expanded="true" />
-                <element signature="e#47660#47661#0" expanded="true" />
-                <element signature="e#47707#47708#0" expanded="true" />
-                <element signature="e#47759#47760#0" expanded="true" />
-                <element signature="e#47792#47793#0" expanded="true" />
-                <element signature="e#47849#47850#0" expanded="true" />
-                <element signature="e#47882#47883#0" expanded="true" />
-                <element signature="e#47932#47933#0" expanded="true" />
-                <element signature="e#47972#47973#0" expanded="true" />
-                <element signature="e#48027#48028#0" expanded="true" />
-                <element signature="e#48094#48095#0" expanded="true" />
-                <element signature="e#48596#48597#0" expanded="true" />
-                <element signature="e#48633#48634#0" expanded="true" />
-                <element signature="e#48678#48679#0" expanded="true" />
-                <element signature="e#48723#48724#0" expanded="true" />
-                <element signature="e#48770#48771#0" expanded="true" />
-                <element signature="e#48818#48819#0" expanded="true" />
-                <element signature="e#49989#50003#0" expanded="true" />
-                <element signature="e#51699#51700#0" expanded="true" />
-                <element signature="e#51734#51735#0" expanded="true" />
-                <element signature="e#52895#52909#0" expanded="true" />
-                <element signature="e#53362#53376#0" expanded="true" />
-                <element signature="e#53624#53632#0" expanded="true" />
-                <element signature="e#53836#53837#0" expanded="true" />
-                <element signature="e#53891#53892#0" expanded="true" />
-                <element signature="e#53951#53952#0" expanded="true" />
-                <element signature="e#53987#53988#0" expanded="true" />
-                <element signature="e#54173#54174#0" expanded="true" />
-                <element signature="e#54215#54216#0" expanded="true" />
-                <element signature="e#54263#54264#0" expanded="true" />
-                <element signature="e#54302#54303#0" expanded="true" />
-                <element signature="e#54354#54355#0" expanded="true" />
-                <element signature="e#54393#54394#0" expanded="true" />
-                <element signature="e#54459#54460#0" expanded="true" />
-                <element signature="e#54498#54499#0" expanded="true" />
-                <element signature="e#54545#54546#0" expanded="true" />
-                <element signature="e#54590#54591#0" expanded="true" />
-                <element signature="e#54645#54646#0" expanded="true" />
-                <element signature="e#54687#54688#0" expanded="true" />
-                <element signature="e#54742#54743#0" expanded="true" />
-                <element signature="e#54786#54787#0" expanded="true" />
-                <element signature="e#54861#54862#0" expanded="true" />
-                <element signature="e#54915#54916#0" expanded="true" />
-                <element signature="e#54977#54978#0" expanded="true" />
-                <element signature="e#55024#55025#0" expanded="true" />
-                <element signature="e#55074#55075#0" expanded="true" />
-                <element signature="e#55122#55123#0" expanded="true" />
-                <element signature="e#55184#55185#0" expanded="true" />
-                <element signature="e#55232#55233#0" expanded="true" />
-                <element signature="e#55280#55281#0" expanded="true" />
-                <element signature="e#55326#55327#0" expanded="true" />
-                <element signature="e#55384#55385#0" expanded="true" />
-                <element signature="e#55428#55429#0" expanded="true" />
-                <element signature="e#55474#55475#0" expanded="true" />
-                <element signature="e#55521#55522#0" expanded="true" />
-                <element signature="e#55577#55578#0" expanded="true" />
-                <element signature="e#55630#55631#0" expanded="true" />
-                <element signature="e#55688#55689#0" expanded="true" />
-                <element signature="e#55733#55734#0" expanded="true" />
-                <element signature="e#55789#55790#0" expanded="true" />
-                <element signature="e#55846#55847#0" expanded="true" />
-                <element signature="e#55924#55925#0" expanded="true" />
-                <element signature="e#55976#55977#0" expanded="true" />
-                <element signature="e#56026#56027#0" expanded="true" />
-                <element signature="e#56077#56078#0" expanded="true" />
-                <element signature="e#56140#56141#0" expanded="true" />
-                <element signature="e#56196#56197#0" expanded="true" />
-                <element signature="e#56252#56253#0" expanded="true" />
-                <element signature="e#56309#56310#0" expanded="true" />
-                <element signature="e#56377#56378#0" expanded="true" />
-                <element signature="e#56434#56435#0" expanded="true" />
-                <element signature="e#56510#56511#0" expanded="true" />
-                <element signature="e#56560#56561#0" expanded="true" />
-                <element signature="e#56608#56609#0" expanded="true" />
-                <element signature="e#56657#56658#0" expanded="true" />
-                <element signature="e#56718#56719#0" expanded="true" />
-                <element signature="e#56772#56773#0" expanded="true" />
-                <element signature="e#56826#56827#0" expanded="true" />
-                <element signature="e#56881#56882#0" expanded="true" />
-                <element signature="e#56945#56946#0" expanded="true" />
-                <element signature="e#57001#57002#0" expanded="true" />
-                <element signature="e#57052#57053#0" expanded="true" />
-                <element signature="e#57103#57104#0" expanded="true" />
-                <element signature="e#57165#57166#0" expanded="true" />
-                <element signature="e#57219#57220#0" expanded="true" />
-                <element signature="e#57268#57269#0" expanded="true" />
-                <element signature="e#57317#57318#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MediaWrapperList.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWrapperList.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1590" max-vertical-offset="2618">
-              <caret line="138" column="47" selection-start-line="138" selection-start-column="47" selection-end-line="138" selection-end-column="47" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MediaWrapper.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWrapper.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-192.10715" vertical-offset="1183" max-vertical-offset="6732">
-              <caret line="474" column="71" selection-start-line="474" selection-start-column="67" selection-end-line="474" selection-end-column="71" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -2506,7 +2255,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="5762390681362" />
+        <entry key="$PROJECT_DIR$" value="5765680814464" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2570,9 +2319,8 @@
                             <option value="$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-v4/22.2.0/support-v4-22.2.0.aar" />
                             <option value="$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0.jar" />
                             <option value="$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/mediarouter-v7/22.0.0/mediarouter-v7-22.0.0.aar" />
-                            <option value="$MODULE_DIR$/libs/emby.apiclient.android.jar" />
                             <option value="$MODULE_DIR$/libs/emby.apiclient.jar" />
-                            <option value="$MODULE_DIR$/libs/libvlc.jar" />
+                            <option value="$MODULE_DIR$/libs/emby.apiclient.android.jar" />
                             <option value="$MODULE_DIR$/libs/volley.jar" />
                             <option value="$APPLICATION_HOME_DIR$/gradle/m2repository/com/android/tools/build/gradle/1.0.0/gradle-1.0.0-sources.jar" />
                             <option value="$APPLICATION_HOME_DIR$/gradle/m2repository/com/android/tools/build/gradle/1.0.0/gradle-1.0.0.jar" />
@@ -2697,9 +2445,8 @@
                             <option value="$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-v4/22.2.0/support-v4-22.2.0.aar" />
                             <option value="$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0.jar" />
                             <option value="$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/mediarouter-v7/22.0.0/mediarouter-v7-22.0.0.aar" />
-                            <option value="$MODULE_DIR$/libs/emby.apiclient.android.jar" />
                             <option value="$MODULE_DIR$/libs/emby.apiclient.jar" />
-                            <option value="$MODULE_DIR$/libs/libvlc.jar" />
+                            <option value="$MODULE_DIR$/libs/emby.apiclient.android.jar" />
                             <option value="$MODULE_DIR$/libs/volley.jar" />
                             <option value="$APPLICATION_HOME_DIR$/gradle/m2repository/com/android/tools/build/gradle/1.0.0/gradle-1.0.0-sources.jar" />
                             <option value="$APPLICATION_HOME_DIR$/gradle/m2repository/com/android/tools/build/gradle/1.0.0/gradle-1.0.0.jar" />
@@ -2890,14 +2637,7 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/RemoteControlClientReceiver.java" />
-        <option value="$PROJECT_DIR$/res/layout/notification.xml" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/KitKatMediaService.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/exclude/MediaBrowsingService.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaBrowsingService.java" />
-        <option value="$PROJECT_DIR$/res/layout/notification_expanded.xml" />
         <option value="$PROJECT_DIR$/assets/www/cordova/android/androidcredentials.js" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java" />
         <option value="$PROJECT_DIR$/src/de/appplant/cordova/plugin/notification/Options.java" />
         <option value="$PROJECT_DIR$/src/de/appplant/cordova/plugin/notification/Builder.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/api/SyncLoggerFactory.java" />
@@ -2923,7 +2663,6 @@
         <option value="$PROJECT_DIR$/src/com/mb/android/api/HttpRequestResponse.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/preferences/PreferencesProvider.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/VLCCrashHandler.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaWrapperList.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaWrapper.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/WeakHandler.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/Preferences.java" />
@@ -2935,12 +2674,20 @@
         <option value="$PROJECT_DIR$/src/com/mb/android/media/Util.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/AndroidDevices.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/legacy/RemoteControlClientReceiver.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/Playback.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/VideoApiHelper.java" />
-        <option value="$PROJECT_DIR$/src/com/mb/android/media/legacy/KitKatMediaService.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/PlaybackServiceActivity.java" />
+        <option value="$PROJECT_DIR$/res/layout/player_hud.xml" />
+        <option value="$PROJECT_DIR$/assets/www/cordova/android/vlcplayer.js" />
+        <option value="$PROJECT_DIR$/res/layout/player.xml" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/MediaWrapperList.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/Playback.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/webviews/CrosswalkWebView.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/MainActivity.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/VideoApiHelper.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/PlaybackService.java" />
         <option value="$PROJECT_DIR$/src/com/mb/android/media/VideoPlayerActivity.java" />
+        <option value="$PROJECT_DIR$/src/com/mb/android/media/legacy/KitKatMediaService.java" />
       </list>
     </option>
   </component>
@@ -2995,181 +2742,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="AndroidView">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="plugins" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="preferences" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="media" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="android" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="com" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -3244,7 +2817,137 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="AndroidView">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="android" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="media" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="legacy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -3258,7 +2961,7 @@
     <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="Nexus_5_API_21_x86" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="Galaxy_Nexus_API_16" />
     <property name="android.project.structure.last.selected" value="android" />
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/libs/libvlc.jar" />
@@ -3475,36 +3178,36 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="54" y="-8" width="2514" height="1456" extended-state="1" />
+    <frame x="54" y="-8" width="2514" height="1456" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32943925" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21324095" sideWeight="0.6809291" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24376947" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21324095" sideWeight="0.3190709" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24375473" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21044663" sideWeight="0.38991192" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36370715" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17093675" sideWeight="0.15244487" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19476521" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27630582" sideWeight="0.85737574" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27630582" sideWeight="0.14291432" order="11" side_tool="true" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17093675" sideWeight="0.15436241" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27479184" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27630582" sideWeight="0.85708565" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32964784" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32943925" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24979626" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17093675" sideWeight="0.8475551" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21044663" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17093675" sideWeight="0.84563756" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21044663" sideWeight="0.61008805" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27647975" sideWeight="0.3034398" order="14" side_tool="true" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21271764" sideWeight="0.68054444" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -3513,11 +3216,11 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19548286" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22113022" sideWeight="0.15198451" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22113022" sideWeight="0.15198451" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32948422" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22113022" sideWeight="0.8480155" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="combo" />
@@ -3535,8 +3238,8 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19548286" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.48442367" sideWeight="0.8574939" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24979626" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
@@ -3558,249 +3261,14 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="43" />
+      <option name="time" value="47" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/org/apache/cordova/filetransfer/FileTransfer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.06505771" vertical-offset="3457" max-vertical-offset="15351">
-          <caret line="285" column="0" selection-start-line="285" selection-start-column="0" selection-end-line="285" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/content/ContentResolver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34169278" vertical-offset="9448" max-vertical-offset="42058">
-          <caret line="627" column="29" selection-start-line="627" selection-start-column="29" selection-end-line="627" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/de/appplant/cordova/plugin/notification/Builder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45768026" vertical-offset="1415" max-vertical-offset="2975">
-          <caret line="139" column="44" selection-start-line="139" selection-start-column="44" selection-end-line="139" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/de/appplant/cordova/plugin/notification/Options.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5736677" vertical-offset="3072" max-vertical-offset="4437">
-          <caret line="262" column="0" selection-start-line="262" selection-start-column="0" selection-end-line="262" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/de/appplant/cordova/plugin/notification/AssetUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="6175" max-vertical-offset="7412">
-          <caret line="428" column="20" selection-start-line="428" selection-start-column="20" selection-end-line="428" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/emby.apiclient.jar!/mediabrowser/model/net/HttpException.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.32832617" vertical-offset="0" max-vertical-offset="932">
-          <caret line="19" column="66" selection-start-line="19" selection-start-column="66" selection-end-line="19" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/SyncLoggerFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="578">
-          <caret line="24" column="13" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/crosswalk/engine/XWalkCordovaView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.32" vertical-offset="0" max-vertical-offset="1683">
-          <caret line="37" column="66" selection-start-line="37" selection-start-column="66" selection-end-line="37" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/logging/AppLogger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2431">
-          <caret line="30" column="43" selection-start-line="30" selection-start-column="43" selection-end-line="30" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.10/4d2725efe68b9943ba0deaf334bb27116ca6b687/slf4j-api-1.7.10-sources.jar!/org/slf4j/Logger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.3396226" vertical-offset="10302" max-vertical-offset="12427">
-          <caret line="700" column="14" selection-start-line="700" selection-start-column="14" selection-end-line="700" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/logging/LoggingBridge.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="493">
-          <caret line="20" column="27" selection-start-line="20" selection-start-column="27" selection-end-line="20" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/logging/LogbackLogger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1955">
-          <caret line="31" column="50" selection-start-line="31" selection-start-column="50" selection-end-line="31" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/content/Context.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="5088" max-vertical-offset="57545">
-          <caret line="375" column="24" selection-start-line="375" selection-start-column="24" selection-end-line="375" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="255" max-vertical-offset="391">
-          <caret line="15" column="59" selection-start-line="15" selection-start-column="59" selection-end-line="15" selection-end-column="59" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/media/AudioManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3329939" vertical-offset="36172" max-vertical-offset="62577">
-          <caret line="2209" column="21" selection-start-line="2209" selection-start-column="21" selection-end-line="2209" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/de.mrmaffen/vlc-android-sdk/1.0.6/classes.jar!/org/videolan/libvlc/LibVLC.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34169278" vertical-offset="2478" max-vertical-offset="4794">
-          <caret line="166" column="22" selection-start-line="166" selection-start-column="22" selection-end-line="166" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/os/Build.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="6779" max-vertical-offset="11849">
-          <caret line="439" column="32" selection-start-line="439" selection-start-column="32" selection-end-line="439" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mesmotronic/plugins/FullScreenPlugin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5066259" vertical-offset="2954" max-vertical-offset="7497">
-          <caret line="237" column="20" selection-start-line="237" selection-start-column="20" selection-end-line="237" selection-end-column="20" />
-          <folding>
-            <element signature="e#5351#6122#0" expanded="false" />
-            <element signature="e#6117#6118#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/de.mrmaffen/vlc-android-sdk/1.0.6/classes.jar!/org/videolan/libvlc/IVideoPlayer.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.08891214" vertical-offset="0" max-vertical-offset="956">
-          <caret line="6" column="17" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="714" max-vertical-offset="1275">
-          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/emby.apiclient.android.jar!/mediabrowser/apiinteraction/android/sync/OnDemandSync.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1440678" vertical-offset="0" max-vertical-offset="944">
-          <caret line="9" column="11" selection-start-line="9" selection-start-column="11" selection-end-line="9" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/libs/emby.apiclient.android.jar!/mediabrowser/apiinteraction/android/VolleyHttpClient.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43220338" vertical-offset="0" max-vertical-offset="944">
-          <caret line="25" column="16" selection-start-line="25" selection-start-column="16" selection-end-line="25" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/HttpRequestResponse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.2807018" vertical-offset="0" max-vertical-offset="1649">
-          <caret line="80" column="0" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8245614" vertical-offset="748" max-vertical-offset="1717">
-          <caret line="112" column="52" selection-start-line="112" selection-start-column="52" selection-end-line="112" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/RemotePlayerService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2600" max-vertical-offset="6171">
-          <caret line="193" column="0" selection-start-line="193" selection-start-column="0" selection-end-line="193" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/res/values/styles.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-23.8" vertical-offset="0" max-vertical-offset="697">
-          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/preferences/PreferencesProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-28.84" vertical-offset="197" max-vertical-offset="1207">
-          <caret line="68" column="78" selection-start-line="68" selection-start-column="78" selection-end-line="68" selection-end-column="78" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/util/Log.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15392354" vertical-offset="0" max-vertical-offset="3451">
-          <caret line="25" column="19" selection-start-line="25" selection-start-column="19" selection-end-line="25" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/WeakHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.016699411" vertical-offset="0" max-vertical-offset="1018">
-          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/Preferences.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="680">
-          <caret line="38" column="1" selection-start-line="38" selection-start-column="1" selection-end-line="38" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/OnRepeatListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1258">
-          <caret line="7" column="29" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaRes.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
-          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/CommonDialogs.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="357">
           <caret line="5" column="42" selection-start-line="5" selection-start-column="42" selection-end-line="5" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3815,7 +3283,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1539" max-vertical-offset="2533">
           <caret line="2" column="30" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3823,12 +3290,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2193159" vertical-offset="3" max-vertical-offset="2703">
           <caret line="13" column="44" selection-start-line="13" selection-start-column="44" selection-end-line="13" selection-end-column="44" />
-          <folding>
-            <element signature="e#1007#1015#0" expanded="true" />
-            <element signature="e#1523#1524#0" expanded="true" />
-            <element signature="e#1555#1556#0" expanded="true" />
-            <element signature="e#2437#2445#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3836,9 +3297,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="1.0090543" vertical-offset="0" max-vertical-offset="1666">
           <caret line="65" column="50" selection-start-line="65" selection-start-column="50" selection-end-line="65" selection-end-column="50" />
-          <folding>
-            <element signature="e#458#485#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3846,9 +3304,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.29074445" vertical-offset="0" max-vertical-offset="994">
           <caret line="17" column="38" selection-start-line="17" selection-start-column="38" selection-end-line="17" selection-end-column="38" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3856,7 +3311,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0877193" vertical-offset="0" max-vertical-offset="5525">
           <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3864,7 +3318,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="238">
           <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -3872,17 +3325,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="8.209255" vertical-offset="0" max-vertical-offset="57443">
           <caret line="549" column="13" selection-start-line="549" selection-start-column="13" selection-end-line="549" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWrapperList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1590" max-vertical-offset="2618">
-          <caret line="138" column="47" selection-start-line="138" selection-start-column="47" selection-end-line="138" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -3896,314 +3338,442 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VLCCrashHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
-          <caret line="55" column="41" selection-start-line="55" selection-start-column="41" selection-end-line="55" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="43" max-vertical-offset="1275">
+          <caret line="40" column="60" selection-start-line="40" selection-start-column="60" selection-end-line="40" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/app/Service.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.48418972" vertical-offset="9948" max-vertical-offset="11781">
+          <caret line="648" column="22" selection-start-line="648" selection-start-column="22" selection-end-line="648" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/content/ContextWrapper.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.050395258" vertical-offset="816" max-vertical-offset="9537">
+          <caret line="104" column="19" selection-start-line="104" selection-start-column="19" selection-end-line="104" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/widget/SeekBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33300394" vertical-offset="105" max-vertical-offset="2125">
+          <caret line="43" column="21" selection-start-line="43" selection-start-column="21" selection-end-line="43" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/app/Activity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.34980237" vertical-offset="9183" max-vertical-offset="102833">
+          <caret line="659" column="21" selection-start-line="659" selection-start-column="13" selection-end-line="659" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/values/styles.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.36" vertical-offset="0" max-vertical-offset="697">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/PlaybackServiceActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.03359684" vertical-offset="102" max-vertical-offset="1513">
+          <caret line="8" column="30" selection-start-line="8" selection-start-column="30" selection-end-line="8" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/libs/libvlc.jar!/org/videolan/libvlc/IVLCVout.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.7" vertical-offset="0" max-vertical-offset="1207">
+          <caret line="6" column="21" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/generated/source/r/googlex86/release/com/mb/android/R.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35031185" vertical-offset="37896" max-vertical-offset="119833">
+          <caret line="2254" column="32" selection-start-line="2254" selection-start-column="32" selection-end-line="2254" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/player_remote_control.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33299494" vertical-offset="63" max-vertical-offset="1802">
+          <caret line="23" column="28" selection-start-line="23" selection-start-column="28" selection-end-line="23" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/player_remote.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1009">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/sdk/sources/android-22/android/content/Intent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7176724" vertical-offset="60228" max-vertical-offset="132498">
+          <caret line="3647" column="28" selection-start-line="3647" selection-start-column="28" selection-end-line="3647" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/libs/emby.apiclient.jar!/mediabrowser/model/entities/MediaStreamType.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29948187" vertical-offset="0" max-vertical-offset="965">
+          <caret line="18" column="1" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/player.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-26.444445" vertical-offset="0" max-vertical-offset="2380">
+          <caret line="42" column="39" selection-start-line="42" selection-start-column="39" selection-end-line="42" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWrapperList.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-23.12" vertical-offset="663" max-vertical-offset="2635">
+          <caret line="80" column="19" selection-start-line="80" selection-start-column="19" selection-end-line="80" selection-end-column="19" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaWrapper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-192.10715" vertical-offset="1183" max-vertical-offset="6732">
-          <caret line="474" column="71" selection-start-line="474" selection-start-column="67" selection-end-line="474" selection-end-column="71" />
+        <state vertical-scroll-proportion="0.3414387" vertical-offset="224" max-vertical-offset="6732">
+          <caret line="33" column="28" selection-start-line="33" selection-start-column="28" selection-end-line="33" selection-end-column="28" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/Playback.java">
+    <entry file="jar://$PROJECT_DIR$/libs/emby.apiclient.android.jar!/mediabrowser/apiinteraction/android/mediabrowser/IPlayback.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-14.071428" vertical-offset="3040" max-vertical-offset="9605">
-          <caret line="207" column="21" selection-start-line="207" selection-start-column="21" selection-end-line="207" selection-end-column="21" />
+        <state vertical-scroll-proportion="0.47065338" vertical-offset="0" max-vertical-offset="903">
+          <caret line="26" column="68" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/res/layout/player_hud.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1089" max-vertical-offset="2074">
+          <caret line="89" column="37" selection-start-line="89" selection-start-column="37" selection-end-line="89" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/org.xwalk/xwalk_core_library/14.43.343.24/classes.jar!/org/xwalk/core/XWalkView.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.245283" vertical-offset="26" max-vertical-offset="2584">
+          <caret line="22" column="81" selection-start-line="22" selection-start-column="41" selection-end-line="22" selection-end-column="81" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CordovaLib/src/org/apache/cordova/CordovaBridge.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.33596838" vertical-offset="510" max-vertical-offset="2788">
+          <caret line="32" column="13" selection-start-line="32" selection-start-column="13" selection-end-line="32" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/webviews/CrosswalkWebView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="578">
+          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/crosswalk/engine/XWalkCordovaView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="663" max-vertical-offset="2006">
+          <caret line="39" column="72" selection-start-line="39" selection-start-column="72" selection-end-line="39" selection-end-column="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/org.xwalk/xwalk_core_library/14.43.343.24/classes.jar!/org/xwalk/core/JavascriptInterface.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.12020202" vertical-offset="0" max-vertical-offset="990">
+          <caret line="8" column="18" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/crosswalk/engine/XWalkExposedJsApi.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.38522166" vertical-offset="0" max-vertical-offset="1015">
+          <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/crosswalk/engine/XWalkWebViewEngine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.42411643" vertical-offset="0" max-vertical-offset="2414">
+          <caret line="54" column="11" selection-start-line="54" selection-start-column="11" selection-end-line="54" selection-end-column="11" />
+          <folding>
+            <element signature="e#3458#3459#0" expanded="false" />
+            <element signature="e#3524#3525#0" expanded="false" />
+            <element signature="e#4386#4387#0" expanded="false" />
+            <element signature="e#4456#4457#0" expanded="false" />
+            <element signature="e#5075#5076#0" expanded="false" />
+            <element signature="e#5110#5111#0" expanded="false" />
+            <element signature="e#5158#5159#0" expanded="false" />
+            <element signature="e#5214#5215#0" expanded="false" />
+            <element signature="e#5261#5262#0" expanded="false" />
+            <element signature="e#5303#5304#0" expanded="false" />
+            <element signature="e#5349#5350#0" expanded="false" />
+            <element signature="e#5389#5390#0" expanded="false" />
+            <element signature="e#5433#5434#0" expanded="false" />
+            <element signature="e#5477#5478#0" expanded="false" />
+            <element signature="e#5665#5666#0" expanded="false" />
+            <element signature="e#5704#5705#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/libs/emby.apiclient.jar!/mediabrowser/model/session/PlaybackProgressInfo.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35031185" vertical-offset="445" max-vertical-offset="1513">
+          <caret line="47" column="22" selection-start-line="47" selection-start-column="22" selection-end-line="47" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/org.xwalk/xwalk_core_library_beta/13.42.319.12/classes.jar!/org/xwalk/core/JavascriptInterface.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.053014554" vertical-offset="0" max-vertical-offset="962">
+          <caret line="4" column="23" selection-start-line="4" selection-start-column="8" selection-end-line="4" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/webviews/NativeWebView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="935">
+          <caret line="3" column="29" selection-start-line="3" selection-start-column="7" selection-end-line="3" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/HttpRequestResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="637" max-vertical-offset="1649">
+          <caret line="96" column="5" selection-start-line="96" selection-start-column="5" selection-end-line="102" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CordovaLib/src/org/apache/cordova/CordovaActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="544" max-vertical-offset="8449">
+          <caret line="32" column="26" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/libs/libvlc_x86.jar!/org/videolan/libvlc/MediaPlayer.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5790021" vertical-offset="1772" max-vertical-offset="5525">
+          <caret line="138" column="37" selection-start-line="138" selection-start-column="37" selection-end-line="138" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/AppData/Local/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0-sources.jar!/android/support/annotation/MainThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3100304" vertical-offset="0" max-vertical-offset="987">
+          <caret line="38" column="18" selection-start-line="38" selection-start-column="18" selection-end-line="38" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3414387" vertical-offset="1958" max-vertical-offset="7004">
+          <caret line="198" column="23" selection-start-line="198" selection-start-column="23" selection-end-line="198" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/api/ApiClientBridge.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2166" max-vertical-offset="3434">
+          <caret line="159" column="34" selection-start-line="159" selection-start-column="34" selection-end-line="159" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/PlaybackService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="15232" max-vertical-offset="34170">
+          <caret line="896" column="17" selection-start-line="896" selection-start-column="17" selection-end-line="896" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VideoPlayerActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.55792683" vertical-offset="15414" max-vertical-offset="53074">
+          <caret line="943" column="39" selection-start-line="943" selection-start-column="39" selection-end-line="943" selection-end-column="39" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#6318#6319#0" expanded="true" />
-            <element signature="e#6347#6348#0" expanded="true" />
-            <element signature="e#12728#12729#0" expanded="true" />
-            <element signature="e#12769#12770#0" expanded="true" />
+            <element signature="e#10469#10477#0" expanded="true" />
+            <element signature="e#12524#13151#0" expanded="true" />
+            <element signature="e#13136#13137#0" expanded="true" />
+            <element signature="e#13883#14430#0" expanded="true" />
+            <element signature="e#14407#14408#0" expanded="true" />
+            <element signature="e#14970#15174#0" expanded="true" />
+            <element signature="e#15163#15164#0" expanded="true" />
+            <element signature="e#27663#27856#0" expanded="true" />
+            <element signature="e#27833#27834#0" expanded="true" />
+            <element signature="e#32283#33143#0" expanded="true" />
+            <element signature="e#33136#33137#0" expanded="true" />
+            <element signature="e#35830#35864#0" expanded="true" />
+            <element signature="e#41713#41744#0" expanded="true" />
+            <element signature="e#41873#41902#0" expanded="true" />
+            <element signature="e#42534#43208#0" expanded="true" />
+            <element signature="e#43201#43202#0" expanded="true" />
+            <element signature="e#43365#43396#0" expanded="true" />
+            <element signature="e#43742#43771#0" expanded="true" />
+            <element signature="e#44405#44420#0" expanded="true" />
+            <element signature="e#44936#44953#0" expanded="true" />
+            <element signature="e#50854#52399#0" expanded="true" />
+            <element signature="e#52392#52393#0" expanded="true" />
+            <element signature="e#53352#53495#0" expanded="true" />
+            <element signature="e#53480#53481#0" expanded="true" />
+            <element signature="e#53938#54168#0" expanded="true" />
+            <element signature="e#54149#54150#0" expanded="true" />
+            <element signature="e#54205#54216#0" expanded="true" />
+            <element signature="e#54218#54511#0" expanded="true" />
+            <element signature="e#54492#54493#0" expanded="true" />
+            <element signature="e#54539#54571#0" expanded="true" />
+            <element signature="e#54601#54635#0" expanded="true" />
+            <element signature="e#55133#55144#0" expanded="true" />
+            <element signature="e#55146#55428#0" expanded="true" />
+            <element signature="e#55409#55410#0" expanded="true" />
+            <element signature="e#55465#55480#0" expanded="true" />
+            <element signature="e#55482#55731#0" expanded="true" />
+            <element signature="e#55712#55713#0" expanded="true" />
+            <element signature="e#55770#56013#0" expanded="true" />
+            <element signature="e#55994#55995#0" expanded="true" />
+            <element signature="e#56041#56083#0" expanded="true" />
+            <element signature="e#56113#56157#0" expanded="true" />
+            <element signature="e#67399#67425#0" expanded="true" />
+            <element signature="e#68468#68494#0" expanded="true" />
+            <element signature="e#68813#68831#0" expanded="true" />
+            <element signature="e#68834#68851#0" expanded="true" />
+            <element signature="e#71027#71057#0" expanded="true" />
+            <element signature="e#72700#73330#0" expanded="true" />
+            <element signature="e#73319#73320#0" expanded="true" />
+            <element signature="e#74656#75369#0" expanded="true" />
+            <element signature="e#75350#75351#0" expanded="true" />
+            <element signature="e#75853#75873#0" expanded="true" />
+            <element signature="e#75891#76388#0" expanded="true" />
+            <element signature="e#76369#76370#0" expanded="true" />
+            <element signature="e#76707#76726#0" expanded="true" />
+            <element signature="e#76744#77246#0" expanded="true" />
+            <element signature="e#77227#77228#0" expanded="true" />
+            <element signature="e#77718#77739#0" expanded="true" />
+            <element signature="e#77757#78206#0" expanded="true" />
+            <element signature="e#78187#78188#0" expanded="true" />
+            <element signature="e#79851#79973#0" expanded="true" />
+            <element signature="e#79966#79967#0" expanded="true" />
+            <element signature="e#80044#80623#0" expanded="true" />
+            <element signature="e#80616#80617#0" expanded="true" />
+            <element signature="e#81855#81856#0" expanded="true" />
+            <element signature="e#81907#81908#0" expanded="true" />
+            <element signature="e#82887#83178#0" expanded="true" />
+            <element signature="e#83171#83172#0" expanded="true" />
+            <element signature="e#83254#83377#0" expanded="true" />
+            <element signature="e#83370#83371#0" expanded="true" />
+            <element signature="e#83668#83693#0" expanded="true" />
+            <element signature="e#83791#83822#0" expanded="true" />
+            <element signature="e#83918#83947#0" expanded="true" />
+            <element signature="e#84035#84056#0" expanded="true" />
+            <element signature="e#84334#84359#0" expanded="true" />
+            <element signature="e#84490#84672#0" expanded="true" />
+            <element signature="e#84665#84666#0" expanded="true" />
+            <element signature="e#91232#91248#0" expanded="true" />
+            <element signature="e#91692#91707#0" expanded="true" />
+            <element signature="e#92364#92379#0" expanded="true" />
+            <element signature="e#92816#92831#0" expanded="true" />
+            <element signature="e#93052#93060#0" expanded="true" />
+            <element signature="e#93823#93831#0" expanded="true" />
+            <element signature="e#94671#94705#0" expanded="true" />
+            <element signature="e#95008#95042#0" expanded="true" />
+            <element signature="e#95241#95281#0" expanded="true" />
+            <element signature="e#101007#101039#0" expanded="true" />
+            <element signature="e#102221#102253#1" expanded="true" />
+            <element signature="e#104855#104878#0" expanded="true" />
+            <element signature="e#104915#104944#0" expanded="true" />
+            <element signature="e#104946#105141#0" expanded="true" />
+            <element signature="e#105122#105123#0" expanded="true" />
+            <element signature="e#105178#105202#0" expanded="true" />
+            <element signature="e#105204#105398#0" expanded="true" />
+            <element signature="e#105379#105380#0" expanded="true" />
+            <element signature="e#107959#108245#0" expanded="true" />
+            <element signature="e#108238#108239#0" expanded="true" />
+            <element signature="e#114452#114673#0" expanded="true" />
+            <element signature="e#114662#114663#0" expanded="true" />
+            <element signature="e#115453#116033#0" expanded="true" />
+            <element signature="e#116022#116023#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VideoApiHelper.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="7909" max-vertical-offset="9180">
-          <caret line="515" column="19" selection-start-line="515" selection-start-column="19" selection-end-line="515" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="246" max-vertical-offset="7820">
+          <caret line="89" column="0" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/MediaService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="918">
+          <caret line="42" column="45" selection-start-line="42" selection-start-column="45" selection-end-line="42" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="1870">
+          <caret line="22" column="22" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/Playback.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8058" max-vertical-offset="8925">
+          <caret line="474" column="12" selection-start-line="472" selection-start-column="12" selection-end-line="474" selection-end-column="12" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/legacy/KitKatMediaService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.785714" vertical-offset="520" max-vertical-offset="30294">
-          <caret line="50" column="27" selection-start-line="50" selection-start-column="27" selection-end-line="50" selection-end-column="27" />
-          <folding>
-            <element signature="e#3587#3588#0" expanded="true" />
-            <element signature="e#3641#3642#0" expanded="true" />
-            <element signature="e#4121#4131#0" expanded="true" />
-            <element signature="e#6258#6259#0" expanded="true" />
-            <element signature="e#6310#6311#0" expanded="true" />
-            <element signature="e#16024#16025#0" expanded="true" />
-            <element signature="e#16054#16055#0" expanded="true" />
-            <element signature="e#16091#16092#0" expanded="true" />
-            <element signature="e#16139#16140#0" expanded="true" />
-            <element signature="e#21626#22252#0" expanded="true" />
-            <element signature="e#22245#22246#0" expanded="true" />
-            <element signature="e#22310#22476#0" expanded="true" />
-            <element signature="e#22469#22470#0" expanded="true" />
-            <element signature="e#22699#22700#0" expanded="true" />
-            <element signature="e#22727#22728#0" expanded="true" />
-            <element signature="e#22798#22799#0" expanded="true" />
-            <element signature="e#22826#22827#0" expanded="true" />
-            <element signature="e#22884#23632#0" expanded="true" />
-            <element signature="e#23625#23626#0" expanded="true" />
-            <element signature="e#23702#26825#0" expanded="true" />
-            <element signature="e#26818#26819#0" expanded="true" />
-            <element signature="e#29564#29565#0" expanded="true" />
-            <element signature="e#29599#29600#0" expanded="true" />
-            <element signature="e#30073#30074#0" expanded="true" />
-            <element signature="e#30130#30131#0" expanded="true" />
-            <element signature="e#30599#30600#0" expanded="true" />
-            <element signature="e#30638#30639#0" expanded="true" />
-            <element signature="e#31889#31890#0" expanded="true" />
-            <element signature="e#31945#31946#0" expanded="true" />
-            <element signature="e#36098#36099#0" expanded="true" />
-            <element signature="e#36136#36137#0" expanded="true" />
-            <element signature="e#37869#37870#0" expanded="true" />
-            <element signature="e#37919#37920#0" expanded="true" />
-            <element signature="e#47660#47661#0" expanded="true" />
-            <element signature="e#47707#47708#0" expanded="true" />
-            <element signature="e#47759#47760#0" expanded="true" />
-            <element signature="e#47792#47793#0" expanded="true" />
-            <element signature="e#47849#47850#0" expanded="true" />
-            <element signature="e#47882#47883#0" expanded="true" />
-            <element signature="e#47932#47933#0" expanded="true" />
-            <element signature="e#47972#47973#0" expanded="true" />
-            <element signature="e#48027#48028#0" expanded="true" />
-            <element signature="e#48094#48095#0" expanded="true" />
-            <element signature="e#48596#48597#0" expanded="true" />
-            <element signature="e#48633#48634#0" expanded="true" />
-            <element signature="e#48678#48679#0" expanded="true" />
-            <element signature="e#48723#48724#0" expanded="true" />
-            <element signature="e#48770#48771#0" expanded="true" />
-            <element signature="e#48818#48819#0" expanded="true" />
-            <element signature="e#49989#50003#0" expanded="true" />
-            <element signature="e#51699#51700#0" expanded="true" />
-            <element signature="e#51734#51735#0" expanded="true" />
-            <element signature="e#52895#52909#0" expanded="true" />
-            <element signature="e#53362#53376#0" expanded="true" />
-            <element signature="e#53624#53632#0" expanded="true" />
-            <element signature="e#53836#53837#0" expanded="true" />
-            <element signature="e#53891#53892#0" expanded="true" />
-            <element signature="e#53951#53952#0" expanded="true" />
-            <element signature="e#53987#53988#0" expanded="true" />
-            <element signature="e#54173#54174#0" expanded="true" />
-            <element signature="e#54215#54216#0" expanded="true" />
-            <element signature="e#54263#54264#0" expanded="true" />
-            <element signature="e#54302#54303#0" expanded="true" />
-            <element signature="e#54354#54355#0" expanded="true" />
-            <element signature="e#54393#54394#0" expanded="true" />
-            <element signature="e#54459#54460#0" expanded="true" />
-            <element signature="e#54498#54499#0" expanded="true" />
-            <element signature="e#54545#54546#0" expanded="true" />
-            <element signature="e#54590#54591#0" expanded="true" />
-            <element signature="e#54645#54646#0" expanded="true" />
-            <element signature="e#54687#54688#0" expanded="true" />
-            <element signature="e#54742#54743#0" expanded="true" />
-            <element signature="e#54786#54787#0" expanded="true" />
-            <element signature="e#54861#54862#0" expanded="true" />
-            <element signature="e#54915#54916#0" expanded="true" />
-            <element signature="e#54977#54978#0" expanded="true" />
-            <element signature="e#55024#55025#0" expanded="true" />
-            <element signature="e#55074#55075#0" expanded="true" />
-            <element signature="e#55122#55123#0" expanded="true" />
-            <element signature="e#55184#55185#0" expanded="true" />
-            <element signature="e#55232#55233#0" expanded="true" />
-            <element signature="e#55280#55281#0" expanded="true" />
-            <element signature="e#55326#55327#0" expanded="true" />
-            <element signature="e#55384#55385#0" expanded="true" />
-            <element signature="e#55428#55429#0" expanded="true" />
-            <element signature="e#55474#55475#0" expanded="true" />
-            <element signature="e#55521#55522#0" expanded="true" />
-            <element signature="e#55577#55578#0" expanded="true" />
-            <element signature="e#55630#55631#0" expanded="true" />
-            <element signature="e#55688#55689#0" expanded="true" />
-            <element signature="e#55733#55734#0" expanded="true" />
-            <element signature="e#55789#55790#0" expanded="true" />
-            <element signature="e#55846#55847#0" expanded="true" />
-            <element signature="e#55924#55925#0" expanded="true" />
-            <element signature="e#55976#55977#0" expanded="true" />
-            <element signature="e#56026#56027#0" expanded="true" />
-            <element signature="e#56077#56078#0" expanded="true" />
-            <element signature="e#56140#56141#0" expanded="true" />
-            <element signature="e#56196#56197#0" expanded="true" />
-            <element signature="e#56252#56253#0" expanded="true" />
-            <element signature="e#56309#56310#0" expanded="true" />
-            <element signature="e#56377#56378#0" expanded="true" />
-            <element signature="e#56434#56435#0" expanded="true" />
-            <element signature="e#56510#56511#0" expanded="true" />
-            <element signature="e#56560#56561#0" expanded="true" />
-            <element signature="e#56608#56609#0" expanded="true" />
-            <element signature="e#56657#56658#0" expanded="true" />
-            <element signature="e#56718#56719#0" expanded="true" />
-            <element signature="e#56772#56773#0" expanded="true" />
-            <element signature="e#56826#56827#0" expanded="true" />
-            <element signature="e#56881#56882#0" expanded="true" />
-            <element signature="e#56945#56946#0" expanded="true" />
-            <element signature="e#57001#57002#0" expanded="true" />
-            <element signature="e#57052#57053#0" expanded="true" />
-            <element signature="e#57103#57104#0" expanded="true" />
-            <element signature="e#57165#57166#0" expanded="true" />
-            <element signature="e#57219#57220#0" expanded="true" />
-            <element signature="e#57268#57269#0" expanded="true" />
-            <element signature="e#57317#57318#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VlcEventHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="832" max-vertical-offset="2125">
-          <caret line="75" column="60" selection-start-line="75" selection-start-column="60" selection-end-line="75" selection-end-column="60" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.76" vertical-offset="4743" max-vertical-offset="7701">
-          <caret line="330" column="50" selection-start-line="330" selection-start-column="50" selection-end-line="330" selection-end-column="50" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/mb/android/media/VideoPlayerActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-49.793938" vertical-offset="49976" max-vertical-offset="50966">
-          <caret line="40" column="20" selection-start-line="40" selection-start-column="20" selection-end-line="40" selection-end-column="20" />
-          <folding>
-            <element signature="e#9402#9410#0" expanded="true" />
-            <element signature="e#10208#10209#0" expanded="true" />
-            <element signature="e#10248#10249#0" expanded="true" />
-            <element signature="e#10790#11415#0" expanded="true" />
-            <element signature="e#11400#11401#0" expanded="true" />
-            <element signature="e#12147#12694#0" expanded="true" />
-            <element signature="e#12671#12672#0" expanded="true" />
-            <element signature="e#13234#13438#0" expanded="true" />
-            <element signature="e#13427#13428#0" expanded="true" />
-            <element signature="e#25209#25402#0" expanded="true" />
-            <element signature="e#25379#25380#0" expanded="true" />
-            <element signature="e#30254#30255#0" expanded="true" />
-            <element signature="e#30306#30307#0" expanded="true" />
-            <element signature="e#31402#32262#0" expanded="true" />
-            <element signature="e#32255#32256#0" expanded="true" />
-            <element signature="e#32746#32747#0" expanded="true" />
-            <element signature="e#32777#32778#0" expanded="true" />
-            <element signature="e#34949#34983#0" expanded="true" />
-            <element signature="e#40762#40793#0" expanded="true" />
-            <element signature="e#40922#40951#0" expanded="true" />
-            <element signature="e#41583#42257#0" expanded="true" />
-            <element signature="e#42250#42251#0" expanded="true" />
-            <element signature="e#42414#42445#0" expanded="true" />
-            <element signature="e#42789#42818#0" expanded="true" />
-            <element signature="e#43452#43467#0" expanded="true" />
-            <element signature="e#43983#44000#0" expanded="true" />
-            <element signature="e#46169#46170#0" expanded="true" />
-            <element signature="e#46239#46240#0" expanded="true" />
-            <element signature="e#46312#46313#0" expanded="true" />
-            <element signature="e#46339#46340#0" expanded="true" />
-            <element signature="e#47020#47021#0" expanded="true" />
-            <element signature="e#47048#47049#0" expanded="true" />
-            <element signature="e#47351#47352#0" expanded="true" />
-            <element signature="e#47379#47380#0" expanded="true" />
-            <element signature="e#49782#51322#0" expanded="true" />
-            <element signature="e#51315#51316#0" expanded="true" />
-            <element signature="e#51953#52096#0" expanded="true" />
-            <element signature="e#52081#52082#0" expanded="true" />
-            <element signature="e#52494#52724#0" expanded="true" />
-            <element signature="e#52705#52706#0" expanded="true" />
-            <element signature="e#52761#52772#0" expanded="true" />
-            <element signature="e#52774#53010#0" expanded="true" />
-            <element signature="e#52991#52992#0" expanded="true" />
-            <element signature="e#53038#53070#0" expanded="true" />
-            <element signature="e#53100#53134#0" expanded="true" />
-            <element signature="e#53262#53263#0" expanded="true" />
-            <element signature="e#53313#53314#0" expanded="true" />
-            <element signature="e#53632#53643#0" expanded="true" />
-            <element signature="e#53645#53927#0" expanded="true" />
-            <element signature="e#53908#53909#0" expanded="true" />
-            <element signature="e#53964#53979#0" expanded="true" />
-            <element signature="e#53981#54230#0" expanded="true" />
-            <element signature="e#54211#54212#0" expanded="true" />
-            <element signature="e#54269#54512#0" expanded="true" />
-            <element signature="e#54493#54494#0" expanded="true" />
-            <element signature="e#54540#54582#0" expanded="true" />
-            <element signature="e#54612#54656#0" expanded="true" />
-            <element signature="e#65801#65827#0" expanded="true" />
-            <element signature="e#66870#66896#0" expanded="true" />
-            <element signature="e#67215#67233#0" expanded="true" />
-            <element signature="e#67236#67253#0" expanded="true" />
-            <element signature="e#69425#69455#0" expanded="true" />
-            <element signature="e#70867#71877#0" expanded="true" />
-            <element signature="e#71866#71867#0" expanded="true" />
-            <element signature="e#72969#73645#0" expanded="true" />
-            <element signature="e#73626#73627#0" expanded="true" />
-            <element signature="e#73958#73978#0" expanded="true" />
-            <element signature="e#73996#74580#0" expanded="true" />
-            <element signature="e#74561#74562#0" expanded="true" />
-            <element signature="e#74719#74738#0" expanded="true" />
-            <element signature="e#74756#75337#0" expanded="true" />
-            <element signature="e#75318#75319#0" expanded="true" />
-            <element signature="e#75536#75658#0" expanded="true" />
-            <element signature="e#75651#75652#0" expanded="true" />
-            <element signature="e#75729#76304#0" expanded="true" />
-            <element signature="e#76297#76298#0" expanded="true" />
-            <element signature="e#77535#77536#0" expanded="true" />
-            <element signature="e#77587#77588#0" expanded="true" />
-            <element signature="e#78193#78484#0" expanded="true" />
-            <element signature="e#78477#78478#0" expanded="true" />
-            <element signature="e#78560#78683#0" expanded="true" />
-            <element signature="e#78676#78677#0" expanded="true" />
-            <element signature="e#78974#78999#0" expanded="true" />
-            <element signature="e#79097#79128#0" expanded="true" />
-            <element signature="e#79224#79253#0" expanded="true" />
-            <element signature="e#79341#79362#0" expanded="true" />
-            <element signature="e#79640#79665#0" expanded="true" />
-            <element signature="e#79796#79978#0" expanded="true" />
-            <element signature="e#79971#79972#0" expanded="true" />
-            <element signature="e#80336#80337#0" expanded="true" />
-            <element signature="e#80370#80371#0" expanded="true" />
-            <element signature="e#87536#87570#0" expanded="true" />
-            <element signature="e#87873#87907#0" expanded="true" />
-            <element signature="e#88033#88073#0" expanded="true" />
-            <element signature="e#99219#99227#0" expanded="true" />
-            <element signature="e#100101#100133#0" expanded="true" />
-            <element signature="e#101329#101361#1" expanded="true" />
-            <element signature="e#103963#103986#0" expanded="true" />
-            <element signature="e#104023#104052#0" expanded="true" />
-            <element signature="e#104054#104249#0" expanded="true" />
-            <element signature="e#104230#104231#0" expanded="true" />
-            <element signature="e#104286#104310#0" expanded="true" />
-            <element signature="e#104312#104506#0" expanded="true" />
-            <element signature="e#104487#104488#0" expanded="true" />
-            <element signature="e#104832#105015#0" expanded="true" />
-            <element signature="e#105004#105005#0" expanded="true" />
-            <element signature="e#107020#107305#0" expanded="true" />
-            <element signature="e#107298#107299#0" expanded="true" />
-            <element signature="e#109975#109976#0" expanded="true" />
-            <element signature="e#110028#110029#0" expanded="true" />
-            <element signature="e#111310#111311#0" expanded="true" />
-            <element signature="e#111346#111347#0" expanded="true" />
-            <element signature="e#111488#111489#0" expanded="true" />
-            <element signature="e#111524#111525#0" expanded="true" />
-            <element signature="e#111966#111967#0" expanded="true" />
-            <element signature="e#111996#111997#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.30147782" vertical-offset="9384" max-vertical-offset="27438">
+          <caret line="661" column="60" selection-start-line="661" selection-start-column="60" selection-end-line="661" selection-end-column="60" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -1,12 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242411" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.11" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242412" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
-    </feature>
-    <feature name="StatusBar">
-        <param name="android-package" value="org.apache.cordova.statusbar.StatusBar" />
-        <param name="onload" value="true" />
     </feature>
     <feature name="Whitelist">
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
@@ -47,14 +43,18 @@
     <feature name="Device">
         <param name="android-package" value="org.apache.cordova.device.Device" />
     </feature>
-    <feature name="Notification">
-        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
-    </feature>
     <feature name="Globalization">
         <param name="android-package" value="org.apache.cordova.globalization.Globalization" />
     </feature>
     <feature name="InAppBillingPlugin">
         <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
+    </feature>
+    <feature name="StatusBar">
+        <param name="android-package" value="org.apache.cordova.statusbar.StatusBar" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="Notification">
+        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
     </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="21" />
