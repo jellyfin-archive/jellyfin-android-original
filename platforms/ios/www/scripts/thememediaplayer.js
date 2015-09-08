@@ -3,5 +3,5 @@ currentThemeIds=items.map(function(i){return i.Id;});currentOwnerId=ownerId;play
 function onPlayItem(item){if(currentThemeIds.indexOf(item.Id)==-1){currentOwnerId=null;}}
 function enabled(){var userId=Dashboard.getCurrentUserId();var val=appStorage.getItem('enableThemeSongs-'+userId);var localAutoPlayers=MediaController.getPlayers().filter(function(p){return p.isLocalPlayer&&p.canAutoPlayAudio();});return val=='1'||(val!='0'&&localAutoPlayers.length);}
 function getPlayer(){return MediaController.getCurrentPlayer();}
-Events.on(document,'thememediadownload',".libraryPage",function(e,themeMediaResult){if(!enabled()){return;}
+Events.on(document,'thememediadownload',function(e,themeMediaResult){if(!enabled()){return;}
 var ownerId=themeMediaResult.ThemeSongsResult.OwnerId;if(ownerId!=currentOwnerId){playThemeSongs(themeMediaResult.ThemeSongsResult.Items,ownerId);}});})(document);

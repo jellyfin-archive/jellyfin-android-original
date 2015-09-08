@@ -140,6 +140,7 @@
             if (tIndex != -1) {
                 startPosMs = val.substring(tIndex + 3);
                 startPosMs = parseFloat(startPosMs) * 1000;
+                val = val.split('#')[0];
             }
 
             if (options.type == 'audio') {
@@ -185,8 +186,6 @@
 
                 playerState.currentSrc = val;
                 self.report('playing', null, startPosMs, false, 100);
-
-                playerState.currentSrc = val;
             }
         };
 
@@ -255,13 +254,9 @@
             return deferred.promise();
         };
 
-        self.onActivityClosed = function (wasStopped, hasError, endPositionMs, currentSrc) {
+        self.onActivityClosed = function (wasStopped, hasError, endPositionMs) {
 
             playerState.currentTime = endPositionMs;
-
-            if (currentSrc) {
-                playerState.currentSrc = currentSrc;
-            }
 
             if (wasStopped) {
                 MediaPlayer.stop(false);
