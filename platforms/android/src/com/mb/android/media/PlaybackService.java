@@ -100,6 +100,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     // Indicates whether the service was started.
     private boolean mServiceStarted;
 
+    private long TranscodingOffsetPositionTicks = 0;
+    private boolean EnableServerSeek = false;
+    private long lastReportedPositionTicks = 0;
+
     public interface Callback {
         void update();
         void updateProgress();
@@ -765,17 +769,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                 return;
             }
 
-            long time = 0;
-
-            try {
-                time = getTime();
-            }
-            catch (IllegalStateException ex) {
-                return;
-            }
-
-            //activity.updateSubtitles(time);
-
             if (checkLastReportTime){
 
                 // avoid useless error logs
@@ -789,6 +782,15 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                 lastReportTime = System.currentTimeMillis();
             }
 
+            long timeTicks = 0;
+
+            try {
+                timeTicks = getTimeTicks();
+            }
+            catch (IllegalStateException ex) {
+                return;
+            }
+
             int playerState = mMediaPlayer.getPlayerState();
 
             // Expected states by web plugins are: IDLE/CLOSE=0, OPENING=1, BUFFERING=2, PLAYING=3, PAUSED=4, STOPPING=5, ENDED=6, ERROR=7
@@ -798,11 +800,11 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
             logger.Debug("Vlc player state: %s", playerState);
 
-            long length = getLength() / 1000;
-
             int volume = getVolume();
 
-            apiHelper.ReportPlaybackProgress(length, time, volume, isPaused);
+            lastReportedPositionTicks = timeTicks;
+
+            apiHelper.ReportPlaybackProgress(timeTicks, volume, isPaused);
         }
     };
 
@@ -894,7 +896,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     public void setResult(boolean completed, boolean error) {
 
-        long positionMs = completed ? 0 : mMediaPlayer.getTime();
+        long positionMs = completed ? 0 : (lastReportedPositionTicks / 10000);
         String currentSrc = getCurrentMedia().getUri().toString();
 
         MainActivity.RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));
@@ -1123,6 +1125,11 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public void stop() {
+
+        if (apiHelper != null) {
+            apiHelper.enableProgressReporting = false;
+        }
+
         if (mMediaPlayer == null)
             return;
         savePosition();
@@ -1477,7 +1484,32 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public long getTime() {
-        return mMediaPlayer.getTime();
+        return getTimeTicks() / 10000;
+    }
+
+    @MainThread
+    public long getTimeTicks() {
+        return (mMediaPlayer.getTime() * 10000) + getTranscodingOffsetPositionTicks();
+    }
+
+    @MainThread
+    public boolean getEnableServerSeek() {
+        return EnableServerSeek;
+    }
+
+    @MainThread
+    public void setEnableServerSeek(boolean val) {
+        EnableServerSeek = val;
+    }
+
+    @MainThread
+    public long getTranscodingOffsetPositionTicks() {
+        return TranscodingOffsetPositionTicks;
+    }
+
+    @MainThread
+    public void setTranscodingOffsetPositionTicks(long val) {
+        TranscodingOffsetPositionTicks = val;
     }
 
     @MainThread
@@ -1587,6 +1619,18 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         notifyTrackChanged();
         determinePrevAndNextIndices();
+    }
+
+    public void restartIndex(int index, int flags) {
+
+        final Media media = mMediaPlayer.getMedia();
+        if (media != null) {
+            media.setEventListener(null);
+            media.release();
+        }
+
+        playIndex(index, flags);
+        onMediaChanged();
     }
 
     /**

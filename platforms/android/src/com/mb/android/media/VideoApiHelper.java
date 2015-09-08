@@ -76,7 +76,7 @@ public class VideoApiHelper {
         preferencesProvider = new PreferencesProvider(context, logger);
     }
 
-    public void ReportPlaybackProgress(Long duration, Long time, int volume, boolean isPaused) {
+    public void ReportPlaybackProgress(Long positionTicks, int volume, boolean isPaused) {
 
         if (!enableProgressReporting){
             return;
@@ -86,7 +86,7 @@ public class VideoApiHelper {
 
         info.setVolumeLevel(volume);
         info.setIsPaused(isPaused);
-        info.setPositionTicks(time * 10000);
+        info.setPositionTicks(positionTicks);
 
         apiClient.ReportPlaybackProgressAsync(info, new EmptyResponse());
     }
@@ -112,6 +112,11 @@ public class VideoApiHelper {
         this.isOffline = isOffline;
         currentMediaSource = mediaSourceInfo;
         originalMaxBitrate = deviceProfile.getMaxStreamingBitrate();
+    }
+
+    public void seekTranscode(long newPositionTicks){
+
+        changeStream(currentMediaSource, newPositionTicks, null, null, null);
     }
 
     public void setAudioStreamIndex(MediaPlayer vlc, int index){
@@ -414,7 +419,7 @@ public class VideoApiHelper {
         final PlayMethod method = playMethod;
 
         // Tell VideoPlayerActivity to changeStream
-        activity.changeLocation(path);
+        activity.changeLocation(path, newMediaSource, playMethod, positionTicks);
 
         currentMediaSource = newMediaSource;
         playbackStartInfo.setPlayMethod(method);
