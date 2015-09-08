@@ -897,9 +897,8 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     public void setResult(boolean completed, boolean error) {
 
         long positionMs = completed ? 0 : (lastReportedPositionTicks / 10000);
-        String currentSrc = getCurrentMedia().getUri().toString();
 
-        MainActivity.RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));
+        MainActivity.RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s);", !completed, error, positionMs));
     }
 
     private void executeUpdate() {

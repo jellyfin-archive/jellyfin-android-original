@@ -9,18 +9,6 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"StatusBar\"><param name=\"ios-package\" value=\"CDVStatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"StatusBarOverlaysWebView\" value=\"true\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"BackgroundColor\"><param name=\"ios-package\" value=\"CDVBackgroundColor\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -73,10 +61,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"SearchBar\"><param name=\"ios-package\" value=\"SearchBar\" /></feature>",
                             "count": 1
                         },
@@ -90,6 +74,22 @@
                         },
                         {
                             "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"StatusBar\"><param name=\"ios-package\" value=\"CDVStatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"StatusBarOverlaysWebView\" value=\"true\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
                             "count": 1
                         }
                     ],
@@ -203,9 +203,6 @@
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -254,9 +251,6 @@
         "cordova-plugin-device": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -270,6 +264,12 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
