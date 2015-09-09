@@ -135,6 +135,7 @@ else if(Dashboard.isRunningInCordova()){define("filesystem",["cordova/filesystem
 else{define("filesystem",["thirdparty/filesystem"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("nativedirectorychooser",["cordova/android/nativedirectorychooser"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["cordova/android/vlcplayer"]);define("videorenderer",["cordova/android/vlcplayer"]);}
+else if(Dashboard.isRunningInCordova()&&$.browser.safari){define("audiorenderer",["cordova/ios/vlcplayer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
 else{define("audiorenderer",["scripts/htmlmediarenderer"]);define("videorenderer",["scripts/htmlmediarenderer"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("localsync",["cordova/android/localsync"]);}
 else{define("localsync",["scripts/localsync"]);}
@@ -147,6 +148,7 @@ function initAfterDependencies(deferred,capabilities){var drawer=document.queryS
 var deps=[];if(AppInfo.isNativeApp&&$.browser.android){deps.push('cordova/android/logging');}
 deps.push('appstorage');require(deps,function(){if(Dashboard.isRunningInCordova()&&$.browser.android){AppInfo.directPlayAudioContainers="aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus".split(',');if(AppSettings.syncLosslessAudio()){AppInfo.directPlayAudioContainers.push('flac');}
 AppInfo.directPlayVideoContainers="m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm".split(',');}
+else if(Dashboard.isRunningInCordova()&&$.browser.safari){AppInfo.directPlayAudioContainers="aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus".split(',');if(AppSettings.syncLosslessAudio()){AppInfo.directPlayAudioContainers.push('flac');}}
 capabilities.DeviceProfile=MediaPlayer.getDeviceProfile(Math.max(screen.height,screen.width));createConnectionManager(capabilities).done(function(){onConnectionManagerCreated(deferred);});});}
 function onConnectionManagerCreated(deferred){Globalize.ensure().done(function(){document.title=Globalize.translateDocument(document.title,'html');$(function(){var mainDrawerPanelContent=document.querySelector('.mainDrawerPanelContent');if(mainDrawerPanelContent){var newHtml=mainDrawerPanelContent.innerHTML.substring(4);newHtml=newHtml.substring(0,newHtml.length-3);var srch='data-require=';var index=newHtml.indexOf(srch);var depends;if(index!=-1){var requireAttribute=newHtml.substring(index+srch.length+1);requireAttribute=requireAttribute.substring(0,requireAttribute.indexOf('"'));depends=requireAttribute.split(',');}
 depends=depends||[];if(newHtml.indexOf('type-interior')!=-1){depends.push('jqmpopup');depends.push('jqmlistview');depends.push('jqmcollapsible');depends.push('jqmcontrolgroup');depends.push('jqmcheckbox');}
