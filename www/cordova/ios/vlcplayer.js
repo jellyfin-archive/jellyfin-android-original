@@ -198,33 +198,20 @@
 
         function reportEvent(eventName) {
 
-            window.audioplayer.getaudiostate(function () {
+            Logger.log('getaudiostate success. eventName: ' + eventName);
 
-                Logger.log('getaudiostate success. eventName: ' + eventName);
+            if (eventName == 'playing') {
+                restartInterval();
+            }
 
-                if (eventName == 'playing') {
-                    restartInterval();
-                }
-
-                self.report(eventName, (result.duration || 0), (result.progress || 0) * 1000, eventName == 'paused');
-
-            }, function () {
-
-                Logger.log('Error getting audiostate. eventName: ' + eventName);
-
-                if (eventName == 'playbackstop') {
-                    stopInterval();
-                    self.report(eventName, playerState.duration, playerState.position, false);
-                }
-
-            });
+            self.report(eventName, (result.duration || 0), (result.progress || 0) * 1000, eventName == 'paused');
         }
 
         var progressInterval;
         function restartInterval() {
             stopInterval();
 
-            progressInterval = setInterval(onProgressInterval, 3000);
+            //progressInterval = setInterval(onProgressInterval, 3000);
         }
 
         function onProgressInterval() {
@@ -279,7 +266,19 @@
         self.init = function () {
 
             var deferred = DeferredBuilder.Deferred();
-            deferred.resolve();
+
+            if (!self.initVlc) {
+                window.audioplayer.configure(function () {
+                    Logger.log('audioplayer.configure success');
+                    deferred.resolve();
+                }, function () {
+                    Logger.log('audioplayer.configure error');
+                    deferred.resolve();
+                });
+                self.initVlc = true;
+            } else {
+                deferred.resolve();
+            }
             return deferred.promise();
         };
 
