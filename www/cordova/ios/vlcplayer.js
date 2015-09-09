@@ -75,7 +75,7 @@
         self.stop = function () {
             window.audioplayer.pause(function () {
                 Logger.log('Stop succeeded!');
-                onEnded();
+                reportEvent('playbackstop');
 
             }, function () {
                 Logger.log('Stop failed!');
@@ -85,7 +85,7 @@
         self.pause = function () {
             window.audioplayer.pause(function () {
                 Logger.log('Pause succeeded!');
-                onPause();
+                reportEvent('paused');
 
             }, function () {
                 Logger.log('Pause failed!');
@@ -95,7 +95,7 @@
         self.unpause = function () {
             window.audioplayer.pause(function () {
                 Logger.log('Unpause succeeded!');
-                onPlaying();
+                reportEvent('playing');
 
             }, function () {
                 Logger.log('Unpause failed!');
@@ -138,9 +138,10 @@
 
                 window.audioplayer.playstream(function () {
                     Logger.log('playstream succeeded!');
-                    onPlaying();
+                    reportEvent('playing');
                 }, function () {
                     Logger.log('playstream failed!');
+                    onError();
                 },
                                {
                                    ios: val
@@ -159,12 +160,6 @@
                                     "description": item.Overview
                                 }
                              );
-
-                // TODO: Fire revents
-                // positionchange
-                // playbackstop
-                // paused
-                // playing
 
             } else {
 
@@ -192,7 +187,7 @@
                 // TODO
 
             }
-
+            stopInterval();
             playerState = {};
         };
 
@@ -200,6 +195,57 @@
 
             return false;
         };
+
+        function reportEvent(eventName) {
+
+            window.audioplayer.getaudiostate(function () {
+
+                Logger.log('getaudiostate success. eventName: ' + eventName);
+
+                if (eventName == 'playing') {
+                    restartInterval();
+                }
+
+                self.report(eventName, (result.duration || 0), (result.progress || 0) * 1000, eventName == 'paused');
+
+            }, function () {
+
+                Logger.log('Error getting audiostate. eventName: ' + eventName);
+
+                if (eventName == 'playbackstop') {
+                    stopInterval();
+                    self.report(eventName, playerState.duration, playerState.position, false);
+                }
+
+            });
+        }
+
+        var progressInterval;
+        function restartInterval() {
+            stopInterval();
+
+            progressInterval = setInterval(onProgressInterval, 3000);
+        }
+
+        function onProgressInterval() {
+
+            window.audioplayer.getaudiostate(function (result) {
+
+                self.report('positionchange', (result.duration || 0), (result.progress || 0) * 1000, result.state == 3);
+
+            }, function () {
+
+                Logger.log('Error getting audiostate during progress interval');
+
+            });
+        }
+
+        function stopInterval() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
 
         self.report = function (eventName, duration, position, isPaused, volume) {
 
@@ -235,17 +281,6 @@
             var deferred = DeferredBuilder.Deferred();
             deferred.resolve();
             return deferred.promise();
-        };
-
-        self.onActivityClosed = function (wasStopped, hasError, endPositionMs) {
-
-            playerState.currentTime = endPositionMs;
-
-            if (wasStopped) {
-                MediaPlayer.stop(false);
-            }
-
-            self.report('playbackstop', playerState.duration, endPositionMs, false, 100);
         };
 
         window.AudioRenderer.Current = self;
