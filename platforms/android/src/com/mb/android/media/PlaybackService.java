@@ -1558,13 +1558,14 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
-    public void setMedia(Uri uri, int index) {
+    public MediaWrapper setMedia(Uri uri, int index) {
 
         final Media media = new Media(VLCInstance.get(getApplicationContext(), logger), uri);
         MediaWrapper mediaWrapper = new MediaWrapper(media);
         mediaWrapper.removeFlags(MediaWrapper.MEDIA_FORCE_AUDIO);
         mediaWrapper.addFlags(MediaWrapper.MEDIA_VIDEO);
         mMediaList.set(index,mediaWrapper);
+        return mediaWrapper;
     }
 
     @MainThread
