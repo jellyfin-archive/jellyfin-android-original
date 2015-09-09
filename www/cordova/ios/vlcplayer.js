@@ -135,7 +135,7 @@
 
                 //AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
                 var artist = item.ArtistItems && item.ArtistItems.length ? item.ArtistItems[0].Name : null;
-                window.audioplayer.playstream(getSuccessHandler(), function () {
+                window.audioplayer.playstream(successHandler, function () {
 
                     Logger.log('playstream failed!');
                     //onError();
@@ -161,6 +161,14 @@
             } else {
 
             }
+
+            var state = playerState;
+
+            state.duration = (mediaSource.RunTimeTicks || 0) / 10000;
+            state.currentTime = startPosMs;
+            state.paused = false;
+            state.volume = 0;
+            onPlaying();
         };
 
         self.currentSrc = function () {
@@ -225,30 +233,20 @@
             }
         }
 
-        function getSuccessHandler() {
-            var handler = this;
-            handler.isFirst = true;
+        function successHandler(result) {
 
-            return function (result) {
+            if (!result) {
+                return;
+            }
 
-                if (!handler.stopped) {
-                    if (result.state == 4 || result.state == 6) {
-                        handler.stopped = true;
-                        reportEvent('playbackstop', result);
-                    }
-                    else {
+            if (result.state == 4 || result.state == 6) {
+                reportEvent('playbackstop', result);
+            }
+            else {
 
-                        var eventName = 'positionchange';
-
-                        if (handler.isFirst) {
-                            eventName = 'playing';
-                            handler.isFirst = false;
-                        }
-
-                        reportEvent(eventName, result);
-                    }
-                }
-            };
+                var eventName = 'positionchange';
+                reportEvent(eventName, result);
+            }
         }
 
         self.init = function () {
