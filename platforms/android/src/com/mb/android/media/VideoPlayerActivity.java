@@ -1487,7 +1487,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         mDisabledHardwareAcceleration = true;
-                        loadMedia();
+                        restartVideo();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -2074,6 +2074,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 });
     }
 
+    public void restartVideo() {
+        changeLocation(mUri.toString(), apiHelper.getMediaSource(), apiHelper.getPlaybackProgressInfo().getPlayMethod(), 0);
+    }
+
     public void changeLocation(String location, MediaSourceInfo mediaSourceInfo, PlayMethod playMethod, long startPositionTicks) {
 
         location = normalizeLocation(location, mediaSourceInfo, playMethod, startPositionTicks);
@@ -2083,7 +2087,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         Uri newUri = Uri.parse(location);
 
-        mService.setMedia(newUri, 0);
+        MediaWrapper wrapper = mService.setMedia(newUri, 0);
+
+        if (mDisabledHardwareAcceleration){
+            wrapper.addFlags(MediaWrapper.MEDIA_NO_HWACCEL);
+        }
 
         //resumePositionMs = currentTime;
 
@@ -2098,7 +2106,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     private String normalizeLocation(String location, MediaSourceInfo mediaSourceInfo, PlayMethod playMethod, long startPositionTicks) {
 
-        if (playMethod == PlayMethod.Transcode && mediaSourceInfo.getRunTimeTicks() != null && mediaSourceInfo.getRunTimeTicks() > 0) {
+        if (playMethod == PlayMethod.Transcode) {
 
             mService.setEnableServerSeek(true);
             mService.setTranscodingOffsetPositionTicks(startPositionTicks);
