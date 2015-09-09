@@ -73,9 +73,9 @@
         };
 
         self.stop = function () {
-            window.audioplayer.pause(function () {
+            window.audioplayer.stop(function (result) {
                 Logger.log('Stop succeeded!');
-                reportEvent('playbackstop');
+                reportEvent('playbackstop', result);
 
             }, function () {
                 Logger.log('Stop failed!');
@@ -83,9 +83,9 @@
         };
 
         self.pause = function () {
-            window.audioplayer.pause(function () {
+            window.audioplayer.pause(function (result) {
                 Logger.log('Pause succeeded!');
-                reportEvent('paused');
+                reportEvent('paused', result);
 
             }, function () {
                 Logger.log('Pause failed!');
@@ -93,9 +93,9 @@
         };
 
         self.unpause = function () {
-            window.audioplayer.pause(function () {
+            window.audioplayer.pause(function (result) {
                 Logger.log('Unpause succeeded!');
-                reportEvent('playing');
+                reportEvent('playing', result);
 
             }, function () {
                 Logger.log('Unpause failed!');
@@ -135,31 +135,28 @@
 
                 //AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
                 var artist = item.ArtistItems && item.ArtistItems.length ? item.ArtistItems[0].Name : null;
+                window.audioplayer.playstream(getSuccessHandler(), function () {
 
-                window.audioplayer.playstream(function () {
-                    Logger.log('playstream succeeded!');
-                    reportEvent('playing');
-                }, function () {
                     Logger.log('playstream failed!');
-                    onError();
+                    //onError();
                 },
-                               {
-                                   ios: val
-                               },
-                                // metadata used for iOS lock screen, Android 'Now Playing' notification
-                                {
-                                    "title": item.Name,
-                                    "artist": artist,
-                                    "image": {
-                                        "url": options.poster
-                                    },
-                                    "imageThumbnail": {
-                                        "url": options.poster
-                                    },
-                                    "name": item.Name,
-                                    "description": item.Overview
-                                }
-                             );
+                                              {
+                                                  ios: val
+                                              },
+                                              // metadata used for iOS lock screen, Android 'Now Playing' notification
+                                              {
+                                                  "title": item.Name,
+                                                  "artist": artist,
+                                                  "image": {
+                                                      "url": options.poster
+                                                  },
+                                                  "imageThumbnail": {
+                                                      "url": options.poster
+                                                  },
+                                                  "name": item.Name,
+                                                  "description": item.Overview
+                                              }
+                                              );
 
             } else {
 
@@ -187,7 +184,6 @@
                 // TODO
 
             }
-            stopInterval();
             playerState = {};
         };
 
@@ -196,45 +192,14 @@
             return false;
         };
 
-        function reportEvent(eventName) {
+        function reportEvent(eventName, result) {
 
-            Logger.log('getaudiostate success. eventName: ' + eventName);
+            var duration = result.duration || 0;
+            var position = result.progress || 0;
 
-            if (eventName == 'playing') {
-                restartInterval();
-            }
+            Logger.log('eventName: ' + eventName + '. position: ' + position);
 
-            self.report(eventName, (result.duration || 0), (result.progress || 0) * 1000, eventName == 'paused');
-        }
-
-        var progressInterval;
-        function restartInterval() {
-            stopInterval();
-
-            //progressInterval = setInterval(onProgressInterval, 3000);
-        }
-
-        function onProgressInterval() {
-
-            window.audioplayer.getaudiostate(function (result) {
-
-                self.report('positionchange', (result.duration || 0), (result.progress || 0) * 1000, result.state == 3);
-
-            }, function () {
-
-                Logger.log('Error getting audiostate during progress interval');
-
-            });
-        }
-
-        function stopInterval() {
-            if (progressInterval) {
-                clearInterval(progressInterval);
-                progressInterval = null;
-            }
-        }
-
-        self.report = function (eventName, duration, position, isPaused, volume) {
+            var isPaused = result.state == 3 || eventName == 'paused';
 
             var state = playerState;
 
@@ -245,9 +210,6 @@
 
             if (eventName == 'playbackstop') {
                 onEnded();
-            }
-            else if (eventName == 'volumechange') {
-                onVolumeChange();
             }
             else if (eventName == 'positionchange') {
                 onTimeUpdate();
@@ -261,24 +223,45 @@
             else if (eventName == 'playing') {
                 onPlaying();
             }
-        };
+        }
+
+        function getSuccessHandler() {
+            var handler = this;
+            handler.isFirst = true;
+
+            return function (result) {
+
+                if (!handler.stopped) {
+                    if (result.state == 4 || result.state == 6) {
+                        handler.stopped = true;
+                        reportEvent('playbackstop', result);
+                    }
+                    else {
+
+                        var eventName = 'positionchange';
+
+                        if (handler.isFirst) {
+                            eventName = 'playing';
+                            handler.isFirst = false;
+                        }
+
+                        reportEvent(eventName, result);
+                    }
+                }
+            };
+        }
 
         self.init = function () {
 
             var deferred = DeferredBuilder.Deferred();
 
-            if (!self.initVlc) {
-                window.audioplayer.configure(function () {
-                    Logger.log('audioplayer.configure success');
-                    deferred.resolve();
-                }, function () {
-                    Logger.log('audioplayer.configure error');
-                    deferred.resolve();
-                });
-                self.initVlc = true;
-            } else {
+            window.audioplayer.configure(function () {
+                Logger.log('audioplayer.configure success');
                 deferred.resolve();
-            }
+            }, function () {
+                Logger.log('audioplayer.configure error');
+                deferred.resolve();
+            });
             return deferred.promise();
         };
 
