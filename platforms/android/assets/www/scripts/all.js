@@ -641,7 +641,7 @@ self.connectToServer=function(server,options){var deferred=DeferredBuilder.Defer
 if(tests.indexOf(MediaBrowser.ConnectionMode.Manual)==-1){tests.push(MediaBrowser.ConnectionMode.Manual);}
 if(tests.indexOf(MediaBrowser.ConnectionMode.Local)==-1){tests.push(MediaBrowser.ConnectionMode.Local);}
 if(tests.indexOf(MediaBrowser.ConnectionMode.Remote)==-1){tests.push(MediaBrowser.ConnectionMode.Remote);}
-beginWakeServer(server);var wakeOnLanSendTime=new Date().getTime();testNextConnectionMode(tests,0,server,wakeOnLanSendTime,options,deferred);return deferred.promise();};function stringEqualsIgnoreCase(str1,str2){return(str1||'').toLowerCase()==(str2||'').toLowerCase();}
+beginWakeServer(server);var wakeOnLanSendTime=new Date().getTime();options=options||{};testNextConnectionMode(tests,0,server,wakeOnLanSendTime,options,deferred);return deferred.promise();};function stringEqualsIgnoreCase(str1,str2){return(str1||'').toLowerCase()==(str2||'').toLowerCase();}
 function testNextConnectionMode(tests,index,server,wakeOnLanSendTime,options,deferred){if(index>=tests.length){logger.log('Tested all connection modes. Failing server connection.');resolveWithFailure(deferred);return;}
 var mode=tests[index];var address=MediaBrowser.ServerInfo.getServerAddress(server,mode);var enableRetry=false;var skipTest=false;var timeout=defaultTimeout;if(mode==MediaBrowser.ConnectionMode.Local){enableRetry=true;timeout=7000;}
 else if(mode==MediaBrowser.ConnectionMode.Manual){if(stringEqualsIgnoreCase(address,server.LocalAddress)||stringEqualsIgnoreCase(address,server.RemoteAddress)){skipTest=true;}}
