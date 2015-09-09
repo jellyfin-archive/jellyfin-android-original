@@ -17,7 +17,6 @@
         <param name="ios-package" value="CDVBackgroundColor" />
         <param name="onload" value="true" />
     </feature>
-    <preference name="BackgroundColor" value="0xff000000" />
     <feature name="UniqueDeviceID">
         <param name="ios-package" value="CDVUniqueDeviceID" />
         <param name="onload" value="true" />
@@ -117,6 +116,7 @@
     <preference name="StatusBarBackgroundColor" value="#1c1c1c" />
     <preference name="StatusBarStyle" value="blacktranslucent" />
     <preference name="SplashScreenBackgroundColor" value="#1c1c1c" />
+    <preference name="BackgroundColor" value="0xff000000" />
     <name>Emby</name>
     <description>
     Emby Mobile
@@ -132,7 +132,6 @@
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="webviewbounce" value="false" />
-    <preference name="BackgroundColor" value="0xff222222" />
     <preference name="BackupWebStorage" value="local" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="SplashScreen" value="res/icon.png" />
