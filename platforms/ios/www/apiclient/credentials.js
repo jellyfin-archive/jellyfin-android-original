@@ -15,4 +15,5 @@ if(server.WakeOnLanInfos&&server.WakeOnLanInfos.length){existing.WakeOnLanInfos=
 if(server.LastConnectionMode!=null){existing.LastConnectionMode=server.LastConnectionMode;}
 if(server.ConnectServerId){existing.ConnectServerId=server.ConnectServerId;}
 existing.DateLastLocalConnection=Math.max(existing.DateLastLocalConnection||0,server.DateLastLocalConnection||0);return existing;}
-else{list.push(server);return server;}};};})(window,window.JSON);
+else{list.push(server);return server;}};self.addOrUpdateUser=function(server,user){server.Users=server.Users||[];var existing=server.Users.filter(function(s){return s.Id==user.Id;})[0];if(existing){existing.IsSignedInOffline=true;}
+else{server.Users.push(user);}};};})(window,window.JSON);
