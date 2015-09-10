@@ -161,6 +161,7 @@
 
             }
 
+            playerState.currentSrc = val;
             reportEvent('playing', {});
         };
 
