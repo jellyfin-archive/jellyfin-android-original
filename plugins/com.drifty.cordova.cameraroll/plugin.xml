@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="com.drifty.cordova.cameraroll"
+    version="0.2.1">
+    <name>CameraRoll</name>
+    <description>Drifty Camera Roll Plugin</description>
+    <license>MIT</license>
+    <keywords>cordova,camera,camera roll</keywords>
+
+    <js-module src="www/CameraRoll.js" name="CameraRoll">
+        <clobbers target="CameraRoll" />
+    </js-module>
+
+     <!-- ios -->
+     <platform name="ios">
+         <config-file target="config.xml" parent="/*">
+           <feature name="CameraRoll">
+             <param name="ios-package" value="IonicCameraRoll" />
+           </feature>
+         </config-file>
+
+         <header-file src="src/ios/IonicCameraRoll.h" />
+         <source-file src="src/ios/IonicCameraRoll.m" />
+ 	     <framework src="ImageIO.framework" weak="true" />
+ 	     <framework src="CoreLocation.framework" />
+ 	     <framework src="CoreGraphics.framework" />
+ 	     <framework src="AssetsLibrary.framework" />
+       <framework src="MobileCoreServices.framework" />
+     </platform>
+</plugin>

@@ -288,5 +288,14 @@
         },
         "is_top_level": false,
         "variables": {}
+    },
+    "com.drifty.cordova.cameraroll": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/driftyco/cordova-camera-roll",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

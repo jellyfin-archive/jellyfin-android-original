@@ -101,7 +101,8 @@ if(!file){throw new Error("File must be an image.");}
 if(file.type!="image/png"&&file.type!="image/jpeg"&&file.type!="image/jpeg"){throw new Error("File must be an image.");}
 var url=self.getUrl("Items/"+itemId+"/Images");url+="/"+imageType;var deferred=DeferredBuilder.Deferred();var reader=new FileReader();reader.onerror=function(){deferred.reject();};reader.onabort=function(){deferred.reject();};reader.onload=function(e){var data=e.target.result.split(',')[1];self.ajax({type:"POST",url:url,data:data,contentType:"image/"+file.name.substring(file.name.lastIndexOf('.')+1)}).done(function(result){deferred.resolveWith(null,[result]);}).fail(function(){deferred.reject();});};reader.readAsDataURL(file);return deferred.promise();};self.getInstalledPlugins=function(){var options={};if(self.enableAppStorePolicy){options.IsAppStoreEnabled=true;}
 var url=self.getUrl("Plugins",options);return self.ajax({type:"GET",url:url,dataType:"json"});};self.getUser=function(id){if(!id){throw new Error("Must supply a userId");}
-var url=self.getUrl("Users/"+id);return self.ajax({type:"GET",url:url,dataType:"json"});};self.getStudio=function(name,userId){if(!name){throw new Error("null name");}
+var url=self.getUrl("Users/"+id);return self.ajax({type:"GET",url:url,dataType:"json"});};self.getOfflineUser=function(id){if(!id){throw new Error("Must supply a userId");}
+var url=self.getUrl("Users/"+id+"/Offline");return self.ajax({type:"GET",url:url,dataType:"json"});};self.getStudio=function(name,userId){if(!name){throw new Error("null name");}
 var options={};if(userId){options.userId=userId;}
 var url=self.getUrl("Studios/"+self.encodeName(name),options);return self.ajax({type:"GET",url:url,dataType:"json"});};self.getGenre=function(name,userId){if(!name){throw new Error("null name");}
 var options={};if(userId){options.userId=userId;}

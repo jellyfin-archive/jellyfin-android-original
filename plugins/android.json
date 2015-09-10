@@ -255,6 +255,9 @@
         },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.mb.android"
+        },
+        "com.drifty.cordova.cameraroll": {
+            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {
