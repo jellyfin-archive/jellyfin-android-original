@@ -67,15 +67,6 @@ contentHtml+='</div>';$('.detailsMenuContentInner',elem).html(contentHtml).trigg
 function showItemsOverlay(options){var context=options.context;require(['jqmpopup'],function(){var elem=getItemsOverlay(options.ids,context);setItemIntoOverlay(elem,0);});}
 function parentWithClass(elem,className){while(!elem.classList||!elem.classList.contains(className)){elem=elem.parentNode;if(!elem){return null;}}
 return elem;}
-function onCardClick(e){var targetElem=parentWithClass(e.target,'mediaItem');if(!targetElem){return;}
-if(isClickable(targetElem)){return;}
-if(targetElem.classList.contains('itemSelectionPanel')||this.querySelector('.itemSelectionPanel')){return;}
-var info=LibraryBrowser.getListItemInfo(this);var itemId=info.id;var context=info.context;var card=this;if(card.classList.contains('itemWithAction')){return;}
-if(!card.classList.contains('card')){card=$(card).parents('.card')[0];}
-if(card.classList.contains('groupedCard')){return;}
-if(card.getAttribute('data-detailsmenu')!='true'){return;}
-var target=$(targetElem);if(target.parents('a').length||target.parents('button').length){return;}
-if(AppSettings.enableItemPreviews()){showItemsOverlay({ids:[itemId],context:context});return false;}}
 $.fn.createCardMenus=function(options){var preventHover=false;function onShowTimerExpired(elem){elem=elem.querySelector('a');if($('.itemSelectionPanel:visible',elem).length){return;}
 var innerElem=elem.querySelector('.cardOverlayTarget');var dataElement=elem;while(dataElement&&!dataElement.getAttribute('data-itemid')){dataElement=dataElement.parentNode;}
 var id=dataElement.getAttribute('data-itemid');var commands=dataElement.getAttribute('data-commands').split(',');var promise1=ApiClient.getItem(Dashboard.getCurrentUserId(),id);var promise2=Dashboard.getCurrentUser();$.when(promise1,promise2).done(function(response1,response2){var item=response1[0];var user=response2[0];var card=elem;while(!card.classList.contains('card')){card=card.parentNode;}
@@ -86,7 +77,7 @@ var elem=this;while(!elem.classList.contains('card')){elem=elem.parentNode;}
 showOverlayTimeout=setTimeout(function(){onShowTimerExpired(elem);},1000);}
 function preventTouchHover(){preventHover=true;}
 this.off('contextmenu',onCardTapHold);this.on('contextmenu',onCardTapHold);this.off('click',onGroupedCardClick);this.on('click',onGroupedCardClick);this.off('click',onListViewMenuButtonClick);this.on('click',onListViewMenuButtonClick);this.off('click',onListViewPlayButtonClick);this.on('click',onListViewPlayButtonClick);if(!AppInfo.isTouchPreferred){this.off('mouseenter','.card:not(.bannerCard) .cardContent',onHoverIn);this.on('mouseenter','.card:not(.bannerCard) .cardContent',onHoverIn);this.off('mouseleave','.card:not(.bannerCard) .cardContent',onHoverOut);this.on('mouseleave','.card:not(.bannerCard) .cardContent',onHoverOut);this.off("touchstart",'.card:not(.bannerCard) .cardContent',preventTouchHover);this.on("touchstart",'.card:not(.bannerCard) .cardContent',preventTouchHover);}
-this.off('click',onCardClick);this.on('click',onCardClick);return this;};function toggleSelections(page){Dashboard.showLoadingMsg();var selectionCommands=$('.selectionCommands',page);if(selectionCommands.is(':visible')){selectionCommands.hide();$('.itemSelectionPanel',page).hide();}else{selectionCommands.show();var panels=$('.itemSelectionPanel',page).show();if(!panels.length){var index=0;$('.cardContent',page).each(function(){var chkItemSelectId='chkItemSelect'+index;$(this).append('<div class="itemSelectionPanel" onclick="return false;"><div class="ui-checkbox"><label class="ui-btn ui-corner-all ui-btn-inherit ui-btn-icon-left ui-checkbox-off" for="'+chkItemSelectId+'">Select</label><input id="'+chkItemSelectId+'" type="checkbox" class="chkItemSelect" data-enhanced="true" /></div></div>');index++;});$('.itemsContainer',page).trigger('create');}
+return this;};function toggleSelections(page){Dashboard.showLoadingMsg();var selectionCommands=$('.selectionCommands',page);if(selectionCommands.is(':visible')){selectionCommands.hide();$('.itemSelectionPanel',page).hide();}else{selectionCommands.show();var panels=$('.itemSelectionPanel',page).show();if(!panels.length){var index=0;$('.cardContent',page).each(function(){var chkItemSelectId='chkItemSelect'+index;$(this).append('<div class="itemSelectionPanel" onclick="return false;"><div class="ui-checkbox"><label class="ui-btn ui-corner-all ui-btn-inherit ui-btn-icon-left ui-checkbox-off" for="'+chkItemSelectId+'">Select</label><input id="'+chkItemSelectId+'" type="checkbox" class="chkItemSelect" data-enhanced="true" /></div></div>');index++;});$('.itemsContainer',page).trigger('create');}
 $('.chkItemSelect:checked',page).checked(false).checkboxradio('refresh');}
 Dashboard.hideLoadingMsg();}
 function hideSelections(page){var selectionCommands=page.querySelector('.selectionCommands');if(selectionCommands){selectionCommands.style.display='none';}
@@ -105,7 +96,8 @@ function onItemWithActionClick(e){var elem=this;var action=elem.getAttribute('da
 var index;var itemsContainer;var itemId=elemWithAttributes.getAttribute('data-itemid');if(action=='play'){MediaController.play(itemId);}
 else if(action=='playallfromhere'){index=elemWithAttributes.getAttribute('data-index');itemsContainer=$(elem).parents('.itemsContainer');playAllFromHere(index,itemsContainer,'play');}
 return false;}
-function playAllFromHere(index,itemsContainer,method){var ids=$('.mediaItem',itemsContainer).get().map(function(i){return i.getAttribute('data-itemid')||i.parentNode.getAttribute('data-itemid')||i.parentNode.parentNode.getAttribute('data-itemid');});ids=ids.slice(index);ApiClient.getItems(Dashboard.getCurrentUserId(),{Ids:ids.join(','),Fields:'MediaSources,Chapters',Limit:100}).done(function(result){MediaController[method]({items:result.Items});});}
+function playAllFromHere(index,itemsContainer,method){var ids=$('.mediaItem',itemsContainer).get().map(function(i){var node=i;var id=node.getAttribute('data-itemid');while(!id){node=node.parentNode;id=node.getAttribute('data-itemid');}
+return id;});ids=ids.slice(index);ApiClient.getItems(Dashboard.getCurrentUserId(),{Ids:ids.join(','),Fields:'MediaSources,Chapters',Limit:100}).done(function(result){MediaController[method]({items:result.Items});});}
 pageClassOn('pageinit',"libraryPage",function(){var page=this;var btnAddToPlaylist=page.querySelector('.btnAddToPlaylist');if(btnAddToPlaylist){Events.on(btnAddToPlaylist,'click',function(){addToPlaylist(page);});}
 var btnMergeVersions=page.querySelector('.btnMergeVersions');if(btnMergeVersions){Events.on(btnMergeVersions,'click',function(){combineVersions(page);});}
 var btnSyncItems=page.querySelector('.btnSyncItems');if(btnSyncItems){Events.on(btnSyncItems,'click',function(){sync(page);});}

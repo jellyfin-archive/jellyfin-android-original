@@ -20,7 +20,8 @@ var credentials=credentialProvider.credentials();var servers=credentials.Servers
 var server=servers[0];return getOrAddApiClient(server,server.LastConnectionMode);};function onAuthenticated(apiClient,result,options,saveCredentials){var credentials=credentialProvider.credentials();var servers=credentials.Servers.filter(function(s){return s.Id==result.ServerId;});var server=servers.length?servers[0]:apiClient.serverInfo();if(options.updateDateLastAccessed!==false){server.DateLastAccessed=new Date().getTime();}
 server.Id=result.ServerId;if(saveCredentials){server.UserId=result.User.Id;server.AccessToken=result.AccessToken;}else{server.UserId=null;server.AccessToken=null;}
 credentialProvider.addOrUpdateServer(credentials.Servers,server);saveUserInfoIntoCredentials(server,result.User);credentialProvider.credentials(credentials);afterConnected(apiClient,options);onLocalUserSignIn(result.User);}
-function saveUserInfoIntoCredentials(server,user){}
+function saveUserInfoIntoCredentials(server,user){var info=new{Id:user.Id,IsSignedInOffline:true}
+credentialProvider.addOrUpdateUser(server,info);}
 function afterConnected(apiClient,options){options=options||{};if(options.reportCapabilities!==false){apiClient.reportCapabilities(capabilities);}
 if(options.enableWebSocket!==false){if(!apiClient.isWebSocketOpenOrConnecting&&apiClient.isWebSocketSupported()){logger.log('calling apiClient.openWebSocket');apiClient.openWebSocket();}}}
 function onLocalUserSignIn(user){Events.trigger(self,'localusersignedin',[user]);}
