@@ -15,11 +15,20 @@
 
         if (window.cameraRoll) {
 
+            var photos = [];
+
             cameraRoll.getPhotos(function (result) {
-                deferred.resolveWith(null, [result]);
-            }, function () {
-                deferred.reject();
+                photos.push(result);
             });
+
+            setTimeout(function () {
+
+                // clone the array in case the callback is still getting called
+                photos = photos.slice();
+
+                deferred.resolveWith(null, [photos]);
+
+            }, 2000);
 
         } else {
             deferred.resolveWith(null, [[]]);
