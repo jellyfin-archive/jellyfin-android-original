@@ -361,6 +361,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
+        "id": "com.drifty.cordova.cameraroll.CameraRoll",
+        "clobbers": [
+            "CameraRoll"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -437,6 +444,7 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "1.0.1",
     "cordova-plugin-dialogs": "1.1.1",
     "org.nypr.cordova.vlcplugin": "0.1.0",
+    "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",

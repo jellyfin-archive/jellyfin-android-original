@@ -1,5 +1,9 @@
 ﻿(function(globalScope){function contentUploader(connectionManager){var self=this;self.uploadImages=function(server){var deferred=DeferredBuilder.Deferred();var apiClient=connectionManager.getApiClient(server.Id);apiClient.getDevicesOptions().done(function(devicesOptions){if(!devicesOptions.EnabledCameraUploadDevices||devicesOptions.EnabledCameraUploadDevices.indexOf(apiClient.deviceId())==-1){Logger.log("Camera upload is not enabled for this device.");deferred.reject();}
 else{uploadImagesInternal(server,apiClient,deferred);}}).fail(function(){deferred.reject();});return deferred.promise();};function uploadImagesInternal(server,apiClient,deferred){apiClient.getContentUploadHistory().done(function(result){uploadImagesWithHistory(server,result,apiClient,deferred);}).fail(function(){deferred.reject();});}
-function uploadImagesWithHistory(server,uploadHistory,apiClient,deferred){require(['localassetmanager'],function(){deferred.resolve();});}}
+function uploadImagesWithHistory(server,uploadHistory,apiClient,deferred){require(['localassetmanager'],function(){require(['localassetmanager'],function(){LocalAssetManager.getCameraPhotos().done(function(photos){photos=getFilesToUpload(photos,uploadHistory);uploadNext(photos,0,server,apiClient,deferred);}).fail(function(){deferred.reject();});});});}
+function getFilesToUpload(files,uploadHistory){return files.filter(function(file){return uploadHistory.FilesUploaded.filter(function(u){return file.toLowerCase()==u.Id.toLowerCase();}).length==0;});}
+function uploadNext(files,index,server,apiClient,deferred){var length=files.length;if(index>=length){deferred.resolve();return;}
+uploadFile(files[index],apiClient).done(function(){uploadNext(files,index+1,server,apiClient,deferred);}).fail(function(){uploadNext(files,index+1,server,apiClient,deferred);});}
+function uploadFile(file,apiClient){var deferred=DeferredBuilder.Deferred();deferred.resolve();return deferred.promise();}}
 if(!globalScope.MediaBrowser){globalScope.MediaBrowser={};}
 globalScope.MediaBrowser.ContentUploader=contentUploader;})(this);

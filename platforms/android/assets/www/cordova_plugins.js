@@ -369,6 +369,13 @@ module.exports = [
         "merges": [
             "navigator.notification"
         ]
+    },
+    {
+        "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
+        "id": "com.drifty.cordova.cameraroll.CameraRoll",
+        "clobbers": [
+            "CameraRoll"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -399,6 +406,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.5.0",
     "cordova-plugin-statusbar": "1.0.1",
     "cordova-plugin-dialogs": "1.1.1",
+    "com.drifty.cordova.cameraroll": "0.2.1",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

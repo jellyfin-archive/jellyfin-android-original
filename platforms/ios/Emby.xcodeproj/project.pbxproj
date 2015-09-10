@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 		03DE8F2F494A4174980E95F0 /* MyMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9766CA038E6741C0A3BCA658 /* MyMainViewController.m */; };
@@ -118,6 +117,9 @@
 		EEF37D23C84B45748681E38B /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D240FC4E01DB4DD088BCEFEE /* CDVDevice.m */; };
 		FC59E64DD47C4527AD77ABCC /* CDVWebViewOperationsDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0894B0CAA7C74BAF97CC49C9 /* CDVWebViewOperationsDelegate.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		D48CA1D634BB4E98955044FD /* IonicCameraRoll.m in Sources */ = {isa = PBXBuildFile; fileRef = F558690764DB4EEDA661700D /* IonicCameraRoll.m */; };
+		8EEF0700C07D44F084A80265 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05DA4705271F494CAE647F27 /* ImageIO.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		26C07A39D4B543CCABFB904E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B671FD6782B74FB1A8814A6E /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -341,6 +343,10 @@
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
+		F558690764DB4EEDA661700D /* IonicCameraRoll.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "IonicCameraRoll.m"; path = "com.drifty.cordova.cameraroll/IonicCameraRoll.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		DABE610A342C44D89F346191 /* IonicCameraRoll.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "IonicCameraRoll.h"; path = "com.drifty.cordova.cameraroll/IonicCameraRoll.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		05DA4705271F494CAE647F27 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "ImageIO.framework"; path = "System/Library/Frameworks/ImageIO.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
+		B671FD6782B74FB1A8814A6E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "CoreLocation.framework"; path = "System/Library/Frameworks/CoreLocation.framework"; sourceTree = SDKROOT; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -375,6 +381,8 @@
 				9AA7A4671E7A49FBBA638914 /* libstdc++.6.0.9.dylib in Frameworks */,
 				63CB22F5F8A5478AA3D3D298 /* libbz2.dylib in Frameworks */,
 				D7494241BECE4915B3897488 /* libiconv.dylib in Frameworks */,
+				8EEF0700C07D44F084A80265 /* ImageIO.framework in Frameworks */,
+				26C07A39D4B543CCABFB904E /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,6 +481,8 @@
 				500661F9C5DA4578BA9B65FB /* libstdc++.6.0.9.dylib */,
 				84406F29A89C4A4C8388F112 /* libbz2.dylib */,
 				562A1E17127948228E93614C /* libiconv.dylib */,
+				05DA4705271F494CAE647F27 /* ImageIO.framework */,
+				B671FD6782B74FB1A8814A6E /* CoreLocation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -601,6 +611,8 @@
 				58643CEBB00C4EBCB5EC7D51 /* MainViewController+RemoteControl.m */,
 				27EA7898BE844A69BCA2A70C /* VLCPlugin.h */,
 				5FA9F5DDB87A45169DDA698D /* MainViewController+RemoteControl.h */,
+				F558690764DB4EEDA661700D /* IonicCameraRoll.m */,
+				DABE610A342C44D89F346191 /* IonicCameraRoll.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -881,6 +893,7 @@
 				65E7A31BC52A472E9A78FDEC /* DDNSLoggerLogger.m in Sources */,
 				97D012AEB3B14F15BB87F4D8 /* VLCPlugin.m in Sources */,
 				AE2E0FAC10984A71ACA739E2 /* MainViewController+RemoteControl.m in Sources */,
+				D48CA1D634BB4E98955044FD /* IonicCameraRoll.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

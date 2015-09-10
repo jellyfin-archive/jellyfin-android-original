@@ -183,13 +183,11 @@
 
             Logger.log('eventName: ' + eventName + '. position: ' + position);
 
-            var isPaused = result.state == 3 || eventName == 'paused';
-
             var state = AudioRenderer.Current.playerState;
 
             state.duration = duration;
             state.currentTime = position;
-            state.paused = isPaused;
+            state.paused = result.state == 3 || eventName == 'paused';
             state.volume = 0;
 
             if (eventName == 'playbackstop') {

@@ -107,6 +107,10 @@
                         {
                             "xml": "<feature name=\"AudioPlayerPlugin\"><param name=\"ios-package\" value=\"VLCPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"CameraRoll\"><param name=\"ios-package\" value=\"IonicCameraRoll\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -188,16 +192,21 @@
                     "AssetsLibrary.framework": [
                         {
                             "xml": false,
-                            "count": 2
+                            "count": 3
                         }
                     ],
                     "MobileCoreServices.framework": [
                         {
                             "xml": false,
-                            "count": 2
+                            "count": 3
                         }
                     ],
-                    "CoreGraphics.framework": [],
+                    "CoreGraphics.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
                     "Social.framework": [
                         {
                             "xml": true,
@@ -241,6 +250,18 @@
                         }
                     ],
                     "libiconv.dylib": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "ImageIO.framework": [
+                        {
+                            "xml": true,
+                            "count": 1
+                        }
+                    ],
+                    "CoreLocation.framework": [
                         {
                             "xml": false,
                             "count": 1
@@ -334,6 +355,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "org.nypr.cordova.vlcplugin": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
