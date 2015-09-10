@@ -90,6 +90,9 @@
         <param name="ios-package" value="VLCPlugin" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="CameraRoll">
+        <param name="ios-package" value="IonicCameraRoll" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -155,7 +158,4 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
-    <feature name="CameraRoll">
-        <param name="ios-package" value="IonicCameraRoll" />
-    </feature>
 </widget>
