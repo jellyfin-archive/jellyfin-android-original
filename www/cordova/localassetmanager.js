@@ -24,7 +24,7 @@
             setTimeout(function () {
 
                 // clone the array in case the callback is still getting called
-                photos = photos.slice();
+                Logger.log('Found ' + photos.length + ' in camera roll');
 
                 deferred.resolveWith(null, [photos]);
 

@@ -96,7 +96,8 @@ function onItemWithActionClick(e){var elem=this;var action=elem.getAttribute('da
 var index;var itemsContainer;var itemId=elemWithAttributes.getAttribute('data-itemid');if(action=='play'){MediaController.play(itemId);}
 else if(action=='playallfromhere'){index=elemWithAttributes.getAttribute('data-index');itemsContainer=$(elem).parents('.itemsContainer');playAllFromHere(index,itemsContainer,'play');}
 return false;}
-function playAllFromHere(index,itemsContainer,method){var ids=$('.mediaItem',itemsContainer).get().map(function(i){return i.getAttribute('data-itemid')||i.parentNode.getAttribute('data-itemid')||i.parentNode.parentNode.getAttribute('data-itemid');});ids=ids.slice(index);ApiClient.getItems(Dashboard.getCurrentUserId(),{Ids:ids.join(','),Fields:'MediaSources,Chapters',Limit:100}).done(function(result){MediaController[method]({items:result.Items});});}
+function playAllFromHere(index,itemsContainer,method){var ids=$('.mediaItem',itemsContainer).get().map(function(i){var node=i;var id=node.getAttribute('data-itemid');while(!id){node=node.parentNode;id=node.getAttribute('data-itemid');}
+return id;});ids=ids.slice(index);ApiClient.getItems(Dashboard.getCurrentUserId(),{Ids:ids.join(','),Fields:'MediaSources,Chapters',Limit:100}).done(function(result){MediaController[method]({items:result.Items});});}
 pageClassOn('pageinit',"libraryPage",function(){var page=this;var btnAddToPlaylist=page.querySelector('.btnAddToPlaylist');if(btnAddToPlaylist){Events.on(btnAddToPlaylist,'click',function(){addToPlaylist(page);});}
 var btnMergeVersions=page.querySelector('.btnMergeVersions');if(btnMergeVersions){Events.on(btnMergeVersions,'click',function(){combineVersions(page);});}
 var btnSyncItems=page.querySelector('.btnSyncItems');if(btnSyncItems){Events.on(btnSyncItems,'click',function(){sync(page);});}
