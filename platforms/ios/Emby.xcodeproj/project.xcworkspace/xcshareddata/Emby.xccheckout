@@ -10,6 +10,8 @@
 	<string>Emby</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>0EFDF2D073A77BC2CB2CF6173E0F3A830E66F8AF</key>
+		<string>git://git.videolan.org/vlc-bindings/VLCKit.git</string>
 		<key>11E76B4A8B249084BFAB339B1C0AB3F9B9875C19</key>
 		<string>https://github.com/ConnectSDK/Connect-SDK-iOS-Core.git</string>
 		<key>17F782690A81D001A6DE548E24007364647BAAA3</key>
@@ -25,6 +27,8 @@
 	<string>platforms/ios/Emby.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>0EFDF2D073A77BC2CB2CF6173E0F3A830E66F8AF</key>
+		<string>../../../../plugins/org.nypr.cordova.vlcplugin/VLCKit/</string>
 		<key>11E76B4A8B249084BFAB339B1C0AB3F9B9875C19</key>
 		<string>../../../../../Connect-SDK-iOS/core</string>
 		<key>17F782690A81D001A6DE548E24007364647BAAA3</key>
@@ -83,6 +87,14 @@
 			<string>A66AB07D00310EEAA22A90A63D173413E2D6C6BC</string>
 			<key>IDESourceControlWCCName</key>
 			<string>MediaBrowser.Mobile</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0EFDF2D073A77BC2CB2CF6173E0F3A830E66F8AF</string>
+			<key>IDESourceControlWCCName</key>
+			<string>VLCKit</string>
 		</dict>
 	</array>
 </dict>

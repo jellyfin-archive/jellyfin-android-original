@@ -1,0 +1,29 @@
+From 065987797b1d5b9a46d23bdfc51431d101bff4fa Mon Sep 17 00:00:00 2001
+From: Brad Kammin <bkammin@nypublicradio.org>
+Date: Wed, 17 Sep 2014 11:59:36 -0400
+Subject: [PATCH] do not display  vlc unable to connect dialog box
+
+---
+ src/input/input.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/input/input.c b/src/input/input.c
+index 03c9dcf..d086427 100644
+--- a/src/input/input.c
++++ b/src/input/input.c
+@@ -2306,10 +2306,12 @@ static int InputSourceInit( input_thread_t *p_input,
+             if( vlc_object_alive( p_input ) )
+             {
+                 msg_Err( p_input, "open of `%s' failed", psz_mrl );
++/*
+                 if( !b_in_can_fail )
+                     dialog_Fatal( p_input, _("Your input can't be opened"),
+                                    _("VLC is unable to open the MRL '%s'."
+                                      " Check the log for details."), psz_mrl );
++*/
+             }
+             goto error;
+         }
+-- 
+1.8.5.2 (Apple Git-48)
+

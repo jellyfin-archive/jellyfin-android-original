@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin"
+    version="0.1.0">
+    <name>Device</name>
+    <description>NSLogger CocoaLumberjack Connector Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>loggin</keywords>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="NSLoggerCocoaLumberjackConnectorPlugin">
+                <param name="ios-package" value="NSLoggerCocoaLumberjackConnectorPlugin" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/NSLoggerCocoaLumberjackConnectorPlugin.h" />
+        <source-file src="src/ios/NSLoggerCocoaLumberjackConnectorPlugin.m" />
+
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDASLLogCapture.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDASLLogger.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDAbstractDatabaseLogger.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDAssert.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDFileLogger.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDLog+LOGV.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDLog.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/DDTTYLogger.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/Extensions/DDContextFilterLogFormatter.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/Extensions/DDDispatchQueueLogFormatter.h" />
+        <header-file src="src/ios/CocoaLumberjack/Lumberjack/Extensions/DDMultiFormatter.h" />
+
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/DDASLLogCapture.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/DDASLLogger.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/DDAbstractDatabaseLogger.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/DDFileLogger.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/DDLog.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/DDTTYLogger.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/Extensions/DDContextFilterLogFormatter.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/Extensions/DDDispatchQueueLogFormatter.m" />
+        <source-file src="src/ios/CocoaLumberjack/Lumberjack/Extensions/DDMultiFormatter.m" />
+
+        <header-file src="src/ios/NSLogger/Client Logger/iOS/LoggerClient.h" />
+        <header-file src="src/ios/NSLogger/Client Logger/iOS/LoggerCommon.h" />
+        <header-file src="src/ios/NSLogger/Client Logger/iOS/NSLogger.h" />
+
+        <source-file src="src/ios/NSLogger/Client Logger/iOS/LoggerClient.m" />
+
+        <header-file src="src/ios/NSLogger-CocoaLumberjack-connector/DDNSLoggerLogger.h" />
+
+        <source-file src="src/ios/NSLogger-CocoaLumberjack-connector/DDNSLoggerLogger.m" compiler-flags="-fno-objc-arc" />
+
+        <framework src="CFNetwork.framework" />
+        <framework src="SystemConfiguration.framework" />
+    </platform>
+</plugin>

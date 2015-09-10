@@ -1,7 +1,7 @@
 ﻿(function(){function isAndroid(){return $.browser.android;}
 function getPremiumUnlockFeatureId(){if(isAndroid()){return"com.mb.android.unlock";}
 return'appunlock';}
-function validatePlayback(deferred){if(isAndroid()){deferred.resolve();return;}
+function validatePlayback(deferred){deferred.resolve();return;if(isAndroid()){deferred.resolve();return;}
 validateFeature(getPremiumUnlockFeatureId(),deferred);}
 function validateLiveTV(deferred){if(!isAndroid()){deferred.resolve();return;}
 validateFeature(getPremiumUnlockFeatureId(),deferred);}

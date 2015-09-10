@@ -354,6 +354,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.nypr.cordova.vlcplugin/www/audioplayer.js",
+        "id": "org.nypr.cordova.vlcplugin.AudioPlayer",
+        "clobbers": [
+            "audioplayer"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -371,6 +378,35 @@ module.exports = [
     {
         "file": "plugins/cordova-plugin-chrome-apps-common/helpers.js",
         "id": "cordova-plugin-chrome-apps-common.helpers"
+    },
+    {
+        "file": "plugins/org.apache.cordova.media/www/MediaError.js",
+        "id": "org.apache.cordova.media.MediaError",
+        "clobbers": [
+            "window.MediaError"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.media/www/Media.js",
+        "id": "org.apache.cordova.media.Media",
+        "clobbers": [
+            "window.Media"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.network-information/www/network.js",
+        "id": "org.apache.cordova.network-information.network",
+        "clobbers": [
+            "navigator.connection",
+            "navigator.network.connection"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.network-information/www/Connection.js",
+        "id": "org.apache.cordova.network-information.Connection",
+        "clobbers": [
+            "Connection"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -400,9 +436,13 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.5.0",
     "cordova-plugin-statusbar": "1.0.1",
     "cordova-plugin-dialogs": "1.1.1",
+    "org.nypr.cordova.vlcplugin": "0.1.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
-    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1"
+    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
+    "org.apache.cordova.media": "0.2.16",
+    "org.apache.cordova.network-information": "0.2.15",
+    "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": "0.1.0"
 }
 // BOTTOM OF METADATA
 });

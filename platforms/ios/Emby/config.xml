@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242412" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242414" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.14" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -75,6 +75,20 @@
     <preference name="StatusBarStyle" value="lightcontent" />
     <feature name="Notification">
         <param name="ios-package" value="CDVNotification" />
+    </feature>
+    <feature name="Media">
+        <param name="ios-package" value="CDVSound" />
+    </feature>
+    <feature name="NetworkStatus">
+        <param name="ios-package" value="CDVConnection" />
+    </feature>
+    <feature name="NSLoggerCocoaLumberjackConnectorPlugin">
+        <param name="ios-package" value="NSLoggerCocoaLumberjackConnectorPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="AudioPlayerPlugin">
+        <param name="ios-package" value="VLCPlugin" />
+        <param name="onload" value="true" />
     </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
