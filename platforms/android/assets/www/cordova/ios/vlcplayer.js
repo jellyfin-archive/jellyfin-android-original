@@ -52,9 +52,9 @@
 
             if (val != null) {
                 window.audioplayer.seekto(function () {
-                    Logger.log('set currentTime succeeded!');
+                    Logger.log('Stop succeeded!');
                 }, function () {
-                    Logger.log('set currentTime failed!');
+                    Logger.log('Stop failed!');
 
                 }, val / 1000);
                 return;
@@ -85,7 +85,7 @@
         self.pause = function () {
             window.audioplayer.pause(function (result) {
                 Logger.log('Pause succeeded!');
-                reportEvent('sepaused', result);
+                reportEvent('paused', result);
 
             }, function () {
                 Logger.log('Pause failed!');
@@ -116,6 +116,7 @@
         self.setCurrentSrc = function (val, item, mediaSource, tracks) {
 
             if (!val) {
+                self.destroy();
                 return;
             }
 
@@ -161,11 +162,19 @@
 
             }
 
-            reportEvent('playing', {});
+            var state = playerState;
+
+            state.duration = (mediaSource.RunTimeTicks || 0) / 10000;
+            state.currentTime = startPosMs;
+            state.paused = false;
+            state.volume = 0;
+            onPlaying();
         };
 
         self.currentSrc = function () {
-            return playerState.currentSrc;
+            if (playerState) {
+                return playerState.currentSrc;
+            }
         };
 
         self.paused = function () {
@@ -179,6 +188,10 @@
 
         self.cleanup = function (destroyRenderer) {
 
+            if (destroyRenderer !== false) {
+                // TODO
+
+            }
             playerState = {};
         };
 
@@ -201,7 +214,7 @@
             state.duration = duration;
             state.currentTime = position;
             state.paused = isPaused;
-            state.volume = 0;
+            state.volume = (volume || 0) / 100;
 
             if (eventName == 'playbackstop') {
                 onEnded();
@@ -249,6 +262,8 @@
             });
             return deferred.promise();
         };
+
+        window.AudioRenderer.Current = self;
     }
 
     window.AudioRenderer = function (options) {
