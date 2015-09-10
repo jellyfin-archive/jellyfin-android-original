@@ -13,11 +13,11 @@
     function getCameraPhotos() {
         var deferred = DeferredBuilder.Deferred();
 
-        if (window.cameraRoll) {
+        if (window.CameraRoll) {
 
             var photos = [];
 
-            cameraRoll.getPhotos(function (result) {
+            CameraRoll.getPhotos(function (result) {
                 photos.push(result);
             });
 
