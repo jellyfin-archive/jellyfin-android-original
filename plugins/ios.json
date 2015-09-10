@@ -91,6 +91,22 @@
                         {
                             "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Media\"><param name=\"ios-package\" value=\"CDVSound\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NSLoggerCocoaLumberjackConnectorPlugin\"><param name=\"ios-package\" value=\"NSLoggerCocoaLumberjackConnectorPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"AudioPlayerPlugin\"><param name=\"ios-package\" value=\"VLCPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -110,7 +126,7 @@
                     "AudioToolbox.framework": [
                         {
                             "xml": false,
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": true,
@@ -120,13 +136,13 @@
                     "Security.framework": [
                         {
                             "xml": false,
-                            "count": 3
+                            "count": 4
                         }
                     ],
                     "CFNetwork.framework": [
                         {
                             "xml": false,
-                            "count": 3
+                            "count": 5
                         }
                     ],
                     "WebKit.framework": [
@@ -141,7 +157,12 @@
                             "count": 1
                         }
                     ],
-                    "MediaPlayer.framework": [],
+                    "MediaPlayer.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
                     "libicucore.dylib": [
                         {
                             "xml": false,
@@ -157,7 +178,11 @@
                     "SystemConfiguration.framework": [
                         {
                             "xml": false,
-                            "count": 2
+                            "count": 3
+                        },
+                        {
+                            "xml": true,
+                            "count": 1
                         }
                     ],
                     "AssetsLibrary.framework": [
@@ -182,6 +207,42 @@
                     "MessageUI.framework": [
                         {
                             "xml": true,
+                            "count": 1
+                        }
+                    ],
+                    "CoreText.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "QuartzCore.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "OpenGLES.framework": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "libstdc++.6.0.9.dylib": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "libbz2.dylib": [
+                        {
+                            "xml": false,
+                            "count": 1
+                        }
+                    ],
+                    "libiconv.dylib": [
+                        {
+                            "xml": false,
                             "count": 1
                         }
                     ]
@@ -271,6 +332,9 @@
         },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "org.nypr.cordova.vlcplugin": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {
@@ -281,6 +345,15 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "de.appplant.cordova.common.registerusernotificationsettings": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "org.apache.cordova.media": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "org.apache.cordova.network-information": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     }
