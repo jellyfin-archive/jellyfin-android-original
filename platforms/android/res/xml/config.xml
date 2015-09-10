@@ -49,12 +49,12 @@
     <feature name="InAppBillingPlugin">
         <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
     </feature>
+    <feature name="Notification">
+        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
+    </feature>
     <feature name="StatusBar">
         <param name="android-package" value="org.apache.cordova.statusbar.StatusBar" />
         <param name="onload" value="true" />
-    </feature>
-    <feature name="Notification">
-        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
     </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="21" />
