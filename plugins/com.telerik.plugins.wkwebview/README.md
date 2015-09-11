@@ -1,6 +1,10 @@
 # Cordova WKWebView Polyfill Plugin
 by [Eddy Verbruggen](http://twitter.com/eddyverbruggen) / [Telerik](http://www.telerik.com)
 
+
+_iOS9 warning:_ please test your app on iOS 9 and move to the 0.6.0 release if things are broken!
+
+
 ## 0. Index
 
 1. [Description](#1-description)
@@ -43,6 +47,8 @@ $ cordova prepare
 No need for anything else - you can now open the project in XCode 6 if you like.
 
 ## 4. Changelog
+* __0.6.0__  iOS9 (GM) compatibility. Also, compatibility with iOS8 devices when building with XCode 7 (iOS9 SDK). Dialogs (alert, prompt, confirm) were broken.
+* __0.5.1__  Added support for `config.xml` property `DisableLocalStorageSyncWithUIWebView` (default `false`). Set it to `true` if you want to switch back to UIWebView and retain LS changes made while running WKWebView.
 * __0.5.0__  iOS9 (beta) compatibility, keyboard scroll fix, white keyboard background if no specific color is specified (was black).
 * __0.4.0__  Compatibility with Telerik LiveSync and LivePatch. Disabled the horizontal and vertical scrollbars. Added support for `config.xml` property `DisableCrashRecovery` (default `false`).
 * __0.3.8__  Adding a way to access files in '/Library/' and '/Documents/' (simply use those prefixes), thanks #88!
