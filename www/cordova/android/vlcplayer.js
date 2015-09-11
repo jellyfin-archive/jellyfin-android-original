@@ -100,7 +100,7 @@
             };
 
             if (mediaSource.RunTimeTicks) {
-                state.NowPlayingItem.RunTimeTicks = mediaSource.RunTimeTicks;
+                playbackStartInfo.NowPlayingItem.RunTimeTicks = mediaSource.RunTimeTicks;
             }
 
             var audioStreamIndex = getParameterByName('AudioStreamIndex', videoUrl);

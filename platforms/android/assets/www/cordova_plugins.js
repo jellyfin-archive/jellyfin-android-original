@@ -393,7 +393,7 @@ module.exports.metadata =
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-crosswalk-webview": "1.2.0",
     "org.apache.cordova.speech.speechrecognition": "0.1.0",
-    "cordova-plugin-file": "2.0.0",
+    "cordova-plugin-file": "3.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",

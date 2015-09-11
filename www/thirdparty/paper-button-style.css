@@ -114,14 +114,6 @@ paper-button.hover:hover {
     background: #eee;
 }
 
-paper-button.ripple::shadow paper-ripple {
-    color: var(--paper-pink-a200);
-}
-
-paper-button.ripple paper-ripple {
-    color: var(--paper-pink-a200);
-}
-
 paper-button span {
     vertical-align: middle;
 }
