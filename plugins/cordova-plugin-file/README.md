@@ -1,25 +1,23 @@
-<!---
- license: Licensed to the Apache Software Foundation (ASF) under one
-         or more contributor license agreements.  See the NOTICE file
-         distributed with this work for additional information
-         regarding copyright ownership.  The ASF licenses this file
-         to you under the Apache License, Version 2.0 (the
-         "License"); you may not use this file except in compliance
-         with the License.  You may obtain a copy of the License at
-
-           http://www.apache.org/licenses/LICENSE-2.0
-
-         Unless required by applicable law or agreed to in writing,
-         software distributed under the License is distributed on an
-         "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-         KIND, either express or implied.  See the License for the
-         specific language governing permissions and limitations
-         under the License.
+<!--
+# license: Licensed to the Apache Software Foundation (ASF) under one
+#         or more contributor license agreements.  See the NOTICE file
+#         distributed with this work for additional information
+#         regarding copyright ownership.  The ASF licenses this file
+#         to you under the Apache License, Version 2.0 (the
+#         "License"); you may not use this file except in compliance
+#         with the License.  You may obtain a copy of the License at
+#
+#           http://www.apache.org/licenses/LICENSE-2.0
+#
+#         Unless required by applicable law or agreed to in writing,
+#         software distributed under the License is distributed on an
+#         "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#         KIND, either express or implied.  See the License for the
+#         specific language governing permissions and limitations
+#         under the License.
 -->
 
 # cordova-plugin-file
-
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-file.svg)](https://travis-ci.org/apache/cordova-plugin-file)
 
 This plugin implements a File API allowing read/write access to files residing on the device.
 
@@ -216,13 +214,13 @@ application's `config.xml` file. To do this, add one of these two lines to
 
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
 
-Without this line, the File plugin will use `Compatibility` as the default. If
+Without this line, the File plugin will use `Internal` as the default. If
 a preference tag is present, and is not one of these values, the application
 will not start.
 
 If your application has previously been shipped to users, using an older (pre-
-1.0) version of this plugin, and has stored files in the persistent filesystem,
-then you should set the preference to `Compatibility`. Switching the location to
+3.0.0) version of this plugin, and has stored files in the persistent filesystem,
+then you should set the preference to `Compatibility` if your config.xml does not specify a location for the persistent filesystem. Switching the location to
 "Internal" would mean that existing users who upgrade their application may be
 unable to access their previously-stored files, depending on their device.
 

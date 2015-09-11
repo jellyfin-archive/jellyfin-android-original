@@ -93,7 +93,8 @@ public class MainActivity extends CordovaActivity
         loadUrl(launchUrl);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(true);
+            // This is causing a crash on some devices and is not needed anyway when using Crosswalk
+            //WebView.setWebContentsDebuggingEnabled(true);
         }
 
         /* Prepare the progressBar */

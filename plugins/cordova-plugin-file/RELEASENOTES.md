@@ -353,3 +353,18 @@
 * CB-8459 Fixes spec 111 failure due to incorrect relative paths handling
 * Code cleanup, whitespace
 * Added nativeURL property to FileEntry, implemented readAsArrayBuffer and readAsBinaryString
+
+### 2.1.0 (Jun 17, 2015)
+* added missing license header
+* CB-9128 cordova-plugin-file documentation translation: cordova-plugin-file
+* fix npm md
+* CB-8844 Increased timeout for asset tests
+* Updated resolveFileSystem.js so it can be parsed by uglifyJS
+* CB-8860 cordova-plugin-file documentation translation: cordova-plugin-file
+* CB-8792 Fixes reading of json files using readAsText
+
+### 3.0.0 (Aug 18, 2015)
+* Make Android default persistent file location internal
+* Fixed issue with file paths not existing when using browserify
+* CB-9251: Changed from Intents to Preferences object as per the issue
+* CB-9215 Add cordova-plugin-file manual test for windows platform
