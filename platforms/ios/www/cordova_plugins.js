@@ -333,13 +333,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
-        "id": "com.telerik.plugins.wkwebview.wkwebview",
-        "clobbers": [
-            "wkwebview"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-dialogs/www/notification.js",
         "id": "cordova-plugin-dialogs.notification",
         "merges": [
@@ -365,6 +358,13 @@ module.exports = [
         "id": "cordova-plugin-statusbar.statusbar",
         "clobbers": [
             "window.StatusBar"
+        ]
+    },
+    {
+        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
+        "id": "com.telerik.plugins.wkwebview.wkwebview",
+        "clobbers": [
+            "wkwebview"
         ]
     },
     {
@@ -430,7 +430,7 @@ module.exports.metadata =
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-crosswalk-webview": "1.2.0",
     "org.apache.cordova.speech.speechrecognition": "0.1.0",
-    "cordova-plugin-file": "2.0.0",
+    "cordova-plugin-file": "3.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
@@ -440,11 +440,11 @@ module.exports.metadata =
     "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-globalization": "1.0.1",
     "cc.fovea.cordova.purchase": "3.11.0",
-    "com.telerik.plugins.wkwebview": "0.5.0",
     "cordova-plugin-dialogs": "1.1.1",
     "org.nypr.cordova.vlcplugin": "0.1.0",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-statusbar": "2.0.0-dev",
+    "com.telerik.plugins.wkwebview": "0.6.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",

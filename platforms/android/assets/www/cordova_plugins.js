@@ -403,10 +403,10 @@ module.exports.metadata =
     "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-globalization": "1.0.1",
     "cc.fovea.cordova.purchase": "3.11.0",
-    "com.telerik.plugins.wkwebview": "0.5.0",
     "cordova-plugin-dialogs": "1.1.1",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-statusbar": "2.0.0-dev",
+    "com.telerik.plugins.wkwebview": "0.6.0",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
