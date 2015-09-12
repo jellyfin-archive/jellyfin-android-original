@@ -20,7 +20,7 @@ public class VLCInstance {
             Thread.setDefaultUncaughtExceptionHandler(new VLCCrashHandler(logger));
 
             if(!VLCUtil.hasCompatibleCPU(context)) {
-                Log.e(TAG, VLCUtil.getErrorMsg());
+                logger.Error(VLCUtil.getErrorMsg());
                 throw new IllegalStateException("LibVLC initialisation failed: " + VLCUtil.getErrorMsg());
             }
 
