@@ -1526,7 +1526,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public void load(List<MediaWrapper> mediaList, int position) {
-        Log.v(TAG, "Loading position " + ((Integer) position).toString() + " in " + mediaList.toString());
+        logger.Debug("Loading position " + ((Integer) position).toString() + " in " + mediaList.toString());
 
         mMediaList.removeEventListener(mListEventListener);
         mMediaList.clear();
@@ -1589,13 +1589,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
      */
     public void playIndex(int index, int flags) {
         if (mMediaList.size() == 0) {
-            Log.w(TAG, "Warning: empty media list, nothing to play !");
+            logger.Warn("Warning: empty media list, nothing to play !");
             return;
         }
         if (index >= 0 && index < mMediaList.size()) {
             mCurrentIndex = index;
         } else {
-            Log.w(TAG, "Warning: index " + index + " out of bounds");
+            logger.Warn("Warning: index " + index + " out of bounds");
             mCurrentIndex = 0;
         }
 
@@ -1615,6 +1615,9 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         mMediaPlayer.setVideoTitleDisplay(MediaPlayer.Position.Disable, 0);
         changeAudioFocus(true);
         mMediaPlayer.setEventListener(mMediaPlayerListener);
+
+        logger.Debug("Calling mMediaPlayer.play");
+
         mMediaPlayer.play();
 
         notifyTrackChanged();

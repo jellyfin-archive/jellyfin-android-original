@@ -324,7 +324,7 @@ public class MainActivity extends CordovaActivity
         intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION, path);
         intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_TITLE, itemName);
         //intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_OPENED_POSITION, 0);
-        intent.putExtra("item", itemJson);
+        //intent.putExtra("item", itemJson);
         intent.putExtra("mediaSourceJson", mediaSourceJson);
         intent.putExtra("playbackStartInfoJson", playbackStartInfoJson);
         intent.putExtra("serverId", serverId);
