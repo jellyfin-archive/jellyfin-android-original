@@ -121,6 +121,8 @@ public class VideoApiHelper {
 
     public void setAudioStreamIndex(MediaPlayer vlc, int index){
 
+        logger.Info("setAudioStreamIndex %s", index);
+
         if (playbackStartInfo.getPlayMethod() == PlayMethod.Transcode){
 
             if (playbackStartInfo.getAudioStreamIndex() != null && index == playbackStartInfo.getAudioStreamIndex()) {
@@ -148,13 +150,19 @@ public class VideoApiHelper {
             MediaPlayer.TrackDescription[] audioTracks = vlc.getAudioTracks();
 
             // Increment by one to account for the "Disabled" entry
-            vlc.setAudioTrack(audioTracks[trackNumber+1].id);
+            boolean success = vlc.setAudioTrack(audioTracks[trackNumber+1].id);
+
+            if (!success){
+                logger.Error("Vlc returned an error when attempting to set the audioTrack");
+            }
 
             playbackStartInfo.setAudioStreamIndex(index);
         }
     }
 
     public void setSubtitleStreamIndex(MediaPlayer vlc, int index){
+
+        logger.Info("setSubtitleStreamIndex %s", index);
 
         MediaStream stream = null;
         for (MediaStream current : currentMediaSource.getMediaStreams()){
@@ -167,6 +175,8 @@ public class VideoApiHelper {
 
         // Disable subtitles
         if (index == -1){
+
+            logger.Info("Disabling subtitles");
 
             if (stream != null && stream.getDeliveryMethod() == SubtitleDeliveryMethod.Encode) {
 
@@ -187,26 +197,17 @@ public class VideoApiHelper {
             return;
         }
 
+        if (playbackStartInfo.getSubtitleStreamIndex() != null && index == playbackStartInfo.getSubtitleStreamIndex()) {
+            return;
+        }
+
         if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.Embed) {
             activity.updateExternalSubtitles(null);
-            enableEmbeddedSubtitleTrack(vlc, stream);
+            enableEmbeddedSubtitleTrack(vlc, currentMediaSource, stream.getIndex());
         }
         else if (stream.getDeliveryMethod() == SubtitleDeliveryMethod.External) {
 
-            if (playbackStartInfo.getPlayMethod() == PlayMethod.Transcode) {
-
-                // Unfortunately we have to work around this vlc bug:
-                // https://trac.videolan.org/vlc/ticket/3075
-                enableManualExternalSubtitleTrack(vlc, stream);
-            }
-            else {
-
-                enableManualExternalSubtitleTrack(vlc, stream);
-
-                // Do it the normal way
-                //activity.updateExternalSubtitles(null);
-                //enableExternalSubtitleTrack(vlc, stream);
-            }
+            enableManualExternalSubtitleTrack(vlc, stream);
         }
         else {
 
@@ -217,13 +218,38 @@ public class VideoApiHelper {
         }
     }
 
-    private void enableEmbeddedSubtitleTrack(MediaPlayer vlc, MediaStream stream) {
+    private void enableEmbeddedSubtitleTrack(MediaPlayer vlc, MediaSourceInfo mediaSourceInfo, int newIndex) {
 
-        // This could be tricky. We have to map the Emby server index to the vlc trackID
-        // Let's assume they're at least in the same order
+        // We need to figure out the index in vlc
+        int trackNumber = 0;
+        for (MediaStream stream : mediaSourceInfo.getMediaStreams()) {
+            if (stream.getType() == MediaStreamType.Subtitle && !stream.getIsExternal()){
+                if (newIndex == stream.getIndex()){
+                    break;
+                }
+                trackNumber++;
+            }
+        }
 
-        vlc.setSpuTrack(stream.getIndex());
-        playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());
+        logger.Info("enableEmbeddedSubtitleTrack. newIndex: %s, vlc track number: %s", newIndex, trackNumber);
+
+        MediaPlayer.TrackDescription[] vlcTracks = vlc.getSpuTracks();
+
+        int newTrackId = vlcTracks[trackNumber+1].id;
+
+        logger.Info("vlc.setSpuTrack newTrackId: %s", newTrackId);
+
+        // Increment by one to account for the "Disabled" entry
+        boolean success = vlc.setSpuTrack(newTrackId);
+
+        if (success){
+            logger.Info("setSpuTrack succeeded");
+        }
+        else {
+            logger.Error("Vlc returned an error when attempting to set the spuTrack");
+        }
+
+        playbackStartInfo.setSubtitleStreamIndex(newIndex);
     }
 
     private void enableManualExternalSubtitleTrack(final MediaPlayer vlc, final MediaStream stream) {

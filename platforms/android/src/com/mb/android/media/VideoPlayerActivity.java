@@ -85,6 +85,7 @@ import org.videolan.libvlc.util.HWDecoderUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -691,7 +692,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             if (mSubtitlesSurfaceView.getVisibility() != View.GONE)
                 vlcVout.setSubtitlesView(mPresentation.mSubtitlesSurfaceView);
         }
+
+        logger.Debug("vlcVout.addCallback");
         vlcVout.addCallback(this);
+
+        logger.Debug("vlcVout.attachViews");
         vlcVout.attachViews();
 
         mPlaybackStarted = true;
@@ -2085,7 +2090,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         int playlistIndex = savedIndexPosition;
         //long currentTime = mService.getTime();
 
-        Uri newUri = Uri.parse(location);
+        Uri newUri = createUri(location);
+        logger.Debug("Parsed uri: %s", newUri.toString());
 
         MediaWrapper wrapper = mService.setMedia(newUri, 0);
 
@@ -2607,6 +2613,16 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         loadMedia();
     }
 
+    private Uri createUri(String location) {
+
+        if (location.indexOf("file://") == 0) {
+            location = location.replace("file://", "");
+            Uri.fromFile(new File(location));
+        }
+
+        return Uri.parse(location);
+    }
+
     /**
      * External extras:
      * - position (long) - position of the video to start with (in ms)
@@ -2657,7 +2673,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
             String location = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_LOCATION);
             location = normalizeLocation(location, mediaSourceInfo, playbackStartInfo.getPlayMethod(), intentPosition * 10000);
-            mUri = Uri.parse(location);
+            mUri = createUri(location);
+            logger.Debug("Parsed uri: %s", mUri.toString());
 
             itemTitle = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_TITLE);
 
@@ -2681,15 +2698,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             updateExternalSubtitles(null);
             apiHelper.setInitialInfo(apiServerId, false, apiClient, deviceProfile, playbackStartInfo, mediaSourceInfo);
 
-            if (getIntent().hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
-                mSubtitleSelectedFiles.add(getIntent().getExtras().getString(PLAY_EXTRA_SUBTITLES_LOCATION));
             openedPosition = getIntent().getExtras().getInt(PLAY_EXTRA_OPENED_POSITION, -1);
         }
-
-        if (intent.hasExtra(PLAY_EXTRA_SUBTITLES_LOCATION))
-            mSubtitleSelectedFiles.add(extras.getString(PLAY_EXTRA_SUBTITLES_LOCATION));
-        if (intent.hasExtra(PLAY_EXTRA_ITEM_TITLE))
-            itemTitle = extras.getString(PLAY_EXTRA_ITEM_TITLE);
 
         mCanSeek = false;
 
@@ -3058,6 +3068,19 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
 
         logger.Debug("VideoPlayerActivity.OnNewLayout width=%1 height=%2 visibleWidth=%3 visibleHeight=%4 sarNum=%5 sarDen=%6");
+
+        /*if (width * height == 0) {
+            MediaSourceInfo mediaSourceInfo = apiHelper.getMediaSource();
+            MediaStream videoStream = mediaSourceInfo.getVideoStream();
+            if (videoStream != null) {
+                if (videoStream.getWidth() != null) {
+                    width = videoStream.getWidth();
+                }
+                if (videoStream.getHeight() != null) {
+                    height = videoStream.getHeight();
+                }
+            }
+        }*/
 
         if (width * height == 0)
             return;
