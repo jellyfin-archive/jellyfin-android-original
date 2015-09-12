@@ -370,12 +370,12 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
              */
         if (mDetectHeadset && !mHasHdmiAudio) {
             if (action.equalsIgnoreCase(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
-                Log.i(TAG, "Headset Removed.");
+                logger.Info("Headset Removed.");
                 if (mMediaPlayer.isPlaying() && hasCurrentMedia())
                     pause();
             }
             else if (action.equalsIgnoreCase(Intent.ACTION_HEADSET_PLUG) && state != 0) {
-                Log.i(TAG, "Headset Inserted.");
+                logger.Info("Headset Inserted.");
                 if (!mMediaPlayer.isPlaying() && hasCurrentMedia())
                     play();
             }
@@ -491,13 +491,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                  */
                 switch (focusChange) {
                     case AudioManager.AUDIOFOCUS_LOSS:
-                        Log.i(TAG, "AUDIOFOCUS_LOSS");
+                        logger.Info("AUDIOFOCUS_LOSS");
                         // Stop playback
                         changeAudioFocus(false);
                         stop();
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                        Log.i(TAG, "AUDIOFOCUS_LOSS_TRANSIENT");
+                        logger.Info("AUDIOFOCUS_LOSS_TRANSIENT");
                         // Pause playback
                         if (mMediaPlayer.isPlaying()) {
                             mLossTransient = true;
@@ -505,7 +505,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                         }
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        Log.i(TAG, "AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
+                        logger.Info("AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
                         // Lower the volume
                         if (mMediaPlayer.isPlaying()) {
                             mMediaPlayer.setVolume(36);
@@ -513,7 +513,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                         }
                         break;
                     case AudioManager.AUDIOFOCUS_GAIN:
-                        Log.i(TAG, "AUDIOFOCUS_GAIN: " + mLossTransientCanDuck + ", " + mLossTransient);
+                        logger.Info("AUDIOFOCUS_GAIN: " + mLossTransientCanDuck + ", " + mLossTransient);
                         // Resume playback
                         if (mLossTransientCanDuck) {
                             mMediaPlayer.setVolume(100);
@@ -641,7 +641,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         public void onEvent(Media.Event event) {
             switch (event.type) {
                 case Media.Event.ParsedChanged:
-                    Log.i(TAG, "Media.Event.ParsedChanged");
+                    logger.Info("Media.Event.ParsedChanged");
                     final MediaWrapper mw = getCurrentMedia();
                     if (mw != null)
                         mw.updateMeta(mMediaPlayer);
@@ -666,7 +666,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         public void onEvent(MediaPlayer.Event event) {
             switch (event.type) {
                 case MediaPlayer.Event.Playing:
-                    Log.i(TAG, "MediaPlayer.Event.Playing");
+                    logger.Info("MediaPlayer.Event.Playing");
                     executeUpdate();
                     executeUpdateProgress();
 
@@ -678,7 +678,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     startTimer();
                     break;
                 case MediaPlayer.Event.Paused:
-                    Log.i(TAG, "MediaPlayer.Event.Paused");
+                    logger.Info("MediaPlayer.Event.Paused");
                     executeUpdate();
                     executeUpdateProgress();
                     showNotification();
@@ -688,7 +688,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     reportState("paused", false);
                     break;
                 case MediaPlayer.Event.Stopped:
-                    Log.i(TAG, "MediaPlayer.Event.Stopped");
+                    logger.Info("MediaPlayer.Event.Stopped");
                     stopTimer();
                     executeUpdate();
                     executeUpdateProgress();
@@ -698,7 +698,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     changeAudioFocus(false);
                     break;
                 case MediaPlayer.Event.EndReached:
-                    Log.i(TAG, "MediaPlayerEndReached");
+                    logger.Info("MediaPlayerEndReached");
                     stopTimer();
                     executeUpdate();
                     executeUpdateProgress();
@@ -812,7 +812,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         @Override
         public void onItemAdded(int index, String mrl) {
-            Log.i(TAG, "CustomMediaListItemAdded");
+            logger.Info("CustomMediaListItemAdded");
             if(mCurrentIndex >= index && !mExpanding.get())
                 mCurrentIndex++;
 
@@ -822,7 +822,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         @Override
         public void onItemRemoved(int index, String mrl) {
-            Log.i(TAG, "CustomMediaListItemDeleted");
+            logger.Info("CustomMediaListItemDeleted");
             if (mCurrentIndex == index && !mExpanding.get()) {
                 // The current item has been deleted
                 mCurrentIndex--;
@@ -843,7 +843,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         @Override
         public void onItemMoved(int indexBefore, int indexAfter, String mrl) {
-            Log.i(TAG, "CustomMediaListItemMoved");
+            logger.Info("CustomMediaListItemMoved");
             if (mCurrentIndex == indexBefore) {
                 mCurrentIndex = indexAfter;
                 if (indexAfter > indexBefore)
@@ -1316,7 +1316,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         if (size == 0 || mCurrentIndex < 0 || mCurrentIndex >= size) {
             if (mCurrentIndex < 0)
                 saveCurrentMedia();
-            Log.w(TAG, "Warning: invalid next index, aborted !");
+            logger.Warn("Warning: invalid next index, aborted !");
             stop();
             return;
         }
@@ -1333,7 +1333,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         int size = mMediaList.size();
         if (size == 0 || mPrevIndex < 0 || mCurrentIndex >= size) {
-            Log.w(TAG, "Warning: invalid previous index, aborted !");
+            logger.Warn("Warning: invalid previous index, aborted !");
             stop();
             return;
         }
@@ -1539,13 +1539,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         }
 
         if (mMediaList.size() == 0) {
-            Log.w(TAG, "Warning: empty media list, nothing to play !");
+            logger.Warn("Warning: empty media list, nothing to play !");
             return;
         }
         if (mMediaList.size() > position && position >= 0) {
             mCurrentIndex = position;
         } else {
-            Log.w(TAG, "Warning: positon " + position + " out of bounds");
+            logger.Warn("Warning: positon " + position + " out of bounds");
             mCurrentIndex = 0;
         }
 
@@ -1655,7 +1655,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     @MainThread
     public void showWithoutParse(int index) {
         String URI = mMediaList.getMRL(index);
-        Log.v(TAG, "Showing index " + index + " with playing URI " + URI);
+        logger.Debug("Showing index " + index + " with playing URI " + URI);
         // Show an URI without interrupting/losing the current stream
 
         if(URI == null || !mMediaPlayer.isPlaying())

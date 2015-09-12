@@ -235,6 +235,11 @@ public class VideoApiHelper {
 
         MediaPlayer.TrackDescription[] vlcTracks = vlc.getSpuTracks();
 
+        if (vlcTracks == null) {
+            logger.Error("Cannot set subtitle stream index because vlc.getSpuTracks returned null");
+            return;
+        }
+
         int newTrackId = vlcTracks[trackNumber+1].id;
 
         logger.Info("vlc.setSpuTrack newTrackId: %s", newTrackId);
