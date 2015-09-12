@@ -247,9 +247,6 @@
             "BILLING_KEY": "none",
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -257,6 +254,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

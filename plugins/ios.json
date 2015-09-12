@@ -73,10 +73,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
                             "count": 1
                         },
@@ -110,6 +106,10 @@
                         },
                         {
                             "xml": "<preference name=\"StatusBarStyle\" value=\"lightcontent\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
                             "count": 1
                         }
                     ],
@@ -276,6 +276,12 @@
                             "xml": "<array><string>audio</string></array>",
                             "count": 1
                         }
+                    ],
+                    "NSAppTransportSecurity": [
+                        {
+                            "xml": "<dict><key>NSAllowsArbitraryLoads</key><true /></dict>",
+                            "count": 1
+                        }
                     ]
                 }
             }
@@ -345,9 +351,6 @@
         "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -358,6 +361,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

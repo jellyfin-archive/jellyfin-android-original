@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242414" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.14" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242416" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.16" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -64,9 +64,6 @@
     <feature name="InAppPurchase">
         <param name="ios-package" value="InAppPurchase" />
     </feature>
-    <feature name="WKWebViewPolyfill">
-        <param name="ios-package" value="WKWebViewPolyfill" />
-    </feature>
     <feature name="Notification">
         <param name="ios-package" value="CDVNotification" />
     </feature>
@@ -83,6 +80,18 @@
     <feature name="AudioPlayerPlugin">
         <param name="ios-package" value="VLCPlugin" />
         <param name="onload" value="true" />
+    </feature>
+    <feature name="CameraRoll">
+        <param name="ios-package" value="IonicCameraRoll" />
+    </feature>
+    <feature name="StatusBar">
+        <param name="ios-package" value="CDVStatusBar" />
+        <param name="onload" value="true" />
+    </feature>
+    <preference name="StatusBarOverlaysWebView" value="true" />
+    <preference name="StatusBarStyle" value="lightcontent" />
+    <feature name="WKWebViewPolyfill">
+        <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
@@ -149,13 +158,4 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
-    <feature name="CameraRoll">
-        <param name="ios-package" value="IonicCameraRoll" />
-    </feature>
-    <feature name="StatusBar">
-        <param name="ios-package" value="CDVStatusBar" />
-        <param name="onload" value="true" />
-    </feature>
-    <preference name="StatusBarOverlaysWebView" value="true" />
-    <preference name="StatusBarStyle" value="lightcontent" />
 </widget>

@@ -7,6 +7,7 @@
     "A66AB07D00310EEAA22A90A63D173413E2D6C6BC" : 0,
     "F6F96CA34C5878B0A9123C7C37855491A5E599DA" : 0,
     "11E76B4A8B249084BFAB339B1C0AB3F9B9875C19" : 0,
+    "0EFDF2D073A77BC2CB2CF6173E0F3A830E66F8AF" : 0,
     "75793EFA09A162BA4F1A17844A987CDF3B180B54" : 0,
     "17F782690A81D001A6DE548E24007364647BAAA3" : 0
   },
@@ -15,13 +16,19 @@
     "A66AB07D00310EEAA22A90A63D173413E2D6C6BC" : "MediaBrowser.Mobile",
     "F6F96CA34C5878B0A9123C7C37855491A5E599DA" : "GCDWebServer",
     "11E76B4A8B249084BFAB339B1C0AB3F9B9875C19" : "Connect-SDK-iOS\/core",
+    "0EFDF2D073A77BC2CB2CF6173E0F3A830E66F8AF" : "MediaBrowser.Mobile\/plugins\/org.nypr.cordova.vlcplugin\/VLCKit\/",
     "75793EFA09A162BA4F1A17844A987CDF3B180B54" : "Connect-SDK-iOS",
     "17F782690A81D001A6DE548E24007364647BAAA3" : "Connect-SDK-iOS\/modules\/google-cast"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Emby",
-  "DVTSourceControlWorkspaceBlueprintVersion" : 203,
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
   "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "platforms\/ios\/Emby.xcodeproj",
   "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "git:\/\/git.videolan.org\/vlc-bindings\/VLCKit.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "0EFDF2D073A77BC2CB2CF6173E0F3A830E66F8AF"
+    },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/ConnectSDK\/Connect-SDK-iOS-Core.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",

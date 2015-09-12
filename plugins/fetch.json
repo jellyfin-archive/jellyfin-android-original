@@ -222,15 +222,6 @@
             "BILLING_KEY": "none"
         }
     },
-    "com.telerik.plugins.wkwebview": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Telerik-Verified-Plugins/WKWebView",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-dialogs": {
         "source": {
             "type": "registry",
@@ -294,6 +285,15 @@
         "source": {
             "type": "git",
             "url": "https://github.com/apache/cordova-plugin-statusbar",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "com.telerik.plugins.wkwebview": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Telerik-Verified-Plugins/WKWebView",
             "subdir": "."
         },
         "is_top_level": true,
