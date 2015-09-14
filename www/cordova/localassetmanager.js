@@ -58,12 +58,33 @@
         return deferred.promise();
     }
 
+    function removeLocalItem(itemId, serverId) {
+        var deferred = DeferredBuilder.Deferred();
+        deferred.resolveWith(null, []);
+        return deferred.promise();
+    }
+
+    function getLocalItem(itemId, serverId) {
+        var deferred = DeferredBuilder.Deferred();
+        deferred.resolveWith(null, []);
+        return deferred.promise();
+    }
+
+    function addOrUpdateLocalItem(localItem) {
+        var deferred = DeferredBuilder.Deferred();
+        deferred.resolveWith(null, []);
+        return deferred.promise();
+    }
+
     window.LocalAssetManager = {
         getLocalMediaSource: getLocalMediaSource,
         saveOfflineUser: saveOfflineUser,
         getCameraPhotos: getCameraPhotos,
         getOfflineActions: getOfflineActions,
-        getServerItemIds: getServerItemIds
+        getServerItemIds: getServerItemIds,
+        removeLocalItem: removeLocalItem,
+        getLocalItem: getLocalItem,
+        addOrUpdateLocalItem: addOrUpdateLocalItem
     };
 
 })();

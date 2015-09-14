@@ -182,7 +182,8 @@ var url=self.getUrl("Sessions/Playing");return self.ajax({type:"POST",data:JSON.
 if(self.isWebSocketOpen()){var deferred=DeferredBuilder.Deferred();var msg=JSON.stringify(options);self.sendWebSocketMessage("ReportPlaybackProgress",msg);deferred.resolveWith(null,[]);return deferred.promise();}
 var url=self.getUrl("Sessions/Playing/Progress");return self.ajax({type:"POST",data:JSON.stringify(options),contentType:"application/json",url:url});};self.reportOfflineActions=function(actions){if(!actions){throw new Error("null actions");}
 var url=self.getUrl("Sync/OfflineActions");return self.ajax({type:"POST",data:JSON.stringify(actions),contentType:"application/json",url:url});};self.syncData=function(data){if(!data){throw new Error("null data");}
-var url=self.getUrl("Sync/Data");return self.ajax({type:"POST",data:JSON.stringify(actions),contentType:"application/json",url:url,dataType:"json"});};self.reportPlaybackStopped=function(options){if(!options){throw new Error("null options");}
+var url=self.getUrl("Sync/Data");return self.ajax({type:"POST",data:JSON.stringify(data),contentType:"application/json",url:url,dataType:"json"});};self.getReadySyncItems=function(deviceId){if(!deviceId){throw new Error("null deviceId");}
+var url=self.getUrl("Sync/Items/Ready",{TargetId:deviceId});return self.ajax({type:"GET",url:url,dataType:"json"});};self.reportPlaybackStopped=function(options){if(!options){throw new Error("null options");}
 var url=self.getUrl("Sessions/Playing/Stopped");return self.ajax({type:"POST",data:JSON.stringify(options),contentType:"application/json",url:url});};self.sendPlayCommand=function(sessionId,options){if(!sessionId){throw new Error("null sessionId");}
 if(!options){throw new Error("null options");}
 var url=self.getUrl("Sessions/"+sessionId+"/Playing",options);return self.ajax({type:"POST",url:url});};self.sendCommand=function(sessionId,command){if(!sessionId){throw new Error("null sessionId");}
