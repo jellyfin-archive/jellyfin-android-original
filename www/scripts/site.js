@@ -129,7 +129,7 @@ if($.browser.safari){require(['cordova/ios/orientation']);}}else{if($.browser.ch
 if(navigator.splashscreen){navigator.splashscreen.hide();}}
 function init(deferred,capabilities,appName,deviceId,deviceName){requirejs.config({urlArgs:"v="+window.dashboardVersion,paths:{"velocity":"bower_components/velocity/velocity.min"}});define('jquery',[],function(){return jQuery;});if(Dashboard.isRunningInCordova()&&$.browser.android){define("appstorage",["cordova/android/appstorage"]);}else{define('appstorage',[],function(){return appStorage;});}
 if(Dashboard.isRunningInCordova()){define("serverdiscovery",["cordova/serverdiscovery"]);define("wakeonlan",["cordova/wakeonlan"]);}else{define("serverdiscovery",["apiclient/serverdiscovery"]);define("wakeonlan",["apiclient/wakeonlan"]);}
-if(Dashboard.isRunningInCordova()&&$.browser.android){define("localassetmanager",["cordova/android/localassetmanager"]);}else if(Dashboard.isRunningInCordova()){define("localassetmanager",["cordova/localassetmanager"]);}else{define("localassetmanager",["apiclient/localassetmanager"]);}
+if(Dashboard.isRunningInCordova()){define("localassetmanager",["cordova/localassetmanager"]);}else{define("localassetmanager",["apiclient/localassetmanager"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("filesystem",["cordova/android/filesystem"]);}
 else if(Dashboard.isRunningInCordova()){define("filesystem",["cordova/filesystem"]);}
 else{define("filesystem",["thirdparty/filesystem"]);}
@@ -156,7 +156,8 @@ depends=depends||[];if(newHtml.indexOf('type-interior')!=-1){depends.push('jqmpo
 require(depends,function(){$(mainDrawerPanelContent).html(Globalize.translateDocument(newHtml,'html'));onAppReady(deferred);});return;}
 onAppReady(deferred);});});}
 function onAppReady(deferred){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();if(AppInfo.isNativeApp&&!$.browser.android){require(['localsync']);}}
-function initCordovaWithDeviceId(deferred,deviceId){require(['cordova/imagestore']);var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");init(deferred,capablities,name,deviceId,device.model);}
+function initCordovaWithDeviceId(deferred,deviceId){if($.browser.android){require(['cordova/imagestore']);}
+var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");init(deferred,capablities,name,deviceId,device.model);}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}
 var initDeferred=$.Deferred();Dashboard.initPromise=initDeferred.promise();setAppInfo();setDocumentClasses();$(document).on('WebComponentsReady',function(){if(Dashboard.isRunningInCordova()){initCordova(initDeferred);}else{init(initDeferred,Dashboard.capabilities());}});})();function pageClassOn(eventName,className,fn){$(document).on(eventName,function(e){var target=e.target;if(target.classList.contains(className)){fn.call(target,e);}});}
 function pageIdOn(eventName,id,fn){$(document).on(eventName,function(e){var target=e.target;if(target.id==id){fn.call(target,e);}});}
