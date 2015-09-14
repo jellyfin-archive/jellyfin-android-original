@@ -558,7 +558,8 @@ var url=self.getUrl("Sessions/Playing");return self.ajax({type:"POST",data:JSON.
 if(self.isWebSocketOpen()){var deferred=DeferredBuilder.Deferred();var msg=JSON.stringify(options);self.sendWebSocketMessage("ReportPlaybackProgress",msg);deferred.resolveWith(null,[]);return deferred.promise();}
 var url=self.getUrl("Sessions/Playing/Progress");return self.ajax({type:"POST",data:JSON.stringify(options),contentType:"application/json",url:url});};self.reportOfflineActions=function(actions){if(!actions){throw new Error("null actions");}
 var url=self.getUrl("Sync/OfflineActions");return self.ajax({type:"POST",data:JSON.stringify(actions),contentType:"application/json",url:url});};self.syncData=function(data){if(!data){throw new Error("null data");}
-var url=self.getUrl("Sync/Data");return self.ajax({type:"POST",data:JSON.stringify(actions),contentType:"application/json",url:url,dataType:"json"});};self.reportPlaybackStopped=function(options){if(!options){throw new Error("null options");}
+var url=self.getUrl("Sync/Data");return self.ajax({type:"POST",data:JSON.stringify(data),contentType:"application/json",url:url,dataType:"json"});};self.getReadySyncItems=function(deviceId){if(!deviceId){throw new Error("null deviceId");}
+var url=self.getUrl("Sync/Items/Ready",{TargetId:deviceId});return self.ajax({type:"GET",url:url,dataType:"json"});};self.reportPlaybackStopped=function(options){if(!options){throw new Error("null options");}
 var url=self.getUrl("Sessions/Playing/Stopped");return self.ajax({type:"POST",data:JSON.stringify(options),contentType:"application/json",url:url});};self.sendPlayCommand=function(sessionId,options){if(!sessionId){throw new Error("null sessionId");}
 if(!options){throw new Error("null options");}
 var url=self.getUrl("Sessions/"+sessionId+"/Playing",options);return self.ajax({type:"POST",url:url});};self.sendCommand=function(sessionId,command){if(!sessionId){throw new Error("null sessionId");}
@@ -888,8 +889,7 @@ depends=depends||[];if(newHtml.indexOf('type-interior')!=-1){depends.push('jqmpo
 require(depends,function(){$(mainDrawerPanelContent).html(Globalize.translateDocument(newHtml,'html'));onAppReady(deferred);});return;}
 onAppReady(deferred);});});}
 function onAppReady(deferred){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();if(AppInfo.isNativeApp&&!$.browser.android){require(['localsync']);}}
-function initCordovaWithDeviceId(deferred,deviceId){if($.browser.android){require(['cordova/imagestore']);}
-var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");init(deferred,capablities,name,deviceId,device.model);}
+function initCordovaWithDeviceId(deferred,deviceId){require(['cordova/imagestore']);var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");init(deferred,capablities,name,deviceId,device.model);}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}
 var initDeferred=$.Deferred();Dashboard.initPromise=initDeferred.promise();setAppInfo();setDocumentClasses();$(document).on('WebComponentsReady',function(){if(Dashboard.isRunningInCordova()){initCordova(initDeferred);}else{init(initDeferred,Dashboard.capabilities());}});})();function pageClassOn(eventName,className,fn){$(document).on(eventName,function(e){var target=e.target;if(target.classList.contains(className)){fn.call(target,e);}});}
 function pageIdOn(eventName,id,fn){$(document).on(eventName,function(e){var target=e.target;if(target.id==id){fn.call(target,e);}});}
