@@ -1,7 +1,7 @@
 ﻿$.fn.taskButton=function(options){function pollTasks(button){ApiClient.getScheduledTasks({IsEnabled:true}).done(function(tasks){updateTasks(button,tasks);});}
 function updateTasks(button,tasks){var task=tasks.filter(function(t){return t.Key==options.taskKey;})[0];if(options.panel){if(task){$(options.panel).show();}else{$(options.panel).hide();}}
 if(!task){return;}
-$(button).buttonEnabled(task.State=='Idle').attr('data-taskid',task.Id);var progress=(task.CurrentProgressPercentage||0).toFixed(1);if(options.progressElem){var progressElem=options.progressElem.val(progress);if(task.State=='Running'){progressElem.show();}else{progressElem.hide();}}
+$(button).buttonEnabled(task.State=='Idle').attr('data-taskid',task.Id);var progress=(task.CurrentProgressPercentage||0).toFixed(1);if(options.progressElem){options.progressElem.value=progress;if(task.State=='Running'){options.progressElem.classList.remove('hide');}else{options.progressElem.classList.add('hide');}}
 if(options.lastResultElem){var lastResult=task.LastExecutionResult?task.LastExecutionResult.Status:'';if(lastResult=="Failed"){options.lastResultElem.html('<span style="color:#FF0000;">'+Globalize.translate('LabelFailed')+'</span>');}
 else if(lastResult=="Cancelled"){options.lastResultElem.html('<span style="color:#0026FF;">'+Globalize.translate('LabelCancelled')+'</span>');}
 else if(lastResult=="Aborted"){options.lastResultElem.html('<span style="color:#FF0000;">'+Globalize.translate('LabelAbortedByServerShutdown')+'</span>');}else{options.lastResultElem.html(lastResult);}}}

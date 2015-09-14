@@ -933,7 +933,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             endDelaySetting();
         } else
         {
-            mService.setResult(false, false);
+            if (mService == null) {
+                logger.Error("onBackPressed - mService is null");
+            }
+            else {
+                mService.setResult(false, false);
+            }
+
             exitOK();
         }
     }
