@@ -94,7 +94,7 @@
 
         getOfflineUserdb(function (db) {
 
-            self.db().transaction(function (tx) {
+            db.transaction(function (tx) {
 
                 tx.executeSql("REPLACE INTO offlineusers (id, data) VALUES (?,?)", [user.Id, JSON.stringify(user)], function (tx, res) {
 
@@ -114,7 +114,7 @@
 
         getOfflineUserdb(function (db) {
 
-            self.db().transaction(function (tx) {
+            db.transaction(function (tx) {
 
                 tx.executeSql("DELETE from offlineusers where id=?", [user.Id], function (tx, res) {
 
@@ -154,7 +154,7 @@
 
         getOfflineActionsDb(function (db) {
 
-            self.db().transaction(function (tx) {
+            db.transaction(function (tx) {
 
                 tx.executeSql("SELECT json from offlineactions where ServerId=?", [serverId], function (tx, res) {
 
@@ -182,7 +182,7 @@
 
         getOfflineActionsDb(function (db) {
 
-            self.db().transaction(function (tx) {
+            db.transaction(function (tx) {
 
                 tx.executeSql("DELETE from offlineactions where Id in (" + ids + ")", [], function (tx, res) {
 
@@ -322,6 +322,8 @@
     function getDirectoryPath(item, serverInfo) {
 
         var parts = [];
+        parts.push("emby");
+        parts.push("sync");
         parts.push(server.Name);
 
         if (item.Type == "Episode") {
