@@ -111,6 +111,10 @@
                         {
                             "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SQLitePlugin\"><param name=\"ios-package\" value=\"SQLitePlugin\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -364,6 +368,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "io.litehelpers.cordova.sqlite": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

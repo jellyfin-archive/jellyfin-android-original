@@ -298,5 +298,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "io.litehelpers.cordova.sqlite": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/litehelpers/Cordova-sqlite-storage",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
