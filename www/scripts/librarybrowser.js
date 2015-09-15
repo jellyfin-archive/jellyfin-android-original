@@ -157,7 +157,7 @@ else if(options.shape=='overflowSquare'){squareSize=posterInfo.overflowSquareWid
 else if(options.shape=='smallBackdrop'){thumbWidth=posterInfo.smallBackdropWidth;}
 else if(options.shape=='homePageSmallBackdrop'){thumbWidth=posterInfo.homePageSmallBackdropWidth;posterWidth=posterInfo.homePageSmallBackdropWidth;}
 else if(options.shape=='detailPagePortrait'){posterWidth=200;}
-else if(options.shape=='detailPageSquare'){posterWidth=200;squareSize=200;}
+else if(options.shape=='detailPageSquare'){posterWidth=240;squareSize=240;}
 else if(options.shape=='detailPage169'){posterWidth=320;thumbWidth=320;}
 var dateText;for(var i=0,length=items.length;i<length;i++){var item=items[i];dateText=null;primaryImageAspectRatio=LibraryBrowser.getAveragePrimaryImageAspectRatio([item]);if(options.showStartDateIndex){if(item.StartDate){try{dateText=LibraryBrowser.getFutureDateText(parseISO8601Date(item.StartDate,{toLocal:true}),true);}catch(err){}}
 var newIndexValue=dateText||Globalize.translate('HeaderUnknownDate');if(newIndexValue!=currentIndexValue){html+='<h1 class="timelineHeader" style="text-align:center;">'+newIndexValue+'</h1>';currentIndexValue=newIndexValue;}}else if(options.timeline){var year=item.ProductionYear||Globalize.translate('HeaderUnknownYear');if(year!=currentIndexValue){html+='<h1 class="timelineHeader">'+year+'</h1>';currentIndexValue=year;}}

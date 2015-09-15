@@ -33,10 +33,10 @@ var _currentTime;self.currentTime=function(val){if(mediaElement){if(val!=null){m
 if(_currentTime){return _currentTime*1000;}
 return(mediaElement.currentTime||0)*1000;}};self.duration=function(val){if(mediaElement){return mediaElement.duration;}
 return null;};self.stop=function(){if(mediaElement){mediaElement.pause();if(isViblastStarted){_currentTime=mediaElement.currentTime;viblast('#'+mediaElement.id).stop();isViblastStarted=false;}}};self.pause=function(){if(mediaElement){mediaElement.pause();}};self.unpause=function(){if(mediaElement){mediaElement.play();}};self.volume=function(val){if(mediaElement){if(val!=null){mediaElement.volume=val;return;}
-return mediaElement.volume;}};var currentSrc;self.setCurrentSrc=function(val,item,mediaSource,tracks){var elem=mediaElement;if(!elem){currentSrc=null;return;}
-if(!val){currentSrc=null;elem.src=null;elem.src="";if($.browser.safari){elem.src='files/dummy.mp4';elem.play();}
+return mediaElement.volume;}};var currentSrc;self.setCurrentSrc=function(streamInfo,item,mediaSource,tracks){var elem=mediaElement;if(!elem){currentSrc=null;return;}
+if(!streamInfo){currentSrc=null;elem.src=null;elem.src="";if($.browser.safari){elem.src='files/dummy.mp4';elem.play();}
 return;}
-requiresSettingStartTimeOnStart=false;var startTime=getStartTime(val);var playNow=false;if(elem.tagName.toLowerCase()=='audio'){elem.src=val;playNow=true;}
+var val=streamInfo.url;requiresSettingStartTimeOnStart=false;var startTime=getStartTime(val);var playNow=false;if(elem.tagName.toLowerCase()=='audio'){elem.src=val;playNow=true;}
 else{if(isViblastStarted){viblast('#'+elem.id).stop();isViblastStarted=false;}
 if(startTime){try{elem.currentTime=startTime;}catch(err){}
 requiresSettingStartTimeOnStart=elem.currentTime==0;}
