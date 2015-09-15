@@ -368,6 +368,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/io.litehelpers.cordova.sqlite/www/SQLitePlugin.js",
+        "id": "io.litehelpers.cordova.sqlite.SQLitePlugin",
+        "clobbers": [
+            "SQLitePlugin"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -445,6 +452,7 @@ module.exports.metadata =
     "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-statusbar": "2.0.0-dev",
     "com.telerik.plugins.wkwebview": "0.6.0",
+    "io.litehelpers.cordova.sqlite": "0.7.11-dev",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",

@@ -154,12 +154,12 @@
 
         getOfflineActionsDb(function (db) {
 
-            self.db().transaction(function (tx) {
+            db.transaction(function (tx) {
 
                 tx.executeSql("SELECT json from offlineactions where ServerId=?", [serverId], function (tx, res) {
 
                     var actions = [];
-                    for (var i = 0, length = rws.rows.length; i < length; i++) {
+                    for (var i = 0, length = res.rows.length; i < length; i++) {
                         actions.push(res.rows.item(i).json);
                     }
 

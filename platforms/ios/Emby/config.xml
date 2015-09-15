@@ -93,6 +93,9 @@
     <feature name="WKWebViewPolyfill">
         <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
+    <feature name="SQLitePlugin">
+        <param name="ios-package" value="SQLitePlugin" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
