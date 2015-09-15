@@ -127,8 +127,6 @@
 
             if (options.type == 'audio') {
 
-                // TODO
-
                 //AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
                 var artist = item.ArtistItems && item.ArtistItems.length ? item.ArtistItems[0].Name : null;
                 window.audioplayer.playstream(successHandler, function () {

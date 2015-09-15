@@ -108,7 +108,6 @@
     <orderEntry type="library" exported="" name="support-annotations-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="logback-android-core-1.1.1-3" level="project" />
     <orderEntry type="library" exported="" name="emby.googleiap-" level="project" />
-    <orderEntry type="library" exported="" name="jcifs-1.3.14-kohsuke-1" level="project" />
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="slf4j-api-1.7.10" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.5.0" level="project" />

@@ -2621,11 +2621,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     private Uri createUri(String location) {
 
-        if (location.indexOf("file://") == 0) {
-            location = location.replace("file://", "");
-            Uri.fromFile(new File(location));
-        }
-
         return Uri.parse(location);
     }
 

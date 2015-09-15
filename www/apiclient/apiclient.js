@@ -183,7 +183,8 @@ if(self.isWebSocketOpen()){var deferred=DeferredBuilder.Deferred();var msg=JSON.
 var url=self.getUrl("Sessions/Playing/Progress");return self.ajax({type:"POST",data:JSON.stringify(options),contentType:"application/json",url:url});};self.reportOfflineActions=function(actions){if(!actions){throw new Error("null actions");}
 var url=self.getUrl("Sync/OfflineActions");return self.ajax({type:"POST",data:JSON.stringify(actions),contentType:"application/json",url:url});};self.syncData=function(data){if(!data){throw new Error("null data");}
 var url=self.getUrl("Sync/Data");return self.ajax({type:"POST",data:JSON.stringify(data),contentType:"application/json",url:url,dataType:"json"});};self.getReadySyncItems=function(deviceId){if(!deviceId){throw new Error("null deviceId");}
-var url=self.getUrl("Sync/Items/Ready",{TargetId:deviceId});return self.ajax({type:"GET",url:url,dataType:"json"});};self.reportPlaybackStopped=function(options){if(!options){throw new Error("null options");}
+var url=self.getUrl("Sync/Items/Ready",{TargetId:deviceId});return self.ajax({type:"GET",url:url,dataType:"json"});};self.reportSyncJobItemTransferred=function(syncJobItemId){if(!syncJobItemId){throw new Error("null syncJobItemId");}
+var url=self.getUrl("Sync/JobItems/"+syncJobItemId+"/Transferred");return self.ajax({type:"POST",url:url});};self.reportPlaybackStopped=function(options){if(!options){throw new Error("null options");}
 var url=self.getUrl("Sessions/Playing/Stopped");return self.ajax({type:"POST",data:JSON.stringify(options),contentType:"application/json",url:url});};self.sendPlayCommand=function(sessionId,options){if(!sessionId){throw new Error("null sessionId");}
 if(!options){throw new Error("null options");}
 var url=self.getUrl("Sessions/"+sessionId+"/Playing",options);return self.ajax({type:"POST",url:url});};self.sendCommand=function(sessionId,command){if(!sessionId){throw new Error("null sessionId");}

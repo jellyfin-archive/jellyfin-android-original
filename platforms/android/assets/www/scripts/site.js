@@ -129,7 +129,7 @@ if($.browser.safari){require(['cordova/ios/orientation']);}}else{if($.browser.ch
 if(navigator.splashscreen){navigator.splashscreen.hide();}}
 function init(deferred,capabilities,appName,deviceId,deviceName){requirejs.config({urlArgs:"v="+window.dashboardVersion,paths:{"velocity":"bower_components/velocity/velocity.min"}});define('jquery',[],function(){return jQuery;});if(Dashboard.isRunningInCordova()&&$.browser.android){define("appstorage",["cordova/android/appstorage"]);}else{define('appstorage',[],function(){return appStorage;});}
 if(Dashboard.isRunningInCordova()){define("serverdiscovery",["cordova/serverdiscovery"]);define("wakeonlan",["cordova/wakeonlan"]);}else{define("serverdiscovery",["apiclient/serverdiscovery"]);define("wakeonlan",["apiclient/wakeonlan"]);}
-if(Dashboard.isRunningInCordova()&&$.browser.android){define("localassetmanager",["cordova/android/localassetmanager"]);}else if(Dashboard.isRunningInCordova()){define("localassetmanager",["cordova/localassetmanager"]);}else{define("localassetmanager",["apiclient/localassetmanager"]);}
+if(Dashboard.isRunningInCordova()){define("localassetmanager",["cordova/localassetmanager"]);}else{define("localassetmanager",["apiclient/localassetmanager"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("filesystem",["cordova/android/filesystem"]);}
 else if(Dashboard.isRunningInCordova()){define("filesystem",["cordova/filesystem"]);}
 else{define("filesystem",["thirdparty/filesystem"]);}
