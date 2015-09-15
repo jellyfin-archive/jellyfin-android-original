@@ -39,7 +39,6 @@ deferred.resolveWith(null,[list]);});return deferred.promise();}
 function updateLibraryMenu(user){if(!user){$('.adminMenuOptions').visible(false);$('.lnkMySync').visible(false);$('.userMenuOptions').visible(false);return;}
 var userId=Dashboard.getCurrentUserId();var apiClient=window.ApiClient;getUserViews(apiClient,userId).done(function(result){var items=result;var html='';html+='<div class="sidebarHeader">';html+=Globalize.translate('HeaderMedia');html+='</div>';html+=items.map(function(i){var icon='folder';var color='inherit';var itemId=i.Id;if(i.CollectionType=="channels"){itemId="channels";}
 else if(i.CollectionType=="livetv"){itemId="livetv";}
-if(i.Type=='Channel'){}
 if(i.CollectionType=="photos"){icon='photo-library';color="#009688";}
 else if(i.CollectionType=="music"||i.CollectionType=="musicvideos"){icon='library-music';color='#FB8521';}
 else if(i.CollectionType=="books"){icon='library-books';color="#1AA1E1";}

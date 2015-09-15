@@ -87,7 +87,7 @@
             javaRequest.RequestContentType = request.contentType;
         }
 
-        Logger.log("Sending request: " + JSON.stringify(javaRequest));
+        //Logger.log("Sending request: " + JSON.stringify(javaRequest));
 
         ApiClientBridge.sendRequest(JSON.stringify(javaRequest), request.dataType, id);
 
