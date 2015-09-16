@@ -147,10 +147,17 @@ public class VideoApiHelper {
                 }
             }
 
-            MediaPlayer.TrackDescription[] audioTracks = vlc.getAudioTracks();
-
             // Increment by one to account for the "Disabled" entry
-            boolean success = vlc.setAudioTrack(audioTracks[trackNumber+1].id);
+            trackNumber++;
+
+            MediaPlayer.TrackDescription[] vlcTracks = vlc.getAudioTracks();
+
+            if (vlcTracks.length <= trackNumber) {
+                logger.Error("Cannot set subtitle stream index because the track doesn't exist in the track list");
+                return;
+            }
+
+            boolean success = vlc.setAudioTrack(vlcTracks[trackNumber].id);
 
             if (!success){
                 logger.Error("Vlc returned an error when attempting to set the audioTrack");
@@ -240,11 +247,18 @@ public class VideoApiHelper {
             return;
         }
 
-        int newTrackId = vlcTracks[trackNumber+1].id;
+        // Increment by one to account for the "Disabled" entry
+        trackNumber++;
+
+        if (vlcTracks.length <= trackNumber) {
+            logger.Error("Cannot set subtitle stream index because the track doesn't exist in the track list");
+            return;
+        }
+
+        int newTrackId = vlcTracks[trackNumber].id;
 
         logger.Info("vlc.setSpuTrack newTrackId: %s", newTrackId);
 
-        // Increment by one to account for the "Disabled" entry
         boolean success = vlc.setSpuTrack(newTrackId);
 
         if (success){
