@@ -110,12 +110,13 @@
             return self.playerState.volume;
         };
 
-        self.setCurrentSrc = function (val, item, mediaSource, tracks) {
+        self.setCurrentSrc = function (streamInfo, item, mediaSource, tracks) {
 
-            if (!val) {
+            if (!streamInfo) {
                 return;
             }
 
+            var val = streamInfo.url;
             var tIndex = val.indexOf('#t=');
             var startPosMs = 0;
 
