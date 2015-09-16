@@ -61,19 +61,21 @@ public class IapManager {
     }
 
     private void isPurchasedInternal(String id, final Response<Boolean> response) {
-        final IabValidator iabValidator = new IabValidator(context, GOOGLE_KEY, new IResultHandler() {
+        final IabValidator iabValidator = new IabValidator(context, GOOGLE_KEY);
+
+        iabValidator.checkInAppPurchase(id, new IResultHandler<ResultType>() {
             @Override
-            public void handleResult(ResultType resultType) {
+            public void onResult(ResultType resultType) {
                 response.onResponse(resultType.equals(ResultType.Success));
+                iabValidator.dispose();
             }
 
             @Override
-            public void handleError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
+            public void onError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
                 //TODO handle error...
+                iabValidator.dispose();
             }
         });
-
-        iabValidator.checkInAppPurchase(id);
 
     }
 }
