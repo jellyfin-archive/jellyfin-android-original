@@ -383,8 +383,8 @@
             for (var i = 0, length = libraryItem.MediaSources.length; i < length; i++) {
 
                 var mediaSource = libraryItem.MediaSources[i];
-                mediaSource.setPath(localPath);
-                mediaSource.setProtocol(MediaProtocol.File);
+                mediaSource.Path = localPath;
+                mediaSource.Protocol = 'File';
             }
 
             item.ServerId = serverInfo.Id;
@@ -397,7 +397,7 @@
         return deferred.promise();
     }
 
-    function getDirectoryPath(item, serverInfo) {
+    function getDirectoryPath(item, server) {
 
         var parts = [];
         parts.push("emby");
@@ -442,7 +442,7 @@
 
         var filename = originalFileName || libraryItem.Name;
 
-        return fileRepository.getValidFileName(filename);
+        return getValidFileName(filename);
     }
 
     function getValidFileName(filename) {
