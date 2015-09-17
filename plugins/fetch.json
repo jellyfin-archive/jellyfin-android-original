@@ -307,5 +307,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "org.apache.cordova.background-download": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/sgrebnov/cordova-plugin-background-download",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

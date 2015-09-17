@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CordovaWP8_3.3.02", "CordovaWP8_3.3.02.csproj", "{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadAgent", "..\DownlaodAgent\DownloadAgent.csproj", "{AD02D298-C47F-432D-A07D-553130FEBD84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|ARM.Build.0 = Debug|ARM
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|ARM.Deploy.0 = Debug|ARM
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|x86.ActiveCfg = Debug|x86
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|x86.Build.0 = Debug|x86
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Debug|x86.Deploy.0 = Debug|x86
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|ARM.ActiveCfg = Release|ARM
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|ARM.Build.0 = Release|ARM
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|ARM.Deploy.0 = Release|ARM
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|x86.ActiveCfg = Release|x86
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|x86.Build.0 = Release|x86
+		{3677C1B7-D68B-4CF9-BF8A-E869D437A6DF}.Release|x86.Deploy.0 = Release|x86
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Debug|ARM.ActiveCfg = Debug|ARM
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Debug|ARM.Build.0 = Debug|ARM
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Debug|x86.ActiveCfg = Debug|x86
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Debug|x86.Build.0 = Debug|x86
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Release|ARM.ActiveCfg = Release|ARM
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Release|ARM.Build.0 = Release|ARM
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Release|x86.ActiveCfg = Release|x86
+		{AD02D298-C47F-432D-A07D-553130FEBD84}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

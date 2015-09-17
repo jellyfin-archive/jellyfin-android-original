@@ -5,7 +5,7 @@
     var currentDeferred;
     var hasChanges = false;
 
-    var browsableImagePageSize = 20;
+    var browsableImagePageSize = 15;
     var browsableImageStartIndex = 0;
     var browsableImageType = 'Primary';
     var selectedProvider;

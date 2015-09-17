@@ -375,6 +375,24 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.apache.cordova.background-download/www/Promise.js",
+        "id": "org.apache.cordova.background-download.Promise"
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/www/BackgroundDownloader.js",
+        "id": "org.apache.cordova.background-download.BackgroundDownloader",
+        "clobbers": [
+            "BackgroundTransfer.BackgroundDownloader"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/www/DownloadOperation.js",
+        "id": "org.apache.cordova.background-download.DownloadOperation",
+        "clobbers": [
+            "DownloadOperation"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -453,6 +471,7 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "2.0.0-dev",
     "com.telerik.plugins.wkwebview": "0.6.0",
     "io.litehelpers.cordova.sqlite": "0.7.11-dev",
+    "org.apache.cordova.background-download": "0.0.2",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
