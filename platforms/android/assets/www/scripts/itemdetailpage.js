@@ -27,7 +27,7 @@ var isMissingEpisode=false;if(item.LocationType=="Virtual"&&item.Type=="Episode"
 if(isMissingEpisode){$('.missingIndicator',page).show();}
 else{$('.missingIndicator',page).hide();}
 setPeopleHeader(page,item);$(page).trigger('displayingitem',[{item:item,context:context}]);Dashboard.hideLoadingMsg();}
-function renderImage(page,item,user){var imageHref=user.Policy.IsAdministrator&&item.MediaType!='Photo'?"edititemmetadata.html?tab=1&id="+item.Id:"";LibraryBrowser.renderDetailImage(page.querySelector('.detailImageContainer'),item,imageHref);}
+function renderImage(page,item,user){LibraryBrowser.renderDetailImage(page.querySelector('.detailImageContainer'),item,user.Policy.IsAdministrator&&item.MediaType!='Photo');}
 function refreshImage(page,item,user){LibraryBrowser.refreshDetailImageUserData(page.querySelector('.detailImageContainer'),item);}
 function onWebSocketMessage(e,data){var msg=data;var page=$($.mobile.activePage)[0];if(msg.MessageType==="UserDataChanged"){if(currentItem&&msg.Data.UserId==Dashboard.getCurrentUserId()){var key=currentItem.UserData.Key;var userData=msg.Data.UserDataList.filter(function(u){return u.Key==key;})[0];if(userData){currentItem.UserData=userData;Dashboard.getCurrentUser().done(function(user){refreshImage(page,currentItem,user);});}}}}
 function setPeopleHeader(page,item){if(item.Type=="Audio"||item.Type=="MusicAlbum"||item.MediaType=="Book"||item.MediaType=="Photo"){$('#peopleHeader',page).html(Globalize.translate('HeaderPeople'));}else{$('#peopleHeader',page).html(Globalize.translate('HeaderCastAndCrew'));}}

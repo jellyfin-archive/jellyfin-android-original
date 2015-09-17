@@ -1,7 +1,6 @@
 ﻿(function ($, window, document) {
 
     var currentItem;
-    var currentDialog;
 
     function showLocalSubtitles(page, index) {
 
@@ -330,7 +329,7 @@
         ApiClient.ajax({
 
             type: 'GET',
-            url: 'subtitleeditor/subtitleeditor.template.html'
+            url: 'components/subtitleeditor/subtitleeditor.template.html'
 
         }).done(function (template) {
 
@@ -340,6 +339,8 @@
 
                 dlg.setAttribute('with-backdrop', 'with-backdrop');
                 dlg.setAttribute('role', 'alertdialog');
+                // without this safari will scroll the background instead of the dialog contents
+                dlg.setAttribute('modal', 'modal');
                 dlg.entryAnimation = 'scale-up-animation';
                 dlg.exitAnimation = 'fade-out-animation';
                 dlg.classList.add('fullscreen-editor-paper-dialog');
@@ -363,14 +364,7 @@
                 // Has to be assigned a z-index after the call to .open() 
                 $(dlg).on('iron-overlay-closed', onDialogClosed);
 
-                document.body.classList.add('bodyWithPopupOpen');
-                dlg.open();
-
-                window.location.hash = getHash(itemId);
-
-                $(window).on('navigate', onHashChange);
-
-                currentDialog = dlg;
+                PaperDialogHelper.openWithHash(dlg, 'subtitleeditor');
 
                 var editorContent = dlg.querySelector('.editorContent');
                 reload(editorContent, item);
@@ -385,40 +379,25 @@
         });
     }
 
-    function getHash(itemId) {
-        return 'subtitleeditor';
-    }
-
-    function onHashChange() {
-        // In some browsers this will fire immediately after opening the dialog, despite the fact that we bound the event after setting the hash
-        if (currentItem && window.location.hash == '#' + getHash(currentItem.Id)) {
-            return;
-        }
-
-        if (currentDialog) {
-            currentDialog.close();
-        }
-    }
-
     function closeDialog() {
 
         history.back();
     }
 
     function onDialogClosed() {
-        currentDialog = null;
 
-        $(window).off('navigate', onHashChange);
-        document.body.classList.remove('bodyWithPopupOpen');
         $(this).remove();
         Dashboard.hideLoadingMsg();
-        if ((window.location.hash || '').length > 1) {
-            history.back();
-        }
     }
 
     window.SubtitleEditor = {
-        show: showEditor
+        show: function (itemId) {
+
+            require(['components/paperdialoghelper'], function () {
+
+                showEditor(itemId);
+            });
+        }
     };
 
 })(jQuery, window, document);
