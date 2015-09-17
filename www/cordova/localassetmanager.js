@@ -376,7 +376,7 @@
 
         getFileSystem().done(function (fileSystem) {
 
-            var localPath = fileSystem.root.toURL() + "/" + path.join('/');
+            var localPath = trimEnd(fileSystem.root.toURL()) + "/" + path.join('/');
 
             item.LocalPath = localPath;
 
@@ -395,6 +395,18 @@
         });
 
         return deferred.promise();
+    }
+
+    function trimEnd(str) {
+
+        var charEnd = '/';
+
+        if (str.charAt(str.length - 1) == charEnd) {
+
+            str = str.substring(0, str.length - 1);
+        }
+
+        return str;
     }
 
     function getDirectoryPath(item, server) {
@@ -562,7 +574,7 @@
         var deferred = DeferredBuilder.Deferred();
 
         getFileSystem().done(function (fileSystem) {
-            var path = fileSystem.root.toURL() + "/emby/images/" + serverId + "/" + itemId + "/" + imageTag;
+            var path = trimEnd(fileSystem.root.toURL()) + "/emby/images/" + serverId + "/" + itemId + "/" + imageTag;
 
             deferred.resolveWith(null, [path]);
         });
