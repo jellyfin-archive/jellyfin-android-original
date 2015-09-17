@@ -376,16 +376,16 @@
 
         getFileSystem().done(function (fileSystem) {
 
-            var localPath = fileSystem.root.toURL() + "/" + path.join('/');
+            var localPath = trimEnd(fileSystem.root.toURL()) + "/" + path.join('/');
 
             item.LocalPath = localPath;
 
             for (var i = 0, length = libraryItem.MediaSources.length; i < length; i++) {
 
                 var mediaSource = libraryItem.MediaSources[i];
-                             mediaSource.Path = localPath;
-                             mediaSource.Protocol = 'File';
-                             }
+                mediaSource.Path = localPath;
+                mediaSource.Protocol = 'File';
+            }
 
             item.ServerId = serverInfo.Id;
             item.Item = libraryItem;
@@ -395,6 +395,18 @@
         });
 
         return deferred.promise();
+    }
+
+    function trimEnd(str) {
+
+        var charEnd = '/';
+
+        if (str.charAt(str.length - 1) == charEnd) {
+
+            str = str.substring(0, str.length - 1);
+        }
+
+        return str;
     }
 
     function getDirectoryPath(item, server) {
@@ -455,13 +467,35 @@
         var deferred = DeferredBuilder.Deferred();
 
         Logger.log('downloading: ' + url + ' to ' + localPath);
-        var ft = new FileTransfer();
-        ft.download(url, localPath, function (entry) {
 
-            var localUrl = normalizeReturnUrl(entry.toURL());
+        getFileSystem().done(function (fileSystem) {
 
-            Logger.log('Downloaded local url: ' + localUrl);
-            deferred.resolveWith(null, [localUrl]);
+            fileSystem.root.getFile(localPath, function (targetFile) {
+
+                var downloader = new BackgroundTransfer.BackgroundDownloader();
+                // Create a new download operation.
+                var download = downloader.createDownload(url, targetFile);
+                // Start the download and persist the promise to be able to cancel the download.
+                app.downloadPromise = download.startAsync().then(function () {
+
+                    // on success
+                    var localUrl = normalizeReturnUrl(targetFile.toURL());
+
+                    Logger.log('Downloaded local url: ' + localUrl);
+                    deferred.resolveWith(null, [localUrl]);
+
+                }, function () {
+
+                    // on error
+                    Logger.log('download failed: ' + url + ' to ' + localPath);
+                    deferred.reject();
+
+                }, function () {
+
+                    // on progress
+                });
+            });
+
         });
 
         return deferred.promise();
@@ -562,7 +596,7 @@
         var deferred = DeferredBuilder.Deferred();
 
         getFileSystem().done(function (fileSystem) {
-            var path = fileSystem.root.toURL() + "/emby/images/" + serverId + "/" + itemId + "/" + imageTag;
+            var path = trimEnd(fileSystem.root.toURL()) + "/emby/images/" + serverId + "/" + itemId + "/" + imageTag;
 
             deferred.resolveWith(null, [path]);
         });
