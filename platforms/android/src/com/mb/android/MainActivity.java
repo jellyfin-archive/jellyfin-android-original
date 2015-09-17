@@ -27,6 +27,7 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -109,8 +110,8 @@ public class MainActivity extends CordovaActivity
         CordovaWebViewEngine engine =  new XWalkWebViewEngine(this, preferences);
 
         View engineView = engine.getView();
-        ILogger logger = getLogger();
-        IJsonSerializer jsonSerializer = new GsonJsonSerializer();
+        final ILogger logger = getLogger();
+        final IJsonSerializer jsonSerializer = new GsonJsonSerializer();
 
         webView = null;
 
@@ -127,7 +128,8 @@ public class MainActivity extends CordovaActivity
 
         Context context = getApplicationContext();
 
-        webView.addJavascriptInterface(new IapManager(context, webView, logger), "NativeIapManager");
+        final IapManager iapManager = new IapManager(context, webView, logger);
+        webView.addJavascriptInterface(iapManager, "NativeIapManager");
         webView.addJavascriptInterface(new ApiClientBridge(context, logger, webView, jsonSerializer), "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
@@ -139,6 +141,15 @@ public class MainActivity extends CordovaActivity
         PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
 
         webView.addJavascriptInterface(preferencesProvider, "AndroidSharedPreferences");
+
+        //Test - delay to get out of the way of the normal purchase check
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                iapManager.getAvailableProducts(jsonSerializer);
+            }
+        }, 20000);
+        //end test
 
         return engine;
     }
