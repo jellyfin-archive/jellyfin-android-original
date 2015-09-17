@@ -55,7 +55,7 @@
     static NSURLSession *backgroundSession = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.cordova.plugin.BackgroundDownload.BackgroundSession"];
+        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"com.cordova.plugin.BackgroundDownload.BackgroundSession"];
         backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     });
     return backgroundSession;
