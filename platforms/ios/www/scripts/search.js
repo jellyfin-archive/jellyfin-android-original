@@ -16,7 +16,7 @@ function requestSearchHintsForOverlay(elem,searchTerm){var currentTimeout=search
 Dashboard.hideLoadingMsg();}).fail(function(){Dashboard.hideLoadingMsg();});}
 function updateSearchOverlay(elem,searchTerm){if(!searchTerm){$('.itemsContainer',elem).empty();clearSearchHintTimeout();return;}
 clearSearchHintTimeout();searchHintTimeout=setTimeout(function(){requestSearchHintsForOverlay(elem,searchTerm);},300);}
-function getSearchOverlay(createIfNeeded){var elem=document.querySelector('.searchResultsOverlay');if(createIfNeeded&&!elem){var html='<div class="searchResultsOverlay ui-page-theme-b smoothScrollY">';html+='<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';elem=$(html).appendTo(document.body).hide()[0];$(elem).createCardMenus();}
+function getSearchOverlay(createIfNeeded){var elem=document.querySelector('.searchResultsOverlay');if(createIfNeeded&&!elem){var html='<div class="searchResultsOverlay ui-body-b smoothScrollY">';html+='<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';elem=$(html).appendTo(document.body).hide()[0];$(elem).createCardMenus();}
 return elem;}
 function onHeaderSearchChange(val){var elem;if(val){elem=getSearchOverlay(true);$(elem).show();elem.style.opacity='1';document.body.classList.add('bodyWithPopupOpen');updateSearchOverlay(elem,val);}else{elem=getSearchOverlay(false);if(elem){require(["jquery","velocity"],function($,Velocity){$(elem).velocity("fadeOut");document.body.classList.remove('bodyWithPopupOpen');});updateSearchOverlay(elem,'');}}}
 function bindSearchEvents(){require(['searchmenu'],function(){Events.on(SearchMenu,'closed',closeSearchResults);Events.on(SearchMenu,'change',function(e,value){onHeaderSearchChange(value);});});}
