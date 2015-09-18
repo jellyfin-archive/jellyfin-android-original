@@ -470,7 +470,7 @@
 
         getFileSystem().done(function (fileSystem) {
 
-            fileSystem.root.getFile(localPath, function (targetFile) {
+            fileSystem.root.getFile(localPath.replace('file://', ''), {}, function (targetFile) {
 
                 var downloader = new BackgroundTransfer.BackgroundDownloader();
                 // Create a new download operation.
@@ -490,9 +490,11 @@
                     Logger.log('download failed: ' + url + ' to ' + localPath);
                     deferred.reject();
 
-                }, function () {
+                }, function (value) {
 
                     // on progress
+                    Logger.log('download progress: ' + value);
+
                 });
             });
 
@@ -559,7 +561,7 @@
     }
 
     function getLocalId(serverId, itemId) {
-
+        return serverId + '_' + itemId;
     }
 
     function hasImage(serverId, itemId, imageTag) {
