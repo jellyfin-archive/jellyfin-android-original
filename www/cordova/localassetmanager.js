@@ -561,7 +561,7 @@
     }
 
     function getLocalId(serverId, itemId) {
-
+        return serverId + '_' + itemId;
     }
 
     function hasImage(serverId, itemId, imageTag) {
