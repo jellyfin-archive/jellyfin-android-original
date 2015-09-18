@@ -285,7 +285,9 @@
 
             db.transaction(function (tx) {
 
-                var values = [item.Id, item.ItemId, item.Item.Type, item.Item.MediaType, item.ServerId, item.LocalPath, item.UserIdsWithAccess.join(','), item.Item.AlbumId, item.Item.AlbumName, item.Item.SeriesId, item.Item.SeriesName, JSON.stringify(item)];
+                var libraryItem = item.Item || {};
+
+                var values = [item.Id, item.ItemId, libraryItem.Type, libraryItem.MediaType, item.ServerId, item.LocalPath, (item.UserIdsWithAccess || []).join(','), libraryItem.AlbumId, libraryItem.AlbumName, libraryItem.SeriesId, libraryItem.SeriesName, JSON.stringify(item)];
                 tx.executeSql("REPLACE INTO Items (Id, ItemId, ItemType, MediaType, ServerId, LocalPath, UserIdsWithAccess, AlbumId, AlbumName, SeriesId, SeriesName, Json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", values);
                 deferred.resolve();
             });
@@ -467,7 +469,7 @@
             // Create a new download operation.
             var download = downloader.createDownload(url, targetFile);
             // Start the download and persist the promise to be able to cancel the download.
-            app.downloadPromise = download.startAsync().then(function () {
+            var downloadPromise = download.startAsync().then(function () {
 
                 // on success
                 var localUrl = localPath;
