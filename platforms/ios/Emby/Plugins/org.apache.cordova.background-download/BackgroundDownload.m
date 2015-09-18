@@ -93,8 +93,9 @@
         ignoreNextError = NO;
         return;
     }
-    
     if (error != nil) {
+        NSLog(@"didCompleteWithError - error");
+        
         if ((error.code == -999)) {
             NSData* resumeData = [[error userInfo] objectForKey:NSURLSessionDownloadTaskResumeData];
             // resumeData is available only if operation was terminated by the system (no connection or other reason)
@@ -110,6 +111,9 @@
         CDVPluginResult* errorResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
         [self.commandDelegate sendPluginResult:errorResult callbackId:self.callbackId];
     } else {
+        
+        NSLog(@"didCompleteWithError - OK");
+        
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
     }

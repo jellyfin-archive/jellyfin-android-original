@@ -1,6 +1,6 @@
 ﻿(function (globalScope) {
 
-    function paperDialogHashHandler(dlg, hash) {
+    function paperDialogHashHandler(dlg, hash, lockDocumentScroll) {
 
         var isActive = true;
 
@@ -17,16 +17,13 @@
                     }
                 }
             }
-
-            if (isActive) {
-                document.body.classList.add('bodyWithPopupOpen');
-            }
-            else {
-                document.body.classList.remove('bodyWithPopupOpen');
-            }
         }
 
         function onDialogClosed() {
+
+            if (lockDocumentScroll !== false) {
+                Dashboard.onPopupClose();
+            }
 
             dlg = null;
             $(window).off('navigate', onHashChange);
@@ -41,14 +38,18 @@
         $(dlg).on('iron-overlay-closed', onDialogClosed);
         dlg.open();
 
+        if (lockDocumentScroll !== false) {
+            Dashboard.onPopupOpen();
+        }
+
         window.location.hash = hash;
 
         $(window).on('navigate', onHashChange);
     }
 
-    function openWithHash(dlg, hash) {
+    function openWithHash(dlg, hash, lockDocumentScroll) {
 
-        new paperDialogHashHandler(dlg, hash);
+        new paperDialogHashHandler(dlg, hash, lockDocumentScroll);
     }
 
     globalScope.PaperDialogHelper = {
