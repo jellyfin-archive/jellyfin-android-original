@@ -376,6 +376,13 @@ module.exports = [
         "clobbers": [
             "window.StatusBar"
         ]
+    },
+    {
+        "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
+        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -407,6 +414,7 @@ module.exports.metadata =
     "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-statusbar": "2.0.0-dev",
     "com.telerik.plugins.wkwebview": "0.6.0",
+    "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

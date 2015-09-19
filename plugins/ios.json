@@ -119,6 +119,10 @@
                         {
                             "xml": "<feature name=\"BackgroundDownload\"><param name=\"ios-package\" value=\"BackgroundDownload\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"AppVersion\"><param name=\"ios-package\" value=\"AppVersion\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -378,6 +382,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "org.apache.cordova.background-download": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "uk.co.whiteoctober.cordova.appversion": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
