@@ -103,4 +103,7 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
+    <feature name="AppVersion">
+        <param name="android-package" value="uk.co.whiteoctober.cordova.AppVersion" />
+    </feature>
 </widget>

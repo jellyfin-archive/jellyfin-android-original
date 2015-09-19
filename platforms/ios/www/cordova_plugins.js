@@ -393,6 +393,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
+        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -472,6 +479,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.6.0",
     "io.litehelpers.cordova.sqlite": "0.7.11-dev",
     "org.apache.cordova.background-download": "0.0.2",
+    "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
