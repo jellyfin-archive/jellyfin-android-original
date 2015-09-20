@@ -506,6 +506,31 @@
 
     function createDirectory(path) {
 
+        var deferred = DeferredBuilder.Deferred();
+        createDirectoryPart(path, 0, deferred);
+        return deferred.promise();
+    }
+
+    function createDirectoryPart(path, index, deferred) {
+
+        var parts = path.split('/');
+        if (index >= parts.length) {
+            deferred.resolve();
+            return;
+        }
+
+        parts.length = index + 1;
+        var pathToCreate = parts.join('/');
+
+        createDirectoryInternal(pathToCreate).done(function () {
+
+            createDirectoryPart(path, index + 1, deferred);
+
+        }).fail(getOnFail(deferred));
+    }
+
+    function createDirectoryInternal(path) {
+
         Logger.log('creating directory: ' + path);
         var deferred = DeferredBuilder.Deferred();
 
