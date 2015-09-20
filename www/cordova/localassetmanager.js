@@ -156,11 +156,11 @@
 
             db.transaction(function (tx) {
 
-                tx.executeSql("SELECT json from offlineactions where ServerId=?", [serverId], function (tx, res) {
+                tx.executeSql("SELECT Json from offlineactions where ServerId=?", [serverId], function (tx, res) {
 
                     var actions = [];
                     for (var i = 0, length = res.rows.length; i < length; i++) {
-                        actions.push(JSON.parse(res.rows.item(i).json));
+                        actions.push(JSON.parse(res.rows.item(i).Json));
                     }
 
                     deferred.resolveWith(null, [actions]);
@@ -254,11 +254,11 @@
 
             db.transaction(function (tx) {
 
-                tx.executeSql("SELECT json from Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
+                tx.executeSql("SELECT json Json Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
 
                     if (res.rows.length) {
 
-                        var localItem = JSON.parse(res.rows.item(0).json);
+                        var localItem = JSON.parse(res.rows.item(0).Json);
 
                         deferred.resolveWith(null, [localItem]);
                     }
@@ -350,7 +350,7 @@
         var deferred = DeferredBuilder.Deferred();
 
         Logger.log('Deleting ' + path);
-        resolveLocalFileSystemURL(path, function (fileEntry) {
+        resolveFile(path, function (fileEntry) {
 
             fileEntry.remove(function () {
                 Logger.log('Deleted ' + path);
@@ -368,6 +368,11 @@
         });
 
         return deferred.promise();
+    }
+
+    function resolveFile(path, success, fail) {
+
+        resolveLocalFileSystemURL(path, success, fail);
     }
 
     function createLocalItem(libraryItem, serverInfo, originalFileName) {
@@ -602,12 +607,12 @@
 
         var deferred = DeferredBuilder.Deferred();
 
-        resolveLocalFileSystemURL(path, function (fileEntry) {
-
+        resolveFile(path, function (fileEntry) {
+            Logger.log('fileExists: true - path: ' + path);
             deferred.resolveWith(null, [true]);
 
         }, function () {
-
+            Logger.log('fileExists: false - path: ' + path);
             deferred.resolveWith(null, [false]);
         });
 
@@ -653,7 +658,8 @@
         downloadFile: downloadFile,
         downloadSubtitles: downloadSubtitles,
         hasImage: hasImage,
-        downloadImage: downloadImage
+        downloadImage: downloadImage,
+        fileExists: fileExists
     };
 
 })();
