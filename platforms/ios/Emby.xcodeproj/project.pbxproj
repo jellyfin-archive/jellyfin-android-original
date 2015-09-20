@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
@@ -46,6 +47,7 @@
 		37E4C15B37C74748907180F7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B7E7ABEF62E4669B12D0F3D /* Security.framework */; };
 		3AE2571C3CA540C38FC7F3F2 /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = B93A2284934A43D79FC20530 /* DDFileLogger.m */; };
 		3D16EE750DFF442D89831332 /* SpeechRecognition.m in Sources */ = {isa = PBXBuildFile; fileRef = A4AE934D5E724B3F972F1D2A /* SpeechRecognition.m */; };
+		3D87CBA0AB6A4A84900D54A1 /* AppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FB03CEEBDC0844FB820EDF0C /* AppVersion.m */; };
 		3FA5C557A8EA4A0288AD3AC4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 187C1F5FEE2E4A0F8EE30CEA /* MessageUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		43DEFF2366C1463DA0E35BC2 /* APPLocalNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 587B74605C264FABB734128C /* APPLocalNotification.m */; };
 		51EFB7D2AA4648DA9CB10AB9 /* NSLoggerCocoaLumberjackConnectorPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AFE7085DCB14452BAC30799 /* NSLoggerCocoaLumberjackConnectorPlugin.m */; };
@@ -123,7 +125,6 @@
 		ED6B4D7048AB461AA2ECF565 /* CDVLocalFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 753AB05F07ED4BFE898DE60D /* CDVLocalFilesystem.m */; };
 		EEF37D23C84B45748681E38B /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D240FC4E01DB4DD088BCEFEE /* CDVDevice.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
-		3D87CBA0AB6A4A84900D54A1 /* AppVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FB03CEEBDC0844FB820EDF0C /* AppVersion.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -189,6 +190,7 @@
 		25769CDA5D5A4A2488C95E0B /* DDMultiFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDMultiFormatter.h; path = "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin/DDMultiFormatter.h"; sourceTree = "<group>"; };
 		27EA7898BE844A69BCA2A70C /* VLCPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VLCPlugin.h; path = org.nypr.cordova.vlcplugin/VLCPlugin.h; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		294F66C9EBA641A0A2052129 /* AppVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppVersion.h; path = uk.co.whiteoctober.cordova.appversion/AppVersion.h; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2CFCB181009E4ECE87AB7C7E /* BackgroundAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BackgroundAudio.m; path = "nl.x-services.plugins.backgroundaudio/BackgroundAudio.m"; sourceTree = "<group>"; };
 		2D3DE3E8F5B54B8AACCDCE9D /* InAppPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InAppPurchase.h; path = cc.fovea.cordova.purchase/InAppPurchase.h; sourceTree = "<group>"; };
@@ -354,11 +356,10 @@
 		F56589A630DC417D9D78FCD1 /* CFNetwork.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		F6E1DF323B774AED9C0C7A24 /* SocialSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SocialSharing.h; path = "nl.x-services.plugins.socialsharing/SocialSharing.h"; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = Emby/config.xml; sourceTree = "<group>"; };
+		FB03CEEBDC0844FB820EDF0C /* AppVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppVersion.m; path = uk.co.whiteoctober.cordova.appversion/AppVersion.m; sourceTree = "<group>"; };
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
-		FB03CEEBDC0844FB820EDF0C /* AppVersion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "AppVersion.m"; path = "uk.co.whiteoctober.cordova.appversion/AppVersion.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		294F66C9EBA641A0A2052129 /* AppVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "AppVersion.h"; path = "uk.co.whiteoctober.cordova.appversion/AppVersion.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
