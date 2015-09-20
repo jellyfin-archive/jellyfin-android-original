@@ -3,11 +3,9 @@
     window.FileSystemBridge = {
 
         fileExists: function (path) {
-            return NativeFileSystem.fileExists(path);
-        },
-
-        translateFilePath: function (path) {
-            return 'file://' + NativeFileSystem.translateFilePath(path);
+            var deferred = DeferredBuilder.Deferred();
+            deferred.resolveWith(null, [NativeFileSystem.fileExists(path)]);
+            return deferred.promise();
         }
     };
 

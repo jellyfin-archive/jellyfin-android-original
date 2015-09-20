@@ -50,10 +50,11 @@ if(liveStreamId){query.LiveStreamId=liveStreamId;}
 return ApiClient.ajax({url:ApiClient.getUrl('Items/'+itemId+'/PlaybackInfo',query),type:'POST',data:JSON.stringify(postData),contentType:"application/json",dataType:"json"});}
 self.getLiveStream=function(itemId,playSessionId,deviceProfile,startPosition,mediaSource,audioStreamIndex,subtitleStreamIndex){var postData={DeviceProfile:deviceProfile,OpenToken:mediaSource.OpenToken};var query={UserId:Dashboard.getCurrentUserId(),StartTimeTicks:startPosition||0,ItemId:itemId,PlaySessionId:playSessionId};if(audioStreamIndex!=null){query.AudioStreamIndex=audioStreamIndex;}
 if(subtitleStreamIndex!=null){query.SubtitleStreamIndex=subtitleStreamIndex;}
-return ApiClient.ajax({url:ApiClient.getUrl('LiveStreams/Open',query),type:'POST',data:JSON.stringify(postData),contentType:"application/json",dataType:"json"});};self.supportsDirectPlay=function(mediaSource){if(mediaSource.SupportsDirectPlay){if(mediaSource.Protocol=='Http'&&!mediaSource.RequiredHttpHeaders.length){if(!mediaSource.SupportsDirectStream&&!mediaSource.SupportsTranscoding){return true;}
-return mediaSource.Path.toLowerCase().replace('https:','http').indexOf(ApiClient.serverAddress().toLowerCase().replace('https:','http').substring(0,14))==0;}
-if(mediaSource.Protocol=='File'){var exists=FileSystemBridge.fileExists(mediaSource.Path);Logger.log('FileSystemBridge.fileExists: path: '+mediaSource.Path+' result: '+exists);return exists;}}
-return false;};self.showPlayerSelection=showPlayerSelection;}
+return ApiClient.ajax({url:ApiClient.getUrl('LiveStreams/Open',query),type:'POST',data:JSON.stringify(postData),contentType:"application/json",dataType:"json"});};self.supportsDirectPlay=function(mediaSource){var deferred=$.Deferred();if(mediaSource.SupportsDirectPlay){if(mediaSource.Protocol=='Http'&&!mediaSource.RequiredHttpHeaders.length){if(!mediaSource.SupportsDirectStream&&!mediaSource.SupportsTranscoding){deferred.resolveWith(null,[true]);}
+else{var val=mediaSource.Path.toLowerCase().replace('https:','http').indexOf(ApiClient.serverAddress().toLowerCase().replace('https:','http').substring(0,14))==0;deferred.resolveWith(null,[val]);}}
+if(mediaSource.Protocol=='File'){FileSystemBridge.fileExists(mediaSource.Path).done(function(exists){Logger.log('FileSystemBridge.fileExists: path: '+mediaSource.Path+' result: '+exists);deferred.resolveWith(null,[exists]);});}}
+else{deferred.resolveWith(null,[false]);}
+return deferred.promise();};self.showPlayerSelection=showPlayerSelection;}
 window.MediaController=new mediaController();function onWebSocketMessageReceived(e,msg){var localPlayer;if(msg.MessageType==="Play"){localPlayer=MediaController.getLocalPlayer();if(msg.Data.PlayCommand=="PlayNext"){localPlayer.queueNext({ids:msg.Data.ItemIds});}
 else if(msg.Data.PlayCommand=="PlayLast"){localPlayer.queue({ids:msg.Data.ItemIds});}
 else{localPlayer.play({ids:msg.Data.ItemIds,startPositionTicks:msg.Data.StartPositionTicks});}}
