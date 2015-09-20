@@ -19,9 +19,9 @@
 
         getLocalItem(itemId, serverId).done(function (localItem) {
 
-            if (localItem && localItem.MediaSources.length) {
+            if (localItem && localItem.Item.MediaSources.length) {
 
-                var mediaSource = localItem.MediaSources[0];
+                var mediaSource = localItem.Item.MediaSources[0];
 
                 fileExists(mediaSource.Path).done(function (exists) {
 
@@ -254,13 +254,13 @@
 
             db.transaction(function (tx) {
 
-                tx.executeSql("SELECT Json from Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
+                tx.executeSql("SELECT json from Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
 
                     if (res.rows.length) {
 
-                        var localItem = JSON.parse(res.rows.item(0).Json);
+                        var localItem = JSON.parse(res.rows.item(0).json);
 
-                        deferred.resolveWith(null, [item]);
+                        deferred.resolveWith(null, [localItem]);
                     }
                     else {
                         deferred.resolveWith(null, [null]);

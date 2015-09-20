@@ -3,11 +3,9 @@
     window.FileSystemBridge = {
 
         fileExists: function (path) {
-            return false;
-        },
-
-        translateFilePath: function (path) {
-            return 'file://' + path;
+            var deferred = DeferredBuilder.Deferred();
+            deferred.resolveWith(null, [false]);
+            return deferred.promise();
         }
     };
 })();
