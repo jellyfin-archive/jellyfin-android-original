@@ -99,6 +99,9 @@
     <feature name="BackgroundDownload">
         <param name="ios-package" value="BackgroundDownload" />
     </feature>
+    <feature name="AppVersion">
+        <param name="ios-package" value="AppVersion" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -164,7 +167,4 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
-    <feature name="AppVersion">
-        <param name="ios-package" value="AppVersion" />
-    </feature>
 </widget>
