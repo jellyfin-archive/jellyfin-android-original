@@ -697,6 +697,23 @@
         };
     }
 
+    function translateFilePath(path) {
+
+        var deferred = DeferredBuilder.Deferred();
+
+        resolveFile(path, function (fileEntry) {
+            Logger.log('translateFilePath fileExists: true - path: ' + path);
+            Logger.log('translateFilePath resolving with: ' + fileEntry.toURL());
+            deferred.resolveWith(null, [fileEntry.toURL()]);
+
+        }, function () {
+            Logger.log('translateFilePath fileExists: false - path: ' + path);
+            deferred.resolveWith(null, [path]);
+        });
+
+        return deferred.promise();
+    }
+
     window.LocalAssetManager = {
         getLocalMediaSource: getLocalMediaSource,
         saveOfflineUser: saveOfflineUser,
@@ -713,7 +730,8 @@
         downloadSubtitles: downloadSubtitles,
         hasImage: hasImage,
         downloadImage: downloadImage,
-        fileExists: fileExists
+        fileExists: fileExists,
+        translateFilePath: translateFilePath
     };
 
 })();
