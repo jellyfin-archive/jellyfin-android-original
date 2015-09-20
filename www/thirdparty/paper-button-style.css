@@ -392,8 +392,8 @@ paper-menu-item {
 }
 
 .ui-body-b paper-checkbox #checkbox.checked.paper-checkbox {
-    background-color: #2ad;
-    border-color: #2ad;
+    background-color: #52B54B;
+    border-color: #52B54B;
 }
 
 .paperCheckboxList paper-checkbox {
@@ -532,4 +532,29 @@ paper-dialog paper-radio-group paper-radio-button {
     line-height: initial !important;
     padding: 0 1em;
     margin-top: 1em;
+}
+
+.paperToggleContainer{
+    padding: .5em 0;
+}
+
+.paperToggleContainer paper-toggle-button {
+    vertical-align: middle;
+}
+
+.paperToggleContainer > span {
+    vertical-align: middle;
+    margin-left: 1em;
+}
+
+paper-toggle-button #toggleBar {
+    background-color: #080808;
+}
+
+paper-toggle-button #toggleButton, paper-toggle-button[checked] #toggleBar {
+    background-color: #52B54B;
+}
+
+paper-toggle-button paper-ripple {
+    color: #52B54B;
 }
