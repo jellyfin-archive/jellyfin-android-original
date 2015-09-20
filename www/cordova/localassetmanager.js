@@ -254,7 +254,7 @@
 
             db.transaction(function (tx) {
 
-                tx.executeSql("SELECT json Json Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
+                tx.executeSql("SELECT Json from Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
 
                     if (res.rows.length) {
 
@@ -372,7 +372,10 @@
 
     function resolveFile(path, success, fail) {
 
-        resolveLocalFileSystemURL(path, success, fail);
+        getFileSystem().done(function (fileSystem) {
+
+            fileSystem.root.getFile(path, { create: false }, success, fail);
+        });
     }
 
     function createLocalItem(libraryItem, serverInfo, originalFileName) {
@@ -384,25 +387,22 @@
 
         var deferred = DeferredBuilder.Deferred();
 
-        getFileSystem().done(function (fileSystem) {
+        var localPath = path.join('/');
 
-            var localPath = fileSystem.root.toURL() + "/" + path.join('/');
+        item.LocalPath = localPath;
 
-            item.LocalPath = localPath;
+        for (var i = 0, length = libraryItem.MediaSources.length; i < length; i++) {
 
-            for (var i = 0, length = libraryItem.MediaSources.length; i < length; i++) {
+            var mediaSource = libraryItem.MediaSources[i];
+            mediaSource.Path = localPath;
+            mediaSource.Protocol = 'File';
+        }
 
-                var mediaSource = libraryItem.MediaSources[i];
-                mediaSource.Path = localPath;
-                mediaSource.Protocol = 'File';
-            }
-
-            item.ServerId = serverInfo.Id;
-            item.Item = libraryItem;
-            item.ItemId = libraryItem.Id;
-            item.Id = getLocalId(item.ServerId, item.ItemId);
-            deferred.resolveWith(null, [item]);
-        });
+        item.ServerId = serverInfo.Id;
+        item.Item = libraryItem;
+        item.ItemId = libraryItem.Id;
+        item.Id = getLocalId(item.ServerId, item.ItemId);
+        deferred.resolveWith(null, [item]);
 
         return deferred.promise();
     }
@@ -410,7 +410,6 @@
     function getDirectoryPath(item, server) {
 
         var parts = [];
-        parts.push("emby");
         parts.push("sync");
         parts.push(server.Name);
 
@@ -468,36 +467,68 @@
 
         getFileSystem().done(function (fileSystem) {
 
-            var targetFile = localPath;
+            createDirectory(getParentDirectoryPath(localPath)).done(function () {
 
-            var downloader = new BackgroundTransfer.BackgroundDownloader();
-            // Create a new download operation.
-            var download = downloader.createDownload(url, targetFile);
-            // Start the download and persist the promise to be able to cancel the download.
-            var downloadPromise = download.startAsync().then(function () {
+                fileSystem.root.getFile(localPath, { create: true }, function (targetFile) {
 
-                // on success
-                var localUrl = localPath;
+                    var downloader = new BackgroundTransfer.BackgroundDownloader();
+                    // Create a new download operation.
+                    var download = downloader.createDownload(url, targetFile.toURL());
+                    // Start the download and persist the promise to be able to cancel the download.
+                    var downloadPromise = download.startAsync().then(function () {
 
-                Logger.log('Downloaded local url: ' + localUrl);
-                deferred.resolveWith(null, [localUrl]);
+                        // on success
+                        var localUrl = localPath;
+
+                        Logger.log('Downloaded local url: ' + localUrl);
+                        deferred.resolveWith(null, [localUrl]);
+
+                    }, function () {
+
+                        // on error
+                        Logger.log('download failed: ' + url + ' to ' + localPath);
+                        deferred.reject();
+
+                    }, function (value) {
+
+                        // on progress
+                        Logger.log('download progress: ' + value);
+
+                    });
+                });
+
+            }).fail(getOnFail(deferred));;
+
+        }).fail(getOnFail(deferred));
+
+        return deferred.promise();
+    }
+
+    function createDirectory(path) {
+
+        Logger.log('creating directory: ' + path);
+        var deferred = DeferredBuilder.Deferred();
+
+        getFileSystem().done(function (fileSystem) {
+
+            fileSystem.root.getDirectory(path, { create: true, exclusive: false }, function (targetFile) {
+
+                Logger.log('createDirectory succeeded');
+                deferred.resolve();
 
             }, function () {
 
-                // on error
-                Logger.log('download failed: ' + url + ' to ' + localPath);
+                Logger.log('createDirectory failed');
                 deferred.reject();
-
-            }, function (value) {
-
-                // on progress
-                Logger.log('download progress: ' + value);
-
             });
 
-        });
+        }).fail(getOnFail(deferred));
 
         return deferred.promise();
+    }
+
+    function getParentDirectoryPath(path) {
+        return path.substring(0, path.lastIndexOf('/'));;
     }
 
     function downloadSubtitles(url, localItem, subtitleStream) {
@@ -594,11 +625,9 @@
     function getImageLocalPath(serverId, itemId, imageTag) {
         var deferred = DeferredBuilder.Deferred();
 
-        getFileSystem().done(function (fileSystem) {
-            var path = fileSystem.root.toURL() + "/emby/images/" + serverId + "/" + itemId + "/" + imageTag;
+        var path = "images/" + serverId + "/" + itemId + "/" + imageTag;
 
-            deferred.resolveWith(null, [path]);
-        });
+        deferred.resolveWith(null, [path]);
 
         return deferred.promise();
     }
