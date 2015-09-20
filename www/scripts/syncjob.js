@@ -2,7 +2,7 @@
 function getTargetDialogOptionsFn(dialogOptions){return function(targetId){var deferred=$.Deferred();deferred.resolveWith(null,[dialogOptions]);return deferred.promise();};}
 function getJobItemHtml(jobItem,index){var html='';html+='<paper-icon-item data-itemid="'+jobItem.Id+'" data-status="'+jobItem.Status+'" data-remove="'+jobItem.IsMarkedForRemoval+'">';var hasActions=['Queued','Cancelled','Failed','ReadyToTransfer','Transferring','Converting','Synced'].indexOf(jobItem.Status)!=-1;var imgUrl;if(jobItem.PrimaryImageItemId){imgUrl=ApiClient.getImageUrl(jobItem.PrimaryImageItemId,{type:"Primary",width:80,tag:jobItem.PrimaryImageTag,minScale:1.5});}
 if(imgUrl){html+='<paper-fab class="listAvatar blue" style="background-image:url(\''+imgUrl+'\');background-repeat:no-repeat;background-position:center center;background-size: cover;" item-icon></paper-fab>';}
-else{html+='<paper-fab class="listAvatar blue" icon="refresh" item-icon></paper-fab>';}
+else{html+='<paper-fab class="listAvatar blue" icon="sync" item-icon></paper-fab>';}
 html+='<paper-item-body three-line>';html+='<div>';html+=jobItem.ItemName;html+='</div>';if(jobItem.Status=='Failed'){html+='<div secondary style="color:red;">';}else{html+='<div secondary>';}
 html+=Globalize.translate('SyncJobItemStatus'+jobItem.Status);if(jobItem.Status=='Synced'&&jobItem.IsMarkedForRemoval){html+='<br/>';html+=Globalize.translate('SyncJobItemStatusSyncedMarkForRemoval');}
 html+='</div>';html+='</paper-item-body>';if(hasActions){html+='<paper-icon-button icon="'+AppInfo.moreIcon+'" class="btnJobItemMenu"></paper-icon-button>';}else{html+='<paper-icon-button icon="'+AppInfo.moreIcon+'" class="btnJobItemMenu" disabled></paper-icon-button>';}

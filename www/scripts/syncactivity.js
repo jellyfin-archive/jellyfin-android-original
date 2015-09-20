@@ -22,7 +22,8 @@ require(['actionsheet'],function(){ActionSheetElement.show({items:menuItems,posi
 function hasLocalSync(){return Dashboard.capabilities().SupportsSync;}
 function reloadData(page){Dashboard.showLoadingMsg();var options={};Dashboard.getCurrentUser().done(function(user){if($(page).hasClass('mySyncPage')){options.UserId=Dashboard.getCurrentUserId();if(hasLocalSync()){options.TargetId=ApiClient.deviceId();}}
 ApiClient.getJSON(ApiClient.getUrl('Sync/Jobs',options)).done(function(response){loadData(page,response.Items);Dashboard.hideLoadingMsg();});});}
-function onWebSocketMessage(e,msg){var page=$.mobile.activePage;if(msg.MessageType=="SyncJobs"){loadData(page,msg.Data);}}
+function onWebSocketMessage(e,msg){var page=$.mobile.activePage;if(msg.MessageType=="SyncJobs"){var data=msg.Data;if(hasLocalSync()){var targetId=ApiClient.deviceId();data=data.filter(function(j){return TargetId=targetId;});}
+loadData(page,data);}}
 function startListening(page){var startParams="0,1500";if($(page).hasClass('mySyncPage')){startParams+=","+Dashboard.getCurrentUserId();}
 if(ApiClient.isWebSocketOpen()){ApiClient.sendWebSocketMessage("SyncJobsStart",startParams);}}
 function stopListening(){if(ApiClient.isWebSocketOpen()){ApiClient.sendWebSocketMessage("SyncJobsStop","");}}
