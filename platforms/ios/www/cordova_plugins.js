@@ -400,6 +400,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.transistorsoft.cordova.plugin.background.fetch/www/BackgroundFetch.js",
+        "id": "org.transistorsoft.cordova.plugin.background.fetch.BackgroundFetch",
+        "clobbers": [
+            "window.BackgroundFetch"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -480,6 +487,7 @@ module.exports.metadata =
     "io.litehelpers.cordova.sqlite": "0.7.11-dev",
     "org.apache.cordova.background-download": "0.0.2",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
+    "org.transistorsoft.cordova.plugin.background.fetch": "2.0.4",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",

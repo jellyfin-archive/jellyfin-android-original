@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.transistorsoft.cordova.plugin.background.fetch"
+    version="2.0.4">
+    <name>CDVBackgroundFetch</name>
+    <description>Cordova Background Fetch Plugin</description>
+    <license>MIT</license>
+    <keywords>phonegap,background fetch</keywords>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>
+
+    <platform name="ios">
+
+        <!-- required background modes:  App registers for location updates -->
+        <config-file target="*-Info.plist" parent="UIBackgroundModes">
+            <array>
+                <string>fetch</string>
+            </array>
+        </config-file>
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="BackgroundFetch">
+                <param name="ios-package" value="CDVBackgroundFetch"/>
+                <param name="onload" value="true"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/ios/CDVBackgroundFetch.m" />
+        <header-file src="src/ios/CDVBackgroundFetch.h" />
+
+        <js-module src="www/BackgroundFetch.js" name="BackgroundFetch">
+            <clobbers target="window.BackgroundFetch" />
+        </js-module>
+     </platform>          
+
+</plugin>

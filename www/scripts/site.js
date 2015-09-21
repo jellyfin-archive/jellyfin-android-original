@@ -152,7 +152,8 @@ function onConnectionManagerCreated(deferred){Globalize.ensure().done(function()
 depends=depends||[];if(newHtml.indexOf('type-interior')!=-1){depends.push('jqmpopup');depends.push('jqmlistview');depends.push('jqmcollapsible');depends.push('jqmcontrolgroup');depends.push('jqmcheckbox');}
 require(depends,function(){$(mainDrawerPanelContent).html(Globalize.translateDocument(newHtml,'html'));onAppReady(deferred);});return;}
 onAppReady(deferred);});});}
-function onAppReady(deferred){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();if(AppInfo.isNativeApp&&!$.browser.android){require(['localsync']);}}
+function onAppReady(deferred){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();if(AppInfo.isNativeApp&&!$.browser.android){require(['localsync']);}
+if(AppInfo.isNativeApp&&$.browser.safari){require(['cordova/ios/backgroundfetch']);}}
 function initCordovaWithDeviceId(deferred,deviceId){require(['cordova/imagestore']);cordova.getAppVersion.getVersionNumber(function(appVersion){var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");init(deferred,capablities,name,appVersion,deviceId,device.model);});}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}
 var initDeferred=$.Deferred();Dashboard.initPromise=initDeferred.promise();setAppInfo();setDocumentClasses();$(document).on('WebComponentsReady',function(){if(Dashboard.isRunningInCordova()){initCordova(initDeferred);}else{init(initDeferred,Dashboard.capabilities());}});})();function pageClassOn(eventName,className,fn){$(document).on(eventName,function(e){var target=e.target;if(target.classList.contains(className)){fn.call(target,e);}});}
