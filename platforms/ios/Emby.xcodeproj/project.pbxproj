@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
@@ -125,6 +124,7 @@
 		ED6B4D7048AB461AA2ECF565 /* CDVLocalFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = 753AB05F07ED4BFE898DE60D /* CDVLocalFilesystem.m */; };
 		EEF37D23C84B45748681E38B /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D240FC4E01DB4DD088BCEFEE /* CDVDevice.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
+		559840EDB60746DD823A3B11 /* CDVBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = E6FDDFF645E34ED583C05981 /* CDVBackgroundFetch.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -360,6 +360,8 @@
 		FC5EEDB423564A2DBF4479BB /* ConnectSDKCordova.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ConnectSDKCordova.m; path = com.connectsdk.cordovaplugin/ConnectSDKCordova.m; sourceTree = "<group>"; };
 		FDE7400BAC1B460C8CF19491 /* CDVFileTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFileTransfer.h; path = "cordova-plugin-file-transfer/CDVFileTransfer.h"; sourceTree = "<group>"; };
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
+		E6FDDFF645E34ED583C05981 /* CDVBackgroundFetch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVBackgroundFetch.m"; path = "org.transistorsoft.cordova.plugin.background.fetch/CDVBackgroundFetch.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		3C036C72491843E8934C777D /* CDVBackgroundFetch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVBackgroundFetch.h"; path = "org.transistorsoft.cordova.plugin.background.fetch/CDVBackgroundFetch.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -634,6 +636,8 @@
 				47292DEC34854FB8AD481E47 /* BackgroundDownload.h */,
 				FB03CEEBDC0844FB820EDF0C /* AppVersion.m */,
 				294F66C9EBA641A0A2052129 /* AppVersion.h */,
+				E6FDDFF645E34ED583C05981 /* CDVBackgroundFetch.m */,
+				3C036C72491843E8934C777D /* CDVBackgroundFetch.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -919,6 +923,7 @@
 				94AEEAEF95A14A6BB7AAC695 /* sqlite3.c in Sources */,
 				9A09A8B9684F40F39E770FCF /* BackgroundDownload.m in Sources */,
 				3D87CBA0AB6A4A84900D54A1 /* AppVersion.m in Sources */,
+				559840EDB60746DD823A3B11 /* CDVBackgroundFetch.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

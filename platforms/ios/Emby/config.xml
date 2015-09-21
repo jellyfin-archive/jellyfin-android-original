@@ -167,4 +167,8 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
+    <feature name="BackgroundFetch">
+        <param name="ios-package" value="CDVBackgroundFetch" />
+        <param name="onload" value="true" />
+    </feature>
 </widget>

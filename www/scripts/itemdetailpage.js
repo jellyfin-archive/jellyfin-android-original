@@ -32,7 +32,9 @@ function refreshImage(page,item,user){LibraryBrowser.refreshDetailImageUserData(
 function onWebSocketMessage(e,data){var msg=data;var page=$($.mobile.activePage)[0];if(msg.MessageType==="UserDataChanged"){if(currentItem&&msg.Data.UserId==Dashboard.getCurrentUserId()){var key=currentItem.UserData.Key;var userData=msg.Data.UserDataList.filter(function(u){return u.Key==key;})[0];if(userData){currentItem.UserData=userData;Dashboard.getCurrentUser().done(function(user){refreshImage(page,currentItem,user);});}}}}
 function setPeopleHeader(page,item){if(item.Type=="Audio"||item.Type=="MusicAlbum"||item.MediaType=="Book"||item.MediaType=="Photo"){$('#peopleHeader',page).html(Globalize.translate('HeaderPeople'));}else{$('#peopleHeader',page).html(Globalize.translate('HeaderCastAndCrew'));}}
 function getContext(item){return getParameterByName('context');}
-function renderHeader(page,item,context){$('.itemTabs',page).hide();if(context=='tv'){$(page).removeClass('noSecondaryNavPage');$('#tvShowsTabs',page).show();LibraryMenu.setMenuButtonVisible(true);}
+function renderHeader(page,item,context){$('.itemTabs',page).hide();if(context=='tv'){if(AppInfo.enableBottomTabs){$(page).addClass('noSecondaryNavPage');}
+else{$(page).removeClass('noSecondaryNavPage');}
+$('#tvShowsTabs',page).show();LibraryMenu.setMenuButtonVisible(true);}
 else{$(page).addClass('noSecondaryNavPage');LibraryMenu.setBackButtonVisible(true);LibraryMenu.setMenuButtonVisible(false);}}
 function setInitialCollapsibleState(page,item,context,user){$('.collectionItems',page).empty();if(item.Type=='TvChannel'){$('#childrenCollapsible',page).removeClass('hide');renderChannelGuide(page,item,user);}
 else if(item.Type=='Playlist'){$('#childrenCollapsible',page).removeClass('hide');renderPlaylistItems(page,item,user);}

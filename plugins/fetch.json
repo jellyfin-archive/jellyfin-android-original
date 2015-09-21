@@ -325,5 +325,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "org.transistorsoft.cordova.plugin.background.fetch": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/christocracy/cordova-plugin-background-fetch.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
