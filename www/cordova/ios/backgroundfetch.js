@@ -9,22 +9,28 @@
         });
     }
 
+    function onSyncFinish() {
+
+        var fetcher = window.BackgroundFetch;
+        fetcher.finish();   // <-- N.B. You MUST called #finish so that native-side can signal completion of the background-thread to the os.
+    }
+
     function onBackgroundFetch() {
 
         Logger.log('BackgroundFetch initiated');
 
-        var fetcher = window.BackgroundFetch;
-
         require(['localsync'], function () {
+
+            if (LocalSync.getSyncStatus() == 'Syncing') {
+                onSyncFinish();
+                return;
+            }
 
             var syncOptions = {
                 uploadPhotos: false
             };
 
-            LocalSync.startSync(syncOptions).done(function () {
-
-                fetcher.finish();   // <-- N.B. You MUST called #finish so that native-side can signal completion of the background-thread to the os.
-            });
+            LocalSync.sync(syncOptions).done(onSyncFinish).fail(onSyncFinish);
         });
     }
 
