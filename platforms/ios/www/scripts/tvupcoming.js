@@ -8,4 +8,4 @@ currentGroupName=dateText;currentGroup=[item];}else{currentGroup.push(item);}}
 var html='';for(i=0,length=groups.length;i<length;i++){var group=groups[i];html+='<div class="homePageSection">';html+='<h1 class="listHeader">'+group.name+'</h1>';if(enableScrollX()){html+='<div class="itemsContainer hiddenScrollX">';}else{html+='<div class="itemsContainer">';}
 html+=LibraryBrowser.getPosterViewHtml({items:group.items,showLocationTypeIndicator:false,shape:getThumbShape(),showTitle:true,showPremiereDate:true,preferThumb:true,lazy:true,showDetailsMenu:true,centerText:true});html+='</div>';html+='</div>';}
 elem.innerHTML=html;ImageLoader.lazyChildren(elem);}
-$(document).on('pagebeforeshow',"#tvUpcomingPage",function(){var page=this;if(LibraryBrowser.needsRefresh(page)){loadUpcoming(page);}});})(jQuery,document);
+window.TvPage.renderUpcomingTab=function(page,tabContent){if(LibraryBrowser.needsRefresh(tabContent)){loadUpcoming(tabContent);}};})(jQuery,document);

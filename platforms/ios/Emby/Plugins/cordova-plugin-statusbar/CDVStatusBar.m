@@ -26,6 +26,7 @@
 #import "CDVStatusBar.h"
 #import <objc/runtime.h>
 #import <Cordova/CDVViewController.h>
+#import <WebKit/WKWebView.h>
 
 static const void *kHideStatusBar = &kHideStatusBar;
 static const void *kStatusBarStyle = &kStatusBarStyle;
@@ -374,6 +375,18 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
             }
 
             self.webView.frame = frame;
+            for (UIView *subview in self.webView.superview.subviews)
+            {
+                BOOL isView = [subview isKindOfClass:[WKWebView class]];
+                if (isView) {
+                    frame = subview.frame;
+                    frame.origin.y = 0;
+                    if (!self.statusBarOverlaysWebView) {
+                        frame.size.height += MIN(statusBarFrame.size.height, statusBarFrame.size.width);
+                    }
+                    subview.frame = frame;
+                }
+            }
         }
 
         _statusBarBackgroundView.hidden = YES;
@@ -426,6 +439,16 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
             }
 
             self.webView.frame = frame;
+            for (UIView *subview in self.webView.superview.subviews)
+            {
+                BOOL isView = [subview isKindOfClass:[WKWebView class]];
+                if (isView) {
+                    frame = subview.frame;
+                    frame.origin.y = statusBarFrame.size.height;
+                    frame.size.height -= statusBarFrame.size.height;
+                    subview.frame = frame;
+                }
+            }
 
         } else {
 
