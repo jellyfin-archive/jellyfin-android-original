@@ -11,6 +11,16 @@
 
     function onSyncFinish() {
 
+        Logger.log('BackgroundFetch completed');
+
+        var fetcher = window.BackgroundFetch;
+        fetcher.finish();   // <-- N.B. You MUST called #finish so that native-side can signal completion of the background-thread to the os.
+    }
+
+    function onSyncFail() {
+
+        Logger.log('BackgroundFetch completed - sync failed');
+
         var fetcher = window.BackgroundFetch;
         fetcher.finish();   // <-- N.B. You MUST called #finish so that native-side can signal completion of the background-thread to the os.
     }
@@ -30,7 +40,7 @@
                 uploadPhotos: false
             };
 
-            LocalSync.sync(syncOptions).done(onSyncFinish).fail(onSyncFinish);
+            LocalSync.sync(syncOptions).done(onSyncFinish).fail(onSyncFail);
         });
     }
 
