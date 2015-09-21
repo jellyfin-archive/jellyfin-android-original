@@ -3,7 +3,7 @@ function removeRecurringFields(page){$('.pprecurring',page).remove();$('#ppCmd',
 function setItemNumber(page,itemNumber){$('#ppItemNo',page).val(itemNumber);}
 function setItemName(page,itemName){$('#ppItemName',page).val(itemName);}
 function getDonationType(page){return $(".radioDonationType:checked",page).val();}
-var lifeTimeAmount=79.99;var dailyAmount=1;var monthlyAmount=4.99;var yearlyAmount=37.99;function getDonationAmount(page){var type=getDonationType(page);if(type=='once'){return $("#selectOneTimeDonationAmount",page).val();}
+var lifeTimeAmount=89.99;var dailyAmount=1;var monthlyAmount=4.99;var yearlyAmount=39.99;function getDonationAmount(page){var type=getDonationType(page);if(type=='once'){return $("#selectOneTimeDonationAmount",page).val();}
 if(type=='yearly'){return yearlyAmount;}
 if(type=='monthly'){return monthlyAmount;}
 if(type=='daily'){return dailyAmount;}
