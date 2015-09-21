@@ -473,7 +473,7 @@
 
                     var downloader = new BackgroundTransfer.BackgroundDownloader();
                     // Create a new download operation.
-                    var download = downloader.createDownload(url, targetFile.toURL());
+                    var download = downloader.createDownload(url, targetFile);
                     // Start the download and persist the promise to be able to cancel the download.
                     var downloadPromise = download.startAsync().then(function () {
 
