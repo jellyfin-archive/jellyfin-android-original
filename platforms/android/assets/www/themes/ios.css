@@ -21,7 +21,7 @@
 }
 
     .viewMenuBar.semiTransparent {
-        background-color: rgba(28, 28, 28, .8);
+        background-color: rgba(28, 28, 28, .75);
     }
 
     .libraryViewNav a {
