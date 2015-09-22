@@ -79,7 +79,7 @@ WebNotifications.show(notification);}});},ensurePageTitle:function(page){if(!pag
 var pageElem=page;if(pageElem.querySelector('.pageTitle')){return;}
 var parent=pageElem.querySelector('.content-primary');if(!parent){parent=pageElem.getElementsByClassName('ui-content')[0];}
 var helpUrl=pageElem.getAttribute('data-helpurl');var html='<div>';html+='<h1 class="pageTitle" style="display:inline-block;">'+(document.title||'&nbsp;')+'</h1>';if(helpUrl){html+='<a href="'+helpUrl+'" target="_blank" class="clearLink" style="margin-top:-10px;display:inline-block;vertical-align:middle;margin-left:1em;"><paper-button raised class="secondary mini"><iron-icon icon="info"></iron-icon><span>'+Globalize.translate('ButtonHelp')+'</span></paper-button></a>';}
-html+='</div>';$(parent).prepend(html);if(helpUrl){require(['paperbuttonstyle']);}},setPageTitle:function(title){var elem=$($.mobile.activePage)[0].querySelector('.pageTitle');if(elem){elem.innerHTML=title;}
+html+='</div>';$(parent).prepend(html);if(helpUrl){require(['paperbuttonstyle']);}},setPageTitle:function(title){var page=$.mobile.activePage;if(page){var elem=$(page)[0].querySelector('.pageTitle');if(elem){elem.innerHTML=title;}}
 if(title){document.title=title;}},getDisplayTime:function(ticks){var ticksPerHour=36000000000;var ticksPerMinute=600000000;var ticksPerSecond=10000000;var parts=[];var hours=ticks/ticksPerHour;hours=Math.floor(hours);if(hours){parts.push(hours);}
 ticks-=(hours*ticksPerHour);var minutes=ticks/ticksPerMinute;minutes=Math.floor(minutes);ticks-=(minutes*ticksPerMinute);if(minutes<10&&hours){minutes='0'+minutes;}
 parts.push(minutes);var seconds=ticks/ticksPerSecond;seconds=Math.floor(seconds);if(seconds<10){seconds='0'+seconds;}
