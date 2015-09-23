@@ -79,8 +79,7 @@ onPageBeforeShowDocumentReady(page);});pageClassOn('pageshowready','page',functi
 if(!title){if(page.classList.contains('type-interior')){title=Globalize.translate('ButtonHome');}}
 if(title){LibraryMenu.setTitle(title);}
 var mainDrawerButton=document.querySelector('.mainDrawerButton');if(mainDrawerButton){if(page.getAttribute('data-menubutton')=='false'&&$.browser.mobile){mainDrawerButton.classList.remove('hide');}else{mainDrawerButton.classList.remove('hide');}}
-if(isLibraryPage){document.body.classList.add('libraryDocument');document.body.classList.remove('dashboardDocument');document.body.classList.remove('hideMainDrawer');if(AppInfo.enableBottomTabs){page.classList.add('noSecondaryNavPage');if(page.classList.contains('pageWithAbsoluteTabs')){document.querySelector('.footer').classList.add('footerOverBottomTabs');}
-else{document.querySelector('.footer').classList.remove('footerOverBottomTabs');}}else{var navs=page.querySelectorAll('.libraryViewNav');for(var i=0,length=navs.length;i<length;i++){initHeadRoom(navs[i]);}}}
+if(isLibraryPage){document.body.classList.add('libraryDocument');document.body.classList.remove('dashboardDocument');document.body.classList.remove('hideMainDrawer');var navs=page.querySelectorAll('.libraryViewNav');for(var i=0,length=navs.length;i<length;i++){initHeadRoom(navs[i]);}}
 else if(page.classList.contains('type-interior')){document.body.classList.remove('libraryDocument');document.body.classList.add('dashboardDocument');document.body.classList.remove('hideMainDrawer');}else{document.body.classList.remove('libraryDocument');document.body.classList.remove('dashboardDocument');document.body.classList.add('hideMainDrawer');}
 if(!Dashboard.isConnectMode()&&!$.browser.mobile){darkDrawer=true;}
 var drawer=document.querySelector('.mainDrawerPanel #drawer');if(drawer){if(darkDrawer){drawer.classList.add('darkDrawer');}else{drawer.classList.remove('darkDrawer');}}

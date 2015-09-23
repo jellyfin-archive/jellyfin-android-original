@@ -4,7 +4,7 @@ options.push({name:'480p - 1.0Mbps',maxHeight:480,bitrate:1000000});options.push
 if(selectedIndex==-1){selectedIndex=options.length-1;}
 options[selectedIndex].selected=true;return options;};self.getDeviceProfile=function(maxHeight){if(!maxHeight){maxHeight=self.getVideoQualityOptions().filter(function(q){return q.selected;})[0].maxHeight;}
 var isVlc=AppInfo.isNativeApp&&$.browser.android;var bitrateSetting=AppSettings.maxStreamingBitrate();var canPlayWebm=self.canPlayWebm();var profile={};profile.MaxStreamingBitrate=bitrateSetting;profile.MaxStaticBitrate=8000000;profile.MusicStreamingTranscodingBitrate=Math.min(bitrateSetting,192000);profile.DirectPlayProfiles=[];if(canPlayH264()){profile.DirectPlayProfiles.push({Container:'mp4,m4v',Type:'Video',VideoCodec:'h264',AudioCodec:'aac,mp3'});}
-if($.browser.chrome){profile.DirectPlayProfiles.push({Container:'mkv',Type:'Video',VideoCodec:'h264',AudioCodec:'aac,mp3'});}
+if($.browser.chrome){profile.DirectPlayProfiles.push({Container:'mkv',Type:'Video',VideoCodec:'h264',AudioCodec:'aac,mp3'});profile.DirectPlayProfiles.push({Container:'mov',Type:'Video',VideoCodec:'h264',AudioCodec:'aac,mp3'});}
 var directPlayVideoContainers=AppInfo.directPlayVideoContainers;if(directPlayVideoContainers&&directPlayVideoContainers.length){profile.DirectPlayProfiles.push({Container:directPlayVideoContainers.join(','),Type:'Video'});}
 profile.DirectPlayProfiles.push({Container:'mp3',Type:'Audio'});if(canPlayAac){profile.DirectPlayProfiles.push({Container:'aac',Type:'Audio'});}
 var directPlayAudioContainers=AppInfo.directPlayAudioContainers;if(directPlayAudioContainers&&directPlayAudioContainers.length){profile.DirectPlayProfiles.push({Container:directPlayAudioContainers.join(','),Type:'Audio'});}

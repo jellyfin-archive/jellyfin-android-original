@@ -407,6 +407,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.squerb.cordova.plugins.ios-tab-bar/www/tab-bar.js",
+        "id": "com.squerb.cordova.plugins.ios-tab-bar.TabBar",
+        "clobbers": [
+            "window.TabBar"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -488,6 +495,7 @@ module.exports.metadata =
     "org.apache.cordova.background-download": "0.0.2",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "org.transistorsoft.cordova.plugin.background.fetch": "2.0.4",
+    "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
