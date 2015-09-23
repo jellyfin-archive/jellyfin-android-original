@@ -15,6 +15,7 @@
  *  Copyright 2009 Decaf Ninja Software. All rights reserved.
  */
 #import "CDVTabBar.h"
+#import <WebKit/WKWebView.h>
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -27,7 +28,6 @@
 - (void)pluginInitialize
 {
   tabBarItems = [[NSMutableDictionary alloc] initWithCapacity:5];
-  originalWebViewBounds = self.webView.bounds;
 }
 
 #pragma mark - Listener
@@ -60,8 +60,8 @@
 
   if ( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
     tabBar.barStyle = UIBarStyleBlack;
-    tabBar.translucent = NO;
-    tabBar.barTintColor = [UIColor colorWithRed:0.122 green:0.122 blue:0.122 alpha:1]; /*#1f1f1f*/
+    //tabBar.translucent = NO;
+    //tabBar.barTintColor = [UIColor colorWithRed:0.122 green:0.122 blue:0.122 alpha:1]; /*#1f1f1f*/
     tabBar.tintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1]; /*#ffffff*/
   } else {
     // Pre iOS 7
@@ -129,7 +129,14 @@
   }
 
   tabBar.hidden = NO;
-  CGRect webViewBounds = originalWebViewBounds;
+    CGRect webViewBounds;
+    for (UIView *subview in self.webView.superview.subviews)
+    {
+        BOOL isView = [subview isKindOfClass:[WKWebView class]];
+        if (isView) {
+            webViewBounds = subview.frame;
+        }
+    }
   CGRect tabBarBounds;
 
 	NSNotification* notif = [NSNotification notificationWithName:@"CDVLayoutSubviewAdded" object:tabBar];
@@ -169,7 +176,14 @@
   [tabBar setFrame:tabBarBounds];
 
 
-  [self.webView setFrame:webViewBounds];
+    [self.webView setFrame:webViewBounds];
+    for (UIView *subview in self.webView.superview.subviews)
+    {
+        BOOL isView = [subview isKindOfClass:[WKWebView class]];
+        if (isView) {
+            [subview setFrame:webViewBounds];
+        }
+    }
 
   CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -191,12 +205,25 @@
   NSNotification* notif = [NSNotification notificationWithName:@"CDVLayoutSubviewRemoved" object:tabBar];
   [[NSNotificationQueue defaultQueue] enqueueNotification:notif postingStyle: NSPostASAP];
 
-  CGRect webViewBounds = originalWebViewBounds;
-  if ( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
-    webViewBounds.origin.y += 20;
-  }
+  CGRect webViewBounds;
+    for (UIView *subview in self.webView.superview.subviews)
+    {
+        BOOL isView = [subview isKindOfClass:[WKWebView class]];
+        if (isView) {
+            webViewBounds = subview.frame;
+        }
+    }
 
-  [self.webView setFrame:webViewBounds];
+ webViewBounds.size.height += 49.0f;
+
+    [self.webView setFrame:webViewBounds];
+    for (UIView *subview in self.webView.superview.subviews)
+    {
+        BOOL isView = [subview isKindOfClass:[WKWebView class]];
+        if (isView) {
+            [subview setFrame:webViewBounds];
+        }
+    }
 
   CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -265,6 +292,11 @@
 
   if (!item) {
     item = [[UITabBarItem alloc] initWithTitle:title image:[UIImage imageNamed:imageName] tag:tag];
+      NSString  *selectedImageName = [imageName stringByReplacingOccurrencesOfString:@".png"
+                                                                    withString:@"-selected.png"];
+      
+        
+    item.selectedImage =[UIImage imageNamed:selectedImageName];
   }
 
   // Set badge if needed
