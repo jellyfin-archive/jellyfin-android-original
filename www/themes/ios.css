@@ -46,7 +46,6 @@ body {
     .libraryViewNav paper-tab {
         height: auto !important;
         flex-grow: 0 !important;
-        display: flex !important;
     }
 
     .libraryViewNav #selectionBar {

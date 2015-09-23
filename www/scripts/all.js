@@ -883,7 +883,8 @@ function onConnectionManagerCreated(deferred){Globalize.ensure().done(function()
 depends=depends||[];if(newHtml.indexOf('type-interior')!=-1){depends.push('jqmpopup');depends.push('jqmlistview');depends.push('jqmcollapsible');depends.push('jqmcontrolgroup');depends.push('jqmcheckbox');}
 require(depends,function(){$(mainDrawerPanelContent).html(Globalize.translateDocument(newHtml,'html'));onAppReady(deferred);});return;}
 onAppReady(deferred);});});}
-function onAppReady(deferred){onDocumentReady();Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();if(AppInfo.isNativeApp&&$.browser.safari){require(['cordova/ios/backgroundfetch','cordova/ios/tabbar','localsync']);}}
+function onAppReady(deferred){onDocumentReady();var deps=[];if(AppInfo.isNativeApp&&$.browser.safari){deps.push('cordova/ios/backgroundfetch');deps.push('cordova/ios/tabbar');deps.push('localsync');}
+require(deps,function(){Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();});}
 function initCordovaWithDeviceId(deferred,deviceId){require(['cordova/imagestore']);cordova.getAppVersion.getVersionNumber(function(appVersion){var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");init(deferred,capablities,name,appVersion,deviceId,device.model);});}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}
 var initDeferred=$.Deferred();Dashboard.initPromise=initDeferred.promise();setAppInfo();setDocumentClasses();$(document).on('WebComponentsReady',function(){if(Dashboard.isRunningInCordova()){initCordova(initDeferred);}else{init(initDeferred,Dashboard.capabilities());}});})();function pageClassOn(eventName,className,fn){$(document).on(eventName,function(e){var target=e.target;if(target.classList.contains(className)){fn.call(target,e);}});}
@@ -903,7 +904,7 @@ try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId(),JSON.stringify(value
 if(NavHelper.isBack()){Logger.log('Not refreshing data because IsBack=true');return false;}
 var now=new Date().getTime();var cacheDuration;if(AppInfo.isNativeApp){cacheDuration=300000;}else if($.browser.ipad||$.browser.iphone||$.browser.android){cacheDuration=10000;}else{cacheDuration=60000;}
 if((now-last)<cacheDuration){Logger.log('Not refreshing data due to age');return false;}
-return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},enableFullPaperTabs:function(){return AppInfo.isNativeApp;},animatePaperTabs:function(){if(!LibraryBrowser.enableFullPaperTabs()){return false;}
+return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},enableFullPaperTabs:function(){return true;return AppInfo.isNativeApp;},animatePaperTabs:function(){if(!LibraryBrowser.enableFullPaperTabs()){return false;}
 if($.browser.safari){return false;}
 if(typeof($.browser.androidVersion)=='number'&&!isNaN($.browser.androidVersion)){if($.browser.androidVersion<5){return false;}}
 return false;},configureSwipeTabs:function(ownerpage,tabs,pages){if(LibraryBrowser.animatePaperTabs()){pages.entryAnimation='slide-from-right-animation';pages.exitAnimation='slide-left-animation';}
