@@ -342,29 +342,6 @@ paper-menu-item {
     display: none !important;
 }
 
-.libraryViewNav #tabsContainer {
-    margin: auto;
-    -ms-flex: none;
-    -webkit-flex: none;
-    flex: none;
-    flex-shrink: 0;
-    flex-grow: 1;
-}
-
-.libraryViewNav paper-tabs {
-    flex: none;
-    flex-shrink: 0;
-    flex-grow: 1;
-    overflow-x: visible !important;
-}
-
-.libraryViewNav paper-tab {
-    display: inline-block !important;
-    flex: none;
-    flex-shrink: 0;
-    flex-grow: 1;
-}
-
 .ui-body-b paper-item-body [secondary] {
     color: #aaa;
 }
