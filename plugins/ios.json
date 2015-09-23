@@ -137,6 +137,10 @@
                         {
                             "xml": "<feature name=\"ChromeSocketsUdp\"><param name=\"ios-package\" value=\"ChromeSocketsUdp\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"TabBar\"><param name=\"ios-package\" value=\"CDVTabBar\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -396,6 +400,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "org.transistorsoft.cordova.plugin.background.fetch": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.squerb.cordova.plugins.ios-tab-bar": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

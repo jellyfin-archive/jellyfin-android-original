@@ -1,6 +1,9 @@
 ﻿html, body, .ui-btn, .pageTitle {
     font-family: San Francisco, Helvetica Neue;
 }
+body {
+    font-size: 14px;
+}
 
 .backdropContainer {
     /* This isn't implemented right and ends up looking terrible */
@@ -8,20 +11,19 @@
 }
 
 .background-theme-b {
-    background-color: #1c1c1c;
+    background-color: #181818;
 }
 
 .backdropContainer .pageBackground {
     background-color: rgba(28,28,28,.92) !important;
 }
 
-
 .viewMenuBar, .libraryViewNav, paper-tabs {
-    background-color: rgb(28,28,28);
+    background-color: #000;
 }
 
     .viewMenuBar.semiTransparent {
-        background-color: rgba(28, 28, 28, .75);
+    background-color: #000;
     }
 
     .libraryViewNav a {
@@ -36,24 +38,12 @@
     }
 
     .libraryViewNav paper-tabs {
-        height: 58px !important;
         flex-grow: 0 !important;
     }
 
     .libraryViewNav paper-tab {
         height: auto !important;
         flex-grow: 0 !important;
-    }
-
-    .libraryViewNav iron-icon {
-        width: 22px;
-        height: 22px;
-        display: block;
-        margin: 0 auto 6px;
-    }
-
-    .libraryViewNav paper-tabs iron-icon {
-        margin: 6px auto 6px;
     }
 
     .libraryViewNav #selectionBar {
@@ -88,17 +78,8 @@
     background: #FF2D55 !important;
 }
 
-
-.libraryViewNav {
-    border-top: 1px solid #333 !important;
-}
-
 .libraryViewNav, paper-tabs {
     font-size: 12px;
-}
-
-.viewMenuBar {
-    border-bottom: 1px solid #333;
 }
 
 h1, h1 a {
@@ -125,6 +106,10 @@ h1, h1 a {
 
 .libraryPanelHeader span {
     font-weight: 400;
+}
+
+.noSecondaryNavPage .itemBackdrop {
+    margin-top: 0;
 }
 
 paper-tab {

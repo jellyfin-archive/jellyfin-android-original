@@ -125,6 +125,7 @@
 		EEF37D23C84B45748681E38B /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D240FC4E01DB4DD088BCEFEE /* CDVDevice.m */; };
 		FD28A5A5A78C41E2929FE4A9 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 600156CA4FE7422A8A5CFAD6 /* ChromeSocketsUdp.m */; };
 		559840EDB60746DD823A3B11 /* CDVBackgroundFetch.m in Sources */ = {isa = PBXBuildFile; fileRef = E6FDDFF645E34ED583C05981 /* CDVBackgroundFetch.m */; };
+		1E08E5B8BC2B4782B92AF30F /* CDVTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C73DEC5762A4794852134A9 /* CDVTabBar.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -362,6 +363,8 @@
 		FF1E54067C7A4AD8A3A36B37 /* AppDelegate+APPRegisterUserNotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+APPRegisterUserNotificationSettings.h"; path = "de.appplant.cordova.common.registerusernotificationsettings/AppDelegate+APPRegisterUserNotificationSettings.h"; sourceTree = "<group>"; };
 		E6FDDFF645E34ED583C05981 /* CDVBackgroundFetch.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVBackgroundFetch.m"; path = "org.transistorsoft.cordova.plugin.background.fetch/CDVBackgroundFetch.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		3C036C72491843E8934C777D /* CDVBackgroundFetch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVBackgroundFetch.h"; path = "org.transistorsoft.cordova.plugin.background.fetch/CDVBackgroundFetch.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		8C73DEC5762A4794852134A9 /* CDVTabBar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVTabBar.m"; path = "com.squerb.cordova.plugins.ios-tab-bar/CDVTabBar.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		CC5ADFE323A249E4BE875F85 /* CDVTabBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVTabBar.h"; path = "com.squerb.cordova.plugins.ios-tab-bar/CDVTabBar.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -638,6 +641,8 @@
 				294F66C9EBA641A0A2052129 /* AppVersion.h */,
 				E6FDDFF645E34ED583C05981 /* CDVBackgroundFetch.m */,
 				3C036C72491843E8934C777D /* CDVBackgroundFetch.h */,
+				8C73DEC5762A4794852134A9 /* CDVTabBar.m */,
+				CC5ADFE323A249E4BE875F85 /* CDVTabBar.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -924,6 +929,7 @@
 				9A09A8B9684F40F39E770FCF /* BackgroundDownload.m in Sources */,
 				3D87CBA0AB6A4A84900D54A1 /* AppVersion.m in Sources */,
 				559840EDB60746DD823A3B11 /* CDVBackgroundFetch.m in Sources */,
+				1E08E5B8BC2B4782B92AF30F /* CDVTabBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

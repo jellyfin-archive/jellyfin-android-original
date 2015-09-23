@@ -171,4 +171,7 @@
         <param name="ios-package" value="CDVBackgroundFetch" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="TabBar">
+        <param name="ios-package" value="CDVTabBar" />
+    </feature>
 </widget>
