@@ -69,19 +69,16 @@
 
         var items = [
           { name: 'Featured', label: Globalize.translate('ButtonForYou'), image: 'tabButton:Featured', options: {} },
-          { name: 'Library', label: Globalize.translate('ButtonLibrary'), image: 'tabButton:History', options: {} },
+          { name: 'Library', label: Globalize.translate('ButtonLibrary'), image: 'tabbar/tab-library.png', options: {} },
           { name: 'Search', label: Globalize.translate('ButtonSearch'), image: 'tabButton:Search', options: {} },
-          { name: 'NowPlaying', label: Globalize.translate('ButtonNowPlaying'), image: 'tabButton:MostViewed', options: {} },
-          { name: 'Sync', label: Globalize.translate('ButtonSync'), image: 'tabButton:Downloads', options: {} },
-          { name: 'Settings', label: Globalize.translate('ButtonSettings'), image: 'tabButton:More', options: {} }
+          { name: 'NowPlaying', label: Globalize.translate('ButtonNowPlaying'), image: 'tabbar/tab-nowplaying.png', options: {} },
+          { name: 'Sync', label: Globalize.translate('ButtonSync'), image: 'tabbar/tab-sync.png', options: {} },
+          { name: 'Settings', label: Globalize.translate('ButtonSettings'), image: 'tabbar/tab-settings.png', options: {} }
         ];
 
         for (var i = 0; i < items.length; i++) {
             var item = items[i];
-            var options = item.options;
-            // set the function to invoke when the item is selected
-            options.onSelect = onTabSelected;
-            TabBar.createItem(item.name, item.label, item.image, item.options);
+            TabBar.createItem(item.name, item.label, item.image, onTabSelected, item.options);
         };
 
         TabBar.showItems();
