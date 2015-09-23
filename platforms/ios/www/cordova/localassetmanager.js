@@ -492,7 +492,7 @@
                     }, function (value) {
 
                         // on progress
-                        Logger.log('download progress: ' + value);
+                        //Logger.log('download progress: ' + value);
 
                     });
                 });
@@ -661,6 +661,13 @@
 
         var deferred = DeferredBuilder.Deferred();
 
+        if (window.NativeFileSystem) {
+            var exists = NativeFileSystem.fileExists(path);
+            Logger.log('fileExists: ' + exists + ' - path: ' + path);
+            deferred.resolveWith(null, [exists]);
+            return deferred.promise();
+        }
+
         resolveFile(path, function (fileEntry) {
             Logger.log('fileExists: true - path: ' + path);
             deferred.resolveWith(null, [true]);
@@ -700,6 +707,11 @@
     function translateFilePath(path) {
 
         var deferred = DeferredBuilder.Deferred();
+
+        if ($.browser.android) {
+            deferred.resolveWith(null, ['file://' + path]);
+            return deferred.promise();
+        }
 
         resolveFile(path, function (fileEntry) {
             Logger.log('translateFilePath fileExists: true - path: ' + path);
