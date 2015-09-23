@@ -122,7 +122,7 @@ if(!AppInfo.enableSupporterMembership){elem.classList.add('supporterMembershipDi
 if(AppInfo.isNativeApp){elem.classList.add('nativeApp');}}
 function onDocumentReady(){if(AppInfo.isNativeApp){if($.browser.android){Dashboard.importCss('themes/android.css');}
 else if($.browser.safari){Dashboard.importCss('themes/ios.css');}}
-Dashboard.importCss('themes/ios.css');if($.browser.msie&&$.browser.tv&&($.browser.version||11)<=10){Dashboard.importCss('thirdparty/paper-ie10.css');}
+if($.browser.msie&&$.browser.tv&&($.browser.version||11)<=10){Dashboard.importCss('thirdparty/paper-ie10.css');}
 if($.browser.safari&&$.browser.mobile){initFastClick();}
 var footerHtml='<div id="footer" class="footer" data-theme="b" class="ui-bar-b">';footerHtml+='<div id="footerNotifications"></div>';footerHtml+='</div>';$(document.body).append(footerHtml);$(window).on("beforeunload",function(){var apiClient=window.ApiClient;if(apiClient&&apiClient.isWebSocketOpen()){var localActivePlayers=MediaController.getPlayers().filter(function(p){return p.isLocalPlayer&&p.isPlaying();});if(!localActivePlayers.length){Logger.log('Sending close web socket command');apiClient.closeWebSocket();}}});$(document).on('contextmenu','.ui-popup-screen',function(e){$('.ui-popup').popup('close');e.preventDefault();return false;});if(Dashboard.isRunningInCordova()){require(['cordova/connectsdk','scripts/registrationservices','cordova/back']);if($.browser.android){require(['cordova/android/androidcredentials','cordova/android/immersive','cordova/android/mediasession']);}else{require(['cordova/volume']);}
 if($.browser.safari){require(['cordova/ios/orientation']);}}else{if($.browser.chrome){require(['scripts/chromecast']);}}

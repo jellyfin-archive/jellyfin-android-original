@@ -7,7 +7,7 @@ try{appStorage.setItem(key+'_'+Dashboard.getCurrentUserId(),JSON.stringify(value
 if(NavHelper.isBack()){Logger.log('Not refreshing data because IsBack=true');return false;}
 var now=new Date().getTime();var cacheDuration;if(AppInfo.isNativeApp){cacheDuration=300000;}else if($.browser.ipad||$.browser.iphone||$.browser.android){cacheDuration=10000;}else{cacheDuration=60000;}
 if((now-last)<cacheDuration){Logger.log('Not refreshing data due to age');return false;}
-return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},enableFullPaperTabs:function(){return true;return AppInfo.isNativeApp;},animatePaperTabs:function(){if(!LibraryBrowser.enableFullPaperTabs()){return false;}
+return true;},setLastRefreshed:function(elem){elem.setAttribute('data-lastrefresh',new Date().getTime());elem.classList.add('hasrefreshtime');},enableFullPaperTabs:function(){return AppInfo.isNativeApp;},animatePaperTabs:function(){if(!LibraryBrowser.enableFullPaperTabs()){return false;}
 if($.browser.safari){return false;}
 if(typeof($.browser.androidVersion)=='number'&&!isNaN($.browser.androidVersion)){if($.browser.androidVersion<5){return false;}}
 return false;},configureSwipeTabs:function(ownerpage,tabs,pages){if(LibraryBrowser.animatePaperTabs()){pages.entryAnimation='slide-from-right-animation';pages.exitAnimation='slide-left-animation';}
