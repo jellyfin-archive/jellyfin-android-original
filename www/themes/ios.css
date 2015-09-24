@@ -66,6 +66,10 @@ body {
     box-shadow: none;
 }
 
+.settingsMenuHeader {
+    display: none;
+}
+
 @media all and (max-width: 600px) {
 
     .libraryViewNav a {
