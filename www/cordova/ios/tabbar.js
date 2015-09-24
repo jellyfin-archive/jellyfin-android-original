@@ -11,7 +11,7 @@
         }
 
         switch (name) {
-            case 'Featured':
+            case 'Favorites':
                 Dashboard.navigate('index.html');
                 break;
             case 'Library':
@@ -68,8 +68,8 @@
  */
 
         var items = [
-          { name: 'Featured', label: Globalize.translate('ButtonForYou'), image: 'tabButton:Featured', options: {} },
           { name: 'Library', label: Globalize.translate('ButtonLibrary'), image: 'tabbar/tab-library.png', options: {} },
+          { name: 'Favorites', label: Globalize.translate('ButtonFavorites'), image: 'tabButton:Favorites', options: {} },
           { name: 'Search', label: Globalize.translate('ButtonSearch'), image: 'tabButton:Search', options: {} },
           { name: 'NowPlaying', label: Globalize.translate('ButtonNowPlaying'), image: 'tabbar/tab-nowplaying.png', options: {} },
           { name: 'Sync', label: Globalize.translate('ButtonSync'), image: 'tabbar/tab-sync.png', options: {} },
@@ -117,7 +117,7 @@
         Events.on(ConnectionManager, 'playbackstop', onPlaybackStart);
     });
 
-    pageClassOn('pageshowready', "page", function () {
+    pageClassOn('pageshow', "page", function () {
 
         var page = this;
 

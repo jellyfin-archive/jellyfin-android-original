@@ -6,13 +6,20 @@ body {
     font-size: 14px;
 }
 
+.ui-body-b a:visited {
+    color: #007AFF /*{b-link-visited}*/;
+}
+.ui-body-b a {
+    color: #007AFF /*{b-link-color}*/;
+}
+
 .backdropContainer {
     /* This isn't implemented right and ends up looking terrible */
     background-attachment: initial;
 }
 
 .background-theme-b {
-    background-color: #181818;
+    background-color: #161616;
 }
 
 .backdropContainer .pageBackground {
