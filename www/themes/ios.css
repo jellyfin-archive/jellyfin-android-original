@@ -128,7 +128,7 @@ h1, h1 a {
 }
 
 .tvGuideHeader {
-    top: 86px;
+    top: 86px !important;
 }
 
 .libraryMenuButtonText {
@@ -204,9 +204,9 @@ paper-tab {
 }
 
 .nowPlayingPageBackButton {
-    display: none;
+    display: none !important;
 }
 
 .nowPlayingPagePaperTabs {
-    display: none;
+    display: none !important;
 }
