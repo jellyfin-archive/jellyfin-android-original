@@ -15,6 +15,10 @@ body {
     font-weight: 500;
 }
 
+.ui-body-b select {
+    -webkit-appearance: none;
+}
+
 .backdropContainer {
     /* This isn't implemented right and ends up looking terrible */
     background-attachment: initial;
