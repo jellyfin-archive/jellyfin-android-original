@@ -86,7 +86,7 @@
         showTabs();
 
         ignoreNextSelection = true;
-        TabBar.selectItem('Featured');
+        TabBar.selectItem('Library');
     }
 
     function showTabs() {
@@ -113,8 +113,8 @@
 
         Events.on(ConnectionManager, 'localusersignedin', showTabs);
         Events.on(ConnectionManager, 'localusersignedout', hideTabs);
-        Events.on(ConnectionManager, 'playbackstart', onPlaybackStop);
-        Events.on(ConnectionManager, 'playbackstop', onPlaybackStart);
+        Events.on(MediaController, 'playbackstart', onPlaybackStop);
+        Events.on(MediaController, 'playbackstop', onPlaybackStart);
     });
 
     pageClassOn('pageshow', "page", function () {
