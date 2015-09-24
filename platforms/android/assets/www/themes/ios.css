@@ -2,26 +2,47 @@
     font-family: San Francisco, Helvetica Neue;
 }
 
+body {
+    font-size: 15px;
+}
+
+.ui-body-b a:visited {
+    color: #007AFF /*{b-link-visited}*/;
+}
+
+.ui-body-b a {
+    color: #007AFF /*{b-link-color}*/;
+    font-weight: 500;
+}
+
 .backdropContainer {
     /* This isn't implemented right and ends up looking terrible */
     background-attachment: initial;
 }
 
 .background-theme-b {
-    background-color: #1c1c1c;
+    background-color: #161616;
 }
 
 .backdropContainer .pageBackground {
     background-color: rgba(28,28,28,.92) !important;
 }
 
+.homeTopViews .defaultBackground .cardImage {
+    background-color: #303030;
+}
+
+.viewMenuBar {
+    /* It needs this in order to retain height since we're positioning the contents absolutely */
+    height: 50px;
+}
 
 .viewMenuBar, .libraryViewNav, paper-tabs {
-    background-color: rgb(28,28,28);
+    background-color: #000;
 }
 
     .viewMenuBar.semiTransparent {
-        background-color: rgba(28, 28, 28, .75);
+        background-color: #000;
     }
 
     .libraryViewNav a {
@@ -36,24 +57,13 @@
     }
 
     .libraryViewNav paper-tabs {
-        height: 58px !important;
         flex-grow: 0 !important;
+        height: 36px;
     }
 
     .libraryViewNav paper-tab {
         height: auto !important;
         flex-grow: 0 !important;
-    }
-
-    .libraryViewNav iron-icon {
-        width: 22px;
-        height: 22px;
-        display: block;
-        margin: 0 auto 6px;
-    }
-
-    .libraryViewNav paper-tabs iron-icon {
-        margin: 6px auto 6px;
     }
 
     .libraryViewNav #selectionBar {
@@ -63,6 +73,15 @@
     .libraryViewNav #tabsContainer {
         flex-grow: 0 !important;
     }
+
+.ui-body-b .paperList {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.settingsMenuHeader {
+    display: none;
+}
 
 @media all and (max-width: 600px) {
 
@@ -88,17 +107,8 @@
     background: #FF2D55 !important;
 }
 
-
-.libraryViewNav {
-    border-top: 1px solid #333 !important;
-}
-
 .libraryViewNav, paper-tabs {
     font-size: 12px;
-}
-
-.viewMenuBar {
-    border-bottom: 1px solid #333;
 }
 
 h1, h1 a {
@@ -117,14 +127,27 @@ h1, h1 a {
     font-weight: 400;
 }
 
+.tvGuideHeader {
+    top: 86px;
+}
+
 .libraryMenuButtonText {
     font-weight: 500 !important;
-    position: relative;
-    top: 2px;
+    position: absolute;
+    left: 100px;
+    right: 100px;
+    text-align: center;
+    font-size: 16px;
+    margin: 0 auto !important;
+    padding: 0 !important;
 }
 
 .libraryPanelHeader span {
     font-weight: 400;
+}
+
+.noSecondaryNavPage .itemBackdrop {
+    margin-top: 0;
 }
 
 paper-tab {
@@ -155,15 +178,6 @@ paper-tab {
     background: #1c1c1c;
 }
 
-.libraryMenuButtonText {
-    position: absolute;
-    left: 100px;
-    right: 100px;
-    text-align: center;
-    font-size: 16px;
-    margin: 0 auto !important;
-}
-
 @media (min-width: 600px) {
 
     /* This needs a little extra space to account for the longer date format */
@@ -187,4 +201,12 @@ paper-tab {
 #footer {
     /* Eliminate transparency to prevent clicks from passing through to the elements underneath */
     background-color: rgb(26,26,26);
+}
+
+.nowPlayingPageBackButton {
+    display: none;
+}
+
+.nowPlayingPagePaperTabs {
+    display: none;
 }
