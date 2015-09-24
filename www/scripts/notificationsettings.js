@@ -3,4 +3,4 @@ itemHtml+='<h1>';itemHtml+=i.Category;itemHtml+='</h1>';itemHtml+='<div class="p
 itemHtml+='<a class="clearLink" href="notificationsetting.html?type='+i.Type+'">';itemHtml+='<paper-icon-item>';if(i.Enabled){itemHtml+='<paper-fab class="listAvatar blue" icon="notifications-active" item-icon></paper-fab>';}
 else{itemHtml+='<paper-fab class="listAvatar" style="background-color:#999;" icon="notifications-off" item-icon></paper-fab>';}
 itemHtml+='<paper-item-body two-line>';itemHtml+='<div>'+i.Name+'</div>';itemHtml+='</paper-item-body>';itemHtml+='<paper-icon-button icon="mode-edit"></paper-icon-button>';itemHtml+='</paper-icon-item>';itemHtml+='</a>';return itemHtml;}).join('');html+='</div>';$('.notificationList',page).html(html).trigger('create');Dashboard.hideLoadingMsg();});}
-$(document).on('pageshowready',"#notificationSettingsPage",function(){var page=this;reload(page);});})(jQuery,window);
+$(document).on('pageshow',"#notificationSettingsPage",function(){var page=this;reload(page);});})(jQuery,window);
