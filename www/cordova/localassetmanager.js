@@ -470,7 +470,7 @@
         if (localStorage.getItem('sync-' + url) == '1') {
             Logger.log('file was downloaded previously');
             deferred.resolveWith(null, [localPath]);
-            return;
+            return deferred.promise();
         }
 
         Logger.log('downloading: ' + url + ' to ' + localPath);
