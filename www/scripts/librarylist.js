@@ -80,12 +80,13 @@ if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;
 var elem=this;while(!elem.classList.contains('card')){elem=elem.parentNode;}
 showOverlayTimeout=setTimeout(function(){onShowTimerExpired(elem);},1000);}
 function preventTouchHover(){preventHover=true;}
-this.off('click',onGroupedCardClick);this.on('click',onGroupedCardClick);this.off('click',onListViewMenuButtonClick);this.on('click',onListViewMenuButtonClick);this.off('click',onListViewPlayButtonClick);this.on('click',onListViewPlayButtonClick);if(AppInfo.isTouchPreferred){this.off('contextmenu',disableEvent);this.on('contextmenu',disableEvent);}
+this.off('click',onGroupedCardClick);this.on('click',onGroupedCardClick);this.off('click',onListViewMenuButtonClick);this.on('click',onListViewMenuButtonClick);this.off('click',onListViewPlayButtonClick);this.on('click',onListViewPlayButtonClick);if(AppInfo.isTouchPreferred){this.off('contextmenu',onContextMenu);this.on('contextmenu',onContextMenu);}
 else{this.off('contextmenu',onContextMenu);this.on('contextmenu',onContextMenu);this.off('mouseenter','.card:not(.bannerCard) .cardContent',onHoverIn);this.on('mouseenter','.card:not(.bannerCard) .cardContent',onHoverIn);this.off('mouseleave','.card:not(.bannerCard) .cardContent',onHoverOut);this.on('mouseleave','.card:not(.bannerCard) .cardContent',onHoverOut);this.off("touchstart",'.card:not(.bannerCard) .cardContent',preventTouchHover);this.on("touchstart",'.card:not(.bannerCard) .cardContent',preventTouchHover);}
-for(var i=0,length=this.length;i<length;i++){initTapHold(this[i]);}
+for(var i=0,length=this.length;i<length;i++){}
 return this;};function disableEvent(e){e.preventDefault();return false;}
 function onTapHold(e){onContextMenu(e);}
-function initTapHold(element){require(['hammer'],function(Hammer){var hammertime=new Hammer(element);hammertime.on('press',onTapHold);});}
+function initTapHold(element){if(!LibraryBrowser.allowSwipe(element)){return;}
+require(['hammer'],function(Hammer){var hammertime=new Hammer(element);hammertime.on('press',onTapHold);});}
 function toggleSelections(page){Dashboard.showLoadingMsg();var selectionCommands=$('.selectionCommands',page);if(selectionCommands.is(':visible')){selectionCommands.hide();$('.itemSelectionPanel',page).hide();}else{selectionCommands.show();var panels=$('.itemSelectionPanel',page).show();if(!panels.length){var index=0;$('.cardContent',page).each(function(){var chkItemSelectId='chkItemSelect'+index;$(this).append('<div class="itemSelectionPanel" onclick="return false;"><div class="ui-checkbox"><label class="ui-btn ui-corner-all ui-btn-inherit ui-btn-icon-left ui-checkbox-off" for="'+chkItemSelectId+'">Select</label><input id="'+chkItemSelectId+'" type="checkbox" class="chkItemSelect" data-enhanced="true" /></div></div>');index++;});$('.itemsContainer',page).trigger('create');}
 $('.chkItemSelect:checked',page).checked(false).checkboxradio('refresh');}
 Dashboard.hideLoadingMsg();}

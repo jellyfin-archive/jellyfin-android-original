@@ -18,7 +18,7 @@
                 Dashboard.navigate('index.html');
                 break;
             case 'Search':
-                Dashboard.navigate('index.html');
+                Dashboard.navigate('search.html');
                 break;
             case 'NowPlaying':
                 Dashboard.navigate('nowplaying.html');

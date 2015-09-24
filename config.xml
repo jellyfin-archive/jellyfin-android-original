@@ -69,7 +69,7 @@
     <allow-intent href="itms-apps:*" />
 	<preference name="apiKey" value="1d44b9d3acd7d0fbcff284549c6ec5d9" />
 	<preference name="StatusBarOverlaysWebView" value="false" />
-	<preference name="StatusBarBackgroundColor" value="#1c1c1c" />
+	<preference name="StatusBarBackgroundColor" value="#000000" />
 	<preference name="StatusBarStyle" value="blacktranslucent" />
 	<preference name="SplashScreenBackgroundColor" value="#1c1c1c" /> <!-- defaults to "#464646" -->
 	<preference name="BackgroundColor" value="0xff000000" />
