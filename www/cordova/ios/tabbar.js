@@ -113,6 +113,8 @@
 
         Events.on(ConnectionManager, 'localusersignedin', showTabs);
         Events.on(ConnectionManager, 'localusersignedout', hideTabs);
+        Events.on(ConnectionManager, 'playbackstart', onPlaybackStop);
+        Events.on(ConnectionManager, 'playbackstop', onPlaybackStart);
     });
 
     pageClassOn('pageshowready', "page", function () {
@@ -126,5 +128,19 @@
             hideTabs();
         }
     });
+
+    function onPlaybackStart(e, state, player) {
+
+        if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video' && player.isLocalPlayer) {
+            hideTabs();
+        }
+    }
+
+    function onPlaybackStop(e, state, player) {
+
+        if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video' && player.isLocalPlayer) {
+            showTabs();
+        }
+    }
 
 })();
