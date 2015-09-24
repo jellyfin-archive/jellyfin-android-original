@@ -4,4 +4,4 @@ function loadTemplate(page,type){guideController=null;ApiClient.ajax({type:'GET'
 function skip(){var apiClient=ApiClient;apiClient.getJSON(apiClient.getUrl('Startup/Info')).done(function(info){if(info.SupportsRunningAsService){Dashboard.navigate('wizardservice.html');}else{Dashboard.navigate('wizardagreement.html');}});}
 function next(){guideController.submit();}
 function reload(page){$('#selectType',page).trigger('change');}
-$(document).on('pageinit',"#wizardGuidePage",function(){var page=this;$('#selectType',page).on('change',function(){loadTemplate(page,this.value);});$('.btnSkip',page).on('click',skip);$('.btnNext',page).on('click',next);}).on('pageshowready',"#wizardGuidePage",function(){var page=this;reload(page);});})(jQuery,document,window);
+$(document).on('pageinit',"#wizardGuidePage",function(){var page=this;$('#selectType',page).on('change',function(){loadTemplate(page,this.value);});$('.btnSkip',page).on('click',skip);$('.btnNext',page).on('click',next);}).on('pageshow',"#wizardGuidePage",function(){var page=this;reload(page);});})(jQuery,document,window);

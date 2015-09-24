@@ -3,4 +3,4 @@ function reloadData(page,config,cultures,countries){Dashboard.populateLanguages(
 function reload(page){Dashboard.showLoadingMsg();var apiClient=ApiClient;var promise1=apiClient.getJSON(apiClient.getUrl('Startup/Configuration'));var promise2=apiClient.getCultures();var promise3=apiClient.getCountries();$.when(promise1,promise2,promise3).done(function(response1,response2,response3){reloadData(page,response1[0],response2[0],response3[0]);});}
 function navigateToNextPage(){Dashboard.navigate('wizardlivetvtuner.html');}
 function onSubmit(){var form=this;save(form);return false;}
-$(document).on('pageinit',"#wizardSettingsPage",function(){var page=this;$('.wizardSettingsForm',page).off('submit',onSubmit).on('submit',onSubmit);}).on('pageshowready',"#wizardSettingsPage",function(){var page=this;reload(page);});})(jQuery,document,window);
+$(document).on('pageinit',"#wizardSettingsPage",function(){var page=this;$('.wizardSettingsForm',page).off('submit',onSubmit).on('submit',onSubmit);}).on('pageshow',"#wizardSettingsPage",function(){var page=this;reload(page);});})(jQuery,document,window);

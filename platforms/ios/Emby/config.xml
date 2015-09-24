@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="14242427" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.27" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="14242428" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.28" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -146,7 +146,7 @@
     <allow-intent href="itms-apps:*" />
     <preference name="apiKey" value="1d44b9d3acd7d0fbcff284549c6ec5d9" />
     <preference name="StatusBarOverlaysWebView" value="false" />
-    <preference name="StatusBarBackgroundColor" value="#1c1c1c" />
+    <preference name="StatusBarBackgroundColor" value="#000000" />
     <preference name="StatusBarStyle" value="blacktranslucent" />
     <preference name="SplashScreenBackgroundColor" value="#1c1c1c" />
     <preference name="BackgroundColor" value="0xff000000" />

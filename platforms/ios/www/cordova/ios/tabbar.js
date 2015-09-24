@@ -11,14 +11,14 @@
         }
 
         switch (name) {
-            case 'Featured':
-                Dashboard.navigate('index.html');
+            case 'Favorites':
+                Dashboard.navigate('favorites.html');
                 break;
             case 'Library':
                 Dashboard.navigate('index.html');
                 break;
             case 'Search':
-                Dashboard.navigate('index.html');
+                Dashboard.navigate('search.html');
                 break;
             case 'NowPlaying':
                 Dashboard.navigate('nowplaying.html');
@@ -68,8 +68,8 @@
  */
 
         var items = [
-          { name: 'Featured', label: Globalize.translate('ButtonForYou'), image: 'tabButton:Featured', options: {} },
           { name: 'Library', label: Globalize.translate('ButtonLibrary'), image: 'tabbar/tab-library.png', options: {} },
+          { name: 'Favorites', label: Globalize.translate('ButtonFavorites'), image: 'tabButton:Favorites', options: {} },
           { name: 'Search', label: Globalize.translate('ButtonSearch'), image: 'tabButton:Search', options: {} },
           { name: 'NowPlaying', label: Globalize.translate('ButtonNowPlaying'), image: 'tabbar/tab-nowplaying.png', options: {} },
           { name: 'Sync', label: Globalize.translate('ButtonSync'), image: 'tabbar/tab-sync.png', options: {} },
@@ -113,9 +113,11 @@
 
         Events.on(ConnectionManager, 'localusersignedin', showTabs);
         Events.on(ConnectionManager, 'localusersignedout', hideTabs);
+        Events.on(MediaController, 'playbackstart', onPlaybackStop);
+        Events.on(MediaController, 'playbackstop', onPlaybackStart);
     });
 
-    pageClassOn('pageshowready', "page", function () {
+    pageClassOn('pageshow', "page", function () {
 
         var page = this;
 
@@ -126,5 +128,19 @@
             hideTabs();
         }
     });
+
+    function onPlaybackStart(e, state, player) {
+
+        if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video' && player.isLocalPlayer) {
+            hideTabs();
+        }
+    }
+
+    function onPlaybackStop(e, state, player) {
+
+        if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video' && player.isLocalPlayer) {
+            showTabs();
+        }
+    }
 
 })();

@@ -1,7 +1,7 @@
-﻿(function(){var supportsTextTracks;var isViblastStarted;var requiresSettingStartTimeOnStart;function htmlMediaRenderer(options){var mediaElement;var self=this;function hideStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.backgroundColorByName("black");StatusBar.hide();}}
+﻿(function(){var supportsTextTracks;var isViblastStarted;var requiresSettingStartTimeOnStart;function htmlMediaRenderer(options){var mediaElement;var self=this;function hideStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.hide();}}
 function showStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.show();}}
 function onEnded(){showStatusBar();$(self).trigger('ended');}
-function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=(duration-1)){onEnded();return;}}}
+function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=(duration-1)){return;}}}
 $(self).trigger('timeupdate');}
 function onVolumeChange(){$(self).trigger('volumechange');}
 function onOneAudioPlaying(){$('.mediaPlayerAudioContainer').hide();}
