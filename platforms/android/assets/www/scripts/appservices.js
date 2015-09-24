@@ -8,4 +8,4 @@ function renderCatalog(page,availablePlugins,installedPlugins){requirejs(['scrip
 $(document).on('pagebeforeshow pageshow',"#appServicesPage",function(){var page=this;var context=getParameterByName('context');$('.sectionTabs',page).hide();if(context=='sync'){Dashboard.setPageTitle(Globalize.translate('TitleSync'));page.setAttribute('data-helpurl','https://github.com/MediaBrowser/Wiki/wiki/Sync');}
 else if(context=='livetv'){Dashboard.setPageTitle(Globalize.translate('TitleLiveTV'));page.setAttribute('data-helpurl','https://github.com/MediaBrowser/Wiki/wiki/Live%20TV');}
 else if(context=='notifications'){Dashboard.setPageTitle(Globalize.translate('TitleNotifications'));page.setAttribute('data-helpurl','https://github.com/MediaBrowser/Wiki/wiki/Notifications');}
-$('.sectionTabs',page).hide();$('.'+context+'SectionTabs',page).show();}).on('pageshowready',"#appServicesPage",function(){var page=this;reloadList(page);});})(jQuery,document);
+$('.sectionTabs',page).hide();$('.'+context+'SectionTabs',page).show();}).on('pageshow',"#appServicesPage",function(){var page=this;reloadList(page);});})(jQuery,document);
