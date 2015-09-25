@@ -526,42 +526,45 @@
 
             createDirectory(getParentDirectoryPath(localPath)).done(function () {
 
-                var path = fileSystem.root.toURL() + "/" + localPath;
+                fileSystem.root.getFile(localPath, { create: true }, function (targetFile) {
 
-                var isQueued = enableBackground;
-                var isError = false;
+                    var isQueued = enableBackground;
+                    var isError = false;
 
-                var ft = new FileTransfer();
-                ft.download(url, path, function (entry) {
+                    var ft = new FileTransfer();
+                    ft.download(url, targetFile.toURL(), function (entry) {
+
+                        if (enableBackground) {
+                            Logger.log('Downloaded local url: ' + localPath);
+                            localStorage.setItem('sync-' + url, '1');
+                            isQueued = false;
+                        } else {
+                            deferred.resolveWith(null, [localPath]);
+                        }
+
+                    }, function () {
+                        Logger.log('Error downloading url: ' + url);
+
+                        if (enableBackground) {
+                            isError = true;
+                        } else {
+                            deferred.reject();
+                        }
+                    });
 
                     if (enableBackground) {
-                        Logger.log('Downloaded local url: ' + localPath);
-                        localStorage.setItem('sync-' + url, '1');
-                        isQueued = false;
-                    } else {
-                        deferred.resolveWith(null, [localPath]);
-                    }
+                        // Give it a short period of time to see if it has already been completed before. Either way, move on and resolve it.
+                        setTimeout(function () {
 
-                }, function () {
-                    if (enableBackground) {
-                        isError = true;
-                    } else {
-                        deferred.reject();
+                            if (isError) {
+                                deferred.reject();
+                            } else {
+                                // true indicates that it's queued
+                                deferred.resolveWith(null, [localPath, isQueued]);
+                            }
+                        }, 1500);
                     }
                 });
-
-                if (enableBackground) {
-                    // Give it a short period of time to see if it has already been completed before. Either way, move on and resolve it.
-                    setTimeout(function () {
-
-                        if (isError) {
-                            deferred.reject();
-                        } else {
-                            // true indicates that it's queued
-                            deferred.resolveWith(null, [localPath, isQueued]);
-                        }
-                    }, 1500);
-                }
 
             }).fail(getOnFail(deferred));
 
