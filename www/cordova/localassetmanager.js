@@ -388,7 +388,7 @@
             path.push(getLocalFileName(libraryItem, originalFileName));
         } else {
             var nameParts = originalFileName.split('.');
-            var ext = nameParts.length > 1 ? ('.' + ext[ext.length - 1]) : '';
+            var ext = nameParts.length > 1 ? ('.' + nameParts[nameParts.length - 1]) : '';
             path.push('media' + ext);
         }
 
