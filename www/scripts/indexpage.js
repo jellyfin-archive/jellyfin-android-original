@@ -1,7 +1,9 @@
-﻿(function($,document){var defaultFirstSection='smalllibrarytiles';function getDefaultSection(index){if(AppInfo.isNativeApp&&$.browser.safari){switch(index){case 0:return defaultFirstSection;case 1:return'resume';case 2:return'nextup';case 3:return'latestmedia';case 4:return'latesttvrecordings';default:return'';}}
+﻿(function($,document){var defaultFirstSection='smalllibrarytiles';function getDefaultSection(index){if(AppInfo.isNativeApp&&$.browser.safari){switch(index){case 0:return defaultFirstSection;case 1:return'resume';case 2:return'nextup';case 3:return'latestmovies';case 4:return'latestepisodes';case 5:return'latesttvrecordings';default:return'';}}
 switch(index){case 0:return defaultFirstSection;case 1:return'resume';case 2:return'latestmedia';case 3:return'latesttvrecordings';default:return'';}}
 function loadSection(page,user,displayPreferences,index){var userId=user.Id;var section=displayPreferences.CustomPrefs['home'+index]||getDefaultSection(index);if(section=='folders'){section=defaultFirstSection;}
 var showLibraryTileNames=displayPreferences.CustomPrefs.enableLibraryTileNames!='0';var elem=page.querySelector('.section'+index);if(section=='latestmedia'){return Sections.loadRecentlyAdded(elem,user);}
+else if(section=='latestmovies'){return Sections.loadLatestMovies(elem,user);}
+else if(section=='latestepisodes'){return Sections.loadLatestEpisodes(elem,user);}
 else if(section=='librarytiles'){return Sections.loadLibraryTiles(elem,user,'backdrop',index,false,showLibraryTileNames);}
 else if(section=='smalllibrarytiles'){return Sections.loadLibraryTiles(elem,user,'homePageSmallBackdrop',index,false,showLibraryTileNames);}
 else if(section=='smalllibrarytiles-automobile'){return Sections.loadLibraryTiles(elem,user,'homePageSmallBackdrop',index,true,showLibraryTileNames);}
@@ -11,7 +13,7 @@ else if(section=='resume'){return Sections.loadResume(elem,userId);}
 else if(section=='nextup'){return Sections.loadNextUp(elem,userId);}
 else if(section=='latesttvrecordings'){return Sections.loadLatestLiveTvRecordings(elem,userId);}
 else if(section=='latestchannelmedia'){return Sections.loadLatestChannelMedia(elem,userId);}else{elem.innerHTML='';var deferred=DeferredBuilder.Deferred();deferred.resolve();return deferred.promise();}}
-function loadSections(page,user,displayPreferences){var i,length;var sectionCount=5;var elem=page.querySelector('.sections');if(!elem.innerHTML.length){var html='';for(i=0,length=sectionCount;i<length;i++){html+='<div class="homePageSection section'+i+'"></div>';}
+function loadSections(page,user,displayPreferences){var i,length;var sectionCount=6;var elem=page.querySelector('.sections');if(!elem.innerHTML.length){var html='';for(i=0,length=sectionCount;i<length;i++){html+='<div class="homePageSection section'+i+'"></div>';}
 elem.innerHTML=html;}
 var promises=[];for(i=0,length=sectionCount;i<length;i++){promises.push(loadSection(page,user,displayPreferences,i));}
 return $.when(promises);}
