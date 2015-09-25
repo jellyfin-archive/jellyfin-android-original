@@ -461,7 +461,7 @@
 
     function downloadFile(url, localPath, enableBackground) {
 
-        return downloadWithFileTransfer(url, localPath, enableBackground);
+        //return downloadWithFileTransfer(url, localPath, enableBackground);
         if (!enableBackground) {
             return downloadWithFileTransfer(url, localPath);
         }

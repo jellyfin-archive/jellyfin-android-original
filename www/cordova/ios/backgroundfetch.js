@@ -76,5 +76,5 @@
     Dashboard.ready(restartInterval);
     document.addEventListener("resume", restartInterval, false);
 
-    onDeviceReady();
+    //onDeviceReady();
 })();
