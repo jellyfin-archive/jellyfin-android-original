@@ -484,12 +484,16 @@
                     var downloader = new BackgroundTransfer.BackgroundDownloader();
                     // Create a new download operation.
                     var download = downloader.createDownload(url, targetFile);
+
+                    var isQueued = true;
+
                     // Start the download and persist the promise to be able to cancel the download.
                     var downloadPromise = download.startAsync().then(function () {
 
                         // on success
                         Logger.log('Downloaded local url: ' + localPath);
                         localStorage.setItem('sync-' + url, '1');
+                        isQueued = false;
 
                     }, function () {
 
@@ -501,11 +505,13 @@
 
                         // on progress
                         //Logger.log('download progress: ' + value);
-
                     });
 
-                    // true indicates that it's queued
-                    deferred.resolveWith(null, [localPath, true]);
+                    // Give it a short period of time to see if it has already been completed before. Either way, move on and resolve it.
+                    setTimeout(function () {
+                        // true indicates that it's queued
+                        deferred.resolveWith(null, [localPath, isQueued]);
+                    }, 1500);
                 });
 
             }).fail(getOnFail(deferred));;
