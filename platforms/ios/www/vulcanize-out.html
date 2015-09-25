@@ -10071,8 +10071,16 @@ context. You should place this element as a child of `<body>` whenever possible.
 
     _toggleListener: function(enable, node, event, boundListener, capture) {
       if (enable) {
+        // enable document-wide tap recognizer
+        if (event === 'tap') {
+          Polymer.Gestures.add(document, 'tap', null);
+        }
         node.addEventListener(event, boundListener, capture);
       } else {
+        // disable document-wide tap recognizer
+        if (event === 'tap') {
+          Polymer.Gestures.remove(document, 'tap', null);
+        }
         node.removeEventListener(event, boundListener, capture);
       }
     },
@@ -10083,7 +10091,7 @@ context. You should place this element as a child of `<body>` whenever possible.
       }
       // async so we don't auto-close immediately via a click.
       this._toggleListenersAsync = this.async(function() {
-        this._toggleListener(this.opened, document, 'click', this._boundOnCaptureClick, true);
+        this._toggleListener(this.opened, document, 'tap', this._boundOnCaptureClick, true);
         this._toggleListener(this.opened, document, 'keydown', this._boundOnCaptureKeydown, true);
         this._toggleListenersAsync = null;
       });
@@ -16368,7 +16376,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
     <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown"></paper-icon-button>
 
-    <div id="tabsContainer" class="flex" on-scroll="_scroll">
+    <div id="tabsContainer" class="flex" on-track="_scroll" on-down="_down">
 
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable)]]">
 
@@ -16503,6 +16511,10 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       'iron-deselect': '_onIronDeselect'
     },
 
+    ready: function() {
+      this.setScrollDirection('y', this.$.tabsContainer);
+    },
+
     _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
       if (!scrollable || hideScrollButtons) {
         return 'hidden';
@@ -16557,24 +16569,43 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       );
     },
 
-    _scroll: function() {
-      var scrollLeft;
 
+    _scroll: function(e, detail) {
       if (!this.scrollable) {
         return;
       }
 
-      scrollLeft = this.$.tabsContainer.scrollLeft;
+      var ddx = (detail && -detail.ddx) || 0;
+      this._affectScroll(ddx);
+    },
+
+    _down: function(e) {
+      // go one beat async to defeat IronMenuBehavior
+      // autorefocus-on-no-selection timeout
+      this.async(function() {
+        if (this._defaultFocusAsync) {
+          this.cancelAsync(this._defaultFocusAsync);
+          this._defaultFocusAsync = null;
+        }
+      }, 1);
+    },
+
+    _affectScroll: function(dx) {
+      this.$.tabsContainer.scrollLeft += dx;
+
+      var scrollLeft = this.$.tabsContainer.scrollLeft;
 
       this._leftHidden = scrollLeft === 0;
       this._rightHidden = scrollLeft === this._tabContainerScrollSize;
     },
 
     _onLeftScrollButtonDown: function() {
+      this._scrollToLeft();
       this._holdJob = setInterval(this._scrollToLeft.bind(this), this._holdDelay);
     },
 
     _onRightScrollButtonDown: function() {
+      this._scrollToRight();
       this._holdJob = setInterval(this._scrollToRight.bind(this), this._holdDelay);
     },
 
@@ -16584,11 +16615,11 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     },
 
     _scrollToLeft: function() {
-      this.$.tabsContainer.scrollLeft -= this._step;
+      this._affectScroll(-this._step);
     },
 
     _scrollToRight: function() {
-      this.$.tabsContainer.scrollLeft += this._step;
+      this._affectScroll(this._step);
     },
 
     _tabChanged: function(tab, old) {
@@ -16930,7 +16961,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     },
 
     _disabledChanged: function(disabled) {
-      this.$.progressContainer.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+      this.setAttribute('aria-disabled', disabled ? 'true' : 'false');
     },
 
     _hideSecondaryProgress: function(secondaryRatio) {
@@ -18494,6 +18525,36 @@ paper-ripple {
      */
     get textarea() {
       return this.$.textarea;
+    },
+
+    /**
+     * Returns textarea's selection start.
+     * @type Number
+     */
+    get selectionStart() {
+      return this.$.textarea.selectionStart;
+    },
+
+    /**
+     * Returns textarea's selection end.
+     * @type Number
+     */
+    get selectionEnd() {
+      return this.$.textarea.selectionEnd;
+    },
+
+    /**
+     * Sets the textarea's selection start.
+     */
+    set selectionStart(value) {
+      this.$.textarea.selectionStart = value;
+    },
+
+    /**
+     * Sets the textarea's selection end.
+     */
+    set selectionEnd(value) {
+      this.$.textarea.selectionEnd = value;
     },
 
     /**
