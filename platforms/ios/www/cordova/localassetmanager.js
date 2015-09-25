@@ -380,8 +380,17 @@
 
     function createLocalItem(libraryItem, serverInfo, originalFileName) {
 
-        var path = getDirectoryPath(libraryItem, serverInfo);
-        path.push(getLocalFileName(libraryItem, originalFileName));
+        var enableFriendlyPath = false;
+
+        var path = getDirectoryPath(libraryItem, serverInfo, enableFriendlyPath);
+
+        if (enableFriendlyPath) {
+            path.push(getLocalFileName(libraryItem, originalFileName));
+        } else {
+            var nameParts = originalFileName.split('.');
+            var ext = nameParts.length > 1 ? ('.' + nameParts[nameParts.length - 1]) : '';
+            path.push('media' + ext);
+        }
 
         var item = {};
 
@@ -407,7 +416,11 @@
         return deferred.promise();
     }
 
-    function getDirectoryPath(item, server) {
+    function getDirectoryPath(item, server, enableFriendlyPath) {
+
+        if (!enableFriendlyPath) {
+            return ['sync', item.Id];
+        }
 
         var parts = [];
         parts.push("sync");
@@ -507,6 +520,10 @@
                         // on progress
                         //Logger.log('download progress: ' + value);
                     });
+                }, function () {
+
+                    Logger.log('getFile failed for ' + localPath);
+                    deferred.reject();
                 });
 
             }).fail(getOnFail(deferred));;
@@ -592,6 +609,11 @@
                             }
                         }, 1500);
                     }
+
+                }, function () {
+
+                    Logger.log('getFile failed for ' + localPath);
+                    deferred.reject();
                 });
 
             }).fail(getOnFail(deferred));
