@@ -5,4 +5,4 @@ html+='</ul>';var elem=$('.customProfiles',page).html(html).trigger('create');$(
 function renderSystemProfiles(page,profiles){profiles=profiles.filter(function(p){return p.Type=='System';});var html='';html+='<ul data-role="listview" data-inset="true">';for(var i=0,length=profiles.length;i<length;i++){var profile=profiles[i];html+='<li>';html+='<a href="dlnaprofile.html?id='+profile.Id+'">';html+=profile.Name;html+='</a>';html+='</li>';}
 html+='</ul>';$('.systemProfiles',page).html(html).trigger('create');}
 function deleteProfile(page,id){Dashboard.confirm(Globalize.translate('MessageConfirmProfileDeletion'),Globalize.translate('HeaderConfirmProfileDeletion'),function(result){if(result){Dashboard.showLoadingMsg();ApiClient.ajax({type:"DELETE",url:ApiClient.getUrl("Dlna/Profiles/"+id)}).done(function(){Dashboard.hideLoadingMsg();loadProfiles(page);});}});}
-$(document).on('pageshowready',"#dlnaProfilesPage",function(){var page=this;loadProfiles(page);});})(jQuery,document,window);
+$(document).on('pageshow',"#dlnaProfilesPage",function(){var page=this;loadProfiles(page);});})(jQuery,document,window);

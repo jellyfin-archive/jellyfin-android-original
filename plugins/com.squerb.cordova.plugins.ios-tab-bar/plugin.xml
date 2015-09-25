@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="com.squerb.cordova.plugins.ios-tab-bar"
+        version="1.0.0">
+
+    <name>Tab Bar Plugin for Cordova iOS</name>
+    <description>This Cordova plugin provides your app with access to configurable, native iOS tab bar</description>
+    <license>MIT</license>
+    <keywords>native ui controls</keywords>
+
+    <engines>
+        <engine name="cordova" version=">=3.0.0"/>
+    </engines>
+
+    <!-- ios -->
+    <platform name="ios">
+
+        <js-module src="www/tab-bar.js" name="TabBar">
+            <clobbers target="window.TabBar"/>
+        </js-module>
+
+        <config-file target="config.xml" parent="/widget">
+            <feature name="TabBar">
+                <param name="ios-package" value="CDVTabBar"/>
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/CDVTabBar.h"/>
+        <source-file src="src/ios/CDVTabBar.m"/>
+
+    </platform>
+
+</plugin>

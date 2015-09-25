@@ -68,7 +68,10 @@
 
         self.duration = function (val) {
 
-            return self.playerState.duration;
+            // TODO
+            // This value doesn't seem to be getting reported properly
+            // Right now it's only used to determine if the player can seek, so for now we can mock it
+            return 1;
         };
 
         self.stop = function () {
@@ -110,12 +113,13 @@
             return self.playerState.volume;
         };
 
-        self.setCurrentSrc = function (val, item, mediaSource, tracks) {
+        self.setCurrentSrc = function (streamInfo, item, mediaSource, tracks) {
 
-            if (!val) {
+            if (!streamInfo) {
                 return;
             }
 
+            var val = streamInfo.url;
             var tIndex = val.indexOf('#t=');
             var startPosMs = 0;
 
@@ -129,6 +133,27 @@
 
                 //AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
                 var artist = item.ArtistItems && item.ArtistItems.length ? item.ArtistItems[0].Name : null;
+
+                var metadata = {};
+
+                if (item.Name) {
+                    metadata.title = item.Name;
+                }
+                if (artist) {
+                    metadata.artist = artist;
+                }
+                if (item.Overview) {
+                    metadata.description = item.Overview;
+                }
+                if (options.poster) {
+                    metadata.image = {
+                        url: options.poster
+                    };
+                    metadata.imageThumbnail = {
+                        url: options.poster
+                    };
+                }
+
                 window.audioplayer.playstream(successHandler, function () {
 
                     Logger.log('playstream failed!');
@@ -138,18 +163,7 @@
                                                   ios: val
                                               },
                                               // metadata used for iOS lock screen, Android 'Now Playing' notification
-                                              {
-                                                  "title": item.Name,
-                                                  "artist": artist,
-                                                  "image": {
-                                                      "url": options.poster
-                                                  },
-                                                  "imageThumbnail": {
-                                                      "url": options.poster
-                                                  },
-                                                  "name": item.Name,
-                                                  "description": item.Overview
-                                              }
+                                              metadata
                                               );
 
             } else {

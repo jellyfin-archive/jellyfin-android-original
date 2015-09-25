@@ -3,7 +3,7 @@
 }
 
     .viewMenuBar.semiTransparent {
-        background-color: rgba(27, 27, 27, .75);
+        background-color: rgba(27, 27, 27, .6);
     }
 
 .background-theme-b {
@@ -18,7 +18,7 @@
     background-color: #383838;
 }
 
-.ui-page-theme-b .visualCardBox {
+.ui-body-b .visualCardBox {
     background: rgba(56,56,56,.85);
 }
 

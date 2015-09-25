@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.emby.mobile" android-packageName="com.mb.android" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.22" android-versionCode="14242422" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.emby.mobile" android-packageName="com.mb.android" ios-CFBundleIdentifier="com.emby.mobile" version="2.4.30" android-versionCode="14242430" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Emby</name>
   <description>
     Emby Mobile
@@ -69,7 +69,7 @@
     <allow-intent href="itms-apps:*" />
 	<preference name="apiKey" value="1d44b9d3acd7d0fbcff284549c6ec5d9" />
 	<preference name="StatusBarOverlaysWebView" value="false" />
-	<preference name="StatusBarBackgroundColor" value="#1c1c1c" />
+	<preference name="StatusBarBackgroundColor" value="#000000" />
 	<preference name="StatusBarStyle" value="blacktranslucent" />
 	<preference name="SplashScreenBackgroundColor" value="#1c1c1c" /> <!-- defaults to "#464646" -->
 	<preference name="BackgroundColor" value="0xff000000" />

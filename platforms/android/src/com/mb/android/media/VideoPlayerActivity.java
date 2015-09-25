@@ -3068,7 +3068,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     @Override
     public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
 
-        logger.Debug("VideoPlayerActivity.OnNewLayout width=%1 height=%2 visibleWidth=%3 visibleHeight=%4 sarNum=%5 sarDen=%6");
+        logger.Debug("VideoPlayerActivity.OnNewLayout width=%s height=%s visibleWidth=%s visibleHeight=%s sarNum=%s sarDen=%s", width, height, visibleWidth, visibleHeight, sarNum, sarDen);
 
         /*if (width * height == 0) {
             MediaSourceInfo mediaSourceInfo = apiHelper.getMediaSource();

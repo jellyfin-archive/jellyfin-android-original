@@ -1,7 +1,7 @@
-﻿(function(){var supportsTextTracks;var isViblastStarted;var requiresSettingStartTimeOnStart;function htmlMediaRenderer(options){var mediaElement;var self=this;function hideStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.backgroundColorByName("black");StatusBar.overlaysWebView(true);StatusBar.hide();}}
-function showStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.show();StatusBar.overlaysWebView(false);}}
+﻿(function(){var supportsTextTracks;var isViblastStarted;var requiresSettingStartTimeOnStart;function htmlMediaRenderer(options){var mediaElement;var self=this;function hideStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.hide();}}
+function showStatusBar(){if(options.type=='video'&&window.StatusBar){StatusBar.show();}}
 function onEnded(){showStatusBar();$(self).trigger('ended');}
-function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=(duration-1)){onEnded();return;}}}
+function onTimeUpdate(){if(isViblastStarted){var time=this.currentTime;var duration=this.duration;if(duration){if(time>=(duration-1)){return;}}}
 $(self).trigger('timeupdate');}
 function onVolumeChange(){$(self).trigger('volumechange');}
 function onOneAudioPlaying(){$('.mediaPlayerAudioContainer').hide();}
@@ -36,7 +36,8 @@ return null;};self.stop=function(){if(mediaElement){mediaElement.pause();if(isVi
 return mediaElement.volume;}};var currentSrc;self.setCurrentSrc=function(streamInfo,item,mediaSource,tracks){var elem=mediaElement;if(!elem){currentSrc=null;return;}
 if(!streamInfo){currentSrc=null;elem.src=null;elem.src="";if($.browser.safari){elem.src='files/dummy.mp4';elem.play();}
 return;}
-var val=streamInfo.url;requiresSettingStartTimeOnStart=false;var startTime=getStartTime(val);var playNow=false;if(elem.tagName.toLowerCase()=='audio'){elem.src=val;playNow=true;}
+var val=streamInfo.url;if(AppInfo.isNativeApp&&$.browser.safari){val=val.replace('file://','');}
+requiresSettingStartTimeOnStart=false;var startTime=getStartTime(val);var playNow=false;if(elem.tagName.toLowerCase()=='audio'){elem.src=val;playNow=true;}
 else{if(isViblastStarted){viblast('#'+elem.id).stop();isViblastStarted=false;}
 if(startTime){try{elem.currentTime=startTime;}catch(err){}
 requiresSettingStartTimeOnStart=elem.currentTime==0;}

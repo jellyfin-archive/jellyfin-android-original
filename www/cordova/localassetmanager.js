@@ -19,9 +19,9 @@
 
         getLocalItem(itemId, serverId).done(function (localItem) {
 
-            if (localItem && localItem.MediaSources.length) {
+            if (localItem && localItem.Item.MediaSources.length) {
 
-                var mediaSource = localItem.MediaSources[0];
+                var mediaSource = localItem.Item.MediaSources[0];
 
                 fileExists(mediaSource.Path).done(function (exists) {
 
@@ -156,11 +156,11 @@
 
             db.transaction(function (tx) {
 
-                tx.executeSql("SELECT json from offlineactions where ServerId=?", [serverId], function (tx, res) {
+                tx.executeSql("SELECT Json from offlineactions where ServerId=?", [serverId], function (tx, res) {
 
                     var actions = [];
                     for (var i = 0, length = res.rows.length; i < length; i++) {
-                        actions.push(JSON.parse(res.rows.item(i).json));
+                        actions.push(JSON.parse(res.rows.item(i).Json));
                     }
 
                     deferred.resolveWith(null, [actions]);
@@ -260,7 +260,7 @@
 
                         var localItem = JSON.parse(res.rows.item(0).Json);
 
-                        deferred.resolveWith(null, [item]);
+                        deferred.resolveWith(null, [localItem]);
                     }
                     else {
                         deferred.resolveWith(null, [null]);
@@ -277,14 +277,19 @@
 
     function addOrUpdateLocalItem(item) {
 
+        Logger.log('addOrUpdateLocalItem');
+
         var deferred = DeferredBuilder.Deferred();
 
         getOfflineItemsDb(function (db) {
 
             db.transaction(function (tx) {
 
-                var values = [item.Id, item.ItemId, item.Item.Type, item.Item.MediaType, item.ServerId, item.LocalPath, item.UserIdsWithAccess.join(','), item.Item.AlbumId, item.Item.AlbumName, item.Item.SeriesId, item.Item.SeriesName, JSON.stringify(item)];
+                var libraryItem = item.Item || {};
+
+                var values = [item.Id, item.ItemId, libraryItem.Type, libraryItem.MediaType, item.ServerId, item.LocalPath, (item.UserIdsWithAccess || []).join(','), libraryItem.AlbumId, libraryItem.AlbumName, libraryItem.SeriesId, libraryItem.SeriesName, JSON.stringify(item)];
                 tx.executeSql("REPLACE INTO Items (Id, ItemId, ItemType, MediaType, ServerId, LocalPath, UserIdsWithAccess, AlbumId, AlbumName, SeriesId, SeriesName, Json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", values);
+                deferred.resolve();
             });
         });
 
@@ -345,7 +350,7 @@
         var deferred = DeferredBuilder.Deferred();
 
         Logger.log('Deleting ' + path);
-        resolveLocalFileSystemURL(path, function (fileEntry) {
+        resolveFile(path, function (fileEntry) {
 
             fileEntry.remove(function () {
                 Logger.log('Deleted ' + path);
@@ -365,6 +370,14 @@
         return deferred.promise();
     }
 
+    function resolveFile(path, success, fail) {
+
+        getFileSystem().done(function (fileSystem) {
+
+            fileSystem.root.getFile(path, { create: false }, success, fail);
+        });
+    }
+
     function createLocalItem(libraryItem, serverInfo, originalFileName) {
 
         var path = getDirectoryPath(libraryItem, serverInfo);
@@ -374,45 +387,29 @@
 
         var deferred = DeferredBuilder.Deferred();
 
-        getFileSystem().done(function (fileSystem) {
+        var localPath = path.join('/');
 
-            var localPath = trimEnd(fileSystem.root.toURL()) + "/" + path.join('/');
+        item.LocalPath = localPath;
 
-            item.LocalPath = localPath;
+        for (var i = 0, length = libraryItem.MediaSources.length; i < length; i++) {
 
-            for (var i = 0, length = libraryItem.MediaSources.length; i < length; i++) {
-
-                var mediaSource = libraryItem.MediaSources[i];
-                mediaSource.Path = localPath;
-                mediaSource.Protocol = 'File';
-            }
-
-            item.ServerId = serverInfo.Id;
-            item.Item = libraryItem;
-            item.ItemId = libraryItem.Id;
-            item.Id = getLocalId(item.ServerId, item.ItemId);
-            deferred.resolveWith(null, [item]);
-        });
-
-        return deferred.promise();
-    }
-
-    function trimEnd(str) {
-
-        var charEnd = '/';
-
-        if (str.charAt(str.length - 1) == charEnd) {
-
-            str = str.substring(0, str.length - 1);
+            var mediaSource = libraryItem.MediaSources[i];
+            mediaSource.Path = localPath;
+            mediaSource.Protocol = 'File';
         }
 
-        return str;
+        item.ServerId = serverInfo.Id;
+        item.Item = libraryItem;
+        item.ItemId = libraryItem.Id;
+        item.Id = getLocalId(item.ServerId, item.ItemId);
+        deferred.resolveWith(null, [item]);
+
+        return deferred.promise();
     }
 
     function getDirectoryPath(item, server) {
 
         var parts = [];
-        parts.push("emby");
         parts.push("sync");
         parts.push(server.Name);
 
@@ -462,19 +459,192 @@
         return filename;
     }
 
-    function downloadFile(url, localPath) {
+    function downloadFile(url, localPath, enableBackground) {
+
+        return downloadWithFileTransfer(url, localPath, enableBackground);
+        if (!enableBackground) {
+            return downloadWithFileTransfer(url, localPath);
+        }
 
         var deferred = DeferredBuilder.Deferred();
 
+        if (localStorage.getItem('sync-' + url) == '1') {
+            Logger.log('file was downloaded previously');
+            deferred.resolveWith(null, [localPath]);
+            return deferred.promise();
+        }
+
         Logger.log('downloading: ' + url + ' to ' + localPath);
-        var ft = new FileTransfer();
-        ft.download(url, localPath, function (entry) {
 
-            var localUrl = normalizeReturnUrl(entry.toURL());
+        getFileSystem().done(function (fileSystem) {
 
-            Logger.log('Downloaded local url: ' + localUrl);
-            deferred.resolveWith(null, [localUrl]);
-        });
+            createDirectory(getParentDirectoryPath(localPath)).done(function () {
+
+                fileSystem.root.getFile(localPath, { create: true }, function (targetFile) {
+
+                    var downloader = new BackgroundTransfer.BackgroundDownloader();
+                    // Create a new download operation.
+                    var download = downloader.createDownload(url, targetFile);
+
+                    var isQueued = true;
+
+                    // Start the download and persist the promise to be able to cancel the download.
+                    var downloadPromise = download.startAsync().then(function () {
+
+                        // on success
+                        Logger.log('Downloaded local url: ' + localPath);
+                        localStorage.setItem('sync-' + url, '1');
+                        isQueued = false;
+
+                    }, function () {
+
+                        // on error
+                        Logger.log('download failed: ' + url + ' to ' + localPath);
+                        deferred.reject();
+
+                    }, function (value) {
+
+                        // on progress
+                        //Logger.log('download progress: ' + value);
+                    });
+                });
+
+            }).fail(getOnFail(deferred));;
+
+        }).fail(getOnFail(deferred));
+
+        return deferred.promise();
+    }
+
+    var activeDownloads = [];
+
+    function removeDownload(key) {
+
+        for (var i = 0, length = activeDownloads.length; i < length; i++) {
+            if (key == activeDownloads[i]) {
+                activeDownloads[i] = "";
+            }
+        }
+    }
+
+    function downloadWithFileTransfer(url, localPath, enableBackground) {
+
+        var deferred = DeferredBuilder.Deferred();
+
+        if (localStorage.getItem('sync-' + url) == '1') {
+            Logger.log('file was downloaded previously');
+            deferred.resolveWith(null, [localPath]);
+            return deferred.promise();
+        }
+
+        var downloadKey = url + localPath;
+        if (activeDownloads.indexOf(downloadKey) != -1) {
+            deferred.resolveWith(null, [localPath, true]);
+        }
+
+        Logger.log('downloading: ' + url + ' to ' + localPath);
+
+        getFileSystem().done(function (fileSystem) {
+
+            createDirectory(getParentDirectoryPath(localPath)).done(function () {
+
+                fileSystem.root.getFile(localPath, { create: true }, function (targetFile) {
+
+                    var isQueued = enableBackground;
+                    var isError = false;
+
+                    var ft = new FileTransfer();
+                    ft.download(url, targetFile.toURL(), function (entry) {
+
+                        removeDownload(downloadKey);
+
+                        if (enableBackground) {
+                            Logger.log('Downloaded local url: ' + localPath);
+                            localStorage.setItem('sync-' + url, '1');
+                            isQueued = false;
+                        } else {
+                            deferred.resolveWith(null, [localPath]);
+                        }
+
+                    }, function () {
+
+                        removeDownload(downloadKey);
+
+                        Logger.log('Error downloading url: ' + url);
+
+                        if (enableBackground) {
+                            isError = true;
+                        } else {
+                            deferred.reject();
+                        }
+                    });
+                    activeDownloads.push(downloadKey);
+
+                    if (enableBackground) {
+                        // Give it a short period of time to see if it has already been completed before. Either way, move on and resolve it.
+                        setTimeout(function () {
+
+                            if (isError) {
+                                deferred.reject();
+                            } else {
+                                // true indicates that it's queued
+                                deferred.resolveWith(null, [localPath, isQueued]);
+                            }
+                        }, 1500);
+                    }
+                });
+
+            }).fail(getOnFail(deferred));
+
+        }).fail(getOnFail(deferred));
+
+        return deferred.promise();
+    }
+
+    function createDirectory(path) {
+
+        var deferred = DeferredBuilder.Deferred();
+        createDirectoryPart(path, 0, deferred);
+        return deferred.promise();
+    }
+
+    function createDirectoryPart(path, index, deferred) {
+
+        var parts = path.split('/');
+        if (index >= parts.length) {
+            deferred.resolve();
+            return;
+        }
+
+        parts.length = index + 1;
+        var pathToCreate = parts.join('/');
+
+        createDirectoryInternal(pathToCreate).done(function () {
+
+            createDirectoryPart(path, index + 1, deferred);
+
+        }).fail(getOnFail(deferred));
+    }
+
+    function createDirectoryInternal(path) {
+
+        Logger.log('creating directory: ' + path);
+        var deferred = DeferredBuilder.Deferred();
+
+        getFileSystem().done(function (fileSystem) {
+
+            fileSystem.root.getDirectory(path, { create: true, exclusive: false }, function (targetFile) {
+
+                Logger.log('createDirectory succeeded');
+                deferred.resolve();
+
+            }, function () {
+
+                Logger.log('createDirectory failed');
+                deferred.reject();
+            });
+
+        }).fail(getOnFail(deferred));
 
         return deferred.promise();
     }
@@ -537,7 +707,7 @@
     }
 
     function getLocalId(serverId, itemId) {
-
+        return serverId + '_' + itemId;
     }
 
     function hasImage(serverId, itemId, imageTag) {
@@ -573,11 +743,9 @@
     function getImageLocalPath(serverId, itemId, imageTag) {
         var deferred = DeferredBuilder.Deferred();
 
-        getFileSystem().done(function (fileSystem) {
-            var path = trimEnd(fileSystem.root.toURL()) + "/emby/images/" + serverId + "/" + itemId + "/" + imageTag;
+        var path = "images/" + serverId + "/" + itemId + "/" + imageTag;
 
-            deferred.resolveWith(null, [path]);
-        });
+        deferred.resolveWith(null, [path]);
 
         return deferred.promise();
     }
@@ -586,12 +754,19 @@
 
         var deferred = DeferredBuilder.Deferred();
 
-        resolveLocalFileSystemURL(path, function (fileEntry) {
+        if (window.NativeFileSystem) {
+            var exists = NativeFileSystem.fileExists(path);
+            Logger.log('fileExists: ' + exists + ' - path: ' + path);
+            deferred.resolveWith(null, [exists]);
+            return deferred.promise();
+        }
 
+        resolveFile(path, function (fileEntry) {
+            Logger.log('fileExists: true - path: ' + path);
             deferred.resolveWith(null, [true]);
 
         }, function () {
-
+            Logger.log('fileExists: false - path: ' + path);
             deferred.resolveWith(null, [false]);
         });
 
@@ -622,6 +797,28 @@
         };
     }
 
+    function translateFilePath(path) {
+
+        var deferred = DeferredBuilder.Deferred();
+
+        if ($.browser.android) {
+            deferred.resolveWith(null, ['file://' + path]);
+            return deferred.promise();
+        }
+
+        resolveFile(path, function (fileEntry) {
+            Logger.log('translateFilePath fileExists: true - path: ' + path);
+            Logger.log('translateFilePath resolving with: ' + fileEntry.toURL());
+            deferred.resolveWith(null, [fileEntry.toURL()]);
+
+        }, function () {
+            Logger.log('translateFilePath fileExists: false - path: ' + path);
+            deferred.resolveWith(null, [path]);
+        });
+
+        return deferred.promise();
+    }
+
     window.LocalAssetManager = {
         getLocalMediaSource: getLocalMediaSource,
         saveOfflineUser: saveOfflineUser,
@@ -637,7 +834,9 @@
         downloadFile: downloadFile,
         downloadSubtitles: downloadSubtitles,
         hasImage: hasImage,
-        downloadImage: downloadImage
+        downloadImage: downloadImage,
+        fileExists: fileExists,
+        translateFilePath: translateFilePath
     };
 
 })();

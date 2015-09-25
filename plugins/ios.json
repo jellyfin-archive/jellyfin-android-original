@@ -115,6 +115,18 @@
                         {
                             "xml": "<feature name=\"SQLitePlugin\"><param name=\"ios-package\" value=\"SQLitePlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"BackgroundDownload\"><param name=\"ios-package\" value=\"BackgroundDownload\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"AppVersion\"><param name=\"ios-package\" value=\"AppVersion\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"BackgroundFetch\"><param name=\"ios-package\" value=\"CDVBackgroundFetch\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -124,6 +136,10 @@
                         },
                         {
                             "xml": "<feature name=\"ChromeSocketsUdp\"><param name=\"ios-package\" value=\"ChromeSocketsUdp\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"TabBar\"><param name=\"ios-package\" value=\"CDVTabBar\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -279,6 +295,10 @@
                         {
                             "xml": "<array><string>audio</string></array>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<array><string>fetch</string></array>",
+                            "count": 1
                         }
                     ],
                     "NSAppTransportSecurity": [
@@ -371,6 +391,18 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "io.litehelpers.cordova.sqlite": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "org.apache.cordova.background-download": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "uk.co.whiteoctober.cordova.appversion": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "org.transistorsoft.cordova.plugin.background.fetch": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.squerb.cordova.plugins.ios-tab-bar": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

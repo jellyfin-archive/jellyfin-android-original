@@ -3,4 +3,4 @@ function load(page,devices){var html='';html+='<div class="paperList">';html+=de
 if(d.LastUserName){deviceHtml+='<div secondary>';deviceHtml+=Globalize.translate('DeviceLastUsedByUserName',d.LastUserName);deviceHtml+='</div>';}
 deviceHtml+='</a>';deviceHtml+='</paper-item-body>';deviceHtml+='<paper-icon-button icon="delete" data-id="'+d.Id+'" title="'+Globalize.translate('ButtonDelete')+'" class="btnDeleteDevice"></paper-icon-button>';deviceHtml+='</paper-icon-item>';return deviceHtml;}).join('');html+='</div>';var elem=$('.devicesList',page).html(html).trigger('create');$('.btnDeleteDevice',elem).on('click',function(){deleteDevice(page,this.getAttribute('data-id'));});}
 function loadData(page){Dashboard.showLoadingMsg();ApiClient.getJSON(ApiClient.getUrl('Devices',{SupportsPersistentIdentifier:true})).done(function(result){load(page,result.Items);Dashboard.hideLoadingMsg();});}
-$(document).on('pageshowready',"#devicesPage",function(){var page=this;loadData(page);});})();
+$(document).on('pageshow',"#devicesPage",function(){var page=this;loadData(page);});})();

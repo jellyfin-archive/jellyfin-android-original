@@ -120,15 +120,15 @@ function renderUserDataIcons(page,item){$('.userDataIcons',page).html(LibraryBro
 function renderCriticReviews(page,item,limit){if(item.Type!="Movie"&&item.Type!="Trailer"&&item.Type!="MusicVideo"){$('#criticReviewsCollapsible',page).hide();return;}
 var options={};if(limit){options.limit=limit;}
 ApiClient.getCriticReviews(item.Id,options).done(function(result){if(result.TotalRecordCount||item.CriticRatingSummary||item.AwardSummary){$('#criticReviewsCollapsible',page).show();renderCriticReviewsContent(page,result,limit);}else{$('#criticReviewsCollapsible',page).hide();}});}
-function renderCriticReviewsContent(page,result,limit){var html='';var reviews=result.Items;for(var i=0,length=reviews.length;i<length;i++){var review=reviews[i];html+='<div class="criticReview">';html+='<div class="reviewScore">';if(review.Score!=null){html+=review.Score;}
-else if(review.Likes!=null){if(review.Likes){html+='<img src="css/images/fresh.png" />';}else{html+='<img src="css/images/rotten.png" />';}}
-html+='</div>';html+='<div class="reviewCaption">'+review.Caption+'</div>';var vals=[];if(review.ReviewerName){vals.push(review.ReviewerName);}
+function renderCriticReviewsContent(page,result,limit){var html='';var reviews=result.Items;html+='<div class="paperList">';for(var i=0,length=reviews.length;i<length;i++){var review=reviews[i];html+='<paper-icon-item style="padding-top:.5em;padding-bottom:.5em;">';if(review.Score!=null){}
+else if(review.Likes!=null){if(review.Likes){html+='<paper-fab class="listAvatar" style="background-color:transparent;background-image:url(\'css/images/fresh.png\');background-repeat:no-repeat;background-position:center center;background-size: cover;" item-icon></paper-fab>';}else{html+='<paper-fab class="listAvatar" style="background-color:transparent;background-image:url(\'css/images/rotten.png\');background-repeat:no-repeat;background-position:center center;background-size: cover;" item-icon></paper-fab>';}}
+html+='<paper-item-body three-line>';html+='<div style="white-space:normal;">'+review.Caption+'</div>';var vals=[];if(review.ReviewerName){vals.push(review.ReviewerName);}
 if(review.Publisher){vals.push(review.Publisher);}
-html+='<div class="reviewerName">'+vals.join(', ')+'.';if(review.Date){try{var date=parseISO8601Date(review.Date,{toLocal:true}).toLocaleDateString();html+='<span class="reviewDate">'+date+'</span>';}
+html+='<div secondary>'+vals.join(', ')+'.';if(review.Date){try{var date=parseISO8601Date(review.Date,{toLocal:true}).toLocaleDateString();html+='<span class="reviewDate">'+date+'</span>';}
 catch(error){}}
-html+='</div>';if(review.Url){html+='<div class="reviewLink"><a class="textlink" href="'+review.Url+'" target="_blank">'+Globalize.translate('ButtonFullReview')+'</a></div>';}
-html+='</div>';}
-if(limit&&result.TotalRecordCount>limit){html+='<p style="margin: 0;"><paper-button raised class="more moreCriticReviews">'+Globalize.translate('ButtonMore')+'</paper-button></p>';}
+html+='</div>';if(review.Url){html+='<div secondary><a class="textlink" href="'+review.Url+'" target="_blank">'+Globalize.translate('ButtonFullReview')+'</a></div>';}
+html+='</paper-item-body>';html+='</paper-icon-item>';}
+html+='</div>';if(limit&&result.TotalRecordCount>limit){html+='<p style="margin: 0;"><paper-button raised class="more moreCriticReviews">'+Globalize.translate('ButtonMore')+'</paper-button></p>';}
 var criticReviewsContent=page.querySelector('#criticReviewsContent');criticReviewsContent.innerHTML=html;}
 function renderThemeMedia(page,item){ApiClient.getThemeMedia(Dashboard.getCurrentUserId(),item.Id,true).done(function(result){var themeSongs=result.ThemeSongsResult.OwnerId==item.Id?result.ThemeSongsResult.Items:[];var themeVideos=result.ThemeVideosResult.OwnerId==item.Id?result.ThemeVideosResult.Items:[];renderThemeSongs(page,themeSongs);renderThemeVideos(page,themeVideos);$(page).trigger('thememediadownload',[result]);});}
 function renderThemeSongs(page,items){if(items.length){$('#themeSongsCollapsible',page).show();var html=LibraryBrowser.getListViewHtml({items:items,smallIcon:true});page.querySelector('#themeSongsContent').innerHTML=html;}else{$('#themeSongsCollapsible',page).hide();}}
