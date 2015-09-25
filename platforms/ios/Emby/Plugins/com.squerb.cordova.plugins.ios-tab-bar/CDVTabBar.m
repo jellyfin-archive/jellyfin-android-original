@@ -60,7 +60,7 @@
 
   if ( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
     tabBar.barStyle = UIBarStyleBlack;
-    //tabBar.translucent = NO;
+    tabBar.translucent = YES;
     //tabBar.barTintColor = [UIColor colorWithRed:0.122 green:0.122 blue:0.122 alpha:1]; /*#1f1f1f*/
     tabBar.tintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1]; /*#ffffff*/
   } else {
@@ -372,6 +372,7 @@
     animateItems = [(NSString*)[options objectForKey:@"animate"] boolValue];
   }
   [tabBar setItems:items animated:animateItems];
+  tabBar.selectedItem = items[0];
 
   CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
