@@ -59,15 +59,15 @@
 
     function restartInterval() {
 
-        setInterval(function () {
+        //setInterval(function () {
 
-            startSync(false);
+        //    startSync(false);
 
-        }, syncInterval);
+        //}, syncInterval);
 
-        if (lastStart > 0 && (now - lastStart) >= syncInterval) {
-            startSync(true);
-        }
+        //if (lastStart > 0 && (now - lastStart) >= syncInterval) {
+        //    startSync(true);
+        //}
     }
 
     Dashboard.ready(restartInterval);

@@ -5,8 +5,7 @@ if(!$.browser.mobile&&!Dashboard.isConnectMode()){html+='<paper-icon-button icon
 html+='</div>';var viewMenuBar=document.createElement('div');viewMenuBar.classList.add('viewMenuBar');viewMenuBar.classList.add('ui-body-b');viewMenuBar.innerHTML=html;document.body.appendChild(viewMenuBar);ImageLoader.lazyChildren(document.querySelector('.viewMenuBar'));Events.trigger(document,'headercreated');bindMenuEvents();}
 function onBackClick(){if(Dashboard.exitOnBack()){Dashboard.exit();}
 else{history.back();}}
-function addUserToHeader(user){var header=document.querySelector('.viewMenuBar');var headerSearchButton=document.querySelector('.headerSearchButton')
-if(user.localUser){$('.btnCast',header).visible(true);if(headerSearchButton){headerSearchButton.classList.remove('hide');}
+function addUserToHeader(user){var header=document.querySelector('.viewMenuBar');var headerSearchButton=document.querySelector('.headerSearchButton');if(user.localUser){$('.btnCast',header).visible(true);if(headerSearchButton){headerSearchButton.classList.remove('hide');}
 requirejs(['voice/voice'],function(){if(VoiceInputManager.isSupported()){document.querySelector('.headerVoiceButton').classList.remove('hide');}else{document.querySelector('.headerVoiceButton').classList.add('hide');}});}else{$('.btnCast',header).visible(false);document.querySelector('.headerVoiceButton').classList.add('hide');if(headerSearchButton){headerSearchButton.classList.add('hide');}}
 var dashboardEntryHeaderButton=document.querySelector('.dashboardEntryHeaderButton');if(dashboardEntryHeaderButton){if(user.canManageServer){dashboardEntryHeaderButton.classList.remove('hide');}else{dashboardEntryHeaderButton.classList.add('hide');}}
 if(user.name){if(user.imageUrl&&AppInfo.enableUserImage){var userButtonHeight=26;var url=user.imageUrl;if(user.supportsImageParams){url+="&height="+(userButtonHeight*Math.max(devicePixelRatio||1,2));}
