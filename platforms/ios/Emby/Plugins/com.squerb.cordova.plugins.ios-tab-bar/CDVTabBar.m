@@ -61,8 +61,8 @@
   if ( SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
     tabBar.barStyle = UIBarStyleBlack;
     tabBar.translucent = YES;
-    //tabBar.barTintColor = [UIColor colorWithRed:0.122 green:0.122 blue:0.122 alpha:1]; /*#1f1f1f*/
-    tabBar.tintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1]; /*#ffffff*/
+    //tabBar.barTintColor = [UIColor colorWithRed:0.0 green:0.478 blue:1 alpha:1]; /*#1f1f1f*/
+    tabBar.tintColor = [UIColor colorWithRed:0 green:0.478 blue:1 alpha:1]; /*#ffffff*/
   } else {
     // Pre iOS 7
     tabBar.opaque = YES;
