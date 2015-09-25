@@ -516,9 +516,31 @@
         return deferred.promise();
     }
 
+    var activeDownloads = [];
+
+    function removeDownload(key) {
+
+        for (var i = 0, length = activeDownloads.length; i < length; i++) {
+            if (key == activeDownloads[i]) {
+                activeDownloads[i] = "";
+            }
+        }
+    }
+
     function downloadWithFileTransfer(url, localPath, enableBackground) {
 
         var deferred = DeferredBuilder.Deferred();
+
+        if (localStorage.getItem('sync-' + url) == '1') {
+            Logger.log('file was downloaded previously');
+            deferred.resolveWith(null, [localPath]);
+            return deferred.promise();
+        }
+
+        var downloadKey = url + localPath;
+        if (activeDownloads.indexOf(downloadKey) != -1) {
+            deferred.resolveWith(null, [localPath, true]);
+        }
 
         Logger.log('downloading: ' + url + ' to ' + localPath);
 
@@ -534,6 +556,8 @@
                     var ft = new FileTransfer();
                     ft.download(url, targetFile.toURL(), function (entry) {
 
+                        removeDownload(downloadKey);
+
                         if (enableBackground) {
                             Logger.log('Downloaded local url: ' + localPath);
                             localStorage.setItem('sync-' + url, '1');
@@ -543,6 +567,9 @@
                         }
 
                     }, function () {
+
+                        removeDownload(downloadKey);
+
                         Logger.log('Error downloading url: ' + url);
 
                         if (enableBackground) {
@@ -551,6 +578,7 @@
                             deferred.reject();
                         }
                     });
+                    activeDownloads.push(downloadKey);
 
                     if (enableBackground) {
                         // Give it a short period of time to see if it has already been completed before. Either way, move on and resolve it.
