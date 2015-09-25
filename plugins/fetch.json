@@ -307,5 +307,41 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "org.apache.cordova.background-download": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/sgrebnov/cordova-plugin-background-download",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "uk.co.whiteoctober.cordova.appversion": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/whiteoctober/cordova-plugin-app-version",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "org.transistorsoft.cordova.plugin.background.fetch": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/christocracy/cordova-plugin-background-fetch.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "com.squerb.cordova.plugins.ios-tab-bar": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/squerb/cordova-ios-tab-bar",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

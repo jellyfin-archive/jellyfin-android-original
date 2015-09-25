@@ -13,4 +13,5 @@ var i,length;var elem=page.querySelector('.sections');if(!elem.innerHTML){var ht
 elem.innerHTML=html;}
 var promises=[];for(i=0,length=sections.length;i<length;i++){var section=sections[i];elem=page.querySelector('.section'+section.id);promises.push(loadSection(elem,userId,section,sections.length==1));}
 $.when(promises).done(function(){Dashboard.hideLoadingMsg();LibraryBrowser.setLastRefreshed(page);});}
-window.HomePage.renderFavorites=function(page,tabContent){if(LibraryBrowser.needsRefresh(tabContent)){loadSections(tabContent,Dashboard.getCurrentUserId());}};})(jQuery,document);
+function initHomePage(){window.HomePage.renderFavorites=function(page,tabContent){if(LibraryBrowser.needsRefresh(tabContent)){loadSections(tabContent,Dashboard.getCurrentUserId());}};}
+initHomePage();pageIdOn('pageshow',"favoritesPage",function(){var page=this;if(LibraryBrowser.needsRefresh(page)){loadSections(page,Dashboard.getCurrentUserId());}});})(jQuery,document);

@@ -405,18 +405,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
         currentItem = jsonSerializer.DeserializeFromString(itemJson, BaseItemDto.class);
 
         final MediaWrapper mw = new MediaWrapper(Uri.parse(path));
-        final Media media = new Media(VLCInstance.get(getApplicationContext(), logger), mw.getUri());
-        VLCOptions.setMediaOptions(media, this, 0 | mw.getFlags());
-        media.setEventListener(mMediaListener);
-        mMediaPlayer.setMedia(media);
-        media.release();
-        mMediaPlayer.setEqualizer(VLCOptions.getEqualizer(this));
-        mMediaPlayer.setVideoTitleDisplay(MediaPlayer.Position.Disable, 0);
-        changeAudioFocus(true);
-        mMediaPlayer.setEventListener(mMediaPlayerListener);
-        mMediaPlayer.play();
-
-        notifyTrackChanged();
+        load(mw);
     }
 
     @Override

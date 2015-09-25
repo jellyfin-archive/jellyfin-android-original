@@ -375,6 +375,45 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/org.apache.cordova.background-download/www/Promise.js",
+        "id": "org.apache.cordova.background-download.Promise"
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/www/BackgroundDownloader.js",
+        "id": "org.apache.cordova.background-download.BackgroundDownloader",
+        "clobbers": [
+            "BackgroundTransfer.BackgroundDownloader"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/www/DownloadOperation.js",
+        "id": "org.apache.cordova.background-download.DownloadOperation",
+        "clobbers": [
+            "DownloadOperation"
+        ]
+    },
+    {
+        "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
+        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
+    },
+    {
+        "file": "plugins/org.transistorsoft.cordova.plugin.background.fetch/www/BackgroundFetch.js",
+        "id": "org.transistorsoft.cordova.plugin.background.fetch.BackgroundFetch",
+        "clobbers": [
+            "window.BackgroundFetch"
+        ]
+    },
+    {
+        "file": "plugins/com.squerb.cordova.plugins.ios-tab-bar/www/tab-bar.js",
+        "id": "com.squerb.cordova.plugins.ios-tab-bar.TabBar",
+        "clobbers": [
+            "window.TabBar"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -453,6 +492,10 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "2.0.0-dev",
     "com.telerik.plugins.wkwebview": "0.6.0",
     "io.litehelpers.cordova.sqlite": "0.7.11-dev",
+    "org.apache.cordova.background-download": "0.0.2",
+    "uk.co.whiteoctober.cordova.appversion": "0.1.7",
+    "org.transistorsoft.cordova.plugin.background.fetch": "2.0.4",
+    "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
