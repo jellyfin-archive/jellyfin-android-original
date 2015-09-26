@@ -79,11 +79,16 @@ else if(item.Type=="Episode"&&item.SeasonId){promise=ApiClient.getEpisodes(item.
 context=context||'';promise.done(function(result){var foundExisting=false;for(var i=0,length=result.Items.length;i<length;i++){var curr=result.Items[i];if(curr.Id==item.Id){foundExisting=true;}
 else if(!foundExisting){$('.lnkPreviousItem',page).removeClass('hide').attr('href','itemdetails.html?id='+curr.Id+'&context='+context);}
 else{$('.lnkNextItem',page).removeClass('hide').attr('href','itemdetails.html?id='+curr.Id+'&context='+context);}}});}
+function enableScrollX(){return $.browser.mobile&&AppInfo.enableAppLayouts;}
+function getPortraitShape(){return enableScrollX()?'overflowPortrait':'detailPagePortrait';}
+function getSquareShape(){return enableScrollX()?'overflowSquare':'detailPageSquare';}
 function renderSimilarItems(page,item,context){if(item.Type=="Movie"||item.Type=="Trailer"||item.Type=="Series"||item.Type=="Program"||item.Type=="Recording"||item.Type=="Game"||item.Type=="MusicAlbum"||item.Type=="MusicArtist"||item.Type=="ChannelVideoItem"){$('#similarCollapsible',page).show();}
 else{$('#similarCollapsible',page).hide();return;}
-var shape=item.Type=="MusicAlbum"||item.Type=="MusicArtist"?"detailPageSquare":"detailPagePortrait";var screenWidth=$(window).width();var screenHeight=$(window).height();var options={userId:Dashboard.getCurrentUserId(),limit:screenWidth>800&&shape=="detailPagePortrait"?5:4,fields:"PrimaryImageAspectRatio,UserData,SyncInfo"};if(screenWidth>=800&&screenHeight>=1000){options.limit*=2;}
+var shape=item.Type=="MusicAlbum"||item.Type=="MusicArtist"?getSquareShape():getPortraitShape();var screenWidth=$(window).width();var screenHeight=$(window).height();var options={userId:Dashboard.getCurrentUserId(),limit:screenWidth>800&&shape=="detailPagePortrait"?5:4,fields:"PrimaryImageAspectRatio,UserData,SyncInfo"};if(screenWidth>=800&&screenHeight>=1000){options.limit*=2;}
+if(enableScrollX()){options.limit=12;}
 ApiClient.getSimilarItems(item.Id,options).done(function(result){if(!result.Items.length){$('#similarCollapsible',page).hide();return;}
-var elem=$('#similarCollapsible',page).show();$('.similiarHeader',elem).html(Globalize.translate('HeaderIfYouLikeCheckTheseOut',item.Name));var html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:shape,showParentTitle:item.Type=="MusicAlbum",centerText:true,showTitle:item.Type=="MusicAlbum"||item.Type=="Game"||item.Type=="MusicArtist",borderless:item.Type=="Game",context:context,lazy:true,showDetailsMenu:true,coverImage:item.Type=="MusicAlbum"||item.Type=="MusicArtist",overlayPlayButton:true});$('#similarContent',page).html(html).lazyChildren().createCardMenus();});}
+var elem=$('#similarCollapsible',page).show();$('.similiarHeader',elem).html(Globalize.translate('HeaderIfYouLikeCheckTheseOut',item.Name));var html='';if(enableScrollX()){html+='<div class="hiddenScrollX itemsContainer">';}else{html+='<div class="itemsContainer">';}
+html+=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:shape,showParentTitle:item.Type=="MusicAlbum",centerText:true,showTitle:item.Type=="MusicAlbum"||item.Type=="Game"||item.Type=="MusicArtist",borderless:item.Type=="Game",context:context,lazy:true,showDetailsMenu:true,coverImage:item.Type=="MusicAlbum"||item.Type=="MusicArtist",overlayPlayButton:true});html+='</div>';$('#similarContent',page).html(html).lazyChildren().createCardMenus();});}
 function renderSeriesAirTime(page,item,isStatic){if(item.Type!="Series"){$('#seriesAirTime',page).hide();return;}
 var html='';if(item.AirDays&&item.AirDays.length){html+=item.AirDays.length==7?'daily':item.AirDays.map(function(a){return a+"s";}).join(',');}
 if(item.AirTime){html+=' at '+item.AirTime;}
