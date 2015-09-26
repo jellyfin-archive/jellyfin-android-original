@@ -167,4 +167,4 @@ if(currentTheme!='a'&&!$.browser.mobile){document.body.classList.add('darkScroll
 Dashboard.ensurePageTitle(page);var apiClient=window.ApiClient;if(apiClient&&apiClient.accessToken()&&Dashboard.getCurrentUserId()){var isSettingsPage=page.classList.contains('type-interior');if(isSettingsPage){Dashboard.ensureToolsMenu(page);Dashboard.getCurrentUser().done(function(user){if(!user.Policy.IsAdministrator){Dashboard.logout();}});}}
 else{var isConnectMode=Dashboard.isConnectMode();if(isConnectMode){if(!Dashboard.isServerlessPage()){Dashboard.logout();return;}}
 if(!isConnectMode&&this.id!=="loginPage"&&!page.classList.contains('forgotPasswordPage')&&!page.classList.contains('wizardPage')&&this.id!=='publicSharedItemPage'){Logger.log('Not logged into server. Redirecting to login.');Dashboard.logout();return;}}
-Events.trigger(page,'pageshowready');Dashboard.ensureHeader(page);if(apiClient&&!apiClient.isWebSocketOpen()){Dashboard.refreshSystemInfoFromServer();}});Dashboard.jQueryMobileInit();
+Dashboard.ensureHeader(page);if(apiClient&&!apiClient.isWebSocketOpen()){Dashboard.refreshSystemInfoFromServer();}});Dashboard.jQueryMobileInit();
