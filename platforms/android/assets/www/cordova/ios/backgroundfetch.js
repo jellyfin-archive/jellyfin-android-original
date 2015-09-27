@@ -55,7 +55,7 @@
         Logger.log('- BackgroundFetch failed');
     }
 
-    var syncInterval = 3600000;
+    var syncInterval = 1800000;
 
     function restartInterval() {
 
