@@ -30,6 +30,18 @@ NSString* appDataFolder;
     return YES;
 }
 
+- (void) restartServerIfNeeded {
+    
+    NSLog(@"restartServerIfNeeded");
+    
+    if (!_webServer.isRunning)
+    {
+        NSLog(@"starting server");
+
+        [self startServer];
+    }
+}
+
 - (void) createWindowAndStartWebServer:(BOOL) startWebServer {
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
 

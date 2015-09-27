@@ -20,31 +20,47 @@
 #import "BackgroundDownload.h"
 
 @implementation BackgroundDownload {
-    bool ignoreNextError;
+    
 }
 
 @synthesize session;
-@synthesize downloadTask;
 
 - (void)startAsync:(CDVInvokedUrlCommand*)command
 {
-    self.downloadUri = [command.arguments objectAtIndex:0];
-    self.targetFile = [command.arguments objectAtIndex:1];
+    NSString *downloadUri = [command.arguments objectAtIndex:0];
+    NSString *targetFile = [command.arguments objectAtIndex:1];
     
-    self.callbackId = command.callbackId;
+    NSURL *downloadUrl =[NSURL URLWithString:downloadUri];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:self.downloadUri]];
-    
-    ignoreNextError = NO;
+    //self.callbackId = command.callbackId;
     
     session = [self backgroundSession];
     
     [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-        if (downloadTasks.count > 0) {
-            downloadTask = downloadTasks[0];
-        } else {
+        
+        NSURLSessionDownloadTask *downloadTask = NULL;
+        
+        for (NSURLSessionDownloadTask *task in downloadTasks)
+        {
+            if ([task.originalRequest.URL absoluteString] == [downloadUrl absoluteString]) {
+                NSLog(@"Reusing download task");
+                downloadTask = task;
+                break;
+            }
+        }
+        
+        if (downloadTask == NULL) {
+            NSLog(@"Creating new download task");
+            NSURLRequest *request = [NSURLRequest requestWithURL:downloadUrl];
+            
             downloadTask = [session downloadTaskWithRequest:request];
         }
+        NSString *taskDesciption = targetFile;
+        taskDesciption = [taskDesciption stringByAppendingString:@"|"];
+        taskDesciption = [taskDesciption stringByAppendingString: command.callbackId];
+        
+        downloadTask.taskDescription = taskDesciption;
+        
         [downloadTask resume];
     }];
     
@@ -56,6 +72,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"com.cordova.plugin.BackgroundDownload.BackgroundSession"];
+        config.discretionary = YES;
         backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     });
     return backgroundSession;
@@ -72,7 +89,7 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Arg was null"];
     }
     
-    [downloadTask cancel];
+    //[downloadTask cancel];
     
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -85,14 +102,19 @@
     [resObj setObject:progressObj forKey:@"progress"];
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:resObj];
     result.keepCallback = [NSNumber numberWithInteger: TRUE];
-    [self.commandDelegate sendPluginResult:result callbackId:self.callbackId];
+    
+    NSArray *chunks = [downloadTask.taskDescription componentsSeparatedByString: @"|"];
+    
+    NSString *callbackId = chunks[1];
+    
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 -(void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-    if (ignoreNextError) {
-        ignoreNextError = NO;
-        return;
-    }
+    
+    NSArray *chunks = [task.taskDescription componentsSeparatedByString: @"|"];
+    NSString *callbackId = chunks[1];
+    
     if (error != nil) {
         NSLog(@"didCompleteWithError - error");
         
@@ -101,30 +123,37 @@
             // resumeData is available only if operation was terminated by the system (no connection or other reason)
             // this happens when application is closed when there is pending download, so we try to resume it
             if (resumeData != nil) {
-                ignoreNextError = YES;
-                [downloadTask cancel];
-                downloadTask = [self.session downloadTaskWithResumeData:resumeData];
-                [downloadTask resume];
-                return;
+                //ignoreNextError = YES;
+                [task cancel];
+                //downloadTask = [self.session downloadTaskWithResumeData:resumeData];
+                //[downloadTask resume];
+                //return;
             }
         }
         CDVPluginResult* errorResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
-        [self.commandDelegate sendPluginResult:errorResult callbackId:self.callbackId];
+        [self.commandDelegate sendPluginResult:errorResult callbackId:callbackId];
     } else {
         
         NSLog(@"didCompleteWithError - OK");
         
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
     }
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    NSURL *targetURL = [NSURL URLWithString:_targetFile];
+    NSArray *chunks = [downloadTask.taskDescription componentsSeparatedByString: @"|"];
     
-    [fileManager removeItemAtPath:targetURL.path error: nil];
-    [fileManager createFileAtPath:targetURL.path contents:[fileManager contentsAtPath:[location path]] attributes:nil];
+    NSString *targetUrlString = chunks[0];
+    
+    NSLog(@"taskDescription: " );
+    NSLog(targetUrlString);
+    
+    [fileManager removeItemAtPath:targetUrlString error: nil];
+    NSLog(@"Completed removeItemAtPath");
+    [fileManager createFileAtPath:targetUrlString contents:[fileManager contentsAtPath:[location path]] attributes:nil];
+    NSLog(@"Completed didFinishDownloadingToURL");
 }
 @end

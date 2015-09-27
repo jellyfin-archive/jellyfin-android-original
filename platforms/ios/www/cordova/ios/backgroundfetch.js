@@ -7,7 +7,7 @@
         var fetcher = window.BackgroundFetch;
 
         fetcher.configure(onBackgroundFetch, onBackgroundFetchFailed, {
-            stopOnTerminate: true  // <-- false is default
+            stopOnTerminate: false  // <-- false is default
         });
     }
 
@@ -61,15 +61,16 @@
 
         setInterval(function () {
 
-            startSync();
+            //startSync();
 
         }, syncInterval);
 
         if (lastStart > 0 && (new Date().getTime() - lastStart) >= syncInterval) {
 
             setTimeout(function () {
-                startSync();
-            }, 3000);
+                //startSync();
+
+            }, 5000);
         }
     }
 

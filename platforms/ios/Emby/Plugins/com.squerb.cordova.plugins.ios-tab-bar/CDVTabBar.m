@@ -62,7 +62,7 @@
     tabBar.barStyle = UIBarStyleBlack;
     tabBar.translucent = YES;
     //tabBar.barTintColor = [UIColor colorWithRed:0.0 green:0.478 blue:1 alpha:1]; /*#1f1f1f*/
-    tabBar.tintColor = [UIColor colorWithRed:0.322 green:0.710 blue:1 alpha:0.294]; /*#ffffff*/
+    tabBar.tintColor = [UIColor colorWithRed:0.322 green:0.710 blue:0.294 alpha:1]; /*#ffffff*/
   } else {
     // Pre iOS 7
     tabBar.opaque = YES;
@@ -142,8 +142,6 @@
 	NSNotification* notif = [NSNotification notificationWithName:@"CDVLayoutSubviewAdded" object:tabBar];
 	[[NSNotificationQueue defaultQueue] enqueueNotification:notif postingStyle: NSPostASAP];
 
-  if (atBottom)
-  {
     tabBarBounds = CGRectMake(
                               webViewBounds.origin.x,
                               webViewBounds.origin.y + webViewBounds.size.height - height,
@@ -156,22 +154,6 @@
                                webViewBounds.size.width,
                                webViewBounds.size.height - height
                                );
-  }
-  else
-  {
-    tabBarBounds = CGRectMake(
-                              webViewBounds.origin.x,
-                              webViewBounds.origin.y,
-                              webViewBounds.size.width,
-                              height
-                              );
-    webViewBounds = CGRectMake(
-                               webViewBounds.origin.x,
-                               webViewBounds.origin.y + height,
-                               webViewBounds.size.width,
-                               webViewBounds.size.height - height
-                               );
-  }
 
   [tabBar setFrame:tabBarBounds];
 
@@ -200,7 +182,13 @@
   if (!tabBar) {
     [self createTabBar:nil];
   }
-	tabBar.hidden = YES;
+	
+    // if we are calling this again when its shown, reset
+    if (tabBar.hidden) {
+        return;
+    }
+    
+    tabBar.hidden = YES;
 
   NSNotification* notif = [NSNotification notificationWithName:@"CDVLayoutSubviewRemoved" object:tabBar];
   [[NSNotificationQueue defaultQueue] enqueueNotification:notif postingStyle: NSPostASAP];
