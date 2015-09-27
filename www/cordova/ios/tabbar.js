@@ -111,6 +111,7 @@
             tabs.push('Settings');
 
             TabBar.showNamedItems(tabs);
+            showTabs();
         });
     }
 
