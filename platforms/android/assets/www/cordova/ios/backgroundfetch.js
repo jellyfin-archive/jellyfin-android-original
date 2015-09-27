@@ -61,14 +61,14 @@
 
         setInterval(function () {
 
-            startSync();
+            //startSync();
 
         }, syncInterval);
 
         if (lastStart > 0 && (new Date().getTime() - lastStart) >= syncInterval) {
 
             setTimeout(function () {
-                startSync();
+                //startSync();
 
             }, 5000);
         }
