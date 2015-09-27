@@ -53,7 +53,8 @@ return supportsTextTracks;};self.setCurrentTrackElement=function(trackIndex){Log
 Logger.log('Setting track '+i+' mode to: '+mode);var useNumericMode=false;if(!isNaN(allTracks[i].mode)){useNumericMode=true;}
 if(useNumericMode){allTracks[i].mode=mode;}else{allTracks[i].mode=modes[mode];}}};self.updateTextStreamUrls=function(startPositionTicks){if(!self.supportsTextTracks()){return;}
 var allTracks=mediaElement.textTracks;for(var i=0;i<allTracks.length;i++){var track=allTracks[i];try{while(track.cues.length){track.removeCue(track.cues[0]);}}catch(e){Logger.log('Error removing cue from textTrack');}}
-$('track',mediaElement).each(function(){this.src=replaceQueryString(this.src,'startPositionTicks',startPositionTicks);});};self.enableCustomVideoControls=function(){if(AppInfo.isNativeApp&&$.browser.safari){return true;}
+$('track',mediaElement).each(function(){this.src=replaceQueryString(this.src,'startPositionTicks',startPositionTicks);});};self.enableCustomVideoControls=function(){if(AppInfo.isNativeApp&&$.browser.safari){if(navigator.userAgent.toLowerCase().indexOf('iphone')!=-1){return true;}
+return false;}
 return self.canAutoPlayVideo()&&!$.browser.mobile;};self.canAutoPlayVideo=function(){if(AppInfo.isNativeApp){return true;}
 if($.browser.mobile){return false;}
 return true;};self.init=function(){var deferred=DeferredBuilder.Deferred();if(options.type=='video'&&enableViblast()){requireViblast(function(){deferred.resolve();});}else{deferred.resolve();}
