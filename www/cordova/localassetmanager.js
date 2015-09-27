@@ -480,11 +480,11 @@
 
         var deferred = DeferredBuilder.Deferred();
 
-        //if (localStorage.getItem('sync-' + url) == '1') {
-        //    Logger.log('file was downloaded previously');
-        //    deferred.resolveWith(null, [localPath]);
-        //    return deferred.promise();
-        //}
+        if (localStorage.getItem('sync-' + url) == '1') {
+            Logger.log('file was downloaded previously');
+            deferred.resolveWith(null, [localPath]);
+            return deferred.promise();
+        }
 
         Logger.log('downloading: ' + url + ' to ' + localPath);
 
@@ -501,9 +501,10 @@
                 // Give it a short period of time to see if it has already been completed before. Either way, move on and resolve it.
                 var timeoutHandle = setTimeout(function () {
 
+                    isResolved = true;
                     // true indicates that it's queued
                     deferred.resolveWith(null, [localPath, true]);
-                }, 3000);
+                }, 1000);
 
                 // Start the download and persist the promise to be able to cancel the download.
                 download.startAsync().then(function () {
@@ -513,7 +514,7 @@
                     Logger.log('Downloaded local url: ' + localPath);
                     if (isResolved) {
                         // If we've already moved on, set this property so that we'll see it later
-                        // localStorage.setItem('sync-' + url, '1');
+                        localStorage.setItem('sync-' + url, '1');
                     } else {
                         // true indicates that it's queued
                         deferred.resolveWith(null, [localPath, false]);
