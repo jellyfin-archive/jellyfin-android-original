@@ -55,7 +55,7 @@ public class PreferencesProvider {
             logger.Error("SharedPreferences.Editor failed to save %s!", key);
         }
 
-        if (key.equalsIgnoreCase("syncPath") || key.equalsIgnoreCase("syncOnlyOnWifi")){
+        if (key.equalsIgnoreCase("syncPath") || key.equalsIgnoreCase("syncOnlyOnWifi") || key.equalsIgnoreCase("cameraUploadServers")){
             updateSyncPreferences();
         }
     }
@@ -68,8 +68,11 @@ public class PreferencesProvider {
         String syncOnOnWifiSetting = getSharedPreferences(context).getString("syncOnlyOnWifi", "true");
         boolean syncOnOnWifi = !syncOnOnWifiSetting.equalsIgnoreCase("false");
 
+        String cameraUploadServersString = getSharedPreferences(context).getString("cameraUploadServers", "");
+        String[] cameraUploadServers = cameraUploadServersString == null || cameraUploadServersString.length() == 0 ? new String[]{} : cameraUploadServersString.split(",");
+
         logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences with %s", syncPath);
-        MediaSyncAdapter.updateSyncPreferences(context, syncPath, syncOnOnWifi);
+        MediaSyncAdapter.updateSyncPreferences(context, syncPath, syncOnOnWifi, cameraUploadServers);
     }
 
     private static SharedPreferences getSharedPreferences(Context context) {
