@@ -154,6 +154,13 @@ h1, h1 a {
     padding: 0 !important;
 }
 
+@media all and (max-width: 400px) {
+
+    .libraryMenuButtonText {
+        display: block;
+    }
+}
+
 .libraryPanelHeader span {
     font-weight: 400;
 }
@@ -219,6 +226,10 @@ paper-tab {
     display: none !important;
 }
 
-.nowPlayingPagePaperTabs {
-    display: none !important;
+.nowPlayingPage .libraryViewNav {
+    top: 0 !important;
+}
+
+.nowPlayingPage {
+    padding-top: 40px !important;
 }
