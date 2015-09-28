@@ -108,15 +108,15 @@ body {
 }
 
 .libraryViewNav .ui-btn-active, .libraryViewNav .iron-selected, .btnActiveCast {
-    color: #007AFF !important;
+    color: #52B54B !important;
 }
 
 .channelTimeslotHeader {
-    border-right-color: #007AFF !important;
+    border-right-color: #52B54B !important;
 }
 
 .channelTimeslotHeader, .timeslotHeader {
-    background: #007AFF !important;
+    background: #52B54B !important;
 }
 
 .libraryViewNav, paper-tabs {

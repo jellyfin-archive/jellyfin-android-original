@@ -3,8 +3,7 @@ function getPremiumUnlockFeatureId(){if(isAndroid()){return"com.mb.android.unloc
 return'appunlock';}
 function validatePlayback(deferred){if(isAndroid()){deferred.resolve();return;}
 validateFeature(getPremiumUnlockFeatureId(),deferred);}
-function validateLiveTV(deferred){if(!isAndroid()){deferred.resolve();return;}
-validateFeature(getPremiumUnlockFeatureId(),deferred);}
+function validateLiveTV(deferred){validateFeature(getPremiumUnlockFeatureId(),deferred);}
 function validateServerManagement(deferred){deferred.resolve();}
 function getRegistrationInfo(feature,enableSupporterUnlock){if(!enableSupporterUnlock){var deferred=$.Deferred();deferred.resolveWith(null,[{}]);return deferred.promise();}
 return ConnectionManager.getRegistrationInfo(feature,ApiClient);}
