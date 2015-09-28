@@ -27,7 +27,7 @@
         fetcher.finish();   // <-- N.B. You MUST called #finish so that native-side can signal completion of the background-thread to the os.
     }
 
-    function startSync(reportToFetcher) {
+    function startSync(reportToFetcher, syncOptions) {
         lastStart = new Date().getTime();
 
         require(['localsync'], function () {
@@ -37,7 +37,7 @@
                 return;
             }
 
-            var promise = LocalSync.sync();
+            var promise = LocalSync.sync(syncOptions);
 
             if (reportToFetcher) {
                 promise.done(onSyncFinish).fail(onSyncFail);
@@ -48,7 +48,11 @@
     function onBackgroundFetch() {
 
         Logger.log('BackgroundFetch initiated');
-        startSync(true);
+
+        startSync(true, {
+            uploadPhotos: false,
+            enableBackgroundTransfer: true
+        });
     }
 
     function onBackgroundFetchFailed() {
@@ -61,17 +65,26 @@
 
         setInterval(function () {
 
-            //startSync();
+            startIntervalSync();
 
         }, syncInterval);
 
         if (lastStart > 0 && (new Date().getTime() - lastStart) >= syncInterval) {
 
             setTimeout(function () {
-                //startSync();
+                startIntervalSync();
 
             }, 5000);
         }
+    }
+
+    function startIntervalSync() {
+
+        startSync(true, {
+            uploadPhotos: true,
+            enableNewDownloads: false,
+            enableBackgroundTransfer: true
+        });
     }
 
     Dashboard.ready(restartInterval);
