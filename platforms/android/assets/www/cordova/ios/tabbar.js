@@ -111,7 +111,9 @@
             tabs.push('Settings');
 
             TabBar.showNamedItems(tabs);
-            showTabs();
+
+            // We need to make sure the above completes first
+            setTimeout(showTabs, 500);
         });
     }
 

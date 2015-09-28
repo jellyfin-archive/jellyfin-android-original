@@ -834,7 +834,7 @@ function setAppInfo(){if(isTouchDevice()){AppInfo.isTouchPreferred=true;}
 var isCordova=Dashboard.isRunningInCordova();AppInfo.enableDetailPageChapters=true;AppInfo.enableDetailsMenuImages=true;AppInfo.enableMovieHomeSuggestions=true;AppInfo.enableNavDrawer=true;AppInfo.enableSearchInTopMenu=true;AppInfo.enableHomeFavorites=true;AppInfo.enableNowPlayingBar=true;AppInfo.enableHomeTabs=true;AppInfo.enableNowPlayingPageBottomTabs=true;AppInfo.enableAppStorePolicy=isCordova;var isIOS=$.browser.safari||$.browser.ipad||$.browser.iphone;var isAndroid=$.browser.android;var isMobile=$.browser.mobile;if(isIOS){if(isMobile){AppInfo.hasLowImageBandwidth=true;}
 if(isCordova){AppInfo.enableNavDrawer=false;AppInfo.enableSearchInTopMenu=false;AppInfo.enableHomeFavorites=false;AppInfo.enableHomeTabs=false;AppInfo.enableNowPlayingPageBottomTabs=false;if(navigator.userAgent.toString().toLowerCase().indexOf('iphone')!=-1){AppInfo.enableNowPlayingBar=false;}}else{if(isMobile){AppInfo.enableDetailPageChapters=false;AppInfo.enableDetailsMenuImages=false;AppInfo.enableMovieHomeSuggestions=false;AppInfo.cardMargin='largeCardMargin';AppInfo.forcedImageFormat='jpg';}}}
 if(!AppInfo.hasLowImageBandwidth){AppInfo.enableStudioTabs=true;AppInfo.enablePeopleTabs=true;AppInfo.enableTvEpisodesTab=true;AppInfo.enableMovieTrailersTab=true;}
-if(isCordova){AppInfo.enableAppLayouts=true;AppInfo.hasKnownExternalPlayerSupport=true;AppInfo.isNativeApp=true;}
+AppInfo.enableAppLayouts=true;if(isCordova){AppInfo.enableAppLayouts=true;AppInfo.hasKnownExternalPlayerSupport=true;AppInfo.isNativeApp=true;}
 else{AppInfo.enableFooterNotifications=true;AppInfo.enableSupporterMembership=true;if(!isAndroid&&!isIOS){AppInfo.enableAppLayouts=true;}}
 if(!$.browser.tv&&!isIOS){if(AppInfo.isNativeApp||window.navigator.standalone||!$.browser.mobile){AppInfo.enableHeadRoom=true;}}
 AppInfo.enableUserImage=true;AppInfo.hasPhysicalVolumeButtons=isCordova||isMobile;AppInfo.enableBackButton=isIOS&&(window.navigator.standalone||AppInfo.isNativeApp);AppInfo.supportsFullScreen=isCordova&&isAndroid;AppInfo.supportsSyncPathSetting=isCordova&&isAndroid;AppInfo.supportsUserDisplayLanguageSetting=Dashboard.isConnectMode()&&!isCordova;AppInfo.directPlayAudioContainers=[];AppInfo.directPlayVideoContainers=[];if(isCordova&&isIOS){AppInfo.moreIcon='more-horiz';}else{AppInfo.moreIcon='more-vert';}}
@@ -1314,12 +1314,14 @@ showOverlayTimeout=setTimeout(function(){onShowTimerExpired(elem);},1000);}
 function preventTouchHover(){preventHover=true;}
 this.off('click',onCardClick);this.on('click',onCardClick);if(AppInfo.isTouchPreferred){this.off('contextmenu',disableEvent);this.on('contextmenu',disableEvent);}
 else{this.off('contextmenu',onContextMenu);this.on('contextmenu',onContextMenu);this.off('mouseenter','.card:not(.bannerCard) .cardContent',onHoverIn);this.on('mouseenter','.card:not(.bannerCard) .cardContent',onHoverIn);this.off('mouseleave','.card:not(.bannerCard) .cardContent',onHoverOut);this.on('mouseleave','.card:not(.bannerCard) .cardContent',onHoverOut);this.off("touchstart",'.card:not(.bannerCard) .cardContent',preventTouchHover);this.on("touchstart",'.card:not(.bannerCard) .cardContent',preventTouchHover);}
-for(var i=0,length=this.length;i<length;i++){initTapHold(this[i]);}
-return this;};function disableEvent(e){e.preventDefault();return false;}
-function onTapHold(e){var card=parentWithClass(e.target,'card');if(card){showSelections(card);e.preventDefault();return false;}}
-function onTapHoldUp(e){var itemSelectionPanel=parentWithClass(e.target,'itemSelectionPanel');if(itemSelectionPanel){if(!parentWithClass(e.target,'chkItemSelect')){var chkItemSelect=itemSelectionPanel.querySelector('.chkItemSelect');if(chkItemSelect){chkItemSelect.checked=!chkItemSelect.checked;}}}}
+for(var i=0,length=this.length;i<length;i++){initTapHoldMenus(this[i]);}
+return this;};function initTapHoldMenus(elem){if(elem.classList.contains('itemsContainer')){initTapHold(elem);return;}
+var elems=elem.querySelectorAll('.itemsContainer');for(var i=0,length=elems.length;i<length;i++){initTapHold(elems[i]);}}
 function initTapHold(element){if(!LibraryBrowser.allowSwipe(element)){return;}
 require(['hammer'],function(Hammer){var hammertime=new Hammer(element);hammertime.on('press',onTapHold);hammertime.on('pressup',onTapHoldUp);});}
+function disableEvent(e){e.preventDefault();return false;}
+function onTapHold(e){var card=parentWithClass(e.target,'card');if(card){showSelections(card);e.preventDefault();return false;}}
+function onTapHoldUp(e){var itemSelectionPanel=parentWithClass(e.target,'itemSelectionPanel');if(itemSelectionPanel){if(!parentWithClass(e.target,'chkItemSelect')){var chkItemSelect=itemSelectionPanel.querySelector('.chkItemSelect');if(chkItemSelect){chkItemSelect.checked=!chkItemSelect.checked;}}}}
 function onItemSelectionPanelClick(e,itemSelectionPanel){if(!parentWithClass(e.target,'chkItemSelect')){var chkItemSelect=itemSelectionPanel.querySelector('.chkItemSelect');if(chkItemSelect){var newValue=!chkItemSelect.checked;chkItemSelect.checked=newValue;updateItemSelection(chkItemSelect,newValue);}}
 e.preventDefault();return false;}
 function showSelection(item){var itemSelectionPanel=item.querySelector('.itemSelectionPanel');if(!itemSelectionPanel){itemSelectionPanel=document.createElement('div');itemSelectionPanel.classList.add('itemSelectionPanel');item.querySelector('.cardContent').appendChild(itemSelectionPanel);var html='';html+='<paper-checkbox class="chkItemSelect"></paper-checkbox>';itemSelectionPanel.innerHTML=html;}}
