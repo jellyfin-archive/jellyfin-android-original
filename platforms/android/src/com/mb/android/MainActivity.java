@@ -60,6 +60,7 @@ import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.OnDemandSync;
+import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
@@ -72,6 +73,7 @@ public class MainActivity extends CordovaActivity
     private final int REQUEST_DIRECTORY = 998;
     public static final int VIDEO_PLAYBACK = 997;
     private static IWebView webView;
+    private IAsyncHttpClient httpClient;
 
     private ILogger getLogger(){
         return AppLogger.getLogger(this);
@@ -130,7 +132,9 @@ public class MainActivity extends CordovaActivity
 
         final IapManager iapManager = new IapManager(context, webView, logger);
         webView.addJavascriptInterface(iapManager, "NativeIapManager");
-        webView.addJavascriptInterface(new ApiClientBridge(context, logger, webView, jsonSerializer), "ApiClientBridge");
+        ApiClientBridge apiClientBridge = new ApiClientBridge(context, logger, webView, jsonSerializer);
+        webView.addJavascriptInterface(apiClientBridge, "ApiClientBridge");
+        httpClient = apiClientBridge.httpClient;
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
