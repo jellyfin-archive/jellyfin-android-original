@@ -42,7 +42,7 @@
         
         for (NSURLSessionDownloadTask *task in downloadTasks)
         {
-            if ([task.originalRequest.URL absoluteString] == [downloadUrl absoluteString]) {
+            if ([task.originalRequest.URL.absoluteString isEqualToString: downloadUrl.absoluteString]) {
                 NSLog(@"Reusing download task");
                 downloadTask = task;
                 break;
@@ -94,21 +94,21 @@
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-    NSMutableDictionary* progressObj = [NSMutableDictionary dictionaryWithCapacity:1];
-    [progressObj setObject:[NSNumber numberWithInteger:totalBytesWritten] forKey:@"bytesReceived"];
-    [progressObj setObject:[NSNumber numberWithInteger:totalBytesExpectedToWrite] forKey:@"totalBytesToReceive"];
-    NSMutableDictionary* resObj = [NSMutableDictionary dictionaryWithCapacity:1];
-    [resObj setObject:progressObj forKey:@"progress"];
-    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:resObj];
-    result.keepCallback = [NSNumber numberWithInteger: TRUE];
-    
-    NSArray *chunks = [downloadTask.taskDescription componentsSeparatedByString: @"|"];
-    
-    NSString *callbackId = chunks[1];
-    
-    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
-}
+//- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+//    NSMutableDictionary* progressObj = [NSMutableDictionary dictionaryWithCapacity:1];
+//    [progressObj setObject:[NSNumber numberWithInteger:totalBytesWritten] forKey:@"bytesReceived"];
+//    [progressObj setObject:[NSNumber numberWithInteger:totalBytesExpectedToWrite] forKey:@"totalBytesToReceive"];
+//    NSMutableDictionary* resObj = [NSMutableDictionary dictionaryWithCapacity:1];
+//    [resObj setObject:progressObj forKey:@"progress"];
+//    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:resObj];
+//    result.keepCallback = [NSNumber numberWithInteger: TRUE];
+//    
+//    NSArray *chunks = [downloadTask.taskDescription componentsSeparatedByString: @"|"];
+//    
+//    NSString *callbackId = chunks[1];
+//    
+//    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+//}
 
 -(void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
     
