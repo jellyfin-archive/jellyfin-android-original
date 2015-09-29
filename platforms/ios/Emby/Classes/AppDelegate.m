@@ -29,6 +29,7 @@
 #import "MainViewController.h"
 
 #import <Cordova/CDVPlugin.h>
+#import "AppDelegate+WKWebViewPolyfill.h"
 
 @implementation AppDelegate
 
@@ -63,30 +64,35 @@
  */
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
-    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [appDelegate createWindowAndStartWebServer:true];
+    
+    //[self createWindowAndStartWebServer:true];
 
-#if __has_feature(objc_arc)
-        self.window = [[UIWindow alloc] initWithFrame:screenBounds];
-#else
-        self.window = [[[UIWindow alloc] initWithFrame:screenBounds] autorelease];
-#endif
-    self.window.autoresizesSubviews = YES;
-
-#if __has_feature(objc_arc)
-        self.viewController = [[MainViewController alloc] init];
-#else
-        self.viewController = [[[MainViewController alloc] init] autorelease];
-#endif
-
-    // Set your app's start page by setting the <content src='foo.html' /> tag in config.xml.
-    // If necessary, uncomment the line below to override it.
-    // self.viewController.startPage = @"index.html";
-
-    // NOTE: To customize the view's frame size (which defaults to full screen), override
-    // [self.viewController viewWillAppear:] in your view controller.
-
-    self.window.rootViewController = self.viewController;
-    [self.window makeKeyAndVisible];
+//    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+//
+//#if __has_feature(objc_arc)
+//        self.window = [[UIWindow alloc] initWithFrame:screenBounds];
+//#else
+//        self.window = [[[UIWindow alloc] initWithFrame:screenBounds] autorelease];
+//#endif
+//    self.window.autoresizesSubviews = YES;
+//
+//#if __has_feature(objc_arc)
+//        self.viewController = [[MainViewController alloc] init];
+//#else
+//        self.viewController = [[[MainViewController alloc] init] autorelease];
+//#endif
+//
+//    // Set your app's start page by setting the <content src='foo.html' /> tag in config.xml.
+//    // If necessary, uncomment the line below to override it.
+//    // self.viewController.startPage = @"index.html";
+//
+//    // NOTE: To customize the view's frame size (which defaults to full screen), override
+//    // [self.viewController viewWillAppear:] in your view controller.
+//
+//    self.window.rootViewController = self.viewController;
+//    [self.window makeKeyAndVisible];
 
     return YES;
 }

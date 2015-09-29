@@ -114,7 +114,8 @@ NSString* appDataFolder;
     NSError *error = nil;
 
     // Enable this option to force the Server also to run when suspended
-    [_webServerOptions setObject:[NSNumber numberWithBool:NO] forKey:GCDWebServerOption_AutomaticallySuspendInBackground];
+    //[_webServerOptions setObject:[NSNumber numberWithBool:NO] forKey:GCDWebServerOption_AutomaticallySuspendInBackground];
+    [_webServerOptions setObject:[NSNumber numberWithFloat:6.0] forKey:GCDWebServerOption_ConnectedStateCoalescingInterval];
 
     [_webServerOptions setObject:[NSNumber numberWithBool:YES]
                           forKey:GCDWebServerOption_BindToLocalhost];

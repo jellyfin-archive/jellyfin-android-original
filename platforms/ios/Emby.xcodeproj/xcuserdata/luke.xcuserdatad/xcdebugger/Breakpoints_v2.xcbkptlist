@@ -82,11 +82,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Emby/Classes/AppDelegate.m"
-            timestampString = "457935074.290016"
+            timestampString = "465093501.610348"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
             landmarkName = "-init"
             landmarkType = "5">
          </BreakpointContent>
@@ -104,6 +104,38 @@
             startingLineNumber = "152"
             endingLineNumber = "152"
             landmarkName = "-URLSession:downloadTask:didFinishDownloadingToURL:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Emby/Plugins/org.apache.cordova.background-download/BackgroundDownload.m"
+            timestampString = "465160284.541001"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "-startAsync:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Emby/Plugins/org.apache.cordova.background-download/BackgroundDownload.m"
+            timestampString = "465160289.455779"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "-startAsync:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
