@@ -20,13 +20,13 @@
 package com.mb.android;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -37,7 +37,6 @@ import com.mb.android.io.NativeFileSystem;
 import com.mb.android.logging.AppLogger;
 import com.mb.android.logging.LoggingBridge;
 import com.mb.android.media.MediaService;
-import com.mb.android.media.PlaybackService;
 import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
@@ -55,22 +54,30 @@ import org.crosswalk.engine.XWalkCordovaView;
 import org.crosswalk.engine.XWalkWebViewEngine;
 import org.xwalk.core.JavascriptInterface;
 
+import mediabrowser.apiinteraction.QueryStringDictionary;
+import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.OnDemandSync;
-import mediabrowser.logging.ConsoleLogger;
+import mediabrowser.apiinteraction.http.HttpRequest;
+import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
+import tv.emby.iap.InAppProduct;
 import tv.emby.iap.UnlockActivity;
 
 public class MainActivity extends CordovaActivity
 {
-    private final int PURCHASE_UNLOCK_REQUEST = 999;
+    private final int PURCHASE_REQUEST = 999;
     private final int REQUEST_DIRECTORY = 998;
     public static final int VIDEO_PLAYBACK = 997;
+    private final String embyAdminUrl = "http://mb3admin.com/test/admin/service/";
+    private String purchaseEmail; // You could fill this in from the connect record if using Emby Connect...
     private static IWebView webView;
+    private IAsyncHttpClient httpClient;
+    private IJsonSerializer jsonSerializer;
 
     private ILogger getLogger(){
         return AppLogger.getLogger(this);
@@ -109,8 +116,8 @@ public class MainActivity extends CordovaActivity
         CordovaWebViewEngine engine =  new XWalkWebViewEngine(this, preferences);
 
         View engineView = engine.getView();
-        ILogger logger = getLogger();
-        IJsonSerializer jsonSerializer = new GsonJsonSerializer();
+        final ILogger logger = getLogger();
+        jsonSerializer = new GsonJsonSerializer();
 
         webView = null;
 
@@ -127,8 +134,11 @@ public class MainActivity extends CordovaActivity
 
         Context context = getApplicationContext();
 
-        webView.addJavascriptInterface(new IapManager(context, webView, logger), "NativeIapManager");
-        webView.addJavascriptInterface(new ApiClientBridge(context, logger, webView, jsonSerializer), "ApiClientBridge");
+        final IapManager iapManager = new IapManager(context, webView, logger);
+        webView.addJavascriptInterface(iapManager, "NativeIapManager");
+        ApiClientBridge apiClientBridge = new ApiClientBridge(context, logger, webView, jsonSerializer);
+        webView.addJavascriptInterface(apiClientBridge, "ApiClientBridge");
+        httpClient = apiClientBridge.httpClient;
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
@@ -140,14 +150,65 @@ public class MainActivity extends CordovaActivity
 
         webView.addJavascriptInterface(preferencesProvider, "AndroidSharedPreferences");
 
+        //Test - delay to get out of the way of the normal purchase check
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                iapManager.getAvailableProducts(jsonSerializer);
+            }
+        }, 20000);
+        //end test
+
         return engine;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == PURCHASE_UNLOCK_REQUEST) {
+        if (requestCode == PURCHASE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
+                InAppProduct product = jsonSerializer.DeserializeFromString(intent.getStringExtra("product"), InAppProduct.class);
+                if (product.getEmbyFeatureCode() != null) {
+                    //Need to register this with the back end
+                    HttpRequest request = new HttpRequest();
+                    request.setUrl(embyAdminUrl + "appstore/register");
+                    request.setMethod("POST");
+                    QueryStringDictionary data = new QueryStringDictionary();
+                    data.Add("store", intent.getStringExtra("store"));
+                    data.Add("application", "com.mb.android");
+                    data.Add("product", product.getSku());
+                    data.Add("type", product.getProductType().toString());
+                    data.Add("storeId", intent.getStringExtra("storeId"));
+                    data.Add("token", intent.getStringExtra("storeToken"));
+                    data.Add("feature", product.getEmbyFeatureCode());
+                    data.Add("email", purchaseEmail);
+                    data.Add("amt", product.getPrice());
+                    request.setPostData(data);
+
+                    httpClient.Send(request, new Response<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            //The response will be a json representation of regRecord e.g.
+                            //{
+                            //    "featId": "MBSupporter",
+                            //    "expDate": "2015-10-09",
+                            //    "key": "cce907328832cea7a09dd49d197c93bd"
+                            //}
+
+                            // call the API to fill in the key and then re-fresh the supporter status in this app
+                            RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
+                        }
+
+                        @Override
+                        public void onError(Exception exception) {
+                            //This would be really bad.  We need to record all the information about this purchase somewhere
+                            // so we can try and rectify it
+                            RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
+                        }
+                    });
+                } else {
+                    // no emby feature - just report success
+                    RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
+                }
             } else {
                 RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
             }
@@ -183,18 +244,49 @@ public class MainActivity extends CordovaActivity
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void beginPurchase(String id) {
+    public void beginPurchase(final String productJson) {
 
+        InAppProduct product = jsonSerializer.DeserializeFromString(productJson, InAppProduct.class);
+        if (product.requiresEmail() && (purchaseEmail == null || purchaseEmail.length() == 0)) {
+            //Todo Obtain the email address for purchase - then re-call this method
+            return;
+        }
+
+        if (product.getEmbyFeatureCode() != null) {
+            //Test connectivity to our back-end before purchase because we need this to complete it
+            HttpRequest request = new HttpRequest();
+            request.setUrl(embyAdminUrl+"appstore/check");
+            httpClient.Send(request, new Response<String>() {
+                @Override
+                public void onResponse(String response) {
+                    //ok, continue with purchase
+                    purchaseInternal(productJson);
+                }
+
+                @Override
+                public void onError(Exception exception) {
+                    //Unable to connect - display appropriate message
+                }
+            });
+        } else {
+            //Just initiate the purchase
+            purchaseInternal(productJson);
+        }
+
+    }
+
+    private void purchaseInternal(String productJson) {
         try {
             Intent purchaseIntent = new Intent(this, UnlockActivity.class);
             purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
-            purchaseIntent.putExtra("sku", "com.mb.android.unlock");
-            startActivityForResult(purchaseIntent, PURCHASE_UNLOCK_REQUEST);
+            purchaseIntent.putExtra("product", productJson);
+            startActivityForResult(purchaseIntent, PURCHASE_REQUEST);
         }
         catch (Exception ex) {
             getLogger().ErrorException("Error launching activity", ex);
             RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
         }
+
     }
 
     public static void RespondToWebView(final String js) {
