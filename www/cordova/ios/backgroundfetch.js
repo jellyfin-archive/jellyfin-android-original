@@ -80,14 +80,31 @@
 
     function startIntervalSync() {
 
-        startSync(true, {
+        startSync(false, {
             uploadPhotos: true,
             enableNewDownloads: false,
             enableBackgroundTransfer: true
         });
     }
 
-    Dashboard.ready(restartInterval);
+    function normalizeSyncOptions(options) {
+
+        options.enableBackgroundTransfer = true;
+
+        if (options.enableNewDownloads == null) {
+            options.enableNewDownloads = false;
+        }
+    }
+
+    Dashboard.ready(function () {
+
+        require(['localsync'], function () {
+
+            LocalSync.normalizeSyncOptions = normalizeSyncOptions;
+        });
+
+        restartInterval();
+    });
     document.addEventListener("resume", restartInterval, false);
 
     onDeviceReady();
