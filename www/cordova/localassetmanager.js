@@ -509,7 +509,7 @@
                     isResolved = true;
                     // true indicates that it's queued
                     deferred.resolveWith(null, [localPath, true]);
-                }, 1000);
+                }, 700);
 
                 // Start the download and persist the promise to be able to cancel the download.
                 download.startAsync().then(function () {
