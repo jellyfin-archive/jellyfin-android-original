@@ -11,7 +11,7 @@ html+='<paper-item-body two-line>';html+='<a class="clearLink" href="livetvtimer
 html+='<paper-icon-button icon="cancel" data-timerid="'+timer.Id+'" title="'+Globalize.translate('ButonCancelRecording')+'" class="btnDeleteTimer"></paper-icon-button>';html+='</paper-icon-item>';}
 if(timers.length){html+='</div>';html+='</div>';}
 return html;}
-window.LiveTvHelpers={getDaysOfWeek:function(){var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];return days.map(function(d){return{name:d,value:d};});},renderOriginalAirDate:function(elem,item){var airDate=item.OriginalAirDate;if(airDate&&item.IsRepeat){try{airDate=parseISO8601Date(airDate,{toLocal:true}).toLocaleDateString();}
+window.LiveTvHelpers={getDaysOfWeek:function(){var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];return days.map(function(d){return{name:d,value:d};});},renderOriginalAirDate:function(elem,item){var airDate=item.PremiereDate;if(airDate&&item.IsRepeat){try{airDate=parseISO8601Date(airDate,{toLocal:true}).toLocaleDateString();}
 catch(e){Logger.log("Error parsing date: "+airDate);}
 elem.html(Globalize.translate('ValueOriginalAirDate').replace('{0}',airDate)).show();}else{elem.hide();}},getTimersHtml:getTimersHtml};})();(function($,document,window){var showOverlayTimeout;var hideOverlayTimeout;var currentPosterItem;function onOverlayMouseOver(){if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}}
 function onOverlayMouseOut(){startHideOverlayTimer();}
