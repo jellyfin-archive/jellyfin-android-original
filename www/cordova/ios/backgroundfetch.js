@@ -62,28 +62,11 @@
 
     var syncInterval = 1800000;
 
-    function restartInterval() {
-
-        setInterval(function () {
-
-            startIntervalSync();
-
-        }, syncInterval);
-
-        if (lastStart > 0 && (new Date().getTime() - lastStart) >= syncInterval) {
-
-            setTimeout(function () {
-                startIntervalSync();
-
-            }, 5000);
-        }
-    }
-
     function startIntervalSync() {
 
         startSync(false, {
             uploadPhotos: true,
-            enableNewDownloads: false,
+            enableNewDownloads: true,
             enableBackgroundTransfer: true
         });
     }
@@ -93,7 +76,7 @@
         options.enableBackgroundTransfer = true;
 
         if (options.enableNewDownloads == null) {
-            options.enableNewDownloads = false;
+            //options.enableNewDownloads = false;
         }
     }
 
@@ -103,10 +86,23 @@
 
             LocalSync.normalizeSyncOptions = normalizeSyncOptions;
         });
-
-        restartInterval();
     });
-    document.addEventListener("resume", restartInterval, false);
+
+    pageClassOn('pageshow', 'page', function () {
+
+        if (!Dashboard.getCurrentUserId()) {
+            return;
+        }
+
+        if ((new Date().getTime() - lastStart) >= syncInterval) {
+
+            setTimeout(function () {
+                startIntervalSync();
+
+            }, 5000);
+        }
+
+    });
 
     onDeviceReady();
 })();
