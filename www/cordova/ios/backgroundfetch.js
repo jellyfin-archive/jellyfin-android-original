@@ -51,7 +51,8 @@
 
         startSync(true, {
             uploadPhotos: false,
-            enableBackgroundTransfer: true
+            enableBackgroundTransfer: true,
+            enableNewDownloads: true
         });
     }
 
