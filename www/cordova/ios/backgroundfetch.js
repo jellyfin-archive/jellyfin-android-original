@@ -51,7 +51,6 @@
 
         startSync(true, {
             uploadPhotos: false,
-            enableBackgroundTransfer: true,
             enableNewDownloads: true
         });
     }
@@ -60,14 +59,14 @@
         Logger.log('- BackgroundFetch failed');
     }
 
-    var syncInterval = 1800000;
-
+    var syncInterval = 900000;
+    var photoUploadInterval = 21600000;
+    var offlineUserSyncInterval = 43200000;
     function startIntervalSync() {
 
         startSync(false, {
             uploadPhotos: true,
-            enableNewDownloads: true,
-            enableBackgroundTransfer: true
+            enableNewDownloads: true
         });
     }
 
@@ -75,9 +74,8 @@
 
         options.enableBackgroundTransfer = true;
 
-        if (options.enableNewDownloads == null) {
-            //options.enableNewDownloads = false;
-        }
+        options.uploadPhotos = (new Date().getTime() - lastStart) >= photoUploadInterval;
+        options.syncOfflineUsers = (new Date().getTime() - lastStart) >= offlineUserSyncInterval;
     }
 
     Dashboard.ready(function () {
@@ -88,7 +86,7 @@
         });
     });
 
-    pageClassOn('pageshow', 'page', function () {
+    pageClassOn('pageshow', "page", function () {
 
         if (!Dashboard.getCurrentUserId()) {
             return;
