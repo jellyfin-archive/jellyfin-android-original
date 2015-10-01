@@ -86,7 +86,7 @@
         });
     });
 
-    pageClassOn('pageshow', "page", function () {
+    pageClassOn('pageshow', "libraryPage", function () {
 
         if (!Dashboard.getCurrentUserId()) {
             return;
