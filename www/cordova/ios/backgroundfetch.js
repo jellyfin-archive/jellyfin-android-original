@@ -4,11 +4,11 @@
 
     function onDeviceReady() {
 
-        var fetcher = window.BackgroundFetch;
+        //var fetcher = window.BackgroundFetch;
 
-        fetcher.configure(onBackgroundFetch, onBackgroundFetchFailed, {
-            stopOnTerminate: false  // <-- false is default
-        });
+        //fetcher.configure(onBackgroundFetch, onBackgroundFetchFailed, {
+        //    stopOnTerminate: false  // <-- false is default
+        //});
     }
 
     function onSyncFinish() {
