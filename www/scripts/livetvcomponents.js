@@ -38,5 +38,5 @@ function onHoverIn(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);sho
 if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}
 var elem=this;if(currentPosterItem){if(currentPosterItem&&currentPosterItem==elem){return;}else{hideOverlay();}}
 showOverlayTimeout=setTimeout(function(){onShowTimerExpired(elem);},1000);}
-if(('ontouchstart'in window)||(navigator.maxTouchPoints>0)||(navigator.msMaxTouchPoints>0)){return this;}
+if(AppInfo.isTouchPreferred){return this;}
 return this.on('mouseenter',childSelector,onHoverIn).on('mouseleave',childSelector,onHoverOut).on('click',childSelector,onProgramClicked);};})(jQuery,document,window);

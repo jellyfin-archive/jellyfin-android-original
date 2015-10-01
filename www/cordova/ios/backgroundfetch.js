@@ -97,7 +97,7 @@
             setTimeout(function () {
                 startIntervalSync();
 
-            }, 5000);
+            }, 10000);
         }
 
     });
