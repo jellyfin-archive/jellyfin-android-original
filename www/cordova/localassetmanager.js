@@ -670,7 +670,7 @@
                             // true indicates that it's queued
                             deferred.resolveWith(null, [localPath, isQueued]);
                         }
-                    }, 3000);
+                    }, 500);
                 }
 
             }, function () {
