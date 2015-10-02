@@ -4,7 +4,7 @@ name=getParameterByName('musicgenre');if(name){return ApiClient.getMusicGenre(na
 name=getParameterByName('gamegenre');if(name){return ApiClient.getGameGenre(name,Dashboard.getCurrentUserId());}
 name=getParameterByName('musicartist');if(name){return ApiClient.getArtist(name,Dashboard.getCurrentUserId());}
 else{throw new Error('Invalid request');}}
-function reload(page){Dashboard.showLoadingMsg();getPromise().done(function(item){reloadFromItem(page,item);});}
+function reload(page){Dashboard.showLoadingMsg();getPromise().done(function(item){reloadFromItem(page,item);window.scrollTo(0,0);});}
 function reloadFromItem(page,item){currentItem=item;var context=getContext(item);renderHeader(page,item,context);LibraryBrowser.renderName(item,$('.itemName',page),false,context);LibraryBrowser.renderParentName(item,$('.parentName',page),context);LibraryMenu.setTitle(item.SeriesName||item.Name);Dashboard.getCurrentUser().done(function(user){renderImage(page,item,user);setInitialCollapsibleState(page,item,context,user);renderDetails(page,item,context);var hasBackdrop=false;if(item.Type=='MusicArtist'||item.Type=="MusicAlbum"||item.Type=="Playlist"||item.Type=="BoxSet"||item.Type=="Audio"){$('#itemBackdrop',page).addClass('noBackdrop').css('background-image','none');Backdrops.setBackdrops(page,[item]);}
 else{hasBackdrop=LibraryBrowser.renderDetailPageBackdrop(page,item);}
 var transparentHeader=hasBackdrop&&page.classList.contains('noSecondaryNavPage');LibraryMenu.setTransparentMenu(transparentHeader);var canPlay=false;if(item.Type=='Program'){var now=new Date();if(now>=parseISO8601Date(item.StartDate,{toLocal:true})&&now<parseISO8601Date(item.EndDate,{toLocal:true})){$('.btnPlay',page).removeClass('hide');canPlay=true;}else{$('.btnPlay',page).addClass('hide');}}
