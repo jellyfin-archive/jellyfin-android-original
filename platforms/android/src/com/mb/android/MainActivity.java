@@ -54,6 +54,8 @@ import org.crosswalk.engine.XWalkCordovaView;
 import org.crosswalk.engine.XWalkWebViewEngine;
 import org.xwalk.core.JavascriptInterface;
 
+import java.util.List;
+
 import mediabrowser.apiinteraction.QueryStringDictionary;
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -74,10 +76,12 @@ public class MainActivity extends CordovaActivity
     private final int REQUEST_DIRECTORY = 998;
     public static final int VIDEO_PLAYBACK = 997;
     private final String embyAdminUrl = "http://mb3admin.com/test/admin/service/";
-    private String purchaseEmail; // You could fill this in from the connect record if using Emby Connect...
     private static IWebView webView;
     private IAsyncHttpClient httpClient;
     private IJsonSerializer jsonSerializer;
+    private IapManager iapManager;
+
+    private String purchaseEmail;
 
     private ILogger getLogger(){
         return AppLogger.getLogger(this);
@@ -134,7 +138,7 @@ public class MainActivity extends CordovaActivity
 
         Context context = getApplicationContext();
 
-        final IapManager iapManager = new IapManager(context, webView, logger);
+        iapManager = new IapManager(context, webView, logger);
         webView.addJavascriptInterface(iapManager, "NativeIapManager");
         ApiClientBridge apiClientBridge = new ApiClientBridge(context, logger, webView, jsonSerializer);
         webView.addJavascriptInterface(apiClientBridge, "ApiClientBridge");
@@ -149,15 +153,6 @@ public class MainActivity extends CordovaActivity
         PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
 
         webView.addJavascriptInterface(preferencesProvider, "AndroidSharedPreferences");
-
-        //Test - delay to get out of the way of the normal purchase check
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                iapManager.getAvailableProducts(jsonSerializer);
-            }
-        }, 20000);
-        //end test
 
         return engine;
     }
@@ -244,35 +239,52 @@ public class MainActivity extends CordovaActivity
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void beginPurchase(final String productJson) {
+    public void beginPurchase(final String id, final String purchaseEmail) {
 
-        InAppProduct product = jsonSerializer.DeserializeFromString(productJson, InAppProduct.class);
-        if (product.requiresEmail() && (purchaseEmail == null || purchaseEmail.length() == 0)) {
-            //Todo Obtain the email address for purchase - then re-call this method
-            return;
-        }
+        this.purchaseEmail = purchaseEmail;
 
-        if (product.getEmbyFeatureCode() != null) {
-            //Test connectivity to our back-end before purchase because we need this to complete it
-            HttpRequest request = new HttpRequest();
-            request.setUrl(embyAdminUrl+"appstore/check");
-            httpClient.Send(request, new Response<String>() {
-                @Override
-                public void onResponse(String response) {
-                    //ok, continue with purchase
+        iapManager.getAvailableProducts(jsonSerializer, new Response<List<InAppProduct>>(){
+
+            @Override
+            public void onResponse(List<InAppProduct> inAppProducts) {
+
+                InAppProduct product = null;
+                for (InAppProduct prd : inAppProducts){
+                    if (StringHelper.EqualsIgnoreCase(id, prd.getSku())){
+                        product = prd;
+                        break;
+                    }
+                }
+
+                final String productJson = jsonSerializer.SerializeToString(product);
+
+                if (product.requiresEmail() && (purchaseEmail == null || purchaseEmail.length() == 0)) {
+                    //Todo Obtain the email address for purchase - then re-call this method
+                    return;
+                }
+
+                if (product.getEmbyFeatureCode() != null) {
+                    //Test connectivity to our back-end before purchase because we need this to complete it
+                    HttpRequest request = new HttpRequest();
+                    request.setUrl(embyAdminUrl+"appstore/check");
+                    httpClient.Send(request, new Response<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            //ok, continue with purchase
+                            purchaseInternal(productJson);
+                        }
+
+                        @Override
+                        public void onError(Exception exception) {
+                            //Unable to connect - display appropriate message
+                        }
+                    });
+                } else {
+                    //Just initiate the purchase
                     purchaseInternal(productJson);
                 }
-
-                @Override
-                public void onError(Exception exception) {
-                    //Unable to connect - display appropriate message
-                }
-            });
-        } else {
-            //Just initiate the purchase
-            purchaseInternal(productJson);
-        }
-
+            }
+        });
     }
 
     private void purchaseInternal(String productJson) {

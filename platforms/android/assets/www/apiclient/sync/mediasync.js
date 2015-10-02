@@ -31,8 +31,8 @@ function syncUserItemAccess(syncDataResult,serverId){Logger.log('Begin syncUserI
 syncNextUserAccessForItem(itemIds,0,syncDataResult,serverId,deferred);return deferred.promise();}
 function syncNextUserAccessForItem(itemIds,index,syncDataResult,serverId,deferred){var length=itemIds.length;if(index>=length){deferred.resolve();return;}
 syncUserAccessForItem(itemIds[index],syncDataResult).done(function(){syncNextUserAccessForItem(itemIds,index+1,syncDataResult,serverId,deferred);}).fail(function(){syncNextUserAccessForItem(itemIds,index+1,syncDataResult,serverId,deferred);});}
-function syncUserAccessForItem(itemId,syncDataResult){Logger.log('Begin syncUserAccessForItem');var deferred=DeferredBuilder.Deferred();require(['localassetmanager'],function(){LocalAssetManager.getLocalItem(itemId,serverId).done(function(localItem){var userIdsWithAccess=syncDataResult.ItemUserAccess[itemId];if(userIdsWithAccess.join(',')==localItem.UserIdsWithAccess.join(',')){deferred.resolve();}
-else{localItem.UserIdsWithAccess=userIdsWithAccess;LocalAssetManager.addOrUpdateLocalItem(localItem).done(function(){deferred.resolve();}).fail(getOnFail(deferred));}}).fail(getOnFail(deferred));});return deferred.promise();}
+function syncUserAccessForItem(itemId,syncDataResult){Logger.log('Begin syncUserAccessForItem');var deferred=DeferredBuilder.Deferred();require(['localassetmanager'],function(){LocalAssetManager.getUserIdsWithAccess(itemId,serverId).done(function(savedUserIdsWithAccess){var userIdsWithAccess=syncDataResult.ItemUserAccess[itemId];if(userIdsWithAccess.join(',')==savedUserIdsWithAccess.join(',')){deferred.resolve();}
+else{LocalAssetManager.saveUserIdsWithAccess(itemId,serverId,userIdsWithAccess).done(function(){deferred.resolve();}).fail(getOnFail(deferred));}}).fail(getOnFail(deferred));});return deferred.promise();}
 function getOnFail(deferred){return function(){deferred.reject();};}}
 if(!globalScope.MediaBrowser){globalScope.MediaBrowser={};}
 globalScope.MediaBrowser.MediaSync=mediaSync;})(this);
