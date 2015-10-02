@@ -13,7 +13,7 @@ var loc=window.location;var address=loc.protocol+'//'+loc.hostname;if(loc.port){
 return address;},getCurrentUserId:function(){var apiClient=window.ApiClient;if(apiClient){return apiClient.getCurrentUserId();}
 return null;},onServerChanged:function(userId,accessToken,apiClient){apiClient=apiClient||window.ApiClient;window.ApiClient=apiClient;Dashboard.getUserPromise=null;},logout:function(logoutWithServer){function onLogoutDone(){var loginPage;if(Dashboard.isConnectMode()){loginPage='connectlogin.html';window.ApiClient=null;}else{loginPage='login.html';}
 Dashboard.navigate(loginPage);}
-if(logoutWithServer===false){onLogoutDone();}else{ConnectionManager.logout().done(onLogoutDone);}},importCss:function(url){if(!Dashboard.importedCss){Dashboard.importedCss=[];}
+if(logoutWithServer===false){onLogoutDone();}else{ConnectionManager.logout().done(onLogoutDone);}},importCss:function(url){url+="?v="+window.dashboardVersion;if(!Dashboard.importedCss){Dashboard.importedCss=[];}
 if(Dashboard.importedCss.indexOf(url)!=-1){return;}
 Dashboard.importedCss.push(url);if(document.createStyleSheet){document.createStyleSheet(url);}else{var link=document.createElement('link');link.setAttribute('rel','stylesheet');link.setAttribute('type','text/css');link.setAttribute('href',url);document.head.appendChild(link);}},showError:function(message){Dashboard.alert(message);},updateSystemInfo:function(info){Dashboard.lastSystemInfo=info;Dashboard.ensureWebSocket();if(!Dashboard.initialServerVersion){Dashboard.initialServerVersion=info.Version;}
 if(info.HasPendingRestart){Dashboard.hideDashboardVersionWarning();Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showServerRestartWarning(info);}});}else{Dashboard.hideServerRestartWarning();if(Dashboard.initialServerVersion!=info.Version){Dashboard.showDashboardRefreshNotification();}}
@@ -132,6 +132,7 @@ if(navigator.splashscreen){navigator.splashscreen.hide();}}
 function init(deferred,capabilities,appName,appVersion,deviceId,deviceName){var urlArgs="v="+window.dashboardVersion;if($.browser.msie){urlArgs+=new Date().getTime();}
 requirejs.config({urlArgs:urlArgs,paths:{"velocity":"bower_components/velocity/velocity.min"}});define('jquery',[],function(){return jQuery;});if(Dashboard.isRunningInCordova()&&$.browser.android){define("appstorage",["cordova/android/appstorage"]);}else{define('appstorage',[],function(){return appStorage;});}
 if(Dashboard.isRunningInCordova()){define("serverdiscovery",["cordova/serverdiscovery"]);define("wakeonlan",["cordova/wakeonlan"]);}else{define("serverdiscovery",["apiclient/serverdiscovery"]);define("wakeonlan",["apiclient/wakeonlan"]);}
+if(Dashboard.isRunningInCordova()){define("prompt",["cordova/prompt"]);}else{define("prompt",["components/prompt"]);}
 if(Dashboard.isRunningInCordova()){define("localassetmanager",["cordova/localassetmanager"]);}else{define("localassetmanager",["apiclient/localassetmanager"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("nativedirectorychooser",["cordova/android/nativedirectorychooser"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["cordova/android/vlcplayer"]);define("videorenderer",["cordova/android/vlcplayer"]);}

@@ -717,7 +717,7 @@ start=stop=undefined;});});}};$.each({swipedown:"swipeupdown",swipeup:"swipeupdo
 return this.addClass('hide');};(function(){var dictionaries={};function getUrl(name,culture){var parts=culture.split('-');if(parts.length==2){parts[1]=parts[1].toUpperCase();culture=parts.join('-');}
 return'strings/'+name+'/'+culture+'.json';}
 function getDictionary(name,culture){return dictionaries[getUrl(name,culture)];}
-function loadDictionary(name,culture){var deferred=DeferredBuilder.Deferred();if(getDictionary(name,culture)){deferred.resolve();}else{var url=getUrl(name,culture);$.getJSON(url).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();}).fail(function(){$.getJSON(getUrl(name,'en-US')).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();});});}
+function loadDictionary(name,culture){var deferred=DeferredBuilder.Deferred();if(getDictionary(name,culture)){deferred.resolve();}else{var url=getUrl(name,culture);var requestUrl=url+"?v="+window.dashboardVersion;$.getJSON(requestUrl).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();}).fail(function(){$.getJSON(getUrl(name,'en-US')).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();});});}
 return deferred.promise();}
 var currentCulture='en-US';function setCulture(value){Logger.log('Setting culture to '+value);currentCulture=value;return $.when(loadDictionary('html',value),loadDictionary('javascript',value));}
 function normalizeLocaleName(culture){culture=culture.replace('_','-');var parts=culture.split('-');if(parts.length==2){if(parts[0].toLowerCase()==parts[1].toLowerCase()){culture=parts[0].toLowerCase();}}
@@ -746,7 +746,7 @@ var loc=window.location;var address=loc.protocol+'//'+loc.hostname;if(loc.port){
 return address;},getCurrentUserId:function(){var apiClient=window.ApiClient;if(apiClient){return apiClient.getCurrentUserId();}
 return null;},onServerChanged:function(userId,accessToken,apiClient){apiClient=apiClient||window.ApiClient;window.ApiClient=apiClient;Dashboard.getUserPromise=null;},logout:function(logoutWithServer){function onLogoutDone(){var loginPage;if(Dashboard.isConnectMode()){loginPage='connectlogin.html';window.ApiClient=null;}else{loginPage='login.html';}
 Dashboard.navigate(loginPage);}
-if(logoutWithServer===false){onLogoutDone();}else{ConnectionManager.logout().done(onLogoutDone);}},importCss:function(url){if(!Dashboard.importedCss){Dashboard.importedCss=[];}
+if(logoutWithServer===false){onLogoutDone();}else{ConnectionManager.logout().done(onLogoutDone);}},importCss:function(url){url+="?v="+window.dashboardVersion;if(!Dashboard.importedCss){Dashboard.importedCss=[];}
 if(Dashboard.importedCss.indexOf(url)!=-1){return;}
 Dashboard.importedCss.push(url);if(document.createStyleSheet){document.createStyleSheet(url);}else{var link=document.createElement('link');link.setAttribute('rel','stylesheet');link.setAttribute('type','text/css');link.setAttribute('href',url);document.head.appendChild(link);}},showError:function(message){Dashboard.alert(message);},updateSystemInfo:function(info){Dashboard.lastSystemInfo=info;Dashboard.ensureWebSocket();if(!Dashboard.initialServerVersion){Dashboard.initialServerVersion=info.Version;}
 if(info.HasPendingRestart){Dashboard.hideDashboardVersionWarning();Dashboard.getCurrentUser().done(function(currentUser){if(currentUser.Policy.IsAdministrator){Dashboard.showServerRestartWarning(info);}});}else{Dashboard.hideServerRestartWarning();if(Dashboard.initialServerVersion!=info.Version){Dashboard.showDashboardRefreshNotification();}}
@@ -865,6 +865,7 @@ if(navigator.splashscreen){navigator.splashscreen.hide();}}
 function init(deferred,capabilities,appName,appVersion,deviceId,deviceName){var urlArgs="v="+window.dashboardVersion;if($.browser.msie){urlArgs+=new Date().getTime();}
 requirejs.config({urlArgs:urlArgs,paths:{"velocity":"bower_components/velocity/velocity.min"}});define('jquery',[],function(){return jQuery;});if(Dashboard.isRunningInCordova()&&$.browser.android){define("appstorage",["cordova/android/appstorage"]);}else{define('appstorage',[],function(){return appStorage;});}
 if(Dashboard.isRunningInCordova()){define("serverdiscovery",["cordova/serverdiscovery"]);define("wakeonlan",["cordova/wakeonlan"]);}else{define("serverdiscovery",["apiclient/serverdiscovery"]);define("wakeonlan",["apiclient/wakeonlan"]);}
+if(Dashboard.isRunningInCordova()){define("prompt",["cordova/prompt"]);}else{define("prompt",["components/prompt"]);}
 if(Dashboard.isRunningInCordova()){define("localassetmanager",["cordova/localassetmanager"]);}else{define("localassetmanager",["apiclient/localassetmanager"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("nativedirectorychooser",["cordova/android/nativedirectorychooser"]);}
 if(Dashboard.isRunningInCordova()&&$.browser.android){define("audiorenderer",["cordova/android/vlcplayer"]);define("videorenderer",["cordova/android/vlcplayer"]);}
@@ -1415,7 +1416,7 @@ else if(i.CollectionType=="livetv"){icon='live-tv';color="#293AAE";}
 icon=i.icon||icon;var onclick=i.onclick?' function(){'+i.onclick+'}':'null';return'<a data-itemid="'+itemId+'" class="lnkMediaFolder sidebarLink" onclick="return LibraryMenu.onLinkClicked(event, this, '+onclick+');" href="'+getItemHref(i,i.CollectionType)+'"><iron-icon icon="'+icon+'" class="sidebarLinkIcon" style="color:'+color+'"></iron-icon><span class="sectionName">'+i.Name+'</span></a>';}).join('');var libraryMenuOptions=document.querySelector('.libraryMenuOptions');libraryMenuOptions.innerHTML=html;var elem=libraryMenuOptions;$('.sidebarLink',elem).off('click',onSidebarLinkClick).on('click',onSidebarLinkClick);});if(user.Policy.IsAdministrator){$('.adminMenuOptions').visible(true);}else{$('.adminMenuOptions').visible(false);}
 if(user.Policy.EnableSync){$('.lnkMySync').visible(true);}else{$('.lnkMySync').visible(false);}}
 function showUserAtTop(){return Dashboard.isConnectMode()||$.browser.mobile;}
-var requiresLibraryMenuRefresh=false;var requiresViewMenuRefresh=false;function onManageServerClicked(){closeMainDrawer();requirejs(["scripts/registrationservices"],function(){RegistrationServices.validateFeature('manageserver').done(function(){Dashboard.navigate('dashboard.html');});});}
+var requiresLibraryMenuRefresh=false;var requiresViewMenuRefresh=false;function onManageServerClicked(){closeMainDrawer();Dashboard.navigate('dashboard.html');}
 function getTopParentId(){return getParameterByName('topParentId')||null;}
 window.LibraryMenu={getTopParentId:getTopParentId,onLinkClicked:function(event,link,action){if(event.which!=1){return true;}
 if((new Date().getTime()-lastOpenTime)>200){setTimeout(function(){closeMainDrawer();setTimeout(function(){if(action){action();}else{Dashboard.navigate(link.href);}},400);},50);}

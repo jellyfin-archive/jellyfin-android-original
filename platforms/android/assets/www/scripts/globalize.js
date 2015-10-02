@@ -1,7 +1,7 @@
 ﻿(function(){var dictionaries={};function getUrl(name,culture){var parts=culture.split('-');if(parts.length==2){parts[1]=parts[1].toUpperCase();culture=parts.join('-');}
 return'strings/'+name+'/'+culture+'.json';}
 function getDictionary(name,culture){return dictionaries[getUrl(name,culture)];}
-function loadDictionary(name,culture){var deferred=DeferredBuilder.Deferred();if(getDictionary(name,culture)){deferred.resolve();}else{var url=getUrl(name,culture);$.getJSON(url).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();}).fail(function(){$.getJSON(getUrl(name,'en-US')).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();});});}
+function loadDictionary(name,culture){var deferred=DeferredBuilder.Deferred();if(getDictionary(name,culture)){deferred.resolve();}else{var url=getUrl(name,culture);var requestUrl=url+"?v="+window.dashboardVersion;$.getJSON(requestUrl).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();}).fail(function(){$.getJSON(getUrl(name,'en-US')).done(function(dictionary){dictionaries[url]=dictionary;deferred.resolve();});});}
 return deferred.promise();}
 var currentCulture='en-US';function setCulture(value){Logger.log('Setting culture to '+value);currentCulture=value;return $.when(loadDictionary('html',value),loadDictionary('javascript',value));}
 function normalizeLocaleName(culture){culture=culture.replace('_','-');var parts=culture.split('-');if(parts.length==2){if(parts[0].toLowerCase()==parts[1].toLowerCase()){culture=parts[0].toLowerCase();}}

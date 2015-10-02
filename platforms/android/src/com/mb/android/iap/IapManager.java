@@ -57,12 +57,27 @@ public class IapManager {
 
         logger.Info("isPurchased: %s", id);
 
+        final String[] idPart = id.split("|");
+
         operationInProgress = true;
-        isPurchasedInternal("com.mb.android.unlock", new Response<Boolean>() {
+        isPurchasedInternal(idPart[0], new Response<Boolean>() {
 
             @Override
             public void onResponse(final Boolean result) {
                 RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, result));
+
+                if (!confirmValidator()) {
+                    logger.Error("*** Attempt to call isPurchased with IAP operation already in progress");
+                    RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, false));
+                }
+
+                isPurchasedInternal(idPart[1], new Response<Boolean>() {
+
+                    @Override
+                    public void onResponse(final Boolean result) {
+                        RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, result));
+                    }
+                });
             }
         });
     }
@@ -100,8 +115,7 @@ public class IapManager {
         return true;
     }
 
-    //Todo Test method - need to convert to method called from js
-    public void getAvailableProducts(final IJsonSerializer jsonSerializer) {
+    public void getAvailableProducts(final IJsonSerializer jsonSerializer, final Response<List<InAppProduct>> handler) {
         logger.Info("*** Get products test call");
         if (!confirmValidator()) {
             // an iap operation is currently in progress - only can have one at a time respond appropriately
@@ -113,12 +127,14 @@ public class IapManager {
                     logger.Info("*** In App product result");
                     logger.Info(jsonSerializer.SerializeToString(inAppProducts));
                     iabValidator.dispose();
+                    handler.onResponse(inAppProducts);
                 }
 
                 @Override
                 public void onError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
                     logger.Error("*** Error getting products: " + s);
                     iabValidator.dispose();
+                    handler.onError(new Exception());
                 }
             });
 
