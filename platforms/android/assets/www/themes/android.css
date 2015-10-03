@@ -7,7 +7,7 @@
     }
 
 .background-theme-b {
-    background-color: #202020;
+    background: radial-gradient(circle, #282828, #141414) fixed !important;
 }
 
 .backdropContainer .pageBackground {
