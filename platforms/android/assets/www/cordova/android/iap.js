@@ -5,7 +5,7 @@
     function getStoreFeatureId(feature) {
 
         if (feature == 'embypremieremonthly') {
-            return "emby.supporter.monthly";
+            return "emby.supporter.weekly";
         }
 
         return "com.mb.android.unlock";
@@ -76,7 +76,7 @@
 
         }).map(function (o) {
 
-            o.buttonText = Globalize.translate(o.buttonText, o.price);
+            o.buttonText = Globalize.translate(o.buttonText, getProduct(o.feature).price);
             return o;
         });
 
