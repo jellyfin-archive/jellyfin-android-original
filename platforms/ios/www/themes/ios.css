@@ -32,8 +32,8 @@ body {
     background-attachment: initial;
 }
 
-.background-theme-b {
-    background-color: #161616;
+.background-theme-b, paper-dialog.background-theme-b {
+    background: radial-gradient(circle, #303030, #101010) fixed;
 }
 
 .backdropContainer .pageBackground {
@@ -232,4 +232,8 @@ paper-tab {
 
 .nowPlayingPage {
     padding-top: 50px !important;
+}
+
+.localSyncStatus .labelSyncStatus {
+    display: none !important;
 }
