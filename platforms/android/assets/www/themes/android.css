@@ -3,11 +3,11 @@
 }
 
     .viewMenuBar.semiTransparent {
-        background-color: rgba(15, 15, 15, .50);
+        background-color: rgba(15, 15, 15, .45);
     }
 
-.background-theme-b {
-    background: radial-gradient(circle, #282828, #141414) fixed !important;
+.background-theme-b, paper-dialog.background-theme-b {
+    background: #202020;
 }
 
 .backdropContainer .pageBackground {
