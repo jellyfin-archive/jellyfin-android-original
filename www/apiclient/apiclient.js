@@ -7,7 +7,7 @@ return promise;};self.getCurrentUserId=function(){return serverInfo.UserId;};sel
 function onRetryRequestFail(request){Events.trigger(self,'requestfail',[{url:request.url}]);}
 self.setRequestHeaders=function(headers){var currentServerInfo=self.serverInfo();if(clientName){var auth='MediaBrowser Client="'+clientName+'", Device="'+deviceName+'", DeviceId="'+deviceId+'", Version="'+applicationVersion+'"';var userId=currentServerInfo.UserId;if(userId){auth+=', UserId="'+userId+'"';}
 headers["X-Emby-Authorization"]=auth;}
-var accessToken=currentServerInfo.AccessToken;if(accessToken){headers['X-Emby-Token']=accessToken;}};self.ajax=function(request,includeAuthorization){if(!request){throw new Error("Request cannot be null");}
+var accessToken=currentServerInfo.AccessToken;if(accessToken){headers['X-MediaBrowser-Token']=accessToken;}};self.ajax=function(request,includeAuthorization){if(!request){throw new Error("Request cannot be null");}
 if(includeAuthorization!==false){request.headers=request.headers||{};self.setRequestHeaders(request.headers);}
 if(self.enableAutomaticNetworking===false||request.type!="GET"){logger.log('Requesting url without automatic networking: '+request.url);return HttpClient.send(request).fail(onRequestFail);}
 var deferred=DeferredBuilder.Deferred();self.ajaxWithFailover(request,deferred,true);return deferred.promise();};function switchConnectionMode(connectionMode){var currentServerInfo=self.serverInfo();var newConnectionMode=connectionMode;newConnectionMode--;if(newConnectionMode<0){newConnectionMode=MediaBrowser.ConnectionMode.Manual;}
