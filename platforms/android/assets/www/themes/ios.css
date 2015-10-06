@@ -32,8 +32,8 @@ body {
     background-attachment: initial;
 }
 
-.background-theme-b {
-    background: radial-gradient(circle, #303030, #101010) fixed !important;
+.background-theme-b, paper-dialog.background-theme-b {
+    background: radial-gradient(circle, #303030, #101010) fixed;
 }
 
 .backdropContainer .pageBackground {
