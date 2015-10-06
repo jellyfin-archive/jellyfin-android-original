@@ -4,11 +4,11 @@
 
     function onDeviceReady() {
 
-        var fetcher = window.BackgroundFetch;
+        //var fetcher = window.BackgroundFetch;
 
-        fetcher.configure(onBackgroundFetch, onBackgroundFetchFailed, {
-            stopOnTerminate: false  // <-- false is default
-        });
+        //fetcher.configure(onBackgroundFetch, onBackgroundFetchFailed, {
+        //    stopOnTerminate: false  // <-- false is default
+        //});
     }
 
     function onSyncFinish() {
@@ -51,8 +51,7 @@
 
         startSync(true, {
             uploadPhotos: false,
-                  enableNewDownloads: true,
-            enableBackgroundTransfer: true
+            enableNewDownloads: true
         });
     }
 
@@ -60,31 +59,14 @@
         Logger.log('- BackgroundFetch failed');
     }
 
-    var syncInterval = 1800000;
-
-    function restartInterval() {
-
-        setInterval(function () {
-
-            startIntervalSync();
-
-        }, syncInterval);
-
-        if (lastStart > 0 && (new Date().getTime() - lastStart) >= syncInterval) {
-
-            setTimeout(function () {
-                startIntervalSync();
-
-            }, 5000);
-        }
-    }
-
+    var syncInterval = 900000;
+    var photoUploadInterval = 21600000;
+    var offlineUserSyncInterval = 43200000;
     function startIntervalSync() {
 
         startSync(false, {
             uploadPhotos: true,
-            enableNewDownloads: false,
-            enableBackgroundTransfer: true
+            enableNewDownloads: true
         });
     }
 
@@ -92,9 +74,8 @@
 
         options.enableBackgroundTransfer = true;
 
-        if (options.enableNewDownloads == null) {
-            options.enableNewDownloads = false;
-        }
+        options.uploadPhotos = (new Date().getTime() - lastStart) >= photoUploadInterval;
+        options.syncOfflineUsers = (new Date().getTime() - lastStart) >= offlineUserSyncInterval;
     }
 
     Dashboard.ready(function () {
@@ -103,10 +84,23 @@
 
             LocalSync.normalizeSyncOptions = normalizeSyncOptions;
         });
-
-        restartInterval();
     });
-    document.addEventListener("resume", restartInterval, false);
+
+    pageClassOn('pageshow', "libraryPage", function () {
+
+        if (!Dashboard.getCurrentUserId()) {
+            return;
+        }
+
+        if ((new Date().getTime() - lastStart) >= syncInterval) {
+
+            setTimeout(function () {
+                startIntervalSync();
+
+            }, 10000);
+        }
+
+    });
 
     onDeviceReady();
 })();

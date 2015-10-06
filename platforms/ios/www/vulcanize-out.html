@@ -6645,7 +6645,7 @@ this.fire('dom-change');
      * `keys` property is pressed.
      *
      * @demo demo/index.html
-     * @polymerBehavior IronA11yKeysBehavior
+     * @polymerBehavior
      */
     Polymer.IronA11yKeysBehavior = {
       properties: {
@@ -7182,6 +7182,8 @@ this.fire('dom-change');
   ];
 
 </script>
+
+
 <style>
   /* IE 10 support for HTML5 hidden attr */
   [hidden] {
@@ -9833,7 +9835,8 @@ intent. Closing generally implies that the user acknowledged the content on the 
 it will cancel whenever the user taps outside it or presses the escape key. This behavior is
 configurable with the `no-cancel-on-esc-key` and the `no-cancel-on-outside-click` properties.
 `close()` should be called explicitly by the implementer when the user interacts with a control
-in the overlay element.
+in the overlay element. When the dialog is canceled, the overlay fires an 'iron-overlay-canceled'
+event. Call `preventDefault` on this event to prevent the overlay from closing.
 
 ### Positioning
 
@@ -10004,6 +10007,11 @@ context. You should place this element as a child of `<body>` whenever possible.
      * Cancels the overlay.
      */
     cancel: function() {
+      var cancelEvent = this.fire('iron-overlay-canceled', undefined, {cancelable: true});
+      if (cancelEvent.defaultPrevented) {
+        return;
+      }
+
       this.opened = false;
       this._setCanceled(true);
     },
@@ -10708,7 +10716,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
      * the selected item or undefined if there is no selection.
      */
     get: function() {
-      return this.multi ? this.selection : this.selection[0];
+      return this.multi ? this.selection.slice() : this.selection[0];
     },
 
     /**
@@ -10884,12 +10892,13 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
       },
 
       /**
-       * The set of excluded elements where the key is the `localName` 
+       * The set of excluded elements where the key is the `localName`
        * of the element that will be ignored from the item list.
        *
+       * @type {object}
        * @default {template: 1}
        */
-      excludedLocalNames: {
+      _excludedLocalNames: {
         type: Object,
         value: function() {
           return {
@@ -10911,6 +10920,9 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
     attached: function() {
       this._observer = this._observeItems(this);
       this._contentObserver = this._observeContent(this);
+      if (!this.selectedItem && this.selected) {
+        this._updateSelected(this.attrForSelected,this.selected)
+      }
     },
 
     detached: function() {
@@ -10998,7 +11010,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
     },
 
     _filterItem: function(node) {
-      return !this.excludedLocalNames[node.localName];
+      return !this._excludedLocalNames[node.localName];
     },
 
     _valueToItem: function(value) {
@@ -11281,9 +11293,9 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
       var i = this.selectedValues.indexOf(value);
       var unselected = i < 0;
       if (unselected) {
-        this.selectedValues.push(value);
+        this.push('selectedValues',value);
       } else {
-        this.selectedValues.splice(i, 1);
+        this.splice('selectedValues',i,1);
       }
       this._selection.setItemSelected(this._valueToItem(value), unselected);
     }
@@ -11831,6 +11843,9 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
      */
     _nameChanged: function() {
       new Polymer.IronMeta({type: 'iconset', key: this.name, value: this});
+      this.async(function() {
+        this.fire('iron-iconset-added', this, {node: window});
+      });
     },
 
     /**
@@ -11871,13 +11886,15 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
      */
     _prepareSvgClone: function(sourceSvg, size) {
       if (sourceSvg) {
-        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('viewBox', ['0', '0', size, size].join(' '));
+        var content = sourceSvg.cloneNode(true),
+            svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+            viewBox = content.getAttribute('viewBox') || '0 0 ' + size + ' ' + size;
+        svg.setAttribute('viewBox', viewBox);
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
         // TODO(dfreedm): `pointer-events: none` works around https://crbug.com/370136
         // TODO(sjmiles): inline style may not be ideal, but avoids requiring a shadow-root
         svg.style.cssText = 'pointer-events: none; display: block; width: 100%; height: 100%;';
-        svg.appendChild(sourceSvg.cloneNode(true)).removeAttribute('id');
+        svg.appendChild(content).removeAttribute('id');
         return svg;
       }
       return null;
@@ -11889,194 +11906,6 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
 
 
 
-
-<style>
-
-.paper-font-display4,
-.paper-font-display3,
-.paper-font-display2,
-.paper-font-display1,
-.paper-font-headline,
-.paper-font-title,
-.paper-font-subhead,
-.paper-font-body2,
-.paper-font-body1,
-.paper-font-caption,
-.paper-font-menu,
-.paper-font-button {
-  font-family: 'Roboto', 'Noto', sans-serif;
-  -webkit-font-smoothing: antialiased;  /* OS X subpixel AA bleed bug */
-}
-
-.paper-font-code2,
-.paper-font-code1 {
-  font-family: 'Roboto Mono', 'Consolas', 'Menlo', monospace;
-  -webkit-font-smoothing: antialiased;  /* OS X subpixel AA bleed bug */
-}
-
-/* Opt for better kerning for headers & other short labels. */
-.paper-font-display4,
-.paper-font-display3,
-.paper-font-display2,
-.paper-font-display1,
-.paper-font-headline,
-.paper-font-title,
-.paper-font-subhead,
-.paper-font-menu,
-.paper-font-button {
-  text-rendering: optimizeLegibility;
-}
-
-/*
-"Line wrapping only applies to Body, Subhead, Headline, and the smaller Display
-styles. All other styles should exist as single lines."
-*/
-.paper-font-display4,
-.paper-font-display3,
-.paper-font-title,
-.paper-font-caption,
-.paper-font-menu,
-.paper-font-button {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.paper-font-display4 {
-  font-size: 112px;
-  font-weight: 300;
-  letter-spacing: -.044em;
-  line-height: 120px;
-}
-
-.paper-font-display3 {
-  font-size: 56px;
-  font-weight: 400;
-  letter-spacing: -.026em;
-  line-height: 60px;
-}
-
-.paper-font-display2 {
-  font-size: 45px;
-  font-weight: 400;
-  letter-spacing: -.018em;
-  line-height: 48px;
-}
-
-.paper-font-display1 {
-  font-size: 34px;
-  font-weight: 400;
-  letter-spacing: -.01em;
-  line-height: 40px;
-}
-
-.paper-font-headline {
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: -.012em;
-  line-height: 32px;
-}
-
-.paper-font-title {
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 28px;
-}
-
-.paper-font-subhead {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-}
-
-.paper-font-body2 {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 24px;
-}
-
-.paper-font-body1 {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-}
-
-.paper-font-caption {
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.011em;
-  line-height: 20px;
-}
-
-.paper-font-menu {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 24px;
-}
-
-.paper-font-button {
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.018em;
-  line-height: 24px;
-  text-transform: uppercase;
-}
-
-.paper-font-code2 {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 20px;
-}
-
-.paper-font-code1 {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 20px;
-}
-
-</style>
-<style>
-.shadow-transition {
-  transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.shadow-elevation-2dp {
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-              0 1px 5px 0 rgba(0, 0, 0, 0.12),
-              0 3px 1px -2px rgba(0, 0, 0, 0.2);
-}
-
-.shadow-elevation-3dp {
-  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14),
-              0 1px 8px 0 rgba(0, 0, 0, 0.12),
-              0 3px 3px -2px rgba(0, 0, 0, 0.4);
-}
-
-.shadow-elevation-4dp {
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14),
-              0 1px 10px 0 rgba(0, 0, 0, 0.12),
-              0 2px 4px -1px rgba(0, 0, 0, 0.4);
-}
-
-.shadow-elevation-6dp {
-  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14),
-              0 1px 18px 0 rgba(0, 0, 0, 0.12),
-              0 3px 5px -1px rgba(0, 0, 0, 0.4);
-}
-
-.shadow-elevation-8dp {
-  box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
-              0 3px 14px 2px rgba(0, 0, 0, 0.12),
-              0 5px 5px -3px rgba(0, 0, 0, 0.4);
-}
-
-.shadow-elevation-16dp {
-  box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14),
-              0  6px 30px 5px rgba(0, 0, 0, 0.12),
-              0  8px 10px -5px rgba(0, 0, 0, 0.4);
-}
-
-</style>
 <script>
 
  /** 
@@ -12158,7 +11987,9 @@ styles. All other styles should exist as single lines."
     *
     * as a work around we can divide by the reciprocal of `step`
     */
-    return this.step ? (Math.round(value / this.step) / (1 / this.step)) : value;
+    // polymer/issues/2493
+    value = parseFloat(value);
+    return this.step ? (Math.round((value + this.min) / this.step) / (1 / this.step)) - this.min : value;
   },
 
   _validateValue: function() {
@@ -12858,6 +12689,20 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       autocorrect: {
         type: String,
         value: 'off'
+      },
+
+      /**
+       * Bind this to the `<input is="iron-input">`'s `autosave` property, used with type=search.
+       */
+      autosave: {
+        type: String
+      },
+
+      /**
+       * Bind this to the `<input is="iron-input">`'s `results` property, , used with type=search.
+       */
+      results: {
+        type: Number
       },
 
       _ariaDescribedBy: {
@@ -14717,11 +14562,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: String,
           observer: '_srcChanged'
         },
-        
+
+        /**
+         * @type {!Polymer.IronMeta}
+         */
         _meta: {
           value: Polymer.Base.create('iron-meta', {type: 'iconset'})
         }
-        
+
       },
 
       _DEFAULT_ICONSET: 'icons',
@@ -14745,12 +14593,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _updateIcon: function() {
         if (this._usesIconset()) {
           if (this._iconsetName) {
-            this._iconset = this._meta.byKey(this._iconsetName);
+            this._iconset = /** @type {?Polymer.Iconset} */ (
+              this._meta.byKey(this._iconsetName));
             if (this._iconset) {
               this._iconset.applyIcon(this, this._iconName, this.theme);
+              this.unlisten(window, 'iron-iconset-added', '_updateIcon');
             } else {
-              this._warn(this._logf('_updateIcon', 'could not find iconset `'
-                + this._iconsetName + '`, did you import the iconset?'));
+              this.listen(window, 'iron-iconset-added', '_updateIcon');
             }
           }
         } else {
@@ -15009,11 +14858,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 :host {
   display: block;
   margin: 24px 40px;
+  -webkit-overflow-scrolling: touch;
 
   background: var(--paper-dialog-background-color, --primary-background-color);
   color: var(--paper-dialog-color, --primary-text-color);
 
-  @apply(--layout-scroll);
   @apply(--paper-font-body1);
   @apply(--shadow-elevation-16dp);
   @apply(--paper-dialog);
@@ -16320,6 +16169,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
     .not-visible {
       opacity: 0;
+      cursor: default;
     }
 
     paper-icon-button {
@@ -16367,7 +16217,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
   <template>
 
-    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown"></paper-icon-button>
+    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
     <div id="tabsContainer" class="flex" on-track="_scroll" on-down="_down">
 
@@ -16381,7 +16231,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
     </div>
 
-    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown"></paper-icon-button>
+    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
 
   </template>
 
@@ -17068,8 +16918,8 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
       .input-content.label-is-floating ::content label,
       .input-content.label-is-floating ::content .paper-input-label {
-        -webkit-transform: translate3d(0, -75%, 0) scale(0.75);
-        transform: translate3d(0, -75%, 0) scale(0.75);
+        -webkit-transform: translateY(-75%) scale(0.75);
+        transform: translateY(-75%) scale(0.75);
         -webkit-transform-origin: left top;
         transform-origin: left top;
         -webkit-transition: -webkit-transform 0.25s;
@@ -17107,6 +16957,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         background: transparent;
         border: none;
         color: var(--paper-input-container-input-color, --primary-text-color);
+        -webkit-appearance: none;
 
         @apply(--paper-font-subhead);
         @apply(--paper-input-container-input);
@@ -17204,7 +17055,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
       /**
        * True if the input is invalid. This property is set automatically when the input value
-       * changes if auto-validating, or when the `iron-input-valid` event is heard from a child.
+       * changes if auto-validating, or when the `iron-input-validate` event is heard from a child.
        */
       invalid: {
         observer: '_invalidChanged',
@@ -17407,9 +17258,9 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
           }
           // The label might have a horizontal offset if a prefix element exists
           // which needs to be undone when displayed as a floating label.
-          if (this.$.prefix && label && label.offsetParent &&
-              Polymer.dom(this.$.prefix).getDistributedNodes().length > 0) {
-           label.style.left = -label.offsetParent.offsetLeft + 'px';
+          if (Polymer.dom(this.$.prefix).getDistributedNodes().length > 0 &&
+              label && label.offsetParent) {
+            label.style.left = -label.offsetParent.offsetLeft + 'px';
           }
         } else {
           // When the label is not floating, it should overlap the input element.
@@ -17453,12 +17304,12 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       :host {
         display: inline-block;
         visibility: hidden;
-        float: left;
 
         color: var(--paper-input-container-invalid-color, --google-red-500);
 
         @apply(--paper-font-caption);
         @apply(--paper-input-error);
+        position: absolute;
       }
 
       :host([invalid]) {
@@ -17467,7 +17318,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     </style>
 
     <content></content>
-
+    
   </template>
 </dom-module>
 
@@ -17576,7 +17427,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
       <label hidden$="[[!label]]">[[label]]</label>
 
-      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange">
+      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange" autosave$="[[autosave]]" ,="" results$="[[results]]">
 
       <content select="[suffix]"></content>
 
@@ -18901,23 +18752,6 @@ paper-ripple {
 
       attached: function() {
         this._isReady = true;
-
-        // Don't stomp over a user-set aria-label.
-        if (!this.getAttribute('aria-label')) {
-          this.updateAriaLabel();
-        }
-      },
-
-      /**
-       * Update the checkbox aria-label. This is a temporary workaround not
-       * being able to observe changes in <content>
-       * (see: https://github.com/Polymer/polymer/issues/1773)
-       *
-       * Call this if you manually change the contents of the checkbox
-       * and want the aria-label to match the new contents.
-       */
-      updateAriaLabel: function() {
-        this.setAttribute('aria-label', Polymer.dom(this).textContent.trim());
       },
 
       // button-behavior hook

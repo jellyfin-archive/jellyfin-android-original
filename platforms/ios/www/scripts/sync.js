@@ -23,7 +23,8 @@ function loadQualityOptions(form,targetId,dialogOptionsFn){dialogOptionsFn(targe
 function setQualityFieldVisible(form,visible){if(visible){$('.fldQuality',form).show();$('#selectQuality',form).attr('required','required');}else{$('.fldQuality',form).hide();$('#selectQuality',form).removeAttr('required');}}
 function renderTargetDialogOptions(form,options){currentDialogOptions=options;if(options.ProfileOptions.length&&options.Options.indexOf('Profile')!=-1){$('.fldProfile',form).show();$('#selectProfile',form).attr('required','required');}else{$('.fldProfile',form).hide();$('#selectProfile',form).removeAttr('required');}
 setQualityFieldVisible(options.QualityOptions.length>0);$('#selectProfile',form).html(options.ProfileOptions.map(function(o){var selectedAttribute=o.IsDefault?' selected="selected"':'';return'<option value="'+o.Id+'"'+selectedAttribute+'>'+o.Name+'</option>';}).join('')).trigger('change');$('#selectQuality',form).html(options.QualityOptions.map(function(o){var selectedAttribute=o.IsDefault?' selected="selected"':'';return'<option value="'+o.Id+'"'+selectedAttribute+'>'+o.Name+'</option>';}).join('')).trigger('change');}
-function isAvailable(item,user){return item.SupportsSync;}
+function isAvailable(item,user){if(AppInfo.isNativeApp&&!Dashboard.capabilities().SupportsSync){return false;}
+return item.SupportsSync;}
 window.SyncManager={showMenu:showSyncMenu,isAvailable:isAvailable,renderForm:renderForm,setJobValues:setJobValues};function showSyncButtonsPerUser(page){var apiClient=window.ApiClient;if(!apiClient||!apiClient.getCurrentUserId()){return;}
 Dashboard.getCurrentUser().done(function(user){$('.categorySyncButton',page).visible(user.Policy.EnableSync);});}
 function onCategorySyncButtonClick(page,button){var category=button.getAttribute('data-category');var parentId=LibraryMenu.getTopParentId();SyncManager.showMenu({ParentId:parentId,Category:category});}

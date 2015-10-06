@@ -13,9 +13,6 @@
 
 -(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    [appDelegate restartServerIfNeeded];
-    
     void (^safeHandler)(UIBackgroundFetchResult) = ^(UIBackgroundFetchResult result){
         dispatch_async(dispatch_get_main_queue(), ^{
             completionHandler(result);
@@ -63,7 +60,7 @@
 
     self.fetchCallbackId = command.callbackId;
     
-    [app setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+    [app setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
     [app.delegate self];
     
     UIApplicationState state = [app applicationState];
@@ -83,16 +80,19 @@
     _notification = notification;
     _completionHandler = [notification.object copy];
     
-    AppDelegate* appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-    [appDelegate restartServerIfNeeded];
-    
     // Inform javascript a background-fetch event has occurred.
-    [self.commandDelegate runInBackground:^{
-        CDVPluginResult* result = nil;
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [result setKeepCallbackAsBool:YES];
-        [self.commandDelegate sendPluginResult:result callbackId:self.fetchCallbackId];
-    }];
+//    [self.commandDelegate runInBackground:^{
+//        CDVPluginResult* result = nil;
+//        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+//        [result setKeepCallbackAsBool:YES];
+//        [self.commandDelegate sendPluginResult:result callbackId:self.fetchCallbackId];
+//    }];
+    
+    if (_completionHandler) {
+        //NSLog(@"- CDVBackgroundFetch stopBackgroundTask (remaining t: %f)", app.backgroundTimeRemaining);
+        _completionHandler(UIBackgroundFetchResultNewData);
+        _completionHandler = nil;
+    }
 }
 -(void) finish:(CDVInvokedUrlCommand*)command
 {
