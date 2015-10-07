@@ -111,6 +111,7 @@ PlaylistManager.showPanel(selection);}
 function onItemWithActionClick(e){var elem=this;var action=elem.getAttribute('data-action');var elemWithAttributes=elem;if(action){while(!elemWithAttributes.getAttribute('data-itemid')){elemWithAttributes=elemWithAttributes.parentNode;}}
 var index;var itemsContainer;var itemId=elemWithAttributes.getAttribute('data-itemid');if(action=='play'){MediaController.play(itemId);}
 else if(action=='playallfromhere'){index=elemWithAttributes.getAttribute('data-index');itemsContainer=$(elem).parents('.itemsContainer');playAllFromHere(index,itemsContainer,'play');}
+else if(action=='instantmix'){MediaController.instantMix(itemId);}
 return false;}
 function playAllFromHere(index,itemsContainer,method){var ids=$('.mediaItem',itemsContainer).get().map(function(i){var node=i;var id=node.getAttribute('data-itemid');while(!id){node=node.parentNode;id=node.getAttribute('data-itemid');}
 return id;});ids=ids.slice(index);ApiClient.getItems(Dashboard.getCurrentUserId(),{Ids:ids.join(','),Fields:'MediaSources,Chapters',Limit:100}).done(function(result){MediaController[method]({items:result.Items});});}
