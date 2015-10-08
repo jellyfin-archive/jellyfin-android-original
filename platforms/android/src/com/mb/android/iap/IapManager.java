@@ -29,7 +29,7 @@ public class IapManager {
     private ILogger logger;
     private Context context;
     private IabValidator iabValidator;
-    private boolean operationInProgress;
+    private boolean initialized;
 
     public final static String GOOGLE_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk4MSP7wxlKaJwF066w7qQ+FvttXc+uSvUI5a+Lq+TT74Y1LTp0qg1+WRqou78WRK5cdfCr2m1N4LqttmYFfsWG/DBon98+ZFtaUbiP+Nx29YCkawE06hMyn0pONw/FnXB90mm0vGl7+fkpdYoUx1pit2DGoQweAZwmilW2jfPdi+YloSbX3SJlTXcgZIoAzIvY+qOinyuWIaRda5YcDfvson2yQC6XQOYqQ4ZOKhQxCSzaaQp3dLMCXlKPpsQNzFpVQsHLt4OntBMPkK3e/RxTE9AyhQYxofEzdKg/MHz1c3vCFIJCkzPy1cstwYMcjktRoLGgPHjxW60Iq9+USjfwIDAQAB";
 
@@ -37,6 +37,7 @@ public class IapManager {
         this.webView = webView;
         this.logger = logger;
         this.context = context;
+        init();
     }
 
     @JavascriptInterface
@@ -44,32 +45,21 @@ public class IapManager {
 
         logger.Info("isStoreAvailable called");
 
-        return true;
+        return initialized;
     }
 
     @JavascriptInterface
     public void isPurchased(final String id, final String callback) {
 
-        if (!confirmValidator()) {
-            logger.Error("*** Attempt to call isPurchased with IAP operation already in progress");
-            RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, false));
-        }
-
         logger.Info("isPurchased: %s", id);
 
         final String[] idPart = id.split("\\|");
 
-        operationInProgress = true;
         isPurchasedInternal(idPart[0], new Response<Boolean>() {
 
             @Override
             public void onResponse(final Boolean result) {
                 RespondToWebView(String.format("%s(\"%s\", %s)", callback, idPart[0], result));
-
-                if (!confirmValidator()) {
-                    logger.Error("*** Attempt to call isPurchased with IAP operation already in progress");
-                    RespondToWebView(String.format("%s(\"%s\", %s)", callback, idPart[1], false));
-                }
 
                 isPurchasedInternal(idPart[1], new Response<Boolean>() {
 
@@ -93,7 +83,6 @@ public class IapManager {
             @Override
             public void onResult(ResultType resultType) {
                 iabValidator.dispose();
-                operationInProgress = false;
                 logger.Info("*** IsPurchased Result: %s %s", id, resultType);
                 response.onResponse(resultType.equals(ResultType.Success));
             }
@@ -103,43 +92,28 @@ public class IapManager {
                 //TODO handle error...
                 logger.Info("*** IsPurchased Error %s %s", id, s);
                 iabValidator.dispose();
-                operationInProgress = false;
             }
         });
 
     }
 
-    private boolean confirmValidator() {
-        if (operationInProgress) return false;
+    public InAppProduct getPremiereMonthly() { return iabValidator.getPremiereMonthly(); }
+    public InAppProduct getPremiereWeekly() { return iabValidator.getPremiereWeekly(); }
+    public InAppProduct getUnlockProduct() { return iabValidator.getUnlockProduct(); }
+
+    private void init() {
         if (iabValidator == null || iabValidator.isDisposed()) iabValidator = new IabValidator(context, GOOGLE_KEY);
-        return true;
-    }
+        iabValidator.validateProductsAsync(new IResultHandler<ResultType>() {
+            @Override
+            public void onResult(ResultType resultType) {
+                initialized = true;
+            }
 
-    public void getAvailableProducts(final IJsonSerializer jsonSerializer, final Response<List<InAppProduct>> handler) {
-        logger.Info("*** Get products test call");
-        if (!confirmValidator()) {
-            // an iap operation is currently in progress - only can have one at a time respond appropriately
-            logger.Error("*** Attempt to call get products with IAP operation already in progress");
-        } else {
-            iabValidator.getAvailableProductsAsync(new IResultHandler<List<InAppProduct>>() {
-                @Override
-                public void onResult(List<InAppProduct> inAppProducts) {
-                    logger.Info("*** In App product result");
-                    logger.Info(jsonSerializer.SerializeToString(inAppProducts));
-                    iabValidator.dispose();
-                    handler.onResponse(inAppProducts);
-                }
-
-                @Override
-                public void onError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
-                    logger.Error("*** Error getting products: " + s);
-                    iabValidator.dispose();
-                    handler.onError(new Exception());
-                }
-            });
-
-
-        }
-
+            @Override
+            public void onError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
+                logger.Error("Error intializing IAP Manager. "+s);
+                initialized = false;
+            }
+        });
     }
 }
