@@ -68,7 +68,7 @@ import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
 import tv.emby.iap.InAppProduct;
-import tv.emby.iap.UnlockActivity;
+import tv.emby.iap.PurchaseActivity;
 
 public class MainActivity extends CordovaActivity
 {
@@ -82,6 +82,7 @@ public class MainActivity extends CordovaActivity
     private IapManager iapManager;
 
     private String purchaseEmail;
+    private InAppProduct currentProduct;
 
     private ILogger getLogger(){
         return AppLogger.getLogger(this);
@@ -161,8 +162,8 @@ public class MainActivity extends CordovaActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == PURCHASE_REQUEST) {
             if (resultCode == RESULT_OK) {
-                InAppProduct product = jsonSerializer.DeserializeFromString(intent.getStringExtra("product"), InAppProduct.class);
-                if (product.getEmbyFeatureCode() != null) {
+
+                if (currentProduct.getEmbyFeatureCode() != null) {
                     //Need to register this with the back end
                     HttpRequest request = new HttpRequest();
                     request.setUrl(embyAdminUrl + "appstore/register");
@@ -170,13 +171,13 @@ public class MainActivity extends CordovaActivity
                     QueryStringDictionary data = new QueryStringDictionary();
                     data.Add("store", intent.getStringExtra("store"));
                     data.Add("application", "com.mb.android");
-                    data.Add("product", product.getSku());
-                    data.Add("type", product.getProductType().toString());
+                    data.Add("product", currentProduct.getSku());
+                    data.Add("type", currentProduct.getProductType().toString());
                     data.Add("storeId", intent.getStringExtra("storeId"));
                     data.Add("token", intent.getStringExtra("storeToken"));
-                    data.Add("feature", product.getEmbyFeatureCode());
+                    data.Add("feature", currentProduct.getEmbyFeatureCode());
                     data.Add("email", purchaseEmail);
-                    data.Add("amt", product.getPrice());
+                    data.Add("amt", currentProduct.getPrice());
                     request.setPostData(data);
 
                     httpClient.Send(request, new Response<String>() {
@@ -239,59 +240,65 @@ public class MainActivity extends CordovaActivity
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void beginPurchase(final String id, final String purchaseEmail) {
+    public void purchasePremiereMonthly(final String email) {
+        if (iapManager.isStoreAvailable()) {
+            beginPurchase(iapManager.getPremiereMonthly(), email);
+        }
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void purchasePremiereWeekly(final String email) {
+        if (iapManager.isStoreAvailable()) {
+            beginPurchase(iapManager.getPremiereWeekly(), email);
+        }
+    }
+
+    @org.xwalk.core.JavascriptInterface
+    public void purchaseUnlock(final String email) {
+        if (iapManager.isStoreAvailable()) {
+            beginPurchase(iapManager.getUnlockProduct(), email);
+        }
+    }
+
+    public void beginPurchase(final InAppProduct product, final String purchaseEmail) {
 
         this.purchaseEmail = purchaseEmail;
 
-        iapManager.getAvailableProducts(jsonSerializer, new Response<List<InAppProduct>>(){
-
-            @Override
-            public void onResponse(List<InAppProduct> inAppProducts) {
-
-                InAppProduct product = null;
-                for (InAppProduct prd : inAppProducts){
-                    if (StringHelper.EqualsIgnoreCase(id, prd.getSku())){
-                        product = prd;
-                        break;
-                    }
-                }
-
-                final String productJson = jsonSerializer.SerializeToString(product);
-
-                if (product.requiresEmail() && (purchaseEmail == null || purchaseEmail.length() == 0)) {
-                    //Todo Obtain the email address for purchase - then re-call this method
-                    return;
-                }
-
-                if (product.getEmbyFeatureCode() != null) {
-                    //Test connectivity to our back-end before purchase because we need this to complete it
-                    HttpRequest request = new HttpRequest();
-                    request.setUrl(embyAdminUrl+"appstore/check");
-                    httpClient.Send(request, new Response<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            //ok, continue with purchase
-                            purchaseInternal(productJson);
-                        }
-
-                        @Override
-                        public void onError(Exception exception) {
-                            //Unable to connect - display appropriate message
-                        }
-                    });
-                } else {
-                    //Just initiate the purchase
-                    purchaseInternal(productJson);
-                }
+            if (product.requiresEmail() && (purchaseEmail == null || purchaseEmail.length() == 0)) {
+                //Todo Obtain the email address for purchase - then re-call this method
+                return;
             }
-        });
+
+            if (product.getEmbyFeatureCode() != null) {
+                //Test connectivity to our back-end before purchase because we need this to complete it
+                HttpRequest request = new HttpRequest();
+                request.setUrl(embyAdminUrl+"appstore/check");
+                httpClient.Send(request, new Response<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //ok, continue with purchase
+                        purchaseInternal(product);
+                    }
+
+                    @Override
+                    public void onError(Exception exception) {
+                        //Unable to connect - display appropriate message
+                    }
+                });
+            } else {
+                //Just initiate the purchase
+                purchaseInternal(product);
+            }
+
+
     }
 
-    private void purchaseInternal(String productJson) {
+    private void purchaseInternal(InAppProduct product) {
         try {
-            Intent purchaseIntent = new Intent(this, UnlockActivity.class);
+            currentProduct = product;
+            Intent purchaseIntent = new Intent(this, PurchaseActivity.class);
             purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
-            purchaseIntent.putExtra("product", productJson);
+            purchaseIntent.putExtra("sku", product.getSku());
             startActivityForResult(purchaseIntent, PURCHASE_REQUEST);
         }
         catch (Exception ex) {
