@@ -39,6 +39,8 @@
     "TextEnjoyBonusFeatures": "Enjoy Bonus Features",
     "TitleLiveTV": "Live TV",
     "ButtonCancelSyncJob": "Cancel sync",
+    "HeaderAddTag": "Add Tag",
+    "LabelTag": "Tag:",
     "ButtonSelectView": "Select view",
     "TitleSync": "Sync",
     "OptionAutomatic": "Auto",
@@ -903,6 +905,7 @@
     "HeaderNextUp": "Next Up",
     "HeaderLatestMovies": "Latest Movies",
     "HeaderLatestEpisodes": "Latest Episodes",
+    "EmbyPremiereMonthly": "Emby Premiere Monthly",
     "EmbyPremiereMonthlyWithPrice": "Emby Premiere Monthly {0}",
     "HeaderEmailAddress": "E-Mail Address",
     "TextPleaseEnterYourEmailAddressForSubscription": "Please enter your e-mail address."

@@ -57,25 +57,25 @@ public class IapManager {
 
         logger.Info("isPurchased: %s", id);
 
-        final String[] idPart = id.split("|");
+        final String[] idPart = id.split("\\|");
 
         operationInProgress = true;
         isPurchasedInternal(idPart[0], new Response<Boolean>() {
 
             @Override
             public void onResponse(final Boolean result) {
-                RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, result));
+                RespondToWebView(String.format("%s(\"%s\", %s)", callback, idPart[0], result));
 
                 if (!confirmValidator()) {
                     logger.Error("*** Attempt to call isPurchased with IAP operation already in progress");
-                    RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, false));
+                    RespondToWebView(String.format("%s(\"%s\", %s)", callback, idPart[1], false));
                 }
 
                 isPurchasedInternal(idPart[1], new Response<Boolean>() {
 
                     @Override
                     public void onResponse(final Boolean result) {
-                        RespondToWebView(String.format("%s(\"%s\", %s)", callback, id, result));
+                        RespondToWebView(String.format("%s(\"%s\", %s)", callback, idPart[1], result));
                     }
                 });
             }
@@ -88,20 +88,20 @@ public class IapManager {
         webView.sendJavaScript(url);
     }
 
-    private void isPurchasedInternal(String id, final Response<Boolean> response) {
+    private void isPurchasedInternal(final String id, final Response<Boolean> response) {
         iabValidator.checkInAppPurchase(id, new IResultHandler<ResultType>() {
             @Override
             public void onResult(ResultType resultType) {
                 iabValidator.dispose();
                 operationInProgress = false;
-                logger.Info("*** IsPurchased Result: %s", resultType);
+                logger.Info("*** IsPurchased Result: %s %s", id, resultType);
                 response.onResponse(resultType.equals(ResultType.Success));
             }
 
             @Override
             public void onError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
                 //TODO handle error...
-                logger.Info("*** IsPurchased Error %s", s);
+                logger.Info("*** IsPurchased Error %s %s", id, s);
                 iabValidator.dispose();
                 operationInProgress = false;
             }

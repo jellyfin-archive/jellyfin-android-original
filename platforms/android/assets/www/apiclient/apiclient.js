@@ -7,7 +7,7 @@ return promise;};self.getCurrentUserId=function(){return serverInfo.UserId;};sel
 function onRetryRequestFail(request){Events.trigger(self,'requestfail',[{url:request.url}]);}
 self.setRequestHeaders=function(headers){var currentServerInfo=self.serverInfo();if(clientName){var auth='MediaBrowser Client="'+clientName+'", Device="'+deviceName+'", DeviceId="'+deviceId+'", Version="'+applicationVersion+'"';var userId=currentServerInfo.UserId;if(userId){auth+=', UserId="'+userId+'"';}
 headers["X-Emby-Authorization"]=auth;}
-var accessToken=currentServerInfo.AccessToken;if(accessToken){headers['X-Emby-Token']=accessToken;}};self.ajax=function(request,includeAuthorization){if(!request){throw new Error("Request cannot be null");}
+var accessToken=currentServerInfo.AccessToken;if(accessToken){headers['X-MediaBrowser-Token']=accessToken;}};self.ajax=function(request,includeAuthorization){if(!request){throw new Error("Request cannot be null");}
 if(includeAuthorization!==false){request.headers=request.headers||{};self.setRequestHeaders(request.headers);}
 if(self.enableAutomaticNetworking===false||request.type!="GET"){logger.log('Requesting url without automatic networking: '+request.url);return HttpClient.send(request).fail(onRequestFail);}
 var deferred=DeferredBuilder.Deferred();self.ajaxWithFailover(request,deferred,true);return deferred.promise();};function switchConnectionMode(connectionMode){var currentServerInfo=self.serverInfo();var newConnectionMode=connectionMode;newConnectionMode--;if(newConnectionMode<0){newConnectionMode=MediaBrowser.ConnectionMode.Manual;}
@@ -19,7 +19,7 @@ function tryReconnectInternal(deferred,connectionMode,currentRetryCount){connect
 function tryReconnect(){var deferred=DeferredBuilder.Deferred();setTimeout(function(){tryReconnectInternal(deferred,self.serverInfo().LastConnectionMode,0);},500);return deferred.promise();}
 self.ajaxWithFailover=function(request,deferred,enableReconnection){logger.log("Requesting "+request.url);request.timeout=30000;HttpClient.send(request).done(function(response){deferred.resolve(response,0);}).fail(function(e,textStatus){logger.log("Request failed with textStatus "+textStatus+" to "+request.url);var statusCode=parseInt(e.status||'0');var isUserErrorCode=statusCode>=400&&statusCode<500;if(enableReconnection&&!isUserErrorCode){logger.log("Attempting reconnection");var previousServerAddress=self.serverAddress();tryReconnect().done(function(){logger.log("Reconnect succeesed");request.url=request.url.replace(previousServerAddress,self.serverAddress());self.ajaxWithFailover(request,deferred,false);}).fail(function(){logger.log("Reconnect failed");onRetryRequestFail(request);deferred.reject();});}else{logger.log("Reporting request failure");onRetryRequestFail(request);deferred.reject();}});};self.get=function(url){return self.ajax({type:"GET",url:url});};self.getJSON=function(url){return self.ajax({type:"GET",url:url,dataType:"json"});};self.getUrl=function(name,params){if(!name){throw new Error("Url name cannot be empty");}
 var url=serverAddress;if(!url){throw new Error("serverAddress is yet not set");}
-if(url.toLowerCase().indexOf('/emby')==-1){url+='/emby';}
+var lowered=url.toLowerCase();if(lowered.indexOf('/emby')==-1&&lowered.indexOf('/mediabrowser')==-1){url+='/emby';}
 if(name.charAt(0)!='/'){url+='/';}
 url+=name;if(params){params=HttpClient.param(params);if(params){url+="?"+params;}}
 return url;};self.updateServerInfo=function(server,connectionMode){if(server==null){throw new Error('server cannot be null');}
