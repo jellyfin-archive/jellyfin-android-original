@@ -1,6 +1,7 @@
 ﻿(function () {
 
     var updatedProducts = [];
+    var enteredEmail;
 
     function getStoreFeatureId(feature) {
 
@@ -41,6 +42,11 @@
     }
 
     function beginPurchase(feature, email) {
+
+        if (email) {
+            enteredEmail = email;
+        }
+
         var id = getStoreFeatureId(feature);
         store.order(id);
     }
@@ -54,31 +60,32 @@
         // product attributes:
         // https://github.com/j3k0/cordova-plugin-purchase/blob/master/doc/api.md#validation-error-codes
 
-        alert(JSON.stringify(product.transaction));
+        var productId = product.id;
+        var transactionId = product.transaction.id;
+        var receipt = product.transaction.appStoreReceipt;
+        var email = enteredEmail;
 
-        callback(true, {
+        //var url = "https://connect.emby.media/service/user?id=" + userId;
 
-        });
-
-        //callback(true, { ... transaction details ... }); // success!
-
-        //// OR
-        //callback(false, {
-        //    error: {
-        //        code: store.PURCHASE_EXPIRED,
-        //        message: "XYZ"
+        //HttpClient.send({
+        //    type: "GET",
+        //    url: url,
+        //    dataType: "json",
+        //    headers: {
+        //        "X-Application": appName + "/" + appVersion,
+        //        "X-Connect-UserToken": accessToken
         //    }
+
         //});
 
-        //// OR
-        //callback(false, "Impossible to proceed with validation");  
+        callback(true, product); 
     }
 
-    function initProduct(id, alias, type) {
+    function initProduct(id, requiresVerification, type) {
 
         store.register({
             id: id,
-            alias: alias,
+            alias: id,
             type: type
         });
 
@@ -86,7 +93,8 @@
         // show some logs and finish the transaction.
         store.when(id).approved(function (product) {
 
-            if (product.type == store.PAID_SUBSCRIPTION) {
+            //product.finish();
+            if (requiresVerification) {
                 product.verify();
             } else {
                 product.finish();
@@ -103,7 +111,11 @@
 
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
-                product.finish();
+                if (requiresVerification) {
+                    product.verify();
+                } else {
+                    product.finish();
+                }
             }
             updateProductInfo(product);
         });
@@ -117,8 +129,8 @@
 
         store.validator = validateProduct;
 
-        initProduct(getStoreFeatureId(""), "premium features", store.NON_CONSUMABLE);
-        initProduct(getStoreFeatureId("embypremieremonthly"), "emby premiere monthly", store.PAID_SUBSCRIPTION);
+        initProduct(getStoreFeatureId(""), false, store.NON_CONSUMABLE);
+        initProduct(getStoreFeatureId("embypremieremonthly"), true, store.PAID_SUBSCRIPTION);
 
         // When every goes as expected, it's time to celebrate!
         // The "ready" event should be welcomed with music and fireworks,
@@ -161,7 +173,6 @@
         getProductInfo: getProduct,
         beginPurchase: beginPurchase,
         restorePurchase: restorePurchase,
-        getStoreFeatureId: getStoreFeatureId,
         getSubscriptionOptions: getSubscriptionOptions
     };
 
