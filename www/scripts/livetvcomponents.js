@@ -23,17 +23,15 @@ if(!item.TimerId&&!item.SeriesTimerId){html+='<paper-button data-id="'+item.Id+'
 html+='<div>';html+='</div>';return html;}
 function onPlayClick(){hideOverlay();MediaController.play({ids:[this.getAttribute('data-id')]});}
 function onRecordClick(){hideOverlay();Dashboard.navigate('livetvnewrecording.html?programid='+this.getAttribute('data-id'));}
-function showOverlay(elem,item){require(['jqmpopup'],function(){hideOverlay();var html='<div data-role="popup" class="itemFlyout" data-theme="b" data-arrow="true" data-history="false">';html+='<div class="ui-bar-b" style="text-align:center;">';html+='<h3 style="margin: .5em 0;padding:.5em 1em;font-weight:normal;">'+item.Name+'</h3>';html+='</div>';html+='<div style="padding: 0 1em;">';html+=getOverlayHtml(item);html+='</div>';html+='</div>';$(document.body).append(html);var popup=$('.itemFlyout').on('mouseenter',onOverlayMouseOver).on('mouseleave',onOverlayMouseOut).popup({positionTo:elem}).trigger('create').popup("open").on("popupafterclose",function(){$(this).off("popupafterclose").off("mouseenter").off("mouseleave").remove();});$('.btnPlay',popup).on('click',onPlayClick);$('.btnRecord',popup).on('click',onRecordClick);LibraryBrowser.renderGenres($('.itemGenres',popup),item,3);$('.miscTvProgramInfo',popup).html(LibraryBrowser.getMiscInfoHtml(item)).trigger('create');popup.parents().prev('.ui-popup-screen').remove();currentPosterItem=elem;});}
+function showOverlay(elem,item){require(['components/paperdialoghelper'],function(){var dlg=document.createElement('paper-dialog');dlg.setAttribute('with-backdrop','with-backdrop');dlg.setAttribute('role','alertdialog');dlg.setAttribute('noAutoFocus','noAutoFocus');dlg.entryAnimation='scale-up-animation';dlg.exitAnimation='fade-out-animation';dlg.classList.add('ui-body-b');dlg.classList.add('background-theme-b');dlg.classList.add('tvProgramOverlay');var html='';html+='<h2 class="dialogHeader">';html+=item.Name;html+='</h2>';html+='<div>';html+=getOverlayHtml(item);html+='</div>';dlg.innerHTML=html;document.body.appendChild(dlg);$(dlg).on('iron-overlay-closed',function(){$(dlg).off('mouseenter',onOverlayMouseOver);$(dlg).off('mouseleave',onOverlayMouseOut);this.parentNode.removeChild(this);if(currentPosterItem){currentPosterItem=null;}});$('.btnPlay',dlg).on('click',onPlayClick);$('.btnRecord',dlg).on('click',onRecordClick);LibraryBrowser.renderGenres($('.itemGenres',dlg),item,3);$('.miscTvProgramInfo',dlg).html(LibraryBrowser.getMiscInfoHtml(item));PaperDialogHelper.positionTo(dlg,elem);dlg.open();$(dlg).on('mouseenter',onOverlayMouseOver);$(dlg).on('mouseleave',onOverlayMouseOut);currentPosterItem=elem;});}
 function onProgramClicked(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}
 if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}
 hideOverlay();}
-function hideOverlay(){var flyout=document.querySelectorAll('.itemFlyout');if(flyout.length){$(flyout).popup('close').popup('destroy').remove();}
-if(currentPosterItem){$(currentPosterItem).off('click');currentPosterItem=null;}}
+function hideOverlay(){var flyout=document.querySelector('.tvProgramOverlay');if(flyout){flyout.close();}}
 function startHideOverlayTimer(){if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}
 hideOverlayTimeout=setTimeout(hideOverlay,200);}
-function onHoverOut(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}
-startHideOverlayTimer();}
 $.fn.createGuideHoverMenu=function(childSelector){function onShowTimerExpired(elem){var id=elem.getAttribute('data-programid');ApiClient.getLiveTvProgram(id,Dashboard.getCurrentUserId()).done(function(item){showOverlay(elem,item);});}
+function onHoverOut(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}}
 function onHoverIn(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}
 if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}
 var elem=this;if(currentPosterItem){if(currentPosterItem&&currentPosterItem==elem){return;}else{hideOverlay();}}
