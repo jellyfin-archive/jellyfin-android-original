@@ -73,11 +73,11 @@
         //callback(false, "Impossible to proceed with validation");  
     }
 
-    function initProduct(id, requiresVerification, alias, type) {
+    function initProduct(id, requiresVerification, type) {
 
         store.register({
             id: id,
-            alias: alias,
+            alias: id,
             type: type
         });
 
@@ -87,7 +87,6 @@
 
             //product.finish();
             if (requiresVerification) {
-                alert('calling verify');
                 product.verify();
             } else {
                 product.finish();
@@ -104,7 +103,11 @@
 
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
-                product.finish();
+                if (requiresVerification) {
+                    product.verify();
+                } else {
+                    product.finish();
+                }
             }
             updateProductInfo(product);
         });
@@ -118,8 +121,8 @@
 
         store.validator = validateProduct;
 
-        initProduct(getStoreFeatureId(""), false, "premium features", store.NON_CONSUMABLE);
-        initProduct(getStoreFeatureId("embypremieremonthly"), true, "emby premiere monthly", store.PAID_SUBSCRIPTION);
+        initProduct(getStoreFeatureId(""), false, store.NON_CONSUMABLE);
+        initProduct(getStoreFeatureId("embypremieremonthly"), true, store.PAID_SUBSCRIPTION);
 
         // When every goes as expected, it's time to celebrate!
         // The "ready" event should be welcomed with music and fireworks,
