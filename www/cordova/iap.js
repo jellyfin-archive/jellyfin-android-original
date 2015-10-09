@@ -1,6 +1,7 @@
 ﻿(function () {
 
     var updatedProducts = [];
+    var enteredEmail;
 
     function getStoreFeatureId(feature) {
 
@@ -41,6 +42,11 @@
     }
 
     function beginPurchase(feature, email) {
+
+        if (email) {
+            enteredEmail = email;
+        }
+
         var id = getStoreFeatureId(feature);
         store.order(id);
     }
@@ -54,23 +60,25 @@
         // product attributes:
         // https://github.com/j3k0/cordova-plugin-purchase/blob/master/doc/api.md#validation-error-codes
 
-        alert(JSON.stringify(product));
-        alert(JSON.stringify(product.transaction));
+        var productId = product.id;
+        var transactionId = product.transaction.id;
+        var receipt = product.transaction.appStoreReceipt;
+        var email = enteredEmail;
 
-        callback(true, product);
+        //var url = "https://connect.emby.media/service/user?id=" + userId;
 
-        //callback(true, { ... transaction details ... }); // success!
-
-        //// OR
-        //callback(false, {
-        //    error: {
-        //        code: store.PURCHASE_EXPIRED,
-        //        message: "XYZ"
+        //HttpClient.send({
+        //    type: "GET",
+        //    url: url,
+        //    dataType: "json",
+        //    headers: {
+        //        "X-Application": appName + "/" + appVersion,
+        //        "X-Connect-UserToken": accessToken
         //    }
+
         //});
 
-        //// OR
-        //callback(false, "Impossible to proceed with validation");  
+        callback(true, product); 
     }
 
     function initProduct(id, requiresVerification, type) {
