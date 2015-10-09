@@ -1,8 +1,8 @@
 ﻿(function(){function validateServerManagement(deferred){deferred.resolve();}
 function getRegistrationInfo(feature){return ConnectionManager.getRegistrationInfo(feature,ApiClient);}
-var validatedFeatures=[];function validateFeature(feature,deferred){var id=IapManager.getStoreFeatureId(feature);if(validatedFeatures.indexOf(feature)!=-1){deferred.resolve();return;}
-var info=IapManager.getProductInfo(feature)||{};if(info.owned){notifyServer(id);validatedFeatures.push(feature);deferred.resolve();return;}
-var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:IapManager.isPurchaseAvailable(feature),id:id,price:info.price,feature:feature}:null;var prefix=$.browser.android?'android':'ios';getRegistrationInfo(prefix+'appunlock').done(function(registrationInfo){if(registrationInfo.IsRegistered){validatedFeatures.push(feature);deferred.resolve();return;}
+var validatedFeatures=[];function validateFeature(feature,deferred){if(validatedFeatures.indexOf(feature)!=-1){deferred.resolve();return;}
+var info=IapManager.getProductInfo(feature)||{};if(info.owned){notifyServer(info.id);validatedFeatures.push(feature);deferred.resolve();return;}
+var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:IapManager.isPurchaseAvailable(feature),id:info.id,price:info.price,feature:feature}:null;var prefix=$.browser.android?'android':'ios';getRegistrationInfo(prefix+'appunlock').done(function(registrationInfo){if(registrationInfo.IsRegistered){validatedFeatures.push(feature);deferred.resolve();return;}
 IapManager.getSubscriptionOptions().done(function(subscriptionOptions){var dialogOptions={title:Globalize.translate('HeaderUnlockApp')};showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,registrationInfo,dialogOptions,deferred);});}).fail(function(){deferred.reject();});}
 function notifyServer(id){if(!$.browser.android){return;}
 HttpClient.send({type:"POST",url:"https://mb3admin.com/admin/service/appstore/addDeviceFeature",data:{deviceId:ConnectionManager.deviceId(),feature:'com.mb.android.unlock'},contentType:'application/x-www-form-urlencoded; charset=UTF-8',headers:{"X-EMBY-TOKEN":"EMBY_DEVICE"}}).done(function(result){Logger.log('addDeviceFeature succeeded');}).fail(function(){Logger.log('addDeviceFeature failed');});}

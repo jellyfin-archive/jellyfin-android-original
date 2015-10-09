@@ -57,9 +57,7 @@
         alert(JSON.stringify(product));
         alert(JSON.stringify(product.transaction));
 
-        callback(true, {
-
-        });
+        callback(true, product);
 
         //callback(true, { ... transaction details ... }); // success!
 
@@ -164,7 +162,6 @@
         getProductInfo: getProduct,
         beginPurchase: beginPurchase,
         restorePurchase: restorePurchase,
-        getStoreFeatureId: getStoreFeatureId,
         getSubscriptionOptions: getSubscriptionOptions
     };
 

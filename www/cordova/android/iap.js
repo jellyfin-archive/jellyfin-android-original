@@ -45,8 +45,14 @@
     }
 
     function beginPurchase(feature, email) {
-        var id = getStoreFeatureId(feature);
-        return MainActivity.beginPurchase(id, email);
+
+        if (feature == 'embypremieremonthly') {
+            return MainActivity.purchasePremiereMonthly(email);
+        }
+        if (feature == 'embypremiereweekly') {
+            return MainActivity.purchasePremiereWeekly(email);
+        }
+        return MainActivity.purchaseUnlock(email);
     }
 
     function onPurchaseComplete(result) {
@@ -90,7 +96,6 @@
         updateProduct: updateProductInfo,
         beginPurchase: beginPurchase,
         onPurchaseComplete: onPurchaseComplete,
-        getStoreFeatureId: getStoreFeatureId,
         getSubscriptionOptions: getSubscriptionOptions
     };
 
