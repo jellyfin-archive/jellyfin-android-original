@@ -5,6 +5,7 @@ node_modules
 logs/
 console.log
 platforms/android/.gradle
+platforms/android/.idea
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
