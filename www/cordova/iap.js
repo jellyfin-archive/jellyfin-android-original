@@ -63,22 +63,35 @@
         var productId = product.id;
         var transactionId = product.transaction.id;
         var receipt = product.transaction.appStoreReceipt;
-        var email = enteredEmail;
+        var price = product.price;
 
-        //var url = "https://connect.emby.media/service/user?id=" + userId;
+        HttpClient.send({
+            type: "POST",
+            url: "https://mb3admin.com/test/admin/service/appstore/register",
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: {
+                store: "Apple",
+                application: "com.emby.mobile",
+                product: productId,
+                type: "Subscription",
+                feature: "MBSClubMonthly",
+                email: enteredEmail,
+                token: receipt,
+                amt: price,
+                storeId: transactionId
+            },
+            headers: {
+                "X-Emby-Token": "08606E86D043"
+            }
 
-        //HttpClient.send({
-        //    type: "GET",
-        //    url: url,
-        //    dataType: "json",
-        //    headers: {
-        //        "X-Application": appName + "/" + appVersion,
-        //        "X-Connect-UserToken": accessToken
-        //    }
+        }).done(function () {
 
-        //});
+            callback(true, product);
 
-        callback(true, product); 
+        }).fail(function () {
+
+            callback(false, product);
+        });
     }
 
     function initProduct(id, requiresVerification, type) {
