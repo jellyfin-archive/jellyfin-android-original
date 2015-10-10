@@ -1,6 +1,7 @@
 ﻿(function () {
 
     var updatedProducts = [];
+    var enteredEmail;
 
     function getStoreFeatureId(feature) {
 
@@ -41,6 +42,11 @@
     }
 
     function beginPurchase(feature, email) {
+
+        if (email) {
+            enteredEmail = email;
+        }
+
         var id = getStoreFeatureId(feature);
         store.order(id);
     }
@@ -54,32 +60,45 @@
         // product attributes:
         // https://github.com/j3k0/cordova-plugin-purchase/blob/master/doc/api.md#validation-error-codes
 
-        alert(JSON.stringify(product));
-        alert(JSON.stringify(product.transaction));
+        var productId = product.id;
+        var transactionId = product.transaction.id;
+        var receipt = product.transaction.appStoreReceipt;
+        var price = product.price;
 
-        callback(true, {
+        HttpClient.send({
+            type: "POST",
+            url: "https://mb3admin.com/test/admin/service/appstore/register",
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            data: {
+                store: "Apple",
+                application: "com.emby.mobile",
+                product: productId,
+                type: "Subscription",
+                feature: "MBSClubMonthly",
+                email: enteredEmail,
+                token: receipt,
+                amt: price,
+                storeId: transactionId
+            },
+            headers: {
+                "X-Emby-Token": "08606E86D043"
+            }
 
+        }).done(function () {
+
+            callback(true, product);
+
+        }).fail(function () {
+
+            callback(false, product);
         });
-
-        //callback(true, { ... transaction details ... }); // success!
-
-        //// OR
-        //callback(false, {
-        //    error: {
-        //        code: store.PURCHASE_EXPIRED,
-        //        message: "XYZ"
-        //    }
-        //});
-
-        //// OR
-        //callback(false, "Impossible to proceed with validation");  
     }
 
-    function initProduct(id, requiresVerification, alias, type) {
+    function initProduct(id, requiresVerification, type) {
 
         store.register({
             id: id,
-            alias: alias,
+            alias: id,
             type: type
         });
 
@@ -89,7 +108,6 @@
 
             //product.finish();
             if (requiresVerification) {
-                alert('calling verify');
                 product.verify();
             } else {
                 product.finish();
@@ -106,7 +124,11 @@
 
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
-                product.finish();
+                if (requiresVerification) {
+                    product.verify();
+                } else {
+                    product.finish();
+                }
             }
             updateProductInfo(product);
         });
@@ -120,8 +142,8 @@
 
         store.validator = validateProduct;
 
-        initProduct(getStoreFeatureId(""), false, "premium features", store.NON_CONSUMABLE);
-        initProduct(getStoreFeatureId("embypremieremonthly"), true, "emby premiere monthly", store.PAID_SUBSCRIPTION);
+        initProduct(getStoreFeatureId(""), false, store.NON_CONSUMABLE);
+        initProduct(getStoreFeatureId("embypremieremonthly"), true, store.PAID_SUBSCRIPTION);
 
         // When every goes as expected, it's time to celebrate!
         // The "ready" event should be welcomed with music and fireworks,
