@@ -29,7 +29,6 @@ public class IapManager {
     private ILogger logger;
     private Context context;
     private IabValidator iabValidator;
-    private boolean initialized;
 
     public final static String GOOGLE_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk4MSP7wxlKaJwF066w7qQ+FvttXc+uSvUI5a+Lq+TT74Y1LTp0qg1+WRqou78WRK5cdfCr2m1N4LqttmYFfsWG/DBon98+ZFtaUbiP+Nx29YCkawE06hMyn0pONw/FnXB90mm0vGl7+fkpdYoUx1pit2DGoQweAZwmilW2jfPdi+YloSbX3SJlTXcgZIoAzIvY+qOinyuWIaRda5YcDfvson2yQC6XQOYqQ4ZOKhQxCSzaaQp3dLMCXlKPpsQNzFpVQsHLt4OntBMPkK3e/RxTE9AyhQYxofEzdKg/MHz1c3vCFIJCkzPy1cstwYMcjktRoLGgPHjxW60Iq9+USjfwIDAQAB";
 
@@ -38,14 +37,6 @@ public class IapManager {
         this.logger = logger;
         this.context = context;
         init();
-    }
-
-    @JavascriptInterface
-    public boolean isStoreAvailable() {
-
-        logger.Info("isStoreAvailable called");
-
-        return initialized;
     }
 
     @JavascriptInterface
@@ -101,18 +92,24 @@ public class IapManager {
     public InAppProduct getPremiereWeekly() { return iabValidator.getPremiereWeekly(); }
     public InAppProduct getUnlockProduct() { return iabValidator.getUnlockProduct(); }
 
+    @JavascriptInterface
+    public void initStore() {
+
+        logger.Info("initStore called");
+        init();
+    }
+
     private void init() {
         if (iabValidator == null || iabValidator.isDisposed()) iabValidator = new IabValidator(context, GOOGLE_KEY);
         iabValidator.validateProductsAsync(new IResultHandler<ResultType>() {
             @Override
             public void onResult(ResultType resultType) {
-                initialized = true;
+                RespondToWebView("IapManager.onStoreReady();");
             }
 
             @Override
             public void onError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
                 logger.Error("Error intializing IAP Manager. "+s);
-                initialized = false;
             }
         });
     }
