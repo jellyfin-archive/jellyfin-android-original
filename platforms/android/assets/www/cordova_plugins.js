@@ -85,62 +85,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognition.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognition",
-        "clobbers": [
-            "SpeechRecognition"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionError.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionError",
-        "clobbers": [
-            "SpeechRecognitionError"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionAlternative.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionAlternative",
-        "clobbers": [
-            "SpeechRecognitionAlternative"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionResult.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionResult",
-        "clobbers": [
-            "SpeechRecognitionResult"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionResultList.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionResultList",
-        "clobbers": [
-            "SpeechRecognitionResultList"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionEvent.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionEvent",
-        "clobbers": [
-            "SpeechRecognitionEvent"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechGrammar.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechGrammar",
-        "clobbers": [
-            "SpeechGrammar"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechGrammarList.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechGrammarList",
-        "clobbers": [
-            "SpeechGrammarList"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
         "id": "cordova-plugin-file.DirectoryEntry",
         "clobbers": [
@@ -399,22 +343,21 @@ module.exports.metadata =
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-crosswalk-webview": "1.2.0",
-    "org.apache.cordova.speech.speechrecognition": "0.1.0",
     "cordova-plugin-file": "3.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "nl.x-services.plugins.socialsharing": "4.3.18",
     "cordova-plugin-device": "1.0.1",
-    "cordova-plugin-webserver": "1.0.3",
     "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-globalization": "1.0.1",
     "cc.fovea.cordova.purchase": "3.11.0",
     "cordova-plugin-dialogs": "1.1.1",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-statusbar": "2.0.0-dev",
-    "com.telerik.plugins.wkwebview": "0.6.0",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
+    "com.telerik.plugins.wkwebview": "0.6.3",
+    "cordova-plugin-webserver": "1.0.3",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

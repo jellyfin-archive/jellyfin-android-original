@@ -58,6 +58,7 @@ NSString* appDataFolder;
 
     [self addHandlerForPath:@"/Library/"];
     [self addHandlerForPath:@"/Documents/"];
+    [self addHandlerForPath:@"/tmp/"];
 
     // Initialize Server startup
     if (startWebServer) {
@@ -70,7 +71,7 @@ NSString* appDataFolder;
 
 - (void)addHandlerForPath:(NSString *) path {
   [_webServer addHandlerForMethod:@"GET"
-                        pathRegex:[@".*" stringByAppendingString:path]
+                     pathRegex: [NSString stringWithFormat:@"^%@.*", path]
                      requestClass:[GCDWebServerRequest class]
                      processBlock:^GCDWebServerResponse *(GCDWebServerRequest* request) {
                        NSString *fileLocation = request.URL.path;
@@ -107,10 +108,15 @@ NSString* appDataFolder;
     [_webServerOptions setObject:[NSNumber numberWithBool:YES]
                           forKey:GCDWebServerOption_BindToLocalhost];
 
-    // Initialize Server listening port, initially trying 12344 for backwards compatibility
+    // If a fixed port is passed in, use that one, otherwise use 12344.
+    // If the port is taken though, look for a free port by adding 1 to the port until we find one.
     int httpPort = 12344;
+  
+    // note that the settings can be in any casing, but they are stored in lowercase
+    if ([self.viewController.settings objectForKey:@"wkwebviewpluginembeddedserverport"]) {
+      httpPort = [[self.viewController.settings objectForKey:@"wkwebviewpluginembeddedserverport"] intValue];
+    }
 
-    // Start Server
     do {
         [_webServerOptions setObject:[NSNumber numberWithInteger:httpPort++]
                               forKey:GCDWebServerOption_Port];

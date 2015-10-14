@@ -10,6 +10,5 @@
 @interface AppDelegate (WKWebViewPolyfill)
 
 - (void) createWindowAndStartWebServer:(BOOL) startWebServer;
-- (void) restartServerIfNeeded;
 
 @end

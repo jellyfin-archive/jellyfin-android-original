@@ -128,15 +128,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "org.apache.cordova.speech.speechrecognition": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/macdonst/SpeechRecognitionPlugin",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-file": {
         "source": {
             "type": "registry",
@@ -189,8 +180,9 @@
     },
     "cordova-plugin-webserver": {
         "source": {
-            "type": "registry",
-            "id": "cordova-plugin-webserver"
+            "type": "git",
+            "url": "https://github.com/icenium/cordova-plugin-webserver",
+            "subdir": "."
         },
         "is_top_level": true,
         "variables": {}
@@ -290,15 +282,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "com.telerik.plugins.wkwebview": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Telerik-Verified-Plugins/WKWebView",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "io.litehelpers.cordova.sqlite": {
         "source": {
             "type": "git",
@@ -326,19 +309,19 @@
         "is_top_level": true,
         "variables": {}
     },
-    "org.transistorsoft.cordova.plugin.background.fetch": {
+    "com.squerb.cordova.plugins.ios-tab-bar": {
         "source": {
             "type": "git",
-            "url": "https://github.com/christocracy/cordova-plugin-background-fetch.git",
+            "url": "https://github.com/squerb/cordova-ios-tab-bar",
             "subdir": "."
         },
         "is_top_level": true,
         "variables": {}
     },
-    "com.squerb.cordova.plugins.ios-tab-bar": {
+    "com.telerik.plugins.wkwebview": {
         "source": {
             "type": "git",
-            "url": "https://github.com/squerb/cordova-ios-tab-bar",
+            "url": "https://github.com/Telerik-Verified-Plugins/WKWebView",
             "subdir": "."
         },
         "is_top_level": true,

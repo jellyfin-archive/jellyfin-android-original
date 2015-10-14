@@ -43,10 +43,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"SpeechRecognition\"><param name=\"android-package\" value=\"org.apache.cordova.speech.SpeechRecognition\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -115,10 +111,6 @@
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
                             "count": 4
-                        },
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
-                            "count": 1
                         }
                     ],
                     "/manifest/application": [
@@ -217,9 +209,6 @@
         "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "org.apache.cordova.speech.speechrecognition": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-file": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -236,9 +225,6 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         },
         "com.dieam.searchbar": {
@@ -260,10 +246,13 @@
         "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "com.mb.android"
         },
+        "uk.co.whiteoctober.cordova.appversion": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "uk.co.whiteoctober.cordova.appversion": {
+        "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

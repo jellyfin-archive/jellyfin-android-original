@@ -68,62 +68,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognition.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognition",
-        "clobbers": [
-            "SpeechRecognition"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionError.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionError",
-        "clobbers": [
-            "SpeechRecognitionError"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionAlternative.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionAlternative",
-        "clobbers": [
-            "SpeechRecognitionAlternative"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionResult.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionResult",
-        "clobbers": [
-            "SpeechRecognitionResult"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionResultList.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionResultList",
-        "clobbers": [
-            "SpeechRecognitionResultList"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechRecognitionEvent.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechRecognitionEvent",
-        "clobbers": [
-            "SpeechRecognitionEvent"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechGrammar.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechGrammar",
-        "clobbers": [
-            "SpeechGrammar"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.speech.speechrecognition/www/SpeechGrammarList.js",
-        "id": "org.apache.cordova.speech.speechrecognition.SpeechGrammarList",
-        "clobbers": [
-            "SpeechGrammarList"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
         "id": "cordova-plugin-file.DirectoryEntry",
         "clobbers": [
@@ -361,13 +305,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
-        "id": "com.telerik.plugins.wkwebview.wkwebview",
-        "clobbers": [
-            "wkwebview"
-        ]
-    },
-    {
         "file": "plugins/io.litehelpers.cordova.sqlite/www/SQLitePlugin.js",
         "id": "io.litehelpers.cordova.sqlite.SQLitePlugin",
         "clobbers": [
@@ -400,17 +337,17 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/org.transistorsoft.cordova.plugin.background.fetch/www/BackgroundFetch.js",
-        "id": "org.transistorsoft.cordova.plugin.background.fetch.BackgroundFetch",
-        "clobbers": [
-            "window.BackgroundFetch"
-        ]
-    },
-    {
         "file": "plugins/com.squerb.cordova.plugins.ios-tab-bar/www/tab-bar.js",
         "id": "com.squerb.cordova.plugins.ios-tab-bar.TabBar",
         "clobbers": [
             "window.TabBar"
+        ]
+    },
+    {
+        "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
+        "id": "com.telerik.plugins.wkwebview.wkwebview",
+        "clobbers": [
+            "wkwebview"
         ]
     },
     {
@@ -475,7 +412,6 @@ module.exports.metadata =
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-crosswalk-webview": "1.2.0",
-    "org.apache.cordova.speech.speechrecognition": "0.1.0",
     "cordova-plugin-file": "3.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
@@ -490,12 +426,11 @@ module.exports.metadata =
     "org.nypr.cordova.vlcplugin": "0.1.0",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-statusbar": "2.0.0-dev",
-    "com.telerik.plugins.wkwebview": "0.6.0",
     "io.litehelpers.cordova.sqlite": "0.7.11-dev",
     "org.apache.cordova.background-download": "0.0.2",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
-    "org.transistorsoft.cordova.plugin.background.fetch": "2.0.4",
     "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
+    "com.telerik.plugins.wkwebview": "0.6.3",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
