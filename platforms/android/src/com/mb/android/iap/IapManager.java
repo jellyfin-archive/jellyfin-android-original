@@ -76,7 +76,6 @@ public class IapManager {
         iabValidator.checkInAppPurchase(id, new IResultHandler<ResultType>() {
             @Override
             public void onResult(ResultType resultType) {
-                iabValidator.dispose();
                 logger.Info("*** IsPurchased Result: %s %s", id, resultType);
                 response.onResponse(resultType.equals(ResultType.Success));
             }
@@ -85,7 +84,6 @@ public class IapManager {
             public void onError(ErrorSeverity errorSeverity, ErrorType errorType, String s) {
                 //TODO handle error...
                 logger.Info("*** IsPurchased Error %s %s", id, s);
-                iabValidator.dispose();
             }
         });
 
