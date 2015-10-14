@@ -1,4 +1,4 @@
-﻿(function($,document){var pageBackgroundCreated;function getElement(){var elem=document.documentElement;elem.classList.add('backdropContainer');if(!pageBackgroundCreated){pageBackgroundCreated=true;var div=document.createElement('div');div.classList.add('pageBackground');document.body.insertBefore(div,document.body.firstChild);}
+﻿(function($,document){var pageBackgroundCreated;function getElement(){var elem=document.documentElement;elem.classList.add('backdropContainer');elem.classList.add('noFade');if(!pageBackgroundCreated){pageBackgroundCreated=true;var div=document.createElement('div');div.classList.add('pageBackground');document.body.insertBefore(div,document.body.firstChild);}
 return elem;}
 function clearBackdrop(){var elem=document.documentElement;elem.classList.remove('backdropContainer');elem.removeAttribute('data-url');elem.style.backgroundImage='';}
 function getRandom(min,max){return Math.floor(Math.random()*(max-min)+min);}

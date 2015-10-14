@@ -76,7 +76,10 @@
         }
     }
 
-    function createDialog() {
+    function createDialog(options) {
+
+        options = options || {};
+
         var dlg = document.createElement('paper-dialog');
 
         dlg.setAttribute('with-backdrop', 'with-backdrop');
@@ -90,16 +93,29 @@
         dlg.setAttribute('noAutoFocus', 'noAutoFocus');
         dlg.entryAnimation = 'scale-up-animation';
         dlg.exitAnimation = 'fade-out-animation';
-        dlg.classList.add('fullscreen-editor-paper-dialog');
-        dlg.classList.add('ui-body-b');
-        dlg.classList.add('background-theme-b');
+
+        dlg.classList.add('popupEditor');
+
+        if (options.size == 'small') {
+            dlg.classList.add('small-paper-dialog');
+        }
+        else if (options.size == 'medium') {
+            dlg.classList.add('medium-paper-dialog');
+        } else {
+            dlg.classList.add('fullscreen-paper-dialog');
+        }
+
+        var theme = options.theme || 'b';
+
+        dlg.classList.add('ui-body-' + theme);
+        dlg.classList.add('background-theme-' + theme);
         dlg.classList.add('smoothScrollY');
 
         return dlg;
     }
 
     function positionTo(dlg, elem) {
-        
+
         var windowHeight = $(window).height();
 
         // If the window height is under a certain amount, don't bother trying to position
