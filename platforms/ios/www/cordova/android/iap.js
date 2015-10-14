@@ -39,9 +39,15 @@
         return products.length ? products[0] : null;
     }
 
+    var storeReady = false;
+    function onStoreReady() {
+        storeReady = true;
+        refreshPurchases();
+    }
+
     function isPurchaseAvailable(feature) {
 
-        return NativeIapManager.isStoreAvailable();
+        return storeReady;
     }
 
     function beginPurchase(feature, email) {
@@ -96,9 +102,10 @@
         updateProduct: updateProductInfo,
         beginPurchase: beginPurchase,
         onPurchaseComplete: onPurchaseComplete,
-        getSubscriptionOptions: getSubscriptionOptions
+        getSubscriptionOptions: getSubscriptionOptions,
+        onStoreReady: onStoreReady
     };
 
-    refreshPurchases();
+    NativeIapManager.initStore();
 
 })();

@@ -31,9 +31,6 @@
     <feature name="Launcher">
         <param name="ios-package" value="Launcher" />
     </feature>
-    <feature name="SpeechRecognition">
-        <param name="ios-package" value="SpeechRecognition" />
-    </feature>
     <feature name="File">
         <param name="ios-package" value="CDVFile" />
         <param name="onload" value="true" />
@@ -90,9 +87,6 @@
     </feature>
     <preference name="StatusBarOverlaysWebView" value="true" />
     <preference name="StatusBarStyle" value="lightcontent" />
-    <feature name="WKWebViewPolyfill">
-        <param name="ios-package" value="WKWebViewPolyfill" />
-    </feature>
     <feature name="SQLitePlugin">
         <param name="ios-package" value="SQLitePlugin" />
     </feature>
@@ -102,9 +96,8 @@
     <feature name="AppVersion">
         <param name="ios-package" value="AppVersion" />
     </feature>
-    <feature name="BackgroundFetch">
-        <param name="ios-package" value="CDVBackgroundFetch" />
-        <param name="onload" value="true" />
+    <feature name="WKWebViewPolyfill">
+        <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
