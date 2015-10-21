@@ -128,7 +128,8 @@
         ApiClient.downloadRemoteImage(options).done(function () {
 
             hasChanges = true;
-            history.back();
+            var dlg = $(page).parents('paper-dialog')[0];
+            PaperDialogHelper.close(dlg);
         });
     }
 
@@ -273,7 +274,7 @@
 
             var html = '';
             html += '<h2 class="dialogHeader">';
-            html += '<paper-fab icon="arrow-back" class="mini btnCloseDialog"></paper-fab>';
+            html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog"></paper-fab>';
             html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + Globalize.translate('HeaderSearch') + '</div>';
             html += '</h2>';
 

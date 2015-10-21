@@ -1536,5 +1536,10 @@
     "ButtonSignOut": "Sign out",
     "HeaderCameraUpload": "Camera Upload",
     "SelectCameraUploadServers": "Upload camera photos to the following servers:",
-    "ButtonClear": "Clear"
+    "ButtonClear": "Clear",
+    "ButtonEditImages": "Edit Images",
+    "LabelFolder": "Folder:",
+    "LabelAdditionalFoldersCanBeAddedHelp": "Additional folders can be added to this library after setting it up.",
+    "HeadersFolders": "Folders",
+    "LabelDisplayName": "Display name:"
 }
