@@ -1,7 +1,7 @@
 ﻿(function($,document){var data={};function getPageData(){var key=getSavedQueryKey();var pageData=data[key];if(!pageData){pageData=data[key]={query:{SortBy:"SortName",SortOrder:"Ascending",IncludeItemTypes:"Playlist",Recursive:true,Fields:"PrimaryImageAspectRatio,SortName,CumulativeRunTimeTicks,CanDelete,SyncInfo",StartIndex:0,Limit:LibraryBrowser.getDefaultPageSize()},view:LibraryBrowser.getSavedView(key)||LibraryBrowser.getDefaultItemsView('Poster','Poster')};pageData.query.ParentId=LibraryMenu.getTopParentId();LibraryBrowser.loadSavedQueryValues(key,pageData.query);}
 return pageData;}
 function getQuery(){return getPageData().query;}
-function getSavedQueryKey(){return getWindowUrl();}
+function getSavedQueryKey(){return LibraryBrowser.getSavedQueryKey();}
 function showLoadingMessage(page){Dashboard.showLoadingMsg();}
 function hideLoadingMessage(page){Dashboard.hideLoadingMsg();}
 function reloadItems(page){showLoadingMessage(page);var query=getQuery();var promise1=ApiClient.getItems(Dashboard.getCurrentUserId(),query);var promise2=Dashboard.getCurrentUser();$.when(promise1,promise2).done(function(response1,response2){var result=response1[0];var user=response2[0];window.scrollTo(0,0);var html='';var view=getPageData().view;$('.listTopPaging',page).html(LibraryBrowser.getQueryPagingHtml({startIndex:query.StartIndex,limit:query.Limit,totalRecordCount:result.TotalRecordCount,viewButton:false,showLimit:false,updatePageSizeSetting:false,addLayoutButton:true,currentLayout:view}));if(result.TotalRecordCount){if(view=="List"){html=LibraryBrowser.getListViewHtml({items:result.Items,sortBy:query.SortBy});}

@@ -9,7 +9,7 @@ var filters=getParameterByName('filters');if(type){pageData.query.Filters=filter
 if(parentItem){addCurrentItemToQuery(pageData.query,parentItem);}
 LibraryBrowser.loadSavedQueryValues(key,pageData.query);}
 return pageData.query;}
-function getSavedQueryKey(){return getWindowUrl();}
+function getSavedQueryKey(){return LibraryBrowser.getSavedQueryKey();}
 function onListItemClick(e){var page=$(this).parents('.page')[0];var info=LibraryBrowser.getListItemInfo(this);if(info.mediaType=='Photo'){var query=getQuery();require(['scripts/photos'],function(){Photos.startSlideshow(page,query,info.id);});return false;}}
 function reloadItems(page,parentItem){Dashboard.showLoadingMsg();var query=getQuery(parentItem);ApiClient.getItems(Dashboard.getCurrentUserId(),query).done(function(result){window.scrollTo(0,0);var html='';var pagingHtml=LibraryBrowser.getQueryPagingHtml({startIndex:query.StartIndex,limit:query.Limit,totalRecordCount:result.TotalRecordCount,showLimit:false});page.querySelector('.listTopPaging').innerHTML=pagingHtml;if(query.IncludeItemTypes=="Audio"){html='<div style="max-width:1000px;margin:auto;">'+LibraryBrowser.getListViewHtml({items:result.Items,playFromHere:true,defaultAction:'playallfromhere',smallIcon:true})+'</div>';}else{var posterOptions={items:result.Items,shape:"auto",centerText:true,lazy:true};if(query.IncludeItemTypes=="MusicAlbum"){posterOptions.overlayText=false;posterOptions.showParentTitle=true;posterOptions.overlayPlayButton=true;}
 else if(query.IncludeItemTypes=="MusicArtist"){posterOptions.overlayText=false;posterOptions.overlayPlayButton=true;}
