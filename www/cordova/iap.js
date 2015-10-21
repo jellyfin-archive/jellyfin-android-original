@@ -80,7 +80,7 @@
                 type: "Subscription",
                 feature: "MBSClubMonthly",
                 email: enteredEmail,
-                token: receipt,
+                storeToken: receipt,
                 amt: price,
                 storeId: transactionId
             },
