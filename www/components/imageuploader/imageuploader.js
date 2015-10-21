@@ -121,7 +121,9 @@
         });
     }
 
-    function showEditor(itemId) {
+    function showEditor(itemId, options) {
+
+        options = options || {};
 
         HttpClient.send({
 
@@ -132,11 +134,13 @@
 
             currentItemId = itemId;
 
-            var dlg = PaperDialogHelper.createDialog();
+            var dlg = PaperDialogHelper.createDialog({
+                theme: options.theme
+            });
 
             var html = '';
             html += '<h2 class="dialogHeader">';
-            html += '<paper-fab icon="arrow-back" class="mini btnCloseDialog"></paper-fab>';
+            html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog"></paper-fab>';
             html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + Globalize.translate('HeaderUploadImage') + '</div>';
             html += '</h2>';
 
@@ -170,7 +174,7 @@
     }
 
     window.ImageUploader = {
-        show: function (itemId) {
+        show: function (itemId, options) {
 
             var deferred = DeferredBuilder.Deferred();
 
@@ -179,7 +183,7 @@
 
             require(['components/paperdialoghelper'], function () {
 
-                showEditor(itemId);
+                showEditor(itemId, options);
             });
             return deferred.promise();
         }
