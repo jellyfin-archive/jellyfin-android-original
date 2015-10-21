@@ -64,12 +64,7 @@
 
             if (path) {
 
-                html += '<paper-item role="menuitem" class="lnkPath lnkDirectory" data-path="' + parentPath + '">';
-                html += '<paper-item-body>';
-                html += '...';
-                html += '</paper-item-body>';
-                html += '<iron-icon icon="arrow-forward"></iron-icon>';
-                html += '</paper-item>';
+                html += getItem("lnkPath lnkDirectory", "", parentPath, '...');
             }
 
             for (var i = 0, length = folders.length; i < length; i++) {
@@ -78,21 +73,11 @@
 
                 var cssClass = folder.Type == "File" ? "lnkPath lnkFile" : "lnkPath lnkDirectory";
 
-                html += '<paper-item role="menuitem" class="' + cssClass + '" data-type="' + folder.Type + '" data-path="' + folder.Path + '">';
-                html += '<paper-item-body>';
-                html += folder.Name;
-                html += '</paper-item-body>';
-                html += '<iron-icon icon="arrow-forward"></iron-icon>';
-                html += '</paper-item>';
+                html += getItem(cssClass, folder.Type, folder.Path, folder.Name);
             }
 
             if (!path) {
-                html += '<paper-item role="menuitem" class="lnkPath lnkDirectory" data-path="Network">';
-                html += '<paper-item-body>';
-                html += Globalize.translate('ButtonNetwork');
-                html += '</paper-item-body>';
-                html += '<iron-icon icon="arrow-forward"></iron-icon>';
-                html += '</paper-item>';
+                html += getItem("lnkPath lnkDirectory", "", "Network", Globalize.translate('ButtonNetwork'));
             }
 
             $('.results', page).html(html);
@@ -106,6 +91,19 @@
 
             Dashboard.hideLoadingMsg();
         });
+    }
+
+    function getItem(cssClass, type, path, name) {
+
+        var html = '';
+        html += '<paper-item role="menuitem" class="' + cssClass + '" data-type="' + type + '" data-path="' + path + '">';
+        html += '<paper-item-body>';
+        html += name;
+        html += '</paper-item-body>';
+        html += '<iron-icon icon="arrow-forward"></iron-icon>';
+        html += '</paper-item>';
+
+        return html;
     }
 
     function getEditorHtml(options, systemInfo) {
@@ -134,7 +132,7 @@
             html += '<br/>';
             html += Globalize.translate('MessageDirectoryPickerLinuxInstruction');
             html += '<br/>';
-            html += '<a href="http://doc.freenas.org/9.3/freenas_jails.html#add-storage" target="_blank">' + Globalize.translate('ButtonMoreInformation') + '</a>';
+            //html += '<a href="http://doc.freenas.org/9.3/freenas_jails.html#add-storage" target="_blank">' + Globalize.translate('ButtonMoreInformation') + '</a>';
         }
 
         html += '</p>';
@@ -226,7 +224,7 @@
 
                     var html = '';
                     html += '<h2 class="dialogHeader">';
-                    html += '<paper-fab icon="arrow-back" class="mini btnCloseDialog"></paper-fab>';
+                    html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog"></paper-fab>';
                     html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + (options.header || Globalize.translate('HeaderSelectPath')) + '</div>';
                     html += '</h2>';
 
