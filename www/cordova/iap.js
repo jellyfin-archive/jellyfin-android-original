@@ -86,14 +86,17 @@
             },
             headers: {
                 "X-Emby-Token": "08606E86D043"
-            }
+            },
+            dataType: 'json'
 
         }).done(function () {
 
+            alert('validate ok');
             callback(true, product);
 
         }).fail(function () {
 
+            alert('validate fail');
             callback(false, product);
         });
     }
