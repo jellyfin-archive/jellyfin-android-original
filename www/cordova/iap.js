@@ -95,8 +95,6 @@
 
         }).fail(function (e) {
 
-            alert('validate fail: ' + e.status + ' ' + url);
-            alert(JSON.stringify(e));
             callback(false, product);
         });
     }
@@ -134,7 +132,7 @@
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
                 if (requiresVerification) {
-                    //product.verify();
+                    product.verify();
                 } else {
                     product.finish();
                 }
