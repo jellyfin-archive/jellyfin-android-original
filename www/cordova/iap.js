@@ -69,7 +69,7 @@
         var receipt = product.transaction.appStoreReceipt;
         var price = product.price;
 
-        alert('start validate');
+        var url = ApiClient.getUrl("Appstore/Register");
 
         ApiClient.ajax({
 
@@ -93,8 +93,10 @@
             alert('validate ok');
             callback(true, product);
 
-        }).fail(function () {
+        }).fail(function (e) {
 
+            alert('validate fail: ' + e.status + ' ' + url);
+            alert(JSON.stringify(e));
             callback(false, product);
         });
     }
