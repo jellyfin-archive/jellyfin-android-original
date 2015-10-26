@@ -48,7 +48,7 @@ return false;}
 function onCardClick(e){var playButton=parentWithClass(e.target,'cardOverlayPlayButton');if(playButton){return onListViewPlayButtonClick(e,playButton);}
 var listviewMenuButton=parentWithClass(e.target,'listviewMenuButton')||parentWithClass(e.target,'cardOverlayMoreButton');if(listviewMenuButton){showContextMenu(listviewMenuButton,{});e.preventDefault();return false;}
 var card=parentWithClass(e.target,'card');if(card){var itemSelectionPanel=card.querySelector('.itemSelectionPanel');if(itemSelectionPanel){return onItemSelectionPanelClick(e,itemSelectionPanel);}
-if(card.classList.contains('groupedCard')){return onGroupedCardClick(e);}}}
+if(card.classList.contains('groupedCard')){return onGroupedCardClick(e,card);}}}
 function onGroupedCardClick(e,card){var itemId=card.getAttribute('data-itemid');var context=card.getAttribute('data-context');var userId=Dashboard.getCurrentUserId();var options={Limit:parseInt($('.playedIndicator',card).html()||'10'),Fields:"PrimaryImageAspectRatio,DateCreated",ParentId:itemId,GroupItems:false};var target=e.target;if(isClickable(target)){return;}
 var buttonParents=$(target).parents('a:not(.card,.cardContent),button:not(.card,.cardContent)');if(buttonParents.length){return;}
 ApiClient.getJSON(ApiClient.getUrl('Users/'+userId+'/Items/Latest',options)).done(function(items){if(items.length==1){Dashboard.navigate(LibraryBrowser.getHref(items[0],context));return;}
@@ -90,8 +90,8 @@ var elems=elem.querySelectorAll('.itemsContainer');for(var i=0,length=elems.leng
 function initTapHold(element){if(!LibraryBrowser.allowSwipe(element)){return;}
 require(['hammer'],function(Hammer){var hammertime=new Hammer(element);hammertime.on('press',onTapHold);hammertime.on('pressup',onTapHoldUp);});showTapHoldHelp(element);}
 function showTapHoldHelp(element){var page=$(element).parents('.page')[0];if(!page){return;}
-if(page.classList.contains('homePage')||page.classList.contains('itemDetailPage')){return;}
-var expectedValue="7";if(appStorage.getItem("tapholdhelp")==expectedValue){return;}
+if(page.classList.contains('homePage')||page.classList.contains('itemDetailPage')||page.classList.contains('liveTvPage')){return;}
+var expectedValue="8";if(appStorage.getItem("tapholdhelp")==expectedValue){return;}
 appStorage.setItem("tapholdhelp",expectedValue);Dashboard.alert({message:Globalize.translate('TryMultiSelectMessage'),title:Globalize.translate('HeaderTryMultiSelect')});}
 function disableEvent(e){e.preventDefault();return false;}
 function onTapHold(e){var card=parentWithClass(e.target,'card');if(card){showSelections(card);e.preventDefault();return false;}}

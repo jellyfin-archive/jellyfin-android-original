@@ -32,7 +32,9 @@ html+='</video>';var elem=$('#videoElement','#mediaPlayer').prepend(html);return
 var _currentTime;self.currentTime=function(val){if(mediaElement){if(val!=null){mediaElement.currentTime=val/1000;return;}
 if(_currentTime){return _currentTime*1000;}
 return(mediaElement.currentTime||0)*1000;}};self.duration=function(val){if(mediaElement){return mediaElement.duration;}
-return null;};self.stop=function(){if(mediaElement){mediaElement.pause();if(isViblastStarted){_currentTime=mediaElement.currentTime;viblast('#'+mediaElement.id).stop();isViblastStarted=false;}}};self.pause=function(){if(mediaElement){mediaElement.pause();}};self.unpause=function(){if(mediaElement){mediaElement.play();}};self.volume=function(val){if(mediaElement){if(val!=null){mediaElement.volume=val;return;}
+return null;};self.stop=function(){if(mediaElement){mediaElement.pause();if(isViblastStarted){_currentTime=mediaElement.currentTime;try{viblast('#'+mediaElement.id).stop();}
+catch(err){Logger.log(err);}
+isViblastStarted=false;}}};self.pause=function(){if(mediaElement){mediaElement.pause();}};self.unpause=function(){if(mediaElement){mediaElement.play();}};self.volume=function(val){if(mediaElement){if(val!=null){mediaElement.volume=val;return;}
 return mediaElement.volume;}};var currentSrc;self.setCurrentSrc=function(streamInfo,item,mediaSource,tracks){var elem=mediaElement;if(!elem){currentSrc=null;return;}
 if(!streamInfo){currentSrc=null;elem.src=null;elem.src="";if($.browser.safari){elem.src='files/dummy.mp4';elem.play();}
 return;}
