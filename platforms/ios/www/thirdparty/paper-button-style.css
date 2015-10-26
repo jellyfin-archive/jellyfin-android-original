@@ -279,14 +279,23 @@ paper-fab {
             height: 22px;
         }
 
-    paper-fab.subdued {
-        background: #404040;
-        color: #fff;
+.ui-body-a paper-fab.subdued {
+    background: #fff;
+    color: #000;
+}
+
+    .ui-body-a paper-fab.subdued paper-material.keyboard-focus {
+        background: #686868 !important;
     }
 
-        paper-fab.subdued paper-material.keyboard-focus {
-            background: #686868 !important;
-        }
+.ui-body-b paper-fab.subdued {
+    background: #404040;
+    color: #fff;
+}
+
+    .ui-body-b paper-fab.subdued paper-material.keyboard-focus {
+        background: #686868 !important;
+    }
 
 .ui-body-b paper-fab[disabled].subdued {
     background: #222;
@@ -328,6 +337,10 @@ paper-slider {
 
 .paper-slider-0 paper-ripple.paper-slider {
     color: #52B54B;
+}
+
+.paper-slider-0 #sliderKnobInner.paper-slider::before {
+    background-color: #388E3C !important;
 }
 
 .paper-progress-0 #primaryProgress.paper-progress {
@@ -511,7 +524,7 @@ paper-dialog paper-radio-group paper-radio-button {
     display: block;
 }
 
-.fullscreen-editor-paper-dialog {
+.fullscreen-paper-dialog, .medium-paper-dialog, .small-paper-dialog {
     position: fixed !important;
     top: 0 !important;
     bottom: 0 !important;
@@ -519,14 +532,30 @@ paper-dialog paper-radio-group paper-radio-button {
     right: 0 !important;
     margin: 0 !important;
     border-radius: 0 !important;
-    background-color: #222 !important;
     max-height: none !important;
     max-width: none !important;
 }
 
 @media all and (min-width: 1280px) and (min-height: 720px) {
 
-    .fullscreen-editor-paper-dialog {
+    .medium-paper-dialog {
+        top: 10% !important;
+        bottom: 10% !important;
+        left: 10% !important;
+        right: 10% !important;
+    }
+
+    .small-paper-dialog {
+        top: 10% !important;
+        bottom: 10% !important;
+        left: 20% !important;
+        right: 20% !important;
+    }
+}
+
+@media all and (min-width: 1280px) and (min-height: 720px) {
+
+    .fullscreen-paper-dialog {
         top: 5% !important;
         bottom: 5% !important;
         left: 5% !important;
@@ -534,12 +563,15 @@ paper-dialog paper-radio-group paper-radio-button {
     }
 }
 
-.fullscreen-editor-paper-dialog .dialogHeader {
+paper-dialog.popupEditor .dialogHeader {
     font-weight: inherit !important;
-    line-height: 1 !important;
-    line-height: initial !important;
+    line-height: 36px;
     padding: 0 1em;
-    margin-top: 1em;
+    margin-top: .7em;
+}
+
+paper-dialog.popupEditor {
+    padding-bottom: 100px;
 }
 
 .paperToggleContainer {
