@@ -39,7 +39,7 @@
 
         Dashboard.showLoadingMsg();
 
-        ApiClient.ajax({
+        HttpClient.send({
 
             type: 'GET',
             url: 'components/metadataeditor/metadataeditor.template.html'
@@ -58,13 +58,11 @@
                 dlg.setAttribute('noAutoFocus', 'noAutoFocus');
                 dlg.entryAnimation = 'scale-up-animation';
                 dlg.exitAnimation = 'fade-out-animation';
-                dlg.classList.add('fullscreen-editor-paper-dialog');
-                dlg.classList.add('ui-body-b');
                 dlg.classList.add('smoothScrollY');
 
                 var html = '';
                 html += '<h2 class="dialogHeader">';
-                html += '<paper-fab icon="arrow-back" class="mini btnCloseDialog"></paper-fab>';
+                html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog"></paper-fab>';
                 html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + Globalize.translate('ButtonEdit') + '</div>';
                 html += '</h2>';
 

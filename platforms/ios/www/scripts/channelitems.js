@@ -1,7 +1,7 @@
 ﻿(function($,document){var data={};function getPageData(){var key=getSavedQueryKey();var pageData=data[key];if(!pageData){pageData=data[key]={query:{SortBy:"",SortOrder:"Ascending",Fields:"PrimaryImageAspectRatio,SyncInfo",StartIndex:0,Limit:LibraryBrowser.getDefaultPageSize()}};LibraryBrowser.loadSavedQueryValues(key,pageData.query);}
 return pageData;}
 function getQuery(){return getPageData().query;}
-function getSavedQueryKey(){return getWindowUrl()+'movies';}
+function getSavedQueryKey(){return LibraryBrowser.getSavedQueryKey('movies');}
 function reloadFeatures(page){var channelId=getParameterByName('id');ApiClient.getJSON(ApiClient.getUrl("Channels/"+channelId+"/Features")).done(function(features){if(features.CanFilter){$('.filterControls',page).show();}else{$('.filterControls',page).hide();}
 if(features.SupportsSortOrderToggle){$('.sortOrderToggle',page).show();}else{$('.sortOrderToggle',page).hide();}
 var maxPageSize=features.MaxPageSize;var query=getQuery();if(maxPageSize){query.Limit=Math.min(maxPageSize,query.Limit||maxPageSize);}
