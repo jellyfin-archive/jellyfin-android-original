@@ -110,6 +110,7 @@
 
         }).fail(function (e) {
 
+            alert('validate fail');
             callback(false, product);
         });
     }
