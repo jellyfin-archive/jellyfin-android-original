@@ -15,7 +15,7 @@
 
         var currentDate;
 
-        var defaultChannels = 50;
+        var defaultChannels = 100;
         var channelLimit = 1000;
 
         var channelQuery = {
@@ -63,7 +63,9 @@
             // Add one second to avoid getting programs that are just ending
             date = new Date(date.getTime() + 1000);
 
-            var nextDay = new Date(date.getTime() + msPerDay - 1);
+            // Subtract to avoid getting programs that are starting when the grid ends
+            var nextDay = new Date(date.getTime() + msPerDay - 2000);
+
             Logger.log(nextDay);
             channelsPromise.done(function (channelsResult) {
 
@@ -75,7 +77,7 @@
                         return c.Id;
                     }).join(','),
                     ImageTypeLimit: 1,
-                    EnableImageTypes: "Primary",
+                    EnableImages: false,
                     SortBy: "StartDate"
 
                 }).done(function (programsResult) {
@@ -213,9 +215,7 @@
                 var endPercent = (renderEndMs - renderStartMs) / msPerDay;
                 endPercent *= 100;
 
-                html += '<div class="programCell" style="left:' + startPercent + '%;width:' + endPercent + '%;">';
-
-                var cssClass = "programCellInner";
+                var cssClass = "programCell";
                 var addAccent = true;
 
                 if (program.IsKids) {
@@ -232,7 +232,7 @@
                     addAccent = false;
                 }
 
-                html += '<a href="itemdetails.html?id=' + program.Id + '" class="' + cssClass + '" data-programid="' + program.Id + '">';
+                html += '<a href="itemdetails.html?id=' + program.Id + '" class="' + cssClass + '" data-programid="' + program.Id + '" style="left:' + startPercent + '%;width:' + endPercent + '%;">';
 
                 html += '<div class="guideProgramName">';
                 html += program.Name;
@@ -269,8 +269,6 @@
                 }
 
                 html += '</a>';
-
-                html += '</div>';
             }
 
             html += '</div>';
@@ -291,9 +289,9 @@
             programGrid.innerHTML = html.join('');
 
             $(programGrid).scrollTop(0).scrollLeft(0);
-            
+
             if (options.enableHoverMenu) {
-                $(programGrid).createGuideHoverMenu('.programCellInner');
+                $(programGrid).createGuideHoverMenu('.programCell');
             }
         }
 
@@ -479,7 +477,7 @@
         }).done(function (template) {
 
             var tabContent = options.element;
-            tabContent.innerHTML = template;
+            tabContent.innerHTML = Globalize.translateDocument(template);
 
             Events.on(tabContent.querySelector('.programGrid'), 'scroll', function () {
 

@@ -55,6 +55,9 @@
         if ($.browser.msie) {
             return false;
         }
+        if ($.browser.edge) {
+            return false;
+        }
         return true;
     }
 
@@ -87,9 +90,13 @@
 
         // without this safari will scroll the background instead of the dialog contents
         // but not needed here since this is already on top of an existing dialog
-        dlg.setAttribute('modal', 'modal');
+        // but skip it in IE because it's causing the entire browser to hang
+        // Also have to disable for firefox because it's causing select elements to not be clickable
+        if (!$.browser.msie && !$.browser.mozilla) {
+            dlg.setAttribute('modal', 'modal');
+        }
 
-        // seeing max call stack size exceeded in the debugger with this
+        //// seeing max call stack size exceeded in the debugger with this
         dlg.setAttribute('noAutoFocus', 'noAutoFocus');
         dlg.entryAnimation = 'scale-up-animation';
         dlg.exitAnimation = 'fade-out-animation';

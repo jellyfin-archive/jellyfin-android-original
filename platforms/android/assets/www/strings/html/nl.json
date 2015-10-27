@@ -1519,5 +1519,10 @@
     "HeaderAdmin": "Beheerder",
     "ButtonSignOut": "Afmelden",
     "HeaderCameraUpload": "Camera Upload",
-    "SelectCameraUploadServers": "Upload camera foto's naar de volgende servers:"
+    "SelectCameraUploadServers": "Upload camera foto's naar de volgende servers:",
+    "ButtonClear": "Wis",
+    "ButtonEditImages": "Bewerk afbeeldingen",
+    "LabelFolder": "Map:",
+    "HeadersFolders": "Mappen",
+    "LabelDisplayName": "Weergave naam:"
 }
