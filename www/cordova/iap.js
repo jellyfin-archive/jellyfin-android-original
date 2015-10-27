@@ -133,6 +133,10 @@
         // owns the full version.
         store.when(id).updated(function (product) {
 
+            if (requiresVerification) {
+                alert('subscription updated. product: ' + JSON.stringify(product));
+            }
+
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
                 if (requiresVerification) {
