@@ -58,9 +58,6 @@
     <feature name="Globalization">
         <param name="ios-package" value="CDVGlobalization" />
     </feature>
-    <feature name="InAppPurchase">
-        <param name="ios-package" value="InAppPurchase" />
-    </feature>
     <feature name="Notification">
         <param name="ios-package" value="CDVNotification" />
     </feature>
@@ -98,6 +95,9 @@
     </feature>
     <feature name="WKWebViewPolyfill">
         <param name="ios-package" value="WKWebViewPolyfill" />
+    </feature>
+    <feature name="InAppPurchase">
+        <param name="ios-package" value="InAppPurchase" />
     </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />

@@ -43,9 +43,6 @@
     <feature name="Globalization">
         <param name="android-package" value="org.apache.cordova.globalization.Globalization" />
     </feature>
-    <feature name="InAppBillingPlugin">
-        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
-    </feature>
     <feature name="Notification">
         <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
     </feature>
@@ -103,4 +100,7 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
+    <feature name="InAppBillingPlugin">
+        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
+    </feature>
 </widget>

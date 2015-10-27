@@ -67,10 +67,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"InAppBillingPlugin\"><param name=\"android-package\" value=\"com.smartmobilesoftware.inappbilling.InAppBillingPlugin\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
                             "count": 1
                         },
@@ -80,6 +76,10 @@
                         },
                         {
                             "xml": "<feature name=\"AppVersion\"><param name=\"android-package\" value=\"uk.co.whiteoctober.cordova.AppVersion\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppBillingPlugin\"><param name=\"android-package\" value=\"com.smartmobilesoftware.inappbilling.InAppBillingPlugin\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -165,7 +165,12 @@
             },
             "res/values/billing_key_param.xml": {
                 "parents": {
-                    "/*": []
+                    "/*": [
+                        {
+                            "xml": "<string name=\"billing_key_param\">DF</string>",
+                            "count": 1
+                        }
+                    ]
                 }
             },
             "config.xml": {
@@ -233,10 +238,6 @@
         "cordova-plugin-globalization": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cc.fovea.cordova.purchase": {
-            "BILLING_KEY": "none",
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -253,6 +254,10 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-webserver": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cc.fovea.cordova.purchase": {
+            "BILLING_KEY": "DF",
             "PACKAGE_NAME": "com.mb.android"
         }
     },
