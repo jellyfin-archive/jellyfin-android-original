@@ -287,13 +287,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
-        "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
-        "clobbers": [
-            "store"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-dialogs/www/notification.js",
         "id": "cordova-plugin-dialogs.notification",
         "merges": [
@@ -327,6 +320,13 @@ module.exports = [
         "clobbers": [
             "cordova.getAppVersion"
         ]
+    },
+    {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
+        "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
+        "clobbers": [
+            "store"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -351,13 +351,13 @@ module.exports.metadata =
     "cordova-plugin-device": "1.0.1",
     "com.dieam.searchbar": "2.1.6",
     "cordova-plugin-globalization": "1.0.1",
-    "cc.fovea.cordova.purchase": "3.11.0",
     "cordova-plugin-dialogs": "1.1.1",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "cordova-plugin-statusbar": "2.0.0-dev",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "com.telerik.plugins.wkwebview": "0.6.3",
     "cordova-plugin-webserver": "1.0.3",
+    "cc.fovea.cordova.purchase": "4.0.0",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

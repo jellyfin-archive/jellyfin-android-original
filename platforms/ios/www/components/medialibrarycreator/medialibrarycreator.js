@@ -113,7 +113,7 @@
 
         html += '<paper-icon-item role="menuitem" class="lnkPath">';
 
-        html += '<paper-fab class="listAvatar" style="background:#52B54B;" icon="folder" item-icon></paper-fab>';
+        html += '<paper-fab mini style="background:#52B54B;" icon="folder" item-icon></paper-fab>';
 
         html += '<paper-item-body>';
         html += path;
@@ -197,7 +197,10 @@
 
                     var dlg = PaperDialogHelper.createDialog({
                         size: 'small',
-                        theme: 'a'
+                        theme: 'a',
+
+                        // In (at least) chrome this is causing the text field to not be editable
+                        modal: false
                     });
 
                     var html = '';
@@ -228,6 +231,7 @@
                         PaperDialogHelper.close(dlg);
                     });
 
+                    paths = [];
                     renderPaths(editorContent);
                 });
 
