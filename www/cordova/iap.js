@@ -98,7 +98,22 @@
         }).fail(function (e) {
 
             alert('validate fail');
-            callback(false, product);
+
+            if (e.status == 400) {
+                callback(false, {
+                    code: store.PURCHASE_EXPIRED,
+                    error: {
+                        message: "Subscription Expired"
+                    }
+                });
+            } else {
+                callback(false, {
+                    code: store.CONNECTION_FAILED,
+                    error: {
+                        message: "Connection Failure"
+                    }
+                });
+            }
         });
     }
 
@@ -124,6 +139,7 @@
 
         if (requiresVerification) {
             store.when(id).verified(function (p) {
+                alert('verified');
                 updateProductInfo(p);
                 p.finish();
             });
@@ -133,14 +149,10 @@
         // owns the full version.
         store.when(id).updated(function (product) {
 
-            if (requiresVerification) {
-                alert('subscription updated. product: ' + JSON.stringify(product));
-            }
-
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
                 if (requiresVerification) {
-                    product.verify();
+                    //product.verify();
                 } else {
                     product.finish();
                 }
