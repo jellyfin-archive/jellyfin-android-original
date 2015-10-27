@@ -117,7 +117,7 @@
                 return '<option value="' + i.Id + '">' + i.Name + '</option>';
             });
 
-            select.html(html).val('').trigger('change');
+            select.html(html).val(lastPlaylistId || '').trigger('change');
 
             Dashboard.hideLoadingMsg();
         });
@@ -205,7 +205,7 @@
 
                 var html = '';
                 html += '<h2 class="dialogHeader">';
-                html += '<paper-fab icon="arrow-back" class="mini btnCloseDialog"></paper-fab>';
+                html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog"></paper-fab>';
 
                 var title = Globalize.translate('HeaderAddToPlaylist');
 
