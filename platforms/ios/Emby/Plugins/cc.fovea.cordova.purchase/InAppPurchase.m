@@ -396,12 +396,12 @@ unsigned char* unbase64( const char* ascii, int len, int *flen )
 //
 - (void)paymentQueue:(SKPaymentQueue*)queue updatedTransactions:(NSArray*)transactions
 {
-	NSString *state, *error, *transactionIdentifier, *transactionReceipt, *productId;
+	NSString *state, *error, *transactionIdentifier, *originalTransactionIdentifier, *transactionReceipt, *productId;
 	NSInteger errorCode;
 
     for (SKPaymentTransaction *transaction in transactions)
     {
-		error = state = transactionIdentifier = transactionReceipt = productId = @"";
+		error = state = transactionIdentifier = originalTransactionIdentifier = transactionReceipt = productId = @"";
 		errorCode = 0;
         DLog(@"Transaction updated: %@", transaction.payment.productIdentifier);
         BOOL canFinish = NO;
@@ -444,6 +444,11 @@ unsigned char* unbase64( const char* ascii, int len, int *flen )
                     transactionIdentifier = transaction.originalTransaction.transactionIdentifier;
 				transactionReceipt = [[transaction transactionReceipt] cdv_base64EncodedString];
 				productId = transaction.originalTransaction.payment.productIdentifier;
+                
+                if (transaction.originalTransaction) {
+                    originalTransactionIdentifier = transaction.originalTransaction.transactionIdentifier;
+                }
+                
                 canFinish = YES;
                 break;
 
@@ -460,7 +465,12 @@ unsigned char* unbase64( const char* ascii, int len, int *flen )
                                  NILABLE(productId),
                                  NILABLE(transactionReceipt),
                                  nil];
-		NSString *js = [NSString
+        
+        if (transactionIdentifier && originalTransactionIdentifier) {
+            [self.commandDelegate evalJs:[NSString stringWithFormat:@"window.IapManager.updateOriginalTransactionInfo('%@','%@');", transactionIdentifier,originalTransactionIdentifier]];
+        }
+        
+        NSString *js = [NSString
             stringWithFormat:@"window.storekit.updatedTransactionCallback.apply(window.storekit, %@)",
             [callbackArgs JSONSerialize]];
 		// DLog(@"js: %@", js);
@@ -485,6 +495,14 @@ unsigned char* unbase64( const char* ascii, int len, int *flen )
                                 NILABLE(transaction.payment.productIdentifier),
                                 NILABLE(nil),
                                 nil];
+    
+    if (transaction.originalTransaction) {
+        NSString *originalTransactionIdentifier = transaction.originalTransaction.transactionIdentifier;
+        if (transaction.transactionIdentifier && originalTransactionIdentifier) {
+            [self.commandDelegate evalJs:[NSString stringWithFormat:@"window.IapManager.updateOriginalTransactionInfo('%@','%@');", transaction.transactionIdentifier,originalTransactionIdentifier]];
+        }
+    }
+    
     NSString *js = [NSString
       stringWithFormat:@"window.storekit.updatedTransactionCallback.apply(window.storekit, %@)",
       [callbackArgs JSONSerialize]];
@@ -611,7 +629,7 @@ static NSString *rootAppleCA = @"MIIEuzCCA6OgAwIBAgIBAjANBgkqhkiG9w0BAQUFADBiMQs
     NSString *base64 = nil;
     NSData *receiptData = [self appStoreReceipt];
     if (receiptData != nil) {
-        base64 = [receiptData convertToBase64];
+        base64 = [receiptData base64EncodedStringWithOptions:0];
         // DLog(@"base64 receipt: %@", base64);
     }
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
@@ -662,7 +680,7 @@ static NSString *rootAppleCA = @"MIIEuzCCA6OgAwIBAgIBAjANBgkqhkiG9w0BAQUFADBiMQs
     NSString *base64 = nil;
     NSData *receiptData = [self.plugin appStoreReceipt];
     if (receiptData != nil) {
-        base64 = [receiptData convertToBase64];
+        base64 = [receiptData base64EncodedStringWithOptions:0];
         // DLog(@"base64 receipt: %@", base64);
     }
     NSBundle *bundle = [NSBundle mainBundle];

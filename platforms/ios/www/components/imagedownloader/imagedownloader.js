@@ -106,7 +106,7 @@
             html += '<div data-role="controlgroup" data-type="horizontal" style="display:inline-block;">';
 
             html += '<paper-icon-button icon="arrow-back" title="' + Globalize.translate('ButtonPreviousPage') + '" class="btnPreviousPage" ' + (startIndex ? '' : 'disabled') + '></paper-icon-button>';
-            html += '<paper-icon-button icon="arrow-forward" title="' + Globalize.translate('ButtonNextPage') + '" class="btnNextPage" ' + (startIndex + limit > totalRecordCount ? 'disabled' : '') + '></paper-icon-button>';
+            html += '<paper-icon-button icon="arrow-forward" title="' + Globalize.translate('ButtonNextPage') + '" class="btnNextPage" ' + (startIndex + limit >= totalRecordCount ? 'disabled' : '') + '></paper-icon-button>';
             html += '</div>';
         }
 
@@ -128,7 +128,8 @@
         ApiClient.downloadRemoteImage(options).done(function () {
 
             hasChanges = true;
-            history.back();
+            var dlg = $(page).parents('paper-dialog')[0];
+            PaperDialogHelper.close(dlg);
         });
     }
 
@@ -259,7 +260,7 @@
 
         Dashboard.showLoadingMsg();
 
-        ApiClient.ajax({
+        HttpClient.send({
 
             type: 'GET',
             url: 'components/imagedownloader/imagedownloader.template.html'
@@ -273,7 +274,7 @@
 
             var html = '';
             html += '<h2 class="dialogHeader">';
-            html += '<paper-fab icon="arrow-back" class="mini btnCloseDialog"></paper-fab>';
+            html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog"></paper-fab>';
             html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + Globalize.translate('HeaderSearch') + '</div>';
             html += '</h2>';
 
