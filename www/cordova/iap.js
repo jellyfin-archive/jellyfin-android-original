@@ -73,7 +73,6 @@
             application: "com.emby.mobile",
             product: productId,
             type: "Subscription",
-            feature: "MBSClubMonthly",
             storeToken: receipt,
             amt: price
         };
@@ -81,6 +80,7 @@
         if (enteredEmail) {
             postData.email = enteredEmail;
             postData.storeId = enteredEmail;
+            postData.feature = "MBSClubMonthly";
         }
 
         ApiClient.ajax({
