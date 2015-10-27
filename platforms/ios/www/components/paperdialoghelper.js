@@ -55,6 +55,9 @@
         if ($.browser.msie) {
             return false;
         }
+        if ($.browser.edge) {
+            return false;
+        }
         return true;
     }
 
@@ -76,7 +79,10 @@
         }
     }
 
-    function createDialog() {
+    function createDialog(options) {
+
+        options = options || {};
+
         var dlg = document.createElement('paper-dialog');
 
         dlg.setAttribute('with-backdrop', 'with-backdrop');
@@ -84,22 +90,39 @@
 
         // without this safari will scroll the background instead of the dialog contents
         // but not needed here since this is already on top of an existing dialog
-        dlg.setAttribute('modal', 'modal');
+        // but skip it in IE because it's causing the entire browser to hang
+        // Also have to disable for firefox because it's causing select elements to not be clickable
+        if (!$.browser.msie && !$.browser.mozilla) {
+            dlg.setAttribute('modal', 'modal');
+        }
 
-        // seeing max call stack size exceeded in the debugger with this
+        //// seeing max call stack size exceeded in the debugger with this
         dlg.setAttribute('noAutoFocus', 'noAutoFocus');
         dlg.entryAnimation = 'scale-up-animation';
         dlg.exitAnimation = 'fade-out-animation';
-        dlg.classList.add('fullscreen-editor-paper-dialog');
-        dlg.classList.add('ui-body-b');
-        dlg.classList.add('background-theme-b');
+
+        dlg.classList.add('popupEditor');
+
+        if (options.size == 'small') {
+            dlg.classList.add('small-paper-dialog');
+        }
+        else if (options.size == 'medium') {
+            dlg.classList.add('medium-paper-dialog');
+        } else {
+            dlg.classList.add('fullscreen-paper-dialog');
+        }
+
+        var theme = options.theme || 'b';
+
+        dlg.classList.add('ui-body-' + theme);
+        dlg.classList.add('background-theme-' + theme);
         dlg.classList.add('smoothScrollY');
 
         return dlg;
     }
 
     function positionTo(dlg, elem) {
-        
+
         var windowHeight = $(window).height();
 
         // If the window height is under a certain amount, don't bother trying to position

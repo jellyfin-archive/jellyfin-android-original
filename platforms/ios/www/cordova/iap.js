@@ -14,6 +14,10 @@
 
     function updateProductInfo(product) {
 
+        if (product.id == 'appunlock') {
+            product.owned = false;
+        }
+
         updatedProducts = updatedProducts.filter(function (r) {
             return r.id != product.id;
         });
@@ -55,41 +59,81 @@
         store.refresh();
     }
 
+    var transactionIds = {};
+
+    function updateOriginalTransactionInfo(transactionId, originalTransactionId) {
+
+        alert('updateOriginalTransactionInfo ' + transactionId + '-' + originalTransactionId);
+
+        if (!transactionId) {
+            return;
+        }
+        if (!originalTransactionId) {
+            return;
+        }
+        if (transactionId == 'null') {
+            return;
+        }
+        if (originalTransactionId == 'null') {
+            return;
+        }
+
+        transactionIds[transactionId] = originalTransactionId;
+    }
+
     function validateProduct(product, callback) {
 
         // product attributes:
         // https://github.com/j3k0/cordova-plugin-purchase/blob/master/doc/api.md#validation-error-codes
 
+        if (!product.transaction) {
+            Logger.log('Transaction info missing. Failing validateProduct');
+            callback(false, product);
+            return;
+        }
+
+        if (!product.transaction.id) {
+            Logger.log('Transaction id missing. Failing validateProduct');
+            callback(false, product);
+            return;
+        }
+
         var productId = product.id;
         var transactionId = product.transaction.id;
+        transactionId = transactionIds[transactionId] || transactionId;
         var receipt = product.transaction.appStoreReceipt;
         var price = product.price;
 
-        HttpClient.send({
-            type: "POST",
-            url: "https://mb3admin.com/test/admin/service/appstore/register",
-            contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-            data: {
-                store: "Apple",
-                application: "com.emby.mobile",
-                product: productId,
-                type: "Subscription",
-                feature: "MBSClubMonthly",
-                email: enteredEmail,
-                token: receipt,
-                amt: price,
-                storeId: transactionId
-            },
-            headers: {
-                "X-Emby-Token": "08606E86D043"
-            }
+        var postData = {
+            store: "Apple",
+            application: "com.emby.mobile",
+            product: productId,
+            type: "Subscription",
+            feature: "MBSClubMonthly",
+            storeToken: receipt,
+            amt: price,
+            storeId: transactionId
+        };
 
+        if (enteredEmail) {
+            postData.email = enteredEmail;
+        }
+
+        ApiClient.ajax({
+
+            type: "POST",
+            url: ApiClient.getUrl("Appstore/Register"),
+            data: {
+                Parameters: JSON.stringify(postData)
+            }
         }).done(function () {
 
+            alert('validate ok');
             callback(true, product);
 
-        }).fail(function () {
+        }).fail(function (e) {
 
+            alert('validate fail');
             callback(false, product);
         });
     }
@@ -114,9 +158,13 @@
             }
         });
 
-        store.when(id).verified(function (p) {
-            p.finish();
-        });
+        if (requiresVerification) {
+            store.when(id).verified(function (p) {
+                alert('verified');
+                updateProductInfo(p);
+                p.finish();
+            });
+        }
 
         // The play button can only be accessed when the user
         // owns the full version.
@@ -186,7 +234,8 @@
         getProductInfo: getProduct,
         beginPurchase: beginPurchase,
         restorePurchase: restorePurchase,
-        getSubscriptionOptions: getSubscriptionOptions
+        getSubscriptionOptions: getSubscriptionOptions,
+        updateOriginalTransactionInfo: updateOriginalTransactionInfo
     };
 
     initializeStore();
