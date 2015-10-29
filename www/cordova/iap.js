@@ -140,7 +140,7 @@
 
         if (requiresVerification) {
             store.when(id).verified(function (p) {
-                alert('verified');
+                //alert('verified');
                 updateProductInfo(p);
                 p.finish();
             });
@@ -153,6 +153,9 @@
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
                 if (requiresVerification) {
+                    if (product.owned) {
+                        alert('sub owned!');
+                    }
                     //product.verify();
                 } else {
                     product.finish();
