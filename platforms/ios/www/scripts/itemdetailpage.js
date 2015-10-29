@@ -155,6 +155,7 @@ function getMediaSourceHtml(item,version){var html='';if(version.Name&&item.Medi
 for(var i=0,length=version.MediaStreams.length;i<length;i++){var stream=version.MediaStreams[i];if(stream.Type=="Data"){continue;}
 html+='<div class="mediaInfoStream">';var displayType=Globalize.translate('MediaInfoStreamType'+stream.Type);html+='<div class="mediaInfoStreamType">'+displayType+'</div>';var attributes=[];if(stream.Language&&stream.Type!="Video"){attributes.push(createAttribute(Globalize.translate('MediaInfoLanguage'),stream.Language));}
 if(stream.Codec){attributes.push(createAttribute(Globalize.translate('MediaInfoCodec'),stream.Codec.toUpperCase()));}
+if(stream.CodecTag){attributes.push(createAttribute(Globalize.translate('MediaInfoCodecTag'),stream.CodecTag));}
 if(stream.Profile){attributes.push(createAttribute(Globalize.translate('MediaInfoProfile'),stream.Profile));}
 if(stream.Level){attributes.push(createAttribute(Globalize.translate('MediaInfoLevel'),stream.Level));}
 if(stream.Width||stream.Height){attributes.push(createAttribute(Globalize.translate('MediaInfoResolution'),stream.Width+'x'+stream.Height));}
