@@ -21,7 +21,7 @@ $(this).remove();});}
 function showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,serverRegistrationInfo,dialogOptions,deferred){require(['components/paperdialoghelper'],function(){if(window.TabBar){TabBar.hide();}
 showInAppPurchaseElement(subscriptionOptions,unlockableProductInfo,dialogOptions,deferred);currentDisplayingDeferred=deferred;});}
 function promptForEmail(feature){require(['prompt'],function(prompt){prompt({text:Globalize.translate('TextPleaseEnterYourEmailAddressForSubscription'),title:Globalize.translate('HeaderEmailAddress'),callback:function(email){if(email){IapManager.beginPurchase(feature,email);}}});});}
-function onProductUpdated(e,product){var deferred=currentDisplayingDeferred;if(deferred&&product.owned){if(currentDisplayingProductInfos.filter(function(p){return product.id==p.id;}).length){isCancelled=false;cancelInAppPurchase();deferred.resolve();}}}
+function onProductUpdated(e,product){if(product.owned){var deferred=currentDisplayingDeferred;if(deferred&&currentDisplayingProductInfos.filter(function(p){return product.id==p.id;}).length){isCancelled=false;cancelInAppPurchase();deferred.resolve();}}}
 function validateSync(deferred){Dashboard.getPluginSecurityInfo().done(function(pluginSecurityInfo){if(pluginSecurityInfo.IsMBSupporter){deferred.resolve();return;}
 getRegistrationInfo('Sync').done(function(registrationInfo){if(registrationInfo.IsRegistered){validatedFeatures.push(feature);deferred.resolve();return;}
 IapManager.getSubscriptionOptions().done(function(subscriptionOptions){var dialogOptions={title:Globalize.translate('HeaderUnlockSync')};showInAppPurchaseInfo(subscriptionOptions,null,registrationInfo,dialogOptions,deferred);});}).fail(function(){deferred.reject();});});}
