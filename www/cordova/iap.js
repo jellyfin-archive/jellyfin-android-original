@@ -94,7 +94,7 @@
 
         } else {
 
-            promise = ApiClient.ajax({
+            promise = HttpClient.send({
                 type: "POST",
                 url: "http://mb3admin.com/admin/service/appstore/register",
                 data: JSON.stringify(postData),
@@ -121,7 +121,7 @@
                 });
 
             } else {
-                alert('validate fail - other');
+                alert('validate fail - other ' + e.status);
 
                 callback(false, {
                     code: store.CONNECTION_FAILED,
