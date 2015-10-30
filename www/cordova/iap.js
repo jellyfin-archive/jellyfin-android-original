@@ -98,7 +98,10 @@
                 type: "POST",
                 url: "http://mb3admin.com/admin/service/appstore/register",
                 data: JSON.stringify(postData),
-                contentType: "application/json"
+                contentType: "application/json",
+                headers: {
+                    "X-Emby-Token": "EMBY-APPLE-VALIDATE"
+                }
             });
         }
 
@@ -109,7 +112,6 @@
         }).fail(function (e) {
 
             if (e.status == 402) {
-                alert('validate fail - expired');
 
                 callback(false, {
                     code: store.PURCHASE_EXPIRED,
@@ -117,6 +119,7 @@
                         message: "Subscription Expired"
                     }
                 });
+
             } else {
                 alert('validate fail - other');
 
