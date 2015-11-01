@@ -51,20 +51,41 @@
             enteredEmail = email;
         }
 
+        validationCache = {};
+
         var id = getStoreFeatureId(feature);
         store.order(id);
     }
 
     function restorePurchase(id) {
+        validationCache = {};
         store.refresh();
     }
 
+    var validationCache = {};
+
     function validateProduct(product, callback) {
+
+        var productId = product.id;
+
+        var cachedResult = validationCache[productId];
+        if (cachedResult && (new Date().getTime() - cachedResult.date) < 300000) {
+            if (cachedResult.result) {
+                callback(true, product);
+            } else {
+                callback(false, {
+                    code: cachedResult.errorCode,
+                    error: {
+                        message: cachedResult.errorMessage
+                    }
+                });
+            }
+            return;
+        }
 
         // product attributes:
         // https://github.com/j3k0/cordova-plugin-purchase/blob/master/doc/api.md#validation-error-codes
 
-        var productId = product.id;
         var receipt = product.transaction.appStoreReceipt;
         var price = product.price;
 
@@ -107,11 +128,15 @@
 
         promise.done(function () {
 
+            setCachedResult(productId, true);
+
             callback(true, product);
 
         }).fail(function (e) {
 
             if (e.status == 402) {
+
+                setCachedResult(productId, false, store.PURCHASE_EXPIRED, 'Subscription Expired');
 
                 callback(false, {
                     code: store.PURCHASE_EXPIRED,
@@ -121,7 +146,9 @@
                 });
 
             } else {
-                alert('validate fail - other ' + e.status);
+                //alert('validate fail - other ' + e.status);
+
+                clearCachedResult(productId);
 
                 callback(false, {
                     code: store.CONNECTION_FAILED,
@@ -131,6 +158,20 @@
                 });
             }
         });
+    }
+
+    function setCachedResult(productId, result, code, message) {
+
+        validationCache[productId] = {
+            date: new Date().getTime(),
+            result: result,
+            errorCode: code,
+            errorMessage: message
+        };
+    }
+
+    function clearCachedResult(productId) {
+        validationCache = {};
     }
 
     function initProduct(id, requiresVerification, type) {
