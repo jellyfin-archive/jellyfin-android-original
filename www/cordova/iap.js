@@ -262,6 +262,7 @@
 
             o.id = getStoreFeatureId(o.feature);
             o.buttonText = Globalize.translate(o.buttonText, getProduct(o.feature).price);
+            o.owned = getProduct(o.feature).owned;
             return o;
         });
 
