@@ -14,9 +14,9 @@
 
     function updateProductInfo(product) {
 
-        if (product.id == 'appunlock') {
-            product.owned = false;
-        }
+        //if (product.id == 'appunlock') {
+        //    product.owned = false;
+        //}
 
         updatedProducts = updatedProducts.filter(function (r) {
             return r.id != product.id;
@@ -51,20 +51,42 @@
             enteredEmail = email;
         }
 
+        validationCache = {};
+
         var id = getStoreFeatureId(feature);
         store.order(id);
     }
 
     function restorePurchase(id) {
+        validationCache = {};
         store.refresh();
     }
 
+    var validationCache = {};
+
     function validateProduct(product, callback) {
+
+        var productId = product.id;
+        var cacheKey = productId + (product.transaction.id || '');
+
+        var cachedResult = validationCache[cacheKey];
+        if (cachedResult && (new Date().getTime() - cachedResult.date) < 60000) {
+            if (cachedResult.result) {
+                callback(true, product);
+            } else {
+                callback(false, {
+                    code: cachedResult.errorCode,
+                    error: {
+                        message: cachedResult.errorMessage
+                    }
+                });
+            }
+            return;
+        }
 
         // product attributes:
         // https://github.com/j3k0/cordova-plugin-purchase/blob/master/doc/api.md#validation-error-codes
 
-        var productId = product.id;
         var receipt = product.transaction.appStoreReceipt;
         var price = product.price;
 
@@ -77,27 +99,45 @@
             amt: price
         };
 
+        var promise;
+
         if (enteredEmail) {
             postData.email = enteredEmail;
             postData.storeId = enteredEmail;
             postData.feature = "MBSClubMonthly";
+
+            promise = ApiClient.ajax({
+                type: "POST",
+                url: ApiClient.getUrl("Appstore/Register"),
+                data: {
+                    Parameters: JSON.stringify(postData)
+                }
+            });
+
+        } else {
+
+            promise = HttpClient.send({
+                type: "POST",
+                url: "http://mb3admin.com/admin/service/appstore/register",
+                data: JSON.stringify(postData),
+                contentType: "application/json",
+                headers: {
+                    "X-Emby-Token": "EMBY-APPLE-VALIDATE"
+                }
+            });
         }
 
-        ApiClient.ajax({
+        promise.done(function () {
 
-            type: "POST",
-            url: ApiClient.getUrl("Appstore/Register"),
-            data: {
-                Parameters: JSON.stringify(postData)
-            }
-        }).done(function () {
+            setCachedResult(cacheKey, true);
 
             callback(true, product);
 
         }).fail(function (e) {
 
             if (e.status == 402) {
-                alert('validate fail - expired');
+
+                setCachedResult(cacheKey, false, store.PURCHASE_EXPIRED, 'Subscription Expired');
 
                 callback(false, {
                     code: store.PURCHASE_EXPIRED,
@@ -105,8 +145,11 @@
                         message: "Subscription Expired"
                     }
                 });
+
             } else {
-                alert('validate fail - other');
+                //alert('validate fail - other ' + e.status);
+
+                validationCache = {};
 
                 callback(false, {
                     code: store.CONNECTION_FAILED,
@@ -116,6 +159,16 @@
                 });
             }
         });
+    }
+
+    function setCachedResult(key, result, code, message) {
+
+        validationCache[key] = {
+            date: new Date().getTime(),
+            result: result,
+            errorCode: code,
+            errorMessage: message
+        };
     }
 
     function initProduct(id, requiresVerification, type) {
@@ -153,10 +206,10 @@
             if (product.loaded && product.valid && product.state == store.APPROVED) {
                 Logger.log('finishing previously created transaction');
                 if (requiresVerification) {
-                    if (product.owned) {
-                        alert('sub owned!');
-                    }
                     //product.verify();
+                    if (product.owned) {
+                        //alert('sub owned!');
+                    }
                 } else {
                     product.finish();
                 }
@@ -204,7 +257,9 @@
 
         }).map(function (o) {
 
+            o.id = getStoreFeatureId(o.feature);
             o.buttonText = Globalize.translate(o.buttonText, getProduct(o.feature).price);
+            o.owned = getProduct(o.feature).owned;
             return o;
         });
 
