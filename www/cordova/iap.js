@@ -67,9 +67,10 @@
     function validateProduct(product, callback) {
 
         var productId = product.id;
+        var cacheKey = productId + (product.transaction.id || '');
 
-        var cachedResult = validationCache[productId];
-        if (cachedResult && (new Date().getTime() - cachedResult.date) < 300000) {
+        var cachedResult = validationCache[cacheKey];
+        if (cachedResult && (new Date().getTime() - cachedResult.date) < 60000) {
             if (cachedResult.result) {
                 callback(true, product);
             } else {
@@ -128,7 +129,7 @@
 
         promise.done(function () {
 
-            setCachedResult(productId, true);
+            setCachedResult(cacheKey, true);
 
             callback(true, product);
 
@@ -136,7 +137,7 @@
 
             if (e.status == 402) {
 
-                setCachedResult(productId, false, store.PURCHASE_EXPIRED, 'Subscription Expired');
+                setCachedResult(cacheKey, false, store.PURCHASE_EXPIRED, 'Subscription Expired');
 
                 callback(false, {
                     code: store.PURCHASE_EXPIRED,
@@ -148,7 +149,7 @@
             } else {
                 //alert('validate fail - other ' + e.status);
 
-                clearCachedResult(productId);
+                validationCache = {};
 
                 callback(false, {
                     code: store.CONNECTION_FAILED,
@@ -160,18 +161,14 @@
         });
     }
 
-    function setCachedResult(productId, result, code, message) {
+    function setCachedResult(key, result, code, message) {
 
-        validationCache[productId] = {
+        validationCache[key] = {
             date: new Date().getTime(),
             result: result,
             errorCode: code,
             errorMessage: message
         };
-    }
-
-    function clearCachedResult(productId) {
-        validationCache = {};
     }
 
     function initProduct(id, requiresVerification, type) {
