@@ -88,7 +88,8 @@ for(var i=0,length=this.length;i<length;i++){initTapHoldMenus(this[i]);}
 return this;};function initTapHoldMenus(elem){if(elem.classList.contains('itemsContainer')){initTapHold(elem);return;}
 var elems=elem.querySelectorAll('.itemsContainer');for(var i=0,length=elems.length;i<length;i++){initTapHold(elems[i]);}}
 function initTapHold(element){if(!LibraryBrowser.allowSwipe(element)){return;}
-require(['hammer'],function(Hammer){var hammertime=new Hammer(element);hammertime.on('press',onTapHold);hammertime.on('pressup',onTapHoldUp);});showTapHoldHelp(element);}
+if(element.classList.contains('hasTapHold')){return;}
+require(['hammer'],function(Hammer){var hammertime=new Hammer(element);element.classList.add('hasTapHold');hammertime.on('press',onTapHold);hammertime.on('pressup',onTapHoldUp);});showTapHoldHelp(element);}
 function showTapHoldHelp(element){var page=$(element).parents('.page')[0];if(!page){return;}
 if(page.classList.contains('homePage')||page.classList.contains('itemDetailPage')||page.classList.contains('liveTvPage')){return;}
 var expectedValue="8";if(appStorage.getItem("tapholdhelp")==expectedValue){return;}
