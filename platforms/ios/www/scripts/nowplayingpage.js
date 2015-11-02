@@ -47,7 +47,8 @@ else if(item.PrimaryImageTag){url=ApiClient.getScaledImageUrl(item.PrimaryImageI
 else if(item.BackdropImageTag){url=ApiClient.getScaledImageUrl(item.BackdropItemId,{type:"Backdrop",height:300,tag:item.BackdropImageTag,index:0});}else if(item.ThumbImageTag){url=ApiClient.getScaledImageUrl(item.ThumbImageItemId,{type:"Thumb",height:300,tag:item.ThumbImageTag});}
 if(url==currentImgUrl){return;}
 if(item&&item.BackdropImageTag){backdropUrl=ApiClient.getScaledImageUrl(item.BackdropItemId,{type:"Backdrop",maxWidth:$(window).width(),tag:item.BackdropImageTag,index:0});}
-setImageUrl(page,url);if(item){Backdrops.setBackdropUrl(page,backdropUrl);ApiClient.getItem(Dashboard.getCurrentUserId(),item.Id).done(function(fullItem){page.querySelector('.nowPlayingPageUserDataButtons').innerHTML=LibraryBrowser.getUserDataIconsHtml(fullItem,false);});}else{page.querySelector('.nowPlayingPageUserDataButtons').innerHTML='';}}
+setImageUrl(page,url);if(item){if(!$.browser.safari){Backdrops.setBackdropUrl(page,backdropUrl);}
+ApiClient.getItem(Dashboard.getCurrentUserId(),item.Id).done(function(fullItem){page.querySelector('.nowPlayingPageUserDataButtons').innerHTML=LibraryBrowser.getUserDataIconsHtml(fullItem,false);});}else{page.querySelector('.nowPlayingPageUserDataButtons').innerHTML='';}}
 function setImageUrl(page,url){currentImgUrl=url;$('.nowPlayingPageImage',page).html(url?'<img src="'+url+'" />':'');}
 function updateSupportedCommands(page,commands){$('.btnCommand',page).each(function(){$(this).buttonEnabled(commands.indexOf(this.getAttribute('data-command'))!=-1);});}
 function releaseCurrentPlayer(){if(currentPlayer){$(currentPlayer).off('playbackstart',onPlaybackStart).off('playbackstop',onPlaybackStopped).off('volumechange',onStateChanged).off('playstatechange',onStateChanged).off('positionchange',onStateChanged);currentPlayer.endPlayerUpdates();currentPlayer=null;}}
