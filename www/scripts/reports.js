@@ -23,7 +23,7 @@ if(!rRow.HasImageTagsLogo){if(rRow.RowType==="Movie"||rRow.RowType==="Trailer"||
 break;default:html+=rItem.Name;}
 html+='</td>';return html;}
 function getStats(result){var html='';html+='<div class="detailSection" >';html+='<div class="detailSectionContent">';result.Groups.map(function(group){html+='<div class="card transparentCard bannerCard"  style="vertical-align: top;">';html+='<div class="visualCardBox">';html+='<div class="cardBox " >';html+='<div class="detailSection">'
-html+='<div class="detailSectionHeader">';html+='<span>'+group.Header+'&nbsp;'+'</span>';html+='</div>';html+='<div class="detailSectionContent">';html+='<div class="childrenItemsContainer itemsContainer fullWidthItemsContainer" style="text-align: left;">';html+='<ul class="itemsListview ui-listview" >';var l=group.Items.length-1;for(var j=0;j<topItems;j++){html+='<li class="ui-li listItem ui-li-has-alt ui-first-child">';if(j<=l){var rItem=group.Items[j];html+='<a class="item ui-btn"';if(rItem.Id>"")
+html+='<div class="detailSectionHeader">';html+='<span>'+group.Header+'&nbsp;'+'</span>';html+='</div>';html+='<div class="detailSectionContent">';html+='<div class="childrenItemsContainer itemsContainer" style="text-align: left;">';html+='<ul class="itemsListview ui-listview" >';var l=group.Items.length-1;for(var j=0;j<topItems;j++){html+='<li class="ui-li listItem ui-li-has-alt ui-first-child">';if(j<=l){var rItem=group.Items[j];html+='<a class="item ui-btn"';if(rItem.Id>"")
 html+=' href="itemdetails.html?id='+rItem.Id+'"';html+='>'+rItem.Name+'&nbsp;'+'</a>';html+='<a title="" class="listviewMenuButton ui-btn ui-btn-inline">'+rItem.Value+'&nbsp;'+'</a>';}
 else
 html+='<a class="item ui-btn">'+'&nbsp;'+'</a>';html+='</li>';}
