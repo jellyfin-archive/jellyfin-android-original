@@ -1,11 +1,8 @@
-﻿(function(){function validateServerManagement(deferred){deferred.resolve();}
-function getRegistrationInfo(feature){return ConnectionManager.getRegistrationInfo(feature,ApiClient);}
-var validatedFeatures=[];function validateFeature(feature,deferred){if(validatedFeatures.indexOf(feature)!=-1){deferred.resolve();return;}
-var info=IapManager.getProductInfo(feature)||{};if(info.owned){notifyServer(info.id);validatedFeatures.push(feature);deferred.resolve();return;}
-var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:IapManager.isPurchaseAvailable(feature),id:info.id,price:info.price,feature:feature}:null;var prefix=$.browser.android?'android':'ios';getRegistrationInfo(prefix+'appunlock').done(function(registrationInfo){if(registrationInfo.IsRegistered){validatedFeatures.push(feature);deferred.resolve();return;}
-IapManager.getSubscriptionOptions().done(function(subscriptionOptions){var dialogOptions={title:Globalize.translate('HeaderUnlockApp')};showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,registrationInfo,dialogOptions,deferred);});}).fail(function(){deferred.reject();});}
-function notifyServer(id){if(!$.browser.android){return;}
-HttpClient.send({type:"POST",url:"https://mb3admin.com/admin/service/appstore/addDeviceFeature",data:{deviceId:ConnectionManager.deviceId(),feature:'com.mb.android.unlock'},contentType:'application/x-www-form-urlencoded; charset=UTF-8',headers:{"X-EMBY-TOKEN":"EMBY_DEVICE"}}).done(function(result){Logger.log('addDeviceFeature succeeded');}).fail(function(){Logger.log('addDeviceFeature failed');});}
+﻿(function(){function getRegistrationInfo(feature){return ConnectionManager.getRegistrationInfo(feature,ApiClient);}
+function validateFeature(feature,deferred){var unlockableProduct=IapManager.getProductInfo(feature)||{};if(unlockableProduct.owned){deferred.resolve();return;}
+var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:true,id:unlockableProduct.id,price:unlockableProduct.price,feature:feature}:null;var prefix=$.browser.android?'android':'ios';getRegistrationInfo(prefix+'appunlock').done(function(registrationInfo){if(registrationInfo.IsRegistered){deferred.resolve();return;}
+IapManager.getSubscriptionOptions().done(function(subscriptionOptions){if(subscriptionOptions.filter(function(p){return p.owned;}).length>0){deferred.resolve();return;}
+var dialogOptions={title:Globalize.translate('HeaderUnlockApp')};showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,registrationInfo,dialogOptions,deferred);});}).fail(function(){deferred.reject();});}
 function cancelInAppPurchase(){var elem=document.querySelector('.inAppPurchaseOverlay');if(elem){PaperDialogHelper.close(elem);}}
 var isCancelled=true;var currentDisplayingProductInfos=[];var currentDisplayingDeferred=null;function clearCurrentDisplayingInfo(){currentDisplayingProductInfos=[];currentDisplayingDeferred=null;}
 function showInAppPurchaseElement(subscriptionOptions,unlockableProductInfo,dialogOptions,deferred){cancelInAppPurchase();currentDisplayingProductInfos=subscriptionOptions.slice(0);if(unlockableProductInfo){currentDisplayingProductInfos.push(unlockableProductInfo);}
@@ -21,9 +18,9 @@ $(this).remove();});}
 function showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,serverRegistrationInfo,dialogOptions,deferred){require(['components/paperdialoghelper'],function(){if(window.TabBar){TabBar.hide();}
 showInAppPurchaseElement(subscriptionOptions,unlockableProductInfo,dialogOptions,deferred);currentDisplayingDeferred=deferred;});}
 function promptForEmail(feature){require(['prompt'],function(prompt){prompt({text:Globalize.translate('TextPleaseEnterYourEmailAddressForSubscription'),title:Globalize.translate('HeaderEmailAddress'),callback:function(email){if(email){IapManager.beginPurchase(feature,email);}}});});}
-function onProductUpdated(e,product){var deferred=currentDisplayingDeferred;if(deferred&&product.owned){if(currentDisplayingProductInfos.filter(function(p){return product.id==p.id;}).length){isCancelled=false;cancelInAppPurchase();deferred.resolve();}}}
+function onProductUpdated(e,product){if(product.owned){var deferred=currentDisplayingDeferred;if(deferred&&currentDisplayingProductInfos.filter(function(p){return product.id==p.id;}).length){isCancelled=false;cancelInAppPurchase();deferred.resolve();}}}
 function validateSync(deferred){Dashboard.getPluginSecurityInfo().done(function(pluginSecurityInfo){if(pluginSecurityInfo.IsMBSupporter){deferred.resolve();return;}
-getRegistrationInfo('Sync').done(function(registrationInfo){if(registrationInfo.IsRegistered){validatedFeatures.push(feature);deferred.resolve();return;}
+getRegistrationInfo('Sync').done(function(registrationInfo){if(registrationInfo.IsRegistered){deferred.resolve();return;}
 IapManager.getSubscriptionOptions().done(function(subscriptionOptions){var dialogOptions={title:Globalize.translate('HeaderUnlockSync')};showInAppPurchaseInfo(subscriptionOptions,null,registrationInfo,dialogOptions,deferred);});}).fail(function(){deferred.reject();});});}
 window.RegistrationServices={renderPluginInfo:function(page,pkg,pluginSecurityInfo){},validateFeature:function(name){var deferred=DeferredBuilder.Deferred();if(name=='playback'){validateFeature(name,deferred);}else if(name=='livetv'){validateFeature(name,deferred);}else if(name=='sync'){validateSync(deferred);}else{deferred.resolve();}
 return deferred.promise();}};function onIapManagerLoaded(){Events.on(IapManager,'productupdated',onProductUpdated);}

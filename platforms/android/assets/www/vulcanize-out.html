@@ -280,7 +280,7 @@ document.registerElement('dom-module', DomModule);
 function forceDocumentUpgrade() {
 if (cePolyfill) {
 var script = document._currentScript || document.currentScript;
-var doc = script && script.ownerDocument;
+var doc = script && script.ownerDocument || document;
 if (doc) {
 CustomElements.upgradeAll(doc);
 }
@@ -592,7 +592,7 @@ debouncer.stop();
 }
 }
 });
-Polymer.version = '1.1.5';
+Polymer.version = '1.2.1';
 Polymer.Base._addFeature({
 _registerFeatures: function () {
 this._prepIs();
@@ -874,61 +874,6 @@ return currentValue === previousValue;
 };
 return new ArraySplice();
 }();
-Polymer.EventApi = function () {
-var Settings = Polymer.Settings;
-var EventApi = function (event) {
-this.event = event;
-};
-if (Settings.useShadow) {
-EventApi.prototype = {
-get rootTarget() {
-return this.event.path[0];
-},
-get localTarget() {
-return this.event.target;
-},
-get path() {
-return this.event.path;
-}
-};
-} else {
-EventApi.prototype = {
-get rootTarget() {
-return this.event.target;
-},
-get localTarget() {
-var current = this.event.currentTarget;
-var currentRoot = current && Polymer.dom(current).getOwnerRoot();
-var p$ = this.path;
-for (var i = 0; i < p$.length; i++) {
-if (Polymer.dom(p$[i]).getOwnerRoot() === currentRoot) {
-return p$[i];
-}
-}
-},
-get path() {
-if (!this.event._path) {
-var path = [];
-var o = this.rootTarget;
-while (o) {
-path.push(o);
-o = Polymer.dom(o).parentNode || o.host;
-}
-path.push(window);
-this.event._path = path;
-}
-return this.event._path;
-}
-};
-}
-var factory = function (event) {
-if (!event.__eventApi) {
-event.__eventApi = new EventApi(event);
-}
-return event.__eventApi;
-};
-return { factory: factory };
-}();
 Polymer.domInnerHTML = function () {
 var escapeAttrRegExp = /[&\u00A0"]/g;
 var escapeDataRegExp = /[&\u00A0<>]/g;
@@ -1054,6 +999,17 @@ DomApi.prototype = {
 flush: function () {
 Polymer.dom.flush();
 },
+deepContains: function (node) {
+if (this.node.contains(node)) {
+return true;
+}
+var n = node;
+var wrappedDocument = wrap(document);
+while (n && n !== wrappedDocument && n !== this.node) {
+n = Polymer.dom(n).parentNode || n.host;
+}
+return n === this.node;
+},
 _lazyDistribute: function (host) {
 if (host.shadyRoot && host.shadyRoot._distributionClean) {
 host.shadyRoot._distributionClean = false;
@@ -1067,7 +1023,7 @@ insertBefore: function (node, ref_node) {
 return this._addNode(node, ref_node);
 },
 _addNode: function (node, ref_node) {
-this._removeNodeFromHost(node, true);
+this._removeNodeFromParent(node);
 var addedInsertionPoint;
 var root = this.getOwnerRoot();
 if (root) {
@@ -1099,6 +1055,7 @@ nativeAppendChild.call(container, node);
 if (addedInsertionPoint) {
 this._updateInsertionPoints(root.host);
 }
+this.notifyObserver();
 return node;
 },
 removeChild: function (node) {
@@ -1113,6 +1070,7 @@ removeFromComposedParent(container, node);
 nativeRemoveChild.call(container, node);
 }
 }
+this.notifyObserver();
 return node;
 },
 replaceChild: function (node, ref_node) {
@@ -1205,6 +1163,13 @@ return Boolean(node._lightChildren !== undefined);
 _parentNeedsDistribution: function (parent) {
 return parent && parent.shadyRoot && hasInsertionPoint(parent.shadyRoot);
 },
+_removeNodeFromParent: function (node) {
+var parent = node._lightParent || node.parentNode;
+if (parent && hasDomApi(parent)) {
+factory(parent).notifyObserver();
+}
+this._removeNodeFromHost(node, true);
+},
 _removeNodeFromHost: function (node, ensureComposedRemoval) {
 var hostNeedsDist;
 var root;
@@ -1216,7 +1181,7 @@ if (root) {
 root.host._elementRemove(node);
 hostNeedsDist = this._removeDistributedChildren(root, node);
 }
-this._removeLogicalInfo(node, node._lightParent);
+this._removeLogicalInfo(node, parent);
 }
 this._removeOwnerShadyRoot(node);
 if (root && hostNeedsDist) {
@@ -1335,24 +1300,29 @@ getDistributedNodes: function () {
 return this.node._distributedNodes || [];
 },
 queryDistributedElements: function (selector) {
-var c$ = this.childNodes;
+var c$ = this.getEffectiveChildNodes();
 var list = [];
-this._distributedFilter(selector, c$, list);
 for (var i = 0, l = c$.length, c; i < l && (c = c$[i]); i++) {
-if (c.localName === CONTENT) {
-this._distributedFilter(selector, factory(c).getDistributedNodes(), list);
+if (c.nodeType === Node.ELEMENT_NODE && matchesSelector.call(c, selector)) {
+list.push(c);
 }
 }
 return list;
 },
-_distributedFilter: function (selector, list, results) {
-results = results || [];
-for (var i = 0, l = list.length, d; i < l && (d = list[i]); i++) {
-if (d.nodeType === Node.ELEMENT_NODE && d.localName !== CONTENT && matchesSelector.call(d, selector)) {
-results.push(d);
+getEffectiveChildNodes: function () {
+var list = [];
+var c$ = this.childNodes;
+for (var i = 0, l = c$.length, c; i < l && (c = c$[i]); i++) {
+if (c.localName === CONTENT) {
+var d$ = factory(c).getDistributedNodes();
+for (var j = 0; j < d$.length; j++) {
+list.push(d$[j]);
+}
+} else {
+list.push(c);
 }
 }
-return results;
+return list;
 },
 _clear: function () {
 while (this.childNodes.length) {
@@ -1396,36 +1366,24 @@ d.appendChild(nc);
 }
 }
 return n;
+},
+observeNodes: function (callback) {
+if (callback) {
+if (!this.observer) {
+this.observer = this.node.localName === CONTENT ? new DomApi.DistributedNodesObserver(this) : new DomApi.EffectiveNodesObserver(this);
 }
-};
-Object.defineProperty(DomApi.prototype, 'classList', {
-get: function () {
-if (!this._classList) {
-this._classList = new DomApi.ClassList(this);
+return this.observer.addListener(callback);
 }
-return this._classList;
 },
-configurable: true
-});
-DomApi.ClassList = function (host) {
-this.domApi = host;
-this.node = host.node;
-};
-DomApi.ClassList.prototype = {
-add: function () {
-this.node.classList.add.apply(this.node.classList, arguments);
-this.domApi._distributeParent();
+unobserveNodes: function (handle) {
+if (this.observer) {
+this.observer.removeListener(handle);
+}
 },
-remove: function () {
-this.node.classList.remove.apply(this.node.classList, arguments);
-this.domApi._distributeParent();
-},
-toggle: function () {
-this.node.classList.toggle.apply(this.node.classList, arguments);
-this.domApi._distributeParent();
-},
-contains: function () {
-return this.node.classList.contains.apply(this.node.classList, arguments);
+notifyObserver: function () {
+if (this.observer) {
+this.observer.notify();
+}
 }
 };
 if (!Settings.useShadow) {
@@ -1607,6 +1565,17 @@ return n$ ? Array.prototype.slice.call(n$) : [];
 };
 DomApi.prototype._distributeParent = function () {
 };
+var nativeForwards = [
+'appendChild',
+'insertBefore',
+'removeChild',
+'replaceChild'
+];
+nativeForwards.forEach(function (forward) {
+DomApi.prototype[forward] = function () {
+return this.node[forward].apply(this.node, arguments);
+};
+});
 Object.defineProperties(DomApi.prototype, {
 childNodes: {
 get: function () {
@@ -1660,13 +1629,17 @@ configurable: true
 });
 }
 var CONTENT = 'content';
-var factory = function (node, patch) {
+function factory(node, patch) {
 node = node || document;
 if (!node.__domApi) {
 node.__domApi = new DomApi(node, patch);
 }
 return node.__domApi;
-};
+}
+;
+function hasDomApi(node) {
+return Boolean(node.__domApi);
+}
 Polymer.dom = function (obj, patch) {
 if (obj instanceof Event) {
 return Polymer.EventApi.factory(obj);
@@ -1674,43 +1647,6 @@ return Polymer.EventApi.factory(obj);
 return factory(obj, patch);
 }
 };
-Polymer.Base.extend(Polymer.dom, {
-_flushGuard: 0,
-_FLUSH_MAX: 100,
-_needsTakeRecords: !Polymer.Settings.useNativeCustomElements,
-_debouncers: [],
-_finishDebouncer: null,
-flush: function () {
-for (var i = 0; i < this._debouncers.length; i++) {
-this._debouncers[i].complete();
-}
-if (this._finishDebouncer) {
-this._finishDebouncer.complete();
-}
-this._flushPolyfills();
-if (this._debouncers.length && this._flushGuard < this._FLUSH_MAX) {
-this._flushGuard++;
-this.flush();
-} else {
-if (this._flushGuard >= this._FLUSH_MAX) {
-console.warn('Polymer.dom.flush aborted. Flush may not be complete.');
-}
-this._flushGuard = 0;
-}
-},
-_flushPolyfills: function () {
-if (this._needsTakeRecords) {
-CustomElements.takeRecords();
-}
-},
-addDebouncer: function (debouncer) {
-this._debouncers.push(debouncer);
-this._finishDebouncer = Polymer.Debounce(this._finishDebouncer, this._finishFlush);
-},
-_finishFlush: function () {
-Polymer.dom._debouncers = [];
-}
-});
 function getLightChildren(node) {
 var children = node._lightChildren;
 return children ? children : node.childNodes;
@@ -1774,10 +1710,399 @@ saveLightChildrenIfNeeded: saveLightChildrenIfNeeded,
 matchesSelector: matchesSelector,
 hasInsertionPoint: hasInsertionPoint,
 ctor: DomApi,
-factory: factory
+factory: factory,
+hasDomApi: hasDomApi
 };
 }();
+Polymer.Base.extend(Polymer.dom, {
+_flushGuard: 0,
+_FLUSH_MAX: 100,
+_needsTakeRecords: !Polymer.Settings.useNativeCustomElements,
+_debouncers: [],
+_staticFlushList: [],
+_finishDebouncer: null,
+flush: function () {
+this._flushGuard = 0;
+this._prepareFlush();
+while (this._debouncers.length && this._flushGuard < this._FLUSH_MAX) {
+for (var i = 0; i < this._debouncers.length; i++) {
+this._debouncers[i].complete();
+}
+if (this._finishDebouncer) {
+this._finishDebouncer.complete();
+}
+this._prepareFlush();
+this._flushGuard++;
+}
+if (this._flushGuard >= this._FLUSH_MAX) {
+console.warn('Polymer.dom.flush aborted. Flush may not be complete.');
+}
+},
+_prepareFlush: function () {
+if (this._needsTakeRecords) {
+CustomElements.takeRecords();
+}
+for (var i = 0; i < this._staticFlushList.length; i++) {
+this._staticFlushList[i]();
+}
+},
+addStaticFlush: function (fn) {
+this._staticFlushList.push(fn);
+},
+removeStaticFlush: function (fn) {
+var i = this._staticFlushList.indexOf(fn);
+if (i >= 0) {
+this._staticFlushList.splice(i, 1);
+}
+},
+addDebouncer: function (debouncer) {
+this._debouncers.push(debouncer);
+this._finishDebouncer = Polymer.Debounce(this._finishDebouncer, this._finishFlush);
+},
+_finishFlush: function () {
+Polymer.dom._debouncers = [];
+}
+});
+Polymer.EventApi = function () {
+'use strict';
+var DomApi = Polymer.DomApi.ctor;
+var Settings = Polymer.Settings;
+DomApi.Event = function (event) {
+this.event = event;
+};
+if (Settings.useShadow) {
+DomApi.Event.prototype = {
+get rootTarget() {
+return this.event.path[0];
+},
+get localTarget() {
+return this.event.target;
+},
+get path() {
+return this.event.path;
+}
+};
+} else {
+DomApi.Event.prototype = {
+get rootTarget() {
+return this.event.target;
+},
+get localTarget() {
+var current = this.event.currentTarget;
+var currentRoot = current && Polymer.dom(current).getOwnerRoot();
+var p$ = this.path;
+for (var i = 0; i < p$.length; i++) {
+if (Polymer.dom(p$[i]).getOwnerRoot() === currentRoot) {
+return p$[i];
+}
+}
+},
+get path() {
+if (!this.event._path) {
+var path = [];
+var o = this.rootTarget;
+while (o) {
+path.push(o);
+o = Polymer.dom(o).parentNode || o.host;
+}
+path.push(window);
+this.event._path = path;
+}
+return this.event._path;
+}
+};
+}
+var factory = function (event) {
+if (!event.__eventApi) {
+event.__eventApi = new DomApi.Event(event);
+}
+return event.__eventApi;
+};
+return { factory: factory };
+}();
 (function () {
+'use strict';
+var DomApi = Polymer.DomApi.ctor;
+Object.defineProperty(DomApi.prototype, 'classList', {
+get: function () {
+if (!this._classList) {
+this._classList = new DomApi.ClassList(this);
+}
+return this._classList;
+},
+configurable: true
+});
+DomApi.ClassList = function (host) {
+this.domApi = host;
+this.node = host.node;
+};
+DomApi.ClassList.prototype = {
+add: function () {
+this.node.classList.add.apply(this.node.classList, arguments);
+this.domApi._distributeParent();
+},
+remove: function () {
+this.node.classList.remove.apply(this.node.classList, arguments);
+this.domApi._distributeParent();
+},
+toggle: function () {
+this.node.classList.toggle.apply(this.node.classList, arguments);
+this.domApi._distributeParent();
+},
+contains: function () {
+return this.node.classList.contains.apply(this.node.classList, arguments);
+}
+};
+}());
+(function () {
+'use strict';
+var DomApi = Polymer.DomApi.ctor;
+var Settings = Polymer.Settings;
+var hasDomApi = Polymer.DomApi.hasDomApi;
+DomApi.EffectiveNodesObserver = function (domApi) {
+this.domApi = domApi;
+this.node = this.domApi.node;
+this._listeners = [];
+};
+DomApi.EffectiveNodesObserver.prototype = {
+addListener: function (callback) {
+if (!this._isSetup) {
+this._setup();
+this._isSetup = true;
+}
+var listener = {
+fn: callback,
+_nodes: []
+};
+this._listeners.push(listener);
+this._scheduleNotify();
+return listener;
+},
+removeListener: function (handle) {
+var i = this._listeners.indexOf(handle);
+if (i >= 0) {
+this._listeners.splice(i, 1);
+handle._nodes = [];
+}
+if (!this._hasListeners()) {
+this._cleanup();
+this._isSetup = false;
+}
+},
+_setup: function () {
+this._observeContentElements(this.domApi.childNodes);
+},
+_cleanup: function () {
+this._unobserveContentElements(this.domApi.childNodes);
+},
+_hasListeners: function () {
+return Boolean(this._listeners.length);
+},
+_scheduleNotify: function () {
+if (this._debouncer) {
+this._debouncer.stop();
+}
+this._debouncer = Polymer.Debounce(this._debouncer, this._notify);
+this._debouncer.context = this;
+Polymer.dom.addDebouncer(this._debouncer);
+},
+notify: function () {
+if (this._hasListeners()) {
+this._scheduleNotify();
+}
+},
+_notify: function (mxns) {
+this._beforeCallListeners();
+this._callListeners();
+},
+_beforeCallListeners: function () {
+this._updateContentElements();
+},
+_updateContentElements: function () {
+this._observeContentElements(this.domApi.childNodes);
+},
+_observeContentElements: function (elements) {
+for (var i = 0, n; i < elements.length && (n = elements[i]); i++) {
+if (this._isContent(n)) {
+n.__observeNodesMap = n.__observeNodesMap || new WeakMap();
+if (!n.__observeNodesMap.has(this)) {
+n.__observeNodesMap.set(this, this._observeContent(n));
+}
+}
+}
+},
+_observeContent: function (content) {
+var h = Polymer.dom(content).observeNodes(this._scheduleNotify.bind(this));
+h._avoidChangeCalculation = true;
+return h;
+},
+_unobserveContentElements: function (elements) {
+for (var i = 0, n, h; i < elements.length && (n = elements[i]); i++) {
+if (this._isContent(n)) {
+h = n.__observeNodesMap.get(this);
+if (h) {
+Polymer.dom(n).unobserveNodes(h);
+n.__observeNodesMap.delete(this);
+}
+}
+}
+},
+_isContent: function (node) {
+return node.localName === 'content';
+},
+_callListeners: function () {
+var o$ = this._listeners;
+var nodes = this._getEffectiveNodes();
+for (var i = 0, o; i < o$.length && (o = o$[i]); i++) {
+var info = this._generateListenerInfo(o, nodes);
+if (info || o._alwaysNotify) {
+this._callListener(o, info);
+}
+}
+},
+_getEffectiveNodes: function () {
+return this.domApi.getEffectiveChildNodes();
+},
+_generateListenerInfo: function (listener, newNodes) {
+if (listener._avoidChangeCalculation) {
+return true;
+}
+var oldNodes = listener._nodes;
+var info = {
+target: this.node,
+addedNodes: [],
+removedNodes: []
+};
+var splices = Polymer.ArraySplice.calculateSplices(newNodes, oldNodes);
+for (var i = 0, s; i < splices.length && (s = splices[i]); i++) {
+for (var j = 0, n; j < s.removed.length && (n = s.removed[j]); j++) {
+info.removedNodes.push(n);
+}
+}
+for (var i = 0, s; i < splices.length && (s = splices[i]); i++) {
+for (var j = s.index; j < s.index + s.addedCount; j++) {
+info.addedNodes.push(newNodes[j]);
+}
+}
+listener._nodes = newNodes;
+if (info.addedNodes.length || info.removedNodes.length) {
+return info;
+}
+},
+_callListener: function (listener, info) {
+return listener.fn.call(this.node, info);
+},
+enableShadowAttributeTracking: function () {
+}
+};
+if (Settings.useShadow) {
+var baseSetup = DomApi.EffectiveNodesObserver.prototype._setup;
+var baseCleanup = DomApi.EffectiveNodesObserver.prototype._cleanup;
+var beforeCallListeners = DomApi.EffectiveNodesObserver.prototype._beforeCallListeners;
+Polymer.Base.extend(DomApi.EffectiveNodesObserver.prototype, {
+_setup: function () {
+if (!this._observer) {
+var self = this;
+this._mutationHandler = function (mxns) {
+if (mxns && mxns.length) {
+self._scheduleNotify();
+}
+};
+this._observer = new MutationObserver(this._mutationHandler);
+this._boundFlush = this._flush.bind(this);
+Polymer.dom.addStaticFlush(this._boundFlush);
+this._observer.observe(this.node, { childList: true });
+}
+baseSetup.call(this);
+},
+_cleanup: function () {
+this._observer.disconnect();
+this._observer = null;
+this._mutationHandler = null;
+Polymer.dom.removeStaticFlush(this._boundFlush);
+baseCleanup.call(this);
+},
+_flush: function () {
+if (this._observer) {
+this._mutationHandler(this._observer.takeRecords());
+}
+},
+enableShadowAttributeTracking: function () {
+if (this._observer) {
+this._makeContentListenersAlwaysNotify();
+this._observer.disconnect();
+this._observer.observe(this.node, {
+childList: true,
+attributes: true,
+subtree: true
+});
+var root = this.domApi.getOwnerRoot();
+var host = root && root.host;
+if (host && Polymer.dom(host).observer) {
+Polymer.dom(host).observer.enableShadowAttributeTracking();
+}
+}
+},
+_makeContentListenersAlwaysNotify: function () {
+for (var i = 0, h; i < this._listeners.length; i++) {
+h = this._listeners[i];
+h._alwaysNotify = h._isContentListener;
+}
+}
+});
+}
+}());
+(function () {
+'use strict';
+var DomApi = Polymer.DomApi.ctor;
+var Settings = Polymer.Settings;
+DomApi.DistributedNodesObserver = function (domApi) {
+DomApi.EffectiveNodesObserver.call(this, domApi);
+};
+DomApi.DistributedNodesObserver.prototype = Object.create(DomApi.EffectiveNodesObserver.prototype);
+Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
+_setup: function () {
+},
+_cleanup: function () {
+},
+_beforeCallListeners: function () {
+},
+_getEffectiveNodes: function () {
+return this.domApi.getDistributedNodes();
+}
+});
+if (Settings.useShadow) {
+Polymer.Base.extend(DomApi.DistributedNodesObserver.prototype, {
+_setup: function () {
+if (!this._observer) {
+var root = this.domApi.getOwnerRoot();
+var host = root && root.host;
+if (host) {
+this._observer = Polymer.dom(host).observeNodes(this._scheduleNotify.bind(this));
+this._observer._isContentListener = true;
+if (this._hasAttrSelect()) {
+Polymer.dom(host).observer.enableShadowAttributeTracking();
+}
+}
+}
+},
+_hasAttrSelect: function () {
+var select = this.node.getAttribute('select');
+return select && select.match(/[[.]+/);
+},
+_cleanup: function () {
+var root = this.domApi.getOwnerRoot();
+var host = root && root.host;
+if (host) {
+Polymer.dom(host).unobserveNodes(this._observer);
+}
+this._observer = null;
+}
+});
+}
+}());
+(function () {
+var hasDomApi = Polymer.DomApi.hasDomApi;
 Polymer.Base._addFeature({
 _prepShady: function () {
 this._useContent = this._useContent || Boolean(this._template);
@@ -1848,6 +2173,7 @@ if (this._useContent) {
 this.shadyRoot._distributionClean = true;
 if (hasInsertionPoint(this.shadyRoot)) {
 this._composeTree();
+notifyContentObservers(this.shadyRoot);
 } else {
 if (!this.shadyRoot._hasDistributed) {
 this.textContent = '';
@@ -1857,6 +2183,9 @@ this.appendChild(this.shadyRoot);
 var children = this._composeNode(this);
 this._updateChildNodes(this, children);
 }
+}
+if (!this.shadyRoot._hasDistributed) {
+notifyInitialDistribution(this);
 }
 this.shadyRoot._hasDistributed = true;
 }
@@ -2075,6 +2404,19 @@ return host.domHost;
 }
 }
 }
+function notifyContentObservers(root) {
+for (var i = 0, c; i < root._insertionPoints.length; i++) {
+c = root._insertionPoints[i];
+if (hasDomApi(c)) {
+Polymer.dom(c).notifyObserver();
+}
+}
+}
+function notifyInitialDistribution(host) {
+if (hasDomApi(host)) {
+Polymer.dom(host).notifyObserver();
+}
+}
 var needsUpgrade = window.CustomElements && !CustomElements.useNative;
 function upgradeLightChildren(children) {
 if (needsUpgrade && children) {
@@ -2141,22 +2483,66 @@ return list;
 _parseNodeAnnotations: function (node, list) {
 return node.nodeType === Node.TEXT_NODE ? this._parseTextNodeAnnotation(node, list) : this._parseElementAnnotations(node, list);
 },
-_testEscape: function (value) {
-var escape = value.slice(0, 2);
-if (escape === '{{' || escape === '[[') {
-return escape;
+_bindingRegex: /([^{[]*)({{|\[\[)([^}\]]*)(?:]]|}})/g,
+_parseBindings: function (text) {
+var re = this._bindingRegex;
+var parts = [];
+var m, lastIndex;
+while ((m = re.exec(text)) !== null) {
+if (m[1]) {
+parts.push({ literal: m[1] });
+}
+var mode = m[2][0];
+var value = m[3].trim();
+var negate = false;
+if (value[0] == '!') {
+negate = true;
+value = value.substring(1).trim();
+}
+var customEvent, notifyEvent, colon;
+if (mode == '{' && (colon = value.indexOf('::')) > 0) {
+notifyEvent = value.substring(colon + 2);
+value = value.substring(0, colon);
+customEvent = true;
+}
+parts.push({
+compoundIndex: parts.length,
+value: value,
+mode: mode,
+negate: negate,
+event: notifyEvent,
+customEvent: customEvent
+});
+lastIndex = re.lastIndex;
+}
+if (lastIndex && lastIndex < text.length) {
+var literal = text.substring(lastIndex);
+if (literal) {
+parts.push({ literal: literal });
+}
+}
+if (parts.length) {
+return parts;
 }
 },
+_literalFromParts: function (parts) {
+var s = '';
+for (var i = 0; i < parts.length; i++) {
+var literal = parts[i].literal;
+s += literal || '';
+}
+return s;
+},
 _parseTextNodeAnnotation: function (node, list) {
-var v = node.textContent;
-var escape = this._testEscape(v);
-if (escape) {
-node.textContent = ' ';
+var parts = this._parseBindings(node.textContent);
+if (parts) {
+node.textContent = this._literalFromParts(parts) || ' ';
 var annote = {
 bindings: [{
 kind: 'text',
-mode: escape[0],
-value: v.slice(2, -2).trim()
+name: 'textContent',
+parts: parts,
+isCompound: parts.length !== 1
 }]
 };
 list.push(annote);
@@ -2218,62 +2604,50 @@ index: index
 });
 },
 _parseNodeAttributeAnnotations: function (node, annotation) {
-for (var i = node.attributes.length - 1, a; a = node.attributes[i]; i--) {
-var n = a.name, v = a.value;
-if (n === 'id' && !this._testEscape(v)) {
-annotation.id = v;
-} else if (n.slice(0, 3) === 'on-') {
+var attrs = Array.prototype.slice.call(node.attributes);
+for (var i = attrs.length - 1, a; a = attrs[i]; i--) {
+var n = a.name;
+var v = a.value;
+var b;
+if (n.slice(0, 3) === 'on-') {
 node.removeAttribute(n);
 annotation.events.push({
 name: n.slice(3),
 value: v
 });
-} else {
-var b = this._parseNodeAttributeAnnotation(node, n, v);
-if (b) {
+} else if (b = this._parseNodeAttributeAnnotation(node, n, v)) {
 annotation.bindings.push(b);
-}
+} else if (n === 'id') {
+annotation.id = v;
 }
 }
 },
-_parseNodeAttributeAnnotation: function (node, n, v) {
-var escape = this._testEscape(v);
-if (escape) {
-var customEvent;
-var name = n;
-var mode = escape[0];
-v = v.slice(2, -2).trim();
-var not = false;
-if (v[0] == '!') {
-v = v.substring(1);
-not = true;
-}
+_parseNodeAttributeAnnotation: function (node, name, value) {
+var parts = this._parseBindings(value);
+if (parts) {
+var origName = name;
 var kind = 'property';
-if (n[n.length - 1] == '$') {
-name = n.slice(0, -1);
+if (name[name.length - 1] == '$') {
+name = name.slice(0, -1);
 kind = 'attribute';
 }
-var notifyEvent, colon;
-if (mode == '{' && (colon = v.indexOf('::')) > 0) {
-notifyEvent = v.substring(colon + 2);
-v = v.substring(0, colon);
-customEvent = true;
+var literal = this._literalFromParts(parts);
+if (literal && kind == 'attribute') {
+node.setAttribute(name, literal);
 }
-if (node.localName == 'input' && n == 'value') {
-node.setAttribute(n, '');
+if (node.localName == 'input' && name == 'value') {
+node.setAttribute(origName, '');
 }
-node.removeAttribute(n);
+node.removeAttribute(origName);
 if (kind === 'property') {
 name = Polymer.CaseMap.dashToCamelCase(name);
 }
 return {
 kind: kind,
-mode: mode,
 name: name,
-value: v,
-negate: not,
-event: notifyEvent,
-customEvent: customEvent
+parts: parts,
+literal: literal,
+isCompound: parts.length !== 1
 };
 }
 },
@@ -2364,9 +2738,14 @@ for (var i = 0; i < notes.length; i++) {
 var note = notes[i];
 for (var j = 0; j < note.bindings.length; j++) {
 var b = note.bindings[j];
-b.signature = this._parseMethod(b.value);
-if (!b.signature) {
-b.model = this._modelForPath(b.value);
+for (var k = 0; k < b.parts.length; k++) {
+var p = b.parts[k];
+if (!p.literal) {
+p.signature = this._parseMethod(p.value);
+if (!p.signature) {
+p.model = this._modelForPath(p.value);
+}
+}
 }
 }
 if (note.templateContent) {
@@ -2377,10 +2756,12 @@ for (var prop in pp) {
 bindings.push({
 index: note.index,
 kind: 'property',
-mode: '{',
 name: '_parent_' + prop,
+parts: [{
+mode: '{',
 model: prop,
 value: prop
+}]
 });
 }
 note.bindings = note.bindings.concat(bindings);
@@ -2391,14 +2772,16 @@ _discoverTemplateParentProps: function (notes) {
 var pp = {};
 notes.forEach(function (n) {
 n.bindings.forEach(function (b) {
-if (b.signature) {
-var args = b.signature.args;
+b.parts.forEach(function (p) {
+if (p.signature) {
+var args = p.signature.args;
 for (var k = 0; k < args.length; k++) {
 pp[args[k].model] = true;
 }
 } else {
-pp[b.model] = true;
+pp[p.model] = true;
 }
+});
 });
 if (n.templateContent) {
 var tpp = n.templateContent._parentProps;
@@ -2418,15 +2801,43 @@ this._marshalAnnotatedNodes();
 this._marshalAnnotatedListeners();
 }
 },
-_configureAnnotationReferences: function () {
-this._configureTemplateContent();
-},
-_configureTemplateContent: function () {
-this._notes.forEach(function (note, i) {
-if (note.templateContent) {
-this._nodes[i]._content = note.templateContent;
+_configureAnnotationReferences: function (config) {
+var notes = this._notes;
+var nodes = this._nodes;
+for (var i = 0; i < notes.length; i++) {
+var note = notes[i];
+var node = nodes[i];
+this._configureTemplateContent(note, node);
+this._configureCompoundBindings(note, node);
 }
-}, this);
+},
+_configureTemplateContent: function (note, node) {
+if (note.templateContent) {
+node._content = note.templateContent;
+}
+},
+_configureCompoundBindings: function (note, node) {
+var bindings = note.bindings;
+for (var i = 0; i < bindings.length; i++) {
+var binding = bindings[i];
+if (binding.isCompound) {
+var storage = node.__compoundStorage__ || (node.__compoundStorage__ = {});
+var parts = binding.parts;
+var literals = new Array(parts.length);
+for (var j = 0; j < parts.length; j++) {
+literals[j] = parts[j].literal;
+}
+var name = binding.name;
+storage[name] = literals;
+if (binding.literal && binding.kind == 'property') {
+if (node._configValue) {
+node._configValue(name, binding.literal);
+} else {
+node[name] = binding.literal;
+}
+}
+}
+}
 },
 _marshalIdNodes: function () {
 this.$ = {};
@@ -3218,7 +3629,9 @@ this._callbacks.splice(0, len);
 this._lastVal += len;
 }
 };
-new (window.MutationObserver || JsMutationObserver)(Polymer.Async._atEndOfMicrotask.bind(Polymer.Async)).observe(Polymer.Async._twiddle, { characterData: true });
+new window.MutationObserver(function () {
+Polymer.Async._atEndOfMicrotask();
+}).observe(Polymer.Async._twiddle, { characterData: true });
 Polymer.Debounce = function () {
 var Async = Polymer.Async;
 var Debouncer = function (context) {
@@ -3300,6 +3713,32 @@ if (toElement) {
 Polymer.dom(toElement).setAttribute(name, '');
 }
 },
+getEffectiveChildNodes: function () {
+return Polymer.dom(this).getEffectiveChildNodes();
+},
+getEffectiveChildren: function () {
+var list = Polymer.dom(this).getEffectiveChildNodes();
+return list.filter(function (n) {
+return n.nodeType === Node.ELEMENT_NODE;
+});
+},
+getEffectiveTextContent: function () {
+var cn = this.getEffectiveChildNodes();
+var tc = [];
+for (var i = 0, c; c = cn[i]; i++) {
+if (c.nodeType !== Node.COMMENT_NODE) {
+tc.push(Polymer.dom(c).textContent);
+}
+}
+return tc.join('');
+},
+queryEffectiveChildren: function (slctr) {
+var e$ = Polymer.dom(this).queryDistributedElements(slctr);
+return e$ && e$[0];
+},
+queryAllEffectiveChildren: function (slctr) {
+return Polymer.dom(this).queryAllDistributedElements(slctr);
+},
 getContentChildNodes: function (slctr) {
 var content = Polymer.dom(this.root).querySelector(slctr || 'content');
 return content ? Polymer.dom(content).getDistributedNodes() : [];
@@ -3337,7 +3776,7 @@ if (index >= 0) {
 return path.splice(index, 1);
 }
 } else {
-var arr = this.get(path);
+var arr = this._get(path);
 index = arr.indexOf(item);
 if (index >= 0) {
 return this.splice(path, index, 1);
@@ -3376,7 +3815,7 @@ elt[n] = props[n];
 return elt;
 },
 isLightDescendant: function (node) {
-return this.contains(node) && Polymer.dom(this).getOwnerRoot() === Polymer.dom(node).getOwnerRoot();
+return this !== node && this.contains(node) && Polymer.dom(this).getOwnerRoot() === Polymer.dom(node).getOwnerRoot();
 },
 isLocalDescendant: function (node) {
 return this.root === Polymer.dom(node).getOwnerRoot();
@@ -3519,7 +3958,7 @@ _notedListenerFactory: function (property, path, isStructured, bogusTest) {
 return function (e, target) {
 if (!bogusTest(e, target)) {
 if (e.detail && e.detail.path) {
-this.notifyPath(this._fixPath(path, property, e.detail.path), e.detail.value);
+this._notifyPath(this._fixPath(path, property, e.detail.path), e.detail.value);
 } else {
 var value = target[property];
 if (!isStructured) {
@@ -3545,16 +3984,16 @@ node.addEventListener(info.event, inst._notifyListener.bind(inst, info.changedFn
 };
 Polymer.Base.extend(Polymer.Bind, {
 _shouldAddListener: function (effect) {
-return effect.name && effect.mode === '{' && !effect.negate && effect.kind != 'attribute';
+return effect.name && effect.kind != 'attribute' && effect.kind != 'text' && !effect.isCompound && effect.parts[0].mode === '{' && !effect.parts[0].negate;
 },
 _annotationEffect: function (source, value, effect) {
 if (source != effect.value) {
-value = this.get(effect.value);
+value = this._get(effect.value);
 this.__data__[effect.value] = value;
 }
 var calc = effect.negate ? !value : value;
 if (!effect.customEvent || this._nodes[effect.index][effect.name] !== calc) {
-return this._applyEffectValue(calc, effect);
+return this._applyEffectValue(effect, calc);
 }
 },
 _reflectEffect: function (source) {
@@ -3592,7 +4031,7 @@ var args = Polymer.Bind._marshalArgs(this.__data__, effect, source, value);
 if (args) {
 var fn = this[effect.method];
 if (fn) {
-this.__setProperty(effect.property, fn.apply(this, args));
+this.__setProperty(effect.name, fn.apply(this, args));
 } else {
 this._warn(this._logf('_computeEffect', 'compute method `' + effect.method + '` not defined'));
 }
@@ -3608,7 +4047,7 @@ var computedvalue = fn.apply(computedHost, args);
 if (effect.negate) {
 computedvalue = !computedvalue;
 }
-this._applyEffectValue(computedvalue, effect);
+this._applyEffectValue(effect, computedvalue);
 }
 } else {
 computedHost._warn(computedHost._logf('_annotatedComputationEffect', 'compute method `' + effect.method + '` not defined'));
@@ -3624,7 +4063,7 @@ var v;
 if (arg.literal) {
 v = arg.value;
 } else if (arg.structured) {
-v = Polymer.Base.get(name, model);
+v = Polymer.Base._get(name, model);
 } else {
 v = model[name];
 }
@@ -3687,7 +4126,7 @@ this._addPropertyEffect(arg.model, 'compute', {
 method: sig.method,
 args: sig.args,
 trigger: arg,
-property: name
+name: name
 });
 }, this);
 },
@@ -3725,35 +4164,49 @@ this._addAnnotationEffect(binding, index);
 },
 _addAnnotationEffect: function (note, index) {
 if (Polymer.Bind._shouldAddListener(note)) {
-Polymer.Bind._addAnnotatedListener(this, index, note.name, note.value, note.event);
+Polymer.Bind._addAnnotatedListener(this, index, note.name, note.parts[0].value, note.parts[0].event);
 }
-if (note.signature) {
-this._addAnnotatedComputationEffect(note, index);
-} else {
-note.index = index;
-this._addPropertyEffect(note.model, 'annotation', note);
+for (var i = 0; i < note.parts.length; i++) {
+var part = note.parts[i];
+if (part.signature) {
+this._addAnnotatedComputationEffect(note, part, index);
+} else if (!part.literal) {
+this._addPropertyEffect(part.model, 'annotation', {
+kind: note.kind,
+index: index,
+name: note.name,
+value: part.value,
+isCompound: note.isCompound,
+compoundIndex: part.compoundIndex,
+event: part.event,
+customEvent: part.customEvent,
+negate: part.negate
+});
+}
 }
 },
-_addAnnotatedComputationEffect: function (note, index) {
-var sig = note.signature;
+_addAnnotatedComputationEffect: function (note, part, index) {
+var sig = part.signature;
 if (sig.static) {
-this.__addAnnotatedComputationEffect('__static__', index, note, sig, null);
+this.__addAnnotatedComputationEffect('__static__', index, note, part, null);
 } else {
 sig.args.forEach(function (arg) {
 if (!arg.literal) {
-this.__addAnnotatedComputationEffect(arg.model, index, note, sig, arg);
+this.__addAnnotatedComputationEffect(arg.model, index, note, part, arg);
 }
 }, this);
 }
 },
-__addAnnotatedComputationEffect: function (property, index, note, sig, trigger) {
+__addAnnotatedComputationEffect: function (property, index, note, part, trigger) {
 this._addPropertyEffect(property, 'annotatedComputation', {
 index: index,
+isCompound: note.isCompound,
+compoundIndex: part.compoundIndex,
 kind: note.kind,
-property: note.name,
-negate: note.negate,
-method: sig.method,
-args: sig.args,
+name: note.name,
+negate: part.negate,
+method: part.signature.method,
+args: part.signature.args,
 trigger: trigger
 });
 },
@@ -3822,9 +4275,14 @@ _marshalInstanceEffects: function () {
 Polymer.Bind.prepareInstance(this);
 Polymer.Bind.setupBindListeners(this);
 },
-_applyEffectValue: function (value, info) {
+_applyEffectValue: function (info, value) {
 var node = this._nodes[info.index];
-var property = info.property || info.name || 'textContent';
+var property = info.name;
+if (info.isCompound) {
+var storage = node.__compoundStorage__[property];
+storage[info.compoundIndex] = value;
+value = storage.join('');
+}
 if (info.kind == 'attribute') {
 this.serializeValueToAttribute(value, property, node);
 } else {
@@ -3904,10 +4362,10 @@ for (var p in config) {
 var fx = fx$[p];
 if (fx) {
 for (var i = 0, l = fx.length, x; i < l && (x = fx[i]); i++) {
-if (x.kind === 'annotation') {
+if (x.kind === 'annotation' && !x.isCompound) {
 var node = this._nodes[x.effect.index];
 if (node._configValue) {
-var value = p === x.effect.value ? config[p] : this.get(x.effect.value, config);
+var value = p === x.effect.value ? config[p] : this._get(x.effect.value, config);
 node._configValue(x.effect.name, value);
 }
 }
@@ -3954,11 +4412,16 @@ this._handlers = [];
 'use strict';
 Polymer.Base._addFeature({
 notifyPath: function (path, value, fromAbove) {
+var info = {};
+this._get(path, this, info);
+this._notifyPath(info.path, value, fromAbove);
+},
+_notifyPath: function (path, value, fromAbove) {
 var old = this._propertySetter(path, value);
 if (old !== value && (old === old || value === value)) {
 this._pathEffector(path, value);
 if (!fromAbove) {
-this._notifyPath(path, value);
+this._notifyPathUp(path, value);
 }
 return true;
 }
@@ -3985,41 +4448,67 @@ var last = parts[parts.length - 1];
 if (parts.length > 1) {
 for (var i = 0; i < parts.length - 1; i++) {
 var part = parts[i];
+if (array && part[0] == '#') {
+prop = Polymer.Collection.get(array).getItem(part);
+} else {
 prop = prop[part];
-if (array && parseInt(part) == part) {
+if (array && parseInt(part, 10) == part) {
 parts[i] = Polymer.Collection.get(array).getKey(prop);
+}
 }
 if (!prop) {
 return;
 }
 array = Array.isArray(prop) ? prop : null;
 }
-if (array && parseInt(last) == last) {
+if (array) {
 var coll = Polymer.Collection.get(array);
+if (last[0] == '#') {
+var key = last;
+var old = coll.getItem(key);
+last = array.indexOf(old);
+coll.setItem(key, value);
+} else if (parseInt(last, 10) == last) {
 var old = prop[last];
 var key = coll.getKey(old);
 parts[i] = key;
 coll.setItem(key, value);
 }
+}
 prop[last] = value;
 if (!root) {
-this.notifyPath(parts.join('.'), value);
+this._notifyPath(parts.join('.'), value);
 }
 } else {
 prop[path] = value;
 }
 },
 get: function (path, root) {
+return this._get(path, root);
+},
+_get: function (path, root, info) {
 var prop = root || this;
 var parts = this._getPathParts(path);
-var last = parts.pop();
-while (parts.length) {
-prop = prop[parts.shift()];
+var array;
+for (var i = 0; i < parts.length; i++) {
 if (!prop) {
 return;
 }
+var part = parts[i];
+if (array && part[0] == '#') {
+prop = Polymer.Collection.get(array).getItem(part);
+} else {
+prop = prop[part];
+if (info && array && parseInt(part, 10) == part) {
+parts[i] = Polymer.Collection.get(array).getKey(prop);
 }
-return prop[last];
+}
+array = Array.isArray(prop) ? prop : null;
+}
+if (info) {
+info.path = parts.join('.');
+}
+return prop;
 },
 _pathEffector: function (path, value) {
 var model = this._modelForPath(path);
@@ -4041,9 +4530,9 @@ if (effect.value === path || effect.value.indexOf(path + '.') === 0) {
 Polymer.Bind._annotationEffect.call(this, path, value, effect);
 } else if (path.indexOf(effect.value + '.') === 0 && !effect.negate) {
 var node = this._nodes[effect.index];
-if (node && node.notifyPath) {
+if (node && node._notifyPath) {
 var p = this._fixPath(effect.name, effect.value, path);
-node.notifyPath(p, value, true);
+node._notifyPath(p, value, true);
 }
 }
 },
@@ -4083,16 +4572,16 @@ _notifyBoundPaths: function (path, value) {
 for (var a in this._boundPaths) {
 var b = this._boundPaths[a];
 if (path.indexOf(a + '.') == 0) {
-this.notifyPath(this._fixPath(b, a, path), value);
+this._notifyPath(this._fixPath(b, a, path), value);
 } else if (path.indexOf(b + '.') == 0) {
-this.notifyPath(this._fixPath(a, b, path), value);
+this._notifyPath(this._fixPath(a, b, path), value);
 }
 }
 },
 _fixPath: function (property, root, path) {
 return property + path.slice(root.length);
 },
-_notifyPath: function (path, value) {
+_notifyPathUp: function (path, value) {
 var rootName = this._modelForPath(path);
 var dashCaseName = Polymer.CaseMap.camelToDashCase(rootName);
 var eventName = dashCaseName + this._EVENT_CHANGED;
@@ -4106,47 +4595,62 @@ var dot = path.indexOf('.');
 return dot < 0 ? path : path.slice(0, dot);
 },
 _EVENT_CHANGED: '-changed',
+notifySplices: function (path, splices) {
+var info = {};
+var array = this._get(path, this, info);
+this._notifySplices(array, info.path, splices);
+},
+_notifySplices: function (array, path, splices) {
+var change = {
+keySplices: Polymer.Collection.applySplices(array, splices),
+indexSplices: splices
+};
+if (!array.hasOwnProperty('splices')) {
+Object.defineProperty(array, 'splices', {
+configurable: true,
+writable: true
+});
+}
+array.splices = change;
+this._notifyPath(path + '.splices', change);
+this._notifyPath(path + '.length', array.length);
+change.keySplices = null;
+change.indexSplices = null;
+},
 _notifySplice: function (array, path, index, added, removed) {
-var splices = [{
+this._notifySplices(array, path, [{
 index: index,
 addedCount: added,
 removed: removed,
 object: array,
 type: 'splice'
-}];
-var change = {
-keySplices: Polymer.Collection.applySplices(array, splices),
-indexSplices: splices
-};
-this.set(path + '.splices', change);
-if (added != removed.length) {
-this.notifyPath(path + '.length', array.length);
-}
-change.keySplices = null;
-change.indexSplices = null;
+}]);
 },
 push: function (path) {
-var array = this.get(path);
+var info = {};
+var array = this._get(path, this, info);
 var args = Array.prototype.slice.call(arguments, 1);
 var len = array.length;
 var ret = array.push.apply(array, args);
 if (args.length) {
-this._notifySplice(array, path, len, args.length, []);
+this._notifySplice(array, info.path, len, args.length, []);
 }
 return ret;
 },
 pop: function (path) {
-var array = this.get(path);
+var info = {};
+var array = this._get(path, this, info);
 var hadLength = Boolean(array.length);
 var args = Array.prototype.slice.call(arguments, 1);
 var ret = array.pop.apply(array, args);
 if (hadLength) {
-this._notifySplice(array, path, array.length, 0, [ret]);
+this._notifySplice(array, info.path, array.length, 0, [ret]);
 }
 return ret;
 },
 splice: function (path, start, deleteCount) {
-var array = this.get(path);
+var info = {};
+var array = this._get(path, this, info);
 if (start < 0) {
 start = array.length - Math.floor(-start);
 } else {
@@ -4159,26 +4663,28 @@ var args = Array.prototype.slice.call(arguments, 1);
 var ret = array.splice.apply(array, args);
 var addedCount = Math.max(args.length - 2, 0);
 if (addedCount || ret.length) {
-this._notifySplice(array, path, start, addedCount, ret);
+this._notifySplice(array, info.path, start, addedCount, ret);
 }
 return ret;
 },
 shift: function (path) {
-var array = this.get(path);
+var info = {};
+var array = this._get(path, this, info);
 var hadLength = Boolean(array.length);
 var args = Array.prototype.slice.call(arguments, 1);
 var ret = array.shift.apply(array, args);
 if (hadLength) {
-this._notifySplice(array, path, 0, 0, [ret]);
+this._notifySplice(array, info.path, 0, 0, [ret]);
 }
 return ret;
 },
 unshift: function (path) {
-var array = this.get(path);
+var info = {};
+var array = this._get(path, this, info);
 var args = Array.prototype.slice.call(arguments, 1);
 var ret = array.unshift.apply(array, args);
 if (args.length) {
-this._notifySplice(array, path, 0, args.length, []);
+this._notifySplice(array, info.path, 0, args.length, []);
 }
 return ret;
 },
@@ -4186,8 +4692,10 @@ prepareModelNotifyPath: function (model) {
 this.mixin(model, {
 fire: Polymer.Base.fire,
 notifyPath: Polymer.Base.notifyPath,
+_get: Polymer.Base._get,
 _EVENT_CHANGED: Polymer.Base._EVENT_CHANGED,
 _notifyPath: Polymer.Base._notifyPath,
+_notifyPathUp: Polymer.Base._notifyPathUp,
 _pathEffector: Polymer.Base._pathEffector,
 _annotationPathEffect: Polymer.Base._annotationPathEffect,
 _complexObserverPathEffect: Polymer.Base._complexObserverPathEffect,
@@ -4195,7 +4703,8 @@ _annotatedComputationPathEffect: Polymer.Base._annotatedComputationPathEffect,
 _computePathEffect: Polymer.Base._computePathEffect,
 _modelForPath: Polymer.Base._modelForPath,
 _pathMatchesEffect: Polymer.Base._pathMatchesEffect,
-_notifyBoundPaths: Polymer.Base._notifyBoundPaths
+_notifyBoundPaths: Polymer.Base._notifyBoundPaths,
+_getPathParts: Polymer.Base._getPathParts
 });
 }
 });
@@ -4333,7 +4842,7 @@ _rx: {
 comments: /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//gim,
 port: /@import[^;]*;/gim,
 customProp: /(?:^|[\s;])--[^;{]*?:[^{};]*?(?:[;\n]|$)/gim,
-mixinProp: /(?:^|[\s;])--[^;{]*?:[^{;]*?{[^}]*?}(?:[;\n]|$)?/gim,
+mixinProp: /(?:^|[\s;])?--[^;{]*?:[^{;]*?{[^}]*?}(?:[;\n]|$)?/gim,
 mixinApply: /@apply[\s]*\([^)]*?\)[\s]*(?:[;\n]|$)?/gim,
 varApply: /[^;:]*?:[^;]*var[^;]*(?:[;\n]|$)?/gim,
 keyframesRule: /^@[^\s]*keyframes/
@@ -5036,7 +5545,7 @@ props[i] = v;
 }
 },
 rx: {
-VAR_ASSIGN: /(?:^|[;\n]\s*)(--[\w-]*?):\s*(?:([^;{]*)|{([^}]*)})(?:(?=[;\n])|$)/gi,
+VAR_ASSIGN: /(?:^|[;\s{]\s*)(--[\w-]*?)\s*:\s*(?:([^;{]*)|{([^}]*)})(?:(?=[;\s}])|$)/gi,
 MIXIN_MATCH: /(?:^|\W+)@apply[\s]*\(([^)]*)\)/i,
 VAR_MATCH: /(^|\W+)var\([\s]*([^,)]*)[\s]*,?[\s]*((?:[^,)]*)|(?:[^;]*\([^;)]*\)))[\s]*?\)/gi,
 VAR_CAPTURE: /\([\s]*(--[^,\s)]*)(?:,[\s]*(--[^,\s)]*))?(?:\)|,)/gi,
@@ -5420,7 +5929,7 @@ archetype._prepEffects();
 this._customPrepEffects(archetype);
 archetype._prepBehaviors();
 archetype._prepBindings();
-archetype._notifyPath = this._notifyPathImpl;
+archetype._notifyPathUp = this._notifyPathUpImpl;
 archetype._scopeElementClass = this._scopeElementClassImpl;
 archetype.listen = this._listenImpl;
 archetype._showHideChildren = this._showHideChildrenImpl;
@@ -5558,7 +6067,7 @@ _forwardInstancePath: function (inst, path, value) {
 },
 _forwardInstanceProp: function (inst, prop, value) {
 },
-_notifyPathImpl: function (path, value) {
+_notifyPathUpImpl: function (path, value) {
 var dataHost = this.dataHost;
 var dot = path.indexOf('.');
 var root = dot < 0 ? path : path.slice(0, dot);
@@ -5571,7 +6080,10 @@ _pathEffectorImpl: function (path, value, fromAbove) {
 if (this._forwardParentPath) {
 if (path.indexOf(this._parentPropPrefix) === 0) {
 var subPath = path.substring(this._parentPropPrefix.length);
+var model = this._modelForPath(subPath);
+if (model in this._parentProps) {
 this._forwardParentPath(subPath, value);
+}
 }
 }
 Polymer.Base._pathEffector.call(this._templatized, path, value, fromAbove);
@@ -5676,9 +6188,10 @@ this.omap.set(item, key);
 } else {
 this.pmap[item] = key;
 }
-return key;
+return '#' + key;
 },
 removeKey: function (key) {
+key = this._parseKey(key);
 this._removeFromMap(this.store[key]);
 delete this.store[key];
 },
@@ -5695,16 +6208,29 @@ this.removeKey(key);
 return key;
 },
 getKey: function (item) {
+var key;
 if (item && typeof item == 'object') {
-return this.omap.get(item);
+key = this.omap.get(item);
 } else {
-return this.pmap[item];
+key = this.pmap[item];
+}
+if (key != undefined) {
+return '#' + key;
 }
 },
 getKeys: function () {
-return Object.keys(this.store);
+return Object.keys(this.store).map(function (key) {
+return '#' + key;
+});
+},
+_parseKey: function (key) {
+if (key[0] == '#') {
+return key.slice(1);
+}
+throw new Error('unexpected key ' + key);
 },
 setItem: function (key, item) {
+key = this._parseKey(key);
 var old = this.store[key];
 if (old) {
 this._removeFromMap(old);
@@ -5717,6 +6243,7 @@ this.pmap[item] = key;
 this.store[key] = item;
 },
 getItem: function (key) {
+key = this._parseKey(key);
 return this.store[key];
 },
 getItems: function () {
@@ -6110,7 +6637,7 @@ this.set('items.' + idx, value);
 },
 _forwardInstancePath: function (inst, path, value) {
 if (path.indexOf(this.as + '.') === 0) {
-this.notifyPath('items.' + inst.__key__ + '.' + path.slice(this.as.length + 1), value);
+this._notifyPath('items.' + inst.__key__ + '.' + path.slice(this.as.length + 1), value);
 }
 },
 _forwardParentProp: function (prop, value) {
@@ -6120,7 +6647,7 @@ inst.__setProperty(prop, value, true);
 },
 _forwardParentPath: function (path, value) {
 this._instances.forEach(function (inst) {
-inst.notifyPath(path, value, true);
+inst._notifyPath(path, value, true);
 }, this);
 },
 _forwardItemPath: function (path, value) {
@@ -6132,7 +6659,7 @@ var inst = this._instances[idx];
 if (inst) {
 if (dot >= 0) {
 path = this.as + '.' + path.substring(dot + 1);
-inst.notifyPath(path, value, true);
+inst._notifyPath(path, value, true);
 } else {
 inst.__setProperty(this.as, value, true);
 }
@@ -6184,6 +6711,7 @@ this.unlinkPaths('selected.' + i);
 }
 } else {
 this.unlinkPaths('selected');
+this.unlinkPaths('selectedItem');
 }
 if (this.multi) {
 if (!this.selected || this.selected.length) {
@@ -6323,7 +6851,7 @@ this._instance[prop] = value;
 },
 _forwardParentPath: function (path, value) {
 if (this._instance) {
-this._instance.notifyPath(path, value, true);
+this._instance._notifyPath(path, value, true);
 }
 }
 });
@@ -6696,6 +7224,15 @@ this.fire('dom-change');
           }
         },
 
+        /**
+         * If true, this property will cause the implementing element to
+         * automatically stop propagation on any handled KeyboardEvents.
+         */
+        stopKeyboardEventPropagation: {
+          type: Boolean,
+          value: false
+        },
+
         _boundKeyHandlers: {
           type: Array,
           value: function() {
@@ -6839,6 +7376,10 @@ this.fire('dom-change');
       },
 
       _onKeyBindingEvent: function(keyBindings, event) {
+        if (this.stopKeyboardEventPropagation) {
+          event.stopPropagation();
+        }
+
         keyBindings.forEach(function(keyBinding) {
           var keyCombo = keyBinding[0];
           var handlerName = keyBinding[1];
@@ -6852,10 +7393,14 @@ this.fire('dom-change');
       _triggerKeyHandler: function(keyCombo, handlerName, keyboardEvent) {
         var detail = Object.create(keyCombo);
         detail.keyboardEvent = keyboardEvent;
-
-        this[handlerName].call(this, new CustomEvent(keyCombo.event, {
-          detail: detail
-        }));
+        var event = new CustomEvent(keyCombo.event, {
+          detail: detail,
+          cancelable: true
+        });
+        this[handlerName].call(this, event);
+        if (event.defaultPrevented) {
+          keyboardEvent.preventDefault();
+        }
       }
     };
   })();
@@ -7152,14 +7697,14 @@ this.fire('dom-change');
 </script>
 <script>
 
-  /** 
-   * `Polymer.PaperRippleBehavior` dynamically implements a ripple 
+  /**
+   * `Polymer.PaperRippleBehavior` dynamically implements a ripple
    * when the element has focus via pointer or keyboard.
    *
    * NOTE: This behavior is intended to be used in conjunction with and after
    * `Polymer.IronButtonState` and `Polymer.IronControlState`.
    *
-   * @polymerBehavior Polymer.PaperRippleBehavior 
+   * @polymerBehavior Polymer.PaperRippleBehavior
    */
   Polymer.PaperRippleBehavior = {
 
@@ -7171,11 +7716,18 @@ this.fire('dom-change');
       noink: {
         type: Boolean,
         observer: '_noinkChanged'
+      },
+
+      /**
+       * @type {Element|undefined}
+       */
+      _rippleContainer: {
+        type: Object,
       }
     },
 
     /**
-     * Ensures a `<paper-ripple>` element is available when the element is 
+     * Ensures a `<paper-ripple>` element is available when the element is
      * focused.
      */
     _buttonStateChanged: function() {
@@ -7184,7 +7736,7 @@ this.fire('dom-change');
       }
     },
 
-    /** 
+    /**
      * In addition to the functionality provided in `IronButtonState`, ensures
      * a ripple effect is created when the element is in a `pressed` state.
      */
@@ -7196,12 +7748,12 @@ this.fire('dom-change');
     },
 
     /**
-     * Ensures this element contains a ripple effect. For startup efficiency 
+     * Ensures this element contains a ripple effect. For startup efficiency
      * the ripple effect is dynamically on demand when needed.
-     * @param {event} triggeringEvent (optional) event that triggered the 
+     * @param {!Event=} opt_triggeringEvent (optional) event that triggered the
      * ripple.
      */
-    ensureRipple: function(triggeringEvent) {
+    ensureRipple: function(opt_triggeringEvent) {
       if (!this.hasRipple()) {
         this._ripple = this._createRipple();
         this._ripple.noink = this.noink;
@@ -7209,10 +7761,13 @@ this.fire('dom-change');
         if (rippleContainer) {
           Polymer.dom(rippleContainer).appendChild(this._ripple);
         }
-        var domContainer = rippleContainer === this.shadyRoot ? this : 
+        var domContainer = rippleContainer === this.shadyRoot ? this :
           rippleContainer;
-        if (triggeringEvent && domContainer.contains(triggeringEvent.target)) {
-          this._ripple.uiDownAction(triggeringEvent);
+        if (opt_triggeringEvent) {
+          var target = opt_triggeringEvent.target;
+          if (domContainer.contains(/** @type {Node} */(target))) {
+            this._ripple.uiDownAction(opt_triggeringEvent);
+          }
         }
       }
     },
@@ -7220,7 +7775,7 @@ this.fire('dom-change');
     /**
      * Returns the `<paper-ripple>` element used by this element to create
      * ripple effects. The element's ripple is created on demand, when
-     * necessary, and calling this method will force the 
+     * necessary, and calling this method will force the
      * ripple to be created.
      */
     getRipple: function() {
@@ -7239,10 +7794,11 @@ this.fire('dom-change');
     /**
      * Create the element's ripple effect via creating a `<paper-ripple>`.
      * Override this method to customize the ripple element.
-     * @return {element} Returns a `<paper-ripple>` element.
+     * @return {!PaperRippleElement} Returns a `<paper-ripple>` element.
      */
     _createRipple: function() {
-      return document.createElement('paper-ripple');
+      return /** @type {!PaperRippleElement} */ (
+          document.createElement('paper-ripple'));
     },
 
     _noinkChanged: function(noink) {
@@ -7306,8 +7862,10 @@ this.fire('dom-change');
     },
 
     /**
-     * In addition to `IronButtonState` behavior, when space key goes down, 
+     * In addition to `IronButtonState` behavior, when space key goes down,
      * create a ripple down effect.
+     *
+     * @param {!KeyboardEvent} event .
      */
     _spaceKeyDownHandler: function(event) {
       Polymer.IronButtonStateImpl._spaceKeyDownHandler.call(this, event);
@@ -7317,8 +7875,10 @@ this.fire('dom-change');
     },
 
     /**
-     * In addition to `IronButtonState` behavior, when space key goes up, 
+     * In addition to `IronButtonState` behavior, when space key goes up,
      * create a ripple up effect.
+     *
+     * @param {!KeyboardEvent} event .
      */
     _spaceKeyUpHandler: function(event) {
       Polymer.IronButtonStateImpl._spaceKeyUpHandler.call(this, event);
@@ -7682,8 +8242,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
       /* @apply(--paper-font-common-nowrap); */
       white-space: nowrap;
       overflow: hidden;
@@ -7699,8 +8258,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
       /* @apply(--paper-font-common-nowrap); */
       white-space: nowrap;
       overflow: hidden;
@@ -7716,8 +8274,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
 
       font-size: 45px;
       font-weight: 400;
@@ -7729,8 +8286,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
 
       font-size: 34px;
       font-weight: 400;
@@ -7742,8 +8298,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
 
       font-size: 24px;
       font-weight: 400;
@@ -7755,8 +8310,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
       /* @apply(--paper-font-common-nowrap); */
       white-space: nowrap;
       overflow: hidden;
@@ -7771,8 +8325,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
 
       font-size: 16px;
       font-weight: 400;
@@ -7818,8 +8371,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
       /* @apply(--paper-font-common-nowrap); */
       white-space: nowrap;
       overflow: hidden;
@@ -7834,8 +8386,7 @@ this.fire('dom-change');
       /* @apply(--paper-font-common-base) */
       font-family: 'Roboto', 'Noto', sans-serif;
       -webkit-font-smoothing: antialiased;
-      /* @apply(--paper-font-common-expensive-kerning); */
-      text-rendering: optimizeLegibility;
+
       /* @apply(--paper-font-common-nowrap); */
       white-space: nowrap;
       overflow: hidden;
@@ -8195,274 +8746,6 @@ this.fire('dom-change');
   }
 
 </style>
-
-
-
-
-<script>
-
-  (function() {
-
-    // monostate data
-    var metaDatas = {};
-    var metaArrays = {};
-
-    Polymer.IronMeta = Polymer({
-
-      is: 'iron-meta',
-
-      properties: {
-
-        /**
-         * The type of meta-data.  All meta-data of the same type is stored
-         * together.
-         */
-        type: {
-          type: String,
-          value: 'default',
-          observer: '_typeChanged'
-        },
-
-        /**
-         * The key used to store `value` under the `type` namespace.
-         */
-        key: {
-          type: String,
-          observer: '_keyChanged'
-        },
-
-        /**
-         * The meta-data to store or retrieve.
-         */
-        value: {
-          type: Object,
-          notify: true,
-          observer: '_valueChanged'
-        },
-
-        /**
-         * If true, `value` is set to the iron-meta instance itself.
-         */
-         self: {
-          type: Boolean,
-          observer: '_selfChanged'
-        },
-
-        /**
-         * Array of all meta-data values for the given type.
-         */
-        list: {
-          type: Array,
-          notify: true
-        }
-
-      },
-
-      /**
-       * Only runs if someone invokes the factory/constructor directly
-       * e.g. `new Polymer.IronMeta()`
-       */
-      factoryImpl: function(config) {
-        if (config) {
-          for (var n in config) {
-            switch(n) {
-              case 'type':
-              case 'key':
-              case 'value':
-                this[n] = config[n];
-                break;
-            }
-          }
-        }
-      },
-
-      created: function() {
-        // TODO(sjmiles): good for debugging?
-        this._metaDatas = metaDatas;
-        this._metaArrays = metaArrays;
-      },
-
-      _keyChanged: function(key, old) {
-        this._resetRegistration(old);
-      },
-
-      _valueChanged: function(value) {
-        this._resetRegistration(this.key);
-      },
-
-      _selfChanged: function(self) {
-        if (self) {
-          this.value = this;
-        }
-      },
-
-      _typeChanged: function(type) {
-        this._unregisterKey(this.key);
-        if (!metaDatas[type]) {
-          metaDatas[type] = {};
-        }
-        this._metaData = metaDatas[type];
-        if (!metaArrays[type]) {
-          metaArrays[type] = [];
-        }
-        this.list = metaArrays[type];
-        this._registerKeyValue(this.key, this.value);
-      },
-
-      /**
-       * Retrieves meta data value by key.
-       *
-       * @method byKey
-       * @param {string} key The key of the meta-data to be returned.
-       * @return {*}
-       */
-      byKey: function(key) {
-        return this._metaData && this._metaData[key];
-      },
-
-      _resetRegistration: function(oldKey) {
-        this._unregisterKey(oldKey);
-        this._registerKeyValue(this.key, this.value);
-      },
-
-      _unregisterKey: function(key) {
-        this._unregister(key, this._metaData, this.list);
-      },
-
-      _registerKeyValue: function(key, value) {
-        this._register(key, value, this._metaData, this.list);
-      },
-
-      _register: function(key, value, data, list) {
-        if (key && data && value !== undefined) {
-          data[key] = value;
-          list.push(value);
-        }
-      },
-
-      _unregister: function(key, data, list) {
-        if (key && data) {
-          if (key in data) {
-            var value = data[key];
-            delete data[key];
-            this.arrayDelete(list, value);
-          }
-        }
-      }
-
-    });
-
-    /**
-    `iron-meta-query` can be used to access infomation stored in `iron-meta`.
-
-    Examples:
-
-    If I create an instance like this:
-
-        <iron-meta key="info" value="foo/bar"></iron-meta>
-
-    Note that value="foo/bar" is the metadata I've defined. I could define more
-    attributes or use child nodes to define additional metadata.
-
-    Now I can access that element (and it's metadata) from any `iron-meta-query` instance:
-
-         var value = new Polymer.IronMetaQuery({key: 'info'}).value;
-
-    @group Polymer Iron Elements
-    @element iron-meta-query
-    */
-    Polymer.IronMetaQuery = Polymer({
-
-      is: 'iron-meta-query',
-
-      properties: {
-
-        /**
-         * The type of meta-data.  All meta-data of the same type is stored
-         * together.
-         */
-        type: {
-          type: String,
-          value: 'default',
-          observer: '_typeChanged'
-        },
-
-        /**
-         * Specifies a key to use for retrieving `value` from the `type`
-         * namespace.
-         */
-        key: {
-          type: String,
-          observer: '_keyChanged'
-        },
-
-        /**
-         * The meta-data to store or retrieve.
-         */
-        value: {
-          type: Object,
-          notify: true,
-          readOnly: true
-        },
-
-        /**
-         * Array of all meta-data values for the given type.
-         */
-        list: {
-          type: Array,
-          notify: true
-        }
-
-      },
-
-      /**
-       * Actually a factory method, not a true constructor. Only runs if
-       * someone invokes it directly (via `new Polymer.IronMeta()`);
-       */
-      factoryImpl: function(config) {
-        if (config) {
-          for (var n in config) {
-            switch(n) {
-              case 'type':
-              case 'key':
-                this[n] = config[n];
-                break;
-            }
-          }
-        }
-      },
-
-      created: function() {
-        // TODO(sjmiles): good for debugging?
-        this._metaDatas = metaDatas;
-        this._metaArrays = metaArrays;
-      },
-
-      _keyChanged: function(key) {
-        this._setValue(this._metaData && this._metaData[key]);
-      },
-
-      _typeChanged: function(type) {
-        this._metaData = metaDatas[type];
-        this.list = metaArrays[type];
-        if (this.key) {
-          this._keyChanged(this.key);
-        }
-      },
-
-      /**
-       * Retrieves meta data value by key.
-       * @param {string} key The key of the meta-data to be returned.
-       * @return {*}
-       */
-      byKey: function(key) {
-        return this._metaData && this._metaData[key];
-      }
-
-    });
-
-  })();
-</script>
 
 
 <style>
@@ -9053,6 +9336,286 @@ this.fire('dom-change');
   }
 
 </style>
+
+
+<script>
+
+  (function() {
+
+    // monostate data
+    var metaDatas = {};
+    var metaArrays = {};
+    var singleton = null;
+
+    Polymer.IronMeta = Polymer({
+
+      is: 'iron-meta',
+
+      properties: {
+
+        /**
+         * The type of meta-data.  All meta-data of the same type is stored
+         * together.
+         */
+        type: {
+          type: String,
+          value: 'default',
+          observer: '_typeChanged'
+        },
+
+        /**
+         * The key used to store `value` under the `type` namespace.
+         */
+        key: {
+          type: String,
+          observer: '_keyChanged'
+        },
+
+        /**
+         * The meta-data to store or retrieve.
+         */
+        value: {
+          type: Object,
+          notify: true,
+          observer: '_valueChanged'
+        },
+
+        /**
+         * If true, `value` is set to the iron-meta instance itself.
+         */
+         self: {
+          type: Boolean,
+          observer: '_selfChanged'
+        },
+
+        /**
+         * Array of all meta-data values for the given type.
+         */
+        list: {
+          type: Array,
+          notify: true
+        }
+
+      },
+
+      hostAttributes: {
+        hidden: true
+      },
+
+      /**
+       * Only runs if someone invokes the factory/constructor directly
+       * e.g. `new Polymer.IronMeta()`
+       */
+      factoryImpl: function(config) {
+        if (config) {
+          for (var n in config) {
+            switch(n) {
+              case 'type':
+              case 'key':
+              case 'value':
+                this[n] = config[n];
+                break;
+            }
+          }
+        }
+      },
+
+      created: function() {
+        // TODO(sjmiles): good for debugging?
+        this._metaDatas = metaDatas;
+        this._metaArrays = metaArrays;
+      },
+
+      _keyChanged: function(key, old) {
+        this._resetRegistration(old);
+      },
+
+      _valueChanged: function(value) {
+        this._resetRegistration(this.key);
+      },
+
+      _selfChanged: function(self) {
+        if (self) {
+          this.value = this;
+        }
+      },
+
+      _typeChanged: function(type) {
+        this._unregisterKey(this.key);
+        if (!metaDatas[type]) {
+          metaDatas[type] = {};
+        }
+        this._metaData = metaDatas[type];
+        if (!metaArrays[type]) {
+          metaArrays[type] = [];
+        }
+        this.list = metaArrays[type];
+        this._registerKeyValue(this.key, this.value);
+      },
+
+      /**
+       * Retrieves meta data value by key.
+       *
+       * @method byKey
+       * @param {string} key The key of the meta-data to be returned.
+       * @return {*}
+       */
+      byKey: function(key) {
+        return this._metaData && this._metaData[key];
+      },
+
+      _resetRegistration: function(oldKey) {
+        this._unregisterKey(oldKey);
+        this._registerKeyValue(this.key, this.value);
+      },
+
+      _unregisterKey: function(key) {
+        this._unregister(key, this._metaData, this.list);
+      },
+
+      _registerKeyValue: function(key, value) {
+        this._register(key, value, this._metaData, this.list);
+      },
+
+      _register: function(key, value, data, list) {
+        if (key && data && value !== undefined) {
+          data[key] = value;
+          list.push(value);
+        }
+      },
+
+      _unregister: function(key, data, list) {
+        if (key && data) {
+          if (key in data) {
+            var value = data[key];
+            delete data[key];
+            this.arrayDelete(list, value);
+          }
+        }
+      }
+
+    });
+
+    Polymer.IronMeta.getIronMeta = function getIronMeta() {
+       if (singleton === null) {
+         singleton = new Polymer.IronMeta();
+       }
+       return singleton;
+     };
+
+    /**
+    `iron-meta-query` can be used to access infomation stored in `iron-meta`.
+
+    Examples:
+
+    If I create an instance like this:
+
+        <iron-meta key="info" value="foo/bar"></iron-meta>
+
+    Note that value="foo/bar" is the metadata I've defined. I could define more
+    attributes or use child nodes to define additional metadata.
+
+    Now I can access that element (and it's metadata) from any `iron-meta-query` instance:
+
+         var value = new Polymer.IronMetaQuery({key: 'info'}).value;
+
+    @group Polymer Iron Elements
+    @element iron-meta-query
+    */
+    Polymer.IronMetaQuery = Polymer({
+
+      is: 'iron-meta-query',
+
+      properties: {
+
+        /**
+         * The type of meta-data.  All meta-data of the same type is stored
+         * together.
+         */
+        type: {
+          type: String,
+          value: 'default',
+          observer: '_typeChanged'
+        },
+
+        /**
+         * Specifies a key to use for retrieving `value` from the `type`
+         * namespace.
+         */
+        key: {
+          type: String,
+          observer: '_keyChanged'
+        },
+
+        /**
+         * The meta-data to store or retrieve.
+         */
+        value: {
+          type: Object,
+          notify: true,
+          readOnly: true
+        },
+
+        /**
+         * Array of all meta-data values for the given type.
+         */
+        list: {
+          type: Array,
+          notify: true
+        }
+
+      },
+
+      /**
+       * Actually a factory method, not a true constructor. Only runs if
+       * someone invokes it directly (via `new Polymer.IronMeta()`);
+       */
+      factoryImpl: function(config) {
+        if (config) {
+          for (var n in config) {
+            switch(n) {
+              case 'type':
+              case 'key':
+                this[n] = config[n];
+                break;
+            }
+          }
+        }
+      },
+
+      created: function() {
+        // TODO(sjmiles): good for debugging?
+        this._metaDatas = metaDatas;
+        this._metaArrays = metaArrays;
+      },
+
+      _keyChanged: function(key) {
+        this._setValue(this._metaData && this._metaData[key]);
+      },
+
+      _typeChanged: function(type) {
+        this._metaData = metaDatas[type];
+        this.list = metaArrays[type];
+        if (this.key) {
+          this._keyChanged(this.key);
+        }
+      },
+
+      /**
+       * Retrieves meta data value by key.
+       * @param {string} key The key of the meta-data to be returned.
+       * @return {*}
+       */
+      byKey: function(key) {
+        return this._metaData && this._metaData[key];
+      }
+
+    });
+
+  })();
+</script>
+
+
 <style is="custom-style">
 
   :root {
@@ -9647,6 +10210,10 @@ CSS properties               | Action
       }
       if (!this._fitInfo.positionedBy.horizontally) {
         this.style.left = '0px';
+      }
+      if (!this._fitInfo.positionedBy.vertically || !this._fitInfo.positionedBy.horizontally) {
+        // need position:fixed to properly size the element
+        this.style.position = 'fixed';
       }
       // need border-box for margin/padding
       this.sizingTarget.style.boxSizing = 'border-box';
@@ -10408,6 +10975,8 @@ context. You should place this element as a child of `<body>` whenever possible.
 
 
 </script>
+
+
 <script>
 
 /**
@@ -11007,6 +11576,8 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
 
       /**
        * Returns the currently selected item.
+       *
+       * @type {?Object}
        */
       selectedItem: {
         type: Object,
@@ -11048,10 +11619,20 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
       },
 
       /**
+       * The list of items from which a selection can be made.
+       */
+      items: {
+        type: Array,
+        readOnly: true,
+        value: function() {
+          return [];
+        }
+      },
+
+      /**
        * The set of excluded elements where the key is the `localName`
        * of the element that will be ignored from the item list.
        *
-       * @type {object}
        * @default {template: 1}
        */
       _excludedLocalNames: {
@@ -11071,15 +11652,12 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
     created: function() {
       this._bindFilterItem = this._filterItem.bind(this);
       this._selection = new Polymer.IronSelection(this._applySelection.bind(this));
-      // TODO(cdata): When polymer/polymer#2535 lands, we do not need to do this
-      // book keeping anymore:
-      this.__listeningForActivate = false;
     },
 
     attached: function() {
       this._observer = this._observeItems(this);
-      this._contentObserver = this._observeContent(this);
-      if (!this.selectedItem && this.selected) {
+      this._updateItems();
+      if (!this._shouldUpdateSelection) {
         this._updateSelected(this.attrForSelected,this.selected)
       }
       this._addListener(this.activateEvent);
@@ -11087,23 +11665,9 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
 
     detached: function() {
       if (this._observer) {
-        this._observer.disconnect();
-      }
-      if (this._contentObserver) {
-        this._contentObserver.disconnect();
+        Polymer.dom(this).unobserveNodes(this._observer);
       }
       this._removeListener(this.activateEvent);
-    },
-
-    /**
-     * Returns an array of selectable items.
-     *
-     * @property items
-     * @type Array
-     */
-    get items() {
-      var nodes = Polymer.dom(this).queryDistributedElements(this.selectable || '*');
-      return Array.prototype.filter.call(nodes, this._bindFilterItem);
     },
 
     /**
@@ -11148,23 +11712,27 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
       this.selected = this._indexToValue(index);
     },
 
-    _addListener: function(eventName) {
-      if (!this.isAttached || this.__listeningForActivate) {
-        return;
-      }
+    get _shouldUpdateSelection() {
+      return this.selected != null;
+    },
 
-      this.__listeningForActivate = true;
+    _addListener: function(eventName) {
       this.listen(this, eventName, '_activateHandler');
     },
 
     _removeListener: function(eventName) {
       this.unlisten(this, eventName, '_activateHandler');
-      this.__listeningForActivate = false;
     },
 
     _activateEventChanged: function(eventName, old) {
       this._removeListener(old);
       this._addListener(eventName);
+    },
+
+    _updateItems: function() {
+      var nodes = Polymer.dom(this).queryDistributedElements(this.selectable || '*');
+      nodes = Array.prototype.filter.call(nodes, this._bindFilterItem);
+      this._setItems(nodes);
     },
 
     _updateSelected: function() {
@@ -11225,18 +11793,9 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
       this._setSelectedItem(this._selection.get());
     },
 
-    // observe content changes under the given node.
-    _observeContent: function(node) {
-      var content = node.querySelector('content');
-      if (content && content.parentElement === node) {
-        return this._observeItems(node.domHost);
-      }
-    },
-
     // observe items change under the given node.
     _observeItems: function(node) {
-      // TODO(cdata): Update this when we get distributed children changed.
-      var observer = new MutationObserver(function(mutations) {
+      return Polymer.dom(node).observeNodes(function(mutations) {
         // Let other interested parties know about the change so that
         // we don't have to recreate mutation observers everywher.
         this.fire('iron-items-changed', mutations, {
@@ -11244,15 +11803,12 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
           cancelable: false
         });
 
-        if (this.selected != null) {
+        this._updateItems();
+
+        if (this._shouldUpdateSelection) {
           this._updateSelected();
         }
-      }.bind(this));
-      observer.observe(node, {
-        childList: true,
-        subtree: true
       });
-      return observer;
     },
 
     _activateHandler: function(e) {
@@ -11286,7 +11842,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
   /**
    * `Polymer.PaperInkyFocusBehavior` implements a ripple when the element has keyboard focus.
    *
-   * @polymerBehavior Polymer.PaperInkyFocusBehaviorImpl
+   * @polymerBehavior Polymer.PaperInkyFocusBehavior
    */
   Polymer.PaperInkyFocusBehaviorImpl = {
 
@@ -11352,10 +11908,29 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
         observer: 'queryChanged'
       },
 
+      /**
+       * If true, the query attribute is assumed to be a complete media query
+       * string rather than a single media feature.
+       */
+      full: {
+        type: Boolean,
+        value: false
+      },
+      
+      /**
+       * @type {function(MediaQueryList)}
+       */ 
       _boundMQHandler: {
         value: function() {
           return this.queryHandler.bind(this);
         }
+      },
+      
+      /**
+       * @type {MediaQueryList}
+       */ 
+      _mq: {
+        value: null
       }
     },
 
@@ -11386,7 +11961,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
       if (!query) {
         return;
       }
-      if (query[0] !== '(') {
+      if (!this.full && query[0] !== '(') {
         query = '(' + query + ')';
       }
       this._mq = window.matchMedia(query);
@@ -11460,6 +12035,11 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
 
     multiChanged: function(multi) {
       this._selection.multi = multi;
+    },
+
+    get _shouldUpdateSelection() {
+      return this.selected != null ||
+        (this.selectedValues != null && this.selectedValues.length);
     },
 
     _updateSelected: function() {
@@ -11925,9 +12505,9 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
    * `iron-iconset-svg` element. Multiple icons should be given distinct id's.
    *
    * Using svg elements to create icons has a few advantages over traditional
-   * bitmap graphics like jpg or png. Icons that use svg are vector based so they
-   * are resolution independent and should look good on any device. They are
-   * stylable via css. Icons can be themed, colorized, and even animated.
+   * bitmap graphics like jpg or png. Icons that use svg are vector based so
+   * they are resolution independent and should look good on any device. They
+   * are stylable via css. Icons can be themed, colorized, and even animated.
    *
    * Example:
    *
@@ -11952,18 +12532,15 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
    *
    * @element iron-iconset-svg
    * @demo demo/index.html
+   * @implements {Polymer.Iconset}
    */
   Polymer({
-
     is: 'iron-iconset-svg',
 
     properties: {
 
       /**
        * The name of the iconset.
-       *
-       * @attribute name
-       * @type string
        */
       name: {
         type: String,
@@ -11972,16 +12549,16 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
 
       /**
        * The size of an individual icon. Note that icons must be square.
-       *
-       * @attribute iconSize
-       * @type number
-       * @default 24
        */
       size: {
         type: Number,
         value: 24
       }
 
+    },
+    
+    attached: function() {
+      this.style.display = 'none';
     },
 
     /**
@@ -12005,7 +12582,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
      * @method applyIcon
      * @param {Element} element Element to which the icon is applied.
      * @param {string} iconName Name of the icon to apply.
-     * @return {Element} The svg element which renders the icon.
+     * @return {?Element} The svg element which renders the icon.
      */
     applyIcon: function(element, iconName) {
       // insert svg element into shadow root, if it exists
@@ -12108,11 +12685,11 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
 
 <script>
 
- /** 
+ /**
  * `iron-range-behavior` provides the behavior for something with a minimum to maximum range.
  *
  * @demo demo/index.html
- * @polymerBehavior 
+ * @polymerBehavior
  */
  Polymer.IronRangeBehavior = {
 
@@ -12181,7 +12758,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
   _calcStep: function(value) {
    /**
     * if we calculate the step using
-    * `Math.round(value / step) * step` we may hit a precision point issue 
+    * `Math.round(value / step) * step` we may hit a precision point issue
     * eg. 0.1 * 0.2 =  0.020000000000000004
     * http://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html
     *
@@ -12189,7 +12766,8 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
     */
     // polymer/issues/2493
     value = parseFloat(value);
-    return this.step ? (Math.round((value + this.min) / this.step) / (1 / this.step)) - this.min : value;
+    return this.step ? (Math.round((value + this.min) / this.step) -
+        (this.min / this.step)) / (1 / this.step) : value;
   },
 
   _validateValue: function() {
@@ -12210,7 +12788,20 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
 <script>
 
   /**
-   * Use `Polymer.IronValidatableBehavior` to implement an element that validates user input.
+   * `Use Polymer.IronValidatableBehavior` to implement an element that validates user input.
+   * Use the related `Polymer.IronValidatorBehavior` to add custom validation logic to an iron-input.
+   *
+   * By default, an `<iron-form>` element validates its fields when the user presses the submit button.
+   * To validate a form imperatively, call the form's `validate()` method, which in turn will
+   * call `validate()` on all its children. By using `Polymer.IronValidatableBehavior`, your
+   * custom element will get a public `validate()`, which
+   * will return the validity of the element, and a corresponding `invalid` attribute,
+   * which can be used for styling.
+   *
+   * To implement the custom validation logic of your element, you must override
+   * the protected `_getValidity()` method of this behaviour, rather than `validate()`.
+   * See [this](https://github.com/PolymerElements/iron-form/blob/master/demo/simple-element.html)
+   * for an example.
    *
    * ### Accessibility
    *
@@ -12591,8 +13182,8 @@ is separate from validation, and `allowed-pattern` does not affect how the input
        * custom element that uses this behavior should also use
        * Polymer.IronValidatableBehavior and define a custom validation method.
        * Otherwise, a `required` element will always be considered valid.
-       * It's also strongly recomended to provide a visual style for the element
-       * when it's value is invalid.
+       * It's also strongly recommended to provide a visual style for the element
+       * when its value is invalid.
        */
       required: {
         type: Boolean,
@@ -12703,7 +13294,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       },
 
       /**
-       * The datalist of the input (if any). This should match the id of an existing <datalist>. Bind this
+       * The datalist of the input (if any). This should match the id of an existing `<datalist>`. Bind this
        * to the `<input is="iron-input">`'s `list` property.
        */
       list: {
@@ -12903,6 +13494,20 @@ is separate from validation, and `allowed-pattern` does not affect how the input
        */
       results: {
         type: Number
+      },
+
+      /**
+       * Bind this to the `<input is="iron-input">`'s `accept` property, , used with type=file.
+       */
+      accept: {
+        type: String
+      },
+
+      /**
+       * Bind this to the `<input is="iron-input">`'s `multiple` property, , used with type=file.
+       */
+      multiple: {
+        type: Boolean
       },
 
       _ariaDescribedBy: {
@@ -13247,37 +13852,38 @@ is separate from validation, and `allowed-pattern` does not affect how the input
 
 
 </head><body><div hidden="" by-vulcanize=""><dom-module id="paper-material" assetpath="bower_components/paper-material/">
-  <style>
-    :host {
-      display: block;
-      position: relative;
-    }
-
-    :host([animated]) {
-      @apply(--shadow-transition);
-    }
-
-    :host([elevation="1"]) {
-      @apply(--shadow-elevation-2dp);
-    }
-
-    :host([elevation="2"]) {
-      @apply(--shadow-elevation-4dp);
-    }
-
-    :host([elevation="3"]) {
-      @apply(--shadow-elevation-6dp);
-    }
-
-    :host([elevation="4"]) {
-      @apply(--shadow-elevation-8dp);
-    }
-
-    :host([elevation="5"]) {
-      @apply(--shadow-elevation-16dp);
-    }
-  </style>
   <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+
+      :host([animated]) {
+        @apply(--shadow-transition);
+      }
+
+      :host([elevation="1"]) {
+        @apply(--shadow-elevation-2dp);
+      }
+
+      :host([elevation="2"]) {
+        @apply(--shadow-elevation-4dp);
+      }
+
+      :host([elevation="3"]) {
+        @apply(--shadow-elevation-6dp);
+      }
+
+      :host([elevation="4"]) {
+        @apply(--shadow-elevation-8dp);
+      }
+
+      :host([elevation="5"]) {
+        @apply(--shadow-elevation-16dp);
+      }
+    </style>
+
     <content></content>
   </template>
 </dom-module>
@@ -13286,7 +13892,6 @@ is separate from validation, and `allowed-pattern` does not affect how the input
     is: 'paper-material',
 
     properties: {
-
       /**
        * The z-depth of this element, from 0-5. Setting to 0 will remove the
        * shadow, and each increasing number greater than 0 will be "deeper"
@@ -14311,343 +14916,336 @@ is separate from validation, and `allowed-pattern` does not affect how the input
 
 })();
 </script>
-<dom-module id="paper-spinner" assetpath="bower_components/paper-spinner/">
-
-  <style>
-/**
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-
-*/
-/**************************/
-/* STYLES FOR THE SPINNER */
-/**************************/
-
-/*
- * Constants:
- *      STROKEWIDTH = 3px
- *      ARCSIZE     = 270 degrees (amount of circle the arc takes up)
- *      ARCTIME     = 1333ms (time it takes to expand and contract arc)
- *      ARCSTARTROT = 216 degrees (how much the start location of the arc
- *                                should rotate each time, 216 gives us a
- *                                5 pointed star shape (it's 360/5 * 3).
- *                                For a 7 pointed star, we might do
- *                                360/7 * 3 = 154.286)
- *      CONTAINERWIDTH = 28px
- *      SHRINK_TIME = 400ms
- */
-
-:host {
-  display: inline-block;
-  position: relative;
-  width: 28px; /* CONTAINERWIDTH */
-  height: 28px; /* CONTAINERWIDTH */
-}
-
-#spinnerContainer {
-  width: 100%;
-  height: 100%;
-
-  /* The spinner does not have any contents that would have to be
-   * flipped if the direction changes. Always use ltr so that the
-   * style works out correctly in both cases. */
-  direction: ltr;
-}
-
-#spinnerContainer.active {
-  /* duration: 360 * ARCTIME / (ARCSTARTROT + (360-ARCSIZE)) */
-  -webkit-animation: container-rotate 1568ms linear infinite;
-  animation: container-rotate 1568ms linear infinite;
-}
-
-@-webkit-keyframes container-rotate {
-  to { -webkit-transform: rotate(360deg) }
-}
-
-@keyframes container-rotate {
-  to { transform: rotate(360deg) }
-}
-
-.spinner-layer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-}
-
-.layer-1 {
-  border-color: var(--paper-spinner-layer-1-color, --google-blue-500);
-}
-
-.layer-2 {
-  border-color: var(--paper-spinner-layer-2-color, --google-red-500);
-}
-
-.layer-3 {
-  border-color: var(--paper-spinner-layer-3-color, --google-yellow-500);
-}
-
-.layer-4 {
-  border-color: var(--paper-spinner-layer-4-color, --google-blue-500);
-}
-
-/**
- * IMPORTANT NOTE ABOUT CSS ANIMATION PROPERTIES (keanulee):
- *
- * iOS Safari (tested on iOS 8.1) does not handle animation-delay very well - it doesn't
- * guarantee that the animation will start _exactly_ after that value. So we avoid using
- * animation-delay and instead set custom keyframes for each color (as layer-2undant as it
- * seems).
- *
- * We write out each animation in full (instead of separating animation-name,
- * animation-duration, etc.) because under the polyfill, Safari does not recognize those
- * specific properties properly, treats them as -webkit-animation, and overrides the
- * other animation rules. See https://github.com/Polymer/platform/issues/53.
- */
-.active .spinner-layer.layer-1 {
-  /* durations: 4 * ARCTIME */
-  -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-1-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-  animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-1-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-}
-
-.active .spinner-layer.layer-2 {
-  /* durations: 4 * ARCTIME */
-  -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-2-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-  animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-2-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-}
-
-.active .spinner-layer.layer-3 {
-  /* durations: 4 * ARCTIME */
-  -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-3-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-  animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-3-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-}
-
-.active .spinner-layer.layer-4 {
-  /* durations: 4 * ARCTIME */
-  -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-4-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-  animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-4-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-}
-
-@-webkit-keyframes fill-unfill-rotate {
-  12.5% { -webkit-transform: rotate(135deg);  } /* 0.5 * ARCSIZE */
-  25%   { -webkit-transform: rotate(270deg);  } /* 1   * ARCSIZE */
-  37.5% { -webkit-transform: rotate(405deg);  } /* 1.5 * ARCSIZE */
-  50%   { -webkit-transform: rotate(540deg);  } /* 2   * ARCSIZE */
-  62.5% { -webkit-transform: rotate(675deg);  } /* 2.5 * ARCSIZE */
-  75%   { -webkit-transform: rotate(810deg);  } /* 3   * ARCSIZE */
-  87.5% { -webkit-transform: rotate(945deg);  } /* 3.5 * ARCSIZE */
-  to    { -webkit-transform: rotate(1080deg); } /* 4   * ARCSIZE */
-}
-
-@keyframes fill-unfill-rotate {
-  12.5% { transform: rotate(135deg);  } /* 0.5 * ARCSIZE */
-  25%   { transform: rotate(270deg);  } /* 1   * ARCSIZE */
-  37.5% { transform: rotate(405deg);  } /* 1.5 * ARCSIZE */
-  50%   { transform: rotate(540deg);  } /* 2   * ARCSIZE */
-  62.5% { transform: rotate(675deg);  } /* 2.5 * ARCSIZE */
-  75%   { transform: rotate(810deg);  } /* 3   * ARCSIZE */
-  87.5% { transform: rotate(945deg);  } /* 3.5 * ARCSIZE */
-  to    { transform: rotate(1080deg); } /* 4   * ARCSIZE */
-}
-
-/**
- * HACK: Even though the intention is to have the current .spinner-layer at
- * `opacity: 1`, we set it to `opacity: 0.99` instead since this forces Chrome
- * to do proper subpixel rendering for the elements being animated. This is
- * especially visible in Chrome 39 on Ubuntu 14.04. See:
- *
- * - https://github.com/Polymer/paper-spinner/issues/9
- * - https://code.google.com/p/chromium/issues/detail?id=436255
- */
-@-webkit-keyframes layer-1-fade-in-out {
-  from { opacity: 0.99; }
-  25% { opacity: 0.99; }
-  26% { opacity: 0; }
-  89% { opacity: 0; }
-  90% { opacity: 0.99; }
-  100% { opacity: 0.99; }
-}
-
-@keyframes layer-1-fade-in-out {
-  from { opacity: 0.99; }
-  25% { opacity: 0.99; }
-  26% { opacity: 0; }
-  89% { opacity: 0; }
-  90% { opacity: 0.99; }
-  100% { opacity: 0.99; }
-}
-
-@-webkit-keyframes layer-2-fade-in-out {
-  from { opacity: 0; }
-  15% { opacity: 0; }
-  25% { opacity: 0.99; }
-  50% { opacity: 0.99; }
-  51% { opacity: 0; }
-}
-
-@keyframes layer-2-fade-in-out {
-  from { opacity: 0; }
-  15% { opacity: 0; }
-  25% { opacity: 0.99; }
-  50% { opacity: 0.99; }
-  51% { opacity: 0; }
-}
-
-@-webkit-keyframes layer-3-fade-in-out {
-  from { opacity: 0; }
-  40% { opacity: 0; }
-  50% { opacity: 0.99; }
-  75% { opacity: 0.99; }
-  76% { opacity: 0; }
-}
-
-@keyframes layer-3-fade-in-out {
-  from { opacity: 0; }
-  40% { opacity: 0; }
-  50% { opacity: 0.99; }
-  75% { opacity: 0.99; }
-  76% { opacity: 0; }
-}
-
-@-webkit-keyframes layer-4-fade-in-out {
-  from { opacity: 0; }
-  65% { opacity: 0; }
-  75% { opacity: 0.99; }
-  90% { opacity: 0.99; }
-  100% { opacity: 0; }
-}
-
-@keyframes layer-4-fade-in-out {
-  from { opacity: 0; }
-  65% { opacity: 0; }
-  75% { opacity: 0.99; }
-  90% { opacity: 0.99; }
-  100% { opacity: 0; }
-}
-
-/**
- * Patch the gap that appear between the two adjacent div.circle-clipper while the
- * spinner is rotating (appears on Chrome 38, Safari 7.1, and IE 11).
- *
- * Update: the gap no longer appears on Chrome when .spinner-layer's opacity is 0.99,
- * but still does on Safari and IE.
- */
-.gap-patch {
-  position: absolute;
-  box-sizing: border-box;
-  top: 0;
-  left: 45%;
-  width: 10%;
-  height: 100%;
-  overflow: hidden;
-  border-color: inherit;
-}
-
-.gap-patch .circle {
-  width: 1000%;
-  left: -450%;
-}
-
-.circle-clipper {
-  display: inline-block;
-  position: relative;
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-  border-color: inherit;
-}
-
-.circle-clipper .circle {
-  width: 200%;
-}
-
-.circle {
-  box-sizing: border-box;
-  height: 100%;
-  border-width: 3px; /* STROKEWIDTH */
-  border-style: solid;
-  border-color: inherit;
-  border-bottom-color: transparent !important;
-  border-radius: 50%;
-  -webkit-animation: none;
-  animation: none;
-
-  @apply(--layout-fit);
-}
-
-.circle-clipper.left .circle {
-  border-right-color: transparent !important;
-  -webkit-transform: rotate(129deg);
-  transform: rotate(129deg);
-}
-
-.circle-clipper.right .circle {
-  left: -100%;
-  border-left-color: transparent !important;
-  -webkit-transform: rotate(-129deg);
-  transform: rotate(-129deg);
-}
-
-.active .circle-clipper.left .circle {
-  /* duration: ARCTIME */
-  -webkit-animation: left-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-  animation: left-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-}
-
-.active .circle-clipper.right .circle {
-  /* duration: ARCTIME */
-  -webkit-animation: right-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-  animation: right-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
-}
-
-@-webkit-keyframes left-spin {
-  from { -webkit-transform: rotate(130deg); }
-  50% { -webkit-transform: rotate(-5deg); }
-  to { -webkit-transform: rotate(130deg); }
-}
-
-@keyframes left-spin {
-  from { transform: rotate(130deg); }
-  50% { transform: rotate(-5deg); }
-  to { transform: rotate(130deg); }
-}
-
-@-webkit-keyframes right-spin {
-  from { -webkit-transform: rotate(-130deg); }
-  50% { -webkit-transform: rotate(5deg); }
-  to { -webkit-transform: rotate(-130deg); }
-}
-
-@keyframes right-spin {
-  from { transform: rotate(-130deg); }
-  50% { transform: rotate(5deg); }
-  to { transform: rotate(-130deg); }
-}
-
-#spinnerContainer.cooldown {
-  /* duration: SHRINK_TIME */
-  -webkit-animation: container-rotate 1568ms linear infinite, fade-out 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  animation: container-rotate 1568ms linear infinite, fade-out 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-@-webkit-keyframes fade-out {
-  from { opacity: 0.99; }
-  to { opacity: 0; }
-}
-
-@keyframes fade-out {
-  from { opacity: 0.99; }
-  to { opacity: 0; }
-}
-
-</style>
-
+<dom-module id="paper-spinner-styles" assetpath="bower_components/paper-spinner/">
   <template>
+    <style>
+      /*
+      /**************************/
+      /* STYLES FOR THE SPINNER */
+      /**************************/
+
+      /*
+       * Constants:
+       *      STROKEWIDTH = 3px
+       *      ARCSIZE     = 270 degrees (amount of circle the arc takes up)
+       *      ARCTIME     = 1333ms (time it takes to expand and contract arc)
+       *      ARCSTARTROT = 216 degrees (how much the start location of the arc
+       *                                should rotate each time, 216 gives us a
+       *                                5 pointed star shape (it's 360/5 * 3).
+       *                                For a 7 pointed star, we might do
+       *                                360/7 * 3 = 154.286)
+       *      CONTAINERWIDTH = 28px
+       *      SHRINK_TIME = 400ms
+       */
+
+      :host {
+        display: inline-block;
+        position: relative;
+        width: 28px; /* CONTAINERWIDTH */
+        height: 28px; /* CONTAINERWIDTH */
+      }
+
+      #spinnerContainer {
+        width: 100%;
+        height: 100%;
+
+        /* The spinner does not have any contents that would have to be
+         * flipped if the direction changes. Always use ltr so that the
+         * style works out correctly in both cases. */
+        direction: ltr;
+      }
+
+      #spinnerContainer.active {
+        /* duration: 360 * ARCTIME / (ARCSTARTROT + (360-ARCSIZE)) */
+        -webkit-animation: container-rotate 1568ms linear infinite;
+        animation: container-rotate 1568ms linear infinite;
+      }
+
+      @-webkit-keyframes container-rotate {
+        to { -webkit-transform: rotate(360deg) }
+      }
+
+      @keyframes container-rotate {
+        to { transform: rotate(360deg) }
+      }
+
+      .spinner-layer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+      }
+
+      .layer-1 {
+        border-color: var(--paper-spinner-layer-1-color, --google-blue-500);
+      }
+
+      .layer-2 {
+        border-color: var(--paper-spinner-layer-2-color, --google-red-500);
+      }
+
+      .layer-3 {
+        border-color: var(--paper-spinner-layer-3-color, --google-yellow-500);
+      }
+
+      .layer-4 {
+        border-color: var(--paper-spinner-layer-4-color, --google-green-500);
+      }
+
+      /**
+       * IMPORTANT NOTE ABOUT CSS ANIMATION PROPERTIES (keanulee):
+       *
+       * iOS Safari (tested on iOS 8.1) does not handle animation-delay very well - it doesn't
+       * guarantee that the animation will start _exactly_ after that value. So we avoid using
+       * animation-delay and instead set custom keyframes for each color (as layer-2undant as it
+       * seems).
+       *
+       * We write out each animation in full (instead of separating animation-name,
+       * animation-duration, etc.) because under the polyfill, Safari does not recognize those
+       * specific properties properly, treats them as -webkit-animation, and overrides the
+       * other animation rules. See https://github.com/Polymer/platform/issues/53.
+       */
+      .active .spinner-layer.layer-1 {
+        /* durations: 4 * ARCTIME */
+        -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-1-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+        animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-1-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+      }
+
+      .active .spinner-layer.layer-2 {
+        /* durations: 4 * ARCTIME */
+        -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-2-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+        animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-2-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+      }
+
+      .active .spinner-layer.layer-3 {
+        /* durations: 4 * ARCTIME */
+        -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-3-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+        animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-3-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+      }
+
+      .active .spinner-layer.layer-4 {
+        /* durations: 4 * ARCTIME */
+        -webkit-animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-4-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+        animation: fill-unfill-rotate 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both, layer-4-fade-in-out 5332ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+      }
+
+      @-webkit-keyframes fill-unfill-rotate {
+        12.5% { -webkit-transform: rotate(135deg);  } /* 0.5 * ARCSIZE */
+        25%   { -webkit-transform: rotate(270deg);  } /* 1   * ARCSIZE */
+        37.5% { -webkit-transform: rotate(405deg);  } /* 1.5 * ARCSIZE */
+        50%   { -webkit-transform: rotate(540deg);  } /* 2   * ARCSIZE */
+        62.5% { -webkit-transform: rotate(675deg);  } /* 2.5 * ARCSIZE */
+        75%   { -webkit-transform: rotate(810deg);  } /* 3   * ARCSIZE */
+        87.5% { -webkit-transform: rotate(945deg);  } /* 3.5 * ARCSIZE */
+        to    { -webkit-transform: rotate(1080deg); } /* 4   * ARCSIZE */
+      }
+
+      @keyframes fill-unfill-rotate {
+        12.5% { transform: rotate(135deg);  } /* 0.5 * ARCSIZE */
+        25%   { transform: rotate(270deg);  } /* 1   * ARCSIZE */
+        37.5% { transform: rotate(405deg);  } /* 1.5 * ARCSIZE */
+        50%   { transform: rotate(540deg);  } /* 2   * ARCSIZE */
+        62.5% { transform: rotate(675deg);  } /* 2.5 * ARCSIZE */
+        75%   { transform: rotate(810deg);  } /* 3   * ARCSIZE */
+        87.5% { transform: rotate(945deg);  } /* 3.5 * ARCSIZE */
+        to    { transform: rotate(1080deg); } /* 4   * ARCSIZE */
+      }
+
+      /**
+       * HACK: Even though the intention is to have the current .spinner-layer at
+       * `opacity: 1`, we set it to `opacity: 0.99` instead since this forces Chrome
+       * to do proper subpixel rendering for the elements being animated. This is
+       * especially visible in Chrome 39 on Ubuntu 14.04. See:
+       *
+       * - https://github.com/Polymer/paper-spinner/issues/9
+       * - https://code.google.com/p/chromium/issues/detail?id=436255
+       */
+      @-webkit-keyframes layer-1-fade-in-out {
+        from { opacity: 0.99; }
+        25% { opacity: 0.99; }
+        26% { opacity: 0; }
+        89% { opacity: 0; }
+        90% { opacity: 0.99; }
+        100% { opacity: 0.99; }
+      }
+
+      @keyframes layer-1-fade-in-out {
+        from { opacity: 0.99; }
+        25% { opacity: 0.99; }
+        26% { opacity: 0; }
+        89% { opacity: 0; }
+        90% { opacity: 0.99; }
+        100% { opacity: 0.99; }
+      }
+
+      @-webkit-keyframes layer-2-fade-in-out {
+        from { opacity: 0; }
+        15% { opacity: 0; }
+        25% { opacity: 0.99; }
+        50% { opacity: 0.99; }
+        51% { opacity: 0; }
+      }
+
+      @keyframes layer-2-fade-in-out {
+        from { opacity: 0; }
+        15% { opacity: 0; }
+        25% { opacity: 0.99; }
+        50% { opacity: 0.99; }
+        51% { opacity: 0; }
+      }
+
+      @-webkit-keyframes layer-3-fade-in-out {
+        from { opacity: 0; }
+        40% { opacity: 0; }
+        50% { opacity: 0.99; }
+        75% { opacity: 0.99; }
+        76% { opacity: 0; }
+      }
+
+      @keyframes layer-3-fade-in-out {
+        from { opacity: 0; }
+        40% { opacity: 0; }
+        50% { opacity: 0.99; }
+        75% { opacity: 0.99; }
+        76% { opacity: 0; }
+      }
+
+      @-webkit-keyframes layer-4-fade-in-out {
+        from { opacity: 0; }
+        65% { opacity: 0; }
+        75% { opacity: 0.99; }
+        90% { opacity: 0.99; }
+        100% { opacity: 0; }
+      }
+
+      @keyframes layer-4-fade-in-out {
+        from { opacity: 0; }
+        65% { opacity: 0; }
+        75% { opacity: 0.99; }
+        90% { opacity: 0.99; }
+        100% { opacity: 0; }
+      }
+
+      /**
+       * Patch the gap that appear between the two adjacent div.circle-clipper while the
+       * spinner is rotating (appears on Chrome 38, Safari 7.1, and IE 11).
+       *
+       * Update: the gap no longer appears on Chrome when .spinner-layer's opacity is 0.99,
+       * but still does on Safari and IE.
+       */
+      .gap-patch {
+        position: absolute;
+        box-sizing: border-box;
+        top: 0;
+        left: 45%;
+        width: 10%;
+        height: 100%;
+        overflow: hidden;
+        border-color: inherit;
+      }
+
+      .gap-patch .circle {
+        width: 1000%;
+        left: -450%;
+      }
+
+      .circle-clipper {
+        display: inline-block;
+        position: relative;
+        width: 50%;
+        height: 100%;
+        overflow: hidden;
+        border-color: inherit;
+      }
+
+      .circle-clipper .circle {
+        width: 200%;
+      }
+
+      .circle {
+        box-sizing: border-box;
+        height: 100%;
+        border-width: 3px; /* STROKEWIDTH */
+        border-style: solid;
+        border-color: inherit;
+        border-bottom-color: transparent !important;
+        border-radius: 50%;
+        -webkit-animation: none;
+        animation: none;
+
+        @apply(--layout-fit);
+      }
+
+      .circle-clipper.left .circle {
+        border-right-color: transparent !important;
+        -webkit-transform: rotate(129deg);
+        transform: rotate(129deg);
+      }
+
+      .circle-clipper.right .circle {
+        left: -100%;
+        border-left-color: transparent !important;
+        -webkit-transform: rotate(-129deg);
+        transform: rotate(-129deg);
+      }
+
+      .active .circle-clipper.left .circle {
+        /* duration: ARCTIME */
+        -webkit-animation: left-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+        animation: left-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+      }
+
+      .active .circle-clipper.right .circle {
+        /* duration: ARCTIME */
+        -webkit-animation: right-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+        animation: right-spin 1333ms cubic-bezier(0.4, 0.0, 0.2, 1) infinite both;
+      }
+
+      @-webkit-keyframes left-spin {
+        from { -webkit-transform: rotate(130deg); }
+        50% { -webkit-transform: rotate(-5deg); }
+        to { -webkit-transform: rotate(130deg); }
+      }
+
+      @keyframes left-spin {
+        from { transform: rotate(130deg); }
+        50% { transform: rotate(-5deg); }
+        to { transform: rotate(130deg); }
+      }
+
+      @-webkit-keyframes right-spin {
+        from { -webkit-transform: rotate(-130deg); }
+        50% { -webkit-transform: rotate(5deg); }
+        to { -webkit-transform: rotate(-130deg); }
+      }
+
+      @keyframes right-spin {
+        from { transform: rotate(-130deg); }
+        50% { transform: rotate(5deg); }
+        to { transform: rotate(-130deg); }
+      }
+
+      #spinnerContainer.cooldown {
+        /* duration: SHRINK_TIME */
+        -webkit-animation: container-rotate 1568ms linear infinite, fade-out 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        animation: container-rotate 1568ms linear infinite, fade-out 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      }
+
+      @-webkit-keyframes fade-out {
+        from { opacity: 0.99; }
+        to { opacity: 0; }
+      }
+
+      @keyframes fade-out {
+        from { opacity: 0.99; }
+        to { opacity: 0; }
+      }
+    </style>
+  </template>
+</dom-module>
+<dom-module id="paper-spinner" assetpath="bower_components/paper-spinner/">
+  <template>
+    <style include="paper-spinner-styles"></style>
 
     <div id="spinnerContainer" class-name="[[_spinnerContainerClassName]]">
       <div class="spinner-layer layer-1">
@@ -14690,13 +15288,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
       </div>
     </div>
-
   </template>
 
   <script>
-
     Polymer({
-
       is: 'paper-spinner',
 
       listeners: {
@@ -14705,7 +15300,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       properties: {
-
         /**
          * Displays the spinner.
          *
@@ -14748,7 +15342,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           type: String,
           computed: '_computeSpinnerContainerClassName(active, _coolingDown)'
         }
-
       },
 
       _computeSpinnerContainerClassName: function(active, coolingDown) {
@@ -14760,9 +15353,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _activeChanged: function(active, old) {
         this._setAriaHidden(!active);
-        if (!active && old) {
-          this._coolingDown = true;
-        }
+        this._coolingDown = !active && old;
       },
 
       _altChanged: function(alt) {
@@ -14788,11 +15379,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.active = false;
         this._coolingDown = false;
       }
-
     });
-
   </script>
-
 </dom-module>
 <dom-module id="iron-icon" assetpath="bower_components/iron-icon/">
 
@@ -14804,7 +15392,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       vertical-align: middle;
 
-      fill: currentcolor;
+      fill: var(--iron-icon-fill-color, currentcolor);
+      stroke: var(--iron-icon-stroke-color, none);
 
       width: var(--iron-icon-width, 24px);
       height: var(--iron-icon-height, 24px);
@@ -14909,7 +15498,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="paper-fab" assetpath="bower_components/paper-fab/">
   <template strip-whitespace="">
     <style include="paper-material">
-
       :host {
         display: inline-block;
         position: relative;
@@ -14959,9 +15547,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background: var(--paper-fab-keyboard-focus-background, --paper-pink-900);
       }
     </style>
+
     <iron-icon id="icon" src="[[src]]" icon="[[icon]]"></iron-icon>
   </template>
 </dom-module>
+
 <script>
   Polymer({
     is: 'paper-fab',
@@ -15011,7 +15601,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         reflectToAttribute: true
       }
     }
-
   });
 </script>
 <dom-module id="iron-overlay-backdrop" assetpath="bower_components/iron-overlay-behavior/">
@@ -15453,6 +16042,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this._squelchNextFinishEvent = true;
           this.cancelAnimation();
           this._completeSelectedChanged();
+          this._squelchNextFinishEvent = false;
         }
 
         // configure the animation.
@@ -15556,8 +16146,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         user-select: none;
         cursor: pointer;
         z-index: 0;
+        line-height: 1;
+        
+        width: 40px;
+        height: 40px;
 
-        width: 24px;
+        /* Because of polymer/2558, this style has lower specificity than * */
+        box-sizing: border-box !important;
         @apply(--paper-icon-button);
       }
 
@@ -15633,168 +16228,160 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </script>
 </dom-module>
 <dom-module id="paper-drawer-panel" assetpath="bower_components/paper-drawer-panel/">
-  <style>
-/**
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
-*/
-
-:host {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-iron-selector > #drawer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background-color: white;
-
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-
-  @apply(--paper-drawer-panel-drawer-container);
-}
-
-.transition > #drawer {
-  transition: -webkit-transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
-  transition: transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
-}
-
-.left-drawer > #drawer {
-  @apply(--paper-drawer-panel-left-drawer-container);
-}
-
-.right-drawer > #drawer {
-  left: auto;
-  right: 0;
-
-  @apply(--paper-drawer-panel-right-drawer-container);
-}
-
-iron-selector > #main {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-
-  @apply(--paper-drawer-panel-main-container);
-}
-
-.transition > #main {
-  transition: left ease-in-out 0.3s, padding ease-in-out 0.3s;
-}
-
-.right-drawer > #main {
-  left: 0;
-}
-
-.right-drawer.transition > #main {
-  transition: right ease-in-out 0.3s, padding ease-in-out 0.3s;
-}
-
-#main > ::content > [main] {
-  height: 100%;
-}
-
-#drawer > ::content > [drawer] {
-  height: 100%;
-}
-
-#scrim {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity ease-in-out 0.38s, visibility ease-in-out 0.38s;
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.narrow-layout > #drawer {
-  will-change: transform;
-}
-
-.narrow-layout > #drawer.iron-selected {
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.right-drawer.narrow-layout > #drawer.iron-selected {
-  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.narrow-layout > #drawer > ::content > [drawer] {
-  border: 0;
-}
-
-.left-drawer.narrow-layout > #drawer:not(.iron-selected) {
-  -webkit-transform: translateX(-100%);
-  transform: translateX(-100%);
-}
-
-.right-drawer.narrow-layout > #drawer:not(.iron-selected) {
-  left: auto;
-  visibility: hidden;
-
-  -webkit-transform: translateX(100%);
-  transform: translateX(100%);
-}
-
-.right-drawer.narrow-layout.dragging > #drawer:not(.iron-selected),
-.right-drawer.narrow-layout.peeking > #drawer:not(.iron-selected) {
-  visibility: visible;
-}
-
-.narrow-layout > #main {
-  padding: 0;
-}
-
-.right-drawer.narrow-layout > #main {
-  left: 0;
-  right: 0;
-}
-
-.narrow-layout > #main:not(.iron-selected) > #scrim,
-.dragging > #main > #scrim {
-  visibility: visible;
-  opacity: var(--paper-drawer-panel-scrim-opacity, 1);
-}
-
-.narrow-layout > #main > * {
-  margin: 0;
-  min-height: 100%;
-  left: 0;
-  right: 0;
-
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
-  display: none;
-}
-</style>
-
   <template>
+    <style>
+      :host {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      iron-selector > #drawer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background-color: white;
+
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+
+        @apply(--paper-drawer-panel-drawer-container);
+      }
+
+      .transition > #drawer {
+        transition: -webkit-transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+        transition: transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+      }
+
+      .left-drawer > #drawer {
+        @apply(--paper-drawer-panel-left-drawer-container);
+      }
+
+      .right-drawer > #drawer {
+        left: auto;
+        right: 0;
+
+        @apply(--paper-drawer-panel-right-drawer-container);
+      }
+
+      iron-selector > #main {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+
+        @apply(--paper-drawer-panel-main-container);
+      }
+
+      .transition > #main {
+        transition: left ease-in-out 0.3s, padding ease-in-out 0.3s;
+      }
+
+      .right-drawer > #main {
+        left: 0;
+      }
+
+      .right-drawer.transition > #main {
+        transition: right ease-in-out 0.3s, padding ease-in-out 0.3s;
+      }
+
+      #main > ::content > [main] {
+        height: 100%;
+      }
+
+      #drawer > ::content > [drawer] {
+        height: 100%;
+      }
+
+      #scrim {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity ease-in-out 0.38s, visibility ease-in-out 0.38s;
+        background-color: rgba(0, 0, 0, 0.3);
+
+        @apply(--paper-drawer-panel-scrim);
+      }
+
+      .narrow-layout > #drawer {
+        will-change: transform;
+      }
+
+      .narrow-layout > #drawer.iron-selected {
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+      }
+
+      .right-drawer.narrow-layout > #drawer.iron-selected {
+        box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.15);
+      }
+
+      .narrow-layout > #drawer > ::content > [drawer] {
+        border: 0;
+      }
+
+      .left-drawer.narrow-layout > #drawer:not(.iron-selected) {
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+      }
+
+      .right-drawer.narrow-layout > #drawer:not(.iron-selected) {
+        left: auto;
+        visibility: hidden;
+
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+      }
+
+      .right-drawer.narrow-layout.dragging > #drawer:not(.iron-selected),
+      .right-drawer.narrow-layout.peeking > #drawer:not(.iron-selected) {
+        visibility: visible;
+      }
+
+      .narrow-layout > #main {
+        padding: 0;
+      }
+
+      .right-drawer.narrow-layout > #main {
+        left: 0;
+        right: 0;
+      }
+
+      .narrow-layout > #main:not(.iron-selected) > #scrim,
+      .dragging > #main > #scrim {
+        visibility: visible;
+        opacity: var(--paper-drawer-panel-scrim-opacity, 1);
+      }
+
+      .narrow-layout > #main > * {
+        margin: 0;
+        min-height: 100%;
+        left: 0;
+        right: 0;
+
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+      }
+
+      iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
+        display: none;
+      }
+    </style>
+
     <iron-media-query id="mq" on-query-matches-changed="_onQueryMatchesChanged" query="[[_computeMediaQuery(forceNarrow, responsiveWidth)]]">
     </iron-media-query>
 
     <iron-selector attr-for-selected="id" class$="[[_computeIronSelectorClass(narrow, transition, dragging, rightDrawer, peeking)]]" activate-event="" selected="[[selected]]">
 
-      <div id="main" style$="[[_computeMainStyle(narrow, rightDrawer, drawerWidth)]]">
+      <div id="main" style$="[[_computeMainStyle(narrow, rightDrawer, drawerWidth)]]" on-transitionend="_onMainTransitionEnd">
         <content select="[main]"></content>
         <div id="scrim" on-tap="closeDrawer"></div>
       </div>
@@ -15806,477 +16393,477 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     </iron-selector>
   </template>
 
-</dom-module>
+  <script>
+    (function() {
+      'use strict';
 
-<script>
+      // this would be the only `paper-drawer-panel` in
+      // the whole app that can be in `dragging` state
+      var sharedPanel = null;
 
-  (function() {
-
-    'use strict';
-
-   // this would be the only `paper-drawer-panel` in
-   // the whole app that can be in `dragging` state
-    var sharedPanel = null;
-
-    function classNames(obj) {
-      var classes = [];
-      for (var key in obj) {
-        if (obj.hasOwnProperty(key) && obj[key]) {
-          classes.push(key);
+      function classNames(obj) {
+        var classes = [];
+        for (var key in obj) {
+          if (obj.hasOwnProperty(key) && obj[key]) {
+            classes.push(key);
+          }
         }
+
+        return classes.join(' ');
       }
 
-      return classes.join(' ');
-    }
+      Polymer({
 
-    Polymer({
+        is: 'paper-drawer-panel',
 
-      is: 'paper-drawer-panel',
-
-      /**
-       * Fired when the narrow layout changes.
-       *
-       * @event paper-responsive-change {{narrow: boolean}} detail -
-       *     narrow: true if the panel is in narrow layout.
-       */
-
-      /**
-       * Fired when the a panel is selected.
-       *
-       * Listening for this event is an alternative to observing changes in the `selected` attribute.
-       * This event is fired both when a panel is selected.
-       *
-       * @event iron-select {{item: Object}} detail -
-       *     item: The panel that the event refers to.
-       */
-
-      /**
-       * Fired when a panel is deselected.
-       *
-       * Listening for this event is an alternative to observing changes in the `selected` attribute.
-       * This event is fired both when a panel is deselected.
-       *
-       * @event iron-deselect {{item: Object}} detail -
-       *     item: The panel that the event refers to.
-       */
-      properties: {
+        behaviors: [Polymer.IronResizableBehavior],
 
         /**
-         * The panel to be selected when `paper-drawer-panel` changes to narrow
-         * layout.
+         * Fired when the narrow layout changes.
+         *
+         * @event paper-responsive-change {{narrow: boolean}} detail -
+         *     narrow: true if the panel is in narrow layout.
          */
-        defaultSelected: {
-          type: String,
-          value: 'main'
-        },
 
         /**
-         * If true, swipe from the edge is disable.
+         * Fired when the a panel is selected.
+         *
+         * Listening for this event is an alternative to observing changes in the `selected` attribute.
+         * This event is fired both when a panel is selected.
+         *
+         * @event iron-select {{item: Object}} detail -
+         *     item: The panel that the event refers to.
          */
-        disableEdgeSwipe: {
-          type: Boolean,
-          value: false
-        },
 
         /**
-         * If true, swipe to open/close the drawer is disabled.
+         * Fired when a panel is deselected.
+         *
+         * Listening for this event is an alternative to observing changes in the `selected` attribute.
+         * This event is fired both when a panel is deselected.
+         *
+         * @event iron-deselect {{item: Object}} detail -
+         *     item: The panel that the event refers to.
          */
-        disableSwipe: {
-          type: Boolean,
-          value: false
-        },
+        properties: {
 
-        /**
-         * Whether the user is dragging the drawer interactively.
-         */
-        dragging: {
-          type: Boolean,
-          value: false,
-          readOnly: true,
-          notify: true
-        },
+          /**
+           * The panel to be selected when `paper-drawer-panel` changes to narrow
+           * layout.
+           */
+          defaultSelected: {
+            type: String,
+            value: 'main'
+          },
 
-        /**
-         * Width of the drawer panel.
-         */
-        drawerWidth: {
-          type: String,
-          value: '256px'
-        },
+          /**
+           * If true, swipe from the edge is disabled.
+           */
+          disableEdgeSwipe: {
+            type: Boolean,
+            value: false
+          },
 
-        /**
-         * How many pixels on the side of the screen are sensitive to edge
-         * swipes and peek.
-         */
-        edgeSwipeSensitivity: {
-          type: Number,
-          value: 30
-        },
+          /**
+           * If true, swipe to open/close the drawer is disabled.
+           */
+          disableSwipe: {
+            type: Boolean,
+            value: false
+          },
 
-        /**
-         * If true, ignore `responsiveWidth` setting and force the narrow layout.
-         */
-        forceNarrow: {
-          type: Boolean,
-          value: false
-        },
+          /**
+           * Whether the user is dragging the drawer interactively.
+           */
+          dragging: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+            notify: true
+          },
 
-        /**
-         * Whether the browser has support for the transform CSS property.
-         */
-        hasTransform: {
-          type: Boolean,
-          value: function() {
-            return 'transform' in this.style;
-          }
-        },
+          /**
+           * Width of the drawer panel.
+           */
+          drawerWidth: {
+            type: String,
+            value: '256px'
+          },
 
-        /**
-         * Whether the browser has support for the will-change CSS property.
-         */
-        hasWillChange: {
-          type: Boolean,
-          value: function() {
-            return 'willChange' in this.style;
-          }
-        },
+          /**
+           * How many pixels on the side of the screen are sensitive to edge
+           * swipes and peek.
+           */
+          edgeSwipeSensitivity: {
+            type: Number,
+            value: 30
+          },
 
-        /**
-         * Returns true if the panel is in narrow layout.  This is useful if you
-         * need to show/hide elements based on the layout.
-         */
-        narrow: {
-          reflectToAttribute: true,
-          type: Boolean,
-          value: false,
-          readOnly: true,
-          notify: true
-        },
+          /**
+           * If true, ignore `responsiveWidth` setting and force the narrow layout.
+           */
+          forceNarrow: {
+            type: Boolean,
+            value: false
+          },
 
-        /**
-         * Whether the drawer is peeking out from the edge.
-         */
-        peeking: {
-          type: Boolean,
-          value: false,
-          readOnly: true,
-          notify: true
-        },
-
-        /**
-         * Max-width when the panel changes to narrow layout.
-         */
-        responsiveWidth: {
-          type: String,
-          value: '640px'
-        },
-
-        /**
-         * If true, position the drawer to the right.
-         */
-        rightDrawer: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-         * The panel that is being selected. `drawer` for the drawer panel and
-         * `main` for the main panel.
-         */
-        selected: {
-          reflectToAttribute: true,
-          notify: true,
-          type: String,
-          value: null
-        },
-
-        /**
-         * The attribute on elements that should toggle the drawer on tap, also elements will
-         * automatically be hidden in wide layout.
-         */
-        drawerToggleAttribute: {
-          type: String,
-          value: 'paper-drawer-toggle'
-        },
-
-        /**
-         * Whether the transition is enabled.
-         */
-        transition: {
-          type: Boolean,
-          value: false
-        },
-
-      },
-
-      listeners: {
-        tap: '_onTap',
-        track: '_onTrack',
-        down: '_downHandler',
-        up: '_upHandler'
-      },
-
-      observers: [
-        '_forceNarrowChanged(forceNarrow, defaultSelected)'
-      ],
-
-      /**
-       * Toggles the panel open and closed.
-       *
-       * @method togglePanel
-       */
-      togglePanel: function() {
-        if (this._isMainSelected()) {
-          this.openDrawer();
-        } else {
-          this.closeDrawer();
-        }
-      },
-
-      /**
-       * Opens the drawer.
-       *
-       * @method openDrawer
-       */
-      openDrawer: function() {
-        this.selected = 'drawer';
-        this.fire('paper-drawer-panel-open');
-      },
-
-      /**
-       * Closes the drawer.
-       *
-       * @method closeDrawer
-       */
-      closeDrawer: function() {
-          this.selected = 'main';
-          this.fire('paper-drawer-panel-close');
-      },
-
-      ready: function() {
-        // Avoid transition at the beginning e.g. page loads and enable
-        // transitions only after the element is rendered and ready.
-        this.transition = true;
-      },
-
-      _computeIronSelectorClass: function(narrow, transition, dragging, rightDrawer, peeking) {
-        return classNames({
-          dragging: dragging,
-          'narrow-layout': narrow,
-          'right-drawer': rightDrawer,
-          'left-drawer': !rightDrawer,
-          transition: transition,
-          peeking: peeking
-        });
-      },
-
-      _computeDrawerStyle: function(drawerWidth) {
-        return 'width:' + drawerWidth + ';';
-      },
-
-      _computeMainStyle: function(narrow, rightDrawer, drawerWidth) {
-        var style = '';
-
-        style += 'left:' + ((narrow || rightDrawer) ? '0' : drawerWidth) + ';';
-
-        if (rightDrawer) {
-          style += 'right:' + (narrow ? '' : drawerWidth) + ';';
-        }
-
-        return style;
-      },
-
-      _computeMediaQuery: function(forceNarrow, responsiveWidth) {
-        return forceNarrow ? '' : '(max-width: ' + responsiveWidth + ')';
-      },
-
-      _computeSwipeOverlayHidden: function(narrow, disableEdgeSwipe) {
-        return !narrow || disableEdgeSwipe;
-      },
-
-      _onTrack: function(event) {
-        if (sharedPanel && this !== sharedPanel) {
-          return;
-        }
-        switch (event.detail.state) {
-          case 'start':
-            this._trackStart(event);
-            break;
-          case 'track':
-            this._trackX(event);
-            break;
-          case 'end':
-            this._trackEnd(event);
-            break;
-        }
-
-      },
-
-      _responsiveChange: function(narrow) {
-        this._setNarrow(narrow);
-
-        if (this.narrow) {
-          this.selected = this.defaultSelected;
-        }
-
-        this.setScrollDirection(this._swipeAllowed() ? 'y' : 'all');
-        this.fire('paper-responsive-change', {narrow: this.narrow});
-      },
-
-      _onQueryMatchesChanged: function(event) {
-        this._responsiveChange(event.detail.value);
-      },
-
-      _forceNarrowChanged: function() {
-        // set the narrow mode only if we reached the `responsiveWidth`
-        this._responsiveChange(this.forceNarrow || this.$.mq.queryMatches);
-      },
-
-      _swipeAllowed: function() {
-        return this.narrow && !this.disableSwipe;
-      },
-
-      _isMainSelected: function() {
-        return this.selected === 'main';
-      },
-
-      _startEdgePeek: function() {
-        this.width = this.$.drawer.offsetWidth;
-        this._moveDrawer(this._translateXForDeltaX(this.rightDrawer ?
-            -this.edgeSwipeSensitivity : this.edgeSwipeSensitivity));
-        this._setPeeking(true);
-      },
-
-      _stopEdgePeek: function() {
-        if (this.peeking) {
-          this._setPeeking(false);
-          this._moveDrawer(null);
-        }
-      },
-
-      _downHandler: function(event) {
-        if (!this.dragging && this._isMainSelected() && this._isEdgeTouch(event) && !sharedPanel) {
-          this._startEdgePeek();
-          // cancel selection
-          event.preventDefault();
-          // grab this panel
-          sharedPanel = this;
-        }
-      },
-
-      _upHandler: function() {
-        this._stopEdgePeek();
-        // release the panel
-        sharedPanel = null;
-      },
-
-      _onTap: function(event) {
-        var targetElement = Polymer.dom(event).localTarget;
-        var isTargetToggleElement = targetElement &&
-          this.drawerToggleAttribute &&
-          targetElement.hasAttribute(this.drawerToggleAttribute);
-
-        if (isTargetToggleElement) {
-          this.togglePanel();
-        }
-      },
-
-      _isEdgeTouch: function(event) {
-        var x = event.detail.x;
-
-        return !this.disableEdgeSwipe && this._swipeAllowed() &&
-          (this.rightDrawer ?
-            x >= this.offsetWidth - this.edgeSwipeSensitivity :
-            x <= this.edgeSwipeSensitivity);
-      },
-
-      _trackStart: function(event) {
-        if (this._swipeAllowed()) {
-          sharedPanel = this;
-          this._setDragging(true);
-
-          if (this._isMainSelected()) {
-            this._setDragging(this.peeking || this._isEdgeTouch(event));
-          }
-
-          if (this.dragging) {
-            this.width = this.$.drawer.offsetWidth;
-            this.transition = false;
-          }
-        }
-      },
-
-      _translateXForDeltaX: function(deltaX) {
-        var isMain = this._isMainSelected();
-
-        if (this.rightDrawer) {
-          return Math.max(0, isMain ? this.width + deltaX : deltaX);
-        } else {
-          return Math.min(0, isMain ? deltaX - this.width : deltaX);
-        }
-      },
-
-      _trackX: function(event) {
-        if (this.dragging) {
-          var dx = event.detail.dx;
-
-          if (this.peeking) {
-            if (Math.abs(dx) <= this.edgeSwipeSensitivity) {
-              // Ignore trackx until we move past the edge peek.
-              return;
+          /**
+           * Whether the browser has support for the transform CSS property.
+           */
+          hasTransform: {
+            type: Boolean,
+            value: function() {
+              return 'transform' in this.style;
             }
-            this._setPeeking(false);
-          }
+          },
 
-          var dy = event.detail.dy;
-          var absDy = Math.abs(dy);
-          if (absDy >= 70) {
-              // Ignore trackx until we move past the edge peek.
-              return;
-          }
+          /**
+           * Whether the browser has support for the will-change CSS property.
+           */
+          hasWillChange: {
+            type: Boolean,
+            value: function() {
+              return 'willChange' in this.style;
+            }
+          },
 
-          this._moveDrawer(this._translateXForDeltaX(dx));
-        }
-      },
+          /**
+           * Returns true if the panel is in narrow layout.  This is useful if you
+           * need to show/hide elements based on the layout.
+           */
+          narrow: {
+            reflectToAttribute: true,
+            type: Boolean,
+            value: false,
+            readOnly: true,
+            notify: true
+          },
 
-      _trackEnd: function(event) {
-        if (this.dragging) {
-          var xDirection = event.detail.dx > 0;
+          /**
+           * Whether the drawer is peeking out from the edge.
+           */
+          peeking: {
+            type: Boolean,
+            value: false,
+            readOnly: true,
+            notify: true
+          },
 
-          this._setDragging(false);
-          this.transition = true;
-          sharedPanel = null;
-          this._moveDrawer(null);
+          /**
+           * Max-width when the panel changes to narrow layout.
+           */
+          responsiveWidth: {
+            type: String,
+            value: '600px'
+          },
 
-          var dx = event.detail.dx;
-          var dy = event.detail.dy;
-          var absDy = Math.abs(dy);
-          if (this.rightDrawer) {
-              this[xDirection ? 'closeDrawer' : 'openDrawer']();
+          /**
+           * If true, position the drawer to the right.
+           */
+          rightDrawer: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * The panel that is being selected. `drawer` for the drawer panel and
+           * `main` for the main panel.
+           */
+          selected: {
+            reflectToAttribute: true,
+            notify: true,
+            type: String,
+            value: null
+          },
+
+          /**
+           * The attribute on elements that should toggle the drawer on tap, also elements will
+           * automatically be hidden in wide layout.
+           */
+          drawerToggleAttribute: {
+            type: String,
+            value: 'paper-drawer-toggle'
+          },
+
+          /**
+           * Whether the transition is enabled.
+           */
+          transition: {
+            type: Boolean,
+            value: false
+          },
+
+        },
+
+        listeners: {
+          tap: '_onTap',
+          track: '_onTrack',
+          down: '_downHandler',
+          up: '_upHandler'
+        },
+
+        observers: [
+          '_forceNarrowChanged(forceNarrow, defaultSelected)'
+        ],
+
+        /**
+         * Toggles the panel open and closed.
+         *
+         * @method togglePanel
+         */
+        togglePanel: function() {
+          if (this._isMainSelected()) {
+            this.openDrawer();
           } else {
-              this[xDirection || dx > -80 || absDy >= 70 ? 'openDrawer' : 'closeDrawer']();
+            this.closeDrawer();
           }
+        },
+
+        /**
+         * Opens the drawer.
+         *
+         * @method openDrawer
+         */
+        openDrawer: function() {
+          this.selected = 'drawer';
+        },
+
+        /**
+         * Closes the drawer.
+         *
+         * @method closeDrawer
+         */
+        closeDrawer: function() {
+          this.selected = 'main';
+        },
+
+        ready: function() {
+          // Avoid transition at the beginning e.g. page loads and enable
+          // transitions only after the element is rendered and ready.
+          this.transition = true;
+        },
+
+        _onMainTransitionEnd: function (e) {
+          if (e.currentTarget === this.$.main && (e.propertyName === 'left' || e.propertyName === 'right')) {
+            this.notifyResize();
+          }
+        },
+
+        _computeIronSelectorClass: function(narrow, transition, dragging, rightDrawer, peeking) {
+          return classNames({
+            dragging: dragging,
+            'narrow-layout': narrow,
+            'right-drawer': rightDrawer,
+            'left-drawer': !rightDrawer,
+            transition: transition,
+            peeking: peeking
+          });
+        },
+
+        _computeDrawerStyle: function(drawerWidth) {
+          return 'width:' + drawerWidth + ';';
+        },
+
+        _computeMainStyle: function(narrow, rightDrawer, drawerWidth) {
+          var style = '';
+
+          style += 'left:' + ((narrow || rightDrawer) ? '0' : drawerWidth) + ';';
+
+          if (rightDrawer) {
+            style += 'right:' + (narrow ? '' : drawerWidth) + ';';
+          }
+
+          return style;
+        },
+
+        _computeMediaQuery: function(forceNarrow, responsiveWidth) {
+          return forceNarrow ? '' : '(max-width: ' + responsiveWidth + ')';
+        },
+
+        _computeSwipeOverlayHidden: function(narrow, disableEdgeSwipe) {
+          return !narrow || disableEdgeSwipe;
+        },
+
+        _onTrack: function(event) {
+          if (sharedPanel && this !== sharedPanel) {
+            return;
+          }
+          switch (event.detail.state) {
+            case 'start':
+              this._trackStart(event);
+              break;
+            case 'track':
+              this._trackX(event);
+              break;
+            case 'end':
+              this._trackEnd(event);
+              break;
+          }
+
+        },
+
+        _responsiveChange: function(narrow) {
+          this._setNarrow(narrow);
+
+          if (this.narrow) {
+            this.selected = this.defaultSelected;
+          }
+
+          this.setScrollDirection(this._swipeAllowed() ? 'y' : 'all');
+          this.fire('paper-responsive-change', {narrow: this.narrow});
+        },
+
+        _onQueryMatchesChanged: function(event) {
+          this._responsiveChange(event.detail.value);
+        },
+
+        _forceNarrowChanged: function() {
+          // set the narrow mode only if we reached the `responsiveWidth`
+          this._responsiveChange(this.forceNarrow || this.$.mq.queryMatches);
+        },
+
+        _swipeAllowed: function() {
+          return this.narrow && !this.disableSwipe;
+        },
+
+        _isMainSelected: function() {
+          return this.selected === 'main';
+        },
+
+        _startEdgePeek: function() {
+          this.width = this.$.drawer.offsetWidth;
+          this._moveDrawer(this._translateXForDeltaX(this.rightDrawer ?
+              -this.edgeSwipeSensitivity : this.edgeSwipeSensitivity));
+          this._setPeeking(true);
+        },
+
+        _stopEdgePeek: function() {
+          if (this.peeking) {
+            this._setPeeking(false);
+            this._moveDrawer(null);
+          }
+        },
+
+        _downHandler: function(event) {
+          if (!this.dragging && this._isMainSelected() && this._isEdgeTouch(event) && !sharedPanel) {
+            this._startEdgePeek();
+            // cancel selection
+            event.preventDefault();
+            // grab this panel
+            sharedPanel = this;
+          }
+        },
+
+        _upHandler: function() {
+          this._stopEdgePeek();
+          // release the panel
+          sharedPanel = null;
+        },
+
+        _onTap: function(event) {
+          var targetElement = Polymer.dom(event).localTarget;
+          var isTargetToggleElement = targetElement &&
+            this.drawerToggleAttribute &&
+            targetElement.hasAttribute(this.drawerToggleAttribute);
+
+          if (isTargetToggleElement) {
+            this.togglePanel();
+          }
+        },
+
+        _isEdgeTouch: function(event) {
+          var x = event.detail.x;
+
+          return !this.disableEdgeSwipe && this._swipeAllowed() &&
+            (this.rightDrawer ?
+              x >= this.offsetWidth - this.edgeSwipeSensitivity :
+              x <= this.edgeSwipeSensitivity);
+        },
+
+        _trackStart: function(event) {
+          if (this._swipeAllowed()) {
+            sharedPanel = this;
+            this._setDragging(true);
+
+            if (this._isMainSelected()) {
+              this._setDragging(this.peeking || this._isEdgeTouch(event));
+            }
+
+            if (this.dragging) {
+              this.width = this.$.drawer.offsetWidth;
+              this.transition = false;
+            }
+          }
+        },
+
+        _translateXForDeltaX: function(deltaX) {
+          var isMain = this._isMainSelected();
+
+          if (this.rightDrawer) {
+            return Math.max(0, isMain ? this.width + deltaX : deltaX);
+          } else {
+            return Math.min(0, isMain ? deltaX - this.width : deltaX);
+          }
+        },
+
+        _trackX: function(event) {
+          if (this.dragging) {
+            var dx = event.detail.dx;
+
+            if (this.peeking) {
+              if (Math.abs(dx) <= this.edgeSwipeSensitivity) {
+                // Ignore trackx until we move past the edge peek.
+                return;
+              }
+              this._setPeeking(false);
+            }
+
+            var dy = event.detail.dy;
+            var absDy = Math.abs(dy);
+            if (absDy >= 70) {
+                // Ignore trackx until we move past the edge peek.
+                return;
+            }
+            this._moveDrawer(this._translateXForDeltaX(dx));
+          }
+        },
+
+        _trackEnd: function(event) {
+          if (this.dragging) {
+            var xDirection = event.detail.dx > 0;
+
+            this._setDragging(false);
+            this.transition = true;
+            sharedPanel = null;
+            this._moveDrawer(null);
+
+            var dx = event.detail.dx;
+            var dy = event.detail.dy;
+            var absDy = Math.abs(dy);
+            if (this.rightDrawer) {
+                this[xDirection ? 'closeDrawer' : 'openDrawer']();
+            } else {
+                this[xDirection || dx > -80 || absDy >= 70 ? 'openDrawer' : 'closeDrawer']();
+            }
+          }
+        },
+
+        _transformForTranslateX: function(translateX) {
+          if (translateX === null) {
+            return '';
+          }
+
+          return this.hasWillChange ? 'translateX(' + translateX + 'px)' :
+              'translate3d(' + translateX + 'px, 0, 0)';
+        },
+
+        _moveDrawer: function(translateX) {
+          this.transform(this._transformForTranslateX(translateX), this.$.drawer);
         }
-      },
 
-      _transformForTranslateX: function(translateX) {
-        if (translateX === null) {
-          return '';
-        }
-
-        return this.hasWillChange ? 'translateX(' + translateX + 'px)' :
-            'translate3d(' + translateX + 'px, 0, 0)';
-      },
-
-      _moveDrawer: function(translateX) {
-        this.transform(this._transformForTranslateX(translateX), this.$.drawer);
-      }
-
-    });
-
-  }());
-
-</script>
+      });
+    }());
+  </script>
+</dom-module>
 <iron-iconset-svg name="paper-tabs" size="24">
 <svg><defs>
 <g id="chevron-left"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></g>
@@ -16453,8 +17040,10 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     }
 
     paper-icon-button {
-      width: 24px;
-      padding: 16px;
+      width: 48px;
+      height: 48px;
+      padding: 12px;
+      margin: 0 4px;
     }
 
     #selectionBar {
@@ -17192,6 +17781,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         font: inherit;
         color: var(--paper-input-container-color, --secondary-text-color);
 
+        @apply(--paper-font-common-nowrap);
         @apply(--paper-font-subhead);
         @apply(--paper-input-container-label);
       }
@@ -17200,12 +17790,27 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       .input-content.label-is-floating ::content .paper-input-label {
         -webkit-transform: translateY(-75%) scale(0.75);
         transform: translateY(-75%) scale(0.75);
-        -webkit-transform-origin: left top;
-        transform-origin: left top;
         -webkit-transition: -webkit-transform 0.25s;
         transition: transform 0.25s;
 
+        -webkit-transform-origin: left top;
+        transform-origin: left top;
+
+        /* Since we scale to 75/100 of the size, we actually have 100/75 of the
+        original space now available */
+        width: 133%;
+
         @apply(--paper-transition-easing);
+      }
+
+      :host-context([dir="rtl"]) .input-content.label-is-floating ::content label,
+      :host-context([dir="rtl"]) .input-content.label-is-floating ::content .paper-input-label {
+        /* TODO(noms): Figure out why leaving the width at 133% before the animation
+         * actually makes
+         * it wider on the right side, not left side, as you would expect in RTL */
+        width: 100%;
+        -webkit-transform-origin: right top;
+        transform-origin: right top;
       }
 
       .input-content.label-is-highlighted ::content label,
@@ -17238,6 +17843,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         border: none;
         color: var(--paper-input-container-input-color, --primary-text-color);
         -webkit-appearance: none;
+        text-align: inherit;
 
         @apply(--paper-font-subhead);
         @apply(--paper-input-container-input);
@@ -17262,6 +17868,10 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         resize: none;
       }
 
+      .add-on-content {
+        position: relative;
+      }
+
       .add-on-content.is-invalid ::content * {
         color: var(--paper-input-container-invalid-color, --google-red-500);
       }
@@ -17277,7 +17887,8 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
     <div class$="[[_computeInputContentClass(noLabelFloat,alwaysFloatLabel,focused,invalid,_inputHasContent)]]">
       <content select="[prefix]" id="prefix"></content>
-      <div class="label-and-input-container">
+
+      <div class="label-and-input-container" id="labelAndInputContainer">
         <content select=":not([add-on]):not([prefix]):not([suffix])"></content>
       </div>
       <content select="[suffix]"></content>
@@ -17440,6 +18051,21 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       } else {
         this._handleValue(this._inputElement);
       }
+
+      this._numberOfPrefixNodes = 0;
+      this._prefixObserver = Polymer.dom(this.$.prefix).observeNodes(
+          function(mutations) {
+            // Keep track whether there's at least one prefix node, since it
+            // affects laying out the floating label.
+            this._numberOfPrefixNodes += mutations.addedNodes.length -
+                mutations.removedNodes.length;
+          }.bind(this));
+    },
+
+    detached: function() {
+      if (this._prefixObserver) {
+        Polymer.dom(this.$.prefix).unobserveNodes(this._prefixObserver);
+      }
     },
 
     _onAddonAttached: function(event) {
@@ -17536,16 +18162,15 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
           } else if (focused) {
             cls += " label-is-highlighted";
           }
-          // The label might have a horizontal offset if a prefix element exists
+          // If a prefix element exists, the label has a horizontal offset
           // which needs to be undone when displayed as a floating label.
-          if (Polymer.dom(this.$.prefix).getDistributedNodes().length > 0 &&
-              label && label.offsetParent) {
-            label.style.left = -label.offsetParent.offsetLeft + 'px';
+          if (this._numberOfPrefixNodes > 0) {
+            this.$.labelAndInputContainer.style.position = 'static';
           }
         } else {
           // When the label is not floating, it should overlap the input element.
           if (label) {
-            label.style.left = 0;
+            this.$.labelAndInputContainer.style.position = 'relative';
           }
         }
       } else {
@@ -17590,6 +18215,8 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         @apply(--paper-font-caption);
         @apply(--paper-input-error);
         position: absolute;
+        left:0;
+        right:0;
       }
 
       :host([invalid]) {
@@ -17598,7 +18225,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     </style>
 
     <content></content>
-    
+
   </template>
 </dom-module>
 
@@ -17636,6 +18263,10 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
         @apply(--paper-font-caption);
         @apply(--paper-input-char-counter);
+      }
+
+      :host-context([dir="rtl"]) {
+        float: left;
       }
     </style>
 
@@ -17707,7 +18338,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
       <label hidden$="[[!label]]">[[label]]</label>
 
-      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange" autosave$="[[autosave]]" ,="" results$="[[results]]">
+      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange" autosave$="[[autosave]]" results$="[[results]]" accept$="[[accept]]" multiple$="[[multiple]]">
 
       <content select="[suffix]"></content>
 
@@ -18495,6 +19126,10 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       word-wrap: break-word;
     }
 
+    .fit {
+      @apply(--layout-fit);
+    }
+
     textarea {
       position: relative;
       outline: none;
@@ -18508,6 +19143,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       font-size: inherit;
       font-family: inherit;
       line-height: inherit;
+      text-align: inherit;
       @apply(--iron-autogrow-textarea);
     }
 
@@ -18517,6 +19153,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
   </style>
   <template>
+    
     
     <div id="mirror" class="mirror-text" aria-hidden="true">&nbsp;</div>
 
@@ -18543,6 +19180,8 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
       /**
        * Use this property instead of `value` for two-way data binding.
+       *
+       * @type {string|number|undefined|null}
        */
       bindValue: {
         observer: '_bindValueChanged',
@@ -18746,7 +19385,8 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       while (this.rows > 0 && _tokens.length < this.rows) {
         _tokens.push('');
       }
-      return _tokens.join('<br>') + '&nbsp;';
+      // Use &#160; instead &nbsp; of to allow this element to be used in XHTML.
+      return _tokens.join('<br/>') + '&#160;';
     },
 
     _valueForMirror: function() {
@@ -18779,7 +19419,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
 
       <label hidden$="[[!label]]">[[label]]</label>
 
-      <iron-autogrow-textarea id="input" class="paper-input-input" bind-value="{{value}}" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" required$="[[required]]" maxlength$="[[maxlength]]" autocapitalize$="[[autocapitalize]]" rows$="[[rows]]" max-rows$="[[maxRows]]" on-change="_onChange"></iron-autogrow-textarea>
+      <iron-autogrow-textarea id="input" class="paper-input-input" bind-value="{{value}}" disabled$="[[disabled]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" required$="[[required]]" maxlength$="[[maxlength]]" autocapitalize$="[[autocapitalize]]" rows$="[[rows]]" max-rows$="[[maxRows]]" on-change="_onChange"></iron-autogrow-textarea>
 
       <template is="dom-if" if="[[errorMessage]]">
         <paper-input-error>[[errorMessage]]</paper-input-error>
@@ -18876,7 +19516,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         background-color: var(--paper-checkbox-unchecked-background-color, transparent);
       }
 
-      :host #ink {
+      #ink {
         position: absolute;
         top: -15px;
         left: -15px;
@@ -18887,11 +19527,16 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         pointer-events: none;
       }
 
-      :host #ink[checked] {
+      :host-context([dir="rtl"]) #ink {
+        right: -15px;
+        left: auto;
+      }
+
+      #ink[checked] {
         color: var(--paper-checkbox-checked-ink-color, --default-primary-color);
       }
 
-      :host #checkbox {
+      #checkbox {
         position: relative;
         box-sizing: border-box;
         height: 100%;
@@ -18939,12 +19584,12 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         }
       }
 
-      :host #checkbox.checked {
+      #checkbox.checked {
         background-color: var(--paper-checkbox-checked-color, --default-primary-color);
         border-color: var(--paper-checkbox-checked-color, --default-primary-color);
       }
 
-      :host #checkmark {
+      #checkmark {
         -webkit-transform: rotate(45deg);
         transform: rotate(45deg);
         position: absolute;
@@ -18965,10 +19610,15 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         position: relative;
         display: inline-block;
         vertical-align: middle;
-        padding-left: 8px;
+        padding-left: var(--paper-checkbox-label-spacing, 8px);
         white-space: normal;
         pointer-events: none;
         color: var(--paper-checkbox-label-color, --primary-text-color);
+      }
+
+      :host-context([dir="rtl"]) #checkboxLabel {
+        padding-right: var(--paper-checkbox-label-spacing, 8px);
+        padding-left: 0;
       }
 
       #checkboxLabel[hidden] {
@@ -19074,8 +19724,29 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         padding: 0px 16px;
       }
 
-      :host > ::content > *:not(:first-child):not(:last-child) {
-        margin-right: 16px;
+      :host(.iron-selected) {
+        font-weight: var(--paper-item-selected-weight, bold);
+        @apply(--paper-item-selected);
+      }
+
+      :host([disabled]) {
+        color: var(--paper-item-disabled-color, --disabled-text-color);
+        @apply(--paper-item-disabled);
+      }
+
+      :host(:focus) {
+        position: relative;
+        outline: 0;
+        @apply(--paper-item-focused);
+      }
+
+      :host(:focus):before {
+        @apply(--layout-fit);
+        content: '';
+        background: currentColor;
+        opacity: var(--dark-divider-opacity);
+
+        @apply(--paper-item-focused-before);
       }
     </style>
   </template>
@@ -19101,7 +19772,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       is: 'paper-item',
 
       hostAttributes: {
-        role: 'listitem',
+        role: 'option',
         tabindex: '0'
       },
 
@@ -19141,7 +19812,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       is: 'paper-icon-item',
 
       hostAttributes: {
-        'role': 'listitem',
+        'role': 'option',
         'tabindex': '0'
       },
 
@@ -19214,7 +19885,7 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         vertical-align: middle;
       }
 
-      :host #ink {
+      #ink {
         position: absolute;
         top: -16px;
         left: -16px;
@@ -19225,15 +19896,21 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         pointer-events: none;
       }
 
-      :host #ink[checked] {
+      :host-context([dir="rtl"]) #ink {
+        right: -15px;
+        left: auto;
+      }
+
+      #ink[checked] {
         color: var(--paper-radio-button-checked-ink-color, --default-primary-color);
       }
 
-      :host #offRadio {
+      #offRadio {
         position: absolute;
         box-sizing: content-box;
         top: 0px;
         left: 0px;
+        right: 0px;
         width: 12px;
         height: 12px;
         border-radius: 50%;
@@ -19243,11 +19920,12 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         transition: border-color 0.28s;
       }
 
-      :host #onRadio {
+      #onRadio {
         position: absolute;
         box-sizing: content-box;
         top: 4px;
         left: 4px;
+        right: 4px;
         width: 8px;
         height: 8px;
         border-radius: 50%;
@@ -19271,10 +19949,15 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
         position: relative;
         display: inline-block;
         vertical-align: middle;
-        margin-left: 10px;
+        margin-left: var(--paper-radio-button-label-spacing, 10px);
         white-space: normal;
         pointer-events: none;
         color: var(--paper-radio-button-label-color, --primary-text-color);
+      }
+
+      :host-context([dir="rtl"]) #radioLabel {
+        margin-left: 0px;
+        margin-right: var(--paper-radio-button-label-spacing, 10px);
       }
 
       #radioLabel[hidden] {
@@ -19308,7 +19991,6 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
     </div>
 
     <div id="radioLabel"><content></content></div>
-
   </template>
 
   <script>
@@ -19351,7 +20033,6 @@ iron-selector:not(.narrow-layout) #main ::content [paper-drawer-toggle] {
       }
     })
   </script>
-
 </dom-module>
 <dom-module id="paper-radio-group" assetpath="bower_components/paper-radio-group/">
   <style>
