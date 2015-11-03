@@ -26,6 +26,6 @@ setQualityFieldVisible(options.QualityOptions.length>0);$('#selectProfile',form)
 function isAvailable(item,user){if(AppInfo.isNativeApp&&!Dashboard.capabilities().SupportsSync){return false;}
 return item.SupportsSync;}
 window.SyncManager={showMenu:showSyncMenu,isAvailable:isAvailable,renderForm:renderForm,setJobValues:setJobValues};function showSyncButtonsPerUser(page){var apiClient=window.ApiClient;if(!apiClient||!apiClient.getCurrentUserId()){return;}
-Dashboard.getCurrentUser().done(function(user){$('.categorySyncButton',page).visible(user.Policy.EnableSync);});}
+Dashboard.getCurrentUser().done(function(user){var item={SupportsSync:true};$('.categorySyncButton',page).visible(isAvailable(item));});}
 function onCategorySyncButtonClick(page,button){var category=button.getAttribute('data-category');var parentId=LibraryMenu.getTopParentId();SyncManager.showMenu({ParentId:parentId,Category:category});}
 $(document).on('pageinit',".libraryPage",function(){var page=this;$('.categorySyncButton',page).on('click',function(){onCategorySyncButtonClick(page,this);});}).on('pageshow',".libraryPage",function(){var page=this;if(!Dashboard.isServerlessPage()){showSyncButtonsPerUser(page);}});})(window,jQuery);
