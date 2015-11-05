@@ -159,7 +159,6 @@ require(depends,function(){$(mainDrawerPanelContent).html(Globalize.translateDoc
 onAppReady(deferred);});});}
 function onAppReady(deferred){onDocumentReady();var deps=[];if(AppInfo.isNativeApp&&$.browser.safari){if(Dashboard.capabilities().SupportsSync){deps.push('cordova/ios/backgroundfetch');}
 deps.push('cordova/ios/tabbar');}
-if(AppInfo.isNativeApp&&$.browser.android){deps.push('cordova/android/newapp');}
 require(deps,function(){Dashboard.initPromiseDone=true;$.mobile.initializePage();deferred.resolve();});}
 function initCordovaWithDeviceId(deferred,deviceId){require(['cordova/imagestore']);cordova.getAppVersion.getVersionNumber(function(appVersion){var capablities=Dashboard.capabilities();var name=$.browser.android?"Emby for Android":($.browser.safari?"Emby for iOS":"Emby Mobile");var cleanDeviceName=device.model.replace(/[^\w\s]/gi,'');init(deferred,capablities,name,appVersion,deviceId,cleanDeviceName);});}
 function initCordova(deferred){document.addEventListener("deviceready",function(){window.plugins.uniqueDeviceID.get(function(uuid){initCordovaWithDeviceId(deferred,uuid);},function(){initCordovaWithDeviceId(deferred,device.uuid);});},false);}

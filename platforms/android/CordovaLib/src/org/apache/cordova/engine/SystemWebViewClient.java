@@ -234,8 +234,8 @@ public class SystemWebViewClient extends WebViewClient {
                 handler.proceed();
                 return;
             } else {
-                handler.proceed();
-                return;
+                // debug = false
+                super.onReceivedSslError(view, handler, error);
             }
         } catch (NameNotFoundException e) {
             // When it doubt, lock it out!
