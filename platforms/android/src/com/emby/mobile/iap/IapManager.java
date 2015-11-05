@@ -45,8 +45,8 @@ public class IapManager {
 
         logger.Info("getPurchaseInfos");
 
-        final String unlockSku = "com.emby.mobile.unlock";
-        final String monthlySubSky = "emby.premiere.monthly";
+        final String unlockSku = InAppProduct.getCurrentUnlockSku("com.emby.mobile");
+        final String monthlySubSky = InAppProduct.getCurrentMonthlySku("com.emby.mobile");
 
         isPurchasedInternal(unlockSku, new Response<Boolean>() {
 
