@@ -342,7 +342,6 @@ module.exports.metadata =
     "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
-    "cordova-plugin-crosswalk-webview": "1.2.0",
     "cordova-plugin-file": "3.0.0",
     "cordova-plugin-file-transfer": "1.1.0",
     "nl.x-services.plugins.actionsheet": "1.1.7",
@@ -358,6 +357,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.6.3",
     "cordova-plugin-webserver": "1.0.3",
     "cc.fovea.cordova.purchase": "4.0.0",
+    "cordova-plugin-crosswalk-webview": "1.4.0-dev",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

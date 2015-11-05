@@ -17,8 +17,11 @@
        under the License.
 */
 
-def DEFAULT_VERSION = "org.xwalk:xwalk_core_library_beta:13+"
-def DEFAULT_COMMAND_LINE = "--disable-pull-to-refresh-effect"
+def EMBEDDED_MODE = "embedded"
+def SHARED_MODE = "shared"
+def DEFAULT_GROUP_ID = "org.xwalk:"
+def SHARED_ARTIFACT_ID = "xwalk_shared_library:"
+def EMBEDD_ARTIFACT_ID = "xwalk_core_library:"
 
 repositories {
   maven {
@@ -26,49 +29,59 @@ repositories {
   }
 }
 
-if (cdvBuildMultipleApks == null) {
-    ext.cdvBuildMultipleApks = true
-}
-if (cdvMinSdkVersion == null) {
-    ext.cdvMinSdkVersion = 14
-}
-
-def getConfigPreference(name, defaultValue) {
+def getConfigPreference(name) {
     name = name.toLowerCase()
     def xml = file("res/xml/config.xml").getText()
     // Disable namespace awareness since Cordova doesn't use them properly
     def root = new XmlParser(false, false).parseText(xml)
 
-    def ret = defaultValue
+    def ret, defaultValue
     root.preference.each { it ->
         def attrName = it.attribute("name")
         if (attrName && attrName.toLowerCase() == name) {
-            ret = it.attribute("value")
+            if (it.attribute('default') != null) {
+                defaultValue = it.attribute('default');
+            } else {
+                ret = it.attribute("value")
+            }
         }
     }
-    return ret
+    return ret ? ret : defaultValue
 }
 
+if (cdvBuildMultipleApks == null) {
+    ext.cdvBuildMultipleApks = getConfigPreference("xwalkMultipleApk").toBoolean();
+}
+if (cdvMinSdkVersion == null) {
+    def minSdk = getConfigPreference("android-minSdkVersion");
+    ext.cdvMinSdkVersion =  minSdk && minSdk.toInteger() > 14 ? minSdk : 14;
+}
+
+if (!project.hasProperty('xwalkMode')) {
+    def mode = getConfigPreference("xwalkMode")
+    println mode
+    ext.artifactid = mode == SHARED_MODE ? SHARED_ARTIFACT_ID : EMBEDD_ARTIFACT_ID;
+}
 // Set defaults before project's build-extras.gradle
 if (!project.hasProperty('xwalkVersion')) {
-    ext.xwalkVersion = getConfigPreference("xwalkversion", DEFAULT_VERSION)
+    ext.xwalkVersion = getConfigPreference("xwalkVersion")
 }
 if (!project.hasProperty('xwalkCommandLine')) {
-    ext.xwalkCommandLine = getConfigPreference("xwalkcommandline", DEFAULT_COMMAND_LINE)
+    ext.xwalkCommandLine = getConfigPreference("xwalkCommandLine")
 }
-
 // Apply values after project's build-extras.gradle
 cdvPluginPostBuildExtras.add({
 
     def xwalkSpec = xwalkVersion
     if ((xwalkSpec =~ /:/).count == 1) {
-        xwalkSpec = "org.xwalk:${xwalkSpec}"
+        xwalkSpec = DEFAULT_GROUP_ID + xwalkSpec
     } else if ((xwalkSpec =~ /:/).count == 0) {
         if (xwalkSpec ==~ /\d+/) {
             xwalkSpec = "${xwalkSpec}+"
         }
-        xwalkSpec = "org.xwalk:xwalk_core_library_beta:${xwalkSpec}"
+        xwalkSpec = DEFAULT_GROUP_ID + artifactid + xwalkSpec
     }
+    println xwalkSpec
 
     dependencies {
         compile xwalkSpec

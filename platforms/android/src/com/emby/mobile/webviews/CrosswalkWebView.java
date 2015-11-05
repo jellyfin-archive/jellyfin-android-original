@@ -1,11 +1,8 @@
 package com.emby.mobile.webviews;
 
-import android.os.Build;
-
 import com.emby.mobile.EmptyStringCallback;
 
 import org.crosswalk.engine.XWalkCordovaView;
-import org.xwalk.core.XWalkView;
 
 /**
  * Created by Luke on 5/28/2015.

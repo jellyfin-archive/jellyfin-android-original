@@ -23,7 +23,6 @@
     <feature name="AndroidFullScreen">
         <param name="android-package" value="com.mesmotronic.plugins.FullScreenPlugin" />
     </feature>
-    <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
     <feature name="File">
         <param name="android-package" value="org.apache.cordova.file.FileUtils" />
         <param name="onload" value="true" />
@@ -56,6 +55,11 @@
     <feature name="InAppBillingPlugin">
         <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
     </feature>
+    <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
+    <preference default="15+" name="xwalkVersion" />
+    <preference default="--disable-pull-to-refresh-effect" name="xwalkCommandLine" />
+    <preference default="embedded" name="xwalkMode" />
+    <preference default="true" name="xwalkMultipleApk" />
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="21" />
     <preference name="StatusBarOverlaysWebView" value="false" />
@@ -103,4 +107,8 @@
     <preference name="SplashScreenHeight" value="300" />
     <preference name="SplashMaintainAspectRatio" value="true" />
     <icon src="res/icon.png" />
+    <preference name="xwalkVersion" value="15+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="true" />
 </widget>

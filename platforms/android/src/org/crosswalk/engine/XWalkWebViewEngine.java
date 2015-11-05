@@ -19,18 +19,23 @@
 
 package org.crosswalk.engine;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 
 import org.apache.cordova.CordovaBridge;
 import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaPreferences;
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.ICordovaCookieManager;
 import org.apache.cordova.NativeToJsMessageQueue;
+import org.apache.cordova.PluginEntry;
 import org.apache.cordova.PluginManager;
+import org.xwalk.core.XWalkActivityDelegate;
 import org.xwalk.core.XWalkNavigationHistory;
 import org.xwalk.core.XWalkView;
 
@@ -40,6 +45,7 @@ import org.xwalk.core.XWalkView;
 public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     public static final String TAG = "XWalkWebViewEngine";
+    public static final String XWALK_USER_AGENT = "xwalkUserAgent";
 
     protected final XWalkCordovaView webView;
     protected XWalkCordovaCookieManager cookieManager;
@@ -50,15 +56,33 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     protected PluginManager pluginManager;
     protected CordovaResourceApi resourceApi;
     protected NativeToJsMessageQueue nativeToJsMessageQueue;
+    protected XWalkActivityDelegate activityDelegate;
+    protected String startUrl;
+    protected CordovaPreferences preferences;
 
     /** Used when created via reflection. */
     public XWalkWebViewEngine(Context context, CordovaPreferences preferences) {
-        this(new XWalkCordovaView(context, preferences));
-    }
+        this.preferences = preferences;
+        Runnable cancelCommand = new Runnable() {
+            @Override
+            public void run() {
+                cordova.getActivity().finish();
+            }
+        };
+        Runnable completeCommand = new Runnable() {
+            @Override
+            public void run() {
+                cookieManager = new XWalkCordovaCookieManager();
 
-    public XWalkWebViewEngine(XWalkCordovaView webView) {
-        this.webView = webView;
-        cookieManager = new XWalkCordovaCookieManager();
+                initWebViewSettings();
+                exposeJsInterface(webView, bridge);
+
+                loadUrl(startUrl, true);
+            }
+        };
+        activityDelegate = new XWalkActivityDelegate((Activity) context, cancelCommand, completeCommand);
+
+        webView = new XWalkCordovaView(context, preferences);
     }
 
     // Use two-phase init so that the control will work with XML layouts.
@@ -78,9 +102,9 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
         this.nativeToJsMessageQueue = nativeToJsMessageQueue;
 
         webView.init(this);
-        initWebViewSettings();
 
-        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
+        nativeToJsMessageQueue.addBridgeMode(new NativeToJsMessageQueue.OnlineEventsBridgeMode(
+                new NativeToJsMessageQueue.OnlineEventsBridgeMode.OnlineEventsBridgeModeDelegate() {
             @Override
             public void setNetworkAvailable(boolean value) {
                 webView.setNetworkAvailable(value);
@@ -91,7 +115,6 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
             }
         }));
         bridge = new CordovaBridge(pluginManager, nativeToJsMessageQueue);
-        exposeJsInterface(webView, bridge);
     }
 
     @Override
@@ -106,6 +129,16 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     private void initWebViewSettings() {
         webView.setVerticalScrollBarEnabled(false);
+
+        // Set xwalk webview settings by Cordova preferences.
+        String xwalkUserAgent = preferences == null ? "" : preferences.getString(XWALK_USER_AGENT, "");
+        if (!xwalkUserAgent.isEmpty()) {
+            webView.setUserAgentString(xwalkUserAgent);
+        }
+        if (preferences.contains("BackgroundColor")) {
+            int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
+            webView.setBackgroundColor(backgroundColor);
+        }
     }
 
     private static void exposeJsInterface(XWalkView webView, CordovaBridge bridge) {
@@ -115,6 +148,7 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     @Override
     public boolean canGoBack() {
+        if (!activityDelegate.isXWalkReady()) return false;
         return this.webView.getNavigationHistory().canGoBack();
     }
 
@@ -129,6 +163,7 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     @Override
     public void setPaused(boolean value) {
+        if (!activityDelegate.isXWalkReady()) return;
         if (value) {
             // TODO: I think this has been fixed upstream and we don't need to override pauseTimers() anymore.
             webView.pauseTimersForReal();
@@ -139,26 +174,31 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     @Override
     public void destroy() {
+        if (!activityDelegate.isXWalkReady()) return;
         webView.onDestroy();
     }
 
     @Override
     public void clearHistory() {
-    	this.webView.getNavigationHistory().clear();
+        if (!activityDelegate.isXWalkReady()) return;
+        this.webView.getNavigationHistory().clear();
     }
 
     @Override
     public void stopLoading() {
+        if (!activityDelegate.isXWalkReady()) return;
         this.webView.stopLoading();
     }
 
     @Override
     public void clearCache() {
+        if (!activityDelegate.isXWalkReady()) return;
         webView.clearCache(true);
     }
 
     @Override
     public String getUrl() {
+        if (!activityDelegate.isXWalkReady()) return null;
         return this.webView.getUrl();
     }
 
@@ -169,6 +209,22 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     @Override
     public void loadUrl(String url, boolean clearNavigationStack) {
+        if (!activityDelegate.isXWalkReady()) {
+            startUrl = url;
+
+            CordovaPlugin initPlugin = new CordovaPlugin() {
+                @Override
+                public void onResume(boolean multitasking) {
+                    activityDelegate.onResume();
+                }
+            };
+            pluginManager.addService(new PluginEntry("XWalkInit", initPlugin));
+            return;
+        }
         webView.load(url, null);
+    }
+
+    public boolean isXWalkReady() {
+        return activityDelegate.isXWalkReady();
     }
 }

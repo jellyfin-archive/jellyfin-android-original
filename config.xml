@@ -101,4 +101,8 @@
 	<preference name="SplashScreenBackgroundColor" value="#1f1f1f" /> <!-- defaults to "#464646" -->
 	<preference name="BackgroundColor" value="0xff222222" />
   </platform>
+    <preference name="xwalkVersion" value="15+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="true" />
 </widget>
