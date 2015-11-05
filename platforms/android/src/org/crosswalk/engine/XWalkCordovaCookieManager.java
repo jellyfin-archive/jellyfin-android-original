@@ -19,7 +19,7 @@
 package org.crosswalk.engine;
 
 import org.apache.cordova.ICordovaCookieManager;
-import org.xwalk.core.internal.XWalkCookieManager;
+import org.xwalk.core.XWalkCookieManager;
 
 class XWalkCordovaCookieManager implements ICordovaCookieManager {
 

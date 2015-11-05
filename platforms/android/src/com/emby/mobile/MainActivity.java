@@ -43,12 +43,14 @@ import com.emby.mobile.media.RemotePlayerService;
 import com.emby.mobile.preferences.PreferencesProvider;
 import com.emby.mobile.webviews.CrosswalkWebView;
 import com.emby.mobile.webviews.IWebView;
+import com.emby.mobile.webviews.MyXWalkWebViewEngine;
 import com.emby.mobile.webviews.NativeWebView;
 
 import net.rdrei.android.dirchooser.DirectoryChooserActivity;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 
 import org.apache.cordova.CordovaActivity;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
 import org.crosswalk.engine.XWalkWebViewEngine;
@@ -118,32 +120,34 @@ public class MainActivity extends CordovaActivity
     @Override
     protected CordovaWebViewEngine makeWebViewEngine() {
 
-        CordovaWebViewEngine engine =  new XWalkWebViewEngine(this, preferences);
+        Context context = getApplicationContext();
 
-        View engineView = engine.getView();
+        CordovaWebViewEngine engine =  new MyXWalkWebViewEngine(this, preferences, this);
+
         final ILogger logger = getLogger();
         jsonSerializer = new GsonJsonSerializer();
 
-        webView = null;
-
-        if (engineView instanceof WebView){
-
-            WebView webkitView = (WebView)engine.getView();
-            webView = new NativeWebView(webkitView);
-        }
-        else{
-
-            XWalkCordovaView xView = (XWalkCordovaView)engine.getView();
-            webView = new CrosswalkWebView(xView);
-        }
-
-        Context context = getApplicationContext();
+        //WebView webkitView = (WebView)engine.getView();
+        //webView = new NativeWebView(webkitView);
+        XWalkCordovaView xView = (XWalkCordovaView)engine.getView();
+        webView = new CrosswalkWebView(xView);
 
         iapManager = new IapManager(context, webView, logger);
-        webView.addJavascriptInterface(iapManager, "NativeIapManager");
         ApiClientBridge apiClientBridge = new ApiClientBridge(context, logger, webView, jsonSerializer);
-        webView.addJavascriptInterface(apiClientBridge, "ApiClientBridge");
         httpClient = apiClientBridge.httpClient;
+
+        //addJavascriptInterfaces();
+
+        return engine;
+    }
+
+    public void addJavascriptInterfaces(){
+
+        Context context = getApplicationContext();
+        final ILogger logger = getLogger();
+
+        webView.addJavascriptInterface(iapManager, "NativeIapManager");
+        webView.addJavascriptInterface(ApiClientBridge.Current, "ApiClientBridge");
         webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
@@ -154,8 +158,6 @@ public class MainActivity extends CordovaActivity
         PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
 
         webView.addJavascriptInterface(preferencesProvider, "AndroidSharedPreferences");
-
-        return engine;
     }
 
     @Override

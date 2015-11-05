@@ -173,21 +173,13 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
     // File Chooser
     @Override
     public void openFileChooser(XWalkView view, final ValueCallback<Uri> uploadFile, String acceptType, String capture) {
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("*/*"); // TODO: wire this to acceptType.
-        Intent intent = Intent.createChooser(i, "File Browser");
-        try {
-            parentEngine.cordova.startActivityForResult(new CordovaPlugin() {
-                @Override
-                public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-                    Uri result = intent == null || resultCode != Activity.RESULT_OK ? null : intent.getData();
-                    uploadFile.onReceiveValue(result);
-                }
-            }, intent, FILECHOOSER_RESULTCODE);
-        } catch (ActivityNotFoundException e) {
-            Log.w("No activity found to handle file chooser intent.", e);
-            uploadFile.onReceiveValue(null);
-        }
+        uploadFile.onReceiveValue(null);
+
+        parentEngine.cordova.setActivityResultCallback(new CordovaPlugin() {
+            @Override
+            public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+                parentEngine.webView.onActivityResult(requestCode, resultCode, intent);
+            }
+        });
     }
 }

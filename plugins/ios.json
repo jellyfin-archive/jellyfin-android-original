@@ -324,9 +324,6 @@
         "com.mesmotronic.plugins.fullscreen": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-file": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -382,6 +379,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cc.fovea.cordova.purchase": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

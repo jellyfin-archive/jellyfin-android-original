@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import org.apache.cordova.CordovaWebView;
@@ -34,18 +33,13 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
             }
             boolean prefAnimatable = preferences == null ? false : preferences.getBoolean("CrosswalkAnimatable", false);
             boolean manifestAnimatable = ai.metaData == null ? false : ai.metaData.getBoolean("CrosswalkAnimatable");
-
-            try {
-                XWalkPreferences.setValue(XWalkPreferences.ANIMATABLE_XWALK_VIEW, false);
-                if ((ai.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-                    XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
-                }
-                XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
-                XWalkPreferences.setValue(XWalkPreferences.ALLOW_UNIVERSAL_ACCESS_FROM_FILE, true);
+            // Selects between a TextureView (obeys framework transforms applied to view) or a SurfaceView (better performance).
+            XWalkPreferences.setValue(XWalkPreferences.ANIMATABLE_XWALK_VIEW, prefAnimatable || manifestAnimatable);
+            if ((ai.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+                XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
             }
-            catch (Exception ex) {
-                Log.e("XWalkCordovaView", "Error in setGlobalPrefs", ex);
-            }
+            XWalkPreferences.setValue(XWalkPreferences.JAVASCRIPT_CAN_OPEN_WINDOW, true);
+            XWalkPreferences.setValue(XWalkPreferences.ALLOW_UNIVERSAL_ACCESS_FROM_FILE, true);
         }
         return context;
     }
@@ -108,5 +102,12 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
     @Override
     public CordovaWebView getCordovaWebView() {
         return parentEngine == null ? null : parentEngine.getCordovaWebView();
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        if (parentEngine != null && parentEngine.isXWalkReady()) {
+            super.setBackgroundColor(color);
+        }
     }
 }
