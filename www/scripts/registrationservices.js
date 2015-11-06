@@ -1,8 +1,9 @@
 ﻿(function(){function getRegistrationInfo(feature){return ConnectionManager.getRegistrationInfo(feature,ApiClient);}
 function validateFeature(feature,deferred){var unlockableProduct=IapManager.getProductInfo(feature)||{};if(unlockableProduct.owned){deferred.resolve();return;}
-var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:true,id:unlockableProduct.id,price:unlockableProduct.price,feature:feature}:null;var prefix=$.browser.android?'android':'ios';getRegistrationInfo(prefix+'appunlock').done(function(registrationInfo){if(registrationInfo.IsRegistered){deferred.resolve();return;}
+var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:true,id:unlockableProduct.id,price:unlockableProduct.price,feature:feature}:null;var prefix=$.browser.android?'android':'ios';IapManager.isUnlockedOverride(feature).done(function(isUnlocked){if(isUnlocked){deferred.resolve();return;}
+getRegistrationInfo(prefix+'appunlock').done(function(registrationInfo){if(registrationInfo.IsRegistered){deferred.resolve();return;}
 IapManager.getSubscriptionOptions().done(function(subscriptionOptions){if(subscriptionOptions.filter(function(p){return p.owned;}).length>0){deferred.resolve();return;}
-var dialogOptions={title:Globalize.translate('HeaderUnlockApp')};showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,registrationInfo,dialogOptions,deferred);});}).fail(function(){deferred.reject();});}
+var dialogOptions={title:Globalize.translate('HeaderUnlockApp')};showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,registrationInfo,dialogOptions,deferred);});}).fail(function(){deferred.reject();});});}
 function cancelInAppPurchase(){var elem=document.querySelector('.inAppPurchaseOverlay');if(elem){PaperDialogHelper.close(elem);}}
 var isCancelled=true;var currentDisplayingProductInfos=[];var currentDisplayingDeferred=null;function clearCurrentDisplayingInfo(){currentDisplayingProductInfos=[];currentDisplayingDeferred=null;}
 function showInAppPurchaseElement(subscriptionOptions,unlockableProductInfo,dialogOptions,deferred){cancelInAppPurchase();currentDisplayingProductInfos=subscriptionOptions.slice(0);if(unlockableProductInfo){currentDisplayingProductInfos.push(unlockableProductInfo);}
