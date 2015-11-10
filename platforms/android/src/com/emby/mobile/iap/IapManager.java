@@ -31,7 +31,8 @@ public class IapManager {
     private IabValidator iabValidator;
     private boolean storeReady;
 
-    public final static String GOOGLE_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk4MSP7wxlKaJwF066w7qQ+FvttXc+uSvUI5a+Lq+TT74Y1LTp0qg1+WRqou78WRK5cdfCr2m1N4LqttmYFfsWG/DBon98+ZFtaUbiP+Nx29YCkawE06hMyn0pONw/FnXB90mm0vGl7+fkpdYoUx1pit2DGoQweAZwmilW2jfPdi+YloSbX3SJlTXcgZIoAzIvY+qOinyuWIaRda5YcDfvson2yQC6XQOYqQ4ZOKhQxCSzaaQp3dLMCXlKPpsQNzFpVQsHLt4OntBMPkK3e/RxTE9AyhQYxofEzdKg/MHz1c3vCFIJCkzPy1cstwYMcjktRoLGgPHjxW60Iq9+USjfwIDAQAB";
+    public final static String GOOGLE_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3hoOq1bO7V26Y3789jPWHOW1Fr5+bfHDHl/ICqITpKevnkoXKN009zuX7gkMLG3F2egosr7Xe9NIZ4U4UAA+O12eZzoytBPgpV3GIeDI65Agzhhoo2wDagiy42MXtjBMah/1iZrGSmO5mfuH1g/CZRilwAZUYvjvBU1VlszLaKp5tbnXVKTQyLCd3YPLVVf3LrluVytb7p9UlFmwyseBgUGIqaj/xBAIxxSW5KcSjfJy7woPp1HrWTSW2b4tiEagNIYh0/f9PSci+xo81RT6VNXTwiD0D7ZmbfH5ixmB6ZWyQXKSJsbl3IvPqN+e8mXEEmbxEawX3Kbmzq+zG7kPAQIDAQAB";
+    private String appPackage = "com.emby.mobile";
 
     public IapManager(Context context, IWebView webView, ILogger logger) {
         this.webView = webView;
@@ -45,8 +46,8 @@ public class IapManager {
 
         logger.Info("getPurchaseInfos");
 
-        final String unlockSku = InAppProduct.getCurrentUnlockSku("com.emby.mobile");
-        final String monthlySubSky = InAppProduct.getCurrentMonthlySku("com.emby.mobile");
+        final String unlockSku = InAppProduct.getCurrentUnlockSku(appPackage);
+        final String monthlySubSky = InAppProduct.getCurrentMonthlySku(appPackage);
 
         isPurchasedInternal(unlockSku, new Response<Boolean>() {
 
@@ -89,6 +90,12 @@ public class IapManager {
         });
 
     }
+
+    @JavascriptInterface
+    public String getUnlockProductSku() { return InAppProduct.getCurrentUnlockSku(appPackage); }
+
+    @JavascriptInterface
+    public String getPremiereMonthlySku() { return InAppProduct.getCurrentMonthlySku(appPackage); }
 
     public InAppProduct getPremiereMonthly() { return iabValidator.getPremiereMonthly(); }
     public InAppProduct getPremiereWeekly() { return iabValidator.getPremiereWeekly(); }
