@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="com.mallzee.collectionrepeatimage" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+	<name>CollectionRepeatImage</name>
+	<description>Offloads image scaling to a background thread to releave pressure on the JavaScript thread</description>
+	<author>Mallzee</author>
+	<license>MIT</license>
+	<keywords>image,collection,repeat,sdwebimage,webimage</keywords>
+	<js-module name="CollectionRepeatImage" src="www/CollectionRepeatImage.js">
+		<clobbers target="window.CollectionRepeatImage"/>
+	</js-module>
+	<js-module name="CollectionRepeatImageOptions" src="www/CollectionRepeatImageOptions.js">
+		<clobbers target="window.CollectionRepeatImageOptions"/>
+	</js-module>
+	<platform name="ios">
+		<config-file parent="/*" target="config.xml">
+			<feature name="CollectionRepeatImage">
+				<param name="ios-package" value="CollectionRepeatImage"/>
+			</feature>
+		</config-file>
+
+		<framework src="ImageIO.framework" weak="true" />
+
+		<header-file src="src/ios/CollectionRepeatImage.h"/>
+		<source-file src="src/ios/CollectionRepeatImage.m"/>
+		<header-file src="src/ios/NSData+ImageContentType.h"/>
+		<source-file src="src/ios/NSData+ImageContentType.m"/>
+		<header-file src="src/ios/SDImageCache.h"/>
+		<source-file src="src/ios/SDImageCache.m"/>
+		<header-file src="src/ios/SDWebImageCompat.h"/>
+		<source-file src="src/ios/SDWebImageCompat.m"/>
+		<header-file src="src/ios/SDWebImageDecoder.h"/>
+		<source-file src="src/ios/SDWebImageDecoder.m"/>
+		<header-file src="src/ios/SDWebImageDownloader.h"/>
+		<source-file src="src/ios/SDWebImageDownloader.m"/>
+		<header-file src="src/ios/SDWebImageDownloaderOperation.h"/>
+		<source-file src="src/ios/SDWebImageDownloaderOperation.m"/>
+		<header-file src="src/ios/SDWebImageManager.h"/>
+		<source-file src="src/ios/SDWebImageManager.m"/>
+		<header-file src="src/ios/SDWebImageOperation.h"/>
+		<header-file src="src/ios/SDWebImagePrefetcher.h"/>
+		<source-file src="src/ios/SDWebImagePrefetcher.m"/>
+		<header-file src="src/ios/UIImage+GIF.h"/>
+		<source-file src="src/ios/UIImage+GIF.m"/>
+		<header-file src="src/ios/UIImage+MultiFormat.h"/>
+		<source-file src="src/ios/UIImage+MultiFormat.m"/>
+		<header-file src="src/ios/UIImage+ResizeMagick.h"/>
+		<source-file src="src/ios/UIImage+ResizeMagick.m"/>
+		<header-file src="src/ios/UIImage+WebP.h"/>
+		<source-file src="src/ios/UIImage+WebP.m"/>
+		<header-file src="src/ios/UIImageView+WebCache.h"/>
+		<source-file src="src/ios/UIImageView+WebCache.m"/>
+		<header-file src="src/ios/UIView+WebCacheOperation.h"/>
+		<source-file src="src/ios/UIView+WebCacheOperation.m"/>
+	</platform>
+	<platform name="android">
+		<config-file parent="/*" target="res/xml/config.xml">
+			<feature name="CollectionRepeatImage">
+				<param name="android-package" value="com.mallzee.collectionrepeatimage.CollectionRepeatImage"/>
+			</feature>
+		</config-file>
+		<config-file parent="/*" target="AndroidManifest.xml"/>
+		<source-file src="src/android/CollectionRepeatImage.java" target-dir="src/com/mallzee/collectionrepeatimage/CollectionRepeatImage"/>
+	</platform>
+</plugin>
