@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.emby.mobile" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.09" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.emby.mobile" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.10" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
@@ -60,6 +60,9 @@
     <feature name="Globalization">
         <param name="android-package" value="org.apache.cordova.globalization.Globalization" />
     </feature>
+    <feature name="CollectionRepeatImage">
+        <param name="android-package" value="com.mallzee.collectionrepeatimage.CollectionRepeatImage" />
+    </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="21" />
     <preference name="StatusBarOverlaysWebView" value="false" />
@@ -112,7 +115,4 @@
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="xwalkUserAgent" value="crosswalk/15 android" />
-    <feature name="CollectionRepeatImage">
-        <param name="android-package" value="com.mallzee.collectionrepeatimage.CollectionRepeatImage" />
-    </feature>
 </widget>
