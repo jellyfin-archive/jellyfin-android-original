@@ -61,10 +61,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Globalization\"><param name=\"ios-package\" value=\"CDVGlobalization\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Notification\"><param name=\"ios-package\" value=\"CDVNotification\" /></feature>",
                             "count": 1
                         },
@@ -118,6 +114,10 @@
                         },
                         {
                             "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Globalization\"><param name=\"ios-package\" value=\"CDVGlobalization\" /></feature>",
                             "count": 1
                         }
                     ],
@@ -348,9 +348,6 @@
         "com.dieam.searchbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-globalization": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -382,6 +379,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-globalization": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
