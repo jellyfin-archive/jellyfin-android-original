@@ -72,7 +72,7 @@
         self.getImageUrl = function (originalUrl) {
 
             if ($.browser.android && originalUrl.indexOf('tag=') != -1) {
-                originalUrl += "&format=webp";
+                originalUrl += "&accept=webp";
             }
 
             var deferred = DeferredBuilder.Deferred();
@@ -111,15 +111,16 @@
                 setImageIntoElement(elem, url);
             }
 
-            if ($.browser.safari) {
-                setImageWithSdWebImage(elem, url);
-            } else {
-                self.getImageUrl(url).done(function (localUrl) {
+            //if ($.browser.safari) {
+            //    setImageWithSdWebImage(elem, url);
+            //    return;
+            //}
 
-                    setImageIntoElement(elem, localUrl);
+            self.getImageUrl(url).done(function (localUrl) {
 
-                }).fail(onFail);
-            }
+                setImageIntoElement(elem, localUrl);
+
+            }).fail(onFail);
         };
 
         var imageIdIndex = 1;
