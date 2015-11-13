@@ -344,6 +344,20 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImage.js",
+        "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImage",
+        "clobbers": [
+            "window.CollectionRepeatImage"
+        ]
+    },
+    {
+        "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImageOptions.js",
+        "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImageOptions",
+        "clobbers": [
+            "window.CollectionRepeatImageOptions"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "clobbers": [
@@ -423,6 +437,7 @@ module.exports.metadata =
     "cc.fovea.cordova.purchase": "4.0.0",
     "cordova-plugin-crosswalk-webview": "1.4.0-dev",
     "cordova-plugin-globalization": "1.0.1",
+    "com.mallzee.collectionrepeatimage": "0.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
