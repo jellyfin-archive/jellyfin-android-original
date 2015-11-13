@@ -55,9 +55,6 @@
     <feature name="SearchBar">
         <param name="ios-package" value="SearchBar" />
     </feature>
-    <feature name="Globalization">
-        <param name="ios-package" value="CDVGlobalization" />
-    </feature>
     <feature name="Notification">
         <param name="ios-package" value="CDVNotification" />
     </feature>
@@ -172,4 +169,7 @@
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="xwalkUserAgent" value="crosswalk/15 android" />
+    <feature name="Globalization">
+        <param name="ios-package" value="CDVGlobalization" />
+    </feature>
 </widget>

@@ -59,10 +59,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Globalization\"><param name=\"android-package\" value=\"org.apache.cordova.globalization.Globalization\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
                             "count": 1
                         },
@@ -96,6 +92,10 @@
                         },
                         {
                             "xml": "<preference default=\"true\" name=\"xwalkMultipleApk\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Globalization\"><param name=\"android-package\" value=\"org.apache.cordova.globalization.Globalization\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -248,9 +248,6 @@
         "com.dieam.searchbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-globalization": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -274,6 +271,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-globalization": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

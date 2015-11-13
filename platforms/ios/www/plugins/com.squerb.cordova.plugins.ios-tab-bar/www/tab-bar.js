@@ -74,14 +74,14 @@ TabBar.prototype.hide = function ( animate ) {
  * @param {Object} [options] Options for customizing the individual tab item
  *  - \c badge value to display in the optional circular badge on the item; if null or unspecified, the badge will be hidden
  */
-TabBar.prototype.createItem = function ( name, label, image, onselect, options ) {
+TabBar.prototype.createItem = function ( name, label, image, options ) {
     var tag = this.tabBarTag++;
-    if ( onselect ) {
-        this.tabBarCallbacks[tag] = {'onSelect': onselect, 'name': name};
+    if ( options && 'onSelect' in options && typeof(options['onSelect']) == 'function' ) {
+        this.tabBarCallbacks[tag] = {'onSelect': options.onSelect, 'name': name};
     }
     this.tabBarItems.push(name);
     this.nameTags[name] = tag;
-               exec( null, null, this.serviceName, "createTabBarItem", [ name, label, image, tag, options ] );
+    exec( null, null, this.serviceName, "createTabBarItem", [ name, label, image, tag, options ] );
 };
 
 /**
