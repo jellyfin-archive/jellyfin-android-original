@@ -143,7 +143,8 @@
             imageIdIndex++;
 
             window.CollectionRepeatImage.getImage(options, function (data) {
-                image.src = 'data:image/jpeg;base64,' + data;
+                var dataUrl = 'data:image/jpeg;base64,' + data;
+                elem.style.backgroundImage = "url('" + dataUrl + "')";
             });
         }
 
