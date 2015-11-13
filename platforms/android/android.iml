@@ -109,8 +109,8 @@
     <orderEntry type="library" exported="" name="gson-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="slf4j-api-1.7.10" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="xwalk_core_library-15.44.384.13" level="project" />
     <orderEntry type="library" exported="" name="play-services-cast-7.8.0" level="project" />
-    <orderEntry type="library" exported="" name="xwalk_core_library-15.44.384.12" level="project" />
     <orderEntry type="library" exported="" name="emby.apiclient" level="project" />
     <orderEntry type="library" exported="" name="emby.apiclient.android" level="project" />
     <orderEntry type="library" exported="" name="connect-sdk-android-1.6.0" level="project" />

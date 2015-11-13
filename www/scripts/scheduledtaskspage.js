@@ -22,7 +22,7 @@ function onWebSocketConnectionOpen(){var page=$($.mobile.activePage)[0];startInt
 var pollInterval;function onPollIntervalFired(){var page=$($.mobile.activePage)[0];if(!ApiClient.isWebSocketOpen()){reloadList(page);}}
 function startInterval(){if(ApiClient.isWebSocketOpen()){ApiClient.sendWebSocketMessage("ScheduledTasksInfoStart","1000,1000");}
 if(pollInterval){clearInterval(pollInterval);}
-pollInterval=setInterval(onPollIntervalFired,1500);}
+pollInterval=setInterval(onPollIntervalFired,5000);}
 function stopInterval(){if(ApiClient.isWebSocketOpen()){ApiClient.sendWebSocketMessage("ScheduledTasksInfoStop");}
 if(pollInterval){clearInterval(pollInterval);}}
 $(document).on('pageinit',"#scheduledTasksPage",function(){var page=this;$('.divScheduledTasks',page).on('click','.btnStartTask',function(){var button=this;var id=button.getAttribute('data-taskid');ApiClient.startScheduledTask(id).done(function(){updateTaskButton(button,"Running");reloadList(page);});}).on('click','.btnStopTask',function(){var button=this;var id=button.getAttribute('data-taskid');ApiClient.stopScheduledTask(id).done(function(){updateTaskButton(button,"");reloadList(page);});});}).on('pageshow',"#scheduledTasksPage",function(){var page=this;Dashboard.showLoadingMsg();startInterval();reloadList(page);$(ApiClient).on("websocketmessage",onWebSocketMessage).on("websocketopen",onWebSocketConnectionOpen);}).on('pagebeforehide',"#scheduledTasksPage",function(){var page=this;$(ApiClient).off("websocketmessage",onWebSocketMessage).off("websocketopen",onWebSocketConnectionOpen);stopInterval();});})(jQuery,document,window);
