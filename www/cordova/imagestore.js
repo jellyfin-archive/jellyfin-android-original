@@ -72,7 +72,7 @@
         self.getImageUrl = function (originalUrl) {
 
             if ($.browser.android && originalUrl.indexOf('tag=') != -1) {
-                originalUrl += "&accept=webp";
+                originalUrl += "&format=webp";
             }
 
             var deferred = DeferredBuilder.Deferred();
@@ -111,12 +111,41 @@
                 setImageIntoElement(elem, url);
             }
 
-            self.getImageUrl(url).done(function (localUrl) {
+            if ($.browser.safari) {
+                setImageWithSdWebImage(elem, url);
+            } else {
+                self.getImageUrl(url).done(function (localUrl) {
 
-                setImageIntoElement(elem, localUrl);
+                    setImageIntoElement(elem, localUrl);
 
-            }).fail(onFail);
+                }).fail(onFail);
+            }
         };
+
+        var imageIdIndex = 1;
+
+        function setImageWithSdWebImage(elem, url) {
+
+            var rect = elem.getBoundingClientRect();
+
+            var options = {
+                data: url,
+                index: imageIdIndex,
+                quality: 0,
+                scale: Math.round(rect.width) + 'x' + Math.round(rect.height),
+                downloadOptions: window.CollectionRepeatImageOptions.SDWebImageRetryFailed | window.CollectionRepeatImageOptions.SDWebImageLowPriority | window.CollectionRepeatImageOptions.SDWebImageAllowInvalidSSLCertificates
+            };
+
+            if (elem.classList.contains('coveredCardImage')) {
+                options.scale += '!';
+            }
+
+            imageIdIndex++;
+
+            window.CollectionRepeatImage.getImage(options, function (data) {
+                image.src = 'data:image/jpeg;base64,' + data;
+            });
+        }
 
         window.ImageStore = self;
     }
