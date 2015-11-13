@@ -119,6 +119,10 @@
                         {
                             "xml": "<feature name=\"Globalization\"><param name=\"ios-package\" value=\"CDVGlobalization\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"CollectionRepeatImage\"><param name=\"ios-package\" value=\"CollectionRepeatImage\" /></feature>",
+                            "count": 1
                         }
                     ],
                     "/widget": [
@@ -270,7 +274,7 @@
                     "ImageIO.framework": [
                         {
                             "xml": true,
-                            "count": 1
+                            "count": 2
                         }
                     ],
                     "CoreLocation.framework": [
@@ -382,6 +386,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-globalization": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "com.mallzee.collectionrepeatimage": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

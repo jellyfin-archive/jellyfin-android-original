@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.emby.mobile" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.08" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.emby.mobile" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.09" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -96,6 +96,12 @@
     <feature name="InAppPurchase">
         <param name="ios-package" value="InAppPurchase" />
     </feature>
+    <feature name="Globalization">
+        <param name="ios-package" value="CDVGlobalization" />
+    </feature>
+    <feature name="CollectionRepeatImage">
+        <param name="ios-package" value="CollectionRepeatImage" />
+    </feature>
     <feature name="IosSocketsCommon">
         <param name="ios-package" value="IosSocketsCommon" />
     </feature>
@@ -169,7 +175,4 @@
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="xwalkUserAgent" value="crosswalk/15 android" />
-    <feature name="Globalization">
-        <param name="ios-package" value="CDVGlobalization" />
-    </feature>
 </widget>
