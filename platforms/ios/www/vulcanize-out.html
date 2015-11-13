@@ -7469,9 +7469,8 @@ this.fire('dom-change');
       // handled). In either case, we can disregard `event.path`.
 
       if (event.target === this) {
-        var focused = event.type === 'focus';
-        this._setFocused(focused);
-      } else if (!this.shadowRoot) {
+        this._setFocused(event.type === 'focus');
+      } else if (!this.shadowRoot && !this.isLightDescendant(event.target)) {
         this.fire(event.type, {sourceEvent: event}, {
           node: this,
           bubbles: event.bubbles,
@@ -7626,14 +7625,43 @@ this.fire('dom-change');
       this._setPressed(false);
     },
 
+    __isFocusedLightDescendant: function(target) {
+      var root = Polymer.dom(this).getOwnerRoot() || document;
+      var focusedElement = root.activeElement;
+
+      // TODO(noms): remove the `this !== target` check once polymer#2610 is fixed.
+      return this !== target && this.isLightDescendant(target) && target == focusedElement;
+    },
+
+    /**
+     * @param {!KeyboardEvent} event .
+     */
     _spaceKeyDownHandler: function(event) {
       var keyboardEvent = event.detail.keyboardEvent;
+      var target = Polymer.dom(keyboardEvent).localTarget;
+
+      // Ignore the event if this is coming from a focused light child, since that
+      // element will deal with it.
+      if (this.__isFocusedLightDescendant(target))
+        return;
+
       keyboardEvent.preventDefault();
       keyboardEvent.stopImmediatePropagation();
       this._setPressed(true);
     },
 
-    _spaceKeyUpHandler: function() {
+    /**
+     * @param {!KeyboardEvent} event .
+     */
+    _spaceKeyUpHandler: function(event) {
+      var keyboardEvent = event.detail.keyboardEvent;
+      var target = Polymer.dom(keyboardEvent).localTarget;
+
+      // Ignore the event if this is coming from a focused light child, since that
+      // element will deal with it.
+      if (this.__isFocusedLightDescendant(target))
+        return;
+
       if (this.pressed) {
         this._asyncClick();
       }
@@ -9405,6 +9433,8 @@ this.fire('dom-change');
       /**
        * Only runs if someone invokes the factory/constructor directly
        * e.g. `new Polymer.IronMeta()`
+       *
+       * @param {{type: (string|undefined), key: (string|undefined), value}=} config
        */
       factoryImpl: function(config) {
         if (config) {
@@ -9569,6 +9599,8 @@ this.fire('dom-change');
       /**
        * Actually a factory method, not a true constructor. Only runs if
        * someone invokes it directly (via `new Polymer.IronMeta()`);
+       *
+       * @param {{type: (string|undefined), key: (string|undefined)}=} config
        */
       factoryImpl: function(config) {
         if (config) {
@@ -12515,8 +12547,8 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
    *       <svg>
    *         <defs>
    *           <g id="shape">
-   *             <rect x="50" y="50" width="50" height="50" />
-   *             <circle cx="50" cy="50" r="50" />
+   *             <rect x="12" y="0" width="12" height="24" />
+   *             <circle cx="12" cy="12" r="12" />
    *           </g>
    *         </defs>
    *       </svg>
@@ -12556,7 +12588,7 @@ The `aria-labelledby` attribute will be set to the header element, if one exists
       }
 
     },
-    
+
     attached: function() {
       this.style.display = 'none';
     },
@@ -14974,6 +15006,7 @@ is separate from validation, and `allowed-pattern` does not affect how the input
         width: 100%;
         height: 100%;
         opacity: 0;
+        white-space: nowrap;
       }
 
       .layer-1 {
@@ -16907,6 +16940,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     :host(:not(.iron-selected)) > .tab-content {
       opacity: 0.8;
+
+      @apply(--paper-tab-content-unselected);
     }
 
     :host(:focus) .tab-content {
@@ -16914,9 +16949,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       font-weight: 700;
     }
 
-    #ink {
+    paper-ripple {
       color: var(--paper-tab-ink, --paper-yellow-a100);
-      pointer-events: none;
     }
 
     .tab-content > ::content > a {
@@ -16937,10 +16971,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <content></content>
     </div>
 
-    <template is="dom-if" if="[[!noink]]">
-      <paper-ripple id="ink" initial-opacity="0.95" opacity-decay-velocity="0.98"></paper-ripple>
-    </template>
-
   </template>
 
 </dom-module>
@@ -16953,22 +16983,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     behaviors: [
       Polymer.IronControlState,
-      Polymer.IronButtonState
+      Polymer.IronButtonState,
+      Polymer.PaperRippleBehavior
     ],
-
-    properties: {
-
-      /**
-       * If true, ink ripple effect is disabled.
-       *
-       * @attribute noink
-       */
-      noink: {
-        type: Boolean,
-        value: false
-      }
-
-    },
 
     hostAttributes: {
       role: 'tab'
@@ -16976,6 +16993,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     listeners: {
       down: '_updateNoink'
+    },
+
+    ready: function() {
+      var ripple = this.getRipple();
+      ripple.initialOpacity = 0.95;
+      ripple.opacityDecayVelocity = 0.98;
     },
 
     attached: function() {
@@ -17012,6 +17035,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       -webkit-tap-highlight-color: rgba(0,0,0,0);
 
       @apply(--paper-tabs);
+    }
+
+    :host-context([dir=rtl]) {
+      @apply(--layout-horizontal-reverse);
     }
 
     #tabsContainer {
@@ -17120,11 +17147,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     properties: {
 
       /**
-       * If true, ink ripple effect is disabled.
+       * If true, ink ripple effect is disabled. When this property is changed,
+       * all descendant `<paper-tab>` elements have their `noink` property
+       * changed to the new value as well.
        */
       noink: {
         type: Boolean,
-        value: false
+        value: false,
+        observer: '_noinkChanged'
       },
 
       /**
@@ -17223,8 +17253,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       'iron-deselect': '_onIronDeselect'
     },
 
+    created: function() {
+      this._holdJob = null;
+    },
+
     ready: function() {
       this.setScrollDirection('y', this.$.tabsContainer);
+    },
+
+    _noinkChanged: function(noink) {
+      var childTabs = Polymer.dom(this).querySelectorAll('paper-tab');
+      childTabs.forEach(noink ? this._setNoinkAttribute : this._removeNoinkAttribute);
+    },
+
+    _setNoinkAttribute: function(element) {
+      element.setAttribute('noink', '');
+    },
+
+    _removeNoinkAttribute: function(element) {
+      element.removeAttribute('noink');
     },
 
     _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
@@ -19494,6 +19541,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: inline-block;
         white-space: nowrap;
+        cursor: pointer;
       }
 
       :host(:focus) {
@@ -19509,9 +19557,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position: relative;
         width: 18px;
         height: 18px;
-        cursor: pointer;
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
         vertical-align: middle;
         background-color: var(--paper-checkbox-unchecked-background-color, transparent);
       }
@@ -19745,6 +19790,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         content: '';
         background: currentColor;
         opacity: var(--dark-divider-opacity);
+        pointer-events: none;
 
         @apply(--paper-item-focused-before);
       }
@@ -19870,6 +19916,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: inline-block;
         white-space: nowrap;
+        cursor: pointer;
       }
 
       :host(:focus) {
@@ -19881,7 +19928,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         position: relative;
         width: 16px;
         height: 16px;
-        cursor: pointer;
         vertical-align: middle;
       }
 

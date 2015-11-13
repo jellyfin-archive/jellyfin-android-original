@@ -2,15 +2,6 @@
 
     var updatedProducts = [];
 
-    function getStoreFeatureId(feature) {
-
-        if (feature == 'embypremieremonthly') {
-            return "emby.supporter.monthly";
-        }
-
-        return "com.mb.android.unlock";
-    }
-
     function updateProductInfo(id, owned, price) {
 
         updatedProducts = updatedProducts.filter(function (r) {
@@ -30,7 +21,12 @@
 
     function getProduct(feature) {
 
-        var id = getStoreFeatureId(feature);
+        var id;
+        if (feature == 'embypremieremonthly') {
+            id = NativeIapManager.getPremiereMonthlySku();
+        } else {
+            id = NativeIapManager.getUnlockProductSku();
+        }
 
         var products = updatedProducts.filter(function (r) {
             return r.id == id;
@@ -45,7 +41,7 @@
         refreshPurchases();
     }
 
-    function isPurchaseAvailable(feature) {
+    function isPurchaseAvailable() {
 
         return storeReady;
     }
@@ -55,10 +51,7 @@
         if (feature == 'embypremieremonthly') {
             return MainActivity.purchasePremiereMonthly(email);
         }
-        if (feature == 'embypremiereweekly') {
-            return MainActivity.purchasePremiereWeekly(email);
-        }
-        return MainActivity.purchaseUnlock(email);
+        return MainActivity.purchaseUnlock();
     }
 
     function onPurchaseComplete(result) {
@@ -69,8 +62,7 @@
     }
 
     function refreshPurchases() {
-        NativeIapManager.isPurchased(getStoreFeatureId("") + "|" + getStoreFeatureId("embypremieremonthly"), "window.IapManager.updateProduct");
-        //NativeIapManager.isPurchased(getStoreFeatureId("embypremieremonthly"), "window.IapManager.updateProduct");
+        NativeIapManager.getPurchaseInfos("window.IapManager.updateProduct");
     }
 
     function getSubscriptionOptions() {
@@ -88,13 +80,79 @@
 
         }).map(function (o) {
 
-            o.buttonText = Globalize.translate(o.buttonText, getProduct(o.feature).price);
-            o.owned = getProduct(o.feature).owned;
+            var prod = getProduct(o.feature);
+            o.buttonText = Globalize.translate(o.buttonText, prod.price);
+            o.owned = prod.owned;
             return o;
         });
 
         deferred.resolveWith(null, [options]);
         return deferred.promise();
+    }
+
+    function isUnlockedOverride(feature) {
+
+        var deferred = DeferredBuilder.Deferred();
+
+        if (feature == 'playback' || feature == 'livetv') {
+            deferred.resolveWith(null, [false]);
+            //isPlaybackUnlockedViaOldApp(deferred);
+        } else {
+            deferred.resolveWith(null, [false]);
+        }
+
+        return deferred.promise();
+    }
+
+    function isPlaybackUnlockedViaOldApp(deferred) {
+
+        testDeviceId(ConnectionManager.deviceId()).done(function (isUnlocked) {
+
+            if (isUnlocked) {
+                deferred.resolveWith(null, [true]);
+                return;
+            }
+
+            testDeviceId(device.uuid).done(function (isUnlocked) {
+
+                if (isUnlocked) {
+                    deferred.resolveWith(null, [true]);
+                    return;
+                }
+
+                deferred.resolveWith(null, [false]);
+            });
+        });
+    }
+
+    function testDeviceId(deviceId) {
+
+
+        var cacheKey = 'oldapp-' + deviceId;
+        var cacheValue = appStorage.getItem(cacheKey);
+        if (cacheValue) {
+
+            var deferred = DeferredBuilder.Deferred();
+            deferred.resolveWith(null, [cacheValue == 'true']);
+            return deferred.promise();
+
+        } else {
+            return HttpClient.send({
+
+                type: 'GET',
+                url: 'https://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId
+
+            }).done(function () {
+
+                appStorage.setItem(cacheKey, 'true');
+
+            }).fail(function (e) {
+
+                if (e.status == 404) {
+                    appStorage.setItem(cacheKey, 'false');
+                }
+            });
+        }
     }
 
     window.IapManager = {
@@ -104,7 +162,8 @@
         beginPurchase: beginPurchase,
         onPurchaseComplete: onPurchaseComplete,
         getSubscriptionOptions: getSubscriptionOptions,
-        onStoreReady: onStoreReady
+        onStoreReady: onStoreReady,
+        isUnlockedOverride: isUnlockedOverride
     };
 
     NativeIapManager.initStore();
