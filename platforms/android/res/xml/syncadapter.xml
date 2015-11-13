@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sync-adapter
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:contentAuthority="mediabrowser.tv"
-    android:accountType="mediabrowser.tv"
+    android:contentAuthority="emby.media"
+    android:accountType="emby.media"
     android:userVisible="true"
     android:supportsUploading="true"
     android:allowParallelSyncs="false"

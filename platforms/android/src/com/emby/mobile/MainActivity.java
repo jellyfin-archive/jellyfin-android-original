@@ -256,9 +256,9 @@ public class MainActivity extends CordovaActivity
     }
 
     @org.xwalk.core.JavascriptInterface
-    public void purchaseUnlock(final String email) {
+    public void purchaseUnlock() {
         if (iapManager.isStoreAvailable()) {
-            beginPurchase(iapManager.getUnlockProduct(), email);
+            beginPurchase(iapManager.getUnlockProduct(), null);
         }
     }
 

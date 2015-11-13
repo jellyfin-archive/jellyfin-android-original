@@ -12,7 +12,7 @@ function onSocketMessage(e,msg){if(msg.MessageType=="ScheduledTasksInfo"){var ta
 var self=this;var pollInterval;function onPollIntervalFired(){if(!ApiClient.isWebSocketOpen()){pollTasks(self);}}
 function startInterval(){if(ApiClient.isWebSocketOpen()){ApiClient.sendWebSocketMessage("ScheduledTasksInfoStart","1000,1000");}
 if(pollInterval){clearInterval(pollInterval);}
-pollInterval=setInterval(onPollIntervalFired,1500);}
+pollInterval=setInterval(onPollIntervalFired,5000);}
 function stopInterval(){if(ApiClient.isWebSocketOpen()){ApiClient.sendWebSocketMessage("ScheduledTasksInfoStop");}
 if(pollInterval){clearInterval(pollInterval);}}
 if(options.panel){$(options.panel).hide();}
