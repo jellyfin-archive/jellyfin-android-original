@@ -72,7 +72,7 @@
         self.getImageUrl = function (originalUrl) {
 
             if ($.browser.android && originalUrl.indexOf('tag=') != -1) {
-                originalUrl += "&format=webp";
+                originalUrl += "&accept=webp";
             }
 
             var deferred = DeferredBuilder.Deferred();
