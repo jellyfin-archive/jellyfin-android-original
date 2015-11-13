@@ -112,4 +112,7 @@
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="xwalkUserAgent" value="crosswalk/15 android" />
+    <feature name="CollectionRepeatImage">
+        <param name="android-package" value="com.mallzee.collectionrepeatimage.CollectionRepeatImage" />
+    </feature>
 </widget>
