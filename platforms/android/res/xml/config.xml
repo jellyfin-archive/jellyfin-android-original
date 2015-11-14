@@ -60,9 +60,6 @@
     <feature name="Globalization">
         <param name="android-package" value="org.apache.cordova.globalization.Globalization" />
     </feature>
-    <feature name="CollectionRepeatImage">
-        <param name="android-package" value="com.mallzee.collectionrepeatimage.CollectionRepeatImage" />
-    </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="21" />
     <preference name="StatusBarOverlaysWebView" value="false" />

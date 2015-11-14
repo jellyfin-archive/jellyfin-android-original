@@ -97,10 +97,6 @@
                         {
                             "xml": "<feature name=\"Globalization\"><param name=\"android-package\" value=\"org.apache.cordova.globalization.Globalization\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"CollectionRepeatImage\"><param name=\"android-package\" value=\"com.mallzee.collectionrepeatimage.CollectionRepeatImage\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -278,9 +274,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-globalization": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "com.mallzee.collectionrepeatimage": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
