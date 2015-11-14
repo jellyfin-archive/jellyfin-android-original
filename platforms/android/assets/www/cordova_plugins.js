@@ -327,20 +327,6 @@ module.exports = [
         "clobbers": [
             "navigator.globalization"
         ]
-    },
-    {
-        "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImage.js",
-        "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImage",
-        "clobbers": [
-            "window.CollectionRepeatImage"
-        ]
-    },
-    {
-        "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImageOptions.js",
-        "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImageOptions",
-        "clobbers": [
-            "window.CollectionRepeatImageOptions"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -372,7 +358,6 @@ module.exports.metadata =
     "cc.fovea.cordova.purchase": "4.0.0",
     "cordova-plugin-crosswalk-webview": "1.4.0-dev",
     "cordova-plugin-globalization": "1.0.1",
-    "com.mallzee.collectionrepeatimage": "0.0.1",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA
