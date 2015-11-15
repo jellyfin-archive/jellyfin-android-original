@@ -330,20 +330,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-globalization/www/GlobalizationError.js",
-        "id": "cordova-plugin-globalization.GlobalizationError",
-        "clobbers": [
-            "window.GlobalizationError"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-globalization/www/globalization.js",
-        "id": "cordova-plugin-globalization.globalization",
-        "clobbers": [
-            "navigator.globalization"
-        ]
-    },
-    {
         "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImage.js",
         "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImage",
         "clobbers": [
@@ -436,7 +422,6 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.6.3",
     "cc.fovea.cordova.purchase": "4.0.0",
     "cordova-plugin-crosswalk-webview": "1.4.0-dev",
-    "cordova-plugin-globalization": "1.0.1",
     "com.mallzee.collectionrepeatimage": "0.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",

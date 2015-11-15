@@ -117,10 +117,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Globalization\"><param name=\"ios-package\" value=\"CDVGlobalization\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"CollectionRepeatImage\"><param name=\"ios-package\" value=\"CollectionRepeatImage\" /></feature>",
                             "count": 1
                         }
@@ -383,9 +379,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-globalization": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.mallzee.collectionrepeatimage": {
