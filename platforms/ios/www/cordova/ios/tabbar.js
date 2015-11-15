@@ -72,7 +72,7 @@
 
         var items = [
           { name: 'Library', label: Globalize.translate('ButtonLibrary'), image: 'tabbar/tab-library.png', options: {} },
-          { name: 'LiveTv', label: Globalize.translate('HeaderLiveTV'), image: 'tabbar/tab-library.png', options: {} },
+          { name: 'LiveTv', label: Globalize.translate('HeaderLiveTV'), image: 'tabbar/tab-livetv.png', options: {} },
           { name: 'Favorites', label: Globalize.translate('ButtonFavorites'), image: 'tabButton:Favorites', options: {} },
           { name: 'Search', label: Globalize.translate('ButtonSearch'), image: 'tabButton:Search', options: {} },
           { name: 'NowPlaying', label: Globalize.translate('ButtonNowPlaying'), image: 'tabbar/tab-nowplaying.png', options: {} },

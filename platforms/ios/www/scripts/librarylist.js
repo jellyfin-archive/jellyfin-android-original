@@ -23,7 +23,7 @@ if(commands.indexOf('editimages')!=-1){items.push({name:Globalize.translate('But
 if(commands.indexOf('editsubtitles')!=-1){items.push({name:Globalize.translate('ButtonEditSubtitles'),id:'editsubtitles',ironIcon:'closed-caption'});}
 if(commands.indexOf('instantmix')!=-1){items.push({name:Globalize.translate('ButtonInstantMix'),id:'instantmix',ironIcon:'shuffle'});}
 items.push({name:Globalize.translate('ButtonOpen'),id:'open',ironIcon:'folder-open'});if(options.showPlayOptions!==false){if(MediaController.canPlayByAttributes(itemType,mediaType,playAccess,locationType)){items.push({name:Globalize.translate('ButtonPlay'),id:'play',ironIcon:'play-arrow'});if(commands.indexOf('playfromhere')!=-1){items.push({name:Globalize.translate('ButtonPlayAllFromHere'),id:'playallfromhere',ironIcon:'play-arrow'});}}
-if(mediaType=='Video'&&AppSettings.enableExternalPlayers()){items.push({name:Globalize.translate('ButtonPlayExternalPlayer'),id:'externalplayer',ironIcon:'airplay'});}
+if(mediaType=='Video'&&AppInfo.supportsExternalPlayers&&AppSettings.enableExternalPlayers()){items.push({name:Globalize.translate('ButtonPlayExternalPlayer'),id:'externalplayer',ironIcon:'airplay'});}
 if(playbackPositionTicks&&mediaType!="Audio"){items.push({name:Globalize.translate('ButtonResume'),id:'resume',ironIcon:'play-arrow'});}
 if(commands.indexOf('trailer')!=-1){items.push({name:Globalize.translate('ButtonPlayTrailer'),id:'trailer',ironIcon:'play-arrow'});}}
 if(MediaController.canQueueMediaType(mediaType,itemType)){items.push({name:Globalize.translate('ButtonQueue'),id:'queue',ironIcon:'playlist-add'});if(commands.indexOf('queuefromhere')!=-1){items.push({name:Globalize.translate('ButtonQueueAllFromHere'),id:'queueallfromhere',ironIcon:'playlist-add'});}}
