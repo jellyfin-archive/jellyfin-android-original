@@ -313,20 +313,6 @@ module.exports = [
         "clobbers": [
             "store"
         ]
-    },
-    {
-        "file": "plugins/cordova-plugin-globalization/www/GlobalizationError.js",
-        "id": "cordova-plugin-globalization.GlobalizationError",
-        "clobbers": [
-            "window.GlobalizationError"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-globalization/www/globalization.js",
-        "id": "cordova-plugin-globalization.globalization",
-        "clobbers": [
-            "navigator.globalization"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -357,7 +343,6 @@ module.exports.metadata =
     "cordova-plugin-webserver": "1.0.3",
     "cc.fovea.cordova.purchase": "4.0.0",
     "cordova-plugin-crosswalk-webview": "1.4.0-dev",
-    "cordova-plugin-globalization": "1.0.1",
     "android.support.v4": "21.0.1"
 }
 // BOTTOM OF METADATA

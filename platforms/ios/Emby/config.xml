@@ -96,9 +96,6 @@
     <feature name="InAppPurchase">
         <param name="ios-package" value="InAppPurchase" />
     </feature>
-    <feature name="Globalization">
-        <param name="ios-package" value="CDVGlobalization" />
-    </feature>
     <feature name="CollectionRepeatImage">
         <param name="ios-package" value="CollectionRepeatImage" />
     </feature>
