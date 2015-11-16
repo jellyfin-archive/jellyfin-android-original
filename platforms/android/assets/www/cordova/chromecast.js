@@ -559,12 +559,7 @@
             device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
                 Logger.log('launchWebApp success. calling onSessionConnected');
-                if ($.browser.android) {
-                    //tryJoinWebSession(device, true, false);
-                    setupWebAppSession(device, session, true);
-                } else {
-                    setupWebAppSession(device, session, true);
-                }
+                setupWebAppSession(device, session, true);
 
             }).error(function (err1) {
 
@@ -666,6 +661,12 @@
         };
 
         self.endSession = function () {
+
+            var session = currentWebAppSession;
+
+            if (session) {
+                session.close();
+            }
 
             if (currentDevice) {
                 currentDevice.disconnect();
