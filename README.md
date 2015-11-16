@@ -11,4 +11,4 @@ The following changes were made to the Connect project:
 
 * Imported Google Cast (instructions on Connect SDK install steps)
 * Removed the entire Amazon Fling folder
-* Remvoed all GCDWebServer .m files, as the implementation is already supplied by the cordova web server plugin
+* Removed all GCDWebServer .m files, as the implementation is already supplied by the cordova web server plugin
