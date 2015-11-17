@@ -38,7 +38,6 @@ public class IapManager {
         this.webView = webView;
         this.logger = logger;
         this.context = context;
-        init();
     }
 
     @JavascriptInterface
