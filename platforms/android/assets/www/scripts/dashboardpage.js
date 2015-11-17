@@ -52,7 +52,6 @@ if(clientLowered.indexOf('android')!=-1){return"<img src='css/images/clients/and
 if(clientLowered.indexOf('ios')!=-1){return"<img src='css/images/clients/ios.png' />";}
 if(clientLowered=="mb-classic"){return"<img src='css/images/clients/mbc.png' />";}
 if(clientLowered=="roku"){return"<img src='css/images/clients/roku.jpg' />";}
-if(clientLowered=="windows rt"){return"<img src='css/images/clients/windowsrt.png' />";}
 if(clientLowered=="windows phone"){return"<img src='css/images/clients/windowsphone.png' />";}
 if(clientLowered=="dlna"){return"<img src='css/images/clients/dlna.png' />";}
 if(clientLowered=="kodi"||clientLowered=="xbmc"){return"<img src='css/images/clients/kodi.png' />";}
