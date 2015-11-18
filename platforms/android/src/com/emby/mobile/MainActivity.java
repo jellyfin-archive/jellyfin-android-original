@@ -429,7 +429,8 @@ public class MainActivity extends CordovaActivity
                              String userId,
                              String accessToken,
                              String deviceProfileJson,
-                             String videoQualityOptionsJson) {
+                             String videoQualityOptionsJson,
+                             long timeLimitMs) {
 
         getLogger().Debug("Video path: %s", path);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
@@ -453,6 +454,10 @@ public class MainActivity extends CordovaActivity
 
         if (startPositionMs > 0){
             intent.putExtra("position", startPositionMs);
+        }
+
+        if (timeLimitMs > 0){
+            intent.putExtra("timeLimitMs", timeLimitMs);
         }
 
         startActivityForResult(intent, VIDEO_PLAYBACK);

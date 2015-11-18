@@ -99,6 +99,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.ApiEventListener;
@@ -307,6 +309,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     private ArrayList<NameValuePair> mQualityList;
 
     private TextView subtitleText;
+
+    private Timer timeLimitTimer;
 
     private static LibVLC LibVLC(Context context, ILogger logger) {
         return VLCInstance.get(context, logger);
@@ -615,6 +619,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     @Override
     protected void onStop() {
         super.onStop();
+
+        stopTimeLimitTimer();
 
         if (mAlertDialog != null && mAlertDialog.isShowing())
             mAlertDialog.dismiss();
@@ -1337,15 +1343,18 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 updateOverlayPausePlay();
                 break;
             case MediaPlayer.Event.Stopped:
+                stopTimeLimitTimer();
                 exitOK();
                 break;
             case MediaPlayer.Event.EndReached:
+                stopTimeLimitTimer();
                 if(mIgnorePlaylistEnd)
                     mIgnorePlaylistEnd = false;
                 else
                     endReached();
                 break;
             case MediaPlayer.Event.EncounteredError:
+                stopTimeLimitTimer();
                 encounteredError();
                 break;
             case MediaPlayer.Event.TimeChanged:
@@ -2645,6 +2654,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         Intent intent = getIntent();
         String action = intent.getAction();
         Bundle extras = getIntent().getExtras();
+        long timeLimitMs = 0;
 
         boolean wasPaused;
         /*
@@ -2671,6 +2681,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             PlaybackProgressInfo playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
 
             intentPosition = getIntent().getExtras().getLong("position", 0);
+            timeLimitMs = getIntent().getExtras().getLong("timeLimitMs", 0);
 
             String location = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_LOCATION);
             location = normalizeLocation(location, mediaSourceInfo, playbackStartInfo.getPlayMethod(), intentPosition * 10000);
@@ -2737,6 +2748,12 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             // Get the title
             if (itemTitle == null)
                 title = mUri.getLastPathSegment();
+
+            stopTimeLimitTimer();
+
+            if (timeLimitMs > 0){
+                startTimeLimitTimer(timeLimitMs);
+            }
         }
         else {
             logger.Debug("mUri is null cannot proceed with video");
@@ -3169,5 +3186,30 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                 subtitleText.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private void startTimeLimitTimer(long durationMs){
+
+        timeLimitTimer = new Timer(true);
+
+        timeLimitTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        onBackPressed();
+                    }
+                });
+            }
+        }, durationMs);
+    }
+
+    private void stopTimeLimitTimer(){
+
+        if (timeLimitTimer != null){
+            timeLimitTimer.cancel();
+            timeLimitTimer = null;
+        }
     }
 }
