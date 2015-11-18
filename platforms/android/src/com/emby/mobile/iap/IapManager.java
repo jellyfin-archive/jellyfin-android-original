@@ -116,8 +116,8 @@ public class IapManager {
         iabValidator.validateProductsAsync(new IResultHandler<ResultType>() {
             @Override
             public void onResult(ResultType resultType) {
-                RespondToWebView("IapManager.onStoreReady();");
                 storeReady = true;
+                RespondToWebView("IapManager.onStoreReady();");
             }
 
             @Override
