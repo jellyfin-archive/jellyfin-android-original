@@ -245,6 +245,8 @@ public class MainActivity extends CordovaActivity
     public void purchasePremiereMonthly(final String email) {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getPremiereMonthly(), email);
+        } else{
+            getLogger().Error("Cannot proceed with purchasePremiereMonthly because store is not available");
         }
     }
 
@@ -252,6 +254,8 @@ public class MainActivity extends CordovaActivity
     public void purchasePremiereWeekly(final String email) {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getPremiereWeekly(), email);
+        } else{
+            getLogger().Error("Cannot proceed with purchasePremiereWeekly because store is not available");
         }
     }
 
@@ -259,6 +263,8 @@ public class MainActivity extends CordovaActivity
     public void purchaseUnlock() {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getUnlockProduct(), null);
+        } else{
+            getLogger().Error("Cannot proceed with purchaseUnlock because store is not available");
         }
     }
 
@@ -268,22 +274,31 @@ public class MainActivity extends CordovaActivity
 
             if (product.requiresEmail() && (purchaseEmail == null || purchaseEmail.length() == 0)) {
                 //Todo Obtain the email address for purchase - then re-call this method
+                getLogger().Error("Aborting beginPurchase because purchaseEmail is required.");
                 return;
             }
 
             if (product.getEmbyFeatureCode() != null) {
+
                 //Test connectivity to our back-end before purchase because we need this to complete it
+                getLogger().Debug("Testing back-end connectivity.");
+
                 HttpRequest request = new HttpRequest();
                 request.setUrl(embyAdminUrl+"appstore/check");
                 httpClient.Send(request, new Response<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        getLogger().Debug("Back-end connectivity test succeeded");
+
                         //ok, continue with purchase
                         purchaseInternal(product);
                     }
 
                     @Override
                     public void onError(Exception exception) {
+
+                        getLogger().Error("Back-end connectivity test failed.");
                         //Unable to connect - display appropriate message
                     }
                 });
@@ -291,12 +306,14 @@ public class MainActivity extends CordovaActivity
                 //Just initiate the purchase
                 purchaseInternal(product);
             }
-
-
     }
 
     private void purchaseInternal(InAppProduct product) {
+
         try {
+
+            getLogger().Debug("purchaseInternal sku: %s", product.getSku());
+
             currentProduct = product;
             Intent purchaseIntent = new Intent(this, PurchaseActivity.class);
             purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
