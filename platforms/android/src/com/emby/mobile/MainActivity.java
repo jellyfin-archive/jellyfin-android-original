@@ -56,6 +56,9 @@ import org.crosswalk.engine.XWalkCordovaView;
 import org.crosswalk.engine.XWalkWebViewEngine;
 import org.xwalk.core.JavascriptInterface;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import mediabrowser.apiinteraction.QueryStringDictionary;
@@ -94,6 +97,13 @@ public class MainActivity extends CordovaActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        /*new Runnable() {
+            @Override
+            public void run() {
+                readLogcatInBackground();
+            }
+        }.run();*/
 
         try {
             // This is throwing an exception we can't catch and is crashing the app
@@ -610,5 +620,37 @@ public class MainActivity extends CordovaActivity
         try {
             unregisterReceiver(messageReceiver);
         } catch (IllegalArgumentException e) {}
+    }
+
+    static final int BUFFER_SIZE = 2 * 4096;
+
+    volatile boolean logcatReaderRunning = true;
+
+    protected void readLogcatInBackground() {
+
+        logcatReaderRunning = true;
+        Process process = null;
+
+        try {
+            process = Runtime.getRuntime().exec("logcat");
+        } catch (IOException e) {
+            logcatReaderRunning = false;
+            return;
+        }
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(process.getInputStream()), BUFFER_SIZE);
+        } catch (IllegalArgumentException e) {
+            logcatReaderRunning = false;
+        }
+        try {
+            while (logcatReaderRunning) {
+
+                getLogger().Debug(reader.readLine());
+            }
+        } catch (IOException e) {
+            logcatReaderRunning = false;
+        }
     }
 }
