@@ -5,7 +5,10 @@ return appStorage.getItem('enableAutomaticBitrateDetection')!='false';},maxStrea
 return parseInt(appStorage.getItem('preferredVideoBitrate')||'')||1500000;},maxChromecastBitrate:function(val){if(val!=null){update('chromecastBitrate',val);}
 return parseInt(appStorage.getItem('chromecastBitrate')||'')||3000000;},enableChromecastAc3:function(val){if(val!=null){update('enablechromecastac3',val.toString());}
 return appStorage.getItem('enablechromecastac3')=='true';},enableExternalPlayers:function(val){if(val!=null){update('externalplayers',val.toString());}
-return appStorage.getItem('externalplayers')=='true';},enableFullScreen:function(val){if(val!=null){update('enableFullScreen',val.toString());}
+return appStorage.getItem('externalplayers')=='true';},enableCinemaMode:function(val){if(val!=null){update('enableCinemaMode',val.toString());}
+val=appStorage.getItem('enableCinemaMode');if(val){return val!='false';}
+if($.browser.mobile){return false;}
+return true;},enableFullScreen:function(val){if(val!=null){update('enableFullScreen',val.toString());}
 return appStorage.getItem('enableFullScreen')=='true';},syncOnlyOnWifi:function(val){if(val!=null){update('syncOnlyOnWifi',val.toString());}
 return appStorage.getItem('syncOnlyOnWifi')!='false';},syncLosslessAudio:function(val){if(val!=null){update('syncLosslessAudio',val.toString());}
 return appStorage.getItem('syncLosslessAudio')!='false';},syncPath:function(val){if(val!=null){update('syncPath',val);}
