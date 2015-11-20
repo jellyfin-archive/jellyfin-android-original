@@ -1293,7 +1293,7 @@
     "OptionUpcomingStreamingMovies": "Incluir tr\u00e1ilers de pel\u00edculas nuevas o por estrenar en Netflix",
     "LabelDisplayTrailersWithinMovieSuggestions": "Desplegar tr\u00e1ilers dentro de las sugerencias de pel\u00edculas",
     "LabelDisplayTrailersWithinMovieSuggestionsHelp": "Requiere la instalaci\u00f3n del canal de tr\u00e1ilers.",
-    "CinemaModeConfigurationHelp2": "Los usuarios individuales podr\u00e1n desactivar el modo cine desde sus preferencias personales.",
+    "CinemaModeConfigurationHelp2": "Emby apps will have a setting to enable or disable cinema mode. TV apps enable cinema mode by default.",
     "LabelEnableCinemaMode": "Activar modo cine",
     "HeaderCinemaMode": "Modo cine",
     "LabelDateAddedBehavior": "Comportamiento de fecha de adici\u00f3n para nuevo contenido:",

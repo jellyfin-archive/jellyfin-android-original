@@ -1293,7 +1293,7 @@
     "OptionUpcomingStreamingMovies": "Inclure les bandes-annonces des nouveaut\u00e9s et des films \u00e0 l'affiche sur Netflix",
     "LabelDisplayTrailersWithinMovieSuggestions": "Afficher les bandes-annonces dans les suggestions de films.",
     "LabelDisplayTrailersWithinMovieSuggestionsHelp": "N\u00e9cessite l'installation du plugin \"Trailer channel\".",
-    "CinemaModeConfigurationHelp2": "Les utilisateurs ont la possibilit\u00e9 de d\u00e9sactiver le mode cin\u00e9ma dans leurs propres pr\u00e9f\u00e9rences.",
+    "CinemaModeConfigurationHelp2": "Emby apps will have a setting to enable or disable cinema mode. TV apps enable cinema mode by default.",
     "LabelEnableCinemaMode": "Activer le mode cin\u00e9ma",
     "HeaderCinemaMode": "Mode cin\u00e9ma",
     "LabelDateAddedBehavior": "Choix des dates lors de l'ajout de nouveau contenu:",
