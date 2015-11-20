@@ -30,4 +30,5 @@ function processTranscript(text){$('.voiceInputText').html(text);if(text||AppInf
 processText(text).done(hideVoiceHelp).fail(showUnrecognizedCommandHelp);}
 function startListening(){destroyCurrentRecognition();Dashboard.importCss('voice/voice.css');startListeningInternal();}
 function startListeningInternal(){var recognition=new(window.SpeechRecognition||window.webkitSpeechRecognition)();recognition.onresult=function(event){if(event.results.length>0){processTranscript(event.results[0][0].transcript||'');}};recognition.onerror=function(){processTranscript('');};recognition.onnomatch=function(){processTranscript('');};recognition.start();currentRecognition=recognition;showVoiceHelp();}
-window.VoiceInputManager={isSupported:function(){return window.SpeechRecognition||window.webkitSpeechRecognition;},startListening:startListening};})();
+window.VoiceInputManager={isSupported:function(){if(AppInfo.isNativeApp){if(window.device&&(device.platform||'').toLowerCase().indexOf('amazon')!=-1){return false;}}
+return window.SpeechRecognition||window.webkitSpeechRecognition;},startListening:startListening};})();
