@@ -1293,7 +1293,7 @@
     "OptionUpcomingStreamingMovies": "V\u010detn\u011b uk\u00e1zek z nov\u00fdch a p\u0159ipravovan\u00fdch film\u016f na Netflix",
     "LabelDisplayTrailersWithinMovieSuggestions": "Zobrazit trailery u doporu\u010den\u00fdch film\u016f",
     "LabelDisplayTrailersWithinMovieSuggestionsHelp": "Vy\u017eaduje instalaci Trailer kan\u00e1lu.",
-    "CinemaModeConfigurationHelp2": "Jednotliv\u00ed u\u017eivatel\u00e9 budou m\u00edt mo\u017enost zak\u00e1zat re\u017eim kino v r\u00e1mci sv\u00fdch vlastn\u00edch preferenc\u00ed.",
+    "CinemaModeConfigurationHelp2": "Emby apps will have a setting to enable or disable cinema mode. TV apps enable cinema mode by default.",
     "LabelEnableCinemaMode": "Povolit Cinema M\u00f3d",
     "HeaderCinemaMode": "Cinema M\u00f3d",
     "LabelDateAddedBehavior": "Nov\u00fd obsah \u0159adit dle data:",
