@@ -71,17 +71,17 @@ public class AppLogger {
         syncServiceFileAppender.setName("syncServiceFileAppender");
         syncServiceFileAppender.addFilter(new LogFileFilter(true));
 
-        LogcatAppender logcatAppender = new LogcatAppender();
+        /*LogcatAppender logcatAppender = new LogcatAppender();
         logcatAppender.setContext(lc);
         logcatAppender.setEncoder(encoder1);
         logcatAppender.setName("logcatAppender");
-        logcatAppender.start();
+        logcatAppender.start();*/
 
         // add the newly created appenders to the root logger;
         // qualify Logger to disambiguate from org.slf4j.Logger
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.addAppender(fileAppender);
-        root.addAppender(logcatAppender);
+        //root.addAppender(logcatAppender);
         root.addAppender(syncServiceFileAppender);
 
         return LoggerFactory.getLogger("App");
