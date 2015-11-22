@@ -23,30 +23,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
-        "clobbers": [
-            "cordova.plugins.notification.local",
-            "plugin.notification.local"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
-        "clobbers": [
-            "cordova.plugins.notification.local.core",
-            "plugin.notification.local.core"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
-        "merges": [
-            "cordova.plugins.notification.local.core",
-            "plugin.notification.local.core"
-        ]
-    },
-    {
         "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
         "id": "com.hutchind.cordova.plugins.launcher.Launcher",
         "clobbers": [
@@ -400,7 +376,6 @@ module.exports.metadata =
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
     "com.connectsdk.cordovaplugin": "1.2.0",
-    "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-file": "3.0.0",
@@ -425,7 +400,6 @@ module.exports.metadata =
     "com.mallzee.collectionrepeatimage": "0.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
-    "de.appplant.cordova.common.registerusernotificationsettings": "1.0.1",
     "org.apache.cordova.media": "0.2.16",
     "org.apache.cordova.network-information": "0.2.15",
     "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": "0.1.0"

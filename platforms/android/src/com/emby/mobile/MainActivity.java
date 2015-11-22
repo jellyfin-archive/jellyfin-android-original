@@ -50,11 +50,9 @@ import net.rdrei.android.dirchooser.DirectoryChooserActivity;
 import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 
 import org.apache.cordova.CordovaActivity;
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewEngine;
+import org.apache.cordova.engine.SystemWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
-import org.crosswalk.engine.XWalkWebViewEngine;
-import org.xwalk.core.JavascriptInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -71,6 +69,7 @@ import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
+import mediabrowser.model.registration.AppstoreRegRequest;
 import mediabrowser.model.serialization.IJsonSerializer;
 import tv.emby.iap.InAppProduct;
 import tv.emby.iap.PurchaseActivity;
@@ -125,28 +124,42 @@ public class MainActivity extends CordovaActivity
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION_SHOW_PLAYER);
         registerReceiver(messageReceiver, filter);
+
+        if (enableSystemWebView()){
+
+            addJavascriptInterfaces();
+        }
     }
+
+    private boolean enableSystemWebView(){
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && BuildConfig.FLAVOR.toLowerCase().indexOf("google") != -1;
+    }
+
 
     @Override
     protected CordovaWebViewEngine makeWebViewEngine() {
 
         Context context = getApplicationContext();
+        CordovaWebViewEngine engine;
 
-        CordovaWebViewEngine engine =  new MyXWalkWebViewEngine(this, preferences, this);
+        if (enableSystemWebView()){
+
+            engine =  new SystemWebViewEngine(this, preferences);
+            WebView webkitView = (WebView)engine.getView();
+            webView = new NativeWebView(webkitView);
+
+        } else {
+            engine =  new MyXWalkWebViewEngine(this, preferences, this);
+            XWalkCordovaView xView = (XWalkCordovaView)engine.getView();
+            webView = new CrosswalkWebView(xView);
+        }
 
         final ILogger logger = getLogger();
         jsonSerializer = new GsonJsonSerializer();
 
-        //WebView webkitView = (WebView)engine.getView();
-        //webView = new NativeWebView(webkitView);
-        XWalkCordovaView xView = (XWalkCordovaView)engine.getView();
-        webView = new CrosswalkWebView(xView);
-
         iapManager = new IapManager(context, webView, logger);
         ApiClientBridge apiClientBridge = new ApiClientBridge(context, logger, webView, jsonSerializer);
         httpClient = apiClientBridge.httpClient;
-
-        //addJavascriptInterfaces();
 
         return engine;
     }
@@ -176,43 +189,19 @@ public class MainActivity extends CordovaActivity
             if (resultCode == RESULT_OK) {
 
                 if (currentProduct.getEmbyFeatureCode() != null) {
-                    //Need to register this with the back end
-                    HttpRequest request = new HttpRequest();
-                    request.setUrl(embyAdminUrl + "appstore/register");
-                    request.setMethod("POST");
-                    QueryStringDictionary data = new QueryStringDictionary();
-                    data.Add("store", intent.getStringExtra("store"));
-                    data.Add("application", "com.emby.mobile");
-                    data.Add("product", currentProduct.getSku());
-                    data.Add("type", currentProduct.getProductType().toString());
-                    data.Add("storeId", intent.getStringExtra("storeId"));
-                    data.Add("token", intent.getStringExtra("storeToken"));
-                    data.Add("feature", currentProduct.getEmbyFeatureCode());
-                    data.Add("email", purchaseEmail);
-                    data.Add("amt", currentProduct.getPrice());
-                    request.setPostData(data);
 
-                    httpClient.Send(request, new Response<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            //The response will be a json representation of regRecord e.g.
-                            //{
-                            //    "featId": "MBSupporter",
-                            //    "expDate": "2015-10-09",
-                            //    "key": "cce907328832cea7a09dd49d197c93bd"
-                            //}
+                    AppstoreRegRequest request = new AppstoreRegRequest();
+                    request.setStore(intent.getStringExtra("store"));
+                    request.setApplication("com.emby.mobile");
+                    request.setProduct(currentProduct.getSku());
+                    request.setFeature(currentProduct.getEmbyFeatureCode());
+                    request.setType(currentProduct.getProductType().toString());
+                    if (intent.getStringExtra("storeId") != null) request.setStoreId(intent.getStringExtra("storeId"));
+                    request.setStoreToken(intent.getStringExtra("storeToken"));
+                    request.setEmail(purchaseEmail);
+                    request.setAmt(currentProduct.getPrice());
 
-                            // call the API to fill in the key and then re-fresh the supporter status in this app
-                            RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
-                        }
-
-                        @Override
-                        public void onError(Exception exception) {
-                            //This would be really bad.  We need to record all the information about this purchase somewhere
-                            // so we can try and rectify it
-                            RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
-                        }
-                    });
+                    RespondToWebView(String.format("window.IapManager.onPurchaseComplete("+jsonSerializer.SerializeToString(request)+");"));
                 } else {
                     // no emby feature - just report success
                     RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
@@ -251,6 +240,7 @@ public class MainActivity extends CordovaActivity
         }
     }
 
+    @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
     public void purchasePremiereMonthly(final String email) {
         if (iapManager.isStoreAvailable()) {
@@ -260,6 +250,7 @@ public class MainActivity extends CordovaActivity
         }
     }
 
+    @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
     public void purchasePremiereWeekly(final String email) {
         if (iapManager.isStoreAvailable()) {
@@ -269,6 +260,7 @@ public class MainActivity extends CordovaActivity
         }
     }
 
+    @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
     public void purchaseUnlock() {
         if (iapManager.isStoreAvailable()) {
@@ -345,7 +337,8 @@ public class MainActivity extends CordovaActivity
         }
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void hideMediaSession() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -358,7 +351,8 @@ public class MainActivity extends CordovaActivity
         }
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void updateMediaSession(String action, boolean isLocalPlayer, String itemId, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -399,7 +393,8 @@ public class MainActivity extends CordovaActivity
         sendBroadcast(i);
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void chooseDirectory() {
 
         final Intent chooserIntent = new Intent(this, DirectoryChooserActivity.class);
@@ -416,7 +411,8 @@ public class MainActivity extends CordovaActivity
         startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void playAudioVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
 
         Intent intent = null;
@@ -440,7 +436,8 @@ public class MainActivity extends CordovaActivity
         startService( intent );
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void playVideoVlc(String path,
                              long startPositionMs,
                              String itemName,
@@ -490,7 +487,8 @@ public class MainActivity extends CordovaActivity
         startActivityForResult(intent, VIDEO_PLAYBACK);
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void destroyVlc() {
 
         Intent intent = null;
@@ -517,7 +515,8 @@ public class MainActivity extends CordovaActivity
         super.onStop();
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
 
         getLogger().Debug("Vlc received command: %s", name);
@@ -603,12 +602,14 @@ public class MainActivity extends CordovaActivity
         }
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public String getSyncStatus() {
         return MediaSyncAdapter.isSyncActive() ? "Active" : MediaSyncAdapter.isSyncPending() ? "Pending" : "Idle";
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void startSync() {
         new OnDemandSync(getApplicationContext()).Run();
     }

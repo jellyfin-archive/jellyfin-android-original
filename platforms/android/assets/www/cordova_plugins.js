@@ -47,30 +47,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification",
-        "clobbers": [
-            "cordova.plugins.notification.local",
-            "plugin.notification.local"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-core.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Core",
-        "clobbers": [
-            "cordova.plugins.notification.local.core",
-            "plugin.notification.local.core"
-        ]
-    },
-    {
-        "file": "plugins/de.appplant.cordova.plugin.local-notification/www/local-notification-util.js",
-        "id": "de.appplant.cordova.plugin.local-notification.LocalNotification.Util",
-        "merges": [
-            "cordova.plugins.notification.local.core",
-            "plugin.notification.local.core"
-        ]
-    },
-    {
         "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
         "id": "com.hutchind.cordova.plugins.launcher.Launcher",
         "clobbers": [
@@ -325,7 +301,6 @@ module.exports.metadata =
     "cordova-plugin-whitelist": "1.0.1-dev",
     "hu.dpal.phonegap.plugins.UniqueDeviceID": "1.2.0",
     "com.connectsdk.cordovaplugin": "1.2.0",
-    "de.appplant.cordova.plugin.local-notification": "0.8.2dev",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "com.mesmotronic.plugins.fullscreen": "1.0.1",
     "cordova-plugin-file": "3.0.0",
@@ -342,8 +317,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.6.3",
     "cordova-plugin-webserver": "1.0.3",
     "cc.fovea.cordova.purchase": "4.0.0",
-    "cordova-plugin-crosswalk-webview": "1.4.0-dev",
-    "android.support.v4": "21.0.1"
+    "cordova-plugin-crosswalk-webview": "1.4.0-dev"
 }
 // BOTTOM OF METADATA
 });

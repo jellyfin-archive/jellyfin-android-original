@@ -29,18 +29,21 @@ public class PreferencesProvider {
         updateSyncPreferences();
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public String get(String key) {
         return getSharedPreferences(context).getString(key, null);
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void remove(String key) {
 
         set(key, null);
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void set(String key, String value){
 
         SharedPreferences settings = getSharedPreferences(context);

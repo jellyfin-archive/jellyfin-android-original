@@ -15,7 +15,8 @@ public class LoggingBridge {
         this.logger = logger;
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void log(String message) {
 
         logger.Info(message);
