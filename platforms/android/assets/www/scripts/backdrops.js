@@ -8,7 +8,7 @@ return deferred.promise();}
 function setBackdropImage(elem,url){if(url==elem.getAttribute('data-url')){return;}
 elem.setAttribute('data-url',url);ImageLoader.lazyImage(elem,url);}
 function showBackdrop(type,parentId){var apiClient=window.ApiClient;if(!apiClient){return;}
-getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).done(function(images){if(images.length){var index=getRandom(0,images.length-1);var item=images[index];var screenWidth=$(window).width();var imgUrl=apiClient.getScaledImageUrl(item.id,{type:"Backdrop",tag:item.tag,maxWidth:screenWidth,quality:50});setBackdropImage(getElement(),imgUrl);}else{clearBackdrop();}});}
+getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).then(function(images){if(images.length){var index=getRandom(0,images.length-1);var item=images[index];var screenWidth=$(window).width();var imgUrl=apiClient.getScaledImageUrl(item.id,{type:"Backdrop",tag:item.tag,maxWidth:screenWidth,quality:50});setBackdropImage(getElement(),imgUrl);}else{clearBackdrop();}});}
 function setDefault(page){var elem=getElement();elem.style.backgroundImage="url(css/images/splash.jpg)";elem.setAttribute('data-url','css/images/splash.jpg');page=$(page)[0];page.classList.add('backdropPage');page.classList.add('staticBackdropPage');}
 function isEnabledByDefault(){if(AppInfo.hasLowImageBandwidth){return false;}
 return false;}

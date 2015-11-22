@@ -20,7 +20,8 @@ public class NativeFileSystem {
         this.logger = logger;
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public boolean fileExists(String path) {
 
         try {
@@ -33,7 +34,8 @@ public class NativeFileSystem {
         }
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public String translateFilePath(String path) {
 
         return path;

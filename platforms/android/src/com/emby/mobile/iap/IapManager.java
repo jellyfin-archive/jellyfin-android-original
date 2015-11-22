@@ -40,7 +40,8 @@ public class IapManager {
         this.context = context;
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void getPurchaseInfos(final String callback) {
 
         logger.Info("getPurchaseInfos");
@@ -90,17 +91,20 @@ public class IapManager {
 
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public String getUnlockProductSku() { return InAppProduct.getCurrentUnlockSku(appPackage); }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public String getPremiereMonthlySku() { return InAppProduct.getCurrentMonthlySku(appPackage); }
 
     public InAppProduct getPremiereMonthly() { return iabValidator.getPremiereMonthly(); }
     public InAppProduct getPremiereWeekly() { return iabValidator.getPremiereWeekly(); }
     public InAppProduct getUnlockProduct() { return iabValidator.getUnlockProduct(); }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void initStore() {
 
         logger.Info("initStore called");

@@ -4,8 +4,6 @@ import android.content.Context;
 
 import com.emby.mobile.webviews.IWebView;
 
-import org.xwalk.core.JavascriptInterface;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -58,7 +56,8 @@ public class ApiClientBridge {
         Current = this;
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void updateCredentials(String credentialsJson) {
 
         logger.Info("Received instruction to updateCredentials");
@@ -67,7 +66,8 @@ public class ApiClientBridge {
         AndroidCredentialProvider.Save(credentialsJson, context);
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void init(String appName, String appVersion, String deviceId, String deviceName, String capabilitiesJson) {
 
         logger.Info("ApiClientBridge.init");
@@ -91,7 +91,8 @@ public class ApiClientBridge {
         new PeriodicSync(context).Create();
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public String getLocalMediaSource(String serverId, String itemId) {
 
         LocalItem item = localAssetManager.getLocalItem(serverId, itemId);
@@ -111,7 +112,8 @@ public class ApiClientBridge {
         return null;
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void sendRequest(String requestJson, String dataType, final String callbackId) {
 
         HttpRequest request = jsonSerializer.DeserializeFromString(requestJson, HttpRequest.class);
@@ -120,7 +122,8 @@ public class ApiClientBridge {
 
     }
 
-    @JavascriptInterface
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void getDownloadSpeed(final long downloadBytes, final String address) {
 
         Thread thread = new Thread(new Runnable() {

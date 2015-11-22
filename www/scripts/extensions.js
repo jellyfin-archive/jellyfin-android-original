@@ -6,9 +6,7 @@ throw new TypeError();var t=Object(this);var len=t.length>>>0;if(typeof fun!="fu
 throw new TypeError();var res=[];var thisp=arguments[1];for(var i=0;i<len;i++){if(i in t){var val=t[i];if(fun.call(thisp,val,i,t))
 res.push(val);}}
 return res;};}
-var WebNotifications={show:function(data){if(window.cordova&&window.cordova.plugins&&window.cordova.plugins.notification){if(!WebNotifications.lastId){WebNotifications.lastId=new Date().getDate()+new Date().getMilliseconds();}
-WebNotifications.lastId++;window.cordova.plugins.notification.local.schedule({id:WebNotifications.lastId,title:data.title,text:data.body,icon:data.icon});}
-else if(window.Notification){var level=Notification.permissionLevel?Notification.permissionLevel():Notification.permission;if(level==="granted"){var notif=new Notification(data.title,data);if(notif.show){notif.show();}
+var WebNotifications={show:function(data){if(window.Notification){var level=Notification.permissionLevel?Notification.permissionLevel():Notification.permission;if(level==="granted"){var notif=new Notification(data.title,data);if(notif.show){notif.show();}
 if(data.timeout){setTimeout(function(){if(notif.close){notif.close();}
 else if(notif.cancel){notif.cancel();}},data.timeout);}
 return notif;}else if(level==="default"){Notification.requestPermission(function(){return WebNotifications.show(data);});}}
