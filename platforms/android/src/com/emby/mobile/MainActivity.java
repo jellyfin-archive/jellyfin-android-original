@@ -23,6 +23,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,6 +60,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.QueryStringDictionary;
 import mediabrowser.apiinteraction.Response;
@@ -115,11 +118,6 @@ public class MainActivity extends CordovaActivity
         // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // This is causing a crash on some devices and is not needed anyway when using Crosswalk
-            //WebView.setWebContentsDebuggingEnabled(true);
-        }
-
         /* Prepare the progressBar */
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION_SHOW_PLAYER);
@@ -127,12 +125,66 @@ public class MainActivity extends CordovaActivity
 
         if (enableSystemWebView()){
 
+            /*try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    // This is causing a crash on some devices
+                    WebView.setWebContentsDebuggingEnabled(true);
+                }
+            }
+            catch (Exception ex) {
+                // This is causing a crash on some devices
+                getLogger().ErrorException("Error enabling webview debugging", ex);
+            }*/
             addJavascriptInterfaces();
         }
     }
 
     private boolean enableSystemWebView(){
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && BuildConfig.FLAVOR.toLowerCase().indexOf("google") != -1;
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
+
+            getLogger().Info("Enabling Crosswalk due to older android version");
+            return false;
+        }
+
+        // Embedded Crosswalk is based on 43. Use system version if equal or higher.
+        if (GetSystemWebViewChromiumVersion() < 43) {
+            getLogger().Info("Enabling Crosswalk due to older chromium version");
+            return false;
+        }
+        return true;
+    }
+
+    private int GetSystemWebViewChromiumVersion() {
+
+        try {
+
+            getLogger().Info("Searching for com.google.android.webview");
+
+            PackageManager pm = getPackageManager();
+
+            PackageInfo pi = pm.getPackageInfo("com.google.android.webview", 0);
+
+            getLogger().Info("com.google.android.webview version name: " + pi.versionName);
+            getLogger().Info("com.google.android.webview version code: " + pi.versionCode);
+
+            String parseString = pi.versionName.split(Pattern.quote("."))[0];
+
+            getLogger().Info("Parsing %s to determine chromium version", parseString);
+
+            int version = Integer.parseInt(parseString);
+
+            getLogger().Info("Chromium version: " + version);
+
+            return version;
+
+        } catch (PackageManager.NameNotFoundException e) {
+            getLogger().ErrorException("Android System WebView is not found", e);
+            return 0;
+        }catch (Exception e) {
+            getLogger().ErrorException("Android System WebView is not found", e);
+            return 0;
+        }
     }
 
 

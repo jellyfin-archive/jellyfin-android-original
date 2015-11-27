@@ -23,4 +23,4 @@ function bindSearchEvents(){require(['searchmenu'],function(){Events.on(SearchMe
 function closeSearchResults(){onHeaderSearchChange('');hideSearchMenu();}
 function showSearchMenu(){require(['searchmenu'],function(){SearchMenu.show();});}
 function hideSearchMenu(){require(['searchmenu'],function(){SearchMenu.hide();});}
-$(document).on('pagecontainerbeforehide',closeSearchResults);$(document).on('headercreated',function(){bindSearchEvents();});})(jQuery,document,window,clearTimeout,setTimeout);
+document.addEventListener('pagebeforehide',closeSearchResults);document.addEventListener('headercreated',function(){bindSearchEvents();});})(jQuery,document,window,clearTimeout,setTimeout);

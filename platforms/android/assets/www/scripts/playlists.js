@@ -11,4 +11,4 @@ else if(view=="Thumb"){html=LibraryBrowser.getPosterViewHtml({items:result.Items
 else if(view=="ThumbCard"){html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:"backdrop",showTitle:true,lazy:true,preferThumb:true,cardLayout:true,showItemCounts:true});}
 $('.noItemsMessage',page).hide();}else{$('.noItemsMessage',page).show();}
 var elem=page.querySelector('.itemsContainer');elem.innerHTML=html;ImageLoader.lazyChildren(elem);$('.btnNextPage',page).on('click',function(){query.StartIndex+=query.Limit;reloadItems(page);});$('.btnPreviousPage',page).on('click',function(){query.StartIndex-=query.Limit;reloadItems(page);});$('.btnChangeLayout',page).on('layoutchange',function(e,layout){getPageData().view=layout;LibraryBrowser.saveViewSetting(getSavedQueryKey(),layout);reloadItems(page);});LibraryBrowser.saveQueryValues(getSavedQueryKey(),query);hideLoadingMessage(page);});}
-$(document).on('pagebeforeshow',"#playlistsPage",function(){var page=this;reloadItems(page);});})(jQuery,document);
+pageIdOn('pagebeforeshow',"playlistsPage",function(){var page=this;reloadItems(page);});})(jQuery,document);
