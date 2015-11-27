@@ -15,5 +15,5 @@ function loadTab(page,index){switch(index){case 0:{reloadItems(page.querySelecto
 break;case 1:{reloadItems(page.querySelector('.photoTabContent'),1);}
 break;case 2:{reloadItems(page.querySelector('.videoTabContent'),2);}
 break;default:break;}}
-$(document).on('pageinit',"#photosPage",function(){var page=this;var tabs=page.querySelector('paper-tabs');var baseUrl='photos.html';var topParentId=LibraryMenu.getTopParentId();if(topParentId){baseUrl+='?topParentId='+topParentId;}
-LibraryBrowser.configurePaperLibraryTabs(page,tabs,page.querySelector('neon-animated-pages'),baseUrl);$(page.querySelector('neon-animated-pages')).on('tabchange',function(){loadTab(page,parseInt(this.selected));});$(page).on('click','.mediaItem',onListItemClick);});window.Photos={startSlideshow:startSlideshow};})(jQuery,document);
+pageIdOn('pageinit',"photosPage",function(){var page=this;var tabs=page.querySelector('paper-tabs');var baseUrl='photos.html';var topParentId=LibraryMenu.getTopParentId();if(topParentId){baseUrl+='?topParentId='+topParentId;}
+LibraryBrowser.configurePaperLibraryTabs(page,tabs,page.querySelector('neon-animated-pages'),baseUrl);page.querySelector('neon-animated-pages').addEventListener('tabchange',function(e){loadTab(page,parseInt(e.target.selected));});$(page).on('click','.mediaItem',onListItemClick);});window.Photos={startSlideshow:startSlideshow};})(jQuery,document);

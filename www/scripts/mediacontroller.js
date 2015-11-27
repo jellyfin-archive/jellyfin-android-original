@@ -77,4 +77,4 @@ else if(msg.MessageType==="GeneralCommand"){var cmd=msg.Data;localPlayer=MediaCo
 function initializeApiClient(apiClient){$(apiClient).off("websocketmessage",onWebSocketMessageReceived).on("websocketmessage",onWebSocketMessageReceived);}
 Dashboard.ready(function(){if(window.ApiClient){initializeApiClient(window.ApiClient);}
 $(ConnectionManager).on('apiclientcreated',function(e,apiClient){initializeApiClient(apiClient);});});function onCastButtonClicked(){showPlayerSelection();}
-$(document).on('headercreated',function(){$('.btnCast').off('click',onCastButtonClicked).on('click',onCastButtonClicked);}).on('pagebeforeshow',".page",function(){var page=this;currentDisplayInfo=null;}).on('displayingitem',".libraryPage",function(e,info){currentDisplayInfo=info;mirrorIfEnabled(info);});})(jQuery,window);
+document.addEventListener('headercreated',function(){$('.btnCast').off('click',onCastButtonClicked).on('click',onCastButtonClicked);});pageClassOn('pagebeforeshow',"page",function(){var page=this;currentDisplayInfo=null;});pageClassOn('displayingitem',"libraryPage",function(e,info){currentDisplayInfo=info;mirrorIfEnabled(info);});})(jQuery,window);

@@ -2,7 +2,7 @@
 return'strings/'+name+'/'+culture+'.json';}
 function getDictionary(name,culture){return dictionaries[getUrl(name,culture)];}
 function loadDictionary(name,culture){return new Promise(function(resolve,reject){if(getDictionary(name,culture)){resolve();return;}
-var url=getUrl(name,culture);var requestUrl=url+"?v="+window.dashboardVersion;fetch(requestUrl,{mode:'no-cors'}).then(function(response){if(response.status<400){return response.json();}else{fetch(getUrl(name,'en-US'),{mode:'no-cors'}).then(function(response){return response.json();}).then(function(json){dictionaries[url]=json;resolve();});}}).then(function(json){if(json){dictionaries[url]=json;resolve();}});});}
+var url=getUrl(name,culture);var requestUrl=url+"?v="+window.dashboardVersion;var xhr=new XMLHttpRequest();xhr.open('GET',requestUrl,true);xhr.onload=function(e){if(this.status<400){dictionaries[url]=JSON.parse(this.response);resolve();}else{var xhr2=new XMLHttpRequest();xhr2.open('GET',getUrl(name,'en-US'),true);xhr2.onload=function(e){dictionaries[url]=JSON.parse(this.response);resolve();};xhr2.send();}};xhr.send();});}
 var currentCulture='en-US';function setCulture(value){Logger.log('Setting culture to '+value);currentCulture=value;return Promise.all([loadDictionary('html',value),loadDictionary('javascript',value)]);}
 function normalizeLocaleName(culture){culture=culture.replace('_','-');var parts=culture.split('-');if(parts.length==2){if(parts[0].toLowerCase()==parts[1].toLowerCase()){culture=parts[0].toLowerCase();}}
 return culture;}
