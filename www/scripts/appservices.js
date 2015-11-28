@@ -1,4 +1,4 @@
-﻿(function($,document){function reloadList(page){Dashboard.showLoadingMsg();var promise1=ApiClient.getAvailablePlugins({TargetSystems:'Server'});var promise2=ApiClient.getInstalledPlugins();$.when(promise1,promise2).done(function(response1,response2){renderInstalled(page,response1[0],response2[0]);renderCatalog(page,response1[0],response2[0]);});}
+﻿(function($,document){function reloadList(page){Dashboard.showLoadingMsg();var promise1=ApiClient.getAvailablePlugins({TargetSystems:'Server'});var promise2=ApiClient.getInstalledPlugins();Promise.all([promise1,promise2]).then(function(responses){renderInstalled(page,responses[0],responses[1]);renderCatalog(page,responses[0],responses[1]);});}
 function getCategories(){var context=getParameterByName('context');var categories=[];if(context=='sync'){categories.push('Sync');}
 else if(context=='livetv'){categories.push('Live TV');}
 else if(context=='notifications'){categories.push('Notifications');}

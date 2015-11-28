@@ -42,17 +42,18 @@ if(item&&item.MediaType=='Audio'){$('.buttonsRow2',page).hide();}else{$('.button
 var toggleRepeatButton=page.querySelector('.repeatToggleButton');if(playState.RepeatMode=='RepeatAll'){toggleRepeatButton.icon="repeat";toggleRepeatButton.classList.add('nowPlayingPageRepeatActive');}
 else if(playState.RepeatMode=='RepeatOne'){toggleRepeatButton.icon="repeat-one";toggleRepeatButton.classList.add('nowPlayingPageRepeatActive');}else{toggleRepeatButton.icon="repeat";toggleRepeatButton.classList.remove('nowPlayingPageRepeatActive');}
 updateNowPlayingInfo(page,state);}
-var currentImgUrl;function updateNowPlayingInfo(page,state){var item=state.NowPlayingItem;var displayName=item?MediaController.getNowPlayingNameHtml(item).replace('<br/>',' - '):'';$('.nowPlayingPageTitle',page).html(displayName).visible(displayName.length>0);var url;var backdropUrl=null;if(!item){}
+var currentImgUrl;function updateNowPlayingInfo(page,state){var item=state.NowPlayingItem;var displayName=item?MediaController.getNowPlayingNameHtml(item).replace('<br/>',' - '):'';$('.nowPlayingPageTitle',page).html(displayName);if(displayName.length>0){$('.nowPlayingPageTitle',page).removeClass('hide');}else{$('.nowPlayingPageTitle',page).addClass('hide');}
+var url;var backdropUrl=null;if(!item){}
 else if(item.PrimaryImageTag){url=ApiClient.getScaledImageUrl(item.PrimaryImageItemId,{type:"Primary",height:300,tag:item.PrimaryImageTag});}
 else if(item.BackdropImageTag){url=ApiClient.getScaledImageUrl(item.BackdropItemId,{type:"Backdrop",height:300,tag:item.BackdropImageTag,index:0});}else if(item.ThumbImageTag){url=ApiClient.getScaledImageUrl(item.ThumbImageItemId,{type:"Thumb",height:300,tag:item.ThumbImageTag});}
 if(url==currentImgUrl){return;}
 if(item&&item.BackdropImageTag){backdropUrl=ApiClient.getScaledImageUrl(item.BackdropItemId,{type:"Backdrop",maxWidth:$(window).width(),tag:item.BackdropImageTag,index:0});}
-setImageUrl(page,url);if(item){if(!$.browser.safari){Backdrops.setBackdropUrl(page,backdropUrl);}
-ApiClient.getItem(Dashboard.getCurrentUserId(),item.Id).done(function(fullItem){page.querySelector('.nowPlayingPageUserDataButtons').innerHTML=LibraryBrowser.getUserDataIconsHtml(fullItem,false);});}else{page.querySelector('.nowPlayingPageUserDataButtons').innerHTML='';}}
+setImageUrl(page,url);if(item){if(!browserInfo.safari){Backdrops.setBackdropUrl(page,backdropUrl);}
+ApiClient.getItem(Dashboard.getCurrentUserId(),item.Id).then(function(fullItem){page.querySelector('.nowPlayingPageUserDataButtons').innerHTML=LibraryBrowser.getUserDataIconsHtml(fullItem,false);});}else{page.querySelector('.nowPlayingPageUserDataButtons').innerHTML='';}}
 function setImageUrl(page,url){currentImgUrl=url;$('.nowPlayingPageImage',page).html(url?'<img src="'+url+'" />':'');}
 function updateSupportedCommands(page,commands){$('.btnCommand',page).each(function(){$(this).buttonEnabled(commands.indexOf(this.getAttribute('data-command'))!=-1);});}
 function releaseCurrentPlayer(){if(currentPlayer){$(currentPlayer).off('playbackstart',onPlaybackStart).off('playbackstop',onPlaybackStopped).off('volumechange',onStateChanged).off('playstatechange',onStateChanged).off('positionchange',onStateChanged);currentPlayer.endPlayerUpdates();currentPlayer=null;}}
-function bindToPlayer(page,player){releaseCurrentPlayer();currentPlayer=player;player.getPlayerState().done(function(state){if(state.NowPlayingItem){player.beginPlayerUpdates();}
+function bindToPlayer(page,player){releaseCurrentPlayer();currentPlayer=player;player.getPlayerState().then(function(state){if(state.NowPlayingItem){player.beginPlayerUpdates();}
 onStateChanged.call(player,{type:'init'},state);});$(player).on('playbackstart',onPlaybackStart).on('playbackstop',onPlaybackStopped).on('volumechange',onStateChanged).on('playstatechange',onStateChanged).on('positionchange',onStateChanged);var playerInfo=MediaController.getPlayerInfo();var supportedCommands=playerInfo.supportedCommands;updateSupportedCommands(page,supportedCommands);}
 function loadPlaylist(page){var html='';html+=LibraryBrowser.getListViewHtml({items:MediaController.playlist(),smallIcon:true});var itemsContainer=page.querySelector('.playlist');itemsContainer.innerHTML=html;var index=MediaController.currentPlaylistIndex();if(index!=-1){var item=itemsContainer.querySelectorAll('.listItem')[index];if(item){var img=item.querySelector('.listviewImage');img.classList.remove('lazy');img.classList.add('playlistIndexIndicatorImage');}}
 ImageLoader.lazyChildren(itemsContainer);}
