@@ -10,14 +10,14 @@
 
         var refreshAfterChange = currentOptions.refresh;
 
-        ApiClient.addMediaPath(virtualFolder.Name, path, refreshAfterChange).done(function () {
+        ApiClient.addMediaPath(virtualFolder.Name, path, refreshAfterChange).then(function () {
 
             hasChanges = true;
             refreshLibraryFromServer(page);
 
-        }).fail(function () {
+        }, function () {
 
-            Dashboard.showError(Globalize.translate('ErrorAddingMediaPathToVirtualFolder'));
+            Dashboard.alert(Globalize.translate('ErrorAddingMediaPathToVirtualFolder'));
         });
     }
 
@@ -36,14 +36,14 @@
 
                 var refreshAfterChange = currentOptions.refresh;
 
-                ApiClient.removeMediaPath(virtualFolder.Name, location, refreshAfterChange).done(function () {
+                ApiClient.removeMediaPath(virtualFolder.Name, location, refreshAfterChange).then(function () {
 
                     hasChanges = true;
                     refreshLibraryFromServer($(button).parents('.editorContent')[0]);
 
-                }).fail(function () {
+                }, function () {
 
-                    Dashboard.showError(Globalize.translate('DefaultErrorMessage'));
+                    Dashboard.alert(Globalize.translate('DefaultErrorMessage'));
                 });
             }
         });
@@ -70,7 +70,7 @@
 
     function refreshLibraryFromServer(page) {
 
-        ApiClient.getVirtualFolders().done(function (result) {
+        ApiClient.getVirtualFolders().then(function (result) {
 
             var library = result.filter(function (f) {
 
@@ -142,13 +142,12 @@
 
             require(['components/paperdialoghelper'], function () {
 
-                HttpClient.send({
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'components/medialibraryeditor/medialibraryeditor.template.html', true);
 
-                    type: 'GET',
-                    url: 'components/medialibraryeditor/medialibraryeditor.template.html'
+                xhr.onload = function (e) {
 
-                }).done(function (template) {
-
+                    var template = this.response;
                     var dlg = PaperDialogHelper.createDialog({
                         size: 'small',
                         theme: 'a',
@@ -184,7 +183,9 @@
                     });
 
                     refreshLibraryFromServer(editorContent);
-                });
+                }
+
+                xhr.send();
 
             });
 

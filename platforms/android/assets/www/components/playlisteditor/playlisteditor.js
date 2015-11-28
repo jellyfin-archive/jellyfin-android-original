@@ -6,7 +6,7 @@
 
         var context = getParameterByName('context');
 
-        ApiClient.getItem(Dashboard.getCurrentUserId(), id).done(function (item) {
+        ApiClient.getItem(Dashboard.getCurrentUserId(), id).then(function (item) {
 
             Dashboard.navigate(LibraryBrowser.getHref(item, context));
 
@@ -46,7 +46,7 @@
             url: url,
             dataType: "json"
 
-        }).done(function (result) {
+        }).then(function (result) {
 
             Dashboard.hideLoadingMsg();
 
@@ -69,7 +69,7 @@
             type: "POST",
             url: url
 
-        }).done(function () {
+        }).then(function () {
 
             Dashboard.hideLoadingMsg();
 
@@ -106,7 +106,7 @@
             SortBy: 'SortName'
         };
 
-        ApiClient.getItems(Dashboard.getCurrentUserId(), options).done(function (result) {
+        ApiClient.getItems(Dashboard.getCurrentUserId(), options).then(function (result) {
 
             var html = '';
 

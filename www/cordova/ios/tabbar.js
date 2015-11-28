@@ -108,11 +108,11 @@
             return;
         }
 
-        ApiClient.getUserViews({}, user.Id).done(function (result) {
+        ApiClient.getUserViews({}, user.Id).then(function (result) {
 
             onUserViewResponse(user, result.Items);
 
-        }).fail(function (result) {
+        }, function (result) {
 
             onUserViewResponse(user, []);
         });
@@ -154,7 +154,7 @@
             return;
         }
 
-        Dashboard.getCurrentUser().done(showUserTabs);
+        Dashboard.getCurrentUser().then(showUserTabs);
     }
 
     var isFirstHide = true;

@@ -19,7 +19,7 @@
             reloadItem(page, item);
         }
         else {
-            ApiClient.getItem(Dashboard.getCurrentUserId(), currentItem.Id).done(function (item) {
+            ApiClient.getItem(Dashboard.getCurrentUserId(), currentItem.Id).then(function (item) {
                 reloadItem(page, item);
             });
         }
@@ -39,14 +39,13 @@
 
         Dashboard.showLoadingMsg();
 
-        HttpClient.send({
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'components/metadataeditor/metadataeditor.template.html', true);
 
-            type: 'GET',
-            url: 'components/metadataeditor/metadataeditor.template.html'
+        xhr.onload = function (e) {
 
-        }).done(function (template) {
-
-            ApiClient.getItem(Dashboard.getCurrentUserId(), itemId).done(function (item) {
+            var template = this.response;
+            ApiClient.getItem(Dashboard.getCurrentUserId(), itemId).then(function (item) {
 
                 var dlg = document.createElement('paper-dialog');
 
@@ -88,7 +87,9 @@
                     PaperDialogHelper.close(dlg);
                 });
             });
-        });
+        }
+
+        xhr.send();
     }
 
     function onDialogClosed() {

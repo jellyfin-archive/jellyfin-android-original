@@ -30,7 +30,7 @@ hideOverlay();}
 function hideOverlay(){var flyout=document.querySelector('.tvProgramOverlay');if(flyout){flyout.close();}}
 function startHideOverlayTimer(){if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}
 hideOverlayTimeout=setTimeout(hideOverlay,200);}
-$.fn.createGuideHoverMenu=function(childSelector){function onShowTimerExpired(elem){var id=elem.getAttribute('data-programid');ApiClient.getLiveTvProgram(id,Dashboard.getCurrentUserId()).done(function(item){showOverlay(elem,item);});}
+$.fn.createGuideHoverMenu=function(childSelector){function onShowTimerExpired(elem){var id=elem.getAttribute('data-programid');ApiClient.getLiveTvProgram(id,Dashboard.getCurrentUserId()).then(function(item){showOverlay(elem,item);});}
 function onHoverOut(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}}
 function onHoverIn(){if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}
 if(hideOverlayTimeout){clearTimeout(hideOverlayTimeout);hideOverlayTimeout=null;}

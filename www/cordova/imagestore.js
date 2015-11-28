@@ -52,10 +52,9 @@
         }
 
         function normalizeReturnUrl(url) {
-            if ($.browser.safari) {
+            if (browserInfo.safari) {
 
                 // Use the embedded server for iOS8, and also if we don't know the iOS version, just to be safe
-                //if (($.browser.iOSVersion || 0) < 9) {
                 var index = url.indexOf('/Documents');
                 if (index != -1) {
                     return url.substring(index);
@@ -63,15 +62,13 @@
                 else {
                     return url.replace('file://', '');
                 }
-
-                //}
             }
             return url;
         }
 
         self.getImageUrl = function (originalUrl) {
 
-            if ($.browser.android && originalUrl.indexOf('tag=') != -1) {
+            if (browserInfo.android && originalUrl.indexOf('tag=') != -1) {
                 originalUrl += "&accept=webp";
             }
 
@@ -80,7 +77,7 @@
 
             //Logger.log('getImageUrl:' + originalUrl);
 
-            getFileSystem().done(function (fileSystem) {
+            getFileSystem().then(function (fileSystem) {
                 var path = fileSystem.root.toURL() + "/emby/cache/" + key;
 
                 resolveLocalFileSystemURL(path, function (fileEntry) {
@@ -111,16 +108,16 @@
                 setImageIntoElement(elem, url);
             }
 
-            //if ($.browser.safari) {
+            //if (browserInfo.safari) {
             //    setImageWithSdWebImage(elem, url);
             //    return;
             //}
 
-            self.getImageUrl(url).done(function (localUrl) {
+            self.getImageUrl(url).then(function (localUrl) {
 
                 setImageIntoElement(elem, localUrl);
 
-            }).fail(onFail);
+            }, onFail);
         };
 
         var imageIdIndex = 1;

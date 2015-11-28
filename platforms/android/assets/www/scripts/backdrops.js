@@ -3,7 +3,7 @@ return elem;}
 function clearBackdrop(){var elem=document.documentElement;elem.classList.remove('backdropContainer');elem.removeAttribute('data-url');elem.style.backgroundImage='';}
 function getRandom(min,max){return Math.floor(Math.random()*(max-min)+min);}
 function getBackdropItemIds(apiClient,userId,types,parentId){var key='backdrops2_'+userId+(types||'')+(parentId||'');var deferred=$.Deferred();var data=sessionStore.getItem(key);if(data){Logger.log('Found backdrop id list in cache. Key: '+key)
-data=JSON.parse(data);deferred.resolveWith(null,[data]);}else{var options={SortBy:"IsFavoriteOrLiked,Random",Limit:20,Recursive:true,IncludeItemTypes:types,ImageTypes:"Backdrop",ParentId:parentId};apiClient.getItems(Dashboard.getCurrentUserId(),options).done(function(result){var images=result.Items.map(function(i){return{id:i.Id,tag:i.BackdropImageTags[0]};});sessionStore.setItem(key,JSON.stringify(images));deferred.resolveWith(null,[images]);});}
+data=JSON.parse(data);deferred.resolveWith(null,[data]);}else{var options={SortBy:"IsFavoriteOrLiked,Random",Limit:20,Recursive:true,IncludeItemTypes:types,ImageTypes:"Backdrop",ParentId:parentId};apiClient.getItems(Dashboard.getCurrentUserId(),options).then(function(result){var images=result.Items.map(function(i){return{id:i.Id,tag:i.BackdropImageTags[0]};});sessionStore.setItem(key,JSON.stringify(images));deferred.resolveWith(null,[images]);});}
 return deferred.promise();}
 function setBackdropImage(elem,url){if(url==elem.getAttribute('data-url')){return;}
 elem.setAttribute('data-url',url);ImageLoader.lazyImage(elem,url);}
