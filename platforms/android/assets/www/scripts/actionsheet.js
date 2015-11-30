@@ -6,5 +6,6 @@ else if(renderIcon){html+='<iron-icon></iron-icon>';}
 html+='<span>'+option.name+'</span>';html+='</paper-menu-item>';}
 html+='</paper-menu>';if(isScrollable){html+='</paper-dialog-scrollable>';}
 if(options.showCancel){html+='<div class="buttons">';html+='<paper-button dialog-dismiss>'+Globalize.translate('ButtonCancel')+'</paper-button>';html+='</div>';}
-html+='</paper-dialog>';$(document.body).append(html);setTimeout(function(){var dlg=document.getElementById(id);dlg.open();$(dlg).on('iron-overlay-closed',function(){$(this).remove();});var eventName=browserInfo.chrome||browserInfo.safari?'click':'mousedown';$('.actionSheetMenuItem',dlg).on(eventName,function(){var selectedId=this.getAttribute('data-id');setTimeout(function(){dlg.close();if(options.callback){options.callback(selectedId);}},100);});},100);}
+html+='</paper-dialog>';$(document.body).append(html);setTimeout(function(){var dlg=document.getElementById(id);if(browserInfo.chrome){dlg.animationConfig={'entry':{name:'scale-up-animation',node:dlg,timing:{duration:160,easing:'ease-out'}},'exit':{name:'fade-out-animation',node:dlg,timing:{duration:200,easing:'ease-in'}}};}
+dlg.open();$(dlg).on('iron-overlay-closed',function(){$(this).remove();});var eventName=browserInfo.chrome||browserInfo.safari?'click':'mousedown';$('.actionSheetMenuItem',dlg).on(eventName,function(){var selectedId=this.getAttribute('data-id');setTimeout(function(){dlg.close();if(options.callback){options.callback(selectedId);}},100);});},100);}
 window.ActionSheetElement={show:show};})();

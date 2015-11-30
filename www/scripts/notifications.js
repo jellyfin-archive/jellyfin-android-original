@@ -15,5 +15,5 @@ itemHtml+='</paper-item-body>';itemHtml+='</paper-icon-item>';if(notification.Ur
 return itemHtml;}
 window.Notifications=new notifications();var needsRefresh=true;function onWebSocketMessage(e,msg){if(msg.MessageType==="NotificationUpdated"||msg.MessageType==="NotificationAdded"||msg.MessageType==="NotificationsMarkedRead"){Notifications.getNotificationsSummaryPromise=null;Notifications.updateNotificationCount();}}
 function initializeApiClient(apiClient){$(apiClient).off("websocketmessage",onWebSocketMessage).on("websocketmessage",onWebSocketMessage);}
-document.addEventListener('headercreated',function(){$('.btnNotifications').on('click',function(){Dashboard.navigate('notificationlist.html');});});if(window.ApiClient){initializeApiClient(window.ApiClient);}
+if(window.ApiClient){initializeApiClient(window.ApiClient);}
 $(ConnectionManager).on('apiclientcreated',function(e,apiClient){initializeApiClient(apiClient);});Events.on(ConnectionManager,'localusersignedin',function(){needsRefresh=true;});Events.on(ConnectionManager,'localusersignedout',function(){needsRefresh=true;});pageClassOn('pageshow',"type-interior",function(){if(needsRefresh){Notifications.updateNotificationCount();}});})(jQuery,document,Dashboard,LibraryBrowser);
