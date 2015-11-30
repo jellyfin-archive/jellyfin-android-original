@@ -17,4 +17,4 @@ elem.innerHTML=html;}
 var promises=[];for(i=0,length=sections.length;i<length;i++){var section=sections[i];elem=page.querySelector('.section'+section.id);promises.push(loadSection(elem,userId,topParentId,section,sections.length==1));}
 Promise.all(promises).then(function(){Dashboard.hideLoadingMsg();LibraryBrowser.setLastRefreshed(page);});}
 function initHomePage(){if(window.HomePage){window.HomePage.renderFavorites=function(page,tabContent){if(LibraryBrowser.needsRefresh(tabContent)){loadSections(tabContent,Dashboard.getCurrentUserId());}};}}
-initHomePage();pageIdOn('pageinit',"indexPage",initHomePage);pageIdOn('pageshow',"favoritesPage",function(){var page=this;if(LibraryBrowser.needsRefresh(page)){loadSections(page,Dashboard.getCurrentUserId());}});window.FavoriteItems={render:loadSections};})(jQuery,document);
+initHomePage();pageIdOn('pageinit',"indexPage",initHomePage);pageIdOn('pagebeforeshow',"favoritesPage",function(){var page=this;if(LibraryBrowser.needsRefresh(page)){loadSections(page,Dashboard.getCurrentUserId());}});window.FavoriteItems={render:loadSections};})(jQuery,document);

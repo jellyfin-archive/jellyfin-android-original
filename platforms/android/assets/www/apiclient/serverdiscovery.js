@@ -1,1 +1,1 @@
-﻿(function(globalScope){globalScope.ServerDiscovery={findServers:function(timeoutMs){var deferred=DeferredBuilder.Deferred();var servers=[];deferred.resolveWith(null,[servers]);return deferred.promise();}};})(window);
+﻿(function(globalScope){globalScope.ServerDiscovery={findServers:function(timeoutMs){return new Promise(function(resolve,reject){var servers=[];resolve(servers);});}};})(window);

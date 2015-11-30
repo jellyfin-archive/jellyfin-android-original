@@ -19,7 +19,8 @@ for(var i=0,length=jobs.length;i<length;i++){var job=jobs[i];if(showTargetName){
 lastTargetName=targetName;html+='<div class="detailSectionHeader">';html+='<div>'+targetName+'</div>';html+='</div>';}}
 html+=getSyncJobHtml(page,job,cardBoxCssClass,syncJobPage);}
 var elem=$('.syncActivity',page).html(html).lazyChildren();Events.trigger(elem[0],'create');$('.btnJobMenu',elem).on('click',function(){showJobMenu(page,this);});if(!jobs.length){elem.html('<div style="padding:1em .25em;">'+Globalize.translate('MessageNoSyncJobsFound')+'</div>');}}
-function refreshData(page,jobs){for(var i=0,length=jobs.length;i<length;i++){var job=jobs[i];refreshJob(page,job);}}
+$.fn.lazyChildren=function(){for(var i=0,length=this.length;i<length;i++){ImageLoader.lazyChildren(this[i]);}
+return this;};function refreshData(page,jobs){for(var i=0,length=jobs.length;i<length;i++){var job=jobs[i];refreshJob(page,job);}}
 function refreshJob(page,job){var card=page.querySelector('.card[data-id=\''+job.Id+'\']');if(!card){return;}
 var banner=card.querySelector('.syncStatusBanner');if(banner.getAttribute('data-status')==job.Status){var elem=document.createElement('div');elem.innerHTML=getSyncStatusBanner(job);elem=elem.querySelector('.syncStatusBanner');elem.parentNode.removeChild(elem);banner.parentNode.replaceChild(elem,banner);}
 var progress=job.Progress||0;var cardFooter=card.querySelector('.cardFooter');if(progress==0||progress>=100){cardFooter.classList.add('hide');}
