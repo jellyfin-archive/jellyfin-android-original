@@ -62,7 +62,7 @@ $.fn.createCardMenus=function(options){var preventHover=false;function onShowTim
 var innerElem=elem.querySelector('.cardOverlayTarget');var dataElement=elem;while(dataElement&&!dataElement.getAttribute('data-itemid')){dataElement=dataElement.parentNode;}
 var id=dataElement.getAttribute('data-itemid');var commands=dataElement.getAttribute('data-commands').split(',');var promise1=ApiClient.getItem(Dashboard.getCurrentUserId(),id);var promise2=Dashboard.getCurrentUser();Promise.all([promise1,promise2]).then(function(responses){var item=responses[0];var user=responses[1];var card=elem;while(!card.classList.contains('card')){card=card.parentNode;}
 innerElem.innerHTML=getOverlayHtml(item,user,card,commands);$('.btnPlayItem',innerElem).on('click',onPlayItemButtonClick);$('.btnPlayTrailer',innerElem).on('click',onTrailerButtonClick);$('.btnMoreCommands',innerElem).on('click',onMoreButtonClick);});$(innerElem).show();slideUp(innerElem,1);}
-function onHoverIn(e){var elem=e.target;if(!elem.classList.contains('card')){return;}
+function onHoverIn(e){var elem=e.target;if(!elem.classList.contains('cardImage')){return;}
 if(preventHover===true){preventHover=false;return;}
 if(showOverlayTimeout){clearTimeout(showOverlayTimeout);showOverlayTimeout=null;}
 while(!elem.classList.contains('card')){elem=elem.parentNode;}

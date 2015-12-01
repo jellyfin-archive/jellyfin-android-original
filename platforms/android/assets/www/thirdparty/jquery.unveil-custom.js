@@ -12,7 +12,7 @@ function fillImages(elems){for(var i=0,length=elems.length;i<length;i++){var ele
 function lazyChildren(elem){unveilElements(elem.getElementsByClassName('lazy'),elem);}
 function lazyImage(elem,url){elem.setAttribute('data-src',url);fillImages([elem]);}
 window.ImageLoader={fillImages:fillImages,lazyImage:lazyImage,lazyChildren:lazyChildren};})();(function(){function setImageIntoElement(elem,url){if(elem.tagName!=="IMG"){elem.style.backgroundImage="url('"+url+"')";}else{elem.setAttribute("src",url);}
-if(browserInfo.chrome&&!browserInfo.mobile){if(!elem.classList.contains('noFade')){fadeIn(elem,1);}}}
+if(browserInfo.animate&&!browserInfo.mobile){if(!elem.classList.contains('noFade')){fadeIn(elem,1);}}}
 function fadeIn(elem,iterations){var keyframes=[{opacity:'0',offset:0},{opacity:'1',offset:1}];var timing={duration:200,iterations:iterations};return elem.animate(keyframes,timing);}
 function simpleImageStore(){var self=this;self.setImageInto=setImageIntoElement;}
 window.ImageStore=new simpleImageStore();})();

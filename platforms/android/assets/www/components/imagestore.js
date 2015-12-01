@@ -1,7 +1,7 @@
 ﻿(function(){function setImageIntoElement(elem,url){if(elem.tagName!=="IMG"){elem.style.backgroundImage="url('"+url+"')";}else{elem.setAttribute("src",url);}
 if(browserInfo.chrome&&!browserInfo.mobile){if(!elem.classList.contains('noFade')){fadeIn(elem,1);}}}
 function fadeIn(elem,iterations){var keyframes=[{opacity:'0',offset:0},{opacity:'1',offset:1}];var timing={duration:200,iterations:iterations};return elem.animate(keyframes,timing);}
-var requestedBytes=1024*1024*200;var imageCacheDirectoryEntry;var imageCacheFolder='images';function createDir(rootDirEntry,folders,callback,errorCallback){if(folders[0]=='.'||folders[0]==''){folders=folders.slice(1);}
+var requestedBytes=1024*1024*500;var imageCacheDirectoryEntry;var imageCacheFolder='images';function createDir(rootDirEntry,folders,callback,errorCallback){if(folders[0]=='.'||folders[0]==''){folders=folders.slice(1);}
 rootDirEntry.getDirectory(folders[0],{create:true},function(dirEntry){if(folders.length>1){createDir(dirEntry,folders.slice(1),callback,errorCallback);}else{callback(dirEntry);}},errorCallback);}
 navigator.webkitPersistentStorage.requestQuota(requestedBytes,function(grantedBytes){var requestMethod=window.webkitRequestFileSystem||window.requestFileSystem;requestMethod(PERSISTENT,grantedBytes,function(fs){fileSystem=fs;createDir(fileSystem.root,imageCacheFolder.split('/'),function(dirEntry){imageCacheDirectoryEntry=dirEntry;});});});var fileSystem;function imageFileStore(){var self=this;function getCacheKey(url){var index=url.indexOf('://');if(index!=-1){url=url.substring(index+3);index=url.indexOf('/');if(index!=-1){url=url.substring(index+1);}}
 return CryptoJS.MD5(url).toString();}
