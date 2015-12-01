@@ -1,11 +1,12 @@
-﻿$.fn.taskButton=function(options){function pollTasks(button){ApiClient.getScheduledTasks({IsEnabled:true}).done(function(tasks){updateTasks(button,tasks);});}
+﻿$.fn.taskButton=function(options){function pollTasks(button){ApiClient.getScheduledTasks({IsEnabled:true}).then(function(tasks){updateTasks(button,tasks);});}
 function updateTasks(button,tasks){var task=tasks.filter(function(t){return t.Key==options.taskKey;})[0];if(options.panel){if(task){$(options.panel).show();}else{$(options.panel).hide();}}
 if(!task){return;}
-$(button).buttonEnabled(task.State=='Idle').attr('data-taskid',task.Id);var progress=(task.CurrentProgressPercentage||0).toFixed(1);if(options.progressElem){options.progressElem.value=progress;if(task.State=='Running'){options.progressElem.classList.remove('hide');}else{options.progressElem.classList.add('hide');}}
+if(task.State=='Idle'){$(button).removeAttr('disabled');}else{$(button).attr('disabled','disabled');}
+$(button).attr('data-taskid',task.Id);var progress=(task.CurrentProgressPercentage||0).toFixed(1);if(options.progressElem){options.progressElem.value=progress;if(task.State=='Running'){options.progressElem.classList.remove('hide');}else{options.progressElem.classList.add('hide');}}
 if(options.lastResultElem){var lastResult=task.LastExecutionResult?task.LastExecutionResult.Status:'';if(lastResult=="Failed"){options.lastResultElem.html('<span style="color:#FF0000;">'+Globalize.translate('LabelFailed')+'</span>');}
 else if(lastResult=="Cancelled"){options.lastResultElem.html('<span style="color:#0026FF;">'+Globalize.translate('LabelCancelled')+'</span>');}
 else if(lastResult=="Aborted"){options.lastResultElem.html('<span style="color:#FF0000;">'+Globalize.translate('LabelAbortedByServerShutdown')+'</span>');}else{options.lastResultElem.html(lastResult);}}}
-function onScheduledTaskMessageConfirmed(instance,id){ApiClient.startScheduledTask(id).done(function(){pollTasks(instance);});}
+function onScheduledTaskMessageConfirmed(instance,id){ApiClient.startScheduledTask(id).then(function(){pollTasks(instance);});}
 function onButtonClick(){var button=this;var id=button.getAttribute('data-taskid');var key='scheduledTaskButton'+options.taskKey;var expectedValue=new Date().getMonth()+'5';if(appStorage.getItem(key)==expectedValue){onScheduledTaskMessageConfirmed(button,id);}else{var msg=Globalize.translate('ConfirmMessageScheduledTaskButton');msg+='<br/>';msg+='<div style="margin-top:1em;">';msg+='<a class="clearLink" href="scheduledtasks.html"><paper-button style="color:#3f51b5!important;margin:0;">'+Globalize.translate('ButtonScheduledTasks')+'</paper-button></a>';msg+='</div>';Dashboard.confirm(msg,Globalize.translate('HeaderConfirmation'),function(result){if(result){appStorage.setItem(key,expectedValue);onScheduledTaskMessageConfirmed(button,id);}});}}
 function onSocketOpen(){startInterval();}
 function onSocketMessage(e,msg){if(msg.MessageType=="ScheduledTasksInfo"){var tasks=msg.Data;updateTasks(self,tasks);}}

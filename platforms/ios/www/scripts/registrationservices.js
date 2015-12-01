@@ -1,10 +1,10 @@
 ﻿(function(){function getRegistrationInfo(feature){return ConnectionManager.getRegistrationInfo(feature,ApiClient);}
 function validateFeature(feature,deferred){var unlockableProduct=IapManager.getProductInfo(feature)||{};if(unlockableProduct.owned){deferred.resolve();return;}
-var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:true,id:unlockableProduct.id,price:unlockableProduct.price,feature:feature}:null;var prefix=$.browser.android?'android':'ios';IapManager.isUnlockedOverride(feature).done(function(isUnlocked){if(isUnlocked){deferred.resolve();return;}
+var unlockableProductInfo=IapManager.isPurchaseAvailable(feature)?{enableAppUnlock:true,id:unlockableProduct.id,price:unlockableProduct.price,feature:feature}:null;var prefix=browserInfo.android?'android':'ios';IapManager.isUnlockedOverride(feature).then(function(isUnlocked){if(isUnlocked){deferred.resolve();return;}
 function onRegistrationInfoResponse(registrationInfo){if(registrationInfo.IsRegistered){deferred.resolve();return;}
-IapManager.getSubscriptionOptions().done(function(subscriptionOptions){if(subscriptionOptions.filter(function(p){return p.owned;}).length>0){deferred.resolve();return;}
+IapManager.getSubscriptionOptions().then(function(subscriptionOptions){if(subscriptionOptions.filter(function(p){return p.owned;}).length>0){deferred.resolve();return;}
 var dialogOptions={title:Globalize.translate('HeaderUnlockApp'),enablePlayMinute:feature=='playback',feature:feature};showInAppPurchaseInfo(subscriptionOptions,unlockableProductInfo,dialogOptions,deferred);});}
-getRegistrationInfo(prefix+'appunlock').done(onRegistrationInfoResponse).fail(function(){onRegistrationInfoResponse({});});});}
+getRegistrationInfo(prefix+'appunlock').then(onRegistrationInfoResponse,function(){onRegistrationInfoResponse({});});});}
 function cancelInAppPurchase(){var elem=document.querySelector('.inAppPurchaseOverlay');if(elem){PaperDialogHelper.close(elem);}}
 var isCancelled=true;var currentDisplayingProductInfos=[];var currentDisplayingDeferred=null;function clearCurrentDisplayingInfo(){currentDisplayingProductInfos=[];currentDisplayingDeferred=null;}
 function showInAppPurchaseElement(subscriptionOptions,unlockableProductInfo,dialogOptions,deferred){cancelInAppPurchase();currentDisplayingProductInfos=subscriptionOptions.slice(0);if(unlockableProductInfo){currentDisplayingProductInfos.push(unlockableProductInfo);}
@@ -29,10 +29,10 @@ function acquireEmail(feature){if(ConnectionManager.isLoggedIntoConnect()){var c
 promptForEmail(feature);}
 function promptForEmail(feature){require(['prompt'],function(prompt){prompt({text:Globalize.translate('TextPleaseEnterYourEmailAddressForSubscription'),title:Globalize.translate('HeaderEmailAddress'),callback:function(email){if(email){IapManager.beginPurchase(feature,email);}}});});}
 function onProductUpdated(e,product){if(product.owned){var deferred=currentDisplayingDeferred;if(deferred&&currentDisplayingProductInfos.filter(function(p){return product.id==p.id;}).length){isCancelled=false;cancelInAppPurchase();deferred.resolve();}}}
-function validateSync(deferred){Dashboard.getPluginSecurityInfo().done(function(pluginSecurityInfo){if(pluginSecurityInfo.IsMBSupporter){deferred.resolve();return;}
+function validateSync(deferred){Dashboard.getPluginSecurityInfo().then(function(pluginSecurityInfo){if(pluginSecurityInfo.IsMBSupporter){deferred.resolve();return;}
 function onRegistrationInfoResponse(registrationInfo){if(registrationInfo.IsRegistered){deferred.resolve();return;}
-IapManager.getSubscriptionOptions().done(function(subscriptionOptions){var dialogOptions={title:Globalize.translate('HeaderUnlockSync'),feature:'sync'};showInAppPurchaseInfo(subscriptionOptions,null,dialogOptions,deferred);});}
-getRegistrationInfo('Sync').done(onRegistrationInfoResponse).fail(function(){onRegistrationInfoResponse({});});});}
+IapManager.getSubscriptionOptions().then(function(subscriptionOptions){var dialogOptions={title:Globalize.translate('HeaderUnlockSync'),feature:'sync'};showInAppPurchaseInfo(subscriptionOptions,null,dialogOptions,deferred);});}
+getRegistrationInfo('Sync').then(onRegistrationInfoResponse,function(){onRegistrationInfoResponse({});});});}
 window.RegistrationServices={renderPluginInfo:function(page,pkg,pluginSecurityInfo){},validateFeature:function(name){var deferred=DeferredBuilder.Deferred();if(name=='playback'){validateFeature(name,deferred);}else if(name=='livetv'){validateFeature(name,deferred);}else if(name=='sync'){validateSync(deferred);}else{deferred.resolve();}
 return deferred.promise();}};function onIapManagerLoaded(){Events.on(IapManager,'productupdated',onProductUpdated);}
-if($.browser.android){requirejs(['cordova/android/iap'],onIapManagerLoaded);}else{requirejs(['cordova/iap'],onIapManagerLoaded);}})();
+if(browserInfo.android){requirejs(['cordova/android/iap'],onIapManagerLoaded);}else{requirejs(['cordova/iap'],onIapManagerLoaded);}})();
