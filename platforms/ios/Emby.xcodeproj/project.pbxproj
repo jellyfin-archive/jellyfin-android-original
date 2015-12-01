@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		001DC940D0A14A029FDF71C7 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8241D42CE405FA82272BB /* SearchBar.m */; };
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
@@ -98,6 +99,11 @@
 		A3E7DCD01B086136007556B9 /* MediaAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */; };
 		A3E9F8D01AF9509800F2026A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3E9F8CF1AF9509800F2026A /* Images.xcassets */; };
 		A3ECE5C71BB31E47003B6515 /* tabbar in Resources */ = {isa = PBXBuildFile; fileRef = A3ECE5C61BB31E47003B6515 /* tabbar */; };
+		A3F1357F1C0CFA550010885D /* MediaToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F1357E1C0CFA550010885D /* MediaToolbox.framework */; };
+		A3F135811C0CFA8D0010885D /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F135801C0CFA8D0010885D /* CoreBluetooth.framework */; };
+		A3F135831C0CFAA40010885D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F135821C0CFAA40010885D /* Accelerate.framework */; };
+		A3F135851C0CFAB20010885D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F135841C0CFAB20010885D /* libc++.tbd */; };
+		A3F135871C0CFACD0010885D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F135861C0CFACD0010885D /* AVFoundation.framework */; };
 		A3F3C5281BA0AE9A00B1DE6D /* MobileVLCKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3F3C5271BA0AE9A00B1DE6D /* MobileVLCKit.framework */; };
 		A3F3C52B1BA0B14100B1DE6D /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2C374D3F2B74479A84498C2 /* MediaPlayer.framework */; };
 		A5A3CA2337AC4CD2A14B3405 /* ReroutingUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E2578DE79FC4F16B6ABF37D /* ReroutingUIWebView.m */; };
@@ -170,6 +176,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = EA61EB0F18FE485B00D75696;
 			remoteInfo = ConnectSDK;
+		};
+		A3F1357A1C0CF4750010885D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 449A37021B0FDC1C00E47DAC;
+			remoteInfo = ConnectSDKIntegrationTests;
+		};
+		A3F1357C1C0CF4750010885D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 44166C501B4203880052F9EC;
+			remoteInfo = ConnectSDKAcceptanceTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -317,6 +337,11 @@
 		A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaAccessibility.framework; path = System/Library/Frameworks/MediaAccessibility.framework; sourceTree = SDKROOT; };
 		A3E9F8CF1AF9509800F2026A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Emby/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		A3ECE5C61BB31E47003B6515 /* tabbar */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tabbar; sourceTree = "<group>"; };
+		A3F1357E1C0CFA550010885D /* MediaToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaToolbox.framework; path = System/Library/Frameworks/MediaToolbox.framework; sourceTree = SDKROOT; };
+		A3F135801C0CFA8D0010885D /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		A3F135821C0CFAA40010885D /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		A3F135841C0CFAB20010885D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		A3F135861C0CFACD0010885D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		A3F3C5271BA0AE9A00B1DE6D /* MobileVLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileVLCKit.framework; path = ../../plugins/org.nypr.cordova.vlcplugin/VLCKit/build/MobileVLCKit.framework; sourceTree = "<group>"; };
 		A8161B87958A4894BD27C9BB /* DDASLLogCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDASLLogCapture.m; path = "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin/DDASLLogCapture.m"; sourceTree = "<group>"; };
 		A8AE01EBC7F84534B913262F /* CDVBackgroundColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVBackgroundColor.m; path = "com.crewmeister.cordova-ios-backgroundcolor/CDVBackgroundColor.m"; sourceTree = "<group>"; };
@@ -391,6 +416,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3F135871C0CFACD0010885D /* AVFoundation.framework in Frameworks */,
+				A3F135851C0CFAB20010885D /* libc++.tbd in Frameworks */,
+				A3F135831C0CFAA40010885D /* Accelerate.framework in Frameworks */,
+				A3F135811C0CFA8D0010885D /* CoreBluetooth.framework in Frameworks */,
+				A3F1357F1C0CFA550010885D /* MediaToolbox.framework in Frameworks */,
 				A3F3C52B1BA0B14100B1DE6D /* MediaPlayer.framework in Frameworks */,
 				A3F3C5281BA0AE9A00B1DE6D /* MobileVLCKit.framework in Frameworks */,
 				A3E7DCD01B086136007556B9 /* MediaAccessibility.framework in Frameworks */,
@@ -492,6 +522,11 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A3F135861C0CFACD0010885D /* AVFoundation.framework */,
+				A3F135841C0CFAB20010885D /* libc++.tbd */,
+				A3F135821C0CFAA40010885D /* Accelerate.framework */,
+				A3F135801C0CFA8D0010885D /* CoreBluetooth.framework */,
+				A3F1357E1C0CFA550010885D /* MediaToolbox.framework */,
 				A34CA9011BC8B05700177D9F /* libz.tbd */,
 				A3A0168C1B3111590089774E /* GoogleCast.framework */,
 				A3F3C5271BA0AE9A00B1DE6D /* MobileVLCKit.framework */,
@@ -721,6 +756,8 @@
 			children = (
 				A3A016871B310C850089774E /* libConnectSDK.a */,
 				A3A016891B310C850089774E /* ConnectSDKTests.xctest */,
+				A3F1357B1C0CF4750010885D /* ConnectSDKIntegrationTests.xctest */,
+				A3F1357D1C0CF4750010885D /* ConnectSDKAcceptanceTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -831,6 +868,20 @@
 			fileType = wrapper.cfbundle;
 			path = ConnectSDKTests.xctest;
 			remoteRef = A3A016881B310C850089774E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A3F1357B1C0CF4750010885D /* ConnectSDKIntegrationTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ConnectSDKIntegrationTests.xctest;
+			remoteRef = A3F1357A1C0CF4750010885D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A3F1357D1C0CF4750010885D /* ConnectSDKAcceptanceTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ConnectSDKAcceptanceTests.xctest;
+			remoteRef = A3F1357C1C0CF4750010885D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1033,6 +1084,7 @@
 					"-weak-lSystem",
 					"-ObjC",
 					"-lz",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = Emby;
 				PROVISIONING_PROFILE = "";
@@ -1084,6 +1136,7 @@
 					"-weak-lSystem",
 					"-ObjC",
 					"-lz",
+					"$(inherited)",
 				);
 				PRODUCT_NAME = Emby;
 				PROVISIONING_PROFILE = "";

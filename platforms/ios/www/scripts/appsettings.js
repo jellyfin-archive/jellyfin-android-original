@@ -7,7 +7,7 @@ return parseInt(appStorage.getItem('chromecastBitrate')||'')||3000000;},enableCh
 return appStorage.getItem('enablechromecastac3')=='true';},enableExternalPlayers:function(val){if(val!=null){update('externalplayers',val.toString());}
 return appStorage.getItem('externalplayers')=='true';},enableCinemaMode:function(val){if(val!=null){update('enableCinemaMode',val.toString());}
 val=appStorage.getItem('enableCinemaMode');if(val){return val!='false';}
-if($.browser.mobile){return false;}
+if(browserInfo.mobile){return false;}
 return true;},enableFullScreen:function(val){if(val!=null){update('enableFullScreen',val.toString());}
 return appStorage.getItem('enableFullScreen')=='true';},syncOnlyOnWifi:function(val){if(val!=null){update('syncOnlyOnWifi',val.toString());}
 return appStorage.getItem('syncOnlyOnWifi')!='false';},syncLosslessAudio:function(val){if(val!=null){update('syncLosslessAudio',val.toString());}

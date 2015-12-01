@@ -3,12 +3,12 @@ return elem;}
 function clearBackdrop(){var elem=document.documentElement;elem.classList.remove('backdropContainer');elem.removeAttribute('data-url');elem.style.backgroundImage='';}
 function getRandom(min,max){return Math.floor(Math.random()*(max-min)+min);}
 function getBackdropItemIds(apiClient,userId,types,parentId){var key='backdrops2_'+userId+(types||'')+(parentId||'');var deferred=$.Deferred();var data=sessionStore.getItem(key);if(data){Logger.log('Found backdrop id list in cache. Key: '+key)
-data=JSON.parse(data);deferred.resolveWith(null,[data]);}else{var options={SortBy:"IsFavoriteOrLiked,Random",Limit:20,Recursive:true,IncludeItemTypes:types,ImageTypes:"Backdrop",ParentId:parentId};apiClient.getItems(Dashboard.getCurrentUserId(),options).done(function(result){var images=result.Items.map(function(i){return{id:i.Id,tag:i.BackdropImageTags[0]};});sessionStore.setItem(key,JSON.stringify(images));deferred.resolveWith(null,[images]);});}
+data=JSON.parse(data);deferred.resolveWith(null,[data]);}else{var options={SortBy:"IsFavoriteOrLiked,Random",Limit:20,Recursive:true,IncludeItemTypes:types,ImageTypes:"Backdrop",ParentId:parentId};apiClient.getItems(Dashboard.getCurrentUserId(),options).then(function(result){var images=result.Items.map(function(i){return{id:i.Id,tag:i.BackdropImageTags[0]};});sessionStore.setItem(key,JSON.stringify(images));deferred.resolveWith(null,[images]);});}
 return deferred.promise();}
 function setBackdropImage(elem,url){if(url==elem.getAttribute('data-url')){return;}
 elem.setAttribute('data-url',url);ImageLoader.lazyImage(elem,url);}
 function showBackdrop(type,parentId){var apiClient=window.ApiClient;if(!apiClient){return;}
-getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).done(function(images){if(images.length){var index=getRandom(0,images.length-1);var item=images[index];var screenWidth=$(window).width();var imgUrl=apiClient.getScaledImageUrl(item.id,{type:"Backdrop",tag:item.tag,maxWidth:screenWidth,quality:50});setBackdropImage(getElement(),imgUrl);}else{clearBackdrop();}});}
+getBackdropItemIds(apiClient,Dashboard.getCurrentUserId(),type,parentId).then(function(images){if(images.length){var index=getRandom(0,images.length-1);var item=images[index];var screenWidth=$(window).width();var imgUrl=apiClient.getScaledImageUrl(item.id,{type:"Backdrop",tag:item.tag,maxWidth:screenWidth,quality:50});setBackdropImage(getElement(),imgUrl);}else{clearBackdrop();}});}
 function setDefault(page){var elem=getElement();elem.style.backgroundImage="url(css/images/splash.jpg)";elem.setAttribute('data-url','css/images/splash.jpg');page=$(page)[0];page.classList.add('backdropPage');page.classList.add('staticBackdropPage');}
 function isEnabledByDefault(){if(AppInfo.hasLowImageBandwidth){return false;}
 return false;}
