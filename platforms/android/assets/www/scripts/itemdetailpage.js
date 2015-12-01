@@ -106,7 +106,7 @@ var promise;if(item.Type=="Series"){promise=ApiClient.getSeasons(item.Id,{userId
 else if(item.Type=="Season"){promise=ApiClient.getEpisodes(item.SeriesId,{seasonId:item.Id,userId:user.Id,Fields:fields});_childrenItemsFunction=getEpisodesFunction(item.SeriesId,{seasonId:item.Id,userId:user.Id});}
 else if(item.Type=="MusicAlbum"){_childrenItemsFunction=getAlbumSongsFunction(query);}
 promise=promise||ApiClient.getItems(Dashboard.getCurrentUserId(),query);promise.then(function(result){var html='';var scrollX=false;if(item.Type=="MusicAlbum"){html=LibraryBrowser.getListViewHtml({items:result.Items,smallIcon:true,showIndex:true,index:'disc',showIndexNumber:true,playFromHere:true,defaultAction:'playallfromhere',lazy:true});}
-else if(item.Type=="Series"){scrollX=enableScrollX();html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:getPortraitShape(),showTitle:false,centerText:true,context:context,lazy:true});}
+else if(item.Type=="Series"){scrollX=enableScrollX();html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:getPortraitShape(),showTitle:false,centerText:true,lazy:true});}
 else if(item.Type=="Season"){html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:"detailPage169",showTitle:true,displayAsSpecial:item.Type=="Season"&&item.IndexNumber,playFromHere:true,overlayText:true,lazy:true,showDetailsMenu:true,overlayPlayButton:AppInfo.enableAppLayouts});}
 else if(item.Type=="GameSystem"){html=LibraryBrowser.getPosterViewHtml({items:result.Items,shape:"auto",showTitle:true,centerText:true,lazy:true,showDetailsMenu:true});}
 var elem=page.querySelector('.childrenItemsContainer');elem.innerHTML=html;ImageLoader.lazyChildren(elem);if(scrollX){elem.classList.add('hiddenScrollX');}else{elem.classList.remove('hiddenScrollX');}
