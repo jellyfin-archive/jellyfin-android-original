@@ -4,8 +4,8 @@ function onDialogClosed(){$(this).remove();Dashboard.hideLoadingMsg();}
 function refreshDirectoryBrowser(page,path,fileOptions){Dashboard.showLoadingMsg();if(path){$('.networkHeadline').hide();}else{$('.networkHeadline').show();}
 var promise;var parentPathPromise=null;if(path==="Network"){promise=ApiClient.getNetworkDevices();}
 else if(path){promise=ApiClient.getDirectoryContents(path,fileOptions);parentPathPromise=ApiClient.getParentPath(path);}else{promise=ApiClient.getDrives();}
-if(!parentPathPromise){parentPathPromise=$.Deferred();parentPathPromise.resolveWith(null,[]);parentPathPromise=parentPathPromise.promise();}
-Promise.all(promise,parentPathPromise).then(function(responses){var folders=responses[0];var parentPath=responses[1]||'';$('#txtDirectoryPickerPath',page).val(path||"");var html='';if(path){html+=getItem("lnkPath lnkDirectory","",parentPath,'...');}
+if(!parentPathPromise){parentPathPromise=new Promise(function(resolve,reject){resolve();});}
+Promise.all([promise,parentPathPromise]).then(function(responses){var folders=responses[0];var parentPath=responses[1]||'';$('#txtDirectoryPickerPath',page).val(path||"");var html='';if(path){html+=getItem("lnkPath lnkDirectory","",parentPath,'...');}
 for(var i=0,length=folders.length;i<length;i++){var folder=folders[i];var cssClass=folder.Type=="File"?"lnkPath lnkFile":"lnkPath lnkDirectory";html+=getItem(cssClass,folder.Type,folder.Path,folder.Name);}
 if(!path){html+=getItem("lnkPath lnkDirectory","","Network",Globalize.translate('ButtonNetwork'));}
 $('.results',page).html(html);Dashboard.hideLoadingMsg();},function(){$('#txtDirectoryPickerPath',page).val("");$('.results',page).html('');Dashboard.hideLoadingMsg();});}

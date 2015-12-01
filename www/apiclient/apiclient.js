@@ -4,13 +4,12 @@ logger.log('ApiClient serverAddress: '+serverAddress);logger.log('ApiClient clie
 var changed=val!=serverAddress;serverAddress=val;if(changed){Events.trigger(this,'serveraddresschanged');}}
 return serverAddress;};self.serverInfo=function(info){serverInfo=info||serverInfo;return serverInfo;};var currentUserPromise;self.getCurrentUser=function(){var promise=currentUserPromise;if(promise==null){promise=self.getUser(self.getCurrentUserId()).catch(function(err){currentUserPromise=null;throw err;});currentUserPromise=promise;}
 return promise;};self.getCurrentUserId=function(){return serverInfo.UserId;};self.accessToken=function(){return serverInfo.AccessToken;};self.deviceName=function(){return deviceName;};self.deviceId=function(){return deviceId;};self.appName=function(){return clientName;};self.appVersion=function(){return applicationVersion;};self.clearAuthenticationInfo=function(){self.setAuthenticationInfo(null,null);};self.setAuthenticationInfo=function(accessKey,userId){currentUserPromise=null;serverInfo.AccessToken=accessKey;serverInfo.UserId=userId;};self.encodeName=function(name){name=name.split('/').join('-');name=name.split('&').join('-');name=name.split('?').join('-');var val=paramsToString({name:name});return val.substring(val.indexOf('=')+1).replace("'",'%27');};function onFetchFail(url,response){Events.trigger(self,'requestfail',[{url:url,status:response.status,errorCode:response.headers?response.headers["X-Application-Error-Code"]:null}]);}
-function onRetryRequestFail(request){Events.trigger(self,'requestfail',[{url:request.url}]);}
 self.setRequestHeaders=function(headers){var currentServerInfo=self.serverInfo();if(clientName){var auth='MediaBrowser Client="'+clientName+'", Device="'+deviceName+'", DeviceId="'+deviceId+'", Version="'+applicationVersion+'"';var userId=currentServerInfo.UserId;if(userId){auth+=', UserId="'+userId+'"';}
 headers["X-Emby-Authorization"]=auth;}
 var accessToken=currentServerInfo.AccessToken;if(accessToken){headers['X-MediaBrowser-Token']=accessToken;}};self.ajax=function(request,includeAuthorization){if(!request){throw new Error("Request cannot be null");}
 return self.fetch(request,includeAuthorization);};function getFetchPromise(request){var headers=request.headers||{};if(request.dataType=='json'){headers.accept='application/json';}
-var fetchRequest={headers:headers,method:request.type};if(request.data){if(typeof request.data==='string'){fetchRequest.body=request.data;}}
-if(request.contentType){headers['Content-Type']=request.contentType;}
+var fetchRequest={headers:headers,method:request.type};var contentType=request.contentType;if(request.data){if(typeof request.data==='string'){fetchRequest.body=request.data;}else{fetchRequest.body=paramsToString(request.data);contentType=contentType||'application/x-www-form-urlencoded';}}
+if(contentType){headers['Content-Type']=contentType;}
 return fetch(request.url,fetchRequest);}
 self.fetch=function(request,includeAuthorization){if(!request){throw new Error("Request cannot be null");}
 request.headers=request.headers||{};if(includeAuthorization!==false){self.setRequestHeaders(request.headers);}
