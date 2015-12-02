@@ -60,6 +60,7 @@ FileTransferOperation.PENDING = 0;
 FileTransferOperation.DONE = 1;
 FileTransferOperation.CANCELLED = 2;
 
+var HTTP_E_STATUS_NOT_MODIFIED = -2145844944;
 
 module.exports = {
 
@@ -78,6 +79,7 @@ exec(win, fail, 'FileTransfer', 'upload',
         // var chunkedMode = options[7]; // todo 
         var headers = options[8] || {};
         var uploadId = options[9];
+        var httpMethod = options[10];
 
         if (!filePath || (typeof filePath !== 'string')) {
             errorCallback(new FTErr(FTErr.FILE_NOT_FOUND_ERR,null,server));
@@ -90,6 +92,9 @@ exec(win, fail, 'FileTransfer', 'upload',
             // Handle 'ms-appdata' scheme
             filePath = filePath.replace('ms-appdata:///local', appData.localFolder.path)
                                .replace('ms-appdata:///temp', appData.temporaryFolder.path);
+        } else if (filePath.indexOf('cdvfile://') === 0) {
+            filePath = filePath.replace('cdvfile://localhost/persistent', appData.localFolder.path)
+                               .replace('cdvfile://localhost/temporary', appData.temporaryFolder.path);
         }
         // normalize path separators
         filePath = cordovaPathToNative(filePath);
@@ -119,6 +124,7 @@ exec(win, fail, 'FileTransfer', 'upload',
 
             // setting request headers for uploader
             var uploader = new Windows.Networking.BackgroundTransfer.BackgroundUploader();
+            uploader.method = httpMethod;
             for (var header in headers) {
                 if (headers.hasOwnProperty(header)) {
                     uploader.setRequestHeader(header, headers[header]);
@@ -259,6 +265,9 @@ exec(win, fail, 'FileTransfer', 'upload',
             // Handle 'ms-appdata' scheme
             target = target.replace('ms-appdata:///local', appData.localFolder.path)
                            .replace('ms-appdata:///temp', appData.temporaryFolder.path);
+        } else if (target.indexOf('cdvfile://') === 0) {
+            target = target.replace('cdvfile://localhost/persistent', appData.localFolder.path)
+                           .replace('cdvfile://localhost/temporary', appData.temporaryFolder.path);
         }
         target = cordovaPathToNative(target);
 
@@ -319,7 +328,7 @@ exec(win, fail, 'FileTransfer', 'upload',
 
                     var nativeURI = storageFile.path.replace(appData.localFolder.path, 'ms-appdata:///local')
                         .replace(appData.temporaryFolder.path, 'ms-appdata:///temp')
-                        .replace('\\', '/');
+                        .replace(/\\/g, '/');
 
                     // Passing null as error callback here because downloaded file should exist in any case
                     // otherwise the error callback will be hit during file creation in another place
@@ -331,6 +340,8 @@ exec(win, fail, 'FileTransfer', 'upload',
                         // message property will be specified
                         if (error.message === 'Canceled') {
                             resolve(new FTErr(FTErr.ABORT_ERR, source, target, null, null, error));
+                        } else if (error && error.number === HTTP_E_STATUS_NOT_MODIFIED) {
+                            resolve(new FTErr(FTErr.NOT_MODIFIED_ERR, source, target, 304, null, error));
                         } else {
                             // in the other way, try to get response property
                             var response = download.getResponseInformation();

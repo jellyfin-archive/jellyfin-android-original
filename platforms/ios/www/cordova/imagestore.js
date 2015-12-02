@@ -11,4 +11,4 @@ var deferred=DeferredBuilder.Deferred();var key=getCacheKey(originalUrl);getFile
 self.getImageUrl(url).then(function(localUrl){setImageIntoElement(elem,localUrl);},onFail);};var imageIdIndex=1;function setImageWithSdWebImage(elem,url){var rect=elem.getBoundingClientRect();var options={data:url,index:imageIdIndex,quality:0,scale:Math.round(rect.width)+'x'+Math.round(rect.height),downloadOptions:window.CollectionRepeatImageOptions.SDWebImageRetryFailed|window.CollectionRepeatImageOptions.SDWebImageLowPriority|window.CollectionRepeatImageOptions.SDWebImageAllowInvalidSSLCertificates};if(elem.classList.contains('coveredCardImage')){options.scale+='!';}
 imageIdIndex++;window.CollectionRepeatImage.getImage(options,function(data){var dataUrl='data:image/jpeg;base64,'+data;elem.style.backgroundImage="url('"+dataUrl+"')";});}
 window.ImageStore=self;}
-new indexedDbBlobImageStore();})();
+require(['cryptojs-sha1'],function(){new indexedDbBlobImageStore();});})();

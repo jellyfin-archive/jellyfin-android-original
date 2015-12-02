@@ -1,6 +1,8 @@
 package com.emby.mobile.iap;
 
 import android.content.Context;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.emby.mobile.webviews.IWebView;

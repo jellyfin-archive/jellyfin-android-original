@@ -24,7 +24,6 @@
         <activity android:configChanges="orientation|screenSize" android:name=".media.PlaybackServiceActivity" android:theme="@style/Theme.VLC.Player">
         </activity>
         <activity android:name="net.rdrei.android.dirchooser.DirectoryChooserActivity" />
-        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
         <provider android:authorities="emby.media" android:exported="false" android:name="mediabrowser.apiinteraction.android.sync.MediaContentProvider" android:syncable="true" />
         <service android:exported="true" android:name="mediabrowser.apiinteraction.android.sync.MediaSyncService">
             <intent-filter>
@@ -47,8 +46,9 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
     </application>
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="21" />
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="22" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

@@ -1,20 +1,4 @@
 {
-    "cordova-plugin-whitelist": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-whitelist@1"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-chrome-apps-sockets-udp": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-chrome-apps-sockets-udp"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-chrome-apps-common": {
         "source": {
             "type": "registry",
@@ -35,15 +19,6 @@
         "source": {
             "type": "git",
             "url": "https://github.com/crewmeister/cordova.ios-backgroundcolor",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "hu.dpal.phonegap.plugins.UniqueDeviceID": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Paldom/UniqueDeviceID.git",
             "subdir": "."
         },
         "is_top_level": true,
@@ -84,31 +59,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "com.mesmotronic.plugins.fullscreen": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mesmotronic/cordova-fullscreen-plugin.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-file": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-file"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-file-transfer": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-file-transfer"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "nl.x-services.plugins.actionsheet": {
         "source": {
             "type": "git",
@@ -123,22 +73,6 @@
             "type": "git",
             "url": "https://github.com/EddyVerbruggen/cordova-plugin-backgroundaudio",
             "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "nl.x-services.plugins.socialsharing": {
-        "source": {
-            "type": "registry",
-            "id": "nl.x-services.plugins.socialsharing"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-device": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-device"
         },
         "is_top_level": true,
         "variables": {}
@@ -161,14 +95,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cordova-plugin-dialogs": {
-        "source": {
-            "type": "registry",
-            "id": "cordova-plugin-dialogs"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "org.nypr.cordova.vlcplugin": {
         "source": {
             "type": "git",
@@ -178,26 +104,10 @@
         "is_top_level": true,
         "variables": {}
     },
-    "org.apache.cordova.media": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.media"
-        },
-        "is_top_level": false,
-        "variables": {}
-    },
     "org.apache.cordova.file": {
         "source": {
             "type": "registry",
             "id": "org.apache.cordova.file"
-        },
-        "is_top_level": false,
-        "variables": {}
-    },
-    "org.apache.cordova.network-information": {
-        "source": {
-            "type": "registry",
-            "id": "org.apache.cordova.network-information"
         },
         "is_top_level": false,
         "variables": {}
@@ -215,15 +125,6 @@
         "source": {
             "type": "git",
             "url": "https://github.com/driftyco/cordova-camera-roll",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
-    "cordova-plugin-statusbar": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/apache/cordova-plugin-statusbar",
             "subdir": "."
         },
         "is_top_level": true,
@@ -299,6 +200,86 @@
             "type": "git",
             "url": "https://github.com/mallzee/cordova-collection-repeat-image-plugin",
             "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-file-transfer": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-file-transfer"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-file": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-file"
+        },
+        "is_top_level": false,
+        "variables": {}
+    },
+    "cordova-plugin-chrome-apps-sockets-udp": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-chrome-apps-sockets-udp"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-device": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-device"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-dialogs": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-dialogs"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-statusbar": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-statusbar"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-media": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-media"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-network-information": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-network-information"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-x-socialsharing": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-x-socialsharing"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-whitelist": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-whitelist@1"
         },
         "is_top_level": true,
         "variables": {}

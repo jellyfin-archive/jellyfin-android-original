@@ -11,4 +11,4 @@ function writeData(dir,filename,fileType,data,callback,errorCallback){dir.getFil
 self.getImageUrl=function(originalUrl){return new Promise(function(resolve,reject){if(originalUrl.indexOf('tag=')!=-1){originalUrl+="&accept=webp";}
 var key=getCacheKey(originalUrl);var fileEntryCallback=function(fileEntry){resolve(fileEntry.toURL());};var errorCallback=function(e){Logger.log('Imagestore error: '+e.name);reject();};if(!fileSystem||!imageCacheDirectoryEntry){errorCallback('');return;}
 var path='/'+imageCacheFolder+"/"+key;fileSystem.root.getFile(path,{create:false},fileEntryCallback,function(){downloadToFile(originalUrl,imageCacheDirectoryEntry,key,fileEntryCallback,errorCallback);});});};self.setImageInto=function(elem,url){self.getImageUrl(url).then(function(localUrl){setImageIntoElement(elem,localUrl);},function(){setImageIntoElement(elem,url);});};window.ImageStore=self;}
-new imageFileStore();})();
+require(['cryptojs-sha1'],function(){new imageFileStore();});})();

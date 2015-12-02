@@ -9,7 +9,7 @@ else if(tab==0){query.Recursive=false;query.MediaTypes=null;}
 query.ParentId=getParameterByName('parentId')||LibraryMenu.getTopParentId();}
 function startSlideshow(page,itemQuery,startItemId){var userId=Dashboard.getCurrentUserId();var localQuery=$.extend({},itemQuery);localQuery.StartIndex=0;localQuery.Limit=null;localQuery.MediaTypes="Photo";localQuery.Recursive=true;localQuery.Filters="IsNotFolder";ApiClient.getItems(userId,localQuery).then(function(result){showSlideshow(page,result.Items,startItemId);});}
 function showSlideshow(page,items,startItemId){var screenWidth=$(window).width();var screenHeight=$(window).height();var slideshowItems=items.map(function(item){var imgUrl=ApiClient.getScaledImageUrl(item.Id,{tag:item.ImageTags.Primary,type:'Primary',maxWidth:screenWidth,maxHeight:screenHeight});return{title:item.Name,href:imgUrl};});var index=items.map(function(i){return i.Id;}).indexOf(startItemId);if(index==-1){index=0;}
-Dashboard.loadSwipebox().then(function(){$.swipebox(slideshowItems,{initialIndexOnArray:index,hideBarsDelay:30000});});}
+require(['swipebox'],function(){$.swipebox(slideshowItems,{initialIndexOnArray:index,hideBarsDelay:30000});});}
 function onListItemClick(e){var page=$(this).parents('.page')[0];var info=LibraryBrowser.getListItemInfo(this);if(info.mediaType=='Photo'){var tab=page.querySelector('neon-animated-pages').selected;var query=getQuery(tab);Photos.startSlideshow(page,query,info.id);return false;}}
 function loadTab(page,index){switch(index){case 0:{reloadItems(page.querySelector('.albumTabContent'),0);}
 break;case 1:{reloadItems(page.querySelector('.photoTabContent'),1);}

@@ -18,11 +18,11 @@ function updateSearchOverlay(elem,searchTerm){if(!searchTerm){$('.itemsContainer
 clearSearchHintTimeout();searchHintTimeout=setTimeout(function(){requestSearchHintsForOverlay(elem,searchTerm);},300);}
 function getSearchOverlay(createIfNeeded){var elem=document.querySelector('.searchResultsOverlay');if(createIfNeeded&&!elem){var html='<div class="searchResultsOverlay ui-body-b smoothScrollY background-theme-b">';html+='<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';elem=$(html).appendTo(document.body)[0];$(elem).createCardMenus();}
 return elem;}
-var currentAnimation;var isVisible;function onHeaderSearchChange(val){var elem;if(val){elem=getSearchOverlay(true);if(!isVisible){fadeIn(elem,1);}
+var isVisible;function onHeaderSearchChange(val){var elem;if(val){elem=getSearchOverlay(true);if(!isVisible){fadeIn(elem,1);}
 isVisible=true;document.body.classList.add('bodyWithPopupOpen');updateSearchOverlay(elem,val);}else{elem=getSearchOverlay(false);if(elem){updateSearchOverlay(elem,'');if(isVisible){fadeOut(elem,1);isVisible=false;}
 document.body.classList.remove('bodyWithPopupOpen');}}}
-function fadeIn(elem,iterations){var keyframes=[{opacity:'0',offset:0},{opacity:'1',offset:1}];var timing={duration:200,iterations:iterations,fill:'both'};currentAnimation=elem.animate(keyframes,timing);}
-function fadeOut(elem,iterations){var keyframes=[{opacity:'1',offset:0},{opacity:'0',offset:1}];var timing={duration:600,iterations:iterations,fill:'both'};currentAnimation=elem.animate(keyframes,timing);}
+function fadeIn(elem,iterations){var keyframes=[{opacity:'0',offset:0},{opacity:'1',offset:1}];var timing={duration:200,iterations:iterations,fill:'both'};elem.animate(keyframes,timing);}
+function fadeOut(elem,iterations){var keyframes=[{opacity:'1',offset:0},{opacity:'0',offset:1}];var timing={duration:600,iterations:iterations,fill:'both'};elem.animate(keyframes,timing).onfinish=function(){elem.parentNode.removeChild(elem);};}
 function bindSearchEvents(){require(['searchmenu'],function(){Events.on(SearchMenu,'closed',closeSearchResults);Events.on(SearchMenu,'change',function(e,value){onHeaderSearchChange(value);});});}
 function closeSearchResults(){onHeaderSearchChange('');hideSearchMenu();}
 function showSearchMenu(){require(['searchmenu'],function(){SearchMenu.show();});}
