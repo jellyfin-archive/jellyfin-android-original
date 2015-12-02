@@ -54,8 +54,7 @@ $('track',mediaElement).each(function(){this.src=replaceQueryString(this.src,'st
 return false;}
 return self.canAutoPlayVideo()&&!browserInfo.mobile;};self.canAutoPlayVideo=function(){if(AppInfo.isNativeApp){return true;}
 if(browserInfo.mobile){return false;}
-return true;};self.init=function(){var deferred=DeferredBuilder.Deferred();if(options.type=='video'&&enableHlsPlayer()){requireHlsPlayer(function(){deferred.resolve();});}else{deferred.resolve();}
-return deferred.promise();};if(options.type=='audio'){mediaElement=createAudioElement();}
+return true;};self.init=function(){return new Promise(function(resolve,reject){if(options.type=='video'&&enableHlsPlayer()){requireHlsPlayer(resolve);}else{resolve();}});};if(options.type=='audio'){mediaElement=createAudioElement();}
 else{mediaElement=createVideoElement();}}
 if(!window.AudioRenderer){window.AudioRenderer=function(options){options=options||{};options.type='audio';return new htmlMediaRenderer(options);};}
 if(!window.VideoRenderer){window.VideoRenderer=function(options){options=options||{};options.type='video';return new htmlMediaRenderer(options);};}})();

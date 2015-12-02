@@ -9,7 +9,7 @@ function onPurchaseComplete(result){if(result===true){refreshPurchases();}
 else if(result){ApiClient.ajax({type:"POST",url:ApiClient.getUrl("Appstore/Register"),data:{Parameters:JSON.stringify(result)}}).then(function(){refreshPurchases();},function(e){refreshPurchases();});}}
 function refreshPurchases(){NativeIapManager.getPurchaseInfos("window.IapManager.updateProduct");}
 function getSubscriptionOptions(){var deferred=DeferredBuilder.Deferred();var options=[];options.push({feature:'embypremieremonthly',buttonText:'EmbyPremiereMonthly'});options=options.filter(function(o){return getProduct(o.feature)!=null;}).map(function(o){var prod=getProduct(o.feature);o.buttonText=Globalize.translate(o.buttonText,prod.price);o.owned=prod.owned;return o;});deferred.resolveWith(null,[options]);return deferred.promise();}
-function isUnlockedOverride(feature){if(feature=='playback'||feature=='livetv'){return isPlaybackUnlockedViaOldApp();}else{return new Promise(function(resolve,reject){resolve(false);});}}
+function isUnlockedOverride(feature){if(feature=='playback'){return isPlaybackUnlockedViaOldApp();}else{return new Promise(function(resolve,reject){resolve(false);});}}
 function isPlaybackUnlockedViaOldApp(){return testDeviceId(ConnectionManager.deviceId()).then(function(isUnlocked){if(isUnlocked){return true;}
 return testDeviceId(device.uuid).then(function(isUnlocked){if(isUnlocked){return true;}
 var legacyDeviceId=MainActivity.getLegacyDeviceId();if(legacyDeviceId){return testDeviceId(legacyDeviceId);}
