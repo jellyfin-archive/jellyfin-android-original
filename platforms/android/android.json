@@ -163,77 +163,77 @@
     },
     "installed_plugins": {
         "com.crewmeister.cordova-ios-backgroundcolor": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-chrome-apps-common": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-chrome-apps-iossocketscommon": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "com.connectsdk.cordovaplugin": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "com.hutchind.cordova.plugins.launcher": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "nl.x-services.plugins.actionsheet": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "nl.x-services.plugins.backgroundaudio": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "com.dieam.searchbar": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "com.drifty.cordova.cameraroll": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "uk.co.whiteoctober.cordova.appversion": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-webserver": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cc.fovea.cordova.purchase": {
             "BILLING_KEY": "DF",
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-chrome-apps-sockets-udp": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-file": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-media": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.emby.mobile"
+            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {},

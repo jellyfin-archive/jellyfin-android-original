@@ -157,7 +157,7 @@ function getWebHostingAppInfo(){return new Promise(function(resolve,reject){var 
 if(browserInfo.version){deviceName+=" "+browserInfo.version;}
 if(browserInfo.ipad){deviceName+=" Ipad";}else if(browserInfo.iphone){deviceName+=" Iphone";}else if(browserInfo.android){deviceName+=" Android";}
 function onDeviceAdAcquired(id){resolve({deviceId:id,deviceName:deviceName,appName:"Emby Web Client",appVersion:window.dashboardVersion});}
-var deviceId=appStorage.getItem('_deviceId');if(deviceId){onDeviceAdAcquired(deviceId);}else{require(['cryptojs-md5'],function(){var keys=[];keys.push(navigator.userAgent);keys.push((navigator.cpuClass||""));var randomId=CryptoJS.SHA1(keys.join('|')).toString();appStorage.setItem('_deviceId',randomId);onDeviceAdAcquired(randomId);});}});}
+var deviceId=appStorage.getItem('_deviceId');if(deviceId){onDeviceAdAcquired(deviceId);}else{require(['cryptojs-sha1'],function(){var keys=[];keys.push(navigator.userAgent);keys.push((navigator.cpuClass||""));var randomId=CryptoJS.SHA1(keys.join('|')).toString();appStorage.setItem('_deviceId',randomId);onDeviceAdAcquired(randomId);});}});}
 function getHostingAppInfo(){if(Dashboard.isRunningInCordova()){return getCordovaHostingAppInfo();}
 return getWebHostingAppInfo();}
 function setBrowserInfo(isMobile){var uaMatch=function(ua){ua=ua.toLowerCase();var match=/(edge)[ \/]([\w.]+)/.exec(ua)||/(chrome)[ \/]([\w.]+)/.exec(ua)||/(safari)[ \/]([\w.]+)/.exec(ua)||/(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua)||/(msie) ([\w.]+)/.exec(ua)||ua.indexOf("compatible")<0&&/(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)||[];var platform_match=/(ipad)/.exec(ua)||/(iphone)/.exec(ua)||/(android)/.exec(ua)||[];var browser=match[1]||"";if(ua.indexOf("windows phone")!=-1||ua.indexOf("iemobile")!=-1){browser="msie";}
