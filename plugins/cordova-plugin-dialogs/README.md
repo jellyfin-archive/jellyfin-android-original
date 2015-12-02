@@ -19,8 +19,6 @@
 
 # cordova-plugin-dialogs
 
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-dialogs.svg)](https://travis-ci.org/apache/cordova-plugin-dialogs)
-
 This plugin provides access to some native dialog UI elements
 via a global `navigator.notification` object.
 
@@ -30,6 +28,8 @@ Although the object is attached to the global scoped `navigator`, it is not avai
     function onDeviceReady() {
         console.log(navigator.notification);
     }
+
+:warning: Report issues on the [Apache Cordova issue tracker](https://issues.apache.org/jira/issues/?jql=project%20%3D%20CB%20AND%20status%20in%20%28Open%2C%20%22In%20Progress%22%2C%20Reopened%29%20AND%20resolution%20%3D%20Unresolved%20AND%20component%20%3D%20%22Plugin%20Dialogs%22%20ORDER%20BY%20priority%20DESC%2C%20summary%20ASC%2C%20updatedDate%20DESC)
 
 ## Installation
 
@@ -272,4 +272,3 @@ The device plays a beep sound.
 - Tizen implements beeps by playing an audio file via the media API.
 
 - The beep file must be short, must be located in a `sounds` subdirectory of the application's root directory, and must be named `beep.wav`.
-

@@ -17,12 +17,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Windows;
 using System.Security;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using WPCordovaClassLib.Cordova.JSON;
+using System.Reflection;
 
 namespace WPCordovaClassLib.Cordova.Commands
 {
@@ -91,6 +94,8 @@ namespace WPCordovaClassLib.Cordova.Commands
         // Private instance of the main WebBrowser instance
         // NOTE: Any access to this object needs to occur on the UI thread via the Dispatcher
         private WebBrowser browser;
+
+
 
         /// <summary>
         /// Uploading response info
@@ -216,6 +221,32 @@ namespace WPCordovaClassLib.Cordova.Commands
         }
 
         /// <summary>
+        /// Represents a request header passed from Javascript to upload/download operations
+        /// </summary>
+        [DataContract]
+        protected struct Header
+        {
+            [DataMember(Name = "name")]
+            public string Name;
+
+            [DataMember(Name = "value")]
+            public string Value;
+        }
+
+        private static MethodInfo JsonDeserializeUsingJsonNet;
+
+        public FileTransfer()
+        {
+            if (JsonDeserializeUsingJsonNet == null)
+            {
+                var method = typeof(JsonHelper).GetMethod("Deserialize", new Type[] { typeof(string), typeof(bool) });
+                if (method != null) 
+                {
+                    JsonDeserializeUsingJsonNet = method.MakeGenericMethod(new Type[] { typeof(Header[]) });
+                }
+            }
+        }
+
         /// Helper method to copy all relevant cookies from the WebBrowser control into a header on
         /// the HttpWebRequest
         /// </summary>
@@ -304,7 +335,7 @@ namespace WPCordovaClassLib.Cordova.Commands
         /// </summary>
         /// <param name="options">Upload options</param>
         /// exec(win, fail, 'FileTransfer', 'upload', [filePath, server, fileKey, fileName, mimeType, params, trustAllHosts, chunkedMode, headers, this._id, httpMethod]);
-        public async void upload(string options)
+        public void upload(string options)
         {
             options = options.Replace("{}", ""); // empty objects screw up the Deserializer
             string callbackId = "";
@@ -363,9 +394,24 @@ namespace WPCordovaClassLib.Cordova.Commands
                 webRequest.ContentType = "multipart/form-data; boundary=" + Boundary;
                 webRequest.Method = uploadOptions.Method;
 
-                // Associate cookies with the request
-                // This is an async call, so we need to await it in order to preserve proper control flow
-                await CopyCookiesFromWebBrowser(webRequest);
+                DownloadRequestState reqState = new DownloadRequestState();
+                InProcDownloads[uploadOptions.Id] = reqState;
+                reqState.options = uploadOptions;
+                reqState.request = webRequest;
+
+                try
+                {
+                    // Associate cookies with the request
+                    // This is an async call, so we need to await it in order to preserve proper control flow
+                    Task cookieTask = CopyCookiesFromWebBrowser(webRequest);
+                    cookieTask.Wait();
+                }
+                catch (AggregateException ae)
+                {
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR,
+                        new FileTransferError(FileTransfer.ConnectionError, uploadOptions.FilePath, uploadOptions.Server, 0, ae.InnerException.Message)));
+                    return;
+                }
 
                 if (!string.IsNullOrEmpty(uploadOptions.Headers))
                 {
@@ -378,12 +424,6 @@ namespace WPCordovaClassLib.Cordova.Commands
                         }
                     }
                 }
-
-                DownloadRequestState reqState = new DownloadRequestState();
-                reqState.options = uploadOptions;
-                reqState.request = webRequest;
-
-                InProcDownloads[uploadOptions.Id] = reqState;
 
                 webRequest.BeginGetRequestStream(uploadCallback, reqState);
             }
@@ -398,37 +438,25 @@ namespace WPCordovaClassLib.Cordova.Commands
         {
             try
             {
-                Dictionary<string, string> result = new Dictionary<string, string>();
-
-                string temp = jsonHeaders.StartsWith("{") ? jsonHeaders.Substring(1) : jsonHeaders;
-                temp = temp.EndsWith("}") ? temp.Substring(0, temp.Length - 1) : temp;
-
-                string[] strHeaders = temp.Split(',');
-                for (int n = 0; n < strHeaders.Length; n++)
+                if (FileTransfer.JsonDeserializeUsingJsonNet != null)
                 {
-                    // we need to use indexOf in order to WP7 compatible
-                    int splitIndex = strHeaders[n].IndexOf(':');
-                    if (splitIndex > 0)
-                    {
-                        string[] split = new string[2];
-                        split[0] = strHeaders[n].Substring(0, splitIndex);
-                        split[1] = strHeaders[n].Substring(splitIndex + 1);
-
-                        split[0] = JSON.JsonHelper.Deserialize<string>(split[0]);
-                        split[1] = JSON.JsonHelper.Deserialize<string>(split[1]);
-                        result[split[0]] = split[1];
-                    }
+                    return ((Header[])FileTransfer.JsonDeserializeUsingJsonNet.Invoke(null, new object[] { jsonHeaders, true }))
+                         .ToDictionary(header => header.Name, header => header.Value);
                 }
-                return result;
+                else
+                {
+                    return JsonHelper.Deserialize<Header[]>(jsonHeaders)
+                        .ToDictionary(header => header.Name, header => header.Value);
+                }
             }
             catch (Exception)
             {
                 Debug.WriteLine("Failed to parseHeaders from string :: " + jsonHeaders);
             }
-            return null;
+            return new Dictionary<string, string>();
         }
 
-        public async void download(string options)
+        public void download(string options)
         {
             TransferOptions downloadOptions = null;
             HttpWebRequest webRequest = null;
@@ -562,19 +590,26 @@ namespace WPCordovaClassLib.Cordova.Commands
                 state.request = webRequest;
                 InProcDownloads[downloadOptions.Id] = state;
 
-                // Associate cookies with the request
-                // This is an async call, so we need to await it in order to preserve proper control flow
-                await CopyCookiesFromWebBrowser(webRequest);
+                try
+                {
+                    // Associate cookies with the request
+                    // This is an async call, so we need to await it in order to preserve proper control flow
+                    Task cookieTask = CopyCookiesFromWebBrowser(webRequest);
+                    cookieTask.Wait();
+                }
+                catch (AggregateException ae) 
+                {
+                    DispatchCommandResult(new PluginResult(PluginResult.Status.ERROR,
+                        new FileTransferError(FileTransfer.ConnectionError, downloadOptions.Url, downloadOptions.FilePath, 0, ae.InnerException.Message)));
+                    return;
+                }
 
                 if (!string.IsNullOrEmpty(downloadOptions.Headers))
                 {
                     Dictionary<string, string> headers = parseHeaders(downloadOptions.Headers);
-                    if (headers != null)
+                    foreach (string key in headers.Keys)
                     {
-                        foreach (string key in headers.Keys)
-                        {
-                            webRequest.Headers[key] = headers[key];
-                        }
+                        webRequest.Headers[key] = headers[key];
                     }
                 }
 

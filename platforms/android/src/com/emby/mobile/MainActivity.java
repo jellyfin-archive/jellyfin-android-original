@@ -29,6 +29,8 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -705,5 +707,37 @@ public class MainActivity extends CordovaActivity
         } catch (IOException e) {
             logcatReaderRunning = false;
         }
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public String getLegacyDeviceId() {
+
+        Context context = getApplicationContext();
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+        String uuid;
+        String androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceID = tm.getDeviceId();
+        String simID = tm.getSimSerialNumber();
+
+        if ("9774d56d682e549c".equals(androidID) || androidID == null) {
+            androidID = "";
+        }
+
+        if (deviceID == null) {
+            deviceID = "";
+        }
+
+        if (simID == null) {
+            simID = "";
+        }
+
+        uuid = androidID + deviceID + simID;
+        uuid = String.format("%32s", uuid).replace(' ', '0');
+        uuid = uuid.substring(0,32);
+        uuid = uuid.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
+
+        return uuid;
     }
 }

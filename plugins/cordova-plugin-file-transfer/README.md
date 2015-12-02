@@ -1,27 +1,23 @@
-<!---
- license: Licensed to the Apache Software Foundation (ASF) under one
-         or more contributor license agreements.  See the NOTICE file
-         distributed with this work for additional information
-         regarding copyright ownership.  The ASF licenses this file
-         to you under the Apache License, Version 2.0 (the
-         "License"); you may not use this file except in compliance
-         with the License.  You may obtain a copy of the License at
-
-           http://www.apache.org/licenses/LICENSE-2.0
-
-         Unless required by applicable law or agreed to in writing,
-         software distributed under the License is distributed on an
-         "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-         KIND, either express or implied.  See the License for the
-         specific language governing permissions and limitations
-         under the License.
+<!--
+# license: Licensed to the Apache Software Foundation (ASF) under one
+#         or more contributor license agreements.  See the NOTICE file
+#         distributed with this work for additional information
+#         regarding copyright ownership.  The ASF licenses this file
+#         to you under the Apache License, Version 2.0 (the
+#         "License"); you may not use this file except in compliance
+#         with the License.  You may obtain a copy of the License at
+#
+#           http://www.apache.org/licenses/LICENSE-2.0
+#
+#         Unless required by applicable law or agreed to in writing,
+#         software distributed under the License is distributed on an
+#         "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#         KIND, either express or implied.  See the License for the
+#         specific language governing permissions and limitations
+#         under the License.
 -->
 
 # cordova-plugin-file-transfer
-
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-file-transfer.svg)](https://travis-ci.org/apache/cordova-plugin-file-transfer)
-
-Plugin documentation: [doc/index.md](doc/index.md)
 
 This plugin allows you to upload and download files.
 
@@ -33,6 +29,8 @@ Although in the global scope, they are not available until after the `deviceread
     function onDeviceReady() {
         console.log(FileTransfer);
     }
+
+:warning: Report issues on the [Apache Cordova issue tracker](https://issues.apache.org/jira/issues/?jql=project%20%3D%20CB%20AND%20status%20in%20%28Open%2C%20%22In%20Progress%22%2C%20Reopened%29%20AND%20resolution%20%3D%20Unresolved%20AND%20component%20%3D%20%22Plugin%20File%20Transfer%22%20ORDER%20BY%20priority%20DESC%2C%20summary%20ASC%2C%20updatedDate%20DESC)
 
 ## Installation
 
@@ -57,7 +55,7 @@ Although in the global scope, they are not available until after the `deviceread
 # FileTransfer
 
 The `FileTransfer` object provides a way to upload files using an HTTP
-multi-part POST request, and to download files as well.
+multi-part POST or PUT request, and to download files as well.
 
 ## Properties
 
@@ -91,8 +89,8 @@ __Parameters__:
   - __mimeType__: The mime type of the data to upload.  Defaults to `image/jpeg`. (DOMString)
   - __params__: A set of optional key/value pairs to pass in the HTTP request. (Object)
   - __chunkedMode__: Whether to upload the data in chunked streaming mode. Defaults to `true`. (Boolean)
-  - __headers__: A map of header name/header values. Use an array to specify more than one value. (Object)
-  
+  - __headers__: A map of header name/header values. Use an array to specify more than one value.  On iOS, FireOS, and Android, if a header named Content-Type is present, multipart form data will NOT be used. (Object)
+
 - __trustAllHosts__: Optional parameter, defaults to `false`. If set to `true`, it accepts all security certificates. This is useful since Android rejects self-signed security certificates. Not recommended for production use. Supported on Android and iOS. _(boolean)_
 
 ### Example
@@ -181,6 +179,9 @@ A `FileUploadResult` object is passed to the success callback of the
 
 - Does not support `responseCode` or `bytesSent`.
 
+### Browser Quirks
+
+- __withCredentials__: _boolean_ that tells the browser to set the withCredentials flag on the XMLHttpRequest
 
 ## download
 
@@ -228,6 +229,10 @@ __Parameters__:
 ### WP8 Quirks
 
 - Download requests is being cached by native implementation. To avoid caching, pass `if-Modified-Since` header to download method.
+
+### Browser Quirks
+
+- __withCredentials__: _boolean_ that tells the browser to set the withCredentials flag on the XMLHttpRequest
 
 ## abort
 
