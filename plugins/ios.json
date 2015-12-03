@@ -323,9 +323,6 @@
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "io.litehelpers.cordova.sqlite": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "org.apache.cordova.background-download": {
             "PACKAGE_NAME": "com.emby.mobile"
         },

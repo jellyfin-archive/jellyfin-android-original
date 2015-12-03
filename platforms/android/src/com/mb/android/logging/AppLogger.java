@@ -19,6 +19,7 @@ import ch.qos.logback.classic.android.LogcatAppender;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
+import mediabrowser.model.logging.NullLogger;
 
 
 public class AppLogger {
@@ -35,11 +36,12 @@ public class AppLogger {
 
     public static ILogger createLogger(Context context) {
 
-        org.slf4j.Logger internalLogger = configureLogbackDirectly(context);
+        return new NullLogger();
+        /*org.slf4j.Logger internalLogger = configureLogbackDirectly(context);
 
         MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(new LogbackLogger(internalLogger, "SyncService"), context);
 
-        return new LogbackLogger(internalLogger, "App");
+        return new LogbackLogger(internalLogger, "App");*/
     }
 
     private static FileAppender<ILoggingEvent> syncServiceFileAppender;
@@ -88,9 +90,12 @@ public class AppLogger {
     }
 
     public static void ResetSyncLogger(Context context){
-        syncServiceFileAppender.stop();
-        syncServiceFileAppender.setFile(getLogFilePath(context, "syncService-"));
-        syncServiceFileAppender.start();
+
+        if (syncServiceFileAppender != null) {
+            syncServiceFileAppender.stop();
+            syncServiceFileAppender.setFile(getLogFilePath(context, "syncService-"));
+            syncServiceFileAppender.start();
+        }
     }
 
     private static String getLogFilePath(Context context, String prefix){

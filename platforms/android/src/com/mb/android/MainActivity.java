@@ -111,13 +111,13 @@ public class MainActivity extends CordovaActivity
             }
         }.run();*/
 
-        try {
+        /*try {
             // This is throwing an exception we can't catch and is crashing the app
-            // URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
+             URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
         }
         catch (Exception ex){
             // Occasionally seeing factory already set error
-        }
+        }*/
 
         // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);

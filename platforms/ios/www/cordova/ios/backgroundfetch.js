@@ -7,5 +7,5 @@ function onBackgroundFetch(){Logger.log('BackgroundFetch initiated');startSync(t
 function onBackgroundFetchFailed(){Logger.log('- BackgroundFetch failed');}
 var syncInterval=900000;var photoUploadInterval=21600000;var offlineUserSyncInterval=43200000;function startIntervalSync(){startSync(false,{uploadPhotos:true,enableNewDownloads:true});}
 function normalizeSyncOptions(options){options.enableBackgroundTransfer=true;options.uploadPhotos=(new Date().getTime()-lastStart)>=photoUploadInterval;options.syncOfflineUsers=(new Date().getTime()-lastStart)>=offlineUserSyncInterval;}
-Dashboard.ready(function(){require(['localsync'],function(){LocalSync.normalizeSyncOptions=normalizeSyncOptions;});});pageClassOn('pageshow',"libraryPage",function(){if(!Dashboard.getCurrentUserId()){return;}
+require(['localsync'],function(){LocalSync.normalizeSyncOptions=normalizeSyncOptions;});pageClassOn('pageshow',"libraryPage",function(){if(!Dashboard.getCurrentUserId()){return;}
 if((new Date().getTime()-lastStart)>=syncInterval){setTimeout(function(){startIntervalSync();},10000);}});onDeviceReady();})();
