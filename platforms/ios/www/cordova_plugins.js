@@ -50,14 +50,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/io.litehelpers.cordova.sqlite/www/SQLitePlugin.js",
-        "id": "io.litehelpers.cordova.sqlite.SQLitePlugin",
-        "pluginId": "io.litehelpers.cordova.sqlite",
-        "clobbers": [
-            "SQLitePlugin"
-        ]
-    },
-    {
         "file": "plugins/org.apache.cordova.background-download/www/Promise.js",
         "id": "org.apache.cordova.background-download.Promise",
         "pluginId": "org.apache.cordova.background-download"
@@ -418,7 +410,6 @@ module.exports.metadata =
     "com.dieam.searchbar": "2.1.6",
     "org.nypr.cordova.vlcplugin": "0.1.0",
     "com.drifty.cordova.cameraroll": "0.2.1",
-    "io.litehelpers.cordova.sqlite": "0.7.11-dev",
     "org.apache.cordova.background-download": "0.0.2",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",

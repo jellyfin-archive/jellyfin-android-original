@@ -15,4 +15,4 @@ function hideMediaControls(){MainActivity.hideMediaSession();lastUpdateTime=0;}
 function bindToPlayer(player){releaseCurrentPlayer();if(player.isLocalPlayer&&!allowLocalPlayer()){return;}
 currentPlayer=player;Logger.log('binding remotecontrols to '+player.name);player.getPlayerState().then(function(state){if(state.NowPlayingItem){player.beginPlayerUpdates();}
 onStateChanged.call(player,{type:'init'},state);});$(player).on('playbackstart',onPlaybackStart).on('playbackstop',onPlaybackStopped).on('playstatechange',onStateChanged).on('positionchange',onStateChanged);}
-Dashboard.ready(function(){Logger.log('binding remotecontrols to MediaController');$(MediaController).on('playerchange',function(){bindToPlayer(MediaController.getCurrentPlayer());});bindToPlayer(MediaController.getCurrentPlayer());});})();
+Logger.log('binding remotecontrols to MediaController');$(MediaController).on('playerchange',function(){bindToPlayer(MediaController.getCurrentPlayer());});bindToPlayer(MediaController.getCurrentPlayer());})();

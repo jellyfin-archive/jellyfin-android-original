@@ -142,16 +142,17 @@ var capabilities=Dashboard.capabilities();capabilities.DeviceProfile=MediaPlayer
 depends=depends||[];if(newHtml.indexOf('type-interior')!=-1){depends.push('jqmpopup');depends.push('jqmlistview');depends.push('jqmcollapsible');depends.push('jqmcontrolgroup');depends.push('jqmcheckbox');depends.push('scripts/notifications');}
 require(depends,function(){$(mainDrawerPanelContent).html(Globalize.translateDocument(newHtml,'html'));onAppReady(promiseResolve);});return;}
 onAppReady(promiseResolve);});});}
-function onAppReady(promiseResolve){if(browserInfo.msie){require(['devices/ie/ie']);}
-if(AppInfo.isNativeApp&&browserInfo.android){Dashboard.importCss('devices/android/android.css');}else if(AppInfo.isNativeApp&&browserInfo.safari){Dashboard.importCss('devices/ios/ios.css');}else if(!browserInfo.android){Dashboard.importCss('devices/android/android.css');}
+function onAppReady(promiseResolve){if(AppInfo.isNativeApp&&browserInfo.android){Dashboard.importCss('devices/android/android.css');}else if(AppInfo.isNativeApp&&browserInfo.safari){Dashboard.importCss('devices/ios/ios.css');}else if(!browserInfo.android){Dashboard.importCss('devices/android/android.css');}
 loadTheme();if(browserInfo.safari&&browserInfo.mobile){initFastClick();}
-if(Dashboard.isRunningInCordova()){require(['cordova/connectsdk','scripts/registrationservices','cordova/back']);if(browserInfo.android){require(['cordova/android/androidcredentials','cordova/android/mediasession']);}else{require(['cordova/volume']);}
-if(browserInfo.safari){require(['cordova/ios/orientation']);}}else{if(browserInfo.chrome){require(['scripts/chromecast']);}}
-var deps=[];if(AppInfo.isNativeApp&&browserInfo.safari){if(Dashboard.capabilities().SupportsSync){deps.push('cordova/ios/backgroundfetch');}
-deps.push('cordova/ios/tabbar');}
+if(Dashboard.isRunningInCordova()){require(['scripts/registrationservices','cordova/back']);if(browserInfo.android){require(['cordova/android/androidcredentials']);}}
+var deps=[];if(browserInfo.msie){deps.push('devices/ie/ie');}
+if(AppInfo.isNativeApp&&browserInfo.safari){deps.push('cordova/ios/tabbar');}
 deps.push('scripts/search');deps.push('scripts/librarylist');deps.push('scripts/alphapicker');deps.push('thirdparty/jquery.unveil-custom.js');deps.push('scripts/playlistmanager');deps.push('scripts/sync');deps.push('scripts/backdrops');deps.push('scripts/librarymenu');require(deps,function(){$.mobile.filterHtml=Dashboard.filterHtml;$.mobile.initializePage();promiseResolve();var postInitDependencies=[];if(navigator.webkitPersistentStorage){postInitDependencies.push('components/imagestore');}
 else if(Dashboard.isRunningInCordova()){postInitDependencies.push('cordova/imagestore');}
-postInitDependencies.push('scripts/thememediaplayer');postInitDependencies.push('scripts/remotecontrol');require(postInitDependencies);Dashboard.importCss('css/notifications.css');Dashboard.importCss('css/chromecast.css');});if(AppInfo.enableNowPlayingBar){require(['scripts/nowplayingbar']);}}
+postInitDependencies.push('scripts/thememediaplayer');postInitDependencies.push('scripts/remotecontrol');postInitDependencies.push('css!css/notifications.css');postInitDependencies.push('css!css/chromecast.css');if(Dashboard.isRunningInCordova()){postInitDependencies.push('cordova/connectsdk');if(browserInfo.android){postInitDependencies.push('cordova/android/mediasession');}else{postInitDependencies.push('cordova/volume');}
+if(browserInfo.safari){postInitDependencies.push('cordova/ios/orientation');if(Dashboard.capabilities().SupportsSync){postInitDependencies.push('cordova/ios/backgroundfetch');}}}else if(browserInfo.chrome){postInitDependencies.push('scripts/chromecast');}
+if(AppInfo.enableNowPlayingBar){postInitDependencies.push('scripts/nowplayingbar');}
+require(postInitDependencies);});}
 function getCordovaHostingAppInfo(){return new Promise(function(resolve,reject){document.addEventListener("deviceready",function(){cordova.getAppVersion.getVersionNumber(function(appVersion){var name=browserInfo.android?"Emby for Android Mobile":(browserInfo.safari?"Emby for iOS":"Emby Mobile");var cleanDeviceName=device.model.replace(/[^\w\s]/gi,'');var deviceId=window.MainActivity?MainActivity.getLegacyDeviceId():null;deviceId=deviceId||device.uuid;resolve({deviceId:deviceId,deviceName:cleanDeviceName,appName:name,appVersion:appVersion});});},false);});}
 function getWebHostingAppInfo(){return new Promise(function(resolve,reject){var deviceName;if(browserInfo.chrome){deviceName="Chrome";}else if(browserInfo.edge){deviceName="Edge";}else if(browserInfo.mozilla){deviceName="Firefox";}else if(browserInfo.msie){deviceName="Internet Explorer";}else{deviceName="Web Browser";}
 if(browserInfo.version){deviceName+=" "+browserInfo.version;}
