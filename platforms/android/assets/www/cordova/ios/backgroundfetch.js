@@ -1,11 +1,1 @@
-﻿(function(){var lastStart=0;function onDeviceReady(){}
-function onSyncFinish(){Logger.log('BackgroundFetch completed');var fetcher=window.BackgroundFetch;fetcher.finish();}
-function onSyncFail(){Logger.log('BackgroundFetch completed - sync failed');var fetcher=window.BackgroundFetch;fetcher.finish();}
-function startSync(reportToFetcher,syncOptions){lastStart=new Date().getTime();require(['localsync'],function(){if(LocalSync.getSyncStatus()=='Syncing'){onSyncFinish();return;}
-var promise=LocalSync.sync(syncOptions);if(reportToFetcher){promise.then(onSyncFinish,onSyncFail);}});}
-function onBackgroundFetch(){Logger.log('BackgroundFetch initiated');startSync(true,{uploadPhotos:false,enableNewDownloads:true});}
-function onBackgroundFetchFailed(){Logger.log('- BackgroundFetch failed');}
-var syncInterval=900000;var photoUploadInterval=21600000;var offlineUserSyncInterval=43200000;function startIntervalSync(){startSync(false,{uploadPhotos:true,enableNewDownloads:true});}
-function normalizeSyncOptions(options){options.enableBackgroundTransfer=true;options.uploadPhotos=(new Date().getTime()-lastStart)>=photoUploadInterval;options.syncOfflineUsers=(new Date().getTime()-lastStart)>=offlineUserSyncInterval;}
-require(['localsync'],function(){LocalSync.normalizeSyncOptions=normalizeSyncOptions;});pageClassOn('pageshow',"libraryPage",function(){if(!Dashboard.getCurrentUserId()){return;}
-if((new Date().getTime()-lastStart)>=syncInterval){setTimeout(function(){startIntervalSync();},10000);}});onDeviceReady();})();
+!function(){function n(){}function e(){Logger.log("BackgroundFetch completed");var n=window.BackgroundFetch;n.finish()}function o(){Logger.log("BackgroundFetch completed - sync failed");var n=window.BackgroundFetch;n.finish()}function c(n,c){i=(new Date).getTime(),require(["localsync"],function(){if("Syncing"==LocalSync.getSyncStatus())return void e();var t=LocalSync.sync(c);n&&t.then(e,o)})}function t(){c(!1,{uploadPhotos:!0,enableNewDownloads:!0})}function a(n){n.enableBackgroundTransfer=!0,n.uploadPhotos=(new Date).getTime()-i>=u,n.syncOfflineUsers=(new Date).getTime()-i>=g}var i=0,r=9e5,u=216e5,g=432e5;require(["localsync"],function(){LocalSync.normalizeSyncOptions=a}),pageClassOn("pageshow","libraryPage",function(){Dashboard.getCurrentUserId()&&(new Date).getTime()-i>=r&&setTimeout(function(){t()},1e4)}),n()}();

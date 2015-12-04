@@ -1,1 +1,1 @@
-﻿$.fn.buttonEnabled=function(enabled){return enabled?this.attr('disabled','').removeAttr('disabled'):this.attr('disabled','disabled');};
+$.fn.buttonEnabled=function(t){return t?this.attr("disabled","").removeAttr("disabled"):this.attr("disabled","disabled")};

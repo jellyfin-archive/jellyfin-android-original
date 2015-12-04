@@ -1,2 +1,1 @@
-﻿(function(){function showMenu(options,successCallback,cancelCallback){var shareInfo=options.share;window.plugins.socialsharing.share(shareInfo.Overview,shareInfo.Name,shareInfo.ImageUrl,shareInfo.Url,function(){successCallback(options);},function(){cancelCallback(options);});}
-window.SharingWidget={showMenu:showMenu};})();
+!function(){function n(n,i,a){var e=n.share;window.plugins.socialsharing.share(e.Overview,e.Name,e.ImageUrl,e.Url,function(){i(n)},function(){a(n)})}window.SharingWidget={showMenu:n}}();

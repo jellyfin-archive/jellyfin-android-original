@@ -1,1 +1,1 @@
-﻿(function(globalScope){globalScope.ServerDiscovery={findServers:function(timeoutMs){return new Promise(function(resolve,reject){var servers=[];resolve(servers);});}};})(window);
+!function(n){n.ServerDiscovery={findServers:function(){return new Promise(function(n){var r=[];n(r)})}}}(window);
