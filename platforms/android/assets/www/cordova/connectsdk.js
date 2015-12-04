@@ -1,4 +1,1 @@
-﻿(function(){function initSdk(){var manager=ConnectSDK.discoveryManager;manager.setAirPlayServiceMode(ConnectSDK.AirPlayServiceMode.Media);manager.on('devicelistchanged',onDeviceListChanged);manager.startDiscovery();requirejs(['cordova/chromecast','cordova/generaldevice']);}
-function onDeviceListChanged(list){}
-function getDeviceList(){return ConnectSDK.discoveryManager.getDeviceList();}
-window.ConnectSDKHelper={getDeviceList:getDeviceList};initSdk();})();
+!function(){function e(){var e=ConnectSDK.discoveryManager;e.setAirPlayServiceMode(ConnectSDK.AirPlayServiceMode.Media),e.on("devicelistchanged",n),e.startDiscovery(),requirejs(["cordova/chromecast","cordova/generaldevice"])}function n(){}function c(){return ConnectSDK.discoveryManager.getDeviceList()}window.ConnectSDKHelper={getDeviceList:c},e()}();

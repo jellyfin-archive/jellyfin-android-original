@@ -1,3 +1,1 @@
-﻿(function(window,$){function onSubmit(){var page=$(this).parents('.page')[0];if(page.querySelector('.chkAccept').checked){Dashboard.navigate('wizardfinish.html');}else{Dashboard.alert({message:Globalize.translate('MessagePleaseAcceptTermsOfServiceBeforeContinuing'),title:''});}
-return false;}
-$(document).on('pageinit','#wizardAgreementPage',function(){$('.wizardAgreementForm').off('submit',onSubmit).on('submit',onSubmit);});})(window,jQuery);
+!function(e,t){function a(){var e=t(this).parents(".page")[0];return e.querySelector(".chkAccept").checked?Dashboard.navigate("wizardfinish.html"):Dashboard.alert({message:Globalize.translate("MessagePleaseAcceptTermsOfServiceBeforeContinuing"),title:""}),!1}t(document).on("pageinit","#wizardAgreementPage",function(){t(".wizardAgreementForm").off("submit",a).on("submit",a)})}(window,jQuery);

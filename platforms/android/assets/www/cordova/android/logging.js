@@ -1,1 +1,1 @@
-﻿window.Logger={log:function(str){LoggingBridge.log(str);}};
+window.Logger={log:function(g){LoggingBridge.log(g)}};

@@ -1,4 +1,1 @@
-﻿(function(){var currentDeferred;function chooseDirectory(){var deferred=DeferredBuilder.Deferred();AndroidDirectoryChooser.chooseDirectory();currentDeferred=deferred;return deferred.promise();}
-function onChosen(path){var deferred=currentDeferred;if(deferred){if(path){deferred.resolveWith(null,[path]);}else{deferred.reject();}
-currentDeferred=null;}}
-window.NativeDirectoryChooser={chooseDirectory:chooseDirectory,onChosen:onChosen};})();
+!function(){function r(){var r=DeferredBuilder.Deferred();return AndroidDirectoryChooser.chooseDirectory(),o=r,r.promise()}function e(r){var e=o;e&&(r?e.resolveWith(null,[r]):e.reject(),o=null)}var o;window.NativeDirectoryChooser={chooseDirectory:r,onChosen:e}}();

@@ -1,3 +1,1 @@
-﻿(function(){function forceScroll(){var doc=$(document);doc.scrollTop(doc.scrollTop()+1);}
-function onOrientationChange(){forceScroll();for(var i=0;i<=500;i+=100){setTimeout(forceScroll,i);}}
-window.addEventListener('orientationchange',onOrientationChange);})();
+!function(){function n(){var n=$(document);n.scrollTop(n.scrollTop()+1)}function o(){n();for(var o=0;500>=o;o+=100)setTimeout(n,o)}window.addEventListener("orientationchange",o)}();

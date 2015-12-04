@@ -1,1 +1,1 @@
-﻿(function(globalScope){globalScope.Events={on:function(obj,eventName,selector,fn){jQuery(obj).on(eventName,selector,fn);},off:function(obj,eventName,selector,fn){jQuery(obj).off(eventName,selector,fn);},trigger:function(obj,eventName,params){jQuery(obj).trigger(eventName,params);}};})(window);
+!function(n){n.Events={on:function(n,o,f,i){jQuery(n).on(o,f,i)},off:function(n,o,f,i){jQuery(n).off(o,f,i)},trigger:function(n,o,f){jQuery(n).trigger(o,f)}}}(window);
