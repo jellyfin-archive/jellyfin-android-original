@@ -213,7 +213,7 @@
 
             getSystemInfo().then(function (systemInfo) {
 
-                require(['components/paperdialoghelper'], function () {
+                require(['components/paperdialoghelper', 'paper-item'], function () {
 
                     var dlg = PaperDialogHelper.createDialog({
                         theme: 'a',
