@@ -142,10 +142,10 @@ var capabilities=Dashboard.capabilities();capabilities.DeviceProfile=MediaPlayer
 depends=depends||[];if(newHtml.indexOf('type-interior')!=-1){depends.push('jqmpopup');depends.push('jqmlistview');depends.push('jqmcollapsible');depends.push('jqmcontrolgroup');depends.push('jqmcheckbox');depends.push('scripts/notifications');}
 require(depends,function(){$(mainDrawerPanelContent).html(Globalize.translateDocument(newHtml,'html'));onAppReady(promiseResolve);});return;}
 onAppReady(promiseResolve);});});}
-function onAppReady(promiseResolve){if(AppInfo.isNativeApp&&browserInfo.android){Dashboard.importCss('devices/android/android.css');}else if(AppInfo.isNativeApp&&browserInfo.safari){Dashboard.importCss('devices/ios/ios.css');}else if(!browserInfo.android){Dashboard.importCss('devices/android/android.css');}
+function onAppReady(promiseResolve){var deps=[];if(AppInfo.isNativeApp&&browserInfo.android){deps.push('css!devices/android/android.css');}else if(AppInfo.isNativeApp&&browserInfo.safari){deps.push('css!devices/ios/ios.css');}else if(!browserInfo.android){deps.push('css!devices/android/android.css');}
 loadTheme();if(browserInfo.safari&&browserInfo.mobile){initFastClick();}
-if(Dashboard.isRunningInCordova()){require(['scripts/registrationservices','cordova/back']);if(browserInfo.android){require(['cordova/android/androidcredentials']);}}
-var deps=[];if(browserInfo.msie){deps.push('devices/ie/ie');}
+if(Dashboard.isRunningInCordova()){deps.push('scripts/registrationservices');deps.push('cordova/back');if(browserInfo.android){deps.push('cordova/android/androidcredentials');}}
+if(browserInfo.msie){deps.push('devices/ie/ie');}
 if(AppInfo.isNativeApp&&browserInfo.safari){deps.push('cordova/ios/tabbar');}
 deps.push('scripts/search');deps.push('scripts/librarylist');deps.push('scripts/alphapicker');deps.push('thirdparty/jquery.unveil-custom.js');deps.push('scripts/playlistmanager');deps.push('scripts/sync');deps.push('scripts/backdrops');deps.push('scripts/librarymenu');require(deps,function(){$.mobile.filterHtml=Dashboard.filterHtml;$.mobile.initializePage();promiseResolve();var postInitDependencies=[];if(navigator.webkitPersistentStorage){postInitDependencies.push('components/imagestore');}
 else if(Dashboard.isRunningInCordova()){postInitDependencies.push('cordova/imagestore');}
