@@ -450,6 +450,7 @@ var Dashboard = {
 
     showLoadingMsg: function () {
 
+        Dashboard.loadingVisible = true;
         var elem = document.querySelector('.docspinner');
 
         if (elem) {
@@ -459,15 +460,19 @@ var Dashboard = {
 
         } else {
 
-            elem = document.createElement("paper-spinner");
-            elem.classList.add('docspinner');
+            require(['paper-spinner'], function () {
+                elem = document.createElement("paper-spinner");
+                elem.classList.add('docspinner');
 
-            document.body.appendChild(elem);
-            elem.active = true;
+                document.body.appendChild(elem);
+                elem.active = Dashboard.loadingVisible == true;
+            });
         }
     },
 
     hideLoadingMsg: function () {
+
+        Dashboard.loadingVisible = false;
 
         var elem = document.querySelector('.docspinner');
 
@@ -521,27 +526,30 @@ var Dashboard = {
 
         if (typeof options == "string") {
 
-            var message = options;
+            require(['paper-toast'], function () {
+                var message = options;
 
-            Dashboard.toastId = Dashboard.toastId || 0;
+                Dashboard.toastId = Dashboard.toastId || 0;
 
-            var id = 'toast' + (Dashboard.toastId++);
+                var id = 'toast' + (Dashboard.toastId++);
 
-            var elem = document.createElement("paper-toast");
-            elem.setAttribute('text', message);
-            elem.id = id;
+                var elem = document.createElement("paper-toast");
+                elem.setAttribute('text', message);
+                elem.id = id;
 
-            document.body.appendChild(elem);
+                document.body.appendChild(elem);
 
-            // This timeout is obviously messy but it's unclear how to determine when the webcomponent is ready for use
-            // element onload never fires
-            setTimeout(function () {
-                elem.show();
+                // This timeout is obviously messy but it's unclear how to determine when the webcomponent is ready for use
+                // element onload never fires
+                setTimeout(function () {
+                    elem.show();
+                }, 300);
 
                 setTimeout(function () {
                     elem.parentNode.removeChild(elem);
-                }, 5000);
-            }, 300);
+                }, 5300);
+
+            });
 
             return;
         }
@@ -1842,7 +1850,8 @@ var AppInfo = {};
         requirejs.config({
             map: {
                 '*': {
-                    'css': 'components/requirecss'
+                    'css': 'components/requirecss',
+                    'html': 'components/requirehtml'
                 }
             },
             urlArgs: urlArgs,
@@ -1852,6 +1861,43 @@ var AppInfo = {};
 
         define("cryptojs-sha1", ["apiclient/sha1"]);
         define("cryptojs-md5", ["apiclient/md5"]);
+
+        // Done
+        define("paper-spinner", ["html!bower_components/paper-spinner/paper-spinner.html"]);
+        define("paper-toast", ["html!bower_components/paper-toast/paper-toast.html"]);
+        define("paper-slider", ["html!bower_components/paper-slider/paper-slider.html"]);
+        define("paper-tabs", ["html!bower_components/paper-tabs/paper-tabs.html"]);
+        define("paper-menu", ["html!bower_components/paper-menu/paper-menu.html"]);
+        define("paper-dialog-scrollable", ["html!bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"]);
+        define("paper-button", ["html!bower_components/paper-button/paper-button.html"]);
+        define("paper-icon-button", ["html!bower_components/paper-icon-button/paper-icon-button.html"]);
+        define("paper-drawer-panel", ["html!bower_components/paper-drawer-panel/paper-drawer-panel.html"]);
+        define("paper-radio-group", ["html!bower_components/paper-radio-group/paper-radio-group.html"]);
+        define("paper-radio-button", ["html!bower_components/paper-radio-button/paper-radio-button.html"]);
+        define("neon-animated-pages", ["html!bower_components/neon-animation/neon-animated-pages.html"]);
+
+        define("slide-right-animation", ["html!bower_components/neon-animation/animations/slide-right-animation.html"]);
+        define("slide-left-animation", ["html!bower_components/neon-animation/animations/slide-left-animation.html"]);
+        define("slide-from-right-animation", ["html!bower_components/neon-animation/animations/slide-from-right-animation.html"]);
+        define("slide-from-left-animation", ["html!bower_components/neon-animation/animations/slide-from-left-animation.html"]);
+        define("paper-textarea", ["html!bower_components/paper-input/paper-textarea.html"]);
+        define("paper-item", ["html!bower_components/paper-item/paper-item.html"]);
+
+        // Not done
+
+        // missing from paperdialoghelper
+        define("scale-up-animation", ["html!bower_components/neon-animation/animations/scale-up-animation.html"]);
+
+        define("fade-out-animation", ["html!bower_components/neon-animation/animations/fade-out-animation.html"]);
+        define("fade-in-animation", ["html!bower_components/neon-animation/animations/fade-in-animation.html"]);
+
+        define("paper-fab", ["html!bower_components/paper-fab/paper-fab.html"]);
+        define("paper-dialog", ["html!bower_components/paper-dialog/paper-dialog.html"]);
+        define("paper-input", ["html!bower_components/paper-input/paper-input.html"]);
+        define("paper-checkbox", ["html!bower_components/paper-checkbox/paper-checkbox.html"]);
+
+        define("paper-icon-item", ["html!bower_components/paper-item/paper-icon-item.html"]);
+        define("paper-item-body", ["html!bower_components/paper-item/paper-item-body.html"]);
     }
 
     function init(promiseResolve, hostingAppInfo) {
@@ -2214,6 +2260,8 @@ var AppInfo = {};
                 postInitDependencies.push('scripts/nowplayingbar');
             }
 
+            postInitDependencies.push('components/testermessage');
+
             require(postInitDependencies);
         });
     }
@@ -2401,17 +2449,31 @@ var AppInfo = {};
 
             function onWebComponentsReady() {
 
-                var link = document.createElement('link');
-                link.rel = 'import';
+                var polymerDependencies = [];
+                //polymerDependencies.push('html!vulcanize-out.html');
+                polymerDependencies.push('paper-button');
+                polymerDependencies.push('paper-icon-button');
+                polymerDependencies.push('paper-drawer-panel');
+                polymerDependencies.push('html!thirdparty/emby-icons.html');
 
-                link.onload = function () {
+                // TODO: These need to be removed
+                polymerDependencies.push('scale-up-animation');
+                polymerDependencies.push('fade-out-animation');
+                polymerDependencies.push('fade-in-animation');
+                polymerDependencies.push('paper-fab');
+                polymerDependencies.push('paper-dialog');
+                polymerDependencies.push('paper-input');
+                polymerDependencies.push('paper-checkbox');
+                polymerDependencies.push('paper-item');
+                polymerDependencies.push('paper-icon-item');
+                polymerDependencies.push('paper-item-body');
+
+                require(polymerDependencies, function () {
 
                     getHostingAppInfo().then(function (hostingAppInfo) {
                         init(resolve, hostingAppInfo);
                     });
-                };
-                link.href = "vulcanize-out.html?v=" + window.dashboardVersion;
-                document.head.appendChild(link);
+                });
             }
 
             setBrowserInfo(isMobile);

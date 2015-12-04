@@ -2821,82 +2821,82 @@
 
         showSortMenu: function (options) {
 
-            var dlg = document.createElement('paper-dialog');
+            require(['paper-dialog', 'components/paperdialoghelper', 'paper-radio-button', 'paper-radio-group', 'scale-up-animation'], function () {
 
-            dlg.setAttribute('with-backdrop', 'with-backdrop');
-            dlg.setAttribute('role', 'alertdialog');
+                var dlg = document.createElement('paper-dialog');
 
-            dlg.entryAnimation = 'fade-in-animation';
-            dlg.exitAnimation = 'fade-out-animation';
+                dlg.setAttribute('with-backdrop', 'with-backdrop');
+                dlg.setAttribute('role', 'alertdialog');
 
-            // The animations flicker in IE and Firefox (probably wherever the polyfill is used)
-            if (browserInfo.animate) {
-                dlg.animationConfig = {
-                    // scale up
-                    'entry': {
-                        name: 'scale-up-animation',
-                        node: dlg,
-                        timing: { duration: 160, easing: 'ease-out' }
-                    },
-                    // fade out
-                    'exit': {
-                        name: 'fade-out-animation',
-                        node: dlg,
-                        timing: { duration: 200, easing: 'ease-in' }
-                    }
-                };
-            }
+                dlg.entryAnimation = 'fade-in-animation';
+                dlg.exitAnimation = 'fade-out-animation';
 
-            var html = '';
+                // The animations flicker in IE and Firefox (probably wherever the polyfill is used)
+                if (browserInfo.animate) {
+                    dlg.animationConfig = {
+                        // scale up
+                        'entry': {
+                            name: 'scale-up-animation',
+                            node: dlg,
+                            timing: { duration: 160, easing: 'ease-out' }
+                        },
+                        // fade out
+                        'exit': {
+                            name: 'fade-out-animation',
+                            node: dlg,
+                            timing: { duration: 200, easing: 'ease-in' }
+                        }
+                    };
+                }
 
-            // There seems to be a bug with this in safari causing it to immediately roll up to 0 height
-            // Have to disable this right now because it's causing the radio buttons to not function properly in other browsers besides chrome
-            var isScrollable = false;
-            if (browserInfo.android) {
-                isScrollable = true;
-            }
+                var html = '';
 
-            html += '<h2>';
-            html += Globalize.translate('HeaderSortBy');
-            html += '</h2>';
+                // There seems to be a bug with this in safari causing it to immediately roll up to 0 height
+                // Have to disable this right now because it's causing the radio buttons to not function properly in other browsers besides chrome
+                var isScrollable = false;
+                if (browserInfo.android) {
+                    isScrollable = true;
+                }
 
-            if (isScrollable) {
-                html += '<paper-dialog-scrollable>';
-            }
+                html += '<h2>';
+                html += Globalize.translate('HeaderSortBy');
+                html += '</h2>';
 
-            html += '<paper-radio-group class="groupSortBy" selected="' + (options.query.SortBy || '').replace(',', '_') + '">';
-            for (var i = 0, length = options.items.length; i < length; i++) {
+                if (isScrollable) {
+                    html += '<paper-dialog-scrollable>';
+                }
 
-                var option = options.items[i];
+                html += '<paper-radio-group class="groupSortBy" selected="' + (options.query.SortBy || '').replace(',', '_') + '">';
+                for (var i = 0, length = options.items.length; i < length; i++) {
 
-                html += '<paper-radio-button class="menuSortBy block" data-id="' + option.id + '" name="' + option.id.replace(',', '_') + '">' + option.name + '</paper-radio-button>';
-            }
-            html += '</paper-radio-group>';
+                    var option = options.items[i];
 
-            html += '<p>';
-            html += Globalize.translate('HeaderSortOrder');
-            html += '</p>';
-            html += '<paper-radio-group class="groupSortOrder" selected="' + (options.query.SortOrder || 'Ascending') + '">';
-            html += '<paper-radio-button name="Ascending" class="menuSortOrder block">' + Globalize.translate('OptionAscending') + '</paper-radio-button>';
-            html += '<paper-radio-button name="Descending" class="menuSortOrder block">' + Globalize.translate('OptionDescending') + '</paper-radio-button>';
-            html += '</paper-radio-group>';
+                    html += '<paper-radio-button class="menuSortBy block" data-id="' + option.id + '" name="' + option.id.replace(',', '_') + '">' + option.name + '</paper-radio-button>';
+                }
+                html += '</paper-radio-group>';
 
-            if (isScrollable) {
-                html += '</paper-dialog-scrollable>';
-            }
+                html += '<p>';
+                html += Globalize.translate('HeaderSortOrder');
+                html += '</p>';
+                html += '<paper-radio-group class="groupSortOrder" selected="' + (options.query.SortOrder || 'Ascending') + '">';
+                html += '<paper-radio-button name="Ascending" class="menuSortOrder block">' + Globalize.translate('OptionAscending') + '</paper-radio-button>';
+                html += '<paper-radio-button name="Descending" class="menuSortOrder block">' + Globalize.translate('OptionDescending') + '</paper-radio-button>';
+                html += '</paper-radio-group>';
 
-            html += '<div class="buttons">';
-            html += '<paper-button dialog-dismiss>' + Globalize.translate('ButtonClose') + '</paper-button>';
-            html += '</div>';
+                if (isScrollable) {
+                    html += '</paper-dialog-scrollable>';
+                }
 
-            dlg.innerHTML = html;
-            document.body.appendChild(dlg);
+                html += '<div class="buttons">';
+                html += '<paper-button dialog-dismiss>' + Globalize.translate('ButtonClose') + '</paper-button>';
+                html += '</div>';
 
-            dlg.addEventListener('iron-overlay-closed', function () {
-                dlg.parentNode.removeChild(dlg);
-            });
+                dlg.innerHTML = html;
+                document.body.appendChild(dlg);
 
-            require(['components/paperdialoghelper'], function () {
+                dlg.addEventListener('iron-overlay-closed', function () {
+                    dlg.parentNode.removeChild(dlg);
+                });
 
                 PaperDialogHelper.openWithHash(dlg, 'sortmenu');
 

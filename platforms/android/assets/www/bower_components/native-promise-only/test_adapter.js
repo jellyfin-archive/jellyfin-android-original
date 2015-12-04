@@ -1,0 +1,1 @@
+var path=require("path"),Promise=require(path.join(__dirname,"lib","npo.src.js"));module.exports.deferred=function(){var e={};return e.promise=new Promise(function(r,o){e.resolve=r,e.reject=o}),e},module.exports.resolved=function(e){return Promise.resolve(e)},module.exports.rejected=function(e){return Promise.reject(e)};
