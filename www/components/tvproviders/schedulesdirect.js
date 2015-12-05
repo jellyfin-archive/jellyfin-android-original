@@ -1,4 +1,4 @@
-﻿define([], function () {
+﻿define(['paper-checkbox', 'paper-input'], function () {
 
     return function (page, providerId, options) {
 

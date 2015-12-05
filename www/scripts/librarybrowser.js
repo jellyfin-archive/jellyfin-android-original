@@ -231,11 +231,17 @@
 
             if (LibraryBrowser.animatePaperTabs()) {
                 if (browserInfo.mobile) {
-                    pages.entryAnimation = 'slide-from-right-animation';
-                    pages.exitAnimation = 'slide-left-animation';
+
+                    require(['slide-left-animation', 'slide-from-right-animation'], function () {
+                        pages.entryAnimation = 'slide-from-right-animation';
+                        pages.exitAnimation = 'slide-left-animation';
+                    });
                 } else {
-                    pages.entryAnimation = 'fade-in-animation';
-                    pages.exitAnimation = 'fade-out-animation';
+
+                    require(['fade-in-animation', 'fade-out-animation'], function () {
+                        pages.entryAnimation = 'fade-in-animation';
+                        pages.exitAnimation = 'fade-out-animation';
+                    });
                 }
             }
 
@@ -847,7 +853,7 @@
 
         editImages: function (itemId) {
 
-            require(['components/imageeditor/imageeditor'], function () {
+            require(['components/imageeditor/imageeditor'], function (ImageEditor) {
 
                 ImageEditor.show(itemId);
             });
@@ -855,7 +861,7 @@
 
         editSubtitles: function (itemId) {
 
-            require(['components/subtitleeditor/subtitleeditor'], function () {
+            require(['components/subtitleeditor/subtitleeditor'], function (SubtitleEditor) {
 
                 SubtitleEditor.show(itemId);
             });
@@ -2821,7 +2827,7 @@
 
         showSortMenu: function (options) {
 
-            require(['paper-dialog', 'components/paperdialoghelper', 'paper-radio-button', 'paper-radio-group', 'scale-up-animation'], function () {
+            require(['paper-dialog', 'components/paperdialoghelper', 'paper-radio-button', 'paper-radio-group', 'scale-up-animation', 'fade-in-animation', 'fade-out-animation'], function () {
 
                 var dlg = document.createElement('paper-dialog');
 
