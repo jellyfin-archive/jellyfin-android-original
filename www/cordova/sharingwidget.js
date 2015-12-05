@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define([], function () {
 
     function showMenu(options, successCallback, cancelCallback) {
 
@@ -14,9 +14,8 @@
         });
     }
 
-    window.SharingWidget = {
+    return {
         showMenu: showMenu
     };
 
-
-})();
+});

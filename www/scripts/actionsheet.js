@@ -2,7 +2,7 @@
 
     function show(options) {
 
-        require(['paper-menu', 'paper-dialog', 'paper-dialog-scrollable', 'scale-up-animation'], function () {
+        require(['paper-menu', 'paper-dialog', 'paper-dialog-scrollable', 'scale-up-animation', 'fade-out-animation'], function () {
             showInternal(options);
         });
     }

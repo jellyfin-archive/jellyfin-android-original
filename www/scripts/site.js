@@ -564,75 +564,6 @@ var Dashboard = {
         }
     },
 
-    dialog: function (options) {
-
-        var title = options.title;
-        var message = options.message;
-        var buttons = options.buttons;
-        var callback = options.callback;
-
-        // Cordova
-        if (navigator.notification && navigator.notification.confirm && message.indexOf('<') == -1) {
-
-            navigator.notification.confirm(message, function (index) {
-
-                callback(index);
-
-            }, title, buttons.join(','));
-
-        } else {
-            Dashboard.dialogInternal(message, title, buttons, callback);
-        }
-    },
-
-    dialogInternal: function (message, title, buttons, callback) {
-
-        var id = 'paperdlg' + new Date().getTime();
-
-        var html = '<paper-dialog id="' + id + '" role="alertdialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation" with-backdrop>';
-        html += '<h2>' + title + '</h2>';
-        html += '<div>' + message + '</div>';
-        html += '<div class="buttons">';
-
-        var index = 0;
-        html += buttons.map(function (b) {
-
-            var dataIndex = ' data-index="' + index + '"';
-            index++;
-            return '<paper-button class="dialogButton"' + dataIndex + ' dialog-dismiss>' + b + '</paper-button>';
-
-        }).join('');
-
-        html += '</div>';
-        html += '</paper-dialog>';
-
-        $(document.body).append(html);
-
-        // This timeout is obviously messy but it's unclear how to determine when the webcomponent is ready for use
-        // element onload never fires
-        setTimeout(function () {
-
-            var dlg = document.getElementById(id);
-
-            $('.dialogButton', dlg).on('click', function () {
-
-                if (callback) {
-                    callback(parseInt(this.getAttribute('data-index')));
-                }
-
-            });
-
-            // Has to be assigned a z-index after the call to .open() 
-            dlg.addEventListener('iron-overlay-closed', function (e) {
-
-                dlg.parentNode.removeChild(dlg);
-            });
-
-            dlg.open();
-
-        }, 300);
-    },
-
     confirm: function (message, title, callback) {
 
         // Cordova
@@ -647,7 +578,10 @@ var Dashboard = {
             }, title || Globalize.translate('HeaderConfirm'), buttonLabels.join(','));
 
         } else {
-            Dashboard.confirmInternal(message, title, true, callback);
+
+            require(['paper-dialog', 'fade-in-animation', 'fade-out-animation'], function () {
+                Dashboard.confirmInternal(message, title, true, callback);
+            });
         }
     },
 
@@ -1842,9 +1776,13 @@ var AppInfo = {};
         };
 
         if (Dashboard.isRunningInCordova()) {
+            paths.dialog = "cordova/dialog";
             paths.prompt = "cordova/prompt";
+            paths.sharingwidget = "cordova/sharingwidget";
         } else {
+            paths.dialog = "components/dialog";
             paths.prompt = "components/prompt";
+            paths.sharingwidget = "components/sharingwidget";
         }
 
         requirejs.config({
@@ -1882,20 +1820,13 @@ var AppInfo = {};
         define("slide-from-left-animation", ["html!bower_components/neon-animation/animations/slide-from-left-animation.html"]);
         define("paper-textarea", ["html!bower_components/paper-input/paper-textarea.html"]);
         define("paper-item", ["html!bower_components/paper-item/paper-item.html"]);
-
-        // Not done
-
-        // missing from paperdialoghelper
-        define("scale-up-animation", ["html!bower_components/neon-animation/animations/scale-up-animation.html"]);
-
-        define("fade-out-animation", ["html!bower_components/neon-animation/animations/fade-out-animation.html"]);
-        define("fade-in-animation", ["html!bower_components/neon-animation/animations/fade-in-animation.html"]);
-
-        define("paper-fab", ["html!bower_components/paper-fab/paper-fab.html"]);
-        define("paper-dialog", ["html!bower_components/paper-dialog/paper-dialog.html"]);
-        define("paper-input", ["html!bower_components/paper-input/paper-input.html"]);
         define("paper-checkbox", ["html!bower_components/paper-checkbox/paper-checkbox.html"]);
-
+        define("fade-in-animation", ["html!bower_components/neon-animation/animations/fade-in-animation.html"]);
+        define("fade-out-animation", ["html!bower_components/neon-animation/animations/fade-out-animation.html"]);
+        define("scale-up-animation", ["html!bower_components/neon-animation/animations/scale-up-animation.html"]);
+        define("paper-dialog", ["html!bower_components/paper-dialog/paper-dialog.html"]);
+        define("paper-fab", ["html!bower_components/paper-fab/paper-fab.html"]);
+        define("paper-input", ["html!bower_components/paper-input/paper-input.html"]);
         define("paper-icon-item", ["html!bower_components/paper-item/paper-icon-item.html"]);
         define("paper-item-body", ["html!bower_components/paper-item/paper-item-body.html"]);
     }
@@ -1967,12 +1898,6 @@ var AppInfo = {};
 
         define("sharingmanager", ["scripts/sharingmanager"]);
 
-        if (Dashboard.isRunningInCordova()) {
-            define("sharingwidget", ["cordova/sharingwidget"]);
-        } else {
-            define("sharingwidget", ["scripts/sharingwidget"]);
-        }
-
         if (Dashboard.isRunningInCordova() && browserInfo.safari) {
             define("searchmenu", ["cordova/searchmenu"]);
         } else {
@@ -2030,6 +1955,8 @@ var AppInfo = {};
 
         deps.push('jQuery');
 
+        deps.push('paper-drawer-panel');
+
         require(deps, function () {
 
             for (var i in hostingAppInfo) {
@@ -2074,6 +2001,14 @@ var AppInfo = {};
 
         deps.push('thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.js');
 
+        deps.push('paper-button');
+        deps.push('paper-icon-button');
+
+        // TODO: These need to be removed
+        deps.push('paper-fab');
+        deps.push('paper-icon-item');
+        deps.push('paper-item-body');
+
         require(deps, function () {
 
             // TODO: This needs to be deprecated, but it's used heavily
@@ -2113,9 +2048,11 @@ var AppInfo = {};
 
             capabilities.DeviceProfile = MediaPlayer.getDeviceProfile(Math.max(screen.height, screen.width));
 
-            var connectionManagerPromise = createConnectionManager(capabilities);
+            deps = [];
+            deps.push(Globalize.ensure());
+            deps.push(createConnectionManager(capabilities));
 
-            Promise.all([Globalize.ensure(), connectionManagerPromise]).then(function () {
+            Promise.all(deps).then(function () {
 
                 document.title = Globalize.translateDocument(document.title, 'html');
 
@@ -2166,6 +2103,10 @@ var AppInfo = {};
     function onAppReady(promiseResolve) {
 
         var deps = [];
+
+        if (!(AppInfo.isNativeApp && browserInfo.android)) {
+            document.documentElement.classList.add('minimumSizeTabs');
+        }
 
         // Do these now to prevent a flash of content
         if (AppInfo.isNativeApp && browserInfo.android) {
@@ -2260,7 +2201,7 @@ var AppInfo = {};
                 postInitDependencies.push('scripts/nowplayingbar');
             }
 
-            postInitDependencies.push('components/testermessage');
+            //postInitDependencies.push('components/testermessage');
 
             require(postInitDependencies);
         });
@@ -2450,23 +2391,7 @@ var AppInfo = {};
             function onWebComponentsReady() {
 
                 var polymerDependencies = [];
-                //polymerDependencies.push('html!vulcanize-out.html');
-                polymerDependencies.push('paper-button');
-                polymerDependencies.push('paper-icon-button');
-                polymerDependencies.push('paper-drawer-panel');
                 polymerDependencies.push('html!thirdparty/emby-icons.html');
-
-                // TODO: These need to be removed
-                polymerDependencies.push('scale-up-animation');
-                polymerDependencies.push('fade-out-animation');
-                polymerDependencies.push('fade-in-animation');
-                polymerDependencies.push('paper-fab');
-                polymerDependencies.push('paper-dialog');
-                polymerDependencies.push('paper-input');
-                polymerDependencies.push('paper-checkbox');
-                polymerDependencies.push('paper-item');
-                polymerDependencies.push('paper-icon-item');
-                polymerDependencies.push('paper-item-body');
 
                 require(polymerDependencies, function () {
 

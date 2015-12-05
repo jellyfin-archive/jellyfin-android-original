@@ -312,21 +312,16 @@
     display: none;
 }
 
-.libraryViewNav .tab-content {
+.minimumSizeTabs .libraryViewNav .tab-content {
     display: block !important;
 }
 
-.libraryViewNav paper-tabs {
-    flex-grow: 0 !important;
-    height: 36px;
-}
-
-.libraryViewNav paper-tab {
+.minimumSizeTabs .libraryViewNav paper-tab {
     height: auto !important;
     flex-grow: 0 !important;
 }
 
-.libraryViewNav #tabsContainer {
+.minimumSizeTabs .libraryViewNav #tabsContainer {
     flex-grow: 0 !important;
 }
 
