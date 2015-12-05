@@ -15,10 +15,6 @@
                     ],
                     "/*": [
                         {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"UniqueDeviceID\"><param name=\"android-package\" value=\"hu.dpal.phonegap.plugins.UniqueDeviceID\" /></feature>",
                             "count": 1
                         },
@@ -187,10 +183,6 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-webserver": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cc.fovea.cordova.purchase": {
-            "BILLING_KEY": "DF",
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-crosswalk-webview": {

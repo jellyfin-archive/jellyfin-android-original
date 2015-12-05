@@ -428,8 +428,7 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "2.0.0",
     "cordova-plugin-network-information": "1.1.0",
     "cordova-plugin-media": "1.0.1",
-    "cordova-plugin-x-socialsharing": "5.0.7",
-    "cordova-plugin-whitelist": "1.2.0"
+    "cordova-plugin-x-socialsharing": "5.0.7"
 }
 // BOTTOM OF METADATA
 });

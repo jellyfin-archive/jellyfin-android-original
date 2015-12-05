@@ -1,5 +1,5 @@
 {
-    "alwaysRun": false,
+    "alwaysRun": true,
     "recursiveFolderSearch": true,
     "foldersToProcess": [
         "js",
