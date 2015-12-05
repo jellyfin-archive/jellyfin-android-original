@@ -367,9 +367,6 @@
         },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {

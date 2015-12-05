@@ -219,9 +219,6 @@
         },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {
