@@ -1,4 +1,4 @@
-﻿define(['components/paperdialoghelper'], function () {
+﻿define(['components/paperdialoghelper', 'paper-fab', 'paper-item-body', 'paper-icon-item'], function () {
 
     var currentDeferred;
     var hasChanges;

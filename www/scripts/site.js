@@ -185,7 +185,7 @@ var Dashboard = {
     importCss: function (url) {
 
         var originalUrl = url;
-        url += "?v=" + window.dashboardVersion;
+        url += "?v=" + AppInfo.appVersion;
 
         if (!Dashboard.importedCss) {
             Dashboard.importedCss = [];
@@ -1826,6 +1826,7 @@ var AppInfo = {};
         define("scale-up-animation", ["html!bower_components/neon-animation/animations/scale-up-animation.html"]);
         define("paper-dialog", ["html!bower_components/paper-dialog/paper-dialog.html"]);
         define("paper-fab", ["html!bower_components/paper-fab/paper-fab.html"]);
+        define("paper-progress", ["html!bower_components/paper-progress/paper-progress.html"]);
         define("paper-input", ["html!bower_components/paper-input/paper-input.html"]);
         define("paper-icon-item", ["html!bower_components/paper-item/paper-icon-item.html"]);
         define("paper-item-body", ["html!bower_components/paper-item/paper-item-body.html"]);
@@ -2003,11 +2004,7 @@ var AppInfo = {};
 
         deps.push('paper-button');
         deps.push('paper-icon-button');
-
-        // TODO: These need to be removed
-        deps.push('paper-fab');
-        deps.push('paper-icon-item');
-        deps.push('paper-item-body');
+        deps.push('html!thirdparty/emby-icons.html');
 
         require(deps, function () {
 
@@ -2391,7 +2388,6 @@ var AppInfo = {};
             function onWebComponentsReady() {
 
                 var polymerDependencies = [];
-                polymerDependencies.push('html!thirdparty/emby-icons.html');
 
                 require(polymerDependencies, function () {
 

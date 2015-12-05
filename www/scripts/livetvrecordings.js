@@ -109,8 +109,9 @@
 
         }).then(function (result) {
 
-            renderRecordingGroups(page, result.Items);
-
+            require(['paper-fab', 'paper-item-body', 'paper-icon-item'], function () {
+                renderRecordingGroups(page, result.Items);
+            });
         });
     }
 
