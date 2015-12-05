@@ -1,1 +1,1 @@
-﻿(function(globalScope){globalScope.DeferredBuilder={Deferred:function(){return jQuery.Deferred();},when:function(promises){return jQuery.when(promises);}};})(window);
+!function(e){e.DeferredBuilder={Deferred:function(){return jQuery.Deferred()},when:function(e){return jQuery.when(e)}}}(window);

@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		03E43C0F75344D119263D8FE /* CDVFileTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = 62ECCF6FEDFF445F9C911FA5 /* CDVFileTransfer.m */; };
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
@@ -942,7 +943,6 @@
 				826B3C54C10D43FBB9870851 /* VLCPlugin.m in Sources */,
 				2A1593A70E094275BE55DA14 /* MainViewController+RemoteControl.m in Sources */,
 				549F66737C8F4BDBABD4002E /* IonicCameraRoll.m in Sources */,
-				B0E7D705F71147518FBD3C74 /* sqlite3.c in Sources */,
 				F8002EF797EA4200A619F27E /* BackgroundDownload.m in Sources */,
 				C4E122F497D84864A98F483E /* AppVersion.m in Sources */,
 				5223387CD6274FD4B5D05632 /* CDVTabBar.m in Sources */,

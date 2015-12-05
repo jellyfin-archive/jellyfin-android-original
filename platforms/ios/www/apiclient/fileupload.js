@@ -1,3 +1,1 @@
-﻿(function(globalScope){function fileUpload(){var self=this;self.upload=function(file,name,url){return new Promise(function(resolve,reject){reject();});};}
-if(!globalScope.MediaBrowser){globalScope.MediaBrowser={};}
-globalScope.MediaBrowser.FileUpload=fileUpload;})(this);
+!function(i){function e(){var i=this;i.upload=function(){return new Promise(function(i,e){e()})}}i.MediaBrowser||(i.MediaBrowser={}),i.MediaBrowser.FileUpload=e}(this);
