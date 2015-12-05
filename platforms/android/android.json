@@ -89,10 +89,6 @@
                         {
                             "xml": "<feature name=\"SocialSharing\"><param name=\"android-package\" value=\"nl.xservices.plugins.SocialSharing\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -198,10 +194,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cc.fovea.cordova.purchase": {
-            "BILLING_KEY": "DF",
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -230,9 +222,6 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
@@ -298,13 +287,6 @@
             "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
             "clobbers": [
                 "cordova.getAppVersion"
-            ]
-        },
-        {
-            "file": "plugins/cc.fovea.cordova.purchase/www/store-android.js",
-            "id": "cc.fovea.cordova.purchase.InAppBillingPlugin",
-            "clobbers": [
-                "store"
             ]
         },
         {
@@ -537,11 +519,6 @@
             "clobbers": [
                 "window.plugins.socialsharing"
             ]
-        },
-        {
-            "file": "plugins/cordova-plugin-whitelist/whitelist.js",
-            "id": "cordova-plugin-whitelist.whitelist",
-            "runs": true
         }
     ]
 }
