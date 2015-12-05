@@ -1,0 +1,1 @@
+define([],function(){return function(n){var i=n.title,t=n.message,o=n.buttons,a=n.callback;navigator.notification.confirm(t,function(n){a(n)},i,o.join(","))}});

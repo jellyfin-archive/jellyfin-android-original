@@ -1,3 +1,1 @@
-﻿(function(){function onVolumeDownKeyDown(){MediaController.volumeDown();}
-function onVolumeUpKeyDown(){MediaController.volumeUp();}
-$(MediaController).on('playerchange',function(e,newPlayer,newTarget){document.removeEventListener("volumedownbutton",onVolumeDownKeyDown,false);document.removeEventListener("volumeupbutton",onVolumeUpKeyDown,false);if(!newPlayer.localPlayer){document.addEventListener("volumedownbutton",onVolumeDownKeyDown,false);document.addEventListener("volumeupbutton",onVolumeUpKeyDown,false);}});})();
+!function(){function e(){MediaController.volumeDown()}function n(){MediaController.volumeUp()}$(MediaController).on("playerchange",function(o,t){document.removeEventListener("volumedownbutton",e,!1),document.removeEventListener("volumeupbutton",n,!1),t.localPlayer||(document.addEventListener("volumedownbutton",e,!1),document.addEventListener("volumeupbutton",n,!1))})}();
