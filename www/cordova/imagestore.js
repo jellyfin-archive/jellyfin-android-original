@@ -149,7 +149,7 @@
         window.ImageStore = self;
     }
 
-    require(['cryptojs-sha1'], function () {
+    require(['cryptojs-md5'], function () {
         new indexedDbBlobImageStore();
     });
 

@@ -1968,6 +1968,14 @@ var AppInfo = {};
         });
     }
 
+    function getRequirePromise(deps) {
+
+        return new Promise(function (resolve, reject) {
+
+            require(deps, resolve);
+        });
+    }
+
     function initAfterDependencies(promiseResolve) {
 
         var drawer = document.querySelector('.mainDrawerPanel');
@@ -1991,20 +1999,12 @@ var AppInfo = {};
             require(['cordova/android/logging']);
         }
 
-        deps.push('scripts/librarybrowser');
         deps.push('appstorage');
         deps.push('scripts/mediaplayer');
         deps.push('scripts/appsettings');
         deps.push('apiclient/apiclient');
         deps.push('apiclient/connectionmanager');
-        deps.push('apiclient/deferred');
         deps.push('apiclient/credentials');
-
-        deps.push('thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.js');
-
-        deps.push('paper-button');
-        deps.push('paper-icon-button');
-        deps.push('html!thirdparty/emby-icons.html');
 
         require(deps, function () {
 
@@ -2045,11 +2045,21 @@ var AppInfo = {};
 
             capabilities.DeviceProfile = MediaPlayer.getDeviceProfile(Math.max(screen.height, screen.width));
 
+            var promises = [];
             deps = [];
-            deps.push(Globalize.ensure());
-            deps.push(createConnectionManager(capabilities));
+            deps.push('thirdparty/jquery.unveil-custom.js');
+            deps.push('html!thirdparty/emby-icons.html');
+            deps.push('paper-icon-button');
+            deps.push('paper-button');
+            deps.push('thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.js');
+            deps.push('scripts/librarybrowser');
+            promises.push(getRequirePromise(deps));
 
-            Promise.all(deps).then(function () {
+            promises.push(Globalize.ensure());
+            promises.push(createConnectionManager(capabilities));
+
+
+            Promise.all(promises).then(function () {
 
                 document.title = Globalize.translateDocument(document.title, 'html');
 
@@ -2143,11 +2153,11 @@ var AppInfo = {};
         deps.push('scripts/search');
         deps.push('scripts/librarylist');
         deps.push('scripts/alphapicker');
-        deps.push('thirdparty/jquery.unveil-custom.js');
         deps.push('scripts/playlistmanager');
         deps.push('scripts/sync');
         deps.push('scripts/backdrops');
         deps.push('scripts/librarymenu');
+        deps.push('apiclient/deferred');
 
         require(deps, function () {
 
