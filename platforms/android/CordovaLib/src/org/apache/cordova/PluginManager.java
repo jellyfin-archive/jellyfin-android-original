@@ -341,30 +341,7 @@ public class PluginManager {
      *                  false to block the resource.
      */
     public boolean shouldAllowRequest(String url) {
-        for (PluginEntry entry : this.entryMap.values()) {
-            CordovaPlugin plugin = pluginMap.get(entry.service);
-            if (plugin != null) {
-                Boolean result = plugin.shouldAllowRequest(url);
-                if (result != null) {
-                    return result;
-                }
-            }
-        }
-
-        // Default policy:
-        if (url.startsWith("blob:") || url.startsWith("data:") || url.startsWith("about:blank")) {
-            return true;
-        }
-        // TalkBack requires this, so allow it by default.
-        if (url.startsWith("https://ssl.gstatic.com/accessibility/javascript/android/")) {
-            return true;
-        }
-        if (url.startsWith("file://")) {
-            //This directory on WebKit/Blink based webviews contains SQLite databases!
-            //DON'T CHANGE THIS UNLESS YOU KNOW WHAT YOU'RE DOING!
-            return !url.contains("/app_webview/");
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -379,18 +356,7 @@ public class PluginManager {
      *                  false to block the navigation.
      */
     public boolean shouldAllowNavigation(String url) {
-        for (PluginEntry entry : this.entryMap.values()) {
-            CordovaPlugin plugin = pluginMap.get(entry.service);
-            if (plugin != null) {
-                Boolean result = plugin.shouldAllowNavigation(url);
-                if (result != null) {
-                    return result;
-                }
-            }
-        }
-
-        // Default policy:
-        return url.startsWith("file://") || url.startsWith("about:blank");
+        return true;
     }
 
 
@@ -398,18 +364,7 @@ public class PluginManager {
      * Called when the webview is requesting the exec() bridge be enabled.
      */
     public boolean shouldAllowBridgeAccess(String url) {
-        for (PluginEntry entry : this.entryMap.values()) {
-            CordovaPlugin plugin = pluginMap.get(entry.service);
-            if (plugin != null) {
-                Boolean result = plugin.shouldAllowBridgeAccess(url);
-                if (result != null) {
-                    return result;
-                }
-            }
-        }
-
-        // Default policy:
-        return url.startsWith("file://");
+        return true;
     }
 
     /**
