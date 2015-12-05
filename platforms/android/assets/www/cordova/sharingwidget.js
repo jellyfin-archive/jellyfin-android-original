@@ -1,1 +1,1 @@
-!function(){function n(n,i,a){var e=n.share;window.plugins.socialsharing.share(e.Overview,e.Name,e.ImageUrl,e.Url,function(){i(n)},function(){a(n)})}window.SharingWidget={showMenu:n}}();
+define([],function(){function n(n,e,i){var r=n.share;window.plugins.socialsharing.share(r.Overview,r.Name,r.ImageUrl,r.Url,function(){e(n)},function(){i(n)})}return{showMenu:n}});
