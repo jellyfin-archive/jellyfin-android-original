@@ -104,7 +104,9 @@
 
         ApiClient.getLiveTvSeriesTimers(query).then(function (result) {
 
-            renderTimers(page, result.Items);
+            require(['paper-fab', 'paper-item-body', 'paper-icon-item'], function () {
+                renderTimers(page, result.Items);
+            });
 
             LibraryBrowser.setLastRefreshed(page);
         });

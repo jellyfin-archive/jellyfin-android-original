@@ -66,7 +66,9 @@
 
         var page = this;
 
-        reload(page);
+        require(['paper-fab', 'paper-item-body', 'paper-icon-item'], function () {
+            reload(page);
+        });
     });
 
 })(jQuery, window);
