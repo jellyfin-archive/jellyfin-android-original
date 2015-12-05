@@ -560,7 +560,9 @@ var Dashboard = {
             navigator.notification.alert(options.message, options.callback || function () { }, options.title || Globalize.translate('HeaderAlert'));
 
         } else {
-            Dashboard.confirmInternal(options.message, options.title || Globalize.translate('HeaderAlert'), false, options.callback);
+            require(['paper-dialog', 'fade-in-animation', 'fade-out-animation'], function () {
+                Dashboard.confirmInternal(options.message, options.title || Globalize.translate('HeaderAlert'), false, options.callback);
+            });
         }
     },
 
@@ -587,9 +589,15 @@ var Dashboard = {
 
     confirmInternal: function (message, title, showCancel, callback) {
 
-        var id = 'paperdlg' + new Date().getTime();
+        var dlg = document.createElement('paper-dialog');
 
-        var html = '<paper-dialog id="' + id + '" role="alertdialog" entry-animation="fade-in-animation" exit-animation="fade-out-animation" with-backdrop>';
+        dlg.setAttribute('with-backdrop', 'with-backdrop');
+        dlg.setAttribute('role', 'alertdialog');
+        dlg.entryAnimation = 'fade-in-animation';
+        dlg.exitAnimation = 'fade-out-animation';
+        dlg.setAttribute('with-backdrop', 'with-backdrop');
+
+        var html = '';
         html += '<h2>' + title + '</h2>';
         html += '<div>' + message + '</div>';
         html += '<div class="buttons">';
@@ -601,30 +609,22 @@ var Dashboard = {
         }
 
         html += '</div>';
-        html += '</paper-dialog>';
 
-        $(document.body).append(html);
+        dlg.innerHTML = html;
+        document.body.appendChild(dlg);
 
-        // This timeout is obviously messy but it's unclear how to determine when the webcomponent is ready for use
-        // element onload never fires
-        setTimeout(function () {
+        // Has to be assigned a z-index after the call to .open() 
+        dlg.addEventListener('iron-overlay-closed', function (e) {
 
-            var dlg = document.getElementById(id);
+            var confirmed = dlg.closingReason.confirmed;
+            dlg.parentNode.removeChild(dlg);
 
-            // Has to be assigned a z-index after the call to .open() 
-            dlg.addEventListener('iron-overlay-closed', function (e) {
+            if (callback) {
+                callback(confirmed);
+            }
+        });
 
-                var confirmed = dlg.closingReason.confirmed;
-                dlg.parentNode.removeChild(dlg);
-
-                if (callback) {
-                    callback(confirmed);
-                }
-            });
-
-            dlg.open();
-
-        }, 300);
+        dlg.open();
     },
 
     refreshSystemInfoFromServer: function () {
@@ -1806,6 +1806,7 @@ var AppInfo = {};
         define("paper-slider", ["html!bower_components/paper-slider/paper-slider.html"]);
         define("paper-tabs", ["html!bower_components/paper-tabs/paper-tabs.html"]);
         define("paper-menu", ["html!bower_components/paper-menu/paper-menu.html"]);
+        define("paper-dialog", ["html!bower_components/paper-dialog/paper-dialog.html"]);
         define("paper-dialog-scrollable", ["html!bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"]);
         define("paper-button", ["html!bower_components/paper-button/paper-button.html"]);
         define("paper-icon-button", ["html!bower_components/paper-icon-button/paper-icon-button.html"]);
@@ -1824,7 +1825,6 @@ var AppInfo = {};
         define("fade-in-animation", ["html!bower_components/neon-animation/animations/fade-in-animation.html"]);
         define("fade-out-animation", ["html!bower_components/neon-animation/animations/fade-out-animation.html"]);
         define("scale-up-animation", ["html!bower_components/neon-animation/animations/scale-up-animation.html"]);
-        define("paper-dialog", ["html!bower_components/paper-dialog/paper-dialog.html"]);
         define("paper-fab", ["html!bower_components/paper-fab/paper-fab.html"]);
         define("paper-progress", ["html!bower_components/paper-progress/paper-progress.html"]);
         define("paper-input", ["html!bower_components/paper-input/paper-input.html"]);
