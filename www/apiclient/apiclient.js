@@ -606,7 +606,13 @@
 
             var now = new Date().getTime();
 
-            return self.get(url).then(function () {
+            return self.ajax({
+
+                type: "GET",
+                url: url,
+                timeout: 5000
+
+            }).then(function () {
 
                 var responseTimeSeconds = (new Date().getTime() - now) / 1000;
                 var bytesPerSecond = byteSize / responseTimeSeconds;
