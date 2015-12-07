@@ -3259,7 +3259,13 @@
                 elem.classList.remove('squareDetailImageContainer');
             }
 
-            ImageLoader.lazyImage(elem.querySelector('img'), url);
+            var img = elem.querySelector('img');
+            img.onload = function () {
+                if (img.src.indexOf('empty.png') == -1) {
+                    img.classList.add('loaded');
+                }
+            };
+            ImageLoader.lazyImage(img, url);
         },
 
         refreshDetailImageUserData: function (elem, item) {
