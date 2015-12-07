@@ -98,6 +98,8 @@
                 supportsAc3: AppSettings.enableChromecastAc3()
             });
 
+            Logger.log('Sending command to Chromecast: ' + message.command);
+
             getEndpointInfo().then(function (endpoint) {
 
                 if (endpoint.IsInNetwork) {
@@ -662,6 +664,8 @@
 
         self.endSession = function () {
 
+            Logger.log('Ending Chromecast session');
+
             self.stop();
 
             setTimeout(function () {
@@ -672,15 +676,18 @@
                     session.close();
                 }
 
-                if (currentDevice) {
-                    currentDevice.disconnect();
+                var device = currentDevice;
+
+                if (device) {
+                    device.getWebAppLauncher().closeWebApp(ApplicationID);
+                    device.disconnect();
                 }
 
                 cleanupSession();
                 currentDevice = null;
                 currentDeviceId = null;
 
-            }, 500);
+            }, 1000);
         };
 
         function onResume() {
