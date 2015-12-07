@@ -34,14 +34,21 @@ public class AppLogger {
         return logger;
     }
 
+    private static boolean enableLogging() {
+        return false;
+    }
+
     public static ILogger createLogger(Context context) {
 
-        return new NullLogger();
-        /*org.slf4j.Logger internalLogger = configureLogbackDirectly(context);
+        if (!enableLogging()) {
+            return new NullLogger();
+        }
+
+        org.slf4j.Logger internalLogger = configureLogbackDirectly(context);
 
         MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(new LogbackLogger(internalLogger, "SyncService"), context);
 
-        return new LogbackLogger(internalLogger, "App");*/
+        return new LogbackLogger(internalLogger, "App");
     }
 
     private static FileAppender<ILoggingEvent> syncServiceFileAppender;
