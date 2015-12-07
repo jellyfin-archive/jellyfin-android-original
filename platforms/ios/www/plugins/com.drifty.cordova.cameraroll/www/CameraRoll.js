@@ -1,15 +1,1 @@
-cordova.define("com.drifty.cordova.cameraroll.CameraRoll", function(require, exports, module) { var exec = require('cordova/exec');
-
-var cameraRoll = {};
-
-cameraRoll.getPhotos = function(successCallback, errorCallback, options) {
-  exec(successCallback, errorCallback, "CameraRoll", "getPhotos", []);
-};
-
-cameraRoll.saveToCameraRoll = function(imageBase64, successCallback, errorCallback, options) {
-  exec(successCallback, errorCallback, "CameraRoll", "saveToCameraRoll", [imageBase64]);
-};
-
-module.exports = cameraRoll;
-
-});
+cordova.define("com.drifty.cordova.cameraroll.CameraRoll",function(o,a,e){var r=o("cordova/exec"),l={};l.getPhotos=function(o,a){r(o,a,"CameraRoll","getPhotos",[])},l.saveToCameraRoll=function(o,a,e){r(a,e,"CameraRoll","saveToCameraRoll",[o])},e.exports=l});

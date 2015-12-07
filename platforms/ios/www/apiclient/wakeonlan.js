@@ -1,2 +1,1 @@
-﻿(function(globalScope){function send(info){return new Promise(function(resolve,reject){resolve();});}
-globalScope.WakeOnLan={send:send};})(window);
+!function(n){function e(){return new Promise(function(n){n()})}n.WakeOnLan={send:e}}(window);
