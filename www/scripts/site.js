@@ -1757,7 +1757,7 @@ var AppInfo = {};
 
     function initRequire() {
 
-        var urlArgs = "v=" + window.dashboardVersion;
+        var urlArgs = "v=" + (window.dashboardVersion || new Date().getDate());
 
         var paths = {
             velocity: "bower_components/velocity/velocity.min",
@@ -2201,6 +2201,8 @@ var AppInfo = {};
                     }
                 }
 
+                postInitDependencies.push('components/testermessage');
+
             } else if (browserInfo.chrome) {
                 postInitDependencies.push('scripts/chromecast');
             }
@@ -2208,8 +2210,6 @@ var AppInfo = {};
             if (AppInfo.enableNowPlayingBar) {
                 postInitDependencies.push('scripts/nowplayingbar');
             }
-
-            postInitDependencies.push('components/testermessage');
 
             require(postInitDependencies);
         });

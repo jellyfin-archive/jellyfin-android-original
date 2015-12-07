@@ -662,35 +662,26 @@
 
         self.endSession = function () {
 
-            var session = currentWebAppSession;
+            self.stop();
 
-            if (session) {
-                session.close();
-            }
+            setTimeout(function () {
 
-            if (currentDevice) {
-                currentDevice.disconnect();
-            }
+                var session = currentWebAppSession;
 
-            cleanupSession();
-            currentDevice = null;
-            currentDeviceId = null;
-        };
-
-        $(MediaController).on('playerchange', function (e, newPlayer, newTarget) {
-
-            if (newTarget.id != currentDeviceId) {
-                if (currentWebAppSession) {
-                    Logger.log('Disconnecting from chromecast');
-                    Logger.log('New target info: ' + JSON.stringify(newTarget));
-                    Logger.log('currentDeviceId: ' + currentDeviceId);
-                    //currentDevice.disconnect();
-                    cleanupSession();
-                    currentDevice = null;
-                    currentDeviceId = null;
+                if (session) {
+                    session.close();
                 }
-            }
-        });
+
+                if (currentDevice) {
+                    currentDevice.disconnect();
+                }
+
+                cleanupSession();
+                currentDevice = null;
+                currentDeviceId = null;
+
+            }, 500);
+        };
 
         function onResume() {
 
