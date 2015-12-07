@@ -196,7 +196,7 @@
                 } else {
                     fetchRequest.body = paramsToString(request.data);
 
-                    contentType = contentType || 'application/x-www-form-urlencoded';
+                    contentType = contentType || 'application/x-www-form-urlencoded; charset=UTF-8';
                 }
             }
 
@@ -205,7 +205,38 @@
                 headers['Content-Type'] = contentType;
             }
 
-            return fetch(request.url, fetchRequest);
+            if (!request.timeout) {
+                return fetch(request.url, fetchRequest);
+            }
+
+            return new Promise(function (resolve, reject) {
+
+                var timeout = setTimeout(reject, request.timeout);
+
+                fetch(request.url, fetchRequest).then(function (response) {
+                    clearTimeout(timeout);
+                    resolve(response);
+                }, function (error) {
+                    clearTimeout(timeout);
+                    throw error;
+                });
+
+            });
+        }
+
+        function paramsToString(params) {
+
+            var values = [];
+
+            for (var key in params) {
+
+                var value = params[key];
+
+                if (value !== null && value !== undefined && value !== '') {
+                    values.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+                }
+            }
+            return values.join('&');
         }
 
         /**
@@ -241,9 +272,9 @@
                         return Promise.reject(response);
                     }
 
-                }, function () {
+                }, function (error) {
                     onFetchFail(request.url, {});
-                    return Promise.reject({});
+                    throw error;
                 });
             }
 
@@ -364,7 +395,7 @@
                     return Promise.reject(response);
                 }
 
-            }, function () {
+            }, function (error) {
 
                 logger.log("Request failed to " + request.url);
 
@@ -375,26 +406,26 @@
 
                     var previousServerAddress = self.serverAddress();
 
-                    tryReconnect().then(function () {
+                    return tryReconnect().then(function () {
 
                         logger.log("Reconnect succeesed");
                         request.url = request.url.replace(previousServerAddress, self.serverAddress());
 
-                        self.fetchWithFailover(request, false);
+                        return self.fetchWithFailover(request, false);
 
-                    }, function () {
+                    }, function (innerError) {
 
                         logger.log("Reconnect failed");
                         onFetchFail(request.url, {});
-                        return Promise.reject({});
-
+                        throw innerError;
                     });
+
                 } else {
 
                     logger.log("Reporting request failure");
 
                     onFetchFail(request.url, {});
-                    return Promise.reject({});
+                    throw error;
                 }
             });
         };
@@ -406,21 +437,6 @@
                 url: url
             });
         };
-
-        function paramsToString(params) {
-
-            var values = [];
-
-            for (var key in params) {
-
-                var value = params[key];
-
-                if (value !== null && value !== undefined && value !== '') {
-                    values.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
-                }
-            }
-            return values.join('&');
-        }
 
         /**
          * Creates an api url based on a handler name and query string parameters
