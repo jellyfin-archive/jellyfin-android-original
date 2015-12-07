@@ -407,7 +407,7 @@
    * iOS 6.0 UIWebView properties
    */
   if (IsAtLeastiOSVersion(@"6.0")) {
-    BOOL keyboardDisplayRequiresUserAction = YES; // KeyboardDisplayRequiresUserAction - defaults to YES
+    BOOL keyboardDisplayRequiresUserAction = NO; // KeyboardDisplayRequiresUserAction - defaults to YES
     if ([self settingForKey:@"KeyboardDisplayRequiresUserAction"] != nil) {
       if ([self settingForKey:@"KeyboardDisplayRequiresUserAction"]) {
         keyboardDisplayRequiresUserAction = [(NSNumber*)[self settingForKey:@"KeyboardDisplayRequiresUserAction"] boolValue];
