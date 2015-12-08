@@ -2,45 +2,39 @@
 
     function getLocalMediaSource(serverId, itemId) {
 
-        var deferred = DeferredBuilder.Deferred();
-
         // android
         if (window.ApiClientBridge) {
-            var json = ApiClientBridge.getLocalMediaSource(serverId, itemId);
+            return new Promise(function (resolve, reject) {
+                var json = ApiClientBridge.getLocalMediaSource(serverId, itemId);
 
-            if (json) {
-                deferred.resolveWith(null, [JSON.parse(json)]);
-            }
-            else {
-                deferred.resolveWith(null, [null]);
-            }
-            return deferred.promise();
+                if (json) {
+                    resolve(JSON.parse(json));
+                }
+                else {
+                    resolve(null);
+                }
+            });
         }
 
-        getLocalItem(itemId, serverId).then(function (localItem) {
+        return getLocalItem(itemId, serverId).then(function (localItem) {
 
             if (localItem && localItem.Item.MediaSources.length) {
 
                 var mediaSource = localItem.Item.MediaSources[0];
 
-                fileExists(mediaSource.Path).then(function (exists) {
+                return fileExists(mediaSource.Path).then(function(exists) {
 
                     if (exists) {
-                        deferred.resolveWith(null, [mediaSource]);
+                        return mediaSource;
+                    } else {
+                        return null;
                     }
-                    else {
-                        deferred.resolveWith(null, [null]);
-                    }
+                });
 
-                }, getOnFail(deferred));
-                return;
+            } else {
+                return null;
             }
-
-            deferred.resolveWith(null, [null]);
-
-        }, getOnFail(deferred));
-
-        return deferred.promise();
+        });
     }
 
     function getCameraPhotos() {
@@ -297,31 +291,33 @@
 
     function getLocalItem(itemId, serverId) {
 
-        var deferred = DeferredBuilder.Deferred();
+        return new Promise(function (resolve, reject) {
 
-        getOfflineItemsDb(function (db) {
+            resolve(null);
+            return;
 
-            db.transaction(function (tx) {
+            getOfflineItemsDb(function (db) {
 
-                tx.executeSql("SELECT Json from Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
+                db.transaction(function (tx) {
 
-                    if (res.rows.length) {
+                    tx.executeSql("SELECT Json from Items where itemId=? AND serverId=?", [itemId, serverId], function (tx, res) {
 
-                        var localItem = JSON.parse(res.rows.item(0).Json);
+                        if (res.rows.length) {
 
-                        deferred.resolveWith(null, [localItem]);
-                    }
-                    else {
-                        deferred.resolveWith(null, [null]);
-                    }
+                            var localItem = JSON.parse(res.rows.item(0).Json);
 
-                }, function (e) {
-                    deferred.reject();
+                            resolve(localItem);
+                        }
+                        else {
+                            resolve(null);
+                        }
+
+                    }, function (e) {
+                        reject();
+                    });
                 });
             });
         });
-
-        return deferred.promise();
     }
 
     function addOrUpdateLocalItem(item) {
@@ -687,16 +683,16 @@
 
     function createDirectory(path) {
 
-        var deferred = DeferredBuilder.Deferred();
-        createDirectoryPart(path, 0, deferred);
-        return deferred.promise();
+        return new Promise(function (resolve, reject) {
+            createDirectoryPart(path, 0, resolve, reject);
+        });
     }
 
-    function createDirectoryPart(path, index, deferred) {
+    function createDirectoryPart(path, index, resolve, reject) {
 
         var parts = path.split('/');
         if (index >= parts.length) {
-            deferred.resolve();
+            resolve();
             return;
         }
 
@@ -705,32 +701,31 @@
 
         createDirectoryInternal(pathToCreate).then(function () {
 
-            createDirectoryPart(path, index + 1, deferred);
+            createDirectoryPart(path, index + 1, resolve, reject);
 
-        }, getOnFail(deferred));
+        }, reject);
     }
 
     function createDirectoryInternal(path) {
 
         Logger.log('creating directory: ' + path);
-        var deferred = DeferredBuilder.Deferred();
 
-        getFileSystem().then(function (fileSystem) {
+        return new Promise(function (resolve, reject) {
+            getFileSystem().then(function (fileSystem) {
 
-            fileSystem.root.getDirectory(path, { create: true, exclusive: false }, function (targetFile) {
+                fileSystem.root.getDirectory(path, { create: true, exclusive: false }, function (targetFile) {
 
-                Logger.log('createDirectory succeeded');
-                deferred.resolve();
+                    Logger.log('createDirectory succeeded');
+                    resolve();
 
-            }, function () {
+                }, function () {
 
-                Logger.log('createDirectory failed');
-                deferred.reject();
-            });
+                    Logger.log('createDirectory failed');
+                    reject();
+                });
 
-        }, getOnFail(deferred));
-
-        return deferred.promise();
+            }, reject);
+        });
     }
 
     function downloadSubtitles(url, localItem, subtitleStream) {
@@ -796,83 +791,60 @@
 
     function hasImage(serverId, itemId, imageTag) {
 
-        var deferred = DeferredBuilder.Deferred();
-        getImageLocalPath(serverId, itemId, imageTag).then(function (localPath) {
-
-            fileExists(localPath).then(function (exists) {
-
-                deferred.resolveWith(null, [exists]);
-
-            }, getOnFail(deferred));
-
-        }, getOnFail(deferred));
-        return deferred.promise();
+        return getImageLocalPath(serverId, itemId, imageTag).then(function (localPath) {
+            return fileExists(localPath);
+        });
     }
 
     function downloadImage(url, serverId, itemId, imageTag) {
 
-        var deferred = DeferredBuilder.Deferred();
-        getImageLocalPath(serverId, itemId, imageTag).then(function (localPath) {
+        return getImageLocalPath(serverId, itemId, imageTag).then(function (localPath) {
 
-            downloadFile(url, localPath).then(function () {
-
-                deferred.resolve();
-
-            }, getOnFail(deferred));
-
-        }, getOnFail(deferred));
-
-        return deferred.promise();
+            return downloadFile(url, localPath);
+        });
     }
 
     function getImageLocalPath(serverId, itemId, imageTag) {
-        var deferred = DeferredBuilder.Deferred();
 
-        var path = "images/" + serverId + "/" + itemId + "/" + imageTag;
-
-        deferred.resolveWith(null, [path]);
-
-        return deferred.promise();
+        return new Promise(function (resolve, reject) {
+            resolve("images/" + serverId + "/" + itemId + "/" + imageTag);
+        });
     }
 
     function fileExists(path) {
 
-        var deferred = DeferredBuilder.Deferred();
+        return new Promise(function (resolve, reject) {
+            if (window.NativeFileSystem) {
+                var exists = NativeFileSystem.fileExists(path);
+                Logger.log('fileExists: ' + exists + ' - path: ' + path);
+                resolve(exists);
+                return;
+            }
 
-        if (window.NativeFileSystem) {
-            var exists = NativeFileSystem.fileExists(path);
-            Logger.log('fileExists: ' + exists + ' - path: ' + path);
-            deferred.resolveWith(null, [exists]);
-            return deferred.promise();
-        }
+            resolveFile(path, null, function (fileEntry) {
+                Logger.log('fileExists: true - path: ' + path);
+                resolve(true);
 
-        resolveFile(path, null, function (fileEntry) {
-            Logger.log('fileExists: true - path: ' + path);
-            deferred.resolveWith(null, [true]);
-
-        }, function () {
-            Logger.log('fileExists: false - path: ' + path);
-            deferred.resolveWith(null, [false]);
+            }, function () {
+                Logger.log('fileExists: false - path: ' + path);
+                resolve(false);
+            });
         });
-
-        return deferred.promise();
     }
 
     var fileSystem;
     function getFileSystem() {
 
-        var deferred = DeferredBuilder.Deferred();
-
-        if (fileSystem) {
-            deferred.resolveWith(null, [fileSystem]);
-        } else {
-            requestFileSystem(PERSISTENT, 0, function (fs) {
-                fileSystem = fs;
-                deferred.resolveWith(null, [fileSystem]);
-            });
-        }
-
-        return deferred.promise();
+        return new Promise(function (resolve, reject) {
+            if (fileSystem) {
+                resolve(fileSystem);
+            } else {
+                requestFileSystem(PERSISTENT, 0, function (fs) {
+                    fileSystem = fs;
+                    resolve(fileSystem);
+                });
+            }
+        });
     }
 
     function getOnFail(deferred) {
@@ -884,24 +856,22 @@
 
     function translateFilePath(path) {
 
-        var deferred = DeferredBuilder.Deferred();
+        return new Promise(function (resolve, reject) {
+            if (browserInfo.android) {
+                resolve('file://' + path);
+                return;
+            }
 
-        if (browserInfo.android) {
-            deferred.resolveWith(null, ['file://' + path]);
-            return deferred.promise();
-        }
+            resolveFile(path, null, function (fileEntry) {
+                Logger.log('translateFilePath fileExists: true - path: ' + path);
+                Logger.log('translateFilePath resolving with: ' + fileEntry.toURL());
+                resolve(fileEntry.toURL());
 
-        resolveFile(path, null, function (fileEntry) {
-            Logger.log('translateFilePath fileExists: true - path: ' + path);
-            Logger.log('translateFilePath resolving with: ' + fileEntry.toURL());
-            deferred.resolveWith(null, [fileEntry.toURL()]);
-
-        }, function () {
-            Logger.log('translateFilePath fileExists: false - path: ' + path);
-            deferred.resolveWith(null, [path]);
+            }, function () {
+                Logger.log('translateFilePath fileExists: false - path: ' + path);
+                resolve(path);
+            });
         });
-
-        return deferred.promise();
     }
 
     window.LocalAssetManager = {
