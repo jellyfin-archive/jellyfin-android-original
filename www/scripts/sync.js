@@ -179,7 +179,7 @@
         //html += '</div>';
         //html += '</div>';
 
-        $(elem).html(html).trigger('create');
+        $(elem).html(html);
 
         $('#selectSyncTarget', elem).on('change', function () {
 
@@ -212,7 +212,7 @@
 
     function showSyncMenuInternal(options) {
 
-        require(['components/paperdialoghelper', 'paper-fab'], function () {
+        require(['components/paperdialoghelper', 'paper-fab'], function (paperDialogHelper) {
 
             var userId = Dashboard.getCurrentUserId();
 
@@ -230,9 +230,10 @@
 
                 currentDialogOptions = dialogOptions;
 
-                var dlg = PaperDialogHelper.createDialog({
+                var dlg = paperDialogHelper.createDialog({
                     size: 'small',
-                    theme: 'a'
+                    theme: 'a',
+                    removeOnClose: true
                 });
 
                 var html = '';
@@ -262,12 +263,7 @@
                 dlg.innerHTML = html;
                 document.body.appendChild(dlg);
 
-                // Has to be assigned a z-index after the call to .open() 
-                dlg.addEventListener('iron-overlay-closed', function (e) {
-                    dlg.parentNode.removeChild(dlg);
-                });
-
-                PaperDialogHelper.openWithHash(dlg, 'syncjob');
+                paperDialogHelper.open(dlg);
 
                 $('form', dlg).on('submit', function () {
 
@@ -276,7 +272,7 @@
                 });
 
                 $('.btnCancel').on('click', function () {
-                    PaperDialogHelper.close(dlg);
+                    paperDialogHelper.close(dlg);
                 });
 
                 renderForm({

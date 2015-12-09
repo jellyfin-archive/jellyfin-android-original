@@ -1,19 +1,22 @@
-﻿define(['paper-dialog', 'scale-up-animation', 'fade-out-animation'], function () {
+﻿define(['paper-dialog', 'scale-up-animation', 'fade-out-animation', 'fade-in-animation'], function () {
 
-    function paperDialogHashHandler(dlg, hash, lockDocumentScroll) {
+    function paperDialogHashHandler(dlg, hash, resolve, lockDocumentScroll) {
+
+        var self = this;
+        self.originalUrl = window.location.href;
+        var activeElement = document.activeElement;
 
         function onHashChange(e) {
 
-            var data = e.detail.state || {};
-            var isActive = data.hash == '#' + hash;
+            var isBack = self.originalUrl == window.location.href;
 
-            if (data.direction == 'back') {
-                if (dlg) {
-                    if (!isActive) {
-                        dlg.close();
-                        dlg = null;
-                    }
-                }
+            if (isBack || !dlg.opened) {
+                window.removeEventListener('popstate', onHashChange);
+            }
+
+            if (isBack) {
+                self.closedByBack = true;
+                dlg.close();
             }
         }
 
@@ -23,14 +26,29 @@
                 Dashboard.onPopupClose();
             }
 
-            dlg = null;
-            if (enableHashChange()) {
-                window.removeEventListener('navigate', onHashChange);
+            window.removeEventListener('popstate', onHashChange);
 
-                if (window.location.hash == '#' + hash) {
+            if (!self.closedByBack) {
+                var state = history.state || {};
+                if (state.dialogId == hash) {
                     history.back();
                 }
             }
+
+            activeElement.focus();
+
+            if (dlg.getAttribute('data-removeonclose') == 'true') {
+                dlg.parentNode.removeChild(dlg);
+            }
+
+            //resolve();
+            // if we just called history.back(), then use a timeout to allow the history events to fire first
+            setTimeout(function () {
+                resolve({
+                    element: dlg,
+                    closedByBack: self.closedByBack
+                });
+            }, 1);
         }
 
         dlg.addEventListener('iron-overlay-closed', onDialogClosed);
@@ -40,41 +58,35 @@
             Dashboard.onPopupOpen();
         }
 
-        if (enableHashChange()) {
+        var state = {
+            dialogId: hash,
+            navigate: false
+        };
+        history.pushState(state, "Dialog", hash);
 
-            window.location.hash = hash;
+        jQuery.onStatePushed(state);
 
-            window.addEventListener('navigate', onHashChange);
-        }
+        window.addEventListener('popstate', onHashChange);
     }
 
-    function enableHashChange() {
-        // It's not firing popstate in response to hashbang changes
-        if (browserInfo.msie) {
-            return false;
-        }
-        if (browserInfo.edge) {
-            return false;
-        }
-        return true;
-    }
+    function open(dlg) {
 
-    function openWithHash(dlg, hash, lockDocumentScroll) {
+        return new Promise(function (resolve, reject) {
 
-        new paperDialogHashHandler(dlg, hash, lockDocumentScroll);
+            new paperDialogHashHandler(dlg, 'dlg' + new Date().getTime(), resolve);
+        });
     }
 
     function close(dlg) {
 
-        if (enableHashChange()) {
-
-            if (dlg.opened) {
-                history.back();
-            }
-
-        } else {
-            dlg.close();
+        if (dlg.opened) {
+            history.back();
         }
+    }
+
+    function onDialogOpened(e) {
+
+        //Emby.FocusManager.autoFocus(e.target, true);
     }
 
     function createDialog(options) {
@@ -100,20 +112,36 @@
         dlg.setAttribute('noAutoFocus', 'noAutoFocus');
 
         // These don't seem to perform well on mobile
-        if (!browserInfo.mobile) {
-            dlg.entryAnimation = 'scale-up-animation';
-            dlg.exitAnimation = 'fade-out-animation';
-        }
+        var defaultEntryAnimation = browserInfo.mobile ? 'fade-in-animation' : 'scale-up-animation';
+        dlg.entryAnimation = options.entryAnimation || defaultEntryAnimation;
+        dlg.exitAnimation = 'fade-out-animation';
 
-        dlg.classList.add('popupEditor');
+        dlg.animationConfig = {
+            // scale up
+            'entry': {
+                name: options.entryAnimation || defaultEntryAnimation,
+                node: dlg,
+                timing: { duration: options.entryAnimationDuration || 300, easing: 'ease-out' }
+            },
+            // fade out
+            'exit': {
+                name: 'fade-out-animation',
+                node: dlg,
+                timing: { duration: options.exitAnimationDuration || 400, easing: 'ease-in' }
+            }
+        };
 
-        if (options.size == 'small') {
-            dlg.classList.add('small-paper-dialog');
-        }
-        else if (options.size == 'medium') {
-            dlg.classList.add('medium-paper-dialog');
-        } else {
-            dlg.classList.add('fullscreen-paper-dialog');
+        if (options.size != 'auto') {
+            dlg.classList.add('popupEditor');
+
+            if (options.size == 'small') {
+                dlg.classList.add('small-paper-dialog');
+            }
+            else if (options.size == 'medium') {
+                dlg.classList.add('medium-paper-dialog');
+            } else {
+                dlg.classList.add('fullscreen-paper-dialog');
+            }
         }
 
         var theme = options.theme || 'b';
@@ -121,6 +149,10 @@
         dlg.classList.add('ui-body-' + theme);
         dlg.classList.add('background-theme-' + theme);
         dlg.classList.add('smoothScrollY');
+
+        if (options.removeOnClose) {
+            dlg.setAttribute('data-removeonclose', 'true');
+        }
 
         return dlg;
     }
@@ -165,7 +197,7 @@
     }
 
     window.PaperDialogHelper = {
-        openWithHash: openWithHash,
+        open: open,
         close: close,
         createDialog: createDialog,
         positionTo: positionTo

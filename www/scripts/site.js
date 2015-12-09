@@ -396,7 +396,7 @@ var Dashboard = {
             elem.slideDown(400);
         }
 
-        elem.html(options.html).trigger('create');
+        elem.html(options.html);
 
         if (options.timeout) {
 
@@ -457,6 +457,7 @@ var Dashboard = {
 
             // This is just an attempt to prevent the fade-in animation from running repeating and causing flickering
             elem.active = true;
+            elem.classList.remove('hide');
 
         } else {
 
@@ -479,6 +480,7 @@ var Dashboard = {
         if (elem) {
 
             elem.active = false;
+            elem.classList.add('hide');
         }
     },
 
@@ -750,7 +752,7 @@ var Dashboard = {
             html += '<p><a data-mini="true" data-role="button" href="mypreferencesmenu.html?userId=' + user.localUser.Id + '" data-icon="gear">' + Globalize.translate('ButtonSettings') + '</button></a>';
         }
 
-        $('.preferencesContainer', elem).html(html).trigger('create');
+        $('.preferencesContainer', elem).html(html);
     },
 
     getPluginSecurityInfo: function () {
@@ -2204,7 +2206,7 @@ var AppInfo = {};
                     }
                 }
 
-                postInitDependencies.push('components/testermessage');
+                //postInitDependencies.push('components/testermessage');
 
             } else if (browserInfo.chrome) {
                 postInitDependencies.push('scripts/chromecast');
