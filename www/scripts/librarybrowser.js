@@ -2191,8 +2191,6 @@
 
             var html = '';
 
-            html += '<div class="' + footerClass + '">';
-
             if (options.cardLayout) {
                 html += '<div class="cardButtonContainer">';
                 html += '<paper-icon-button icon="' + AppInfo.moreIcon + '" class="listviewMenuButton btnCardOptions"></paper-icon-button>';
@@ -2305,8 +2303,12 @@
                 }
             }
 
-            //cardFooter
-            html += "</div>";
+            if (html) {
+                html = '<div class="' + footerClass + '">' + html;
+
+                //cardFooter
+                html += "</div>";
+            }
 
             return html;
         },
@@ -2615,7 +2617,7 @@
             Dashboard.setPageTitle(name);
 
             if (linkToElement) {
-                nameElem.html('<a class="detailPageParentLink" href="' + LibraryBrowser.getHref(item, context) + '">' + name + '</a>').trigger('create');
+                nameElem.html('<a class="detailPageParentLink" href="' + LibraryBrowser.getHref(item, context) + '">' + name + '</a>');
             } else {
                 nameElem.html(name);
             }
@@ -2657,7 +2659,7 @@
             }
 
             if (html.length) {
-                parentNameElem.show().html(html.join(' - ')).trigger('create');
+                parentNameElem.show().html(html.join(' - '));
             } else {
                 parentNameElem.hide();
             }
@@ -2688,7 +2690,7 @@
                 html = Globalize.translate('ValueLinks', html);
 
                 linksElem.innerHTML = html;
-                $(linksElem).trigger('create');
+                $(linksElem);
                 $(linksElem).show();
 
             } else {
@@ -2827,33 +2829,14 @@
 
         showSortMenu: function (options) {
 
-            require(['paper-dialog', 'components/paperdialoghelper', 'paper-radio-button', 'paper-radio-group', 'scale-up-animation', 'fade-in-animation', 'fade-out-animation'], function () {
+            require(['components/paperdialoghelper', 'paper-dialog', 'paper-radio-button', 'paper-radio-group', 'scale-up-animation', 'fade-in-animation', 'fade-out-animation'], function (paperDialogHelper) {
 
-                var dlg = document.createElement('paper-dialog');
-
-                dlg.setAttribute('with-backdrop', 'with-backdrop');
-                dlg.setAttribute('role', 'alertdialog');
-
-                dlg.entryAnimation = 'fade-in-animation';
-                dlg.exitAnimation = 'fade-out-animation';
-
-                // The animations flicker in IE and Firefox (probably wherever the polyfill is used)
-                if (browserInfo.animate) {
-                    dlg.animationConfig = {
-                        // scale up
-                        'entry': {
-                            name: 'scale-up-animation',
-                            node: dlg,
-                            timing: { duration: 160, easing: 'ease-out' }
-                        },
-                        // fade out
-                        'exit': {
-                            name: 'fade-out-animation',
-                            node: dlg,
-                            timing: { duration: 200, easing: 'ease-in' }
-                        }
-                    };
-                }
+                var dlg = paperDialogHelper.createDialog({
+                    removeOnClose: true,
+                    theme: 'a',
+                    size: 'auto',
+                    modal: false
+                });
 
                 var html = '';
 
@@ -2900,28 +2883,38 @@
                 dlg.innerHTML = html;
                 document.body.appendChild(dlg);
 
-                dlg.addEventListener('iron-overlay-closed', function () {
-                    dlg.parentNode.removeChild(dlg);
+                var fireCallbackOnClose = false;
+
+                paperDialogHelper.open(dlg).then(function() {
+
+                    if (options.callback && fireCallbackOnClose) {
+                        options.callback();
+                    }
                 });
 
-                PaperDialogHelper.openWithHash(dlg, 'sortmenu');
-
                 $('.groupSortBy', dlg).on('iron-select', function () {
-                    options.query.SortBy = this.selected.replace('_', ',');
+
+                    var newValue = this.selected.replace('_', ',');
+                    var changed = options.query.SortBy != newValue;
+
+                    options.query.SortBy = newValue;
                     options.query.StartIndex = 0;
 
-                    if (options.callback) {
-                        options.callback();
+                    if (options.callback && changed) {
+                        fireCallbackOnClose = true;
                     }
                 });
 
                 $('.groupSortOrder', dlg).on('iron-select', function () {
 
-                    options.query.SortOrder = this.selected;
+                    var newValue = this.selected;
+                    var changed = options.query.SortOrder != newValue;
+
+                    options.query.SortOrder = newValue;
                     options.query.StartIndex = 0;
 
-                    if (options.callback) {
-                        options.callback();
+                    if (options.callback && changed) {
+                        fireCallbackOnClose = true;
                     }
                 });
             });

@@ -170,7 +170,7 @@
 
         initInAppPurchaseElementEvents(dlg, dialogOptions.feature, deferred);
 
-        PaperDialogHelper.openWithHash(dlg, 'iap');
+        PaperDialogHelper.open(dlg);
 
         $('.btnCloseDialog', dlg).on('click', function () {
 

@@ -85,38 +85,41 @@
 
     })(jQuery, this);
 
-    (function ($, undefined) {
-        var $win = $(window), self;
+    var previousState = {};
 
-        $.event.special.navigate = self = {
-            bound: false,
+    // This is just a temporary api until jquery mobile is eventually deprecated and we have an actual routing library
+    jQuery.onStatePushed = function(state) {
+        previousState = state;
+    };
 
-            // TODO a lot of duplication between popstate and hashchange
-            popstate: function (event) {
-                var state = event.state || {};
+    function ignorePopState(event) {
 
-                // NOTE we let the current stack unwind because any assignment to
-                //      location.hash will stop the world and run this event handler. By
-                //      doing this we create a similar behavior to hashchange on hash
-                //      assignment
-                setTimeout(function () {
+        var state = event.state || {};
 
-                    if (event.historyState) {
-                        $.extend(state, event.historyState);
-                    }
+        if (previousState.navigate === false) {
+            // Ignore
+            previousState = state;
+            return true;
+        }
 
-                    window.dispatchEvent(new CustomEvent("navigate", {
-                        detail: {
-                            state: state,
-                            originalEvent: event
-                        }
-                    }));
-                }, 0);
+        previousState = state;
+        return false;
+    }
+
+    function fireNavigateFromPopstateEvent(event) {
+
+        var state = event.state || {};
+        if (event.historyState) {
+            $.extend(state, event.historyState);
+        }
+
+        window.dispatchEvent(new CustomEvent("navigate", {
+            detail: {
+                state: state,
+                originalEvent: event
             }
-        };
-
-        window.addEventListener('popstate', self.popstate);
-    })(jQuery);
+        }));
+    }
 
     jQuery.mobile.widgets = {};
 
@@ -800,8 +803,16 @@
             // TODO grab the original event here and use it for the synthetic event in the
             //      second half of the navigate execution that will follow this binding
             popstate: function (event) {
-                var hash, state;
 
+                if (ignorePopState(event)) {
+                    return;
+                }
+
+                setTimeout(function () {
+                    fireNavigateFromPopstateEvent(event);
+                }, 0);
+
+                var hash, state;
                 // If this is the popstate triggered by the actual alteration of the hash
                 // prevent it completely. History is tracked manually
                 if (this.preventHashAssignPopState) {

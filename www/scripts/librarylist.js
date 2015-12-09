@@ -938,7 +938,7 @@
 
         if (!itemSelectionPanel) {
 
-            require(['paper-checkbox'], function() {
+            require(['paper-checkbox'], function () {
                 itemSelectionPanel = document.createElement('div');
                 itemSelectionPanel.classList.add('itemSelectionPanel');
 
@@ -1291,19 +1291,27 @@
 
         if (userData.Played) {
 
-            if (!$('.playedIndicator', card).length) {
+            var playedIndicator = card.querySelector('.playedIndicator');
 
-                $('<div class="playedIndicator"></div>').insertAfter($('.cardOverlayTarget', card));
+            if (!playedIndicator) {
+
+                playedIndicator = document.createElement('div');
+                playedIndicator.classList.add('playedIndicator');
+                card.querySelector('.cardContent').appendChild(playedIndicator);
             }
-            $('.playedIndicator', card).html('<iron-icon icon="check"></iron-icon>');
+            playedIndicator.innerHTML = '<iron-icon icon="check"></iron-icon>';
         }
         else if (userData.UnplayedItemCount) {
 
-            if (!$('.playedIndicator', card).length) {
+            var playedIndicator = card.querySelector('.playedIndicator');
 
-                $('<div class="playedIndicator"></div>').insertAfter($('.cardOverlayTarget', card));
+            if (!playedIndicator) {
+
+                playedIndicator = document.createElement('div');
+                playedIndicator.classList.add('playedIndicator');
+                card.querySelector('.cardContent').appendChild(playedIndicator);
             }
-            $('.playedIndicator', card).html(userData.UnplayedItemCount);
+            playedIndicator.innerHTML = userData.UnplayedItemCount;
         }
 
         var progressHtml = LibraryBrowser.getItemProgressBarHtml(userData);
