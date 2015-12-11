@@ -603,7 +603,7 @@
                 cleanupSession();
             }
 
-            tryJoinWebSession(device, true, true);
+            tryJoinWebSession(device, false, true);
         }
 
         function onDeviceReady(device) {
