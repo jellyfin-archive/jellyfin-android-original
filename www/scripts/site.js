@@ -1466,11 +1466,6 @@ var Dashboard = {
         }
     },
 
-    ready: function (fn) {
-
-        Dashboard.initPromise.then(fn);
-    },
-
     loadExternalPlayer: function () {
 
         var deferred = DeferredBuilder.Deferred();
@@ -1871,7 +1866,7 @@ var AppInfo = {};
         define('native-promise-only', [bowerPath + '/native-promise-only/lib/npo.src']);
     }
 
-    function init(promiseResolve, hostingAppInfo) {
+    function init(hostingAppInfo) {
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
             define("appstorage", ["cordova/android/appstorage"]);
@@ -1978,7 +1973,7 @@ var AppInfo = {};
                 AppInfo[i] = hostingAppInfo[i];
             }
 
-            initAfterDependencies(promiseResolve);
+            initAfterDependencies();
         });
     }
 
@@ -1990,7 +1985,7 @@ var AppInfo = {};
         });
     }
 
-    function initAfterDependencies(promiseResolve) {
+    function initAfterDependencies() {
 
         var drawer = document.querySelector('.mainDrawerPanel');
         drawer.classList.remove('mainDrawerPanelPreInit');
@@ -2075,6 +2070,8 @@ var AppInfo = {};
 
             Promise.all(promises).then(function () {
 
+                MediaController.init();
+
                 document.title = Globalize.translateDocument(document.title, 'html');
 
                 var mainDrawerPanelContent = document.querySelector('.mainDrawerPanelContent');
@@ -2111,17 +2108,17 @@ var AppInfo = {};
 
                         // Don't like having to use jQuery here, but it takes care of making sure that embedded script executes
                         $(mainDrawerPanelContent).html(Globalize.translateDocument(newHtml, 'html'));
-                        onAppReady(promiseResolve);
+                        onAppReady();
                     });
                     return;
                 }
 
-                onAppReady(promiseResolve);
+                onAppReady();
             });
         });
     }
 
-    function onAppReady(promiseResolve) {
+    function onAppReady() {
 
         var deps = [];
 
@@ -2178,7 +2175,6 @@ var AppInfo = {};
             $.mobile.filterHtml = Dashboard.filterHtml;
 
             $.mobile.initializePage();
-            promiseResolve();
 
             var postInitDependencies = [];
 
@@ -2407,30 +2403,27 @@ var AppInfo = {};
 
     require(initialDependencies, function (isMobile) {
 
-        Dashboard.initPromise = new Promise(function (resolve, reject) {
+        function onWebComponentsReady() {
 
-            function onWebComponentsReady() {
+            var polymerDependencies = [];
 
-                var polymerDependencies = [];
+            require(polymerDependencies, function () {
 
-                require(polymerDependencies, function () {
-
-                    getHostingAppInfo().then(function (hostingAppInfo) {
-                        init(resolve, hostingAppInfo);
-                    });
+                getHostingAppInfo().then(function (hostingAppInfo) {
+                    init(hostingAppInfo);
                 });
-            }
+            });
+        }
 
-            setBrowserInfo(isMobile);
-            setAppInfo();
-            setDocumentClasses();
+        setBrowserInfo(isMobile);
+        setAppInfo();
+        setDocumentClasses();
 
-            if (supportsNativeWebComponents) {
-                onWebComponentsReady();
-            } else {
-                document.addEventListener('WebComponentsReady', onWebComponentsReady);
-            }
-        });
+        if (supportsNativeWebComponents) {
+            onWebComponentsReady();
+        } else {
+            document.addEventListener('WebComponentsReady', onWebComponentsReady);
+        }
     });
 
 })();

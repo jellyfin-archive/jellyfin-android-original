@@ -117,18 +117,22 @@
                 return fetch(request.url, fetchRequest);
             }
 
+            return fetchWithTimeout(request.url, fetchRequest, request.timeout);
+        }
+
+        function fetchWithTimeout(url, options, timeoutMs) {
+
             return new Promise(function (resolve, reject) {
 
-                var timeout = setTimeout(reject, request.timeout);
+                var timeout = setTimeout(reject, timeoutMs);
 
-                fetch(request.url, fetchRequest).then(function (response) {
+                fetch(url, options).then(function (response) {
                     clearTimeout(timeout);
                     resolve(response);
                 }, function (error) {
                     clearTimeout(timeout);
                     throw error;
                 });
-
             });
         }
 

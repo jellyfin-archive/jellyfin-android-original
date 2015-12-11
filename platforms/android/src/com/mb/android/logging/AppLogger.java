@@ -35,7 +35,7 @@ public class AppLogger {
     }
 
     private static boolean enableLogging() {
-        return false;
+        return true;
     }
 
     public static ILogger createLogger(Context context) {
