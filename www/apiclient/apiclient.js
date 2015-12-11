@@ -71,7 +71,16 @@
                 });
             }
 
-            return self.getUser(self.getCurrentUserId()).then(function (user) {
+            var userId = self.getCurrentUserId();
+
+            if (!userId) {
+                return new Promise(function (resolve, reject) {
+
+                    reject();
+                });
+            }
+
+            return self.getUser(userId).then(function (user) {
                 currentUser = user;
                 return user;
             });
