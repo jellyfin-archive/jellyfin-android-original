@@ -767,32 +767,31 @@ var Dashboard = {
             });
         }
 
-        if (!Dashboard.getPluginSecurityInfoPromise) {
+        var cachedInfo = Dashboard.pluginSecurityInfo;
+        if (cachedInfo) {
+            return new Promise(function (resolve, reject) {
 
-            var deferred = $.Deferred();
-
-            // Don't let this blow up the dashboard when it fails
-            apiClient.ajax({
-                type: "GET",
-                url: apiClient.getUrl("Plugins/SecurityInfo"),
-                dataType: 'json',
-
-                error: function () {
-                    // Don't show normal dashboard errors
-                }
-
-            }).then(function (result) {
-                deferred.resolveWith(null, [result]);
+                resolve(cachedInfo);
             });
-
-            Dashboard.getPluginSecurityInfoPromise = deferred;
         }
 
-        return Dashboard.getPluginSecurityInfoPromise;
+        return apiClient.ajax({
+            type: "GET",
+            url: apiClient.getUrl("Plugins/SecurityInfo"),
+            dataType: 'json',
+
+            error: function () {
+                // Don't show normal dashboard errors
+            }
+
+        }).then(function (result) {
+            Dashboard.pluginSecurityInfo = result;
+            return result;
+        });
     },
 
     resetPluginSecurityInfo: function () {
-        Dashboard.getPluginSecurityInfoPromise = null;
+        Dashboard.pluginSecurityInfo = null;
     },
 
     ensureHeader: function (page) {
