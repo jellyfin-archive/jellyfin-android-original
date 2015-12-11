@@ -173,21 +173,6 @@
         }
     }
 
-    Dashboard.ready(function () {
-
-        init();
-
-        Events.on(ConnectionManager, 'localusersignedin', function (e, user) {
-            showUserTabs(user);
-        });
-
-        Events.on(ConnectionManager, 'localusersignedout', hideTabs);
-        Events.on(MediaController, 'beforeplaybackstart', onPlaybackStart);
-        Events.on(MediaController, 'playbackstop', onPlaybackStop);
-
-        showCurrentUserTabs();
-    });
-
     function onPlaybackStart(e, state, player) {
 
         if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video' && player.isLocalPlayer) {
@@ -201,5 +186,17 @@
             showTabs();
         }
     }
+
+    init();
+
+    Events.on(ConnectionManager, 'localusersignedin', function (e, user) {
+        showUserTabs(user);
+    });
+
+    Events.on(ConnectionManager, 'localusersignedout', hideTabs);
+    Events.on(MediaController, 'beforeplaybackstart', onPlaybackStart);
+    Events.on(MediaController, 'playbackstop', onPlaybackStop);
+
+    Dashboard.ready(showCurrentUserTabs);
 
 })();
