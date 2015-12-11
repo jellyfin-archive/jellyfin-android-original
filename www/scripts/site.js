@@ -1642,7 +1642,11 @@ var AppInfo = {};
                 if (!Dashboard.isServerlessPage()) {
 
                     if (server && server.UserId && server.AccessToken) {
+                        Dashboard.showLoadingMsg();
+
                         ConnectionManager.connectToServer(server).then(function (result) {
+                            Dashboard.showLoadingMsg();
+
                             if (result.State == MediaBrowser.ConnectionState.SignedIn) {
                                 window.ApiClient = result.ApiClient;
                             }
