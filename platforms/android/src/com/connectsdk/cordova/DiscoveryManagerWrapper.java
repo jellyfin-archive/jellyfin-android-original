@@ -35,107 +35,108 @@ import com.connectsdk.discovery.DiscoveryManagerListener;
 import com.connectsdk.service.command.ServiceCommandError;
 
 public class DiscoveryManagerWrapper implements DiscoveryManagerListener {
-	ConnectSDKCordova plugin;
-	DiscoveryManager discoveryManager;
-	CallbackContext callbackContext;
-	
-	DiscoveryManagerWrapper(ConnectSDKCordova plugin, DiscoveryManager discoveryManager) {
-		this.plugin = plugin;
-		
-		this.discoveryManager = discoveryManager;
-		discoveryManager.addListener(this);
-	}
-	
-	public void setCallbackContext(CallbackContext callbackContext) {
-		if (this.callbackContext != null && this.callbackContext != callbackContext) {
-			PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-			this.callbackContext.sendPluginResult(result);
-		}
-		
-		this.callbackContext = callbackContext;
-	}
-	
-	public void start() {
-		discoveryManager.start();
-		sendEvent("startdiscovery", null);
-	}
-	
-	public void stop() {
-		discoveryManager.stop();
-		sendEvent("stopdiscovery", null);
-	}
-	
-	public void configure(JSONObject config) throws JSONException {
-		if (config.has("pairingLevel")) {
-			String pairingLevel = config.getString("pairingLevel");
-			
-			if ("off".equals(pairingLevel)) {
-				discoveryManager.setPairingLevel(PairingLevel.OFF);
-			} else if ("on".equals(pairingLevel)) {
-				discoveryManager.setPairingLevel(PairingLevel.ON);
-			}
-		}
-		
-		if (config.has("capabilityFilters")) {
-			JSONArray filters = config.getJSONArray("capabilityFilters");
-			ArrayList<CapabilityFilter> capabilityFilters = new ArrayList<CapabilityFilter>();
-			
-			for (int i = 0; i < filters.length(); i++) {
-				JSONArray filter = filters.getJSONArray(i);
-				CapabilityFilter capabilityFilter = new CapabilityFilter();
-				
-				for (int j = 0; j < filter.length(); j++) {
-					capabilityFilter.addCapability(filter.getString(j));
-				}
-				
-				capabilityFilters.add(capabilityFilter);
-			}
-			
-			discoveryManager.setCapabilityFilters(capabilityFilters);
-		}
-	}
+    ConnectSDKCordova plugin;
+    DiscoveryManager discoveryManager;
+    CallbackContext callbackContext;
 
-	@Override
-	public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
-		//Log.d(ConnectSDKCordova.LOG_TAG, "sending devicefound event");
-		sendDeviceEvent("devicefound", device);
-	}
+    DiscoveryManagerWrapper(ConnectSDKCordova plugin, DiscoveryManager discoveryManager) {
+        this.plugin = plugin;
 
-	@Override
-	public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
-		sendDeviceEvent("deviceupdated", device);
-	}
+        this.discoveryManager = discoveryManager;
+        discoveryManager.addListener(this);
+    }
 
-	@Override
-	public void onDeviceRemoved(DiscoveryManager manager, ConnectableDevice device) {
-		sendDeviceEvent("devicelost", device);
-		plugin.removeDeviceWrapper(device);
-	}
+    public void setCallbackContext(CallbackContext callbackContext) {
+        if (this.callbackContext != null && this.callbackContext != callbackContext) {
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            this.callbackContext.sendPluginResult(result);
+        }
 
-	@Override
-	public void onDiscoveryFailed(DiscoveryManager manager, ServiceCommandError error) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public JSONObject getDeviceJSON(ConnectableDevice device) {
-		ConnectableDeviceWrapper wrapper = plugin.getDeviceWrapper(device);
-		return wrapper.toJSONObject();
-	}
-	
-	public void sendDeviceEvent(String event, ConnectableDevice device) {
-		JSONObject obj = new JSONObject();
-		try {
-			obj.put("device", getDeviceJSON(device));
-		} catch (JSONException e) {
-		}
-		
-		sendEvent(event, obj);
-	}
-	
-	public void sendEvent(String event, JSONObject obj) {
-		if (callbackContext != null) {
-			plugin.sendEvent(callbackContext, event, obj);
-		}
-	}
+        this.callbackContext = callbackContext;
+    }
+
+    public void start() {
+        discoveryManager.start();
+        sendEvent("startdiscovery", null);
+    }
+
+    public void stop() {
+        discoveryManager.stop();
+        sendEvent("stopdiscovery", null);
+    }
+
+    public void configure(JSONObject config) throws JSONException {
+        if (config.has("pairingLevel")) {
+            String pairingLevel = config.getString("pairingLevel");
+
+            if ("off".equals(pairingLevel)) {
+                discoveryManager.setPairingLevel(PairingLevel.OFF);
+            } else if ("on".equals(pairingLevel)) {
+                discoveryManager.setPairingLevel(PairingLevel.ON);
+            }
+        }
+
+        if (config.has("capabilityFilters")) {
+            JSONArray filters = config.getJSONArray("capabilityFilters");
+            ArrayList<CapabilityFilter> capabilityFilters = new ArrayList<CapabilityFilter>();
+
+            for (int i = 0; i < filters.length(); i++) {
+                JSONArray filter = filters.getJSONArray(i);
+                CapabilityFilter capabilityFilter = new CapabilityFilter();
+
+                for (int j = 0; j < filter.length(); j++) {
+                    capabilityFilter.addCapability(filter.getString(j));
+                }
+
+                capabilityFilters.add(capabilityFilter);
+            }
+
+            discoveryManager.setCapabilityFilters(capabilityFilters);
+        }
+    }
+
+    @Override
+    public void onDeviceAdded(DiscoveryManager manager, ConnectableDevice device) {
+        //Log.d(ConnectSDKCordova.LOG_TAG, "sending devicefound event");
+        sendDeviceEvent("devicefound", device);
+    }
+
+    @Override
+    public void onDeviceUpdated(DiscoveryManager manager, ConnectableDevice device) {
+        sendDeviceEvent("deviceupdated", device);
+    }
+
+    @Override
+    public void onDeviceRemoved(DiscoveryManager manager, ConnectableDevice device) {
+        sendDeviceEvent("devicelost", device);
+        plugin.removeDeviceWrapper(device);
+    }
+
+    @Override
+    public void onDiscoveryFailed(DiscoveryManager manager, ServiceCommandError error) {
+        if (callbackContext != null) {
+            plugin.sendErrorEvent(callbackContext, error);
+        }
+    }
+
+    public JSONObject getDeviceJSON(ConnectableDevice device) {
+        ConnectableDeviceWrapper wrapper = plugin.getDeviceWrapper(device);
+        return wrapper.toJSONObject();
+    }
+
+    public void sendDeviceEvent(String event, ConnectableDevice device) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("device", getDeviceJSON(device));
+        } catch (JSONException e) {
+        }
+
+        sendEvent(event, obj);
+    }
+
+    public void sendEvent(String event, JSONObject obj) {
+        if (callbackContext != null) {
+            plugin.sendEvent(callbackContext, event, obj);
+        }
+    }
 }

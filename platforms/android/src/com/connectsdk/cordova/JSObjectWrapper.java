@@ -26,32 +26,32 @@ import org.json.JSONObject;
 import com.connectsdk.core.JSONSerializable;
 
 public class JSObjectWrapper implements JSONSerializable {
-	ConnectSDKCordova plugin;
-	CallbackContext callbackContext;
-	
-	static long nextObjectId = 0;
-	public String objectId;
-	
-	public JSObjectWrapper(ConnectSDKCordova plugin) {
-		this.plugin = plugin;
-		this.objectId = "object_" + Long.toString(++nextObjectId);
-	}
-	
-	public void cleanup() {
-	}
-	
-	public void setCallbackContext(CallbackContext ctx) {
-		this.callbackContext = ctx;
-	}
-	
-	public void sendEvent(String event, Object ... objs) {
-		plugin.sendEvent(callbackContext, event, objs);
-	}
+    ConnectSDKCordova plugin;
+    CallbackContext callbackContext;
 
-	@Override
-	public JSONObject toJSONObject() throws JSONException {
-		JSONObject obj = new JSONObject();
-		obj.put("objectId", objectId);
-		return obj;
-	}
+    static long nextObjectId = 0;
+    public String objectId;
+
+    public JSObjectWrapper(ConnectSDKCordova plugin) {
+        this.plugin = plugin;
+        this.objectId = "object_" + Long.toString(++nextObjectId);
+    }
+
+    public void cleanup() {
+    }
+
+    public void setCallbackContext(CallbackContext ctx) {
+        this.callbackContext = ctx;
+    }
+
+    public void sendEvent(String event, Object ... objs) {
+        plugin.sendEvent(callbackContext, event, objs);
+    }
+
+    @Override
+    public JSONObject toJSONObject() throws JSONException {
+        JSONObject obj = new JSONObject();
+        obj.put("objectId", objectId);
+        return obj;
+    }
 }

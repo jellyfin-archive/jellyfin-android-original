@@ -36,14 +36,21 @@ import android.util.Log;
 import com.connectsdk.core.AppInfo;
 import com.connectsdk.core.ChannelInfo;
 import com.connectsdk.core.ExternalInputInfo;
+import com.connectsdk.core.MediaInfo;
+import com.connectsdk.core.SubtitleInfo;
 import com.connectsdk.core.TextInputStatusInfo;
 import com.connectsdk.device.ConnectableDevice;
 import com.connectsdk.service.DeviceService;
 import com.connectsdk.service.WebOSTVService;
+import com.connectsdk.service.capability.ExternalInputControl;
 import com.connectsdk.service.capability.ExternalInputControl.ExternalInputListListener;
+import com.connectsdk.service.capability.Launcher;
+import com.connectsdk.service.capability.KeyControl.KeyCode;
 import com.connectsdk.service.capability.MediaControl;
 import com.connectsdk.service.capability.MediaControl.DurationListener;
 import com.connectsdk.service.capability.MediaControl.PositionListener;
+import com.connectsdk.service.capability.MediaPlayer;
+import com.connectsdk.service.capability.PlaylistControl;
 import com.connectsdk.service.capability.TextInputControl;
 import com.connectsdk.service.capability.WebAppLauncher;
 import com.connectsdk.service.command.ServiceCommandError;
@@ -126,12 +133,12 @@ public class JSCommandDispatcher {
             command.error("method not implemented");
         }
     }
-	
-	/* ExternalInputControl methods */
+
+    /* ExternalInputControl methods */
 
     @CommandMethod
     public void externalInputControl_getExternalInputList(final JSCommand command, JSONObject args) throws JSONException {
-        device.getExternalInputControl().getExternalInputList(new ExternalInputListListener () {
+        device.getExternalInputControl().getExternalInputList(new ExternalInputListListener() {
             @Override
             public void onSuccess(List<ExternalInputInfo> list) {
                 command.success(list);
@@ -155,8 +162,14 @@ public class JSCommandDispatcher {
 
         device.getExternalInputControl().setExternalInput(info, command.getResponseListener());
     }
-	
-	/* FivewayControl methods */
+
+    @CommandMethod
+    public void externalInputControl_showExternalInputPicker(JSCommand command, JSONObject args) {
+        device.getCapability(ExternalInputControl.class)
+                .launchInputPicker(command.getAppLaunchListener());
+    }
+
+    /* FivewayControl methods */
 
     @CommandMethod
     public void keyControl_up(JSCommand command, JSONObject args) throws JSONException {
@@ -192,8 +205,15 @@ public class JSCommandDispatcher {
     public void keyControl_home(JSCommand command, JSONObject args) throws JSONException {
         device.getKeyControl().home(command.getResponseListener());
     }
-	
-	/* TextInputControl methods */
+
+    @CommandMethod
+    public void keyControl_sendKeyCode(JSCommand command, JSONObject args) throws JSONException {
+        int keyCode = args.getInt("keyCode");
+        device.getKeyControl().sendKeyCode(KeyCode.createFromInteger(keyCode),
+                command.getResponseListener());
+    }
+
+    /* TextInputControl methods */
 
     @CommandMethod
     public void textInputControl_sendText(JSCommand command, JSONObject args) throws JSONException {
@@ -243,8 +263,8 @@ public class JSCommandDispatcher {
             }
         });
     }
-	
-	/* Launcher methods */
+
+    /* Launcher methods */
 
     @CommandMethod
     public void launcher_launchApp(JSCommand command, JSONObject args) throws JSONException {
@@ -272,19 +292,19 @@ public class JSCommandDispatcher {
 
     @CommandMethod
     public void launcher_launchHulu(JSCommand command, JSONObject args) throws JSONException {
-        String contentId = args.getString("contentId");
+        String contentId = args.optString("contentId");
         device.getLauncher().launchHulu(contentId, command.getAppLaunchListener());
     }
 
     @CommandMethod
     public void launcher_launchNetflix(JSCommand command, JSONObject args) throws JSONException {
-        String contentId = args.getString("contentId");
+        String contentId = args.optString("contentId");
         device.getLauncher().launchNetflix(contentId, command.getAppLaunchListener());
     }
 
     @CommandMethod
     public void launcher_launchYouTube(JSCommand command, JSONObject args) throws JSONException {
-        String contentId = args.getString("contentId");
+        String contentId = args.optString("contentId");
         device.getLauncher().launchYouTube(contentId, command.getAppLaunchListener());
     }
 
@@ -292,8 +312,8 @@ public class JSCommandDispatcher {
     public void launcher_getAppList(JSCommand command, JSONObject args) throws JSONException {
         device.getLauncher().getAppList(command.getAppListListener());
     }
-	
-	/* MediaControl methods */
+
+    /* MediaControl methods */
 
     @CommandMethod
     public void mediaControl_play(JSCommand command, JSONObject args) throws JSONException {
@@ -344,7 +364,7 @@ public class JSCommandDispatcher {
     public void mediaControl_getDuration(final JSCommand command, JSONObject args) throws JSONException {
         MediaControl mediaControl = getMediaControl(command, args);
 
-        mediaControl.getDuration(new DurationListener () {
+        mediaControl.getDuration(new DurationListener() {
             @Override
             public void onSuccess(Long durationMillis) {
                 command.success((double) durationMillis / 1000.0);
@@ -361,7 +381,7 @@ public class JSCommandDispatcher {
     public void mediaControl_getPosition(final JSCommand command, JSONObject args) throws JSONException {
         MediaControl mediaControl = getMediaControl(command, args);
 
-        mediaControl.getPosition(new PositionListener () {
+        mediaControl.getPosition(new PositionListener() {
             @Override
             public void onSuccess(Long positionMillis) {
                 command.success((double) positionMillis / 1000.0);
@@ -380,8 +400,44 @@ public class JSCommandDispatcher {
 
         mediaControl.subscribePlayState(command.getPlayStateListener());
     }
-	
-	/* MediaPlayer methods */
+
+    /* PlaylistControl methods */
+
+    @CommandMethod
+    public void playlistControl_next(JSCommand command, JSONObject args) throws JSONException {
+        PlaylistControl playlistControl = getPlaylistControl(command, args);
+
+        if (playlistControl != null) {
+            playlistControl.next(command.getResponseListener());
+        } else {
+            firePlaylistControlNotAvailableError(command);
+        }
+    }
+
+    @CommandMethod
+    public void playlistControl_previous(JSCommand command, JSONObject args) throws JSONException {
+        PlaylistControl playlistControl = getPlaylistControl(command, args);
+
+        if (playlistControl != null) {
+            playlistControl.previous(command.getResponseListener());
+        } else {
+            firePlaylistControlNotAvailableError(command);
+        }
+    }
+
+    @CommandMethod
+    public void playlistControl_jumpToTrack(JSCommand command, JSONObject args) throws JSONException {
+        PlaylistControl playlistControl = getPlaylistControl(command, args);
+
+        if (playlistControl != null) {
+            long position = args.getLong("index");
+            playlistControl.jumpToTrack(position, command.getResponseListener());
+        } else {
+            firePlaylistControlNotAvailableError(command);
+        }
+    }
+
+    /* MediaPlayer methods */
 
     @CommandMethod
     public void mediaPlayer_displayImage(JSCommand command, JSONObject args) throws JSONException {
@@ -392,8 +448,8 @@ public class JSCommandDispatcher {
     public void mediaPlayer_playMedia(JSCommand command, JSONObject args) throws JSONException {
         displayMedia(command, args, "video");
     }
-	
-	/* MouseControl methods */
+
+    /* MouseControl methods */
 
     @CommandMethod
     public void mouseControl_connectMouse(JSCommand command, JSONObject args) throws JSONException {
@@ -438,8 +494,8 @@ public class JSCommandDispatcher {
     public void powerControl_powerOff(JSCommand command, JSONObject args) throws JSONException {
         device.getPowerControl().powerOff(command.getResponseListener());
     }
-	
-	/* ToastControl methods */
+
+    /* ToastControl methods */
 
     @CommandMethod
     public void toastControl_showToast(JSCommand command, JSONObject args) throws JSONException {
@@ -450,8 +506,8 @@ public class JSCommandDispatcher {
     public void toastControl_showClickableToast(JSCommand command, JSONObject args) throws JSONException {
         showToast(command, args, true);
     }
-	
-	/* TVControl methods */
+
+    /* TVControl methods */
 
     @CommandMethod
     public void TVControl_channelUp(JSCommand command, JSONObject args) throws JSONException {
@@ -466,17 +522,12 @@ public class JSCommandDispatcher {
     @CommandMethod
     public void TVControl_setChannel(JSCommand command, JSONObject args) throws JSONException {
         JSONObject channelInfoObj = args.getJSONObject("channelInfo");
-
         String channelId = channelInfoObj.optString("id");
         String channelNumber = channelInfoObj.optString("number");
 
         ChannelInfo channelInfo = new ChannelInfo();
-
-        if (channelId != null && channelId.length() > 0) {
-            channelInfo.setId(channelId);
-        } else {
-            channelInfo.setNumber(channelNumber);
-        }
+        channelInfo.setId(channelId);
+        channelInfo.setNumber(channelNumber);
 
         device.getTVControl().setChannel(channelInfo, command.getResponseListener());
     }
@@ -495,8 +546,8 @@ public class JSCommandDispatcher {
     public void TVControl_subscribeCurrentChannel(JSCommand command, JSONObject args) throws JSONException {
         device.getTVControl().subscribeCurrentChannel(command.getChannelListener());
     }
-	
-	/* VolumeControl methods */
+
+    /* VolumeControl methods */
 
     @CommandMethod
     public void volumeControl_getVolume(JSCommand command, JSONObject args) throws JSONException {
@@ -559,8 +610,59 @@ public class JSCommandDispatcher {
 
         device.getWebAppLauncher().joinWebApp(webAppId, command.getWebAppLaunchListener());
     }
-	
-	/* WebAppSession methods */
+
+    @CommandMethod
+    public void webAppLauncher_pinWebApp(JSCommand command, JSONObject args) throws JSONException {
+        String webAppId = args.getString("webAppId");
+
+        device.getWebAppLauncher().pinWebApp(webAppId, command.getResponseListener());
+    }
+
+    @CommandMethod
+    public void webAppLauncher_unPinWebApp(JSCommand command, JSONObject args) throws JSONException {
+        String webAppId = args.getString("webAppId");
+
+        device.getWebAppLauncher().unPinWebApp(webAppId, command.getResponseListener());
+    }
+
+    @CommandMethod
+    public void webAppLauncher_isWebAppPinned(final JSCommand command, JSONObject args) throws JSONException {
+        String webAppId = args.getString("webAppId");
+
+        device.getWebAppLauncher().isWebAppPinned(webAppId, new WebAppSession
+                .WebAppPinStatusListener() {
+            @Override
+            public void onSuccess(Boolean object) {
+                command.success(object);
+            }
+
+            @Override
+            public void onError(ServiceCommandError error) {
+                command.error(error);
+            }
+        });
+    }
+
+    @CommandMethod
+    public ServiceSubscription<?> webAppLauncher_subscribeIsWebAppPinned(final JSCommand command, JSONObject args) throws JSONException {
+        String webAppId = args.getString("webAppId");
+
+        return device.getWebAppLauncher().subscribeIsWebAppPinned(webAppId, new WebAppSession.WebAppPinStatusListener() {
+
+            @Override
+            public void onSuccess(Boolean object) {
+                command.success(object);
+            }
+
+            @Override
+            public void onError(ServiceCommandError error) {
+                command.error(error);
+            }
+        });
+    }
+
+
+    /* WebAppSession methods */
 
     WebAppSessionWrapper getWebAppSessionWrapper(String objectId) {
         WebAppSessionWrapper wrapper = (WebAppSessionWrapper) plugin.getObjectWrapper(objectId);
@@ -654,8 +756,8 @@ public class JSCommandDispatcher {
             command.error("WebOSTVService not available for this device");
         }
     }
-	
-	/* Special methods */
+
+    /* Special methods */
 
     @CommandMethod
     public void CORDOVAPLUGIN_closeLaunchSession(JSCommand command, JSONObject args) throws JSONException {
@@ -668,21 +770,48 @@ public class JSCommandDispatcher {
             command.error("unknown launch session type; could not close");
         }
     }
-	
-	/* Helper methods */
+
+    /* Helper methods */
 
     void displayMedia(JSCommand command, JSONObject args, String type) throws JSONException {
         String url = args.getString("url");
         String mimeType = args.getString("mimeType");
-        String title = args.optString("title");
-        String description = args.optString("description");
-        String iconSrc = args.optString("iconUrl");
-        boolean shouldLoop = args.optBoolean("shouldLoop");
+
+        String title = null;
+        String description = null;
+        String iconSrc = null;
+        boolean shouldLoop = false;
+        SubtitleInfo subtitles = null;
+
+        JSONObject options = args.optJSONObject("options");
+        if (options != null) {
+            title = options.optString("title");
+            description = options.optString("description");
+            iconSrc = options.optString("iconUrl");
+            shouldLoop = options.optBoolean("shouldLoop");
+            JSONObject subtitlesJson = options.optJSONObject("subtitles");
+            if (subtitlesJson != null) {
+                subtitles = new SubtitleInfo.Builder(subtitlesJson.getString("url"))
+                        .setLabel(subtitlesJson.optString("label"))
+                        .setLanguage(subtitlesJson.optString("language"))
+                        .setMimeType(subtitlesJson.optString("mimeType"))
+                        .build();
+            }
+        }
+
+        MediaInfo mediaInfo = new MediaInfo.Builder(url, mimeType)
+                .setTitle(title)
+                .setDescription(description)
+                .setIcon(iconSrc)
+                .setSubtitleInfo(subtitles)
+                .build();
 
         if ("image".equals(type)) {
-            device.getMediaPlayer().displayImage(url, mimeType, title, description, iconSrc, command.getMediaLaunchListener());
+            device.getCapability(MediaPlayer.class).displayImage(mediaInfo,
+                    command.getMediaLaunchListener());
         } else {
-            device.getMediaPlayer().playMedia(url, mimeType, title, description, iconSrc, shouldLoop, command.getMediaLaunchListener());
+            device.getCapability(MediaPlayer.class).playMedia(mediaInfo, shouldLoop,
+                    command.getMediaLaunchListener());
         }
     }
 
@@ -718,7 +847,8 @@ public class JSCommandDispatcher {
                 command.error("toast options must include url or appId when showing a clickable toast");
             }
         } else {
-            device.getToastControl().showToast(message, iconData, iconExtension, command.getResponseListener());
+            device.getToastControl().showToast(message, iconData, iconExtension, command
+                    .getResponseListener());
         }
     }
 
@@ -735,9 +865,8 @@ public class JSCommandDispatcher {
     }
 
     MediaControl getMediaControl(JSCommand command, JSONObject args) throws JSONException {
-        String objectId = args.optString("objectId");
-
-        if (objectId != null) {
+        if (args.has("objectId")) {
+            String objectId = args.optString("objectId");
             MediaControlWrapper wrapper = (MediaControlWrapper) plugin.getObjectWrapper(objectId);
 
             if (wrapper != null) {
@@ -748,5 +877,24 @@ public class JSCommandDispatcher {
         } else {
             return device.getMediaControl();
         }
+    }
+
+    PlaylistControl getPlaylistControl(JSCommand command, JSONObject args) throws JSONException {
+        if (args.has("objectId")) {
+            String objectId = args.optString("objectId");
+            PlaylistControlWrapper wrapper = (PlaylistControlWrapper) plugin.getObjectWrapper(objectId);
+
+            if (wrapper != null) {
+                return wrapper.playlistControl;
+            } else {
+                throw new DispatcherException("PlaylistControlWrapper session no longer exists");
+            }
+        } else {
+            return device.getCapability(PlaylistControl.class);
+        }
+    }
+
+    private void firePlaylistControlNotAvailableError(JSCommand command) {
+        command.getResponseListener().onError(new ServiceCommandError("PlaylistControl is not available"));
     }
 }

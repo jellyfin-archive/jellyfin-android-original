@@ -1,8 +1,8 @@
 /*
- *  MediaControlWrapper.java
+ *  PlaylistControlWrapper.java
  *  Connect SDK
  *
- *  Copyright (c) 2014 LG Electronics.
+ *  Copyright (c) 2015 LG Electronics.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,13 +23,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.connectsdk.service.capability.MediaControl;
+import com.connectsdk.service.capability.PlaylistControl;
 
-public class MediaControlWrapper extends JSObjectWrapper {
-    MediaControl mediaControl;
+public class PlaylistControlWrapper extends JSObjectWrapper {
+    PlaylistControl playlistControl;
 
-    public MediaControlWrapper(ConnectSDKCordova plugin, MediaControl control) {
+    public PlaylistControlWrapper(ConnectSDKCordova plugin, PlaylistControl control) {
         super(plugin);
-        this.mediaControl = control;
+        this.playlistControl = control;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class MediaControlWrapper extends JSObjectWrapper {
 
     @Override
     public void cleanup() {
-        mediaControl = null;
+        playlistControl = null;
 
         super.cleanup();
     }
