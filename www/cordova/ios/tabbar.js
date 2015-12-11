@@ -197,6 +197,6 @@
     Events.on(MediaController, 'beforeplaybackstart', onPlaybackStart);
     Events.on(MediaController, 'playbackstop', onPlaybackStop);
 
-    Dashboard.ready(showCurrentUserTabs);
+    showCurrentUserTabs();
 
 })();
