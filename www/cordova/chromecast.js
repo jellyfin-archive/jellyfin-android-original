@@ -424,13 +424,11 @@
 
         self.getPlayerState = function () {
 
-            var deferred = $.Deferred();
+            return new Promise(function (resolve, reject) {
 
-            var result = self.getPlayerStateInternal();
-
-            deferred.resolveWith(null, [result]);
-
-            return deferred.promise();
+                var result = self.getPlayerStateInternal();
+                resolve(result);
+            });
         };
 
         self.lastPlayerData = {};
