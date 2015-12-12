@@ -2151,9 +2151,9 @@ var AppInfo = {};
             initFastClick();
         }
 
-        deps.push('registrationservices');
-
         if (Dashboard.isRunningInCordova()) {
+            deps.push('registrationservices');
+
             deps.push('cordova/back');
 
             if (browserInfo.android) {
@@ -2163,11 +2163,6 @@ var AppInfo = {};
 
         if (browserInfo.msie) {
             deps.push('devices/ie/ie');
-        }
-
-        if (AppInfo.isNativeApp && browserInfo.safari) {
-
-            deps.push('cordova/ios/tabbar');
         }
 
         deps.push('scripts/search');
@@ -2227,6 +2222,11 @@ var AppInfo = {};
 
             if (AppInfo.enableNowPlayingBar) {
                 postInitDependencies.push('scripts/nowplayingbar');
+            }
+
+            if (AppInfo.isNativeApp && browserInfo.safari) {
+
+                postInitDependencies.push('cordova/ios/tabbar');
             }
 
             require(postInitDependencies);
