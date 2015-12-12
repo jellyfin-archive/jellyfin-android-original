@@ -12,14 +12,15 @@
         //  new ConnectSDK.CapabilityFilter(["MediaPlayer.Display.Video", "MediaControl.Pause"])
         //]);
 
-        manager.on('devicelistchanged', onDeviceListChanged);
+        //manager.on('devicelistchanged', onDeviceListChanged);
 
         manager.startDiscovery();
 
-        requirejs(['cordova/chromecast', 'cordova/generaldevice']);
-    }
+        requirejs(['cordova/chromecast']);
 
-    function onDeviceListChanged(list) {
+        if (browserInfo.safari) {
+            requirejs(['cordova/generaldevice']);
+        }
     }
 
     function getDeviceList() {

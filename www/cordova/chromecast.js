@@ -304,9 +304,10 @@
         function isChromecastName(name) {
 
             name = (name || '').toLowerCase();
-            var validTokens = ['nexusplayer'];
+            var validTokens = [];
             validTokens.push('chromecast');
-            validTokens.push('eurekadongle');
+            //validTokens.push('eurekadongle');
+            validTokens.push('nexusplayer');
 
             return validTokens.filter(function (t) {
 
@@ -315,13 +316,18 @@
             }).length > 0;
         }
 
-        self.getTargets = function () {
+        function getDeviceList() {
 
             return ConnectSDKHelper.getDeviceList().filter(function (d) {
 
-                return d.hasService('Chromecast') || d.hasService('ChromeCast') || isChromecastName(d.getModelName()) || isChromecastName(d.getFriendlyName());
+                return d.hasService(ConnectSDK.Services.Chromecast) || isChromecastName(d.getModelName()) || isChromecastName(d.getFriendlyName());
 
-            }).map(convertDeviceToTarget);
+            });
+        }
+
+        self.getTargets = function () {
+
+            return getDeviceList().map(convertDeviceToTarget);
         };
 
         self.seek = function (position) {
@@ -616,25 +622,24 @@
 
         self.tryPair = function (target) {
 
-            var deferred = $.Deferred();
+            return new Promise(function (resolve, reject) {
 
-            var device = ConnectSDKHelper.getDeviceList().filter(function (d) {
+                var device = getDeviceList().filter(function (d) {
 
-                return d.getId() == target.id;
-            })[0];
+                    return d.getId() == target.id;
+                })[0];
 
-            if (device) {
+                if (device) {
 
-                self.tryPairWithDevice(device, deferred);
+                    self.tryPairWithDevice(device, resolve, reject);
 
-            } else {
-                deferred.reject();
-            }
-
-            return deferred.promise();
+                } else {
+                    reject();
+                }
+            });
         };
 
-        self.tryPairWithDevice = function (device, deferred) {
+        self.tryPairWithDevice = function (device, resolve, reject) {
 
             Logger.log('Will attempt to connect to Chromecast');
 
