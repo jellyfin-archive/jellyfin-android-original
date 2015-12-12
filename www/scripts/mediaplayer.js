@@ -129,6 +129,7 @@
             var canPlayAc3 = supportedFormats.indexOf('ac3') != -1;
             var canPlayAac = supportedFormats.indexOf('aac') != -1;
             var canPlayMp3 = supportedFormats.indexOf('mp3') != -1;
+            var canPlayMkv = supportedFormats.indexOf('mkv') != -1;
 
             var profile = {};
 
@@ -147,7 +148,7 @@
                 });
             }
 
-            if (browserInfo.chrome) {
+            if (canPlayMkv) {
                 profile.DirectPlayProfiles.push({
                     Container: 'mkv,mov',
                     Type: 'Video',
@@ -200,6 +201,16 @@
             }
 
             profile.TranscodingProfiles = [];
+
+            if (canPlayMkv && !isVlc) {
+                profile.TranscodingProfiles.push({
+                    Container: 'mkv',
+                    Type: 'Video',
+                    AudioCodec: 'aac' + (canPlayAc3 ? ',ac3' : ''),
+                    VideoCodec: 'h264',
+                    Context: 'Streaming'
+                });
+            }
 
             if (self.canPlayHls()) {
                 profile.TranscodingProfiles.push({
@@ -472,12 +483,6 @@
 
             profile.ResponseProfiles = [];
 
-            //profile.ResponseProfiles.push({
-            //    Type: 'Video',
-            //    Container: 'mkv',
-            //    MimeType: 'video/mp4'
-            //});
-
             profile.ResponseProfiles.push({
                 Type: 'Video',
                 Container: 'm4v',
@@ -638,13 +643,13 @@
 
                         self.currentSubtitleStreamIndex = subtitleStreamIndex;
 
-                        changeStreamToUrl(mediaRenderer, playSessionId, streamInfo, streamInfo.startTimeTicksOffset || 0);
+                        changeStreamToUrl(mediaRenderer, playSessionId, streamInfo);
                     });
                 }
             });
         };
 
-        function changeStreamToUrl(mediaRenderer, playSessionId, streamInfo, newPositionTicks) {
+        function changeStreamToUrl(mediaRenderer, playSessionId, streamInfo) {
 
             clearProgressInterval();
 
@@ -665,15 +670,10 @@
             if (self.currentItem.MediaType == "Video") {
                 ApiClient.stopActiveEncodings(playSessionId).then(function () {
 
-                    //self.startTimeTicksOffset = newPositionTicks;
                     self.setSrcIntoRenderer(mediaRenderer, streamInfo, self.currentItem, self.currentMediaSource);
-
                 });
 
-                self.startTimeTicksOffset = newPositionTicks || 0;
-                self.updateTextStreamUrls(newPositionTicks || 0);
             } else {
-                self.startTimeTicksOffset = newPositionTicks || 0;
                 self.setSrcIntoRenderer(mediaRenderer, streamInfo, self.currentItem, self.currentMediaSource);
             }
         }
@@ -702,8 +702,11 @@
                 });
             }
 
+            self.startTimeTicksOffset = streamInfo.startTimeTicksOffset || 0;
+
             mediaRenderer.setCurrentSrc(streamInfo, item, mediaSource, tracks);
             self.streamInfo = streamInfo;
+            //self.updateTextStreamUrls(streamInfo.startTimeTicksOffset || 0);
         };
 
         self.setCurrentTime = function (ticks, positionSlider, currentTimeElement) {
@@ -960,9 +963,11 @@
                         } else {
 
                             // Reports of stuttering with h264 stream copy in IE
-                            mediaUrl += '&EnableAutoStreamCopy=false';
-
+                            if (mediaUrl.indexOf('.mkv') == -1) {
+                                mediaUrl += '&EnableAutoStreamCopy=false';
+                            }
                             startTimeTicksOffset = startPosition || 0;
+
                             contentType = 'video/' + mediaSource.TranscodingContainer;
                         }
                     }
@@ -1868,6 +1873,10 @@
             }
             if (document.createElement('audio').canPlayType('audio/mp3').replace(/no/, '')) {
                 list.push('mp3');
+            }
+
+            if (browserInfo.chrome) {
+                list.push('mkv');
             }
 
             supportedFormats = list;
