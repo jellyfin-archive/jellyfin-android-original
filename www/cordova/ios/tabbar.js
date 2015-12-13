@@ -103,12 +103,9 @@
 
     function showUserTabs(user) {
 
-        if (!window.ApiClient) {
-            onUserViewResponse(user, []);
-            return;
-        }
+        var apiClient = ConnectionManager.getApiClient(user.ServerId);
 
-        ApiClient.getUserViews({}, user.Id).then(function (result) {
+        apiClient.getUserViews({}, user.Id).then(function (result) {
 
             onUserViewResponse(user, result.Items);
 
