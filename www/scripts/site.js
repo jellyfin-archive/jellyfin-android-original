@@ -428,7 +428,7 @@ var Dashboard = {
         return "ConfigurationPage?name=" + encodeURIComponent(name);
     },
 
-    navigate: function (url, preserveQueryString, transition) {
+    navigate: function (url, preserveQueryString) {
 
         if (!url) {
             throw new Error('url cannot be null or empty');
@@ -440,10 +440,6 @@ var Dashboard = {
         }
 
         var options = {};
-
-        if (transition) {
-            options.transition = transition;
-        }
 
         $.mobile.changePage(url, options);
     },
@@ -1765,6 +1761,12 @@ var AppInfo = {};
 
         var bowerPath = "bower_components";
 
+        // Put the version into the bower path since we can't easily put a query string param on html imports
+        // Emby server will handle this
+        if (!Dashboard.isRunningInCordova()) {
+            bowerPath += window.dashboardVersion;
+        }
+
         var paths = {
             velocity: bowerPath + "/velocity/velocity.min",
             tvguide: 'components/tvguide/tvguide',
@@ -1793,6 +1795,18 @@ var AppInfo = {};
             paths.sharingwidget = "components/sharingwidget";
         }
 
+        var sha1Path = bowerPath + "/cryptojslib/components/sha1-min";
+        var md5Path = bowerPath + "/cryptojslib/components/md5-min";
+        var shim = {};
+
+        shim[sha1Path] = {
+            deps: [bowerPath + "/cryptojslib/components/core-min"]
+        };
+
+        shim[md5Path] = {
+            deps: [bowerPath + "/cryptojslib/components/core-min"]
+        };
+
         requirejs.config({
             map: {
                 '*': {
@@ -1802,13 +1816,16 @@ var AppInfo = {};
             },
             urlArgs: urlArgs,
 
-            paths: paths
+            paths: paths,
+            shim: shim
         });
 
-        define("cryptojs-sha1", ["apiclient/sha1"]);
-        define("cryptojs-md5", ["apiclient/md5"]);
+        define("cryptojs-sha1", [sha1Path]);
+        define("cryptojs-md5", [md5Path]);
 
         // Done
+        define("emby-icons", ["html!" + bowerPath + "/emby-icons/emby-icons.html"]);
+
         define("paper-spinner", ["html!" + bowerPath + "/paper-spinner/paper-spinner.html"]);
         define("paper-toast", ["html!" + bowerPath + "/paper-toast/paper-toast.html"]);
         define("paper-slider", ["html!" + bowerPath + "/paper-slider/paper-slider.html"]);
@@ -2069,7 +2086,7 @@ var AppInfo = {};
             var promises = [];
             deps = [];
             deps.push('thirdparty/jquery.unveil-custom.js');
-            deps.push('html!thirdparty/emby-icons.html');
+            deps.push('emby-icons');
             deps.push('paper-icon-button');
             deps.push('paper-button');
             deps.push('thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.js');
