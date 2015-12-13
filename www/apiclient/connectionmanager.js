@@ -636,7 +636,6 @@
                     resolve({
                         localUser: localUser,
                         name: connectUser ? connectUser.Name : (localUser ? localUser.Name : null),
-                        canManageServer: localUser ? localUser.Policy.IsAdministrator : false,
                         imageUrl: image.url,
                         supportsImageParams: image.supportsParams
                     });
