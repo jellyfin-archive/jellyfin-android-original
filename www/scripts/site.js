@@ -1465,21 +1465,17 @@ var Dashboard = {
 
     loadExternalPlayer: function () {
 
-        var deferred = DeferredBuilder.Deferred();
+        return new Promise(function (resolve, reject) {
 
-        require(['scripts/externalplayer.js'], function () {
+            require(['scripts/externalplayer.js'], function () {
 
-            if (Dashboard.isRunningInCordova()) {
-                require(['cordova/externalplayer.js'], function () {
-
-                    deferred.resolve();
-                });
-            } else {
-                deferred.resolve();
-            }
+                if (Dashboard.isRunningInCordova()) {
+                    require(['cordova/externalplayer.js'], resolve);
+                } else {
+                    resolve();
+                }
+            });
         });
-
-        return deferred.promise();
     },
 
     exitOnBack: function () {
@@ -1789,10 +1785,14 @@ var AppInfo = {};
             paths.dialog = "cordova/dialog";
             paths.prompt = "cordova/prompt";
             paths.sharingwidget = "cordova/sharingwidget";
+            paths.serverdiscovery = "cordova/serverdiscovery";
+            paths.wakeonlan = "cordova/wakeonlan";
         } else {
             paths.dialog = "components/dialog";
             paths.prompt = "components/prompt";
             paths.sharingwidget = "components/sharingwidget";
+            paths.serverdiscovery = "apiclient/serverdiscovery";
+            paths.wakeonlan = "apiclient/wakeonlan";
         }
 
         var sha1Path = bowerPath + "/cryptojslib/components/sha1-min";
@@ -1904,13 +1904,6 @@ var AppInfo = {};
                 return appStorage;
             });
         }
-        if (Dashboard.isRunningInCordova()) {
-            define("serverdiscovery", ["cordova/serverdiscovery"]);
-            define("wakeonlan", ["cordova/wakeonlan"]);
-        } else {
-            define("serverdiscovery", ["apiclient/serverdiscovery"]);
-            define("wakeonlan", ["apiclient/wakeonlan"]);
-        }
 
         if (Dashboard.isRunningInCordova()) {
             define("localassetmanager", ["cordova/localassetmanager"]);
@@ -1980,7 +1973,7 @@ var AppInfo = {};
             define("fileupload", ["apiclient/fileupload"]);
         }
 
-        define("buttonenabled", ["components/buttonenabled"]);
+        define("buttonenabled", ["legacy/buttonenabled"]);
 
         var deps = [];
 
@@ -2192,6 +2185,8 @@ var AppInfo = {};
         deps.push('scripts/backdrops');
         deps.push('scripts/librarymenu');
         deps.push('apiclient/deferred');
+
+        deps.push('css!css/card.css');
 
         require(deps, function () {
 

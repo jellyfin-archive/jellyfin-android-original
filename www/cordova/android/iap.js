@@ -84,28 +84,29 @@
     }
 
     function getSubscriptionOptions() {
-        var deferred = DeferredBuilder.Deferred();
 
-        var options = [];
+        return new Promise(function (resolve, reject) {
 
-        options.push({
-            feature: 'embypremieremonthly',
-            buttonText: 'EmbyPremiereMonthly'
+            var options = [];
+
+            options.push({
+                feature: 'embypremieremonthly',
+                buttonText: 'EmbyPremiereMonthly'
+            });
+
+            options = options.filter(function (o) {
+                return getProduct(o.feature) != null;
+
+            }).map(function (o) {
+
+                var prod = getProduct(o.feature);
+                o.buttonText = Globalize.translate(o.buttonText, prod.price);
+                o.owned = prod.owned;
+                return o;
+            });
+
+            resolve(options);
         });
-
-        options = options.filter(function (o) {
-            return getProduct(o.feature) != null;
-
-        }).map(function (o) {
-
-            var prod = getProduct(o.feature);
-            o.buttonText = Globalize.translate(o.buttonText, prod.price);
-            o.owned = prod.owned;
-            return o;
-        });
-
-        deferred.resolveWith(null, [options]);
-        return deferred.promise();
     }
 
     function isUnlockedOverride(feature) {
@@ -134,20 +135,26 @@
                     return true;
                 }
 
-                var legacyDeviceId = MainActivity.getLegacyDeviceId();
-                if (legacyDeviceId) {
-                    return testDeviceId(legacyDeviceId);
-                }
+                return testDeviceId(MainActivity.getAndroidDeviceId()).then(function (isUnlocked) {
 
-                return false;
+                    if (isUnlocked) {
+                        return true;
+                    }
+
+                    var legacyDeviceId = MainActivity.getLegacyDeviceId();
+                    if (legacyDeviceId) {
+                        return testDeviceId(legacyDeviceId);
+                    }
+
+                    return false;
+                })
             });
         });
     }
 
     function testDeviceId(deviceId) {
 
-
-        var cacheKey = 'oldapp2-' + deviceId;
+        var cacheKey = 'oldapp3-' + deviceId;
         var cacheValue = appStorage.getItem(cacheKey);
         if (cacheValue) {
 
@@ -160,7 +167,7 @@
 
             Logger.log('testing play access for device id: ' + deviceId);
 
-            return fetch('https://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId, {
+            return fetch('http://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId, {
                 method: 'GET'
 
             }).then(function (response) {
@@ -183,6 +190,18 @@
         }
     }
 
+    function enableRestore(subscriptionOptions, unlockableProductInfo) {
+        return unlockableProductInfo != null && unlockableProductInfo.feature == 'playback';
+    }
+
+    function restorePurchase() {
+
+        Dashboard.alert({
+            message: "We're unable to restore your previous purchase. Please send an email to apps@emby.media. Thank you for your patience.",
+            title: Globalize.translate('ButtonRestorePreviousPurchase')
+        });
+    }
+
     window.IapManager = {
         isPurchaseAvailable: isPurchaseAvailable,
         getProductInfo: getProduct,
@@ -191,7 +210,9 @@
         onPurchaseComplete: onPurchaseComplete,
         getSubscriptionOptions: getSubscriptionOptions,
         onStoreReady: onStoreReady,
-        isUnlockedOverride: isUnlockedOverride
+        isUnlockedOverride: isUnlockedOverride,
+        restorePurchase: restorePurchase,
+        enableRestore: enableRestore
     };
 
     NativeIapManager.initStore();

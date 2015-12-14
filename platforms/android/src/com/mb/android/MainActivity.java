@@ -742,4 +742,11 @@ public class MainActivity extends CordovaActivity
 
         return uuid;
     }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public String getAndroidDeviceId() {
+
+        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
 }

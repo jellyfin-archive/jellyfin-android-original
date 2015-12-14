@@ -1,4 +1,4 @@
-﻿(function (globalScope) {
+﻿define([], function () {
 
     function stringToArrayBuffer(string) {
         // UTF-16LE
@@ -41,7 +41,7 @@
         // Expected server properties
         // Name, Id, Address, EndpointAddress (optional)
 
-        var chrome = globalScope.chrome;
+        var chrome = window.chrome;
 
         if (!chrome) {
             deferred.resolveWith(null, [servers]);
@@ -140,7 +140,16 @@
         return deferred.promise();
     }
 
-    globalScope.ServerDiscovery = {
+    var deviceReadyDeferred = DeferredBuilder.Deferred();
+    var deviceReadyPromise = deviceReadyDeferred.promise();
+
+    document.addEventListener("deviceready", function () {
+
+        deviceReadyDeferred.resolve();
+
+    }, false);
+
+    return {
 
         findServers: function (timeoutMs) {
 
@@ -167,14 +176,4 @@
         }
     };
 
-    var deviceReadyDeferred = DeferredBuilder.Deferred();
-    var deviceReadyPromise = deviceReadyDeferred.promise();
-
-    document.addEventListener("deviceready", function () {
-
-        deviceReadyDeferred.resolve();
-
-    }, false);
-
-
-})(window);
+});
