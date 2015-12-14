@@ -147,7 +147,7 @@
     function testDeviceId(deviceId) {
 
 
-        var cacheKey = 'oldapp-' + deviceId;
+        var cacheKey = 'oldapp2-' + deviceId;
         var cacheValue = appStorage.getItem(cacheKey);
         if (cacheValue) {
 
@@ -158,14 +158,16 @@
 
         } else {
 
+            Logger.log('testing play access for device id: ' + deviceId);
+
             return fetch('https://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId, {
                 method: 'GET'
 
             }).then(function (response) {
 
-                if (response.status == 404) {
-                    appStorage.setItem(cacheKey, 'false');
-                } else if (response.status < 400) {
+                Logger.log('Play access test for device id: ' + deviceId + '. Response: ' + response.status);
+
+                if (response.status < 400) {
                     appStorage.setItem(cacheKey, 'true');
                     return true;
                 }
@@ -173,6 +175,8 @@
                 return false;
 
             }, function (e) {
+
+                Logger.log('Play access test for device id: ' + deviceId + ' failed.');
 
                 return false;
             });
