@@ -283,13 +283,18 @@
         });
     }
 
+    function enableRestore(subscriptionOptions, unlockableProductInfo) {
+        return true;
+    }
+
     window.IapManager = {
         isPurchaseAvailable: isPurchaseAvailable,
         getProductInfo: getProduct,
         beginPurchase: beginPurchase,
         restorePurchase: restorePurchase,
         getSubscriptionOptions: getSubscriptionOptions,
-        isUnlockedOverride: isUnlockedOverride
+        isUnlockedOverride: isUnlockedOverride,
+        enableRestore: enableRestore
     };
 
     initializeStore();

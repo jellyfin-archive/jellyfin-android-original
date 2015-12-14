@@ -141,7 +141,7 @@
             html += '</p>';
         }
 
-        if (hasProduct && IapManager.restorePurchase) {
+        if (hasProduct && IapManager.enableRestore(subscriptionOptions, unlockableProductInfo)) {
             html += '<p>';
             html += '<paper-button raised class="secondary block btnRestorePurchase" style="background-color: #673AB7;"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></paper-button>';
             html += '</p>';
@@ -305,7 +305,7 @@
 
     function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, deferred) {
 
-        require(['components/paperdialoghelper'], function () {
+        require(['components/paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function () {
 
             if (window.TabBar) {
                 TabBar.hide();

@@ -1,4 +1,4 @@
-﻿(function (globalScope) {
+﻿define([], function () {
 
     function getResultCode(result) {
 
@@ -28,22 +28,19 @@
         return buf;
     }
 
-    // https://github.com/agnat/node_wake_on_lan/blob/master/wake_on_lan.js
+    function send(info) {
+        return new Promise(function (resolve, reject) {
 
-    globalScope.WakeOnLan = {
-
-        send: function (info) {
-
-            var deferred = DeferredBuilder.Deferred();
-
-            var chrome = globalScope.chrome;
+            var chrome = window.chrome;
 
             if (!chrome) {
-                deferred.resolve();
-                return deferred.promise();
+                resolve();
+                return;
             }
 
             var port = info.Port || 9;
+
+            // https://github.com/agnat/node_wake_on_lan/blob/master/wake_on_lan.js
 
             //chrome.sockets.udp.create(function (createInfo) {
 
@@ -79,9 +76,13 @@
             //    });
             //});
 
-            deferred.resolve();
-            return deferred.promise();
-        }
+            resolve();
+        });
+    }
+
+    return {
+
+        send: send
     };
 
-})(window);
+});

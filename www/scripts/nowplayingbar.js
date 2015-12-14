@@ -79,7 +79,6 @@
         }
 
         return height + 'px';
-        return '80px';
     }
 
     function slideDown(elem) {
