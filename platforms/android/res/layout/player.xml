@@ -40,7 +40,7 @@
                 android:ellipsize="middle"
                 android:gravity="center"
                 android:background="#A0000000"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:padding="3dp"/>
         </FrameLayout>
     </FrameLayout>
