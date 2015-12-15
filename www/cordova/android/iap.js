@@ -197,7 +197,7 @@
     function restorePurchase() {
 
         Dashboard.alert({
-            message: "We're unable to restore your previous purchase. Please send an email to apps@emby.media. Thank you for your patience.",
+            message: "We're unable to automatically restore your previous purchase. Please send an email to apps@emby.media. Thank you for your patience.",
             title: Globalize.translate('ButtonRestorePreviousPurchase')
         });
     }
