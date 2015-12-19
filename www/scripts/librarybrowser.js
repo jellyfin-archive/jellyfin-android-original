@@ -784,7 +784,10 @@
                 commands.push('editimages');
             }
 
-            commands.push('refresh');
+            if (user.Policy.IsAdministrator) {
+
+                commands.push('refresh');
+            }
 
             if (SyncManager.isAvailable(item, user)) {
                 commands.push('sync');
@@ -810,7 +813,10 @@
                 item.Type == "MusicAlbum" ||
                 item.Type == "MusicArtist") {
 
-                commands.push('identify');
+                if (user.Policy.IsAdministrator) {
+
+                    commands.push('identify');
+                }
             }
 
             return commands;
