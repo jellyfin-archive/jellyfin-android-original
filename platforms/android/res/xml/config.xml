@@ -19,9 +19,6 @@
     <feature name="AppVersion">
         <param name="android-package" value="uk.co.whiteoctober.cordova.AppVersion" />
     </feature>
-    <feature name="InAppBillingPlugin">
-        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
-    </feature>
     <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
     <preference default="15+" name="xwalkVersion" />
     <preference default="--disable-pull-to-refresh-effect" name="xwalkCommandLine" />
@@ -54,6 +51,9 @@
         <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
     </feature>
     <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <feature name="InAppBillingPlugin">
+        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
+    </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="22" />
     <preference name="StatusBarOverlaysWebView" value="false" />
