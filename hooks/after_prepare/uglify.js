@@ -114,7 +114,7 @@ function compress(file) {
         source,
         result;
 
-	if (file.toLowerCase().indexOf(".min.") != -1) {
+    if (file.toLowerCase().indexOf(".min.") != -1 || file.toLowerCase().indexOf("hls.js") != -1) {
 		console.log('Skipping minification for ' + file);
         return;
 	}

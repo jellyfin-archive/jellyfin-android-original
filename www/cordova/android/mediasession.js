@@ -127,10 +127,10 @@
 
         if (currentPlayer) {
 
-            $(currentPlayer).off('playbackstart', onPlaybackStart)
-                .off('playbackstop', onPlaybackStopped)
-                .off('playstatechange', onStateChanged)
-                .off('positionchange', onStateChanged);
+            Events.off(currentPlayer, 'playbackstart', onPlaybackStart);
+            Events.off(currentPlayer, 'playbackstop', onPlaybackStopped);
+            Events.off(currentPlayer, 'playstatechange', onStateChanged);
+            Events.off(currentPlayer, 'positionchange', onStateChanged);
 
             currentPlayer.endPlayerUpdates();
             currentPlayer = null;
@@ -165,15 +165,15 @@
             onStateChanged.call(player, { type: 'init' }, state);
         });
 
-        $(player).on('playbackstart', onPlaybackStart)
-            .on('playbackstop', onPlaybackStopped)
-            .on('playstatechange', onStateChanged)
-            .on('positionchange', onStateChanged);
+        Events.on(currentPlayer, 'playbackstart', onPlaybackStart);
+        Events.on(currentPlayer, 'playbackstop', onPlaybackStopped);
+        Events.on(currentPlayer, 'playstatechange', onStateChanged);
+        Events.on(currentPlayer, 'positionchange', onStateChanged);
     }
 
     Logger.log('binding remotecontrols to MediaController');
 
-    $(MediaController).on('playerchange', function () {
+    Events.on(MediaController, 'playerchange', function () {
 
         bindToPlayer(MediaController.getCurrentPlayer());
     });

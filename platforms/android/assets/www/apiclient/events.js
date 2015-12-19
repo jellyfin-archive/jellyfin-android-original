@@ -1,1 +1,0 @@
-!function(n){n.Events={on:function(n,o,f,i){jQuery(n).on(o,f,i)},off:function(n,o,f,i){jQuery(n).off(o,f,i)},trigger:function(n,o,f){jQuery(n).trigger(o,f)}}}(window);

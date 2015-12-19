@@ -570,7 +570,21 @@ paper-dialog paper-radio-group paper-radio-button {
     }
 }
 
-paper-dialog.popupEditor .dialogHeader {
+div.dialogHeader {
+    margin: 0 0 2.5em!important;
+    padding: .35em .5em;
+    background-color: #101010;
+    display: flex;
+    align-items: center;
+    line-height: normal;
+    font-size: 110%;
+}
+
+.dialogHeaderTitle {
+    margin-left: .75em;
+}
+
+paper-dialog.popupEditor h2.dialogHeader {
     font-weight: inherit !important;
     line-height: 36px;
     padding: 0 1em;
@@ -581,21 +595,8 @@ paper-dialog.popupEditor {
     padding-bottom: 100px;
 }
 
-.paperToggleContainer {
-    padding: .5em 0;
-}
-
-    .paperToggleContainer paper-toggle-button {
-        vertical-align: middle;
-    }
-
-    .paperToggleContainer > span {
-        vertical-align: middle;
-        margin-left: 1em;
-    }
-
-paper-toggle-button #toggleBar {
-    background-color: #080808;
+.paper-toggle-button-0 .toggle-label.paper-toggle-button {
+    color: inherit;
 }
 
 paper-toggle-button #toggleButton, paper-toggle-button[checked] #toggleBar {
@@ -612,4 +613,8 @@ paper-toggle-button paper-ripple {
 
 paper-progress.mini #progressContainer {
     height: 3px !important;
+}
+
+.formDialog.background-theme-b {
+    background-color: #202020;
 }
