@@ -14,7 +14,7 @@
         MediaController.volumeUp();
     }
 
-    $(MediaController).on('playerchange', function (e, newPlayer, newTarget) {
+    Events.on(MediaController, 'playerchange', function (e, newPlayer, newTarget) {
 
         document.removeEventListener("volumedownbutton", onVolumeDownKeyDown, false);
         document.removeEventListener("volumeupbutton", onVolumeUpKeyDown, false);

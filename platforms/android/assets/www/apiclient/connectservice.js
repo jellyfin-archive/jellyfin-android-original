@@ -1,1 +1,0 @@
-!function(n){function r(n,r,e){return n.split(r).join(e)}n.MediaBrowser||(n.MediaBrowser={});var e={cleanPassword:function(n){return n=n||"",n=r(n,"&","&amp;"),n=r(n,"/","&#092;"),n=r(n,"!","&#33;"),n=r(n,"$","&#036;"),n=r(n,'"',"&quot;"),n=r(n,"<","&lt;"),n=r(n,">","&gt;"),n=r(n,"'","&#39;")}};n.MediaBrowser.ConnectService=e}(window);

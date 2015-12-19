@@ -204,7 +204,7 @@
                     refreshLibraryInfoInDrawer(user, drawer);
                     refreshBottomUserInfoInDrawer(user, drawer);
 
-                    Events.trigger(document, 'libraryMenuCreated');
+                    document.dispatchEvent(new CustomEvent("libraryMenuCreated", {}));
                     updateLibraryMenu(user.localUser);
                 }
 
@@ -570,7 +570,7 @@
                     closeMainDrawer();
 
                     // On mobile devices don't navigate until after the closing animation has completed or it may stutter
-                    var delay = browserInfo.mobile ? 350 : 150;
+                    var delay = browserInfo.mobile ? 350 : 200;
 
                     setTimeout(function () {
                         if (action) {
@@ -595,7 +595,7 @@
                 closeMainDrawer();
 
                 // On mobile devices don't navigate until after the closing animation has completed or it may stutter
-                var delay = browserInfo.mobile ? 350 : 150;
+                var delay = browserInfo.mobile ? 350 : 200;
 
                 setTimeout(function () {
                     Dashboard.logout();

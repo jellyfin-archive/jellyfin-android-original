@@ -39,31 +39,31 @@
 
         var castPlayer = {};
 
-        $(castPlayer).on("playbackstart", function (e, data) {
+        Events.on(castPlayer, "playbackstart", function (e, data) {
 
             Logger.log('cc: playbackstart');
 
             var state = self.getPlayerStateInternal(data);
-            $(self).trigger("playbackstart", [state]);
+            Events.trigger(self, "playbackstart", [state]);
         });
 
-        $(castPlayer).on("playbackstop", function (e, data) {
+        Events.on(castPlayer, "playbackstop", function (e, data) {
 
             Logger.log('cc: playbackstop');
             var state = self.getPlayerStateInternal(data);
 
-            $(self).trigger("playbackstop", [state]);
+            Events.trigger(self, "playbackstop", [state]);
 
             // Reset this so the next query doesn't make it appear like content is playing.
             self.lastPlayerData = {};
         });
 
-        $(castPlayer).on("playbackprogress", function (e, data) {
+        Events.on(castPlayer, "playbackprogress", function (e, data) {
 
             Logger.log('cc: positionchange');
             var state = self.getPlayerStateInternal(data);
 
-            $(self).trigger("positionchange", [state]);
+            Events.trigger(self, "positionchange", [state]);
         });
 
         var endpointInfo;
@@ -305,7 +305,7 @@
 
             name = (name || '').toLowerCase();
             var validTokens = [];
-            validTokens.push('chromecast');
+            //validTokens.push('chromecast');
             //validTokens.push('eurekadongle');
             validTokens.push('nexusplayer');
 
@@ -473,7 +473,7 @@
 
             }
             else if (message.type && message.type.indexOf('playback') == 0) {
-                $(castPlayer).trigger(message.type, [message.data]);
+                Events.trigger(castPlayer, message.type, [message.data]);
             }
         }
 

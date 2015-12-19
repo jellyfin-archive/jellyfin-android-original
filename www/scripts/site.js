@@ -12,6 +12,13 @@
 
 })();
 
+// Compatibility
+window.Logger = {
+    log: function(msg) {
+        console.log(msg);
+    }
+};
+
 var Dashboard = {
 
     filterHtml: function (html) {
@@ -888,7 +895,6 @@ var Dashboard = {
             html += '</div>';
 
             $('.content-primary', page).before(html);
-            Events.trigger(page, 'create');
         }
     },
 
@@ -1605,18 +1611,20 @@ var AppInfo = {};
         apiClient.getDefaultImageQuality = Dashboard.getDefaultImageQuality;
         apiClient.normalizeImageOptions = Dashboard.normalizeImageOptions;
 
-        $(apiClient).off("websocketmessage", Dashboard.onWebSocketMessageReceived).off('requestfail', Dashboard.onRequestFail);
+        Events.off(apiClient, 'websocketmessage', Dashboard.onWebSocketMessageReceived);
+        Events.on(apiClient, 'websocketmessage', Dashboard.onWebSocketMessageReceived);
 
-        $(apiClient).on("websocketmessage", Dashboard.onWebSocketMessageReceived).on('requestfail', Dashboard.onRequestFail);
+        Events.off(apiClient, 'requestfail', Dashboard.onRequestFail);
+        Events.on(apiClient, 'requestfail', Dashboard.onRequestFail);
     }
 
     //localStorage.clear();
-    function createConnectionManager(capabilities) {
+    function createConnectionManager(credentialProviderFactory, capabilities) {
 
         var credentialKey = Dashboard.isConnectMode() ? null : 'servercredentials4';
-        var credentialProvider = new MediaBrowser.CredentialProvider(credentialKey);
+        var credentialProvider = new credentialProviderFactory(credentialKey);
 
-        window.ConnectionManager = new MediaBrowser.ConnectionManager(Logger, credentialProvider, AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, capabilities);
+        window.ConnectionManager = new MediaBrowser.ConnectionManager(credentialProvider, AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, capabilities, window.devicePixelRatio);
 
         if (window.location.href.toLowerCase().indexOf('wizardstart.html') != -1) {
             window.ConnectionManager.clearData();
@@ -1653,12 +1661,14 @@ var AppInfo = {};
 
             } else {
 
-                var apiClient = new MediaBrowser.ApiClient(Logger, Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId);
-                apiClient.enableAutomaticNetworking = false;
-                ConnectionManager.addApiClient(apiClient);
-                Dashboard.importCss(apiClient.getUrl('Branding/Css'));
-                window.ApiClient = apiClient;
-                resolve();
+                require(['apiclient'], function(apiClientFactory) {
+                    var apiClient = new apiClientFactory(Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, window.devicePixelRatio);
+                    apiClient.enableAutomaticNetworking = false;
+                    ConnectionManager.addApiClient(apiClient);
+                    Dashboard.importCss(apiClient.getUrl('Branding/Css'));
+                    window.ApiClient = apiClient;
+                    resolve();
+                });
             }
         });
     }
@@ -1756,6 +1766,7 @@ var AppInfo = {};
         var urlArgs = "v=" + (window.dashboardVersion || new Date().getDate());
 
         var bowerPath = "bower_components";
+        var apiClientBowerPath = "bower_components/emby-apiclient";
 
         // Put the version into the bower path since we can't easily put a query string param on html imports
         // Emby server will handle this
@@ -1778,8 +1789,15 @@ var AppInfo = {};
             masonry: bowerPath + '/masonry/dist/masonry.pkgd.min',
             humanedate: 'components/humanedate',
             jQuery: bowerPath + '/jquery/dist/jquery.min',
-            fastclick: bowerPath + '/fastclick/lib/fastclick'
+            fastclick: bowerPath + '/fastclick/lib/fastclick',
+            events: apiClientBowerPath + '/events',
+            credentialprovider: apiClientBowerPath + '/credentials',
+            apiclient: apiClientBowerPath + '/apiclient',
+            connectionmanagerfactory: apiClientBowerPath + '/connectionmanager',
+            connectservice: apiClientBowerPath + '/connectservice'
         };
+
+        paths.hlsjs = bowerPath + "/hls.js/dist/hls.min";
 
         if (Dashboard.isRunningInCordova()) {
             paths.dialog = "cordova/dialog";
@@ -1791,8 +1809,8 @@ var AppInfo = {};
             paths.dialog = "components/dialog";
             paths.prompt = "components/prompt";
             paths.sharingwidget = "components/sharingwidget";
-            paths.serverdiscovery = "apiclient/serverdiscovery";
-            paths.wakeonlan = "apiclient/wakeonlan";
+            paths.serverdiscovery = apiClientBowerPath + "/serverdiscovery";
+            paths.wakeonlan = apiClientBowerPath + "/wakeonlan";
         }
 
         var sha1Path = bowerPath + "/cryptojslib/components/sha1-min";
@@ -1839,6 +1857,7 @@ var AppInfo = {};
         define("paper-radio-group", ["html!" + bowerPath + "/paper-radio-group/paper-radio-group.html"]);
         define("paper-radio-button", ["html!" + bowerPath + "/paper-radio-button/paper-radio-button.html"]);
         define("neon-animated-pages", ["html!" + bowerPath + "/neon-animation/neon-animated-pages.html"]);
+        define("paper-toggle-button", ["html!" + bowerPath + "/paper-toggle-button/paper-toggle-button.html"]);
 
         define("slide-right-animation", ["html!" + bowerPath + "/neon-animation/animations/slide-right-animation.html"]);
         define("slide-left-animation", ["html!" + bowerPath + "/neon-animation/animations/slide-left-animation.html"]);
@@ -1893,6 +1912,24 @@ var AppInfo = {};
         } else {
             define('registrationservices', ['scripts/registrationservices']);
         }
+
+        if (Dashboard.isRunningInCordova()) {
+            define("localassetmanager", ["cordova/localassetmanager"]);
+            define("fileupload", ["cordova/fileupload"]);
+        } else {
+            define("localassetmanager", [apiClientBowerPath + "/localassetmanager"]);
+            define("fileupload", [apiClientBowerPath + "/fileupload"]);
+        }
+
+        define("apiclient-store", [apiClientBowerPath + "/store"]);
+        define("apiclient-deferred", ["legacy/deferred"]);
+        define("connectionmanager", [apiClientBowerPath + "/connectionmanager"]);
+
+        define("contentuploader", [apiClientBowerPath + "/sync/contentuploader"]);
+        define("serversync", [apiClientBowerPath + "/sync/serversync"]);
+        define("multiserversync", [apiClientBowerPath + "/sync/multiserversync"]);
+        define("offlineusersync", [apiClientBowerPath + "/sync/offlineusersync"]);
+        define("mediasync", [apiClientBowerPath + "/sync/mediasync"]);
     }
 
     function init(hostingAppInfo) {
@@ -1903,12 +1940,6 @@ var AppInfo = {};
             define('appstorage', [], function () {
                 return appStorage;
             });
-        }
-
-        if (Dashboard.isRunningInCordova()) {
-            define("localassetmanager", ["cordova/localassetmanager"]);
-        } else {
-            define("localassetmanager", ["apiclient/localassetmanager"]);
         }
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
@@ -1935,8 +1966,6 @@ var AppInfo = {};
             define("localsync", ["scripts/localsync"]);
         }
 
-        define("connectservice", ["apiclient/connectservice"]);
-
         define("livetvcss", [], function () {
             Dashboard.importCss('css/livetv.css');
             return {};
@@ -1961,21 +1990,10 @@ var AppInfo = {};
             define("searchmenu", ["scripts/searchmenu"]);
         }
 
-        define("contentuploader", ["apiclient/sync/contentuploader"]);
-        define("serversync", ["apiclient/sync/serversync"]);
-        define("multiserversync", ["apiclient/sync/multiserversync"]);
-        define("offlineusersync", ["apiclient/sync/offlineusersync"]);
-        define("mediasync", ["apiclient/sync/mediasync"]);
-
-        if (Dashboard.isRunningInCordova()) {
-            define("fileupload", ["cordova/fileupload"]);
-        } else {
-            define("fileupload", ["apiclient/fileupload"]);
-        }
-
         define("buttonenabled", ["legacy/buttonenabled"]);
 
         var deps = [];
+        deps.push('events');
 
         if (!window.fetch) {
             deps.push('fetch');
@@ -1983,13 +2001,14 @@ var AppInfo = {};
 
         deps.push('scripts/mediacontroller');
         deps.push('scripts/globalize');
-        deps.push('apiclient/events');
 
         deps.push('jQuery');
 
         deps.push('paper-drawer-panel');
 
-        require(deps, function () {
+        require(deps, function (events) {
+
+            window.Events = events;
 
             for (var i in hostingAppInfo) {
                 AppInfo[i] = hostingAppInfo[i];
@@ -2025,19 +2044,19 @@ var AppInfo = {};
         }
 
         var deps = [];
-
-        if (AppInfo.isNativeApp && browserInfo.android) {
-            require(['cordova/android/logging']);
-        }
+        deps.push('connectionmanagerfactory');
+        deps.push('credentialprovider');
 
         deps.push('appstorage');
         deps.push('scripts/mediaplayer');
         deps.push('scripts/appsettings');
-        deps.push('apiclient/apiclient');
-        deps.push('apiclient/connectionmanager');
-        deps.push('apiclient/credentials');
 
-        require(deps, function () {
+        require(deps, function (connectionManagerExports, credentialProviderFactory) {
+
+            window.MediaBrowser = window.MediaBrowser || {};
+            for (var i in connectionManagerExports) {
+                MediaBrowser[i] = connectionManagerExports[i];
+            }
 
             // TODO: This needs to be deprecated, but it's used heavily
             $.fn.checked = function (value) {
@@ -2087,8 +2106,7 @@ var AppInfo = {};
             promises.push(getRequirePromise(deps));
 
             promises.push(Globalize.ensure());
-            promises.push(createConnectionManager(capabilities));
-
+            promises.push(createConnectionManager(credentialProviderFactory, capabilities));
 
             Promise.all(promises).then(function () {
 
@@ -2184,7 +2202,7 @@ var AppInfo = {};
         deps.push('scripts/sync');
         deps.push('scripts/backdrops');
         deps.push('scripts/librarymenu');
-        deps.push('apiclient/deferred');
+        deps.push('apiclient-deferred');
 
         deps.push('css!css/card.css');
 
@@ -2410,8 +2428,7 @@ var AppInfo = {};
     var initialDependencies = [];
 
     initialDependencies.push('isMobile');
-    initialDependencies.push('apiclient/logger');
-    initialDependencies.push('apiclient/store');
+    initialDependencies.push('apiclient-store');
     initialDependencies.push('scripts/extensions');
 
     var supportsNativeWebComponents = 'registerElement' in document && 'content' in document.createElement('template');
