@@ -142,7 +142,7 @@ TabBar.prototype.selectItem = function ( tab ) {
  */
 TabBar.prototype.itemSelected = function ( tag ) {
     this.selectedTabBarItem = tag;
-    if ( typeof(this.tabBarCallbacks[tag].onSelect) == 'function' )
+    if ( tag != null && typeof(this.tabBarCallbacks[tag].onSelect) == 'function' )
         this.tabBarCallbacks[tag].onSelect( this.tabBarCallbacks[tag].name );
 };
 

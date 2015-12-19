@@ -1,1 +1,1 @@
-!function(n){function e(){return new Promise(function(n){n()})}n.WakeOnLan={send:e}}(window);
+define([],function(){function n(){return new Promise(function(n){n()})}return{send:n}});

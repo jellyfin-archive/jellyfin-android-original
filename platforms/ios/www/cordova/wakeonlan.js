@@ -1,1 +1,1 @@
-!function(e){e.WakeOnLan={send:function(r){var n=DeferredBuilder.Deferred(),o=e.chrome;if(!o)return n.resolve(),n.promise();r.Port||9;return n.resolve(),n.promise()}}}(window);
+define([],function(){function n(n){return new Promise(function(r){var e=window.chrome;if(!e)return void r();n.Port||9;r()})}return{send:n}});
