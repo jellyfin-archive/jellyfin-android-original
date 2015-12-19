@@ -71,10 +71,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"CollectionRepeatImage\"><param name=\"ios-package\" value=\"CollectionRepeatImage\" /></feature>",
                             "count": 1
                         },
@@ -124,6 +120,10 @@
                         },
                         {
                             "xml": "<feature name=\"SocialSharing\"><param name=\"ios-package\" value=\"SocialSharing\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -187,9 +187,6 @@
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cc.fovea.cordova.purchase": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -230,6 +227,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-x-socialsharing": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
@@ -327,14 +327,6 @@
             "pluginId": "com.telerik.plugins.wkwebview",
             "clobbers": [
                 "wkwebview"
-            ]
-        },
-        {
-            "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
-            "id": "cc.fovea.cordova.purchase.InAppPurchase",
-            "pluginId": "cc.fovea.cordova.purchase",
-            "clobbers": [
-                "store"
             ]
         },
         {
@@ -631,6 +623,14 @@
             "clobbers": [
                 "window.plugins.socialsharing"
             ]
+        },
+        {
+            "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+            "id": "cc.fovea.cordova.purchase.InAppPurchase",
+            "pluginId": "cc.fovea.cordova.purchase",
+            "clobbers": [
+                "store"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -647,7 +647,6 @@
         "uk.co.whiteoctober.cordova.appversion": "0.1.7",
         "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
         "com.telerik.plugins.wkwebview": "0.6.3",
-        "cc.fovea.cordova.purchase": "4.0.0",
         "cordova-plugin-crosswalk-webview": "1.4.0-dev",
         "com.mallzee.collectionrepeatimage": "0.0.1",
         "cordova-plugin-chrome-apps-common": "1.0.7",
@@ -661,6 +660,7 @@
         "cordova-plugin-statusbar": "2.0.0",
         "cordova-plugin-network-information": "1.1.0",
         "cordova-plugin-media": "1.0.1",
-        "cordova-plugin-x-socialsharing": "5.0.7"
+        "cordova-plugin-x-socialsharing": "5.0.7",
+        "cc.fovea.cordova.purchase": "4.0.0"
     }
 }

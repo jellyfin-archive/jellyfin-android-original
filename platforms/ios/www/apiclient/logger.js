@@ -1,1 +1,0 @@
-var Logger={log:function(g){}};

@@ -166,17 +166,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cc.fovea.cordova.purchase": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/j3k0/cordova-plugin-purchase",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {
-            "BILLING_KEY": "DF"
-        }
-    },
     "cordova-plugin-crosswalk-webview": {
         "source": {
             "type": "git",
@@ -266,5 +255,15 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cc.fovea.cordova.purchase": {
+        "source": {
+            "type": "registry",
+            "id": "cc.fovea.cordova.purchase"
+        },
+        "is_top_level": true,
+        "variables": {
+            "BILLING_KEY": "0"
+        }
     }
 }

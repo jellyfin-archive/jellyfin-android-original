@@ -95,14 +95,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
-        "id": "cc.fovea.cordova.purchase.InAppPurchase",
-        "pluginId": "cc.fovea.cordova.purchase",
-        "clobbers": [
-            "store"
-        ]
-    },
-    {
         "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImage.js",
         "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImage",
         "pluginId": "com.mallzee.collectionrepeatimage",
@@ -396,6 +388,14 @@ module.exports = [
         "clobbers": [
             "window.plugins.socialsharing"
         ]
+    },
+    {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+        "id": "cc.fovea.cordova.purchase.InAppPurchase",
+        "pluginId": "cc.fovea.cordova.purchase",
+        "clobbers": [
+            "store"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -414,7 +414,6 @@ module.exports.metadata =
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
     "com.telerik.plugins.wkwebview": "0.6.3",
-    "cc.fovea.cordova.purchase": "4.0.0",
     "cordova-plugin-crosswalk-webview": "1.4.0-dev",
     "com.mallzee.collectionrepeatimage": "0.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
@@ -428,7 +427,8 @@ module.exports.metadata =
     "cordova-plugin-statusbar": "2.0.0",
     "cordova-plugin-network-information": "1.1.0",
     "cordova-plugin-media": "1.0.1",
-    "cordova-plugin-x-socialsharing": "5.0.7"
+    "cordova-plugin-x-socialsharing": "5.0.7",
+    "cc.fovea.cordova.purchase": "4.0.0"
 }
 // BOTTOM OF METADATA
 });
