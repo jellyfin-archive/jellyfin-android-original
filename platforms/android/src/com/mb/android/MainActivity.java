@@ -47,6 +47,7 @@ import com.mb.android.media.RemotePlayerService;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
+import com.mb.android.webviews.MySystemWebView;
 import com.mb.android.webviews.MyXWalkWebViewEngine;
 import com.mb.android.webviews.NativeWebView;
 
@@ -200,7 +201,7 @@ public class MainActivity extends CordovaActivity
 
         if (enableSystemWebView()){
 
-            engine =  new SystemWebViewEngine(this, preferences);
+            engine =  new SystemWebViewEngine(new MySystemWebView(this), preferences);
             WebView webkitView = (WebView)engine.getView();
             webView = new NativeWebView(webkitView);
 

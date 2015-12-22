@@ -1443,9 +1443,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         updateNavStatus();
 
         if (apiHelper.getMediaSource().getDefaultSubtitleStreamIndex() == null) {
-            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), -1);
+            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), -1, true);
         } else {
-            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), apiHelper.getMediaSource().getDefaultSubtitleStreamIndex());
+            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), apiHelper.getMediaSource().getDefaultSubtitleStreamIndex(), true);
         }
     }
 
@@ -2068,7 +2068,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                         int trackID = Integer.parseInt(value);
                         if (trackID < -1)
                             return false;
-                        apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), trackID);
+                        apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), trackID, false);
                         return true;
                     }
                 });
@@ -2139,7 +2139,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             mService.setTranscodingOffsetPositionTicks(startPositionTicks);
 
             // If transcoding with a known runtime, switch to .ts to work around the Vlc seek issue with HLS
-            return location.replace("master.m3u8", "stream.ts") + "&StartTimeTicks=" + String.valueOf(startPositionTicks);
+            return location.replace("master.m3u8", "stream.mkv") + "&StartTimeTicks=" + String.valueOf(startPositionTicks);
         }
 
         mService.setEnableServerSeek(false);

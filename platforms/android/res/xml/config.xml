@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="20000550" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.50" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="20000554" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.54" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
@@ -18,6 +18,9 @@
     </feature>
     <feature name="AppVersion">
         <param name="android-package" value="uk.co.whiteoctober.cordova.AppVersion" />
+    </feature>
+    <feature name="InAppBillingPlugin">
+        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
     </feature>
     <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
     <preference default="15+" name="xwalkVersion" />
@@ -51,9 +54,6 @@
         <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
     </feature>
     <preference name="AndroidPersistentFileLocation" value="Internal" />
-    <feature name="InAppBillingPlugin">
-        <param name="android-package" value="com.smartmobilesoftware.inappbilling.InAppBillingPlugin" />
-    </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="22" />
     <preference name="StatusBarOverlaysWebView" value="false" />
