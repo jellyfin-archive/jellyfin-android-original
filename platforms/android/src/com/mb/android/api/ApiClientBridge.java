@@ -70,7 +70,9 @@ public class ApiClientBridge {
     @org.xwalk.core.JavascriptInterface
     public void init(String appName, String appVersion, String deviceId, String deviceName, String capabilitiesJson) {
 
-        logger.Info("ApiClientBridge.init");
+        logger.Info("AppVersion: %s", appVersion);
+        logger.Info("DeviceId: %s", deviceId);
+        logger.Info("DeviceName: %s", deviceName);
 
         ApiEventListener apiEventListener = new ApiEventListener();
 

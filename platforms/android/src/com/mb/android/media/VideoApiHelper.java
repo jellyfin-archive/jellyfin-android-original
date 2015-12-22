@@ -167,7 +167,7 @@ public class VideoApiHelper {
         }
     }
 
-    public void setSubtitleStreamIndex(MediaPlayer vlc, int index){
+    public void setSubtitleStreamIndex(MediaPlayer vlc, int index, boolean isInitialPlayback){
 
         logger.Info("setSubtitleStreamIndex %s", index);
 
@@ -204,7 +204,8 @@ public class VideoApiHelper {
             return;
         }
 
-        if (playbackStartInfo.getSubtitleStreamIndex() != null && index == playbackStartInfo.getSubtitleStreamIndex()) {
+        if (!isInitialPlayback && playbackStartInfo.getSubtitleStreamIndex() != null && index == playbackStartInfo.getSubtitleStreamIndex()) {
+            logger.Info("returning from setSubtitleStreamIndex because index is already set");
             return;
         }
 
@@ -273,12 +274,16 @@ public class VideoApiHelper {
 
     private void enableManualExternalSubtitleTrack(final MediaPlayer vlc, final MediaStream stream) {
 
-        String url = apiClient.GetApiUrl(stream.getDeliveryUrl()).replace("srt", "JSON");
+        final String url = apiClient.GetApiUrl(stream.getDeliveryUrl()).replace("srt", "JSON");
+
+        logger.Info("Downloading subtitles from %s", url);
 
         apiClient.getSubtitles(url, new Response<SubtitleTrackInfo>() {
 
             @Override
             public void onResponse(final SubtitleTrackInfo trackInfo) {
+
+                logger.Info("Downloaded subtitles from %s. Sending subtitles to UI.", url);
 
                 activity.updateExternalSubtitles(trackInfo);
                 playbackStartInfo.setSubtitleStreamIndex(stream.getIndex());

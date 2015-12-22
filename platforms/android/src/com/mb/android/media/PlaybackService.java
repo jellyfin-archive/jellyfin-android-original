@@ -258,6 +258,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         } catch (PackageManager.NameNotFoundException e) {
             mPebbleEnabled = false;
         }
+
     }
 
     /**
