@@ -1060,7 +1060,7 @@ var Dashboard = {
             case 'SetRepeatMode':
                 break;
             default:
-                Logger.log('Unrecognized command: ' + cmd.Name);
+                console.log('Unrecognized command: ' + cmd.Name);
                 break;
         }
     },
@@ -1760,8 +1760,8 @@ var AppInfo = {};
             return;
         }
 
-        if (month == 11 && day >= 18 && day <= 26) {
-            //require(['themes/holiday/theme']);
+        if (month == 11 && day >= 21 && day <= 26) {
+            require(['themes/holiday/theme']);
             return;
         }
     }
@@ -1771,13 +1771,14 @@ var AppInfo = {};
         var urlArgs = "v=" + (window.dashboardVersion || new Date().getDate());
 
         var bowerPath = "bower_components";
-        var apiClientBowerPath = "bower_components/emby-apiclient";
 
         // Put the version into the bower path since we can't easily put a query string param on html imports
         // Emby server will handle this
         if (!Dashboard.isRunningInCordova()) {
             bowerPath += window.dashboardVersion;
         }
+
+        var apiClientBowerPath = bowerPath + "/emby-apiclient";
 
         var paths = {
             velocity: bowerPath + "/velocity/velocity.min",
@@ -2576,7 +2577,7 @@ pageClassOn('pageshow', "page", function () {
 
         if (!isConnectMode && this.id !== "loginPage" && !page.classList.contains('forgotPasswordPage') && !page.classList.contains('forgotPasswordPinPage') && !page.classList.contains('wizardPage') && this.id !== 'publicSharedItemPage') {
 
-            Logger.log('Not logged into server. Redirecting to login.');
+            console.log('Not logged into server. Redirecting to login.');
             Dashboard.logout();
             return;
         }
@@ -2603,7 +2604,7 @@ window.addEventListener("beforeunload", function () {
         });
 
         if (!localActivePlayers.length) {
-            Logger.log('Sending close web socket command');
+            console.log('Sending close web socket command');
             apiClient.closeWebSocket();
         }
     }
