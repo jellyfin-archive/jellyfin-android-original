@@ -250,15 +250,12 @@
 
         self.init = function () {
 
-            var deferred = DeferredBuilder.Deferred();
+            return new Promise(function (resolve, reject) {
 
-            window.audioplayer.configure(successHandler, errorHandler);
+                window.audioplayer.configure(successHandler, errorHandler);
 
-            setTimeout(function () {
-                deferred.resolve();
-            }, 500);
-
-            return deferred.promise();
+                setTimeout(resolve, 500);
+            });
         };
     }
 
