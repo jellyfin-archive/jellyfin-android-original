@@ -14,18 +14,17 @@
     var fileSystem;
     function getFileSystem() {
 
-        var deferred = DeferredBuilder.Deferred();
+        return new Promise(function (resolve, reject) {
 
-        if (fileSystem) {
-            deferred.resolveWith(null, [fileSystem]);
-        } else {
-            requestFileSystem(PERSISTENT, 0, function (fs) {
-                fileSystem = fs;
-                deferred.resolveWith(null, [fileSystem]);
-            });
-        }
-
-        return deferred.promise();
+            if (fileSystem) {
+                resolve(fileSystem);
+            } else {
+                requestFileSystem(PERSISTENT, 0, function (fs) {
+                    fileSystem = fs;
+                    resolve(fileSystem);
+                });
+            }
+        });
     }
 
     function indexedDbBlobImageStore() {
@@ -72,34 +71,34 @@
                 originalUrl += "&accept=webp";
             }
 
-            var deferred = DeferredBuilder.Deferred();
-            var key = getCacheKey(originalUrl);
+            return new Promise(function (resolve, reject) {
 
-            //Logger.log('getImageUrl:' + originalUrl);
+                var key = getCacheKey(originalUrl);
 
-            getFileSystem().then(function (fileSystem) {
-                var path = fileSystem.root.toURL() + "/emby/cache/" + key;
+                //Logger.log('getImageUrl:' + originalUrl);
 
-                resolveLocalFileSystemURL(path, function (fileEntry) {
-                    var localUrl = normalizeReturnUrl(fileEntry.toURL());
-                    //Logger.log('returning cached file: ' + localUrl);
-                    deferred.resolveWith(null, [localUrl]);
+                getFileSystem().then(function (fileSystem) {
+                    var path = fileSystem.root.toURL() + "/emby/cache/" + key;
 
-                }, function () {
+                    resolveLocalFileSystemURL(path, function (fileEntry) {
+                        var localUrl = normalizeReturnUrl(fileEntry.toURL());
+                        //Logger.log('returning cached file: ' + localUrl);
+                        resolve(localUrl);
 
-                    //Logger.log('downloading: ' + originalUrl);
-                    var ft = new FileTransfer();
-                    ft.download(originalUrl, path, function (entry) {
+                    }, function () {
 
-                        var localUrl = normalizeReturnUrl(entry.toURL());
+                        //Logger.log('downloading: ' + originalUrl);
+                        var ft = new FileTransfer();
+                        ft.download(originalUrl, path, function (entry) {
 
-                        //Logger.log(localUrl);
-                        deferred.resolveWith(null, [localUrl]);
+                            var localUrl = normalizeReturnUrl(entry.toURL());
+
+                            //Logger.log(localUrl);
+                            resolve(localUrl);
+                        });
                     });
                 });
             });
-
-            return deferred.promise();
         };
 
         self.setImageInto = function (elem, url) {

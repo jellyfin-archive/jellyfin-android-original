@@ -30,27 +30,27 @@
 
     function getDownloadSpeed(bytes, url) {
 
-        var deferred = DeferredBuilder.Deferred();
+        return new Promise(function (resolve, reject) {
 
-        ApiClientBridge.getDownloadSpeed(bytes, url);
+            ApiClientBridge.getDownloadSpeed(bytes, url);
 
-        Events.on(AndroidAjax, 'downloadspeedresponse', function (e, response) {
+            Events.on(AndroidAjax, 'downloadspeedresponse', function (e, response) {
 
-            Events.off(AndroidAjax, 'downloadspeedresponse');
+                Events.off(AndroidAjax, 'downloadspeedresponse');
 
-            if (response) {
+                if (response) {
 
-                deferred.resolveWith(null, [response]);
-            }
-            else {
+                    resolve(response);
+                }
+                else {
 
-                // Need to mimic the jquery ajax error response
-                deferred.reject();
-            }
+                    // Need to mimic the jquery ajax error response
+                    reject();
+                }
+
+            });
 
         });
-
-        return deferred.promise();
     }
 
     function initApiClient(newApiClient) {

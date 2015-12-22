@@ -254,9 +254,10 @@
 
         self.init = function () {
 
-            var deferred = DeferredBuilder.Deferred();
-            deferred.resolve();
-            return deferred.promise();
+            return new Promise(function (resolve, reject) {
+
+                resolve();
+            });
         };
 
         self.onActivityClosed = function (wasStopped, hasError, endPositionMs) {
