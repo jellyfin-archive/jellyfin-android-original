@@ -1,1 +1,1 @@
-define([],function(){return{cleanPassword:function(l){return l=l||"",l=replaceAll(l,"&","&amp;"),l=replaceAll(l,"/","&#092;"),l=replaceAll(l,"!","&#33;"),l=replaceAll(l,"$","&#036;"),l=replaceAll(l,'"',"&quot;"),l=replaceAll(l,"<","&lt;"),l=replaceAll(l,">","&gt;"),l=replaceAll(l,"'","&#39;")}}});
+define([],function(){function n(n,t,r){return n.split(t).join(r)}return{cleanPassword:function(t){return t=t||"",t=n(t,"&","&amp;"),t=n(t,"/","&#092;"),t=n(t,"!","&#33;"),t=n(t,"$","&#036;"),t=n(t,'"',"&quot;"),t=n(t,"<","&lt;"),t=n(t,">","&gt;"),t=n(t,"'","&#39;")}}});

@@ -518,7 +518,7 @@
             currentSession.on('message', handleMessage);
             currentSession.on('disconnect', handleSessionDisconnect);
 
-            if (connectToSession || browserInfo.safari) {
+            if (connectToSession /*|| browserInfo.safari*/) {
                 currentSession.connect().success(function () {
 
                     onWebAppSessionConnect(currentSession, device);
