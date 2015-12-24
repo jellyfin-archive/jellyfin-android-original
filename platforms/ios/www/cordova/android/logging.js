@@ -1,1 +1,0 @@
-window.Logger={log:function(g){LoggingBridge.log(g)}};

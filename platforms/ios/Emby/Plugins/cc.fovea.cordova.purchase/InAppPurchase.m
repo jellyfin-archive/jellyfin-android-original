@@ -498,10 +498,6 @@ unsigned char* unbase64( const char* ascii, int len, int *flen )
             [callbackArgs JSONSerialize]];
         // DLog(@"js: %@", js);
         [self.commandDelegate evalJs:js];
-        
-        if (canFinish){
-            [[SKPaymentQueue defaultQueue] startDownloads:downloads];
-        }
 
         if (downloads && [downloads count] > 0) {
             [[SKPaymentQueue defaultQueue] startDownloads:downloads];
@@ -652,7 +648,7 @@ static NSString *rootAppleCA = @"MIIEuzCCA6OgAwIBAgIBAjANBgkqhkiG9w0BAQUFADBiMQs
     NSString *base64 = nil;
     NSData *receiptData = [self appStoreReceipt];
     if (receiptData != nil) {
-        base64 = [receiptData convertToBase64];
+        base64 = [receiptData base64EncodedStringWithOptions:0];
         // DLog(@"base64 receipt: %@", base64);
     }
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
@@ -883,7 +879,7 @@ static NSString *rootAppleCA = @"MIIEuzCCA6OgAwIBAgIBAjANBgkqhkiG9w0BAQUFADBiMQs
     NSString *base64 = nil;
     NSData *receiptData = [self.plugin appStoreReceipt];
     if (receiptData != nil) {
-        base64 = [receiptData convertToBase64];
+        base64 = [receiptData base64EncodedStringWithOptions:0];
         // DLog(@"base64 receipt: %@", base64);
     }
     NSBundle *bundle = [NSBundle mainBundle];
