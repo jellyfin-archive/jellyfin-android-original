@@ -66,24 +66,6 @@
             Events.trigger(self, "positionchange", [state]);
         });
 
-        var endpointInfo;
-        function getEndpointInfo() {
-
-            if (endpointInfo) {
-
-                return new Promise(function (resolve, reject) {
-
-                    resolve(endpointInfo);
-                });
-            }
-
-            return ApiClient.getJSON(ApiClient.getUrl('System/Endpoint')).then(function (info) {
-
-                endpointInfo = info;
-                return info;
-            });
-        }
-
         function sendMessageToDevice(message) {
 
             var bitrateSetting = AppSettings.maxChromecastBitrate();
@@ -100,19 +82,13 @@
 
             Logger.log('Sending command to Chromecast: ' + message.command);
 
-            getEndpointInfo().then(function (endpoint) {
+            require(['chromecasthelpers'], function (chromecasthelpers) {
 
-                if (endpoint.IsInNetwork) {
-                    ApiClient.getPublicSystemInfo().then(function (info) {
-
-                        message.serverAddress = info.LocalAddress;
-                        sendMessageInternal(message);
-                    });
-                } else {
+                chromecasthelpers.getServerAddress(ApiClient).then(function (serverAddress) {
+                    message.serverAddress = serverAddress;
                     sendMessageInternal(message);
-                }
+                });
             });
-
         }
 
         function sendMessageInternal(message) {
