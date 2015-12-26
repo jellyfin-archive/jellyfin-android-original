@@ -34,7 +34,7 @@ buildscript {
     // and https://issues.apache.org/jira/browse/CB-8143
     if (gradle.gradleVersion >= "2.2") {
         dependencies {
-            classpath 'com.android.tools.build:gradle:1.0.0+'
+            classpath 'com.android.tools.build:gradle:1.5.0'
         }
     } else if (gradle.gradleVersion >= "2.1") {
         dependencies {
@@ -250,8 +250,8 @@ android {
 	defaultConfig.multiDexEnabled = true
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     signingConfigs {
@@ -289,14 +289,14 @@ android {
 
 dependencies {
     compile 'com.connectsdk:connect-sdk-android:1.6.0'
-    compile 'com.google.code.gson:gson:2.3.+'
-    compile 'com.squareup.okhttp:okhttp:2+'
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'com.squareup.okhttp:okhttp:2.7.0'
     compile 'com.android.support:support-v4:23.1.0'
     compile 'com.gu:option:1.3'
-    compile 'net.rdrei.android.dirchooser:library:3.0@aar'
-    compile 'org.slf4j:slf4j-api:1.7.10'
-    compile 'com.github.tony19:logback-android-core:1.1.1-3'
-    compile 'com.github.tony19:logback-android-classic:1.1.1-3'
+	compile 'net.rdrei.android.dirchooser:library:3.0@aar'
+    compile 'org.slf4j:slf4j-api:1.7.13'
+    compile 'com.github.tony19:logback-android-core:1.1.1-4'
+    compile 'com.github.tony19:logback-android-classic:1.1.1-4'
     compile 'com.android.support:multidex:1.0.0'
     // SUB-PROJECT DEPENDENCIES START
     debugCompile project(path: "CordovaLib", configuration: "debug")
@@ -306,7 +306,7 @@ dependencies {
     compile files('libs/emby.apiclient.jar')
     compile files('libs/emby.apiclient.android.jar')
     compile files('libs/volley.jar')
-    compile 'com.google.guava:guava:18.0'
+    compile 'com.google.guava:guava:19.0'
     // FLAVOR-SPECIFIC DEPENDENCIES
     googlex86Compile(name: 'emby.googleiap', ext: 'aar')
     googlearmv7Compile(name: 'emby.googleiap', ext: 'aar')
