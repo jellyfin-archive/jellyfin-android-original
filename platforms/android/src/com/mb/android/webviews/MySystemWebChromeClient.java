@@ -28,7 +28,7 @@ public class MySystemWebChromeClient extends SystemWebChromeClient {
     {
         if (consoleMessage.message() != null) {
 
-            AppLogger.getLogger(context).Info("%s: Line %d : %s", consoleMessage.sourceId(), consoleMessage.lineNumber(), consoleMessage.message());
+            AppLogger.getLogger(context).Info("%s: Line %s : %s", consoleMessage.sourceId(), consoleMessage.lineNumber(), consoleMessage.message());
         }
 
         return super.onConsoleMessage(consoleMessage);
