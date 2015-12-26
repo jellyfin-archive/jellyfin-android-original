@@ -1,0 +1,1 @@
+!function(){function a(a){a.getPlayerState().then(function(i){var t=i.NowPlayingItem;if(t){var n=i.PlayState||{};a.stop();var o=t.Id,e=n.PositionTicks||0;MediaController.play({ids:[o],startPositionTicks:e})}})}Events.on(MediaController,"playerchange",function(i,t,n,o){o&&o.isLocalPlayer&&(t.isLocalPlayer||o.isPlaying()&&a(o))})}();

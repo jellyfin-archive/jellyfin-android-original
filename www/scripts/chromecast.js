@@ -1,6 +1,31 @@
 ﻿(function (window, chrome, console) {
 
     // Based on https://github.com/googlecast/CastVideos-chrome/blob/master/CastVideos.js
+    var currentResolve;
+    var currentReject;
+
+    var PlayerName = 'Chromecast';
+
+    function sendConnectionResult(isOk) {
+
+        var resolve = currentResolve;
+        var reject = currentReject;
+
+        currentResolve = null;
+        currentReject = null;
+
+        if (isOk) {
+            if (resolve) {
+                resolve();
+            }
+        } else {
+            if (reject) {
+                reject();
+            } else {
+                MediaController.removeActivePlayer(PlayerName);
+            }
+        }
+    }
 
     /**
      * Constants of states for Chromecast device 
@@ -25,8 +50,6 @@
         'SEEKING': 'SEEKING',
         'ERROR': 'ERROR'
     };
-
-    var PlayerName = 'Chromecast';
 
     var applicationID = "2D4B1DA3";
     var messageNamespace = 'urn:x-cast:com.connectsdk';
@@ -191,7 +214,7 @@
             console.log('sessionUpdateListener: setting currentMediaSession to null');
             this.currentMediaSession = null;
 
-            MediaController.removeActivePlayer(PlayerName);
+            sendConnectionResult(false);
         }
     };
 
@@ -257,7 +280,7 @@
 
         //});
 
-        MediaController.removeActivePlayer(PlayerName);
+        sendConnectionResult(false);
     };
 
     /**
@@ -313,24 +336,6 @@
         });
     };
 
-    var endpointInfo;
-    function getEndpointInfo() {
-
-        if (endpointInfo) {
-
-            return new Promise(function (resolve, reject) {
-
-                resolve(endpointInfo);
-            });
-        }
-
-        return ApiClient.getJSON(ApiClient.getUrl('System/Endpoint')).then(function (info) {
-
-            endpointInfo = info;
-            return info;
-        });
-    }
-
     CastPlayer.prototype.sendMessage = function (message) {
 
         var player = this;
@@ -353,17 +358,12 @@
             supportsAc3: AppSettings.enableChromecastAc3()
         });
 
-        getEndpointInfo().then(function (endpoint) {
+        require(['chromecasthelpers'], function (chromecasthelpers) {
 
-            if (endpoint.IsInNetwork) {
-                ApiClient.getPublicSystemInfo().then(function (info) {
-
-                    message.serverAddress = info.LocalAddress;
-                    player.sendMessageInternal(message);
-                });
-            } else {
+            chromecasthelpers.getServerAddress(ApiClient).then(function (serverAddress) {
+                message.serverAddress = serverAddress;
                 player.sendMessageInternal(message);
-            }
+            });
         });
     };
 
@@ -485,7 +485,11 @@
 
         Events.on(castPlayer, "connect", function (e) {
 
-            MediaController.setActivePlayer(PlayerName, self.getCurrentTargetInfo());
+            if (currentResolve) {
+                sendConnectionResult(true);
+            } else {
+                MediaController.setActivePlayer(PlayerName, self.getCurrentTargetInfo());
+            }
 
             console.log('cc: connect');
             // Reset this so the next query doesn't make it appear like content is playing.
@@ -832,7 +836,19 @@
         self.tryPair = function (target) {
 
             return new Promise(function (resolve, reject) {
-                resolve();
+                if (castPlayer.deviceState != DEVICE_STATE.ACTIVE && castPlayer.isInitialized) {
+
+                    currentResolve = resolve;
+                    currentReject = reject;
+
+                    castPlayer.launchApp();
+                } else {
+
+                    currentResolve = null;
+                    currentReject = null;
+
+                    reject();
+                }
             });
         };
     }
@@ -842,14 +858,6 @@
         castPlayer = new CastPlayer();
 
         MediaController.registerPlayer(new chromecastPlayer());
-
-        Events.on(MediaController, 'playerchange', function (e, newPlayer, newTarget) {
-            if (newPlayer.name == PlayerName) {
-                if (castPlayer.deviceState != DEVICE_STATE.ACTIVE && castPlayer.isInitialized) {
-                    castPlayer.launchApp();
-                }
-            }
-        });
     }
 
     requirejs(["https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"], initializeChromecast);

@@ -66,11 +66,14 @@
         }
     }
 
-    function addUserToHeader(user) {
+    function updateUserInHeader(user) {
 
         var header = document.querySelector('.viewMenuBar');
 
-        if (user.name) {
+        var headerUserButton = header.querySelector('.headerUserButton');
+        var hasImage;
+
+        if (user && user.name) {
             if (user.imageUrl && AppInfo.enableUserImage) {
 
                 var userButtonHeight = 26;
@@ -81,16 +84,30 @@
                     url += "&height=" + (userButtonHeight * Math.max(devicePixelRatio || 1, 2));
                 }
 
-                var headerUserButton = header.querySelector('.headerUserButton');
                 if (headerUserButton) {
                     headerUserButton.icon = null;
                     headerUserButton.src = url;
                     headerUserButton.classList.add('headerUserButtonRound');
+                    hasImage = true;
                 }
             }
         }
 
-        updateLocalUser(user.localUser);
+        if (headerUserButton && !hasImage) {
+            headerUserButton.icon = 'person';
+            headerUserButton.src = null;
+            headerUserButton.classList.remove('headerUserButtonRound');
+
+            // Looks like a bug in paper-icon-button that this doesn't get removed
+            var headerUserButtonImg = headerUserButton.querySelector('img');
+            if (headerUserButtonImg) {
+                headerUserButtonImg.parentNode.removeChild(headerUserButtonImg);
+            }
+        }
+        if (user) {
+            updateLocalUser(user.localUser);
+        }
+
         requiresUserRefresh = false;
     }
 
@@ -138,11 +155,6 @@
                 dashboardEntryHeaderButton.classList.add('hide');
             }
         }
-    }
-
-    function removeUserFromHeader() {
-        
-        updateLocalUser(null);
     }
 
     function bindMenuEvents() {
@@ -779,7 +791,7 @@
         }
 
         if (requiresUserRefresh) {
-            ConnectionManager.user(window.ApiClient).then(addUserToHeader);
+            ConnectionManager.user(window.ApiClient).then(updateUserInHeader);
         }
     }
 
@@ -938,13 +950,13 @@
     Events.on(ConnectionManager, 'localusersignedin', function (e, user) {
         requiresLibraryMenuRefresh = true;
         requiresDrawerRefresh = true;
-        ConnectionManager.user(ConnectionManager.getApiClient(user.ServerId)).then(addUserToHeader);
+        ConnectionManager.user(ConnectionManager.getApiClient(user.ServerId)).then(updateUserInHeader);
     });
 
     Events.on(ConnectionManager, 'localusersignedout', function () {
         requiresLibraryMenuRefresh = true;
         requiresDrawerRefresh = true;
-        removeUserFromHeader();
+        updateUserInHeader();
     });
 
     Events.on(MediaController, 'playerchange', function () {

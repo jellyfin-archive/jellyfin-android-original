@@ -1794,6 +1794,7 @@ var AppInfo = {};
             headroom: bowerPath + '/headroom.js/dist/headroom.min',
             masonry: bowerPath + '/masonry/dist/masonry.pkgd.min',
             humanedate: 'components/humanedate',
+            chromecasthelpers: 'components/chromecasthelpers',
             jQuery: bowerPath + '/jquery/dist/jquery.min',
             fastclick: bowerPath + '/fastclick/lib/fastclick',
             events: apiClientBowerPath + '/events',
@@ -2266,6 +2267,8 @@ var AppInfo = {};
 
                 postInitDependencies.push('cordova/ios/tabbar');
             }
+
+            postInitDependencies.push('components/remotecontrolautoplay');
 
             require(postInitDependencies);
         });
