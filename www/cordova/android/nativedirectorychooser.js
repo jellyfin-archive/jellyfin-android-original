@@ -1,25 +1,31 @@
 ﻿(function () {
 
-    var currentDeferred;
+    var currentResolve;
+    var currentReject;
+
     function chooseDirectory() {
-        var deferred = DeferredBuilder.Deferred();
-        AndroidDirectoryChooser.chooseDirectory();
-        currentDeferred = deferred;
-        return deferred.promise();
+        return new Promise(function (resolve, reject) {
+
+            currentResolve = resolve;
+            currentReject = reject;
+
+            AndroidDirectoryChooser.chooseDirectory();
+        });
     }
 
     function onChosen(path) {
 
-        var deferred = currentDeferred;
+        var resolve = currentResolve;
 
-        if (deferred) {
+        if (resolve) {
             if (path) {
-                deferred.resolveWith(null, [path]);
+                resolve(path);
             } else {
-                deferred.reject();
+                reject();
             }
 
-            currentDeferred = null;
+            currentResolve = null;
+            currentReject = null;
         }
     }
 
