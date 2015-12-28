@@ -494,7 +494,7 @@
             currentSession.on('message', handleMessage);
             currentSession.on('disconnect', handleSessionDisconnect);
 
-            if (connectToSession /*|| browserInfo.safari*/) {
+            if (connectToSession) {
                 currentSession.connect().success(function () {
 
                     onWebAppSessionConnect(currentSession, device);
@@ -529,10 +529,11 @@
                 // Release session to free up memory
                 session.disconnect();
                 session.release();
+
+                currentWebAppSession = null;
             }
 
             self.lastPlayerData = {};
-            currentWebAppSession = null;
         }
 
         function tryLaunchWebSession(device) {
@@ -669,14 +670,33 @@
             }, 1000);
         };
 
+        function tryResume(deviceId, retry) {
+
+            var device = getDeviceList().filter(function (d) {
+
+                return d.getId() == deviceId;
+            })[0];
+
+            if (device) {
+                self.tryPair({
+                    id: deviceId
+                });
+            } else if (retry) {
+                setTimeout(function () {
+                    tryResume(deviceId, false);
+                }, 2000);
+            }
+        }
+
         function onResume() {
 
             var deviceId = currentDeviceId;
 
             if (deviceId) {
-                self.tryPair({
-                    id: deviceId
-                });
+
+                setTimeout(function () {
+                    tryResume(deviceId, true);
+                }, 0);
             }
         }
 
