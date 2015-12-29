@@ -41,7 +41,7 @@
 
         Events.on(castPlayer, "playbackstart", function (e, data) {
 
-            Logger.log('cc: playbackstart');
+            console.log('cc: playbackstart');
 
             var state = self.getPlayerStateInternal(data);
             Events.trigger(self, "playbackstart", [state]);
@@ -49,7 +49,7 @@
 
         Events.on(castPlayer, "playbackstop", function (e, data) {
 
-            Logger.log('cc: playbackstop');
+            console.log('cc: playbackstop');
             var state = self.getPlayerStateInternal(data);
 
             Events.trigger(self, "playbackstop", [state]);
@@ -60,7 +60,7 @@
 
         Events.on(castPlayer, "playbackprogress", function (e, data) {
 
-            Logger.log('cc: positionchange');
+            console.log('cc: positionchange');
             var state = self.getPlayerStateInternal(data);
 
             Events.trigger(self, "positionchange", [state]);
@@ -80,7 +80,7 @@
                 supportsAc3: AppSettings.enableChromecastAc3()
             });
 
-            Logger.log('Sending command to Chromecast: ' + message.command);
+            console.log('Sending command to Chromecast: ' + message.command);
 
             require(['chromecasthelpers'], function (chromecasthelpers) {
 
@@ -420,7 +420,7 @@
             data = data || self.lastPlayerData;
             self.lastPlayerData = data;
 
-            Logger.log(JSON.stringify(data));
+            console.log(JSON.stringify(data));
             return data;
         };
 
@@ -464,7 +464,7 @@
 
         function handleSessionDisconnect() {
 
-            Logger.log("session disconnected");
+            console.log("session disconnected");
 
             // We can't trust this because we might receive events of other devices disconnecting
             //cleanupSession();
@@ -475,7 +475,7 @@
 
             currentWebAppSession = webAppSession;
 
-            Logger.log('session.connect succeeded');
+            console.log('session.connect succeeded');
             webAppSession.setWebAppSessionListener();
 
             currentDevice = device;
@@ -513,7 +513,7 @@
         }
 
         function handleSessionError() {
-            Logger.log('chromecast session connect error');
+            console.log('chromecast session connect error');
             cleanupSession();
         }
 
@@ -538,15 +538,15 @@
 
         function tryLaunchWebSession(device) {
 
-            Logger.log('calling launchWebApp');
+            console.log('calling launchWebApp');
             device.getWebAppLauncher().launchWebApp(ApplicationID).success(function (session) {
 
-                Logger.log('launchWebApp success. calling onSessionConnected');
+                console.log('launchWebApp success. calling onSessionConnected');
                 setupWebAppSession(device, session, true);
 
             }).error(function (err1) {
 
-                Logger.log('launchWebApp error:' + JSON.stringify(err1));
+                console.log('launchWebApp error:' + JSON.stringify(err1));
 
             });
         }
@@ -555,15 +555,15 @@
 
             // First try to join existing session. If it fails, launch a new one
 
-            Logger.log('calling joinWebApp');
+            console.log('calling joinWebApp');
             device.getWebAppLauncher().joinWebApp(ApplicationID).success(function (session) {
 
-                Logger.log('joinWebApp success. calling onSessionConnected');
+                console.log('joinWebApp success. calling onSessionConnected');
                 setupWebAppSession(device, session, false);
 
             }).error(function (err) {
 
-                Logger.log('joinWebApp error: ' + JSON.stringify(err));
+                console.log('joinWebApp error: ' + JSON.stringify(err));
 
                 if (enableRetry) {
                     tryJoinWebSession(device, false, true);
@@ -571,7 +571,7 @@
                 }
 
                 if (enableLaunch) {
-                    Logger.log('calling launchWebApp');
+                    console.log('calling launchWebApp');
                     tryLaunchWebSession(device);
                 }
 
@@ -591,7 +591,7 @@
 
             device.off("ready");
 
-            Logger.log('creating webAppSession');
+            console.log('creating webAppSession');
             self.lastPlayerData = {};
 
             launchWebApp(device);
@@ -618,7 +618,7 @@
 
         self.tryPairWithDevice = function (device, resolve, reject) {
 
-            Logger.log('Will attempt to connect to Chromecast');
+            console.log('Will attempt to connect to Chromecast');
 
             device.on("disconnect", function () {
                 device.off("ready");
@@ -626,25 +626,25 @@
             });
 
             if (device.isReady()) {
-                Logger.log('Device is already ready, calling onDeviceReady');
+                console.log('Device is already ready, calling onDeviceReady');
                 onDeviceReady(device);
             } else {
 
-                Logger.log('Binding device ready handler');
+                console.log('Binding device ready handler');
 
                 device.on("ready", function () {
-                    Logger.log('device.ready fired');
+                    console.log('device.ready fired');
                     onDeviceReady(device);
                 });
 
-                Logger.log('Calling device.connect');
+                console.log('Calling device.connect');
                 device.connect();
             }
         };
 
         self.endSession = function () {
 
-            Logger.log('Ending Chromecast session');
+            console.log('Ending Chromecast session');
 
             self.stop();
 
