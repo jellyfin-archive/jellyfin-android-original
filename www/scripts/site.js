@@ -1654,7 +1654,7 @@ var AppInfo = {};
 
     function getSyncProfile() {
 
-        return getRequirePromise(['scripts/mediaplayer']).then(function() {
+        return getRequirePromise(['scripts/mediaplayer']).then(function () {
             return MediaPlayer.getDeviceProfile(Math.max(screen.height, screen.width));
         });
     }
@@ -1670,7 +1670,7 @@ var AppInfo = {};
         var credentialProvider = new credentialProviderFactory(credentialKey);
 
         return getSyncProfile().then(function (deviceProfile) {
-            
+
             capabilities.DeviceProfile = deviceProfile;
 
             window.ConnectionManager = new MediaBrowser.ConnectionManager(credentialProvider, AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, capabilities, window.devicePixelRatio);
@@ -1843,6 +1843,7 @@ var AppInfo = {};
             connectionmanagerfactory: apiClientBowerPath + '/connectionmanager',
             browserdeviceprofile: embyWebComponentsBowerPath + "/browserdeviceprofile",
             browser: embyWebComponentsBowerPath + "/browser",
+            qualityoptions: embyWebComponentsBowerPath + "/qualityoptions",
             connectservice: apiClientBowerPath + '/connectservice'
         };
 
@@ -2426,29 +2427,26 @@ var AppInfo = {};
         initialDependencies.push('native-promise-only');
     }
 
-    require(initialDependencies, function (browser) {
-
-        window.browserInfo = browser;
-
-        function onWebComponentsReady() {
-
-            var polymerDependencies = [];
-
-            require(polymerDependencies, function () {
-
-                getHostingAppInfo().then(function (hostingAppInfo) {
-                    init(hostingAppInfo);
-                });
-            });
-        }
+    function onWebComponentsReady() {
 
         setAppInfo();
         setDocumentClasses();
 
+        getHostingAppInfo().then(function (hostingAppInfo) {
+            init(hostingAppInfo);
+        });
+    }
+
+    if (!supportsNativeWebComponents) {
+        document.addEventListener('WebComponentsReady', onWebComponentsReady);
+    }
+
+    require(initialDependencies, function (browser) {
+
+        window.browserInfo = browser;
+
         if (supportsNativeWebComponents) {
             onWebComponentsReady();
-        } else {
-            document.addEventListener('WebComponentsReady', onWebComponentsReady);
         }
     });
 
