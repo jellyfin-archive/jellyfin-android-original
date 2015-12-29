@@ -2098,6 +2098,7 @@ var AppInfo = {};
 
         deps.push('appstorage');
         deps.push('scripts/appsettings');
+        deps.push('scripts/extensions');
 
         require(deps, function (connectionManagerExports, credentialProviderFactory) {
 
@@ -2414,7 +2415,6 @@ var AppInfo = {};
 
     initialDependencies.push('browser');
     initialDependencies.push('apiclient-store');
-    initialDependencies.push('scripts/extensions');
 
     var supportsNativeWebComponents = 'registerElement' in document && 'content' in document.createElement('template');
 
