@@ -2412,43 +2412,35 @@ var AppInfo = {};
 
     initRequire();
 
-    var initialDependencies = [];
-
-    initialDependencies.push('browser');
-    initialDependencies.push('apiclient-store');
-
-    var supportsNativeWebComponents = 'registerElement' in document && 'content' in document.createElement('template');
-
-    if (!supportsNativeWebComponents) {
-        initialDependencies.push('webcomponentsjs');
-    }
-
-    if (!window.Promise) {
-        initialDependencies.push('native-promise-only');
-    }
-
     function onWebComponentsReady() {
 
-        setAppInfo();
-        setDocumentClasses();
+        var initialDependencies = [];
 
-        getHostingAppInfo().then(function (hostingAppInfo) {
-            init(hostingAppInfo);
+        initialDependencies.push('browser');
+        initialDependencies.push('apiclient-store');
+
+        if (!window.Promise) {
+            initialDependencies.push('native-promise-only');
+        }
+
+        require(initialDependencies, function (browser) {
+
+            window.browserInfo = browser;
+            setAppInfo();
+            setDocumentClasses();
+
+            getHostingAppInfo().then(function (hostingAppInfo) {
+                init(hostingAppInfo);
+            });
         });
     }
 
-    if (!supportsNativeWebComponents) {
+    if ('registerElement' in document && 'content' in document.createElement('template')) {
+        onWebComponentsReady();
+    } else {
         document.addEventListener('WebComponentsReady', onWebComponentsReady);
+        require(['webcomponentsjs']);
     }
-
-    require(initialDependencies, function (browser) {
-
-        window.browserInfo = browser;
-
-        if (supportsNativeWebComponents) {
-            onWebComponentsReady();
-        }
-    });
 
 })();
 
