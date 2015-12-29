@@ -62,7 +62,7 @@
 
             function startTimer() {
 
-                Logger.log('starting udp receive timer with timeout ms: ' + timeoutMs);
+                console.log('starting udp receive timer with timeout ms: ' + timeoutMs);
 
                 timeout = setTimeout(onTimerExpired, timeoutMs);
             }
@@ -71,13 +71,13 @@
 
                 try {
 
-                    Logger.log('ServerDiscovery message received');
+                    console.log('ServerDiscovery message received');
 
-                    Logger.log(info);
+                    console.log(info);
 
                     if (info != null && info.socketId == socketId) {
                         var json = arrayBufferToString(info.data);
-                        Logger.log('Server discovery json: ' + json);
+                        console.log('Server discovery json: ' + json);
                         var server = JSON.parse(json);
 
                         server.RemoteAddress = info.remoteAddress;
@@ -90,48 +90,48 @@
                     }
 
                 } catch (err) {
-                    Logger.log('Error receiving server info: ' + err);
+                    console.log('Error receiving server info: ' + err);
                 }
             }
 
             var port = 7359;
-            Logger.log('chrome.sockets.udp.create');
+            console.log('chrome.sockets.udp.create');
 
             startTimer();
 
             chrome.sockets.udp.create(function (createInfo) {
 
                 if (!createInfo) {
-                    Logger.log('create fail');
+                    console.log('create fail');
                     return;
                 }
                 if (!createInfo.socketId) {
-                    Logger.log('create fail');
+                    console.log('create fail');
                     return;
                 }
 
                 socketId = createInfo.socketId;
 
-                Logger.log('chrome.sockets.udp.bind');
+                console.log('chrome.sockets.udp.bind');
                 chrome.sockets.udp.bind(createInfo.socketId, '0.0.0.0', 0, function (bindResult) {
 
                     if (getResultCode(bindResult) != 0) {
-                        Logger.log('bind fail: ' + bindResult);
+                        console.log('bind fail: ' + bindResult);
                         return;
                     }
 
                     var data = stringToArrayBuffer('who is EmbyServer?');
 
-                    Logger.log('chrome.sockets.udp.send');
+                    console.log('chrome.sockets.udp.send');
 
                     chrome.sockets.udp.send(createInfo.socketId, data, '255.255.255.255', port, function (sendResult) {
 
                         if (getResultCode(sendResult) != 0) {
-                            Logger.log('send fail: ' + sendResult);
+                            console.log('send fail: ' + sendResult);
 
                         } else {
                             chrome.sockets.udp.onReceive.addListener(onReceive);
-                            Logger.log('sendTo: success ' + port);
+                            console.log('sendTo: success ' + port);
                         }
                     });
                 });
@@ -146,11 +146,7 @@
             return new Promise(function (resolve, reject) {
 
                 try {
-                    findServersInternal(timeoutMs).then(function (result) {
-
-                        resolve(result);
-
-                    }, function () {
+                    findServersInternal(timeoutMs).then(resolve, function () {
 
                         resolve([]);
                     });
