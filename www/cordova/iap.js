@@ -38,13 +38,6 @@
         return products.length ? products[0] : null;
     }
 
-    function isPurchaseAvailable(feature) {
-
-        var product = getProduct(feature);
-
-        return product != null && product.valid /*&& product.canPurchase*/;
-    }
-
     function beginPurchase(feature, email) {
 
         if (email) {
@@ -288,7 +281,6 @@
     }
 
     window.IapManager = {
-        isPurchaseAvailable: isPurchaseAvailable,
         getProductInfo: getProduct,
         beginPurchase: beginPurchase,
         restorePurchase: restorePurchase,

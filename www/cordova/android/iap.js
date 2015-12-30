@@ -35,15 +35,8 @@
         return products.length ? products[0] : null;
     }
 
-    var storeReady = false;
     function onStoreReady() {
-        storeReady = true;
         refreshPurchases();
-    }
-
-    function isPurchaseAvailable() {
-
-        return storeReady;
     }
 
     function beginPurchase(feature, email) {
@@ -191,19 +184,44 @@
     }
 
     function enableRestore(subscriptionOptions, unlockableProductInfo) {
-        return unlockableProductInfo != null && unlockableProductInfo.feature == 'playback';
+        return unlockableProductInfo != null;
     }
 
     function restorePurchase() {
 
-        Dashboard.alert({
-            message: "We're unable to automatically restore your previous purchase. Please send an email to apps@emby.media. Thank you for your patience.",
-            title: Globalize.translate('ButtonRestorePreviousPurchase')
+        var msg = Globalize.translate('AlreadyPaidHelp1', 'apps@emby.media');
+
+        msg += '<br/><br/>' + Globalize.translate('AlreadyPaidHelp2');
+
+        Dashboard.confirm(msg, Globalize.translate('AlreadyPaid'), function (result) {
+
+            if (result) {
+                launchEmail();
+            }
         });
     }
 
+    function launchEmail() {
+
+        var serverInfo = ApiClient.serverInfo() || {};
+        var serverId = serverInfo.Id || 'Unknown';
+
+        var body = 'Please assist in restoring my previous purchase. ServerId: ' + serverId + ', DeviceId: ' + ConnectionManager.deviceId();
+
+        cordova.plugins.email.isAvailable(
+          function (isAvailable) {
+              if (isAvailable) {
+                  cordova.plugins.email.open({
+                      to: 'apps@emby.media',
+                      subject: 'Android Activation',
+                      body: body
+                  });
+              }
+          }
+        );
+    }
+
     window.IapManager = {
-        isPurchaseAvailable: isPurchaseAvailable,
         getProductInfo: getProduct,
         updateProduct: updateProductInfo,
         beginPurchase: beginPurchase,

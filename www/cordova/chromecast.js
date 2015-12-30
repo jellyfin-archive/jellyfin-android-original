@@ -303,7 +303,10 @@
 
         self.getTargets = function () {
 
-            return getDeviceList().map(convertDeviceToTarget);
+            return new Promise(function (resolve, reject) {
+
+                resolve(getDeviceList().map(convertDeviceToTarget));
+            });
         };
 
         self.seek = function (position) {
