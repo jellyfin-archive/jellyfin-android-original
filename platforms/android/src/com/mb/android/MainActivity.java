@@ -28,11 +28,9 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
-import android.view.View;
 import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
@@ -62,10 +60,8 @@ import org.crosswalk.engine.XWalkCordovaView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import mediabrowser.apiinteraction.QueryStringDictionary;
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
@@ -201,7 +197,7 @@ public class MainActivity extends CordovaActivity
 
         if (enableSystemWebView()){
 
-            engine =  new SystemWebViewEngine(new MySystemWebView(this), preferences);
+            engine =  new SystemWebViewEngine(new MySystemWebView(this, getLogger()), preferences);
             WebView webkitView = (WebView)engine.getView();
             webView = new NativeWebView(webkitView);
 

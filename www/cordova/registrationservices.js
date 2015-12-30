@@ -7,20 +7,20 @@
 
     function validateFeature(feature, deferred) {
 
-        var unlockableProduct = IapManager.getProductInfo(feature) || {};
+        var unlockableProduct = IapManager.getProductInfo(feature);
 
-        if (unlockableProduct.owned) {
-            deferred.resolve();
-            return;
-        }
-
-        var unlockableProductInfo = IapManager.isPurchaseAvailable(feature) ? {
+        var unlockableProductInfo = unlockableProduct ? {
             enableAppUnlock: true,
             id: unlockableProduct.id,
             price: unlockableProduct.price,
             feature: feature
 
         } : null;
+
+        if (unlockableProduct && unlockableProduct.owned) {
+            deferred.resolve();
+            return;
+        }
 
         var prefix = browserInfo.android ? 'android' : 'ios';
 
@@ -143,7 +143,11 @@
 
         if (hasProduct && IapManager.enableRestore(subscriptionOptions, unlockableProductInfo)) {
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnRestorePurchase" style="background-color: #673AB7;"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></paper-button>';
+            if (browserInfo.safari) {
+                html += '<paper-button raised class="secondary block btnRestorePurchase subdued"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></paper-button>';
+            } else {
+                html += '<paper-button raised class="secondary block btnRestorePurchase subdued"><span>' + Globalize.translate('AlreadyPaid') + '</span></paper-button>';
+            }
             html += '</p>';
         }
 

@@ -160,37 +160,43 @@
                 var videoWidth = videoStream ? videoStream.Width : null;
                 var videoHeight = videoStream ? videoStream.Height : null;
 
-                var videoQualityOptions = MediaPlayer.getVideoQualityOptions(videoWidth, videoHeight).map(function (o) {
-                    return {
-                        Name: o.name,
-                        Value: o.bitrate + "-" + o.maxHeight
-                    };
+                require(['qualityoptions'], function (qualityoptions) {
+
+                    var bitrateSetting = AppSettings.maxStreamingBitrate();
+
+                    var videoQualityOptions = qualityoptions.getVideoQualityOptions(bitrateSetting, videoWidth).map(function (o) {
+                        return {
+                            Name: o.name,
+                            Value: o.bitrate + "-" + o.maxHeight
+                        };
+                    });
+
+                    MediaPlayer.getDeviceProfile().then(function (deviceProfile) {
+
+                        var timeLimitMs = MediaController.playbackTimeLimitMs || 0;
+
+                        AndroidVlcPlayer.playVideoVlc(val,
+                            startPosMs,
+                            item.Name,
+                            JSON.stringify(item),
+                            JSON.stringify(mediaSource),
+                            JSON.stringify(playbackStartInfo),
+                            ApiClient.serverInfo().Id,
+                            serverUrl,
+                            ApiClient.appName(),
+                            ApiClient.appVersion(),
+                            ApiClient.deviceId(),
+                            ApiClient.deviceName(),
+                            ApiClient.getCurrentUserId(),
+                            ApiClient.accessToken(),
+                            JSON.stringify(deviceProfile),
+                            JSON.stringify(videoQualityOptions),
+                            timeLimitMs);
+
+                        playerState.currentSrc = val;
+                        self.report('playing', null, startPosMs, false, 100);
+                    });
                 });
-
-                var deviceProfile = MediaPlayer.getDeviceProfile();
-
-                var timeLimitMs = MediaController.playbackTimeLimitMs || 0;
-
-                AndroidVlcPlayer.playVideoVlc(val,
-                    startPosMs,
-                    item.Name,
-                    JSON.stringify(item),
-                    JSON.stringify(mediaSource),
-                    JSON.stringify(playbackStartInfo),
-                    ApiClient.serverInfo().Id,
-                    serverUrl,
-                    ApiClient.appName(),
-                    ApiClient.appVersion(),
-                    ApiClient.deviceId(),
-                    ApiClient.deviceName(),
-                    ApiClient.getCurrentUserId(),
-                    ApiClient.accessToken(),
-                    JSON.stringify(deviceProfile),
-                    JSON.stringify(videoQualityOptions),
-                    timeLimitMs);
-
-                playerState.currentSrc = val;
-                self.report('playing', null, startPosMs, false, 100);
             }
         };
 
