@@ -650,25 +650,34 @@
 
             setTimeout(function () {
 
-                var session = currentWebAppSession;
-
-                if (session) {
-                    session.close();
-                }
-
-                var device = currentDevice;
-
-                if (device) {
-                    device.getWebAppLauncher().closeWebApp(ApplicationID);
-                    device.disconnect();
-                }
-
-                cleanupSession();
-                currentDevice = null;
-                currentDeviceId = null;
+                endSessionInternal(true, false);
 
             }, 1000);
         };
+
+        function endSessionInternal(closeWebApp, retainDeviceId) {
+            var session = currentWebAppSession;
+
+            if (session) {
+                session.close();
+            }
+
+            var device = currentDevice;
+
+            if (device) {
+                if (closeWebApp) {
+                    device.getWebAppLauncher().closeWebApp(ApplicationID);
+                }
+                device.disconnect();
+            }
+
+            cleanupSession();
+            currentDevice = null;
+
+            if (!retainDeviceId) {
+                currentDeviceId = null;
+            }
+        }
 
         function tryResume(deviceId, retry) {
 
@@ -699,6 +708,12 @@
                 }, 0);
             }
         }
+
+        document.addEventListener("pause", function () {
+
+            endSessionInternal(false, true);
+
+        }, false);
 
         document.addEventListener("resume", onResume, false);
     }

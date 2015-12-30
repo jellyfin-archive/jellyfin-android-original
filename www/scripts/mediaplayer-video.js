@@ -972,14 +972,15 @@
                     if (browserInfo.safari && !mediaSource.RunTimeTicks) {
 
                         Dashboard.showLoadingMsg();
-
+                        var liveStreamUrl = streamInfo.url.replace('master.m3u8', 'live.m3u8');
                         ApiClient.ajax({
 
                             type: 'GET',
-                            url: streamInfo.url.replace('master.m3u8', 'live.m3u8')
+                            url: liveStreamUrl
 
                         }).then(function () {
                             Dashboard.hideLoadingMsg();
+                            streamInfo.url = liveStreamUrl;
                             self.playVideoInternal(item, mediaSource, startPosition, streamInfo, callback);
                         }, function () {
                             Dashboard.hideLoadingMsg();
