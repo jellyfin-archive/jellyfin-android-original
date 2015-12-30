@@ -1,1 +1,1 @@
-!function(){function r(){var r=DeferredBuilder.Deferred();return AndroidDirectoryChooser.chooseDirectory(),o=r,r.promise()}function e(r){var e=o;e&&(r?e.resolveWith(null,[r]):e.reject(),o=null)}var o;window.NativeDirectoryChooser={chooseDirectory:r,onChosen:e}}();
+!function(){function o(){return new Promise(function(o,r){n=o,e=r,AndroidDirectoryChooser.chooseDirectory()})}function r(o){var r=n;r&&(o?r(o):reject(),n=null,e=null)}var n,e;window.NativeDirectoryChooser={chooseDirectory:o,onChosen:r}}();
