@@ -2436,6 +2436,7 @@ var AppInfo = {};
     }
 
     if ('registerElement' in document && 'content' in document.createElement('template')) {
+        // Native web components support
         onWebComponentsReady();
     } else {
         document.addEventListener('WebComponentsReady', onWebComponentsReady);
