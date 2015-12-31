@@ -104,7 +104,7 @@
 
     function isUnlockedOverride(feature) {
 
-        if (feature == 'playback') {
+        if (feature == 'playback' || feature == 'livetv') {
             return isPlaybackUnlockedViaOldApp();
         } else {
             return new Promise(function (resolve, reject) {
@@ -184,7 +184,7 @@
     }
 
     function enableRestore(subscriptionOptions, unlockableProductInfo) {
-        return unlockableProductInfo != null;
+        return unlockableProductInfo != null && (unlockableProductInfo.feature == 'playback' || unlockableProductInfo.feature == 'livetv');
     }
 
     function restorePurchase() {
@@ -206,19 +206,9 @@
         var serverInfo = ApiClient.serverInfo() || {};
         var serverId = serverInfo.Id || 'Unknown';
 
-        var body = 'Please assist in restoring my previous purchase. ServerId: ' + serverId + ', DeviceId: ' + ConnectionManager.deviceId();
+        var body = 'Please assist in restoring my previous purchase. ' + serverId + '|' + ConnectionManager.deviceId();
 
-        cordova.plugins.email.isAvailable(
-          function (isAvailable) {
-              if (isAvailable) {
-                  cordova.plugins.email.open({
-                      to: 'apps@emby.media',
-                      subject: 'Android Activation',
-                      body: body
-                  });
-              }
-          }
-        );
+        MainActivity.sendEmail('apps@emby.media', 'Android Activation', body);
     }
 
     window.IapManager = {
