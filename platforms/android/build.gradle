@@ -200,7 +200,10 @@ android {
 		multiDexEnabled true
     }
 
-    compileSdkVersion cdvCompileSdkVersion
+	println('cdvCompileSdkVersion=' + cdvCompileSdkVersion)
+    println('cdvBuildToolsVersion=' + cdvBuildToolsVersion)
+    
+	compileSdkVersion cdvCompileSdkVersion
     buildToolsVersion cdvBuildToolsVersion
 
     if (Boolean.valueOf(cdvBuildMultipleApks)) {
