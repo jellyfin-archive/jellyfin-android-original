@@ -746,4 +746,75 @@ public class MainActivity extends CordovaActivity
 
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void sendEmail(String to, String subject, String body) {
+
+        Intent draft     = getDraftWithProperties(to, subject, body);
+        String header    = "Open with";
+
+        final Intent chooser = Intent.createChooser(draft, header);
+
+        startActivityForResult(chooser, 0);
+    }
+
+    public Intent getDraftWithProperties (String to, String subject, String body) {
+
+        Intent mail = new Intent(Intent.ACTION_SEND_MULTIPLE);
+
+        setSubject(subject, mail);
+        setBody(body, false, mail);
+        setRecipients(to, mail);
+
+        mail.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        return mail;
+    }
+
+    /**
+     * Setter for the subject.
+     *
+     * @param subject
+     * The subject of the email.
+     * @param draft
+     * The intent to send.
+     */
+    private void setSubject (String subject, Intent draft) {
+        draft.putExtra(Intent.EXTRA_SUBJECT, subject);
+    }
+
+    /**
+     * Setter for the body.
+     *
+     * @param body
+     * The body of the email.
+     * @param isHTML
+     * Indicates the encoding (HTML or plain text).
+     * @param draft
+     * The intent to send.
+     */
+    private void setBody (String body, Boolean isHTML, Intent draft) {
+
+        if (isHTML) {
+            /*draft.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
+            draft.setType("text/html");
+
+            if (Build.VERSION.SDK_INT > 15) {
+                draft.putExtra(Intent.EXTRA_HTML_TEXT, body);
+            }*/
+        } else {
+            draft.putExtra(Intent.EXTRA_TEXT, body);
+            draft.setType("text/plain");
+        }
+    }
+
+    private void setRecipients (String to, Intent draft) {
+
+        String[] receivers = new String[1];
+
+        receivers[0] = to;
+
+        draft.putExtra(Intent.EXTRA_EMAIL, receivers);
+    }
 }

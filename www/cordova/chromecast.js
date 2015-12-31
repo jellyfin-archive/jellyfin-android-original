@@ -712,11 +712,11 @@
             }
         }
 
-        document.addEventListener("pause", function () {
+        //document.addEventListener("pause", function () {
 
-            endSessionInternal(false, true);
+        //    endSessionInternal(false, true);
 
-        }, false);
+        //}, false);
 
         document.addEventListener("resume", onResume, false);
     }

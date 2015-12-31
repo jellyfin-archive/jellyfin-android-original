@@ -98,8 +98,6 @@
 
             Dashboard.hideLoadingMsg();
         });
-        showEmbyConnectErrorMessage('d');
-
     });
 
 })(jQuery, document, window);
