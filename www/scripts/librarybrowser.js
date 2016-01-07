@@ -876,11 +876,11 @@
         editMetadata: function (itemId) {
 
             Dashboard.navigate('edititemmetadata.html?id=' + itemId);
-            return;
-            require(['components/metadataeditor/metadataeditor'], function () {
 
-                MetadataEditor.show(itemId);
-            });
+            //require(['components/metadataeditor/metadataeditor'], function (metadataeditor) {
+
+            //    metadataeditor.show(itemId);
+            //});
         },
 
         showMoreCommands: function (positionTo, itemId, commands) {

@@ -68,17 +68,18 @@
 
         function sendMessageToDevice(message) {
 
-            var bitrateSetting = AppSettings.maxChromecastBitrate();
-
             message = $.extend(message, {
                 userId: Dashboard.getCurrentUserId(),
                 deviceId: ApiClient.deviceId(),
                 accessToken: ApiClient.accessToken(),
                 serverAddress: ApiClient.serverAddress(),
-                maxBitrate: bitrateSetting,
-                receiverName: currentDevice.getFriendlyName(),
-                supportsAc3: AppSettings.enableChromecastAc3()
+                receiverName: currentDevice.getFriendlyName()
             });
+
+            var bitrateSetting = AppSettings.maxChromecastBitrate();
+            if (bitrateSetting) {
+                message.maxBitrate = bitrateSetting;
+            }
 
             console.log('Sending command to Chromecast: ' + message.command);
 
