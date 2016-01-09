@@ -742,6 +742,16 @@ public class MainActivity extends CordovaActivity
 
     @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
+    public boolean supportsPlayStore(){
+
+        // This determines how Chromecast will be supported
+        // If play store services are available, we use the Google Cast SDK, which is the preferred method
+        // If not, we use the LG Connect SDK
+        return BuildConfig.FLAVOR.toLowerCase().indexOf("google") != -1;
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public String getAndroidDeviceId() {
 
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);

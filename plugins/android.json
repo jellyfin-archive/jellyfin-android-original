@@ -211,6 +211,9 @@
         },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.mb.android"
+        },
+        "acidhax.cordova.chromecast": {
+            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {
