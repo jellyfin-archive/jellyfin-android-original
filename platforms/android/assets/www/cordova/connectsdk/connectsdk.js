@@ -1,0 +1,1 @@
+!function(){function e(){var e=ConnectSDK.discoveryManager;e.setAirPlayServiceMode(ConnectSDK.AirPlayServiceMode.Media),e.startDiscovery(),requirejs(["cordova/connectsdk/chromecast"]),browserInfo.safari&&requirejs(["cordova/connectsdk/generaldevice"])}function r(){return ConnectSDK.discoveryManager.getDeviceList()}window.ConnectSDKHelper={getDeviceList:r},e()}();

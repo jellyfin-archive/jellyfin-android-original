@@ -265,5 +265,14 @@
         "variables": {
             "BILLING_KEY": "0"
         }
+    },
+    "acidhax.cordova.chromecast": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/MediaBrowser/cordova-chromecast",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

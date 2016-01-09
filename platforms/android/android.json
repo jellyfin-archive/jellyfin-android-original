@@ -89,6 +89,10 @@
                         {
                             "xml": "<feature name=\"SocialSharing\"><param name=\"android-package\" value=\"nl.xservices.plugins.SocialSharing\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Chromecast\"><param name=\"android-package\" value=\"acidhax.cordova.chromecast.Chromecast\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -98,7 +102,7 @@
                     "/*": [
                         {
                             "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.CHANGE_WIFI_MULTICAST_STATE\" />",
@@ -106,11 +110,11 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
-                            "count": 1
+                            "count": 2
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
@@ -120,7 +124,7 @@
                     "/manifest/application": [
                         {
                             "xml": "<meta-data android:name=\"com.google.android.gms.version\" android:value=\"@integer/google_play_services_version\" />",
-                            "count": 1
+                            "count": 2
                         }
                     ],
                     "/manifest": [
@@ -218,6 +222,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-x-socialsharing": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "acidhax.cordova.chromecast": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
@@ -515,6 +522,21 @@
             "clobbers": [
                 "window.plugins.socialsharing"
             ]
+        },
+        {
+            "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
+            "id": "acidhax.cordova.chromecast.ChromecastApi",
+            "clobbers": [
+                "chrome.cast"
+            ]
+        },
+        {
+            "file": "plugins/acidhax.cordova.chromecast/EventEmitter.js",
+            "id": "acidhax.cordova.chromecast.EventEmitter"
+        },
+        {
+            "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
+            "id": "acidhax.cordova.chromecast.tests"
         }
     ]
 }
