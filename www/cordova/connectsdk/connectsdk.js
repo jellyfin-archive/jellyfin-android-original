@@ -16,10 +16,10 @@
 
         manager.startDiscovery();
 
-        requirejs(['cordova/chromecast']);
+        requirejs(['cordova/connectsdk/chromecast']);
 
         if (browserInfo.safari) {
-            requirejs(['cordova/generaldevice']);
+            requirejs(['cordova/connectsdk/generaldevice']);
         }
     }
 

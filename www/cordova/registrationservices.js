@@ -5,7 +5,12 @@
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
     }
 
-    function validateFeature(feature, deferred) {
+    function validateFeature(feature, resolve, reject) {
+
+        if (isConnectUserSupporter()) {
+            resolve();
+            return;
+        }
 
         var unlockableProduct = IapManager.getProductInfo(feature);
 
@@ -18,7 +23,7 @@
         } : null;
 
         if (unlockableProduct && unlockableProduct.owned) {
-            deferred.resolve();
+            resolve();
             return;
         }
 
@@ -27,14 +32,14 @@
         IapManager.isUnlockedOverride(feature).then(function (isUnlocked) {
 
             if (isUnlocked) {
-                deferred.resolve();
+                resolve();
                 return;
             }
 
             function onRegistrationInfoResponse(registrationInfo) {
 
                 if (registrationInfo.IsRegistered) {
-                    deferred.resolve();
+                    resolve();
                     return;
                 }
 
@@ -43,7 +48,7 @@
                     if (subscriptionOptions.filter(function (p) {
                         return p.owned;
                     }).length > 0) {
-                        deferred.resolve();
+                        resolve();
                         return;
                     }
 
@@ -53,7 +58,7 @@
                         feature: feature
                     };
 
-                    showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, deferred);
+                    showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
                 });
             }
 
@@ -62,6 +67,19 @@
                 onRegistrationInfoResponse({});
             });
         });
+    }
+
+    function isConnectUserSupporter() {
+
+        if (ConnectionManager.isLoggedIntoConnect()) {
+
+            var connectUser = ConnectionManager.connectUser();
+
+            if (connectUser && connectUser.IsSupporter) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function cancelInAppPurchase() {
@@ -74,14 +92,16 @@
 
     var isCancelled = true;
     var currentDisplayingProductInfos = [];
-    var currentDisplayingDeferred = null;
+    var currentDisplayingResolve = null;
+    var currentDisplayingReject = null;
 
     function clearCurrentDisplayingInfo() {
         currentDisplayingProductInfos = [];
-        currentDisplayingDeferred = null;
+        currentDisplayingResolve = null;
+        currentDisplayingReject = null;
     }
 
-    function showInAppPurchaseElement(subscriptionOptions, unlockableProductInfo, dialogOptions, deferred) {
+    function showInAppPurchaseElement(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
 
         cancelInAppPurchase();
 
@@ -172,7 +192,7 @@
         dlg.innerHTML = html;
         document.body.appendChild(dlg);
 
-        initInAppPurchaseElementEvents(dlg, dialogOptions.feature, deferred);
+        initInAppPurchaseElementEvents(dlg, dialogOptions.feature, resolve, reject);
 
         PaperDialogHelper.open(dlg);
 
@@ -258,7 +278,7 @@
         return html;
     }
 
-    function initInAppPurchaseElementEvents(elem, feature, deferred) {
+    function initInAppPurchaseElementEvents(elem, feature, resolve, reject) {
 
         isCancelled = true;
 
@@ -292,12 +312,12 @@
                         message: Globalize.translate('ThankYouForTryingEnjoyOneMinute'),
                         title: Globalize.translate('HeaderTryPlayback'),
                         callback: function () {
-                            deferred.reject();
+                            reject();
                             $(overlay).remove();
                         }
                     });
                 } else {
-                    deferred.reject();
+                    reject();
                     $(overlay).remove();
                 }
 
@@ -307,7 +327,7 @@
         });
     }
 
-    function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, deferred) {
+    function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
 
         require(['components/paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function () {
 
@@ -315,9 +335,10 @@
                 TabBar.hide();
             }
 
-            showInAppPurchaseElement(subscriptionOptions, unlockableProductInfo, dialogOptions, deferred);
+            showInAppPurchaseElement(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
 
-            currentDisplayingDeferred = deferred;
+            currentDisplayingResolve = resolve;
+            currentDisplayingReject = reject;
         });
     }
 
@@ -357,9 +378,9 @@
 
         if (product.owned) {
 
-            var deferred = currentDisplayingDeferred;
+            var resolve = currentDisplayingResolve;
 
-            if (deferred && currentDisplayingProductInfos.filter(function (p) {
+            if (resolve && currentDisplayingProductInfos.filter(function (p) {
 
                 return product.id == p.id;
 
@@ -368,23 +389,23 @@
                 isCancelled = false;
 
                 cancelInAppPurchase();
-                deferred.resolve();
+                resolve.resolve();
             }
         }
     }
 
-    function validateSync(deferred) {
+    function validateSync(resolve, reject) {
 
         Dashboard.getPluginSecurityInfo().then(function (pluginSecurityInfo) {
 
             if (pluginSecurityInfo.IsMBSupporter) {
-                deferred.resolve();
+                resolve();
                 return;
             }
 
             function onRegistrationInfoResponse(registrationInfo) {
                 if (registrationInfo.IsRegistered) {
-                    deferred.resolve();
+                    resolve();
                     return;
                 }
 
@@ -395,7 +416,7 @@
                         feature: 'sync'
                     };
 
-                    showInAppPurchaseInfo(subscriptionOptions, null, dialogOptions, deferred);
+                    showInAppPurchaseInfo(subscriptionOptions, null, dialogOptions, resolve, reject);
                 });
             }
 
@@ -414,19 +435,19 @@
         },
 
         validateFeature: function (name) {
-            var deferred = DeferredBuilder.Deferred();
 
-            if (name == 'playback') {
-                validateFeature(name, deferred);
-            } else if (name == 'livetv') {
-                validateFeature(name, deferred);
-            } else if (name == 'sync') {
-                validateSync(deferred);
-            } else {
-                deferred.resolve();
-            }
+            return new Promise(function (resolve, reject) {
 
-            return deferred.promise();
+                if (name == 'playback') {
+                    validateFeature(name, resolve, reject);
+                } else if (name == 'livetv') {
+                    validateFeature(name, resolve, reject);
+                } else if (name == 'sync') {
+                    validateSync(resolve, reject);
+                } else {
+                    resolve();
+                }
+            });
         }
     };
 
