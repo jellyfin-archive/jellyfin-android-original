@@ -1,0 +1,1 @@
+define([],function(){function t(t,n,i,e){i=i||0,e=e||0;var o=window.innerWidth,r=window.innerHeight,d=t.getBoundingClientRect(),f=d.top>=0&&d.top<r+e,g=d.bottom>0&&d.bottom<=r+e,u=d.left>=0&&d.left<o+i,h=d.right>0&&d.right<=o+i,w=n?f||g:f&&g,c=n?u||h:u&&h;return w&&c}return t});
