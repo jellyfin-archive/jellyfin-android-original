@@ -1,0 +1,1 @@
+module.exports=function(s){"use strict";s.registerTask("old_jsdom",function(){/^v0/.test(process.version)&&s.util.spawn({cmd:"npm",args:["install","jsdom@3"],opts:{stdio:"inherit"}},this.async())})};

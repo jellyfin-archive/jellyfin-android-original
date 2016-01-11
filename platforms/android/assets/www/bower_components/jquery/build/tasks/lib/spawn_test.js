@@ -1,0 +1,1 @@
+"use strict";module.exports=function(e){var n=[].slice.call(arguments,1),i=require("win-spawn");i("node",n,{stdio:"inherit"}).on("close",function(n){e(0===n)})};
