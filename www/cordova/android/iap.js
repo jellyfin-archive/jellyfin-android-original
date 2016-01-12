@@ -183,8 +183,8 @@
         }
     }
 
-    function enableRestore(subscriptionOptions, unlockableProductInfo) {
-        return unlockableProductInfo != null && (unlockableProductInfo.feature == 'playback' || unlockableProductInfo.feature == 'livetv');
+    function enableRestore(feature, subscriptionOptions, unlockableProductInfo) {
+        return feature == 'playback' || feature == 'livetv';
     }
 
     function restorePurchase() {

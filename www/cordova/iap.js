@@ -276,7 +276,7 @@
         });
     }
 
-    function enableRestore(subscriptionOptions, unlockableProductInfo) {
+    function enableRestore(feature, subscriptionOptions, unlockableProductInfo) {
         return true;
     }
 

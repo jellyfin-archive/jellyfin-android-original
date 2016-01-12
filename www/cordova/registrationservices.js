@@ -161,7 +161,7 @@
             html += '</p>';
         }
 
-        if (hasProduct && IapManager.enableRestore(subscriptionOptions, unlockableProductInfo)) {
+        if (hasProduct && IapManager.enableRestore(dialogOptions.feature, subscriptionOptions, unlockableProductInfo)) {
             html += '<p>';
             if (browserInfo.safari) {
                 html += '<paper-button raised class="secondary block btnRestorePurchase subdued"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></paper-button>';
