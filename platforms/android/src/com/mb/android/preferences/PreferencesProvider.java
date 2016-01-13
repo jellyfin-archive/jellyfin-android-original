@@ -74,7 +74,7 @@ public class PreferencesProvider {
         String cameraUploadServersString = getSharedPreferences(context).getString("cameraUploadServers", "");
         String[] cameraUploadServers = cameraUploadServersString == null || cameraUploadServersString.length() == 0 ? new String[]{} : cameraUploadServersString.split(",");
 
-        logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences with %s", syncPath);
+        logger.Debug("Calling MediaSyncAdapter.updateSyncPreferences. syncPath: %s", syncPath);
         MediaSyncAdapter.updateSyncPreferences(context, syncPath, syncOnOnWifi, cameraUploadServers);
     }
 
