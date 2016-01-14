@@ -13,6 +13,9 @@
             if (server.DateLastAccessed != null) {
                 server.DateLastAccessed = new Date(server.DateLastAccessed).toISOString();
             }
+            if (server.DateLastLocalConnection != null) {
+                server.DateLastLocalConnection = new Date(server.DateLastLocalConnection).toISOString();
+            }
         }
 
         json = JSON.stringify(credentials);
