@@ -29,7 +29,7 @@
             list.push('h264');
         }
 
-        if (document.createElement('audio').canPlayType('audio/aac').replace(/no/, '')) {
+        if (document.createElement('audio').canPlayType('audio/aac').replace(/no/, '') || browser.firefox) {
             list.push('aac');
         }
 
@@ -104,11 +104,21 @@
         profile.DirectPlayProfiles = [];
 
         var videoAudioCodecs = [];
-        if (canPlayMp3) {
-            videoAudioCodecs.push('mp3');
+
+        // Only put mp3 first if mkv support is there
+        // Otherwise with HLS and mp3 audio we're seeing some browsers
+        if (canPlayMkv) {
+            if (canPlayMp3) {
+                videoAudioCodecs.push('mp3');
+            }
         }
         if (canPlayAac) {
             videoAudioCodecs.push('aac');
+        }
+        if (!canPlayMkv) {
+            if (canPlayMp3) {
+                videoAudioCodecs.push('mp3');
+            }
         }
         if (canPlayAc3) {
             videoAudioCodecs.push('ac3');
@@ -170,17 +180,6 @@
                 });
             }
         });
-
-        var videoAudioCodecs = [];
-        if (canPlayMp3) {
-            videoAudioCodecs.push('mp3');
-        }
-        if (canPlayAac) {
-            videoAudioCodecs.push('aac');
-        }
-        if (canPlayAc3) {
-            videoAudioCodecs.push('ac3');
-        }
 
         // Can't use mkv on mobile because we have to use the native player controls and they won't be able to seek it
         if (canPlayMkv && !browser.mobile) {
@@ -246,7 +245,7 @@
             }]
         });
 
-        var videoAudioChannels = browser.safari ? '2' : '6';
+        var videoAudioChannels = '6';
 
         profile.CodecProfiles.push({
             Type: 'VideoAudio',
