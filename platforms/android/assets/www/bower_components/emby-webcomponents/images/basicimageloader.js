@@ -1,0 +1,1 @@
+define([],function(){function e(e,n){if("IMG"!==e.tagName){var r=new Image;r.onload=function(){e.style.backgroundImage="url('"+n+"')"},r.src=n}else e.setAttribute("src",n);return Promise.resolve(e)}return{loadImage:e}});
