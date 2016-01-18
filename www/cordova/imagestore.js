@@ -122,8 +122,6 @@
         });
     }
 
-    new indexedDbBlobImageStore();
-
     return {
         loadImage: function (elem, url) {
 
