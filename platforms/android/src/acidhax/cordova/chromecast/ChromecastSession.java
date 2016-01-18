@@ -1,6 +1,7 @@
 package acidhax.cordova.chromecast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -369,8 +370,15 @@ public class ChromecastSession
 			
 			ApplicationMetadata metadata = result.getApplicationMetadata();
 			ChromecastSession.this.sessionId = result.getSessionId();
-			ChromecastSession.this.displayName = metadata.getName();
-			ChromecastSession.this.appImages = metadata.getImages();
+
+            // Seeing a case of this being null
+            if (metadata != null){
+                ChromecastSession.this.displayName = metadata.getName();
+                ChromecastSession.this.appImages = metadata.getImages();
+            } else{
+                ChromecastSession.this.displayName = "Chromecast";
+                ChromecastSession.this.appImages = new ArrayList<WebImage>();
+            }
 		
 			Status status = result.getStatus();
 			
