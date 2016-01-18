@@ -1849,6 +1849,14 @@ var AppInfo = {};
             connectservice: apiClientBowerPath + '/connectservice'
         };
 
+        if (navigator.webkitPersistentStorage) {
+            paths.imageloader = embyWebComponentsBowerPath + "/images/persistentimageloader";
+        } else if (Dashboard.isRunningInCordova()) {
+            paths.imageloader = 'cordova/imagestore';
+        } else {
+            paths.imageloader = embyWebComponentsBowerPath + "/images/basicimageloader";
+        }
+
         paths.hlsjs = bowerPath + "/hls.js/dist/hls.min";
 
         if (Dashboard.isRunningInCordova()) {
@@ -1878,6 +1886,7 @@ var AppInfo = {};
         };
 
         requirejs.config({
+            waitSeconds: 0,
             map: {
                 '*': {
                     'css': bowerPath + '/emby-webcomponents/requirecss',
@@ -1999,7 +2008,7 @@ var AppInfo = {};
         }
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
-            define("audiorenderer", ["cordova/android/vlcplayer"]);
+            define("audiorenderer", ["scripts/htmlmediarenderer"]);
             define("videorenderer", ["cordova/android/vlcplayer"]);
         }
         else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
@@ -2124,23 +2133,11 @@ var AppInfo = {};
             };
 
             if (Dashboard.isRunningInCordova() && browserInfo.android) {
-                AppInfo.directPlayAudioContainers = "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus".split(',');
-
-                // TODO: This is going to exclude it from both playback and sync, so improve on this
-                if (AppSettings.syncLosslessAudio()) {
-                    AppInfo.directPlayAudioContainers.push('flac');
-                }
-
                 AppInfo.directPlayVideoContainers = "m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm".split(',');
             }
             else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
 
-                AppInfo.directPlayAudioContainers = "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus".split(',');
-
-                // TODO: This is going to exclude it from both playback and sync, so improve on this
-                if (AppSettings.syncLosslessAudio()) {
-                    AppInfo.directPlayAudioContainers.push('flac');
-                }
+                AppInfo.directPlayAudioContainers = "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac".split(',');
             }
 
             var promises = [];
@@ -2261,13 +2258,6 @@ var AppInfo = {};
             $.mobile.initializePage();
 
             var postInitDependencies = [];
-
-            if (navigator.webkitPersistentStorage) {
-                postInitDependencies.push('components/imagestore');
-            }
-            else if (Dashboard.isRunningInCordova()) {
-                postInitDependencies.push('cordova/imagestore');
-            }
 
             postInitDependencies.push('scripts/thememediaplayer');
             postInitDependencies.push('scripts/remotecontrol');
@@ -2396,7 +2386,7 @@ var AppInfo = {};
                     var keys = [];
                     keys.push(navigator.userAgent);
                     keys.push((navigator.cpuClass || ""));
-
+                    keys.push(new Date().getTime());
                     var randomId = CryptoJS.SHA1(keys.join('|')).toString();
                     appStorage.setItem('_deviceId', randomId);
                     onDeviceAdAcquired(randomId);
