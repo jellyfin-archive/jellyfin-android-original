@@ -301,14 +301,14 @@ dependencies {
     compile 'com.github.tony19:logback-android-core:1.1.1-4'
     compile 'com.github.tony19:logback-android-classic:1.1.1-4'
     compile 'com.android.support:multidex:1.0.0'
-    // SUB-PROJECT DEPENDENCIES START
+    compile 'com.mcxiaoke.volley:library:1.0.19'
+	// SUB-PROJECT DEPENDENCIES START
     debugCompile project(path: "CordovaLib", configuration: "debug")
     releaseCompile project(path: "CordovaLib", configuration: "release")
     compile "com.squareup.okhttp:okhttp-urlconnection:2+"
     // SUB-PROJECT DEPENDENCIES END
     compile files('libs/emby.apiclient.jar')
     compile files('libs/emby.apiclient.android.jar')
-    compile files('libs/volley.jar')
     compile 'com.google.guava:guava:19.0'
     // FLAVOR-SPECIFIC DEPENDENCIES
     googlex86Compile(name: 'emby.googleiap', ext: 'aar')
