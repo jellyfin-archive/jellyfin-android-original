@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.emby.mobile" android-packageName="com.mb.android" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.74" android-versionCode="20000574" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.emby.mobile" android-packageName="com.mb.android" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.75" android-versionCode="20000575" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Emby</name>
   <description>
     Emby Mobile
@@ -100,9 +100,9 @@
 	<preference name="SplashScreenBackgroundColor" value="#1f1f1f" /> <!-- defaults to "#464646" -->
 	<preference name="BackgroundColor" value="0xff222222" />
   </platform>
-    <preference name="xwalkVersion" value="15+" />
+    <preference name="xwalkUserAgent" value="crosswalk/16 android" />
+    <preference name="xwalkVersion" value="16+" />
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
-	<preference name="xwalkUserAgent" value="crosswalk/15 android" />
 </widget>

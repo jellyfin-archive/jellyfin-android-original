@@ -96,6 +96,8 @@ public class MainActivity extends CordovaActivity
         return AppLogger.getLogger(this);
     }
 
+    private int chromeVersion = 45;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -148,11 +150,15 @@ public class MainActivity extends CordovaActivity
             return false;
         }
 
-        // Embedded Crosswalk is based on 43. Use system version if equal or higher.
-        if (GetSystemWebViewChromiumVersion() < 43) {
+        // Use system version if equal or higher.
+        int systemWebViewVersion = GetSystemWebViewChromiumVersion();
+        if (systemWebViewVersion < chromeVersion) {
             getLogger().Info("Enabling Crosswalk due to older chromium version");
             return false;
         }
+
+        chromeVersion = systemWebViewVersion;
+
         return true;
     }
 
@@ -291,6 +297,12 @@ public class MainActivity extends CordovaActivity
 
             RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));*/
         }
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public int getChromeVersion() {
+        return chromeVersion;
     }
 
     @android.webkit.JavascriptInterface

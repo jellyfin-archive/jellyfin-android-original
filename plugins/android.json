@@ -185,9 +185,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -213,6 +210,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "acidhax.cordova.chromecast": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
