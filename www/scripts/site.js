@@ -1680,6 +1680,7 @@ var AppInfo = {};
                 window.ConnectionManager.clearData();
             }
 
+            console.log('binding to apiclientcreated');
             Events.on(ConnectionManager, 'apiclientcreated', onApiClientCreated);
 
             if (Dashboard.isConnectMode()) {
@@ -1702,12 +1703,19 @@ var AppInfo = {};
                 }
 
             } else {
+
+                console.log('loading ApiClient singleton');
+
                 return getRequirePromise(['apiclient']).then(function (apiClientFactory) {
+
+                    console.log('creating ApiClient singleton');
+
                     var apiClient = new apiClientFactory(Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, window.devicePixelRatio);
                     apiClient.enableAutomaticNetworking = false;
                     ConnectionManager.addApiClient(apiClient);
                     Dashboard.importCss(apiClient.getUrl('Branding/Css'));
                     window.ApiClient = apiClient;
+                    console.log('loaded ApiClient singleton');
                 });
             }
         });
@@ -1846,15 +1854,17 @@ var AppInfo = {};
             browserdeviceprofile: embyWebComponentsBowerPath + "/browserdeviceprofile",
             browser: embyWebComponentsBowerPath + "/browser",
             qualityoptions: embyWebComponentsBowerPath + "/qualityoptions",
-            connectservice: apiClientBowerPath + '/connectservice'
+            connectservice: apiClientBowerPath + '/connectservice',
+            hammer: bowerPath + "/hammerjs/hammer.min",
+            imageLoader: embyWebComponentsBowerPath + "/images/imagehelper"
         };
 
         if (navigator.webkitPersistentStorage) {
-            paths.imageloader = embyWebComponentsBowerPath + "/images/persistentimageloader";
+            paths.imageFetcher = embyWebComponentsBowerPath + "/images/persistentimagefetcher";
         } else if (Dashboard.isRunningInCordova()) {
-            paths.imageloader = 'cordova/imagestore';
+            paths.imageFetcher = 'cordova/imagestore';
         } else {
-            paths.imageloader = embyWebComponentsBowerPath + "/images/basicimageloader";
+            paths.imageFetcher = embyWebComponentsBowerPath + "/images/basicimagefetcher";
         }
 
         paths.hlsjs = bowerPath + "/hls.js/dist/hls.min";
@@ -1957,10 +1967,6 @@ var AppInfo = {};
 
         define("jqmpanel", ["thirdparty/jquerymobile-1.4.5/jqm.panel", 'css!thirdparty/jquerymobile-1.4.5/jqm.panel.css']);
 
-        define("hammer", [bowerPath + "/hammerjs/hammer.min"], function (Hammer) {
-            return Hammer;
-        });
-
         define("swipebox", [bowerPath + '/swipebox/src/js/jquery.swipebox.min', "css!" + bowerPath + "/swipebox/src/css/swipebox.min.css"]);
 
         define('fetch', [bowerPath + '/fetch/fetch']);
@@ -2008,7 +2014,12 @@ var AppInfo = {};
         }
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
-            define("audiorenderer", ["scripts/htmlmediarenderer"]);
+            if (MainActivity.getChromeVersion() >= 48) {
+                //define("audiorenderer", ["scripts/htmlmediarenderer"]);
+                define("audiorenderer", ["cordova/android/vlcplayer"]);
+            } else {
+                define("audiorenderer", ["cordova/android/vlcplayer"]);
+            }
             define("videorenderer", ["cordova/android/vlcplayer"]);
         }
         else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
@@ -2143,12 +2154,10 @@ var AppInfo = {};
             var promises = [];
             deps = [];
             deps.push('scripts/mediaplayer');
-            deps.push('thirdparty/jquery.unveil-custom.js');
             deps.push('emby-icons');
             deps.push('paper-icon-button');
             deps.push('paper-button');
             deps.push('thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.js');
-            deps.push('scripts/librarybrowser');
             promises.push(getRequirePromise(deps));
 
             promises.push(Globalize.ensure());
@@ -2156,6 +2165,7 @@ var AppInfo = {};
 
             Promise.all(promises).then(function () {
 
+                console.log('initAfterDependencies promises resolved');
                 MediaController.init();
 
                 document.title = Globalize.translateDocument(document.title, 'html');
@@ -2206,7 +2216,11 @@ var AppInfo = {};
 
     function onAppReady() {
 
+        console.log('Begin onAppReady');
+
         var deps = [];
+
+        deps.push('imageLoader');
 
         if (!(AppInfo.isNativeApp && browserInfo.android)) {
             document.documentElement.classList.add('minimumSizeTabs');
@@ -2248,10 +2262,14 @@ var AppInfo = {};
         deps.push('scripts/sync');
         deps.push('scripts/backdrops');
         deps.push('scripts/librarymenu');
+        deps.push('scripts/librarybrowser');
 
         deps.push('css!css/card.css');
 
-        require(deps, function () {
+        require(deps, function (imageLoader) {
+
+            imageLoader.enableFade = browserInfo.animate && !browserInfo.mobile;
+            window.ImageLoader = imageLoader;
 
             $.mobile.filterHtml = Dashboard.filterHtml;
 
@@ -2347,7 +2365,7 @@ var AppInfo = {};
                 deviceName = "Chrome";
             } else if (browserInfo.edge) {
                 deviceName = "Edge";
-            } else if (browserInfo.mozilla) {
+            } else if (browserInfo.firefox) {
                 deviceName = "Firefox";
             } else if (browserInfo.msie) {
                 deviceName = "Internet Explorer";

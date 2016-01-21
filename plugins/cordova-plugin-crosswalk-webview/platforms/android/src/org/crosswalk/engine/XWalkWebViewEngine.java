@@ -46,6 +46,7 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     public static final String TAG = "XWalkWebViewEngine";
     public static final String XWALK_USER_AGENT = "xwalkUserAgent";
+    public static final String XWALK_Z_ORDER_ON_TOP = "xwalkZOrderOnTop";
 
     protected final XWalkCordovaView webView;
     protected XWalkCordovaCookieManager cookieManager;
@@ -78,6 +79,10 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
                 exposeJsInterface(webView, bridge);
 
                 loadUrl(startUrl, true);
+                // Send the massage of xwalk's ready to plugin.
+                if (pluginManager != null) {
+                    pluginManager.postMessage("onXWalkReady", this);
+                }
             }
         };
         activityDelegate = new XWalkActivityDelegate((Activity) context, cancelCommand, completeCommand);
@@ -129,6 +134,9 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
     private void initWebViewSettings() {
         webView.setVerticalScrollBarEnabled(false);
+
+        boolean zOrderOnTop = preferences == null ? false : preferences.getBoolean(XWALK_Z_ORDER_ON_TOP, false);
+        webView.setZOrderOnTop(zOrderOnTop);
 
         // Set xwalk webview settings by Cordova preferences.
         String xwalkUserAgent = preferences == null ? "" : preferences.getString(XWALK_USER_AGENT, "");

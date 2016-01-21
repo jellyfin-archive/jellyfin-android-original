@@ -39,26 +39,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<preference name=\"webView\" value=\"org.crosswalk.engine.XWalkWebViewEngine\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"15+\" name=\"xwalkVersion\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"--disable-pull-to-refresh-effect\" name=\"xwalkCommandLine\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"embedded\" name=\"xwalkMode\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"true\" name=\"xwalkMultipleApk\" />",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"FileTransfer\"><param name=\"android-package\" value=\"org.apache.cordova.filetransfer.FileTransfer\" /></feature>",
                             "count": 1
                         },
@@ -92,6 +72,26 @@
                         },
                         {
                             "xml": "<feature name=\"Chromecast\"><param name=\"android-package\" value=\"acidhax.cordova.chromecast.Chromecast\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference name=\"webView\" value=\"org.crosswalk.engine.XWalkWebViewEngine\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"16+\" name=\"xwalkVersion\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"--disable-pull-to-refresh-effect\" name=\"xwalkCommandLine\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"embedded\" name=\"xwalkMode\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<preference default=\"true\" name=\"xwalkMultipleApk\" />",
                             "count": 1
                         }
                     ]
@@ -194,9 +194,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -225,6 +222,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "acidhax.cordova.chromecast": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

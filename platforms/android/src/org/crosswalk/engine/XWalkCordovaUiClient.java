@@ -68,7 +68,7 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
     /**
      * Tell the client to display a javascript alert dialog.
      */
-    private boolean onJsAlert(XWalkView view, String url, String message,
+    public boolean onJsAlert(XWalkView view, String url, String message,
                               final XWalkJavascriptResult result) {
         dialogsHelper.showAlert(message, new CordovaDialogsHelper.Result() {
             @Override
@@ -86,7 +86,7 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
     /**
      * Tell the client to display a confirm dialog to the user.
      */
-    private boolean onJsConfirm(XWalkView view, String url, String message,
+    public boolean onJsConfirm(XWalkView view, String url, String message,
                                 final XWalkJavascriptResult result) {
         dialogsHelper.showConfirm(message, new CordovaDialogsHelper.Result() {
             @Override
@@ -109,7 +109,7 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      * Since we are hacking prompts for our own purposes, we should not be using them for
      * this purpose, perhaps we should hack console.log to do this instead!
      */
-    private boolean onJsPrompt(XWalkView view, String origin, String message, String defaultValue,
+    public boolean onJsPrompt(XWalkView view, String origin, String message, String defaultValue,
                                final XWalkJavascriptResult result) {
         // Unlike the @JavascriptInterface bridge, this method is always called on the UI thread.
         String handledRet = parentEngine.bridge.promptOnJsPrompt(origin, message, defaultValue);

@@ -1,4 +1,4 @@
-﻿(function ($, document, LibraryBrowser, window) {
+﻿(function ($, document, window) {
 
     var currentItem;
 
@@ -518,7 +518,7 @@
         }
 
         if (item.ImageOrientation) {
-            attributes.push(createAttribute(Globalize.translate('MediaInfoOrientation'), item.ImageOrientation));
+            //attributes.push(createAttribute(Globalize.translate('MediaInfoOrientation'), item.ImageOrientation));
         }
 
         if (item.IsoSpeedRating) {
@@ -1915,7 +1915,7 @@
 
         if (currentItem && currentItem.Id == itemId) {
             if (currentItem.Type == 'Recording') {
-                Dashboard.navigate('livetv.html');
+                LibraryBrowser.showTab('livetv.html', 3);
             } else {
                 Dashboard.navigate('index.html');
             }
@@ -2092,4 +2092,4 @@
 
     window.ItemDetailPage = new itemDetailPage();
 
-})(jQuery, document, LibraryBrowser, window);
+})(jQuery, document, window);

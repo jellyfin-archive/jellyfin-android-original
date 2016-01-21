@@ -90,13 +90,24 @@ Note that if you want to specify the Crosswalk version when using shared mode, y
     cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="org.xwalk:xwalk_shared_library_beta:14+"
 
 You can set background color with the preference of BackgroundColor.
+
     <!-- Set red background color -->
     <preference name="BackgroundColor" value="0xFFFF0000" />
 
 You can also set user agent with the preference of xwalkUserAgent.
+
     <preference name="xwalkUserAgent" value="customer UA" />
 
 ### Release Notes
+
+#### 1.5.0 (January 18, 2016)
+* Uses the latest Crosswalk 16 stable version by default
+* The message of xwalk's ready can be listened
+
+#### 1.4.0 (November 5, 2015)
+* Uses the latest Crosswalk 15 stable version by default
+* Support User Agent and Background Color configuration preferences
+* Compatible with the newest Cordova version 5.3.4
 
 #### 1.3.0 (August 28, 2015)
 * Crosswalk variables can be configured as an option via CLI
