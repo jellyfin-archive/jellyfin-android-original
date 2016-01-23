@@ -47,8 +47,9 @@
 
     if (MainActivity.supportsPlayStore()) {
         // Use native chromecast support
-        document.addEventListener('chromecastloaded', onChromecastLoaded);
-        require(['scripts/chromecast']);
+        //document.addEventListener('chromecastloaded', onChromecastLoaded);
+        //require(['scripts/chromecast']);
+        require(['cordova/connectsdk/connectsdk']);
     } else {
         require(['cordova/connectsdk/connectsdk']);
     }
