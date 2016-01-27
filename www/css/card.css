@@ -293,6 +293,10 @@
     background-position: center center;
 }
 
+    .coveredCardImage.noScale {
+        background-size: cover;
+    }
+
 .centeredCardImage {
     background-position: center center;
 }
