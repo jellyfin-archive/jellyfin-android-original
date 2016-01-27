@@ -176,6 +176,7 @@ public class RemotePlayerService extends Service {
                     .setContentTitle(title)
                     .setContentText(artist)
                     .setDeleteIntent(pendingIntent)
+                    .setContentIntent(createContentIntent())
                     .setProgress(duration, position, duration == 0)
                     .setStyle(style);
 
@@ -202,6 +203,14 @@ public class RemotePlayerService extends Service {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, builder.build());
         }
+    }
+
+    private PendingIntent createContentIntent() {
+
+        Intent openUI = new Intent(this, MainActivity.class);
+        openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        openUI.setAction(Constants.ACTION_SHOW_PLAYER);
+        return PendingIntent.getActivity(this, 100, openUI, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private void setMediaSessionMetadata(MediaSession mediaSession, String itemId, String artist, String album, String title, Bitmap largeIcon) {

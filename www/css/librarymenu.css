@@ -397,7 +397,7 @@ body:not(.dashboardDocument) .btnNotifications {
 }
 
 .darkDrawer {
-    background-color: rgba(35,35,35,1) !important;
+    background-color: rgba(30,30,30,1) !important;
     backdrop-filter: brightness(1.5) blur(4px);
     box-shadow: none !important;
 }
