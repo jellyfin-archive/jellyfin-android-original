@@ -1629,9 +1629,6 @@ var AppInfo = {};
         AppInfo.supportsSyncPathSetting = isCordova && isAndroid;
         AppInfo.supportsUserDisplayLanguageSetting = Dashboard.isConnectMode() && !isCordova;
 
-        AppInfo.directPlayAudioContainers = [];
-        AppInfo.directPlayVideoContainers = [];
-
         if (isCordova && isIOS) {
             AppInfo.moreIcon = 'more-horiz';
         } else {
@@ -1878,6 +1875,13 @@ var AppInfo = {};
             paths.wakeonlan = apiClientBowerPath + "/wakeonlan";
         }
 
+        // hack for an android test before browserInfo is loaded
+        if (Dashboard.isRunningInCordova() && window.MainActivity) {
+            paths.appStorage = "cordova/android/appstorage";
+        } else {
+            paths.appStorage = apiClientBowerPath + "/appstorage";
+        }
+
         var sha1Path = bowerPath + "/cryptojslib/components/sha1-min";
         var md5Path = bowerPath + "/cryptojslib/components/md5-min";
         var shim = {};
@@ -1982,8 +1986,6 @@ var AppInfo = {};
             define("localassetmanager", [apiClientBowerPath + "/localassetmanager"]);
             define("fileupload", [apiClientBowerPath + "/fileupload"]);
         }
-
-        define("apiclient-store", [apiClientBowerPath + "/store"]);
         define("apiclient-deferred", ["legacy/deferred"]);
         define("connectionmanager", [apiClientBowerPath + "/connectionmanager"]);
 
@@ -1995,14 +1997,6 @@ var AppInfo = {};
     }
 
     function init(hostingAppInfo) {
-
-        if (Dashboard.isRunningInCordova() && browserInfo.android) {
-            define("appstorage", ["cordova/android/appstorage"]);
-        } else {
-            define('appstorage', [], function () {
-                return appStorage;
-            });
-        }
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
             define("nativedirectorychooser", ["cordova/android/nativedirectorychooser"]);
@@ -2114,7 +2108,6 @@ var AppInfo = {};
         deps.push('connectionmanagerfactory');
         deps.push('credentialprovider');
 
-        deps.push('appstorage');
         deps.push('scripts/appsettings');
         deps.push('scripts/extensions');
 
@@ -2137,14 +2130,6 @@ var AppInfo = {};
                     return this.length && this[0].checked;
                 }
             };
-
-            if (Dashboard.isRunningInCordova() && browserInfo.android) {
-                AppInfo.directPlayVideoContainers = "m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm".split(',');
-            }
-            else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
-
-                AppInfo.directPlayAudioContainers = "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac".split(',');
-            }
 
             var promises = [];
             deps = [];
@@ -2424,15 +2409,17 @@ var AppInfo = {};
         var initialDependencies = [];
 
         initialDependencies.push('browser');
-        initialDependencies.push('apiclient-store');
+        initialDependencies.push('appStorage');
 
         if (!window.Promise) {
             initialDependencies.push('native-promise-only');
         }
 
-        require(initialDependencies, function (browser) {
+        require(initialDependencies, function (browser, appStorage) {
 
             window.browserInfo = browser;
+            window.appStorage = appStorage;
+
             setAppInfo();
             setDocumentClasses();
 

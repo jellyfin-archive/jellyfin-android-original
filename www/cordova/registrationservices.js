@@ -139,6 +139,16 @@
 
         var hasProduct = false;
 
+        for (var i = 0, length = subscriptionOptions.length; i < length; i++) {
+
+            hasProduct = true;
+            html += '<p>';
+            html += '<paper-button raised class="submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
+            html += subscriptionOptions[i].buttonText;
+            html += '</span></paper-button>';
+            html += '</p>';
+        }
+
         if (unlockableProductInfo) {
 
             hasProduct = true;
@@ -148,16 +158,6 @@
             }
             html += '<p>';
             html += '<paper-button raised class="secondary block btnPurchase" data-feature="' + unlockableProductInfo.feature + '"><iron-icon icon="check"></iron-icon><span>' + unlockText + '</span></paper-button>';
-            html += '</p>';
-        }
-
-        for (var i = 0, length = subscriptionOptions.length; i < length; i++) {
-
-            hasProduct = true;
-            html += '<p>';
-            html += '<paper-button raised class="submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
-            html += subscriptionOptions[i].buttonText;
-            html += '</span></paper-button>';
             html += '</p>';
         }
 

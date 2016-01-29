@@ -2,7 +2,7 @@
 
     function show(options) {
 
-        require(['paper-menu', 'paper-dialog', 'paper-dialog-scrollable', 'scale-up-animation', 'fade-out-animation'], function () {
+        require(['paper-menu', 'paper-dialog', 'scale-up-animation', 'fade-out-animation'], function () {
             showInternal(options);
         });
     }
@@ -58,7 +58,7 @@
         var isScrollable = !browserInfo.safari;
 
         if (isScrollable) {
-            html += '<paper-dialog-scrollable>';
+            //html += '<paper-dialog-scrollable>';
         }
 
         var itemsWithIcons = options.items.filter(function (o) {
@@ -96,7 +96,7 @@
         html += '</paper-menu>';
 
         if (isScrollable) {
-            html += '</paper-dialog-scrollable>';
+            //html += '</paper-dialog-scrollable>';
         }
 
         if (options.showCancel) {
@@ -107,6 +107,8 @@
 
         var dlg = document.createElement('paper-dialog');
         dlg.setAttribute('with-backdrop', 'with-backdrop');
+        dlg.setAttribute('role', 'alertdialog');
+        dlg.setAttribute('noAutoFocus', 'noAutoFocus');
         dlg.innerHTML = html;
 
         if (pos) {
@@ -114,29 +116,28 @@
             dlg.style.left = pos.left + 'px';
             dlg.style.top = pos.top + 'px';
         }
+
         document.body.appendChild(dlg);
 
-        // The animations flicker in IE
-        if (!browserInfo.msie) {
-            dlg.animationConfig = {
-                // scale up
-                'entry': {
-                    name: 'scale-up-animation',
-                    node: dlg,
-                    timing: { duration: 160, easing: 'ease-out' }
-                },
-                // fade out
-                'exit': {
-                    name: 'fade-out-animation',
-                    node: dlg,
-                    timing: { duration: 200, easing: 'ease-in' }
-                }
-            };
-        }
+        dlg.animationConfig = {
+            // scale up
+            'entry': {
+                name: 'scale-up-animation',
+                node: dlg,
+                timing: { duration: 160, easing: 'ease-out' }
+            },
+            // fade out
+            'exit': {
+                name: 'fade-out-animation',
+                node: dlg,
+                timing: { duration: 200, easing: 'ease-in' }
+            }
+        };
 
+        var delay = browserInfo.chrome ? 0 : 100;
         setTimeout(function () {
             dlg.open();
-        }, 50);
+        }, delay);
 
         // Has to be assigned a z-index after the call to .open() 
         dlg.addEventListener('iron-overlay-closed', function () {
@@ -146,21 +147,37 @@
         // Seeing an issue in some non-chrome browsers where this is requiring a double click
         var eventName = browserInfo.chrome || browserInfo.safari ? 'click' : 'mousedown';
 
-        $('.actionSheetMenuItem', dlg).on(eventName, function () {
+        dlg.addEventListener(eventName, function (e) {
 
-            var selectedId = this.getAttribute('data-id');
+            var target = parentWithClass(e.target, 'actionSheetMenuItem');
+            if (target) {
+                var selectedId = target.getAttribute('data-id');
 
-            // Add a delay here to allow the click animation to finish, for nice effect
-            setTimeout(function () {
+                // Add a delay here to allow the click animation to finish, for nice effect
+                setTimeout(function () {
 
-                dlg.close();
+                    dlg.close();
 
-                if (options.callback) {
-                    options.callback(selectedId);
-                }
+                    if (options.callback) {
+                        options.callback(selectedId);
+                    }
 
-            }, 100);
+                }, 100);
+            }
         });
+    }
+
+    function parentWithClass(elem, className) {
+
+        while (!elem.classList || !elem.classList.contains(className)) {
+            elem = elem.parentNode;
+
+            if (!elem) {
+                return null;
+            }
+        }
+
+        return elem;
     }
 
     window.ActionSheetElement = {
