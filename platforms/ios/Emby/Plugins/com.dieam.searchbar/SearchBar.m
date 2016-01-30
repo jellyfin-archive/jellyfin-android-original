@@ -249,8 +249,20 @@ static int const BACK_BUTTON_WIDTH = 50;
 }
 
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [self writeJavascript:[NSString stringWithFormat:@"cordova.fireDocumentEvent('searchEvent', {text:'%@'})", searchBar.text]];
+    [self search];
     [searchBar resignFirstResponder];
+}
+
+-(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    SEL fetchSearchResults = @selector(search); //call the search function
+    [[self class] cancelPreviousPerformRequestsWithTarget:self selector:fetchSearchResults object:nil];
+    [self performSelector:fetchSearchResults withObject:nil afterDelay:1];
+    
+}
+
+-(void)search{
+    [self writeJavascript:[NSString stringWithFormat:@"cordova.fireDocumentEvent('searchEvent', {text:'%@'})", nativeSearchBar.text]];
 }
 
 @end
