@@ -158,14 +158,14 @@
 
         } else {
 
-            Logger.log('testing play access for device id: ' + deviceId);
+            console.log('testing play access for device id: ' + deviceId);
 
             return fetch('http://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId, {
                 method: 'GET'
 
             }).then(function (response) {
 
-                Logger.log('Play access test for device id: ' + deviceId + '. Response: ' + response.status);
+                console.log('Play access test for device id: ' + deviceId + '. Response: ' + response.status);
 
                 if (response.status < 400) {
                     appStorage.setItem(cacheKey, 'true');
@@ -176,7 +176,7 @@
 
             }, function (e) {
 
-                Logger.log('Play access test for device id: ' + deviceId + ' failed.');
+                console.log('Play access test for device id: ' + deviceId + ' failed.');
 
                 return false;
             });
