@@ -86,7 +86,10 @@
 
         var elem = document.querySelector('.inAppPurchaseOverlay');
         if (elem) {
-            PaperDialogHelper.close(elem);
+            require(['paperdialoghelper'], function (paperdialoghelper) {
+
+                paperdialoghelper.close(elem);
+            });
         }
     }
 
@@ -101,7 +104,7 @@
         currentDisplayingReject = null;
     }
 
-    function showInAppPurchaseElement(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
+    function showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
 
         cancelInAppPurchase();
 
@@ -112,11 +115,16 @@
             currentDisplayingProductInfos.push(unlockableProductInfo);
         }
 
-        var dlg = PaperDialogHelper.createDialog();
+        var dlg = paperdialoghelper.createDialog({
+            size: 'fullscreen-border'
+        });
+
+        dlg.classList.add('ui-body-b');
+        dlg.classList.add('background-theme-b');
 
         var html = '';
         html += '<h2 class="dialogHeader">';
-        html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog"></paper-fab>';
+        html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog" tabindex=-1""></paper-fab>';
         html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + dialogOptions.title + '</div>';
         html += '</h2>';
 
@@ -194,11 +202,11 @@
 
         initInAppPurchaseElementEvents(dlg, dialogOptions.feature, resolve, reject);
 
-        PaperDialogHelper.open(dlg);
+        paperdialoghelper.open(dlg);
 
         $('.btnCloseDialog', dlg).on('click', function () {
 
-            PaperDialogHelper.close(dlg);
+            paperdialoghelper.close(dlg);
         });
 
         $(dlg).on('iron-overlay-closed', function () {
@@ -329,13 +337,13 @@
 
     function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
 
-        require(['components/paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function () {
+        require(['paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function () {
 
             if (window.TabBar) {
                 TabBar.hide();
             }
 
-            showInAppPurchaseElement(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+            showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
 
             currentDisplayingResolve = resolve;
             currentDisplayingReject = reject;

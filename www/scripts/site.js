@@ -1806,6 +1806,10 @@ var AppInfo = {};
         }
     }
 
+    function returnFirstDependency(obj) {
+        return obj;
+    }
+
     function initRequire() {
 
         var urlArgs = "v=" + (window.dashboardVersion || new Date().getDate());
@@ -1848,6 +1852,8 @@ var AppInfo = {};
             qualityoptions: embyWebComponentsBowerPath + "/qualityoptions",
             connectservice: apiClientBowerPath + '/connectservice',
             hammer: bowerPath + "/hammerjs/hammer.min",
+            performanceManager: embyWebComponentsBowerPath + "/performancemanager",
+            focusManager: embyWebComponentsBowerPath + "/focusmanager",
             imageLoader: embyWebComponentsBowerPath + "/images/imagehelper"
         };
 
@@ -1867,12 +1873,14 @@ var AppInfo = {};
             paths.sharingwidget = "cordova/sharingwidget";
             paths.serverdiscovery = "cordova/serverdiscovery";
             paths.wakeonlan = "cordova/wakeonlan";
+            paths.actionsheet = "cordova/actionsheet";
         } else {
             paths.dialog = "components/dialog";
             paths.prompt = "components/prompt";
             paths.sharingwidget = "components/sharingwidget";
             paths.serverdiscovery = apiClientBowerPath + "/serverdiscovery";
             paths.wakeonlan = apiClientBowerPath + "/wakeonlan";
+            paths.actionsheet = "scripts/actionsheet";
         }
 
         // hack for an android test before browserInfo is loaded
@@ -1966,7 +1974,8 @@ var AppInfo = {};
 
         define("jqmpanel", ["thirdparty/jquerymobile-1.4.5/jqm.panel", 'css!thirdparty/jquerymobile-1.4.5/jqm.panel.css']);
 
-        define("swipebox", [bowerPath + '/swipebox/src/js/jquery.swipebox.min', "css!" + bowerPath + "/swipebox/src/css/swipebox.min.css"]);
+        define("iron-icon-set", ["html!" + bowerPath + "/iron-icon/iron-icon.html", "html!" + bowerPath + "/iron-iconset-svg/iron-iconset-svg.html"]);
+        define("slideshow", [embyWebComponentsBowerPath + "/slideshow/slideshow"], returnFirstDependency);
 
         define('fetch', [bowerPath + '/fetch/fetch']);
         define('webcomponentsjs', [bowerPath + '/webcomponentsjs/webcomponents-lite.min.js']);
@@ -1994,6 +2003,35 @@ var AppInfo = {};
         define("multiserversync", [apiClientBowerPath + "/sync/multiserversync"]);
         define("offlineusersync", [apiClientBowerPath + "/sync/offlineusersync"]);
         define("mediasync", [apiClientBowerPath + "/sync/mediasync"]);
+
+        define("swiper", [bowerPath + "/Swiper/dist/js/swiper.min", "css!" + bowerPath + "/Swiper/dist/css/swiper.min"], returnFirstDependency);
+
+        define("paperdialoghelper", [embyWebComponentsBowerPath + "/paperdialoghelper/paperdialoghelper"], returnFirstDependency);
+
+        // alias
+        define("historyManager", [], function () {
+            return {
+                pushState: function (state, title, url) {
+                    state.navigate = false;
+                    history.pushState(state, title, url);
+                    jQuery.onStatePushed(state);
+                }
+            };
+        });
+
+        // mock this for now. not used in this app
+        define("inputManager", [], function () {
+            return {
+                on: function () {
+                },
+                off: function () {
+                }
+            };
+        });
+
+        define("connectionManager", [], function () {
+            return ConnectionManager;
+        });
     }
 
     function init(hostingAppInfo) {
@@ -2036,12 +2074,6 @@ var AppInfo = {};
             return {};
         });
         define("tileitemcss", ['css!css/tileitem.css']);
-
-        if (Dashboard.isRunningInCordova()) {
-            define("actionsheet", ["cordova/actionsheet"]);
-        } else {
-            define("actionsheet", ["scripts/actionsheet"]);
-        }
 
         define("sharingmanager", ["scripts/sharingmanager"]);
 
@@ -2285,8 +2317,6 @@ var AppInfo = {};
                     }
                 }
 
-                //postInitDependencies.push('components/testermessage');
-
             } else if (browserInfo.chrome) {
                 postInitDependencies.push('scripts/chromecast');
             }
@@ -2502,9 +2532,9 @@ pageClassOn('pageshow', "page", function () {
     }
 
     if (currentTheme != 'a' && !browserInfo.mobile) {
-        document.body.classList.add('darkScrollbars');
+        document.documentElement.classList.add('darkScrollbars');
     } else {
-        document.body.classList.remove('darkScrollbars');
+        document.documentElement.classList.remove('darkScrollbars');
     }
 
     Dashboard.ensurePageTitle(page);

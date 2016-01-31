@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define([], function () {
 
     function show(options) {
 
@@ -57,7 +57,8 @@
         });
     }
 
-    window.ActionSheetElement = {
+    return {
         show: show
     };
-})();
+
+});
