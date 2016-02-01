@@ -10,6 +10,7 @@
     background-repeat: no-repeat;
     margin: 0 !important;
     color: #fff;
+    line-height: normal;
 }
 
     .slideshowImage.cover {
@@ -46,11 +47,15 @@
 .btnSlideshowExit {
     z-index: 1002;
     position: absolute;
-    top: 1%;
-    left: .5%;
+    top: 1.5vh;
+    left: 1.5vh;
     width: 6vh;
     height: 6vh;
     color: #eee;
+}
+
+paper-fab.btnSlideshowExit {
+    background-color: #444;
 }
 
 .slideshowControlBar {
@@ -101,4 +106,15 @@
 
 .slideSubtitle {
     color: #ccc;
+}
+
+.swiper-slide paper-spinner {
+    width: 10vh;
+    height: 10vh;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -5vh;
+    margin-top: -5vh;
+    z-index: 1003;
 }
