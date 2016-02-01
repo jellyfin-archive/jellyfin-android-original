@@ -141,7 +141,7 @@
                 cover: false,
                 items: items,
                 startIndex: index,
-                interval: 6000,
+                interval: 7000,
                 interactive: true
             });
 
