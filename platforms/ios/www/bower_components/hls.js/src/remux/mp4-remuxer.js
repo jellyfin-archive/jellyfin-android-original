@@ -32,7 +32,7 @@ class MP4Remuxer {
     this.ISGenerated = false;
   }
 
-  remux(audioTrack,videoTrack,id3Track,timeOffset, contiguous) {
+  remux(audioTrack,videoTrack,id3Track,textTrack,timeOffset, contiguous) {
     // generate Init Segment if needed
     if (!this.ISGenerated) {
       this.generateIS(audioTrack,videoTrack,timeOffset);
@@ -48,6 +48,10 @@ class MP4Remuxer {
     //logger.log('nb ID3 samples:' + audioTrack.samples.length);
     if (id3Track.samples.length) {
       this.remuxID3(id3Track,timeOffset);
+    }
+    //logger.log('nb ID3 samples:' + audioTrack.samples.length);
+    if (textTrack.samples.length) {
+      this.remuxText(textTrack,timeOffset);
     }
     //notify end of parsing
     this.observer.trigger(Event.FRAG_PARSED);
@@ -249,7 +253,8 @@ class MP4Remuxer {
     var view,
         offset = 8,
         pesTimeScale = this.PES_TIMESCALE,
-        pes2mp4ScaleFactor = this.PES2MP4SCALEFACTOR,
+        mp4timeScale = track.timescale,
+        pes2mp4ScaleFactor = pesTimeScale/mp4timeScale,
         aacSample, mp4Sample,
         unit,
         mdat, moof,
@@ -258,14 +263,10 @@ class MP4Remuxer {
         samples = [],
         samples0 = [];
 
-    track.samples.forEach(aacSample => {
-      if(pts === undefined || aacSample.pts > pts) {
-        samples0.push(aacSample);
-        pts = aacSample.pts;
-      } else {
-        logger.warn('dropping past audio frame');
-      }
+    track.samples.sort(function(a, b) {
+      return (a.pts-b.pts);
     });
+    samples0 = track.samples;
 
     while (samples0.length) {
       aacSample = samples0.shift();
@@ -277,13 +278,15 @@ class MP4Remuxer {
       if (lastDTS !== undefined) {
         ptsnorm = this._PTSNormalize(pts, lastDTS);
         dtsnorm = this._PTSNormalize(dts, lastDTS);
-        // let's compute sample duration
+        // let's compute sample duration.
+        // there should be 1024 audio samples in one AAC frame
         mp4Sample.duration = (dtsnorm - lastDTS) / pes2mp4ScaleFactor;
-        if (mp4Sample.duration < 0) {
+        if(Math.abs(mp4Sample.duration - 1024) > 10) {
           // not expected to happen ...
-          logger.log(`invalid AAC sample duration at PTS:${aacSample.pts}:${mp4Sample.duration}`);
-          mp4Sample.duration = 0;
+          logger.log(`invalid AAC sample duration at PTS ${Math.round(pts/90)},should be 1024,found :${Math.round(mp4Sample.duration)}`);
         }
+        mp4Sample.duration = 1024;
+        dtsnorm = 1024 * pes2mp4ScaleFactor + lastDTS;
       } else {
         var nextAacPts = this.nextAacPts,delta;
         ptsnorm = this._PTSNormalize(pts, nextAacPts);
@@ -309,12 +312,17 @@ class MP4Remuxer {
         // remember first PTS of our aacSamples, ensure value is positive
         firstPTS = Math.max(0, ptsnorm);
         firstDTS = Math.max(0, dtsnorm);
-        /* concatenate the audio data and construct the mdat in place
-          (need 8 more bytes to fill length and mdat type) */
-        mdat = new Uint8Array(track.len + 8);
-        view = new DataView(mdat.buffer);
-        view.setUint32(0, mdat.byteLength);
-        mdat.set(MP4.types.mdat, 4);
+        if(track.len > 0) {
+          /* concatenate the audio data and construct the mdat in place
+            (need 8 more bytes to fill length and mdat type) */
+          mdat = new Uint8Array(track.len + 8);
+          view = new DataView(mdat.buffer);
+          view.setUint32(0, mdat.byteLength);
+          mdat.set(MP4.types.mdat, 4);
+        } else {
+          // no audio samples
+          return;
+        }
       }
       mdat.set(unit, offset);
       offset += unit.byteLength;
@@ -374,6 +382,29 @@ class MP4Remuxer {
         sample.dts = ((sample.dts - this._initDTS) / this.PES_TIMESCALE);
       }
       this.observer.trigger(Event.FRAG_PARSING_METADATA, {
+        samples:track.samples
+      });
+    }
+
+    track.samples = [];
+    timeOffset = timeOffset;
+  }
+
+  remuxText(track,timeOffset) {
+    track.samples.sort(function(a, b) {
+      return (a.pts-b.pts);
+    });
+
+    var length = track.samples.length, sample;
+    // consume samples
+    if(length) {
+      for(var index = 0; index < length; index++) {
+        sample = track.samples[index];
+        // setting text pts, dts to relative time
+        // using this._initPTS and this._initDTS to calculate relative time
+        sample.pts = ((sample.pts - this._initPTS) / this.PES_TIMESCALE);
+      }
+      this.observer.trigger(Event.FRAG_PARSING_USERDATA, {
         samples:track.samples
       });
     }

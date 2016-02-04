@@ -1,0 +1,1 @@
+define(["browser"],function(n){function e(){return n.mobile?1:5}return{getAnimationPerformance:e}});
