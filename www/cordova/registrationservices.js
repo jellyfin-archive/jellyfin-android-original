@@ -337,7 +337,7 @@
 
     function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
 
-        require(['paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function () {
+        require(['paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (paperdialoghelper) {
 
             if (window.TabBar) {
                 TabBar.hide();
