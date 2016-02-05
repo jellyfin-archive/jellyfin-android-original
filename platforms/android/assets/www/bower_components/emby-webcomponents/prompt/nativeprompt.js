@@ -1,0 +1,1 @@
+define([],function(){return function(t){return new Promise(function(e,n){"string"==typeof t&&(t={title:"",text:t});var i=prompt(t.title||"",t.text||"");i?e(i):n(i)})}});

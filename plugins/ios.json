@@ -350,9 +350,6 @@
         "cordova-plugin-device": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-dialogs": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },

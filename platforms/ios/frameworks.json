@@ -6,7 +6,7 @@
     "libz.dylib": 1,
     "CFNetwork.framework": 2,
     "SystemConfiguration.framework": 2,
-    "AudioToolbox.framework": 2,
+    "AudioToolbox.framework": 1,
     "MediaPlayer.framework": 1,
     "CoreText.framework": 1,
     "QuartzCore.framework": 1,

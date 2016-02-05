@@ -565,10 +565,13 @@ var Dashboard = {
             return;
         }
 
-        // Cordova
-        if (navigator.notification && navigator.notification.alert && options.message.indexOf('<') == -1) {
+        if (browserInfo.mobile && options.message.indexOf('<') == -1) {
 
-            navigator.notification.alert(options.message, options.callback || function () { }, options.title || Globalize.translate('HeaderAlert'));
+            alert(options.message);
+
+            if (options.callback) {
+                options.callback();
+            }
 
         } else {
             require(['paper-dialog', 'fade-in-animation', 'fade-out-animation'], function () {
@@ -580,15 +583,13 @@ var Dashboard = {
     confirm: function (message, title, callback) {
 
         // Cordova
-        if (navigator.notification && navigator.notification.confirm && message.indexOf('<') == -1) {
+        if (browserInfo.mobile && message.indexOf('<') == -1) {
 
-            var buttonLabels = [Globalize.translate('ButtonOk'), Globalize.translate('ButtonCancel')];
+            var confirmed = confirm(message);
 
-            navigator.notification.confirm(message, function (index) {
-
-                callback(index == 1);
-
-            }, title || Globalize.translate('HeaderConfirm'), buttonLabels.join(','));
+            if (callback) {
+                callback(confirmed);
+            }
 
         } else {
 
@@ -1810,10 +1811,8 @@ var AppInfo = {};
         return obj;
     }
 
-    function initRequire() {
-
-        var urlArgs = "v=" + (window.dashboardVersion || new Date().getDate());
-
+    function getBowerPath() {
+        
         var bowerPath = "bower_components";
 
         // Put the version into the bower path since we can't easily put a query string param on html imports
@@ -1821,6 +1820,15 @@ var AppInfo = {};
         if (!Dashboard.isRunningInCordova()) {
             bowerPath += window.dashboardVersion;
         }
+
+        return bowerPath;
+    }
+
+    function initRequire() {
+
+        var urlArgs = "v=" + (window.dashboardVersion || new Date().getDate());
+
+        var bowerPath = getBowerPath();
 
         var apiClientBowerPath = bowerPath + "/emby-apiclient";
         var embyWebComponentsBowerPath = bowerPath + '/emby-webcomponents';
@@ -1870,14 +1878,12 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova()) {
             paths.dialog = "cordova/dialog";
-            paths.prompt = "cordova/prompt";
             paths.sharingwidget = "cordova/sharingwidget";
             paths.serverdiscovery = "cordova/serverdiscovery";
             paths.wakeonlan = "cordova/wakeonlan";
             paths.actionsheet = "cordova/actionsheet";
         } else {
             paths.dialog = "components/dialog";
-            paths.prompt = "components/prompt";
             paths.sharingwidget = "components/sharingwidget";
             paths.serverdiscovery = apiClientBowerPath + "/serverdiscovery";
             paths.wakeonlan = apiClientBowerPath + "/wakeonlan";
@@ -2033,6 +2039,19 @@ var AppInfo = {};
         define("connectionManager", [], function () {
             return ConnectionManager;
         });
+    }
+
+    function initRequireWithBrowser(browser) {
+        
+        var bowerPath = getBowerPath();
+
+        var embyWebComponentsBowerPath = bowerPath + '/emby-webcomponents';
+
+        if (browser.mobile) {
+            define("prompt", [embyWebComponentsBowerPath + "/prompt/nativeprompt"], returnFirstDependency);
+        } else {
+            define("prompt", [embyWebComponentsBowerPath + "/prompt/prompt"], returnFirstDependency);
+        }
     }
 
     function init(hostingAppInfo) {
@@ -2447,6 +2466,8 @@ var AppInfo = {};
         }
 
         require(initialDependencies, function (browser, appStorage) {
+
+            initRequireWithBrowser(browser);
 
             window.browserInfo = browser;
             window.appStorage = appStorage;
