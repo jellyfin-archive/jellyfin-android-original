@@ -5,8 +5,9 @@
     var currentPlayer;
     var lastUpdateTime = 0;
 
-    function allowLocalPlayer() {
-        return false;
+    function allowLocalPlayer(isVideo) {
+
+        return !window.VlcAudio && !isVideo;
     }
 
     function updatePlayerState(state, eventName) {
@@ -16,16 +17,18 @@
             return;
         }
 
-        var isLocalPlayer = MediaController.getPlayerInfo().isLocalPlayer || false;
-
-        // Local players do their own notifications
-        if (isLocalPlayer && !allowLocalPlayer()) {
-            return;
-        }
-
         // dummy this up
         if (eventName == 'init') {
             eventName = 'positionchange';
+        }
+
+        var isLocalPlayer = MediaController.getPlayerInfo().isLocalPlayer || false;
+
+        var isVideo = state.NowPlayingItem.MediaType == 'Video';
+
+        // Local players do their own notifications
+        if (isLocalPlayer && !allowLocalPlayer(isVideo)) {
+            return;
         }
 
         var playState = state.PlayState || {};
@@ -37,7 +40,7 @@
         var title = parts[parts.length - 1];
 
         // Switch these two around for video
-        if (state.NowPlayingItem.MediaType == 'Video' && parts.length > 1) {
+        if (isVideo && parts.length > 1) {
             var temp = artist;
             artist = title;
             title = temp;

@@ -1812,7 +1812,7 @@ var AppInfo = {};
     }
 
     function getBowerPath() {
-        
+
         var bowerPath = "bower_components";
 
         // Put the version into the bower path since we can't easily put a query string param on html imports
@@ -1877,13 +1877,11 @@ var AppInfo = {};
         paths.hlsjs = bowerPath + "/hls.js/dist/hls.min";
 
         if (Dashboard.isRunningInCordova()) {
-            paths.dialog = "cordova/dialog";
             paths.sharingwidget = "cordova/sharingwidget";
             paths.serverdiscovery = "cordova/serverdiscovery";
             paths.wakeonlan = "cordova/wakeonlan";
             paths.actionsheet = "cordova/actionsheet";
         } else {
-            paths.dialog = "components/dialog";
             paths.sharingwidget = "components/sharingwidget";
             paths.serverdiscovery = apiClientBowerPath + "/serverdiscovery";
             paths.wakeonlan = apiClientBowerPath + "/wakeonlan";
@@ -2042,7 +2040,7 @@ var AppInfo = {};
     }
 
     function initRequireWithBrowser(browser) {
-        
+
         var bowerPath = getBowerPath();
 
         var embyWebComponentsBowerPath = bowerPath + '/emby-webcomponents';
@@ -2062,9 +2060,10 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
             if (MainActivity.getChromeVersion() >= 48) {
-                //define("audiorenderer", ["scripts/htmlmediarenderer"]);
-                define("audiorenderer", ["cordova/android/vlcplayer"]);
+                define("audiorenderer", ["scripts/htmlmediarenderer"]);
+                //define("audiorenderer", ["cordova/android/vlcplayer"]);
             } else {
+                window.VlcAudio = true;
                 define("audiorenderer", ["cordova/android/vlcplayer"]);
             }
             define("videorenderer", ["cordova/android/vlcplayer"]);
@@ -2369,11 +2368,14 @@ var AppInfo = {};
                     // Remove special characters
                     var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
 
-                    var deviceId = window.MainActivity ? MainActivity.getLegacyDeviceId() : null;
-                    deviceId = deviceId || device.uuid;
+                    var deviceId = null;
+
+                    if (window.MainActivity) {
+                        deviceId = MainActivity.getLegacyDeviceId();
+                    }
 
                     resolve({
-                        deviceId: deviceId,
+                        deviceId: deviceId || device.uuid,
                         deviceName: cleanDeviceName,
                         appName: name,
                         appVersion: appVersion
