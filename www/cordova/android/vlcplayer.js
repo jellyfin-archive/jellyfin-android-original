@@ -281,12 +281,14 @@
         window.VideoRenderer.Current = self;
     }
 
-    window.AudioRenderer = function (options) {
-        options = options || {};
-        options.type = 'audio';
+    if (window.VlcAudio) {
+        window.AudioRenderer = function (options) {
+            options = options || {};
+            options.type = 'audio';
 
-        return new vlcRenderer(options);
-    };
+            return new vlcRenderer(options);
+        };
+    }
 
     window.VideoRenderer = function (options) {
         options = options || {};
