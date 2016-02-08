@@ -174,6 +174,7 @@
 
         if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video' && player.isLocalPlayer) {
             hideTabs();
+            hideStatusBar();
         }
     }
 
@@ -181,7 +182,30 @@
 
         if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video' && player.isLocalPlayer) {
             showTabs();
+            showStatusBar();
         }
+    }
+
+    function hideStatusBar() {
+        executeStatusBarMethod('hide');
+    }
+
+    function showStatusBar() {
+        executeStatusBarMethod('show');
+    }
+
+    var nextStatusBarMethod;
+    var statusBarTimeout;
+    function executeStatusBarMethod(name) {
+        nextStatusBarMethod = name;
+        if (statusBarTimeout) {
+            clearTimeout(statusBarTimeout);
+        }
+        statusBarTimeout = setTimeout(onStatusBarTimeout, 500);
+    }
+
+    function onStatusBarTimeout() {
+        StatusBar[nextStatusBarMethod]();
     }
 
     init();
