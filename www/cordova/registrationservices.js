@@ -262,13 +262,18 @@
 
     function getSubscriptionBenefitHtml(item) {
 
+        var enableLink = !browserInfo.safari;
+
         var html = '';
         html += '<paper-icon-item>';
 
         html += '<paper-fab mini style="background-color:#52B54B;" icon="' + item.icon + '" item-icon></paper-fab>';
 
         html += '<paper-item-body three-line>';
-        html += '<a class="clearLink" href="https://emby.media/premiere" target="_blank">';
+
+        if (enableLink) {
+            html += '<a class="clearLink" href="https://emby.media/premiere" target="_blank">';
+        }
 
         html += '<div>';
         html += item.name;
@@ -278,7 +283,10 @@
         html += item.text;
         html += '</div>';
 
-        html += '</a>';
+        if (enableLink) {
+            html += '</a>';
+        }
+
         html += '</paper-item-body>';
 
         html += '</paper-icon-item>';
