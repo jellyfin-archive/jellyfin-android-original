@@ -260,10 +260,7 @@
 
         self.init = function () {
 
-            return new Promise(function (resolve, reject) {
-
-                resolve();
-            });
+            return Promise.resolve();
         };
 
         self.onActivityClosed = function (wasStopped, hasError, endPositionMs) {
@@ -277,7 +274,10 @@
             self.report('playbackstop', playerState.duration, endPositionMs, false, 100);
         };
 
-        window.AudioRenderer.Current = self;
+        if (window.VlcAudio) {
+            window.AudioRenderer.Current = self;
+        }
+
         window.VideoRenderer.Current = self;
     }
 
