@@ -1,0 +1,3 @@
+MainPackage=C:\Dev\MediaBrowser.Mobile\platforms\windows\build\phone\release\anycpu\CordovaApp.Phone_2.5.86.0_Bundle\CordovaApp.Phone_2.5.86.0_anycpu.appx
+ResourcePack=C:\Dev\MediaBrowser.Mobile\platforms\windows\build\phone\release\anycpu\CordovaApp.Phone_2.5.86.0_Bundle\CordovaApp.Phone_2.5.86.0_language-nl.appx
+ResourcePack=C:\Dev\MediaBrowser.Mobile\platforms\windows\build\phone\release\anycpu\CordovaApp.Phone_2.5.86.0_Bundle\CordovaApp.Phone_2.5.86.0_scale-100.appx
