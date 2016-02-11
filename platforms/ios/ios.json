@@ -71,10 +71,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"CollectionRepeatImage\"><param name=\"ios-package\" value=\"CollectionRepeatImage\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"NSLoggerCocoaLumberjackConnectorPlugin\"><param name=\"ios-package\" value=\"NSLoggerCocoaLumberjackConnectorPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -181,9 +177,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.telerik.plugins.wkwebview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "com.mallzee.collectionrepeatimage": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-chrome-apps-common": {
@@ -320,22 +313,6 @@
             "pluginId": "com.telerik.plugins.wkwebview",
             "clobbers": [
                 "wkwebview"
-            ]
-        },
-        {
-            "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImage.js",
-            "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImage",
-            "pluginId": "com.mallzee.collectionrepeatimage",
-            "clobbers": [
-                "window.CollectionRepeatImage"
-            ]
-        },
-        {
-            "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImageOptions.js",
-            "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImageOptions",
-            "pluginId": "com.mallzee.collectionrepeatimage",
-            "clobbers": [
-                "window.CollectionRepeatImageOptions"
             ]
         },
         {
@@ -632,7 +609,6 @@
         "uk.co.whiteoctober.cordova.appversion": "0.1.7",
         "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
         "com.telerik.plugins.wkwebview": "0.6.3",
-        "com.mallzee.collectionrepeatimage": "0.0.1",
         "cordova-plugin-chrome-apps-common": "1.0.7",
         "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
         "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": "0.1.0",

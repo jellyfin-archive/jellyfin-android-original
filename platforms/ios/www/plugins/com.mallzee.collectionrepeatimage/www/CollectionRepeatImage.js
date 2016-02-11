@@ -1,1 +1,0 @@
-cordova.define("com.mallzee.collectionrepeatimage.CollectionRepeatImage",function(e,l,c){var n=e("cordova/exec"),o=function(){};o.getImage=function(e,l,c){n(l,c,"CollectionRepeatImage","getImage",[e])},o.cancel=function(e,l,c){n(l,c,"CollectionRepeatImage","cancel",[e])},o.cancelAll=function(){n(null,null,"CollectionRepeatImage","cancelAll",[])},c.exports=o});

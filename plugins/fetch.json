@@ -166,15 +166,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "com.mallzee.collectionrepeatimage": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/mallzee/cordova-collection-repeat-image-plugin",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-file-transfer": {
         "source": {
             "type": "registry",
