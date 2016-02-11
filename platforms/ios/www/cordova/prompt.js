@@ -1,1 +1,0 @@
-define([],function(){return function(t){var n=function(n){t.callback(1==n.buttonIndex?n.input1:null)},a=[Globalize.translate("ButtonOk"),Globalize.translate("ButtonCancel")];navigator.notification.prompt(t.text,n,t.title,a,t.defaultText||"")}});
