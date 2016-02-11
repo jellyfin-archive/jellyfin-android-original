@@ -338,9 +338,6 @@
         "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.mallzee.collectionrepeatimage": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.emby.mobile"
         },

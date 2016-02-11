@@ -95,22 +95,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImage.js",
-        "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImage",
-        "pluginId": "com.mallzee.collectionrepeatimage",
-        "clobbers": [
-            "window.CollectionRepeatImage"
-        ]
-    },
-    {
-        "file": "plugins/com.mallzee.collectionrepeatimage/www/CollectionRepeatImageOptions.js",
-        "id": "com.mallzee.collectionrepeatimage.CollectionRepeatImageOptions",
-        "pluginId": "com.mallzee.collectionrepeatimage",
-        "clobbers": [
-            "window.CollectionRepeatImageOptions"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
         "id": "cordova-plugin-chrome-apps-common.events",
         "pluginId": "cordova-plugin-chrome-apps-common",
@@ -406,7 +390,6 @@ module.exports.metadata =
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
     "com.telerik.plugins.wkwebview": "0.6.3",
-    "com.mallzee.collectionrepeatimage": "0.0.1",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": "0.1.0",

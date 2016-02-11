@@ -14,7 +14,7 @@
     "libstdc++.6.0.9.dylib": 1,
     "libbz2.dylib": 1,
     "libiconv.dylib": 1,
-    "ImageIO.framework": 2,
+    "ImageIO.framework": 1,
     "CoreLocation.framework": 1,
     "WebKit.framework": 1,
     "StoreKit.framework": 2

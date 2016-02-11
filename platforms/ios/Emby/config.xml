@@ -58,9 +58,6 @@
     <feature name="WKWebViewPolyfill">
         <param name="ios-package" value="WKWebViewPolyfill" />
     </feature>
-    <feature name="CollectionRepeatImage">
-        <param name="ios-package" value="CollectionRepeatImage" />
-    </feature>
     <feature name="NSLoggerCocoaLumberjackConnectorPlugin">
         <param name="ios-package" value="NSLoggerCocoaLumberjackConnectorPlugin" />
         <param name="onload" value="true" />
@@ -95,6 +92,9 @@
     <feature name="InAppPurchase">
         <param name="ios-package" value="InAppPurchase" />
     </feature>
+    <description>
+    Emby Mobile
+  </description>
     <icon height="180" src="res/ios/icon-60@3x.png" width="180" />
     <icon height="60" src="res/ios/icon-60.png" width="60" />
     <icon height="120" src="res/ios/icon-60@2x.png" width="120" />
