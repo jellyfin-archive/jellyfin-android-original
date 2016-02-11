@@ -1,0 +1,96 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "acidhax.cordova.chromecast": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "android.support.v4": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cc.fovea.cordova.purchase": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "com.connectsdk.cordovaplugin": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "com.crewmeister.cordova-ios-backgroundcolor": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "com.dieam.searchbar": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "com.drifty.cordova.cameraroll": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "com.hutchind.cordova.plugins.launcher": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "com.squerb.cordova.plugins.ios-tab-bar": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "com.telerik.plugins.wkwebview": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-chrome-apps-common": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-chrome-apps-iossocketscommon": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-chrome-apps-sockets-udp": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-webserver": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-x-socialsharing": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "nl.x-services.plugins.actionsheet": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "nl.x-services.plugins.backgroundaudio": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "org.apache.cordova.background-download": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "org.nypr.cordova.vlcplugin": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "uk.co.whiteoctober.cordova.appversion": {
+            "PACKAGE_NAME": "Emby"
+        }
+    },
+    "dependent_plugins": {}
+}

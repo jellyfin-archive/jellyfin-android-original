@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
+    <Identity Name="com.emby.mobile" Publisher="CN=$username$" Version="2.5.86.0" />
+    <mp:PhoneIdentity PhoneProductId="0866d1c0-d0f1-11e5-9e74-d5ad98152351" PhonePublisherId="db093ed5-53b1-45f7-af72-751e8f36ab80" />
+    <Properties>
+        <DisplayName>Emby</DisplayName>
+        <PublisherDisplayName>Emby</PublisherDisplayName>
+        <Logo>images\StoreLogo.png</Logo>
+    </Properties>
+    <Prerequisites>
+        <OSMinVersion>6.3.1</OSMinVersion>
+        <OSMaxVersionTested>6.3.1</OSMaxVersionTested>
+    </Prerequisites>
+    <Resources>
+        <Resource Language="x-generate" />
+    </Resources>
+    <Applications>
+        <Application Id="com.emby.mobile" StartPage="www/index.html">
+            <m3:VisualElements BackgroundColor="transparent" Description="CordovaApp" DisplayName="Emby" ForegroundText="light" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
+                <m3:DefaultTile Square71x71Logo="images\Square71x71Logo.png" Wide310x150Logo="images\Wide310x150Logo.png">
+                    <m3:ShowNameOnTiles>
+                        <m3:ShowOn Tile="square150x150Logo" />
+                        <m3:ShowOn Tile="wide310x150Logo" />
+                    </m3:ShowNameOnTiles>
+                </m3:DefaultTile>
+                <m3:SplashScreen Image="images\SplashScreenPhone.png" />
+                <m3:InitialRotationPreference>
+                    <m3:Rotation Preference="portrait" />
+                    <m3:Rotation Preference="landscape" />
+                    <m3:Rotation Preference="landscapeFlipped" />
+                </m3:InitialRotationPreference>
+            </m3:VisualElements>
+        </Application>
+    </Applications>
+    <Capabilities>
+        <Capability Name="internetClientServer" />
+        <DeviceCapability Name="microphone" />
+    </Capabilities>
+</Package>

@@ -256,5 +256,21 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cordova-android-support-v4": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-android-support-v4"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-actionsheet": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-actionsheet"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }
