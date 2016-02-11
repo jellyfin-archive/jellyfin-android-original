@@ -1,6 +1,6 @@
 package com.mb.android.media;
 
-import android.text.TextUtils;
+import com.mb.android.BuildConfig;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Strings {
-    public final static String TAG = "VLC/Util/Strings";
+    public final static String TAG = "VLC/UiTools/Strings";
 
     public static String stripTrailingSlash(String s) {
         if( s.endsWith("/") && s.length() > 1 )
@@ -102,35 +102,11 @@ public class Strings {
         return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
-    public static String getName(String path){
-        if (path == null)
-            return "";
-        int index = path.lastIndexOf('/');
-        if (index> -1)
-            return path.substring(index+1);
-        else
-            return path;
-    }
-
-    public static String getMediaTitle(MediaWrapper mediaWrapper){
-        String title = mediaWrapper.getTitle();
-        if (title == null)
-            title = getName(mediaWrapper.getLocation());
-        return title;
-    }
-
-    public static String getParent(String path){
-        if (TextUtils.equals("/", path))
-            return path;
-        String parentPath = path;
-        if (parentPath.endsWith("/"))
-            parentPath = parentPath.substring(0, parentPath.length()-1);
-        int index = parentPath.lastIndexOf('/');
-        if (index > 0){
-            parentPath = parentPath.substring(0, index);
-        } else if (index == 0)
-            parentPath = "/";
-        return parentPath;
+    public static String readableSize(long size) {
+        if(size <= 0) return "0";
+        final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1000));
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1000, digitGroups)) + " " + units[digitGroups];
     }
 
     public static String removeFileProtocole(String path){
@@ -140,5 +116,9 @@ public class Strings {
             return path.substring(7);
         else
             return path;
+    }
+
+    public static String buildPkgString(String string) {
+        return BuildConfig.APPLICATION_ID + "." + string;
     }
 }

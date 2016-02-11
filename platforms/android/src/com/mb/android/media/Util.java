@@ -126,4 +126,10 @@ public class Util {
         File file = new File(path);
         return (file.exists() && file.canWrite());
     }
+
+    public static boolean isCallable(Context context, Intent intent) {
+        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
 }

@@ -1,30 +1,37 @@
 package com.mb.android.media;
 
 import android.annotation.TargetApi;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.view.InputDevice;
 import android.view.MotionEvent;
+
+import com.mb.android.media.legacy.RemoteControlClientReceiver;
 
 import org.videolan.libvlc.util.AndroidUtil;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class AndroidDevices {
-    public final static String TAG = "VLC/Util/AndroidDevices";
+    public final static String TAG = "VLC/UiTools/AndroidDevices";
     public final static String EXTERNAL_PUBLIC_DIRECTORY = Environment.getExternalStorageDirectory().getPath();
 
     final static boolean hasNavBar;
@@ -43,25 +50,30 @@ public class AndroidDevices {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
-    public static boolean hasNavBar()
-    {
+    public static boolean hasNavBar() {
         return hasNavBar;
     }
 
-    /** hasCombBar test if device has Combined Bar : only for tablet with Honeycomb or ICS */
+    /**
+     * hasCombBar test if device has Combined Bar : only for tablet with Honeycomb or ICS
+     */
     public static boolean hasCombBar(Context context) {
         return (!AndroidDevices.isPhone(context)
                 && ((VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) &&
                 (VERSION.SDK_INT <= VERSION_CODES.JELLY_BEAN)));
     }
 
-    public static boolean isPhone(Context context){
-        TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+    public static boolean isPhone(Context context) {
+        TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         return manager.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
     }
 
-    public static boolean hasTsp(Context context){
+    public static boolean hasTsp(Context context) {
         return context.getPackageManager().hasSystemFeature("android.hardware.touchscreen");
+    }
+
+    public static boolean isAndroidTv(Context context) {
+        return context.getPackageManager().hasSystemFeature("android.software.leanback");
     }
 
     public static ArrayList<String> getStorageDirectories() {
@@ -71,7 +83,7 @@ public class AndroidDevices {
 
         List<String> typeWL = Arrays.asList("vfat", "exfat", "sdcardfs", "fuse", "ntfs", "fat32", "ext3", "ext4", "esdfs");
         List<String> typeBL = Arrays.asList("tmpfs");
-        String[] mountWL = { "/mnt", "/Removable", "/storage" };
+        String[] mountWL = {"/mnt", "/Removable", "/storage"};
         String[] mountBL = {
                 "/mnt/secure",
                 "/mnt/shell",
@@ -79,16 +91,16 @@ public class AndroidDevices {
                 "/mnt/obb",
                 "/mnt/media_rw/extSdCard",
                 "/mnt/media_rw/sdcard",
-                "/storage/emulated" };
+                "/storage/emulated"};
         String[] deviceWL = {
                 "/dev/block/vold",
                 "/dev/fuse",
-                "/mnt/media_rw" };
+                "/mnt/media_rw"};
 
         try {
             bufReader = new BufferedReader(new FileReader("/proc/mounts"));
             String line;
-            while((line = bufReader.readLine()) != null) {
+            while ((line = bufReader.readLine()) != null) {
 
                 StringTokenizer tokens = new StringTokenizer(line, " ");
                 String device = tokens.nextToken();
@@ -101,16 +113,15 @@ public class AndroidDevices {
 
                 // check that device is in whitelist, and either type or mountpoint is in a whitelist
                 if (Strings.startsWith(deviceWL, device) && (typeWL.contains(type) || Strings.startsWith(mountWL, mountpoint))) {
-                    int position = Strings.containsName(list, Strings.getName(mountpoint));
+                    int position = Strings.containsName(list, FileUtils.getFileNameFromPath(mountpoint));
                     if (position > -1)
                         list.remove(position);
                     list.add(mountpoint);
                 }
             }
-        }
-        catch (FileNotFoundException e) {}
-        catch (IOException e) {}
-        finally {
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        } finally {
             Util.close(bufReader);
         }
         return list;
@@ -138,9 +149,17 @@ public class AndroidDevices {
         return 0;
     }
 
-    public static boolean hasLANConnection(Context context){
+    public static boolean hasPlayServices(Context context) {
+        try {
+            context.getPackageManager().getPackageInfo("com.google.android.gsf", PackageManager.GET_SERVICES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {}
+        return false;
+    }
+
+    public static boolean hasLANConnection(Context context) {
         boolean networkEnabled = false;
-        ConnectivityManager connectivity = (ConnectivityManager)(context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        ConnectivityManager connectivity = (ConnectivityManager) (context.getSystemService(Context.CONNECTIVITY_SERVICE));
         if (connectivity != null) {
             NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected() &&
@@ -149,6 +168,13 @@ public class AndroidDevices {
             }
         }
         return networkEnabled;
+    }
 
+    public static void setRemoteControlReceiverEnabled(Context context, boolean enabled) {
+        context.getPackageManager().setComponentEnabledSetting(
+                new ComponentName(context, RemoteControlClientReceiver.class),
+                enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
     }
 }

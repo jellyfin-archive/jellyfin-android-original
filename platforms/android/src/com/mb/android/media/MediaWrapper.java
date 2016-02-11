@@ -1,21 +1,19 @@
 package com.mb.android.media;
 
-import java.io.File;
-import java.util.Locale;
-
-import org.videolan.libvlc.MediaPlayer;
-import org.videolan.libvlc.util.AndroidUtil;
-import org.videolan.libvlc.util.Extensions;
-import org.videolan.libvlc.Media;
-import org.videolan.libvlc.Media.VideoTrack;
-import org.videolan.libvlc.Media.Meta;
-
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
+
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.Media.Meta;
+import org.videolan.libvlc.Media.VideoTrack;
+import org.videolan.libvlc.MediaPlayer;
+import org.videolan.libvlc.util.Extensions;
+
+import java.util.Locale;
 
 public class MediaWrapper implements Parcelable {
     public final static String TAG = "VLC/MediaWrapper";
@@ -34,6 +32,7 @@ public class MediaWrapper implements Parcelable {
     public final static int MEDIA_FORCE_AUDIO = 0x8;
 
     protected String mTitle;
+    protected String mDisplayTitle;
     private String mArtist;
     private String mGenre;
     private String mCopyright;
@@ -90,6 +89,13 @@ public class MediaWrapper implements Parcelable {
         init(media);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (mUri == ((MediaWrapper)obj).getUri())
+            return true;
+        return false;
+    }
+
     private void init(Media media) {
         mType = TYPE_ALL;
 
@@ -115,26 +121,39 @@ public class MediaWrapper implements Parcelable {
             if (mType == TYPE_ALL && media.getType() == Media.Type.Directory)
                 mType = TYPE_DIR;
         }
+        defineType();
+    }
 
-        if (mType == TYPE_ALL) {
+    public void defineType() {
+        if (mType != TYPE_ALL)
+            return;
+
+        String fileExt = null;
+        int dotIndex = mTitle != null ? mTitle.lastIndexOf(".") : -1;
+
+        if (dotIndex != -1) {
+            fileExt = mTitle.substring(dotIndex).toLowerCase(Locale.ENGLISH);
+        } else {
             final int index = mUri.toString().indexOf('?');
             String location;
             if (index == -1)
                 location = mUri.toString();
             else
                 location = mUri.toString().substring(0, index);
-            int dotIndex = location.lastIndexOf(".");
-            if (dotIndex != -1) {
-                String fileExt = location.substring(dotIndex).toLowerCase(Locale.ENGLISH);
-                if( Extensions.VIDEO.contains(fileExt) ) {
-                    mType = TYPE_VIDEO;
-                } else if (Extensions.AUDIO.contains(fileExt)) {
-                    mType = TYPE_AUDIO;
-                } else if (Extensions.SUBTITLES.contains(fileExt)) {
-                    mType = TYPE_SUBTITLE;
-                } else if (Extensions.PLAYLIST.contains(fileExt)) {
-                    mType = TYPE_PLAYLIST;
-                }
+            dotIndex = location.lastIndexOf(".");
+            if (dotIndex != -1)
+                fileExt = location.substring(dotIndex).toLowerCase(Locale.ENGLISH);
+        }
+
+        if (!TextUtils.isEmpty(fileExt)) {
+            if (Extensions.VIDEO.contains(fileExt)) {
+                mType = TYPE_VIDEO;
+            } else if (Extensions.AUDIO.contains(fileExt)) {
+                mType = TYPE_AUDIO;
+            } else if (Extensions.SUBTITLES.contains(fileExt)) {
+                mType = TYPE_SUBTITLE;
+            } else if (Extensions.PLAYLIST.contains(fileExt)) {
+                mType = TYPE_PLAYLIST;
             }
         }
     }
@@ -273,7 +292,7 @@ public class MediaWrapper implements Parcelable {
      * Returns the raw picture object. Likely to be NULL in VLC for Android
      * due to lazy-loading.
      *
-     * Use {@link org.videolan.vlc.util.BitmapUtil#getPictureFromCache(MediaWrapper)} instead.
+     * Use {@link BitmapUtil#getPictureFromCache(MediaWrapper)} instead.
      *
      * @return The raw picture or NULL
      */
@@ -284,7 +303,7 @@ public class MediaWrapper implements Parcelable {
     /**
      * Sets the raw picture object.
      *
-     * In VLC for Android, use {@link org.videolan.vlc.MediaDatabase#setPicture(MediaWrapper, Bitmap)} instead.
+     * In VLC for Android, use {@link MediaDatabase#setPicture(MediaWrapper, Bitmap)} instead.
      *
      * @param p
      */
@@ -300,22 +319,26 @@ public class MediaWrapper implements Parcelable {
         mIsPictureParsed = isParsed;
     }
 
-    public void setTitle(String title){
-        mTitle = title;
+    public void setDisplayTitle(String title){
+        mDisplayTitle = title;
+    }
+
+    public void setArtist(String artist){
+        mArtist = artist;
     }
 
     public String getTitle() {
+        if (!TextUtils.isEmpty(mDisplayTitle))
+            return mDisplayTitle;
         if (!TextUtils.isEmpty(mTitle))
             return mTitle;
-        else {
-            String fileName = getFileName();
-            if (fileName == null)
-                return "";
-            int end = fileName.lastIndexOf(".");
-            if (end <= 0)
-                return fileName;
-            return fileName.substring(0, end);
-        }
+        String fileName = getFileName();
+        if (fileName == null)
+            return "";
+        int end = fileName.lastIndexOf(".");
+        if (end <= 0)
+            return fileName;
+        return fileName.substring(0, end);
     }
 
     public String getReferenceArtist() {
@@ -419,6 +442,9 @@ public class MediaWrapper implements Parcelable {
     }
     public int getFlags() {
         return mFlags;
+    }
+    public boolean hasFlag(int flag) {
+        return (mFlags & flag) != 0;
     }
     public void removeFlags(int flags) {
         mFlags &= ~flags;
