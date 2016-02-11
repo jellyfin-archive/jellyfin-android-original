@@ -61,14 +61,21 @@ public class OnRepeatListener implements View.OnTouchListener {
         return false;
     }
 
-    private Handler mHandler = new Handler() {
+    private Handler mHandler = new OnRepeatHandler(this);
+
+    private static class OnRepeatHandler extends WeakHandler<OnRepeatListener> {
+
+        public OnRepeatHandler(OnRepeatListener owner) {
+            super(owner);
+        }
+
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case ACTION_ONCLICK:
-                    sendEmptyMessageDelayed(ACTION_ONCLICK, mNormalInterval);
-                    mClickListener.onClick(downView);
+                    sendEmptyMessageDelayed(ACTION_ONCLICK, getOwner().mNormalInterval);
+                    getOwner().mClickListener.onClick(getOwner().downView);
             }
         }
-    };
+    }
 }
