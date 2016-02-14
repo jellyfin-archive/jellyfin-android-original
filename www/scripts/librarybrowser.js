@@ -669,6 +669,7 @@
             if (!resumePositionTicks && mediaType != "Audio" && !isFolder) {
 
                 if (!externalPlayers || mediaType != "Video") {
+
                     MediaController.play(itemId);
                     return;
                 }
@@ -1060,9 +1061,9 @@
 
         identifyItem: function (itemId) {
 
-            require(['components/itemidentifier/itemidentifier'], function () {
+            require(['components/itemidentifier/itemidentifier'], function (itemidentifier) {
 
-                ItemIdentifier.show(itemId);
+                itemidentifier.show(itemId);
             });
         },
 
@@ -1527,6 +1528,10 @@
 
             if (options.context) {
                 atts.push('data-context="' + (options.context || '') + '"');
+            }
+
+            if (item.IsFolder) {
+                atts.push('data-isfolder="' + item.IsFolder + '"');
             }
 
             atts.push('data-itemtype="' + item.Type + '"');
@@ -2210,7 +2215,7 @@
             // cardContent
             html += '</a>';
 
-            if (options.overlayPlayButton && !item.IsPlaceHolder && (item.LocationType != 'Virtual' || !item.MediaType || item.Type == 'Program')) {
+            if (options.overlayPlayButton && !item.IsPlaceHolder && (item.LocationType != 'Virtual' || !item.MediaType || item.Type == 'Program') && item.Type != 'Person') {
                 html += '<div class="cardOverlayButtonContainer"><paper-icon-button icon="play-arrow" class="cardOverlayPlayButton" onclick="return false;"></paper-icon-button></div>';
             }
             if (options.overlayMoreButton) {
@@ -2864,7 +2869,7 @@
                     }).join('');
 
                     // Add styles to defeat jquery mobile
-                    html += '<div class="pageSizeContainer"><label style="font-size:inherit;" class="labelPageSize" for="' + id + '">' + Globalize.translate('LabelLimit') + '</label><select style="width:auto;" class="selectPageSize" id="' + id + '" data-inline="true" data-mini="true">' + optionsHtml + '</select></div>';
+                    html += '<div class="pageSizeContainer"><label class="labelPageSize" for="' + id + '">' + Globalize.translate('LabelLimit') + '</label><select style="width:auto;" class="selectPageSize" id="' + id + '" data-inline="true" data-mini="true">' + optionsHtml + '</select></div>';
                 }
             }
 
