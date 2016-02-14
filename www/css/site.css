@@ -641,6 +641,10 @@ h1 a:hover {
     text-decoration: underline;
 }
 
+.ui-body-b a.accent {
+    color: #52B54B !important;
+}
+
 .ui-listview li h3 {
     font-weight: 400;
 }
@@ -1582,7 +1586,6 @@ progress {
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 2px;
 }
 
 .sessionNowPlayingInnerContent {
@@ -1594,7 +1597,6 @@ progress {
     bottom: 0;
     color: #fff;
     font-weight: 400;
-    border-radius: 2px;
 }
 
 .sessionAppInfo {
@@ -1657,7 +1659,6 @@ progress {
 .activeSession:not(.playingSession) .sessionNowPlayingInnerContent {
     background-color: #fff;
     color: #000;
-    border: 1px solid #ddd;
 }
 
 .activeSession:not(.playingSession) .sessionUserInfo, .activeSession:not(.playingSession) .sessionNowPlayingInfo {
