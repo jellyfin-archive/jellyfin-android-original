@@ -378,13 +378,10 @@
         require(['prompt'], function (prompt) {
 
             prompt({
-                text: Globalize.translate('TextPleaseEnterYourEmailAddressForSubscription'),
-                title: Globalize.translate('HeaderEmailAddress'),
-                callback: function (email) {
-
-                    if (email) {
-                        IapManager.beginPurchase(feature, email);
-                    }
+                label: Globalize.translate('TextPleaseEnterYourEmailAddressForSubscription')
+            }).then(function (email) {
+                if (email) {
+                    IapManager.beginPurchase(feature, email);
                 }
             });
         });
