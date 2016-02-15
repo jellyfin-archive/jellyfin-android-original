@@ -2821,7 +2821,7 @@
                 html += '</span>';
             }
 
-            if (showControls || options.viewButton || options.sortButton || options.addLayoutButton) {
+            if (showControls || options.viewButton || options.filterButton || options.sortButton || options.addLayoutButton) {
 
                 html += '<div style="display:inline-block;margin-left:10px;">';
 
@@ -2847,6 +2847,11 @@
                     var viewPanelClass = options.viewPanelClass || 'viewPanel';
                     var title = options.viewIcon == 'filter-list' ? Globalize.translate('ButtonFilter') : Globalize.translate('ButtonMenu');
                     html += '<paper-icon-button title="' + title + '" icon="' + (options.viewIcon || AppInfo.moreIcon) + '" onclick="LibraryBrowser.openViewPanel(this, \'' + viewPanelClass + '\');"></paper-icon-button>';
+                }
+
+                if (options.filterButton) {
+
+                    html += '<paper-icon-button class="btnFilter" title="' + Globalize.translate('ButtonFilter') + '" icon="filter-list"></paper-icon-button>';
                 }
 
                 html += '</div>';
@@ -2905,7 +2910,7 @@
 
                     var option = options.items[i];
 
-                    html += '<paper-radio-button class="menuSortBy block" data-id="' + option.id + '" name="' + option.id.replace(',', '_') + '">' + option.name + '</paper-radio-button>';
+                    html += '<paper-radio-button class="menuSortBy" style="display:block;" data-id="' + option.id + '" name="' + option.id.replace(',', '_') + '">' + option.name + '</paper-radio-button>';
                 }
                 html += '</paper-radio-group>';
 
@@ -2913,8 +2918,8 @@
                 html += Globalize.translate('HeaderSortOrder');
                 html += '</h2>';
                 html += '<paper-radio-group class="groupSortOrder" selected="' + (options.query.SortOrder || 'Ascending') + '">';
-                html += '<paper-radio-button name="Ascending" class="menuSortOrder block">' + Globalize.translate('OptionAscending') + '</paper-radio-button>';
-                html += '<paper-radio-button name="Descending" class="menuSortOrder block">' + Globalize.translate('OptionDescending') + '</paper-radio-button>';
+                html += '<paper-radio-button name="Ascending" style="display:block;"  class="menuSortOrder block">' + Globalize.translate('OptionAscending') + '</paper-radio-button>';
+                html += '<paper-radio-button name="Descending" style="display:block;"  class="menuSortOrder block">' + Globalize.translate('OptionDescending') + '</paper-radio-button>';
                 html += '</paper-radio-group>';
                 html += '</div>';
 
