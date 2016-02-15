@@ -124,7 +124,7 @@
 
             li += '</a>';
 
-            li += '<a class="blockedTag btnDeleteTag" href="#" data-tag="' + h + '"></a>';
+            li += '<a class="blockedTag btnDeleteTag" href="#" data-tag="' + h + '" data-icon="delete"></a>';
 
             li += '</li>';
 
@@ -343,7 +343,7 @@
         require(['prompt'], function (prompt) {
 
             prompt({
-                title: Globalize.translate('LabelTag')
+                label: Globalize.translate('LabelTag')
 
             }).then(function (value) {
                 var tags = getBlockedTagsFromPage(page);
