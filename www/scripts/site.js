@@ -2228,6 +2228,8 @@ var AppInfo = {};
             deps.push('css!devices/android/android.css');
         } else if (AppInfo.isNativeApp && browserInfo.safari) {
             deps.push('css!devices/ios/ios.css');
+        } else if (browserInfo.edge) {
+            deps.push('css!devices/windowsphone/wp.css');
         } else if (!browserInfo.android) {
             deps.push('css!devices/android/android.css');
         }
