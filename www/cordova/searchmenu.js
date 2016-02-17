@@ -6,7 +6,9 @@
 
         self.show = function () {
 
-            cordova.searchbar.show();
+            require(['css!css/search.css'], function () {
+                cordova.searchbar.show();
+            });
         };
 
         self.hide = function () {
