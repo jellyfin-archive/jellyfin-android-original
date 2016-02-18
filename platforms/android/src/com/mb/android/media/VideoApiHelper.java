@@ -274,6 +274,9 @@ public class VideoApiHelper {
 
     private void enableManualExternalSubtitleTrack(final MediaPlayer vlc, final MediaStream stream) {
 
+        // If vlc is currently displaying subtitles, stop it now
+        vlc.setSpuTrack(-1);
+
         final String url = apiClient.GetApiUrl(stream.getDeliveryUrl()).replace("srt", "JSON");
 
         logger.Info("Downloading subtitles from %s", url);

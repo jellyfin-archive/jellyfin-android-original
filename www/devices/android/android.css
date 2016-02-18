@@ -2,10 +2,6 @@
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
 }
 
-    .libraryViewNav a {
+    .libraryViewNav a, paper-tab {
         font-weight: 500 !important;
     }
-
-paper-tab {
-    font-weight: 500 !important;
-}
