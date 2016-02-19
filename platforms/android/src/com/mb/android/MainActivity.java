@@ -34,6 +34,7 @@ import android.view.KeyEvent;
 import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
+import com.mb.android.iap.IapLogger;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.logging.AppLogger;
@@ -382,6 +383,9 @@ public class MainActivity extends CordovaActivity
             getLogger().Debug("purchaseInternal sku: %s", product.getSku());
 
             currentProduct = product;
+
+            PurchaseActivity.Logger = new IapLogger(getLogger());
+
             Intent purchaseIntent = new Intent(this, PurchaseActivity.class);
             purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
             purchaseIntent.putExtra("sku", product.getSku());

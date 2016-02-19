@@ -2249,6 +2249,7 @@ var AppInfo = {};
 
             if (browserInfo.android) {
                 deps.push('cordova/android/androidcredentials');
+                deps.push('cordova/links');
             }
         }
 
