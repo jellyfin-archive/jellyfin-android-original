@@ -381,18 +381,7 @@ public class PluginManager {
      *                  false to block the intent.
      */
     public Boolean shouldOpenExternalUrl(String url) {
-        for (PluginEntry entry : this.entryMap.values()) {
-            CordovaPlugin plugin = pluginMap.get(entry.service);
-            if (plugin != null) {
-                Boolean result = plugin.shouldOpenExternalUrl(url);
-                if (result != null) {
-                    return result;
-                }
-            }
-        }
-        // Default policy:
-        // External URLs are not allowed
-        return false;
+        return true;
     }
 
     /**

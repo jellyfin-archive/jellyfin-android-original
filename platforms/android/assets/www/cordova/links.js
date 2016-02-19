@@ -1,0 +1,1 @@
+!function(){document.addEventListener("click",function(t){var e=t.target;if("A"==e.tagName&&"_blank"==e.getAttribute("target")){var n=e.href;return window.open(n,"_system"),t.preventDefault(),!1}})}();

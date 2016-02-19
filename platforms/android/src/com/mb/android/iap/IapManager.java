@@ -118,7 +118,7 @@ public class IapManager {
     }
 
     private void init() {
-        if (iabValidator == null || iabValidator.isDisposed()) iabValidator = new IabValidator(context, GOOGLE_KEY);
+        if (iabValidator == null || iabValidator.isDisposed()) iabValidator = new IabValidator(context, GOOGLE_KEY, new IapLogger(logger));
         iabValidator.validateProductsAsync(new IResultHandler<ResultType>() {
             @Override
             public void onResult(ResultType resultType) {
