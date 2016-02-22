@@ -206,6 +206,7 @@ public class MainActivity extends CordovaActivity
 
             engine =  new SystemWebViewEngine(new MySystemWebView(this, getLogger()), preferences);
             WebView webkitView = (WebView)engine.getView();
+            webkitView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
             webView = new NativeWebView(webkitView);
 
         } else {

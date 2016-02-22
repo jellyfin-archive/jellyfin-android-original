@@ -42,18 +42,23 @@
             innerOptions.addCancelButtonWithLabel = Globalize.translate('ButtonCancel');
         }
 
-        // Depending on the buttonIndex, you can now call shareViaFacebook or shareViaTwitter
-        // of the SocialSharing plugin (https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin)
-        window.plugins.actionsheet.show(innerOptions, function (index) {
+        return new Promise(function (resolve, reject) {
 
-            if (options.callback) {
+            // Depending on the buttonIndex, you can now call shareViaFacebook or shareViaTwitter
+            // of the SocialSharing plugin (https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin)
+            window.plugins.actionsheet.show(innerOptions, function (index) {
 
                 // Results are 1-based
                 if (index >= 1 && options.items.length >= index) {
 
-                    options.callback(options.items[index - 1].id);
+                    if (options.callback) {
+                        // Results are 1-based
+                        options.callback(options.items[index - 1].id);
+                    }
+
+                    resolve(options.items[index - 1].id);
                 }
-            }
+            });
         });
     }
 
