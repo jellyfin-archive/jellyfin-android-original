@@ -1,1 +1,0 @@
-module.exports=function(s){"use strict";var e=require("./lib/spawn_test.js");s.registerTask("promises_aplus_tests",function(){e(this.async(),"./node_modules/.bin/promises-aplus-tests","test/promises_aplus_adapter.js")})};

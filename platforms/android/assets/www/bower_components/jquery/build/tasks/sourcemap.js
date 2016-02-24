@@ -1,1 +1,0 @@
-var fs=require("fs");module.exports=function(e){var r=Object.keys(e.config("uglify.all.files"))[0];e.registerTask("remove_map_comment",function(){var e=fs.readFileSync(r,"utf8").replace(/\/\/# sourceMappingURL=\S+/,"");fs.writeFileSync(r,e)})};

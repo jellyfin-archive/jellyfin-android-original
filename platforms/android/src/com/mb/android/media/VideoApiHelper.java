@@ -219,6 +219,11 @@ public class VideoApiHelper {
         }
         else {
 
+            if (isInitialPlayback && playbackStartInfo.getSubtitleStreamIndex() != null && index == playbackStartInfo.getSubtitleStreamIndex()) {
+                logger.Info("returning from setSubtitleStreamIndex because index is already set");
+                return;
+            }
+
             // Subs have to be burned in
             activity.updateExternalSubtitles(null);
             long positionTicks = vlc.getTime() * 10000;

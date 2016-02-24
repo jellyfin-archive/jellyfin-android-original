@@ -427,7 +427,8 @@
 
                 var defaultAttribute = t.isDefault ? ' default' : '';
 
-                return '<track id="textTrack' + t.index + '" kind="subtitles" src="' + t.url + '" srclang="' + t.language + '"' + defaultAttribute + '></track>';
+                var label = t.language || 'und';
+                return '<track id="textTrack' + t.index + '" label="' + label + '" kind="subtitles" src="' + t.url + '" srclang="' + t.language + '"' + defaultAttribute + '></track>';
 
             }).join('');
 
