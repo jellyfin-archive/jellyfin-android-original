@@ -1,1 +1,1 @@
-define([],function(){return function(t){return new Promise(function(e,n){"string"==typeof t&&(t={label:"",text:t});var r=prompt(t.label||"",t.text||"");r?e(r):n(r)})}});
+define([],function(){function e(e,t,r){return e.split(t).join(r)}return function(t){"string"==typeof t&&(t={label:"",text:t});var r=e(t.label||"","<br/>","\n"),n=prompt(r,t.text||"");return n?Promise.resolve(n):Promise.reject(n)}});

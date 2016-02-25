@@ -1,7 +1,4 @@
 {
-    "ButtonLocalRefresh": "Lokaler Refresh",
-    "ButtonAddMissingData": "Nur fehlende Daten hinzuf\u00fcgen",
-    "ButtonFullRefresh": "Kompletter Refresh",
     "SettingsSaved": "Einstellungen gespeichert.",
     "AddUser": "Benutzer anlegen",
     "Users": "Benutzer",
@@ -52,6 +49,7 @@
     "TitleSync": "Synchronisation",
     "OptionAutomatic": "Auto",
     "HeaderSelectDate": "Datum w\u00e4hlen",
+    "ServerUpdateNeeded": "Dieser Emby Server muss aktualisiert werden. Um die neueste Version herunterzuladen, besuchen sie bitte {0}",
     "ButtonIdentify": "Identifizieren",
     "HeaderIdentifyItem": "Identifiziere Element",
     "LabelRecurringDonationCanBeCancelledHelp": "Fortlaufende Spenden k\u00f6nnen jederzeit \u00fcber deinen PayPal Account gek\u00fcndigt werden.",
@@ -408,7 +406,7 @@
     "HeaderAlert": "Alarm",
     "MessagePleaseRestart": "Dr\u00fccke auf Neustart um das Update abzuschlie\u00dfen",
     "ButtonRestart": "Neu starten",
-    "MessagePleaseRefreshPage": "Bitte aktualisieren Sie diese Seite um neue Updated vom Emby Server zu erhalten.",
+    "MessagePleaseRefreshPage": "Bitte aktualisieren Sie diese Seite um Aktualisierungen von Emby Server zu erhalten.",
     "ButtonHide": "Verstecke",
     "MessageSettingsSaved": "Einstellungen gespeichert",
     "ButtonSignOut": "Abmelden",
@@ -958,5 +956,8 @@
     "ButtonOff": "Ausschalten",
     "TitleHardwareAcceleration": "Hardware Beschleunigung",
     "HardwareAccelerationWarning": "Das Aktivieren der Hardwarebeschleunigung kann auf einigen Systemen zu Problemen f\u00fchren. Wenn Sie probleme w\u00e4hrend der Videowiedergabe feststellen, sollten Sie diese Einstellung zur\u00fcck auf \"Automatik\" stellen.",
-    "HeaderSelectCodecIntrosPath": "W\u00e4hlen Sie ein Codec Intro Verzeichnis"
+    "HeaderSelectCodecIntrosPath": "W\u00e4hlen Sie ein Codec Intro Verzeichnis",
+    "ButtonLocalRefresh": "Lokaler Refresh",
+    "ButtonAddMissingData": "Nur fehlende Daten hinzuf\u00fcgen",
+    "ButtonFullRefresh": "Kompletter Refresh"
 }
