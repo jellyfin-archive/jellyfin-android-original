@@ -1556,7 +1556,6 @@ var AppInfo = {};
         } else {
             AppInfo.moreIcon = 'more-vert';
         }
-        AppInfo.hasPhysicalVolumeButtons = true;
     }
 
     function initializeApiClient(apiClient) {
