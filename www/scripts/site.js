@@ -511,14 +511,18 @@ var Dashboard = {
 
         Dashboard.hideLoadingMsg();
 
-        Dashboard.alert(Globalize.translate('MessageSettingsSaved'));
+        require(['toast'], function (toast) {
+            toast(Globalize.translate('MessageSettingsSaved'));
+        });
     },
 
     processServerConfigurationUpdateResult: function (result) {
 
         Dashboard.hideLoadingMsg();
 
-        Dashboard.alert(Globalize.translate('MessageSettingsSaved'));
+        require(['toast'], function (toast) {
+            toast(Globalize.translate('MessageSettingsSaved'));
+        });
     },
 
     alert: function (options) {
@@ -1552,6 +1556,7 @@ var AppInfo = {};
         } else {
             AppInfo.moreIcon = 'more-vert';
         }
+        AppInfo.hasPhysicalVolumeButtons = true;
     }
 
     function initializeApiClient(apiClient) {

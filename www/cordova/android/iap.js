@@ -193,11 +193,10 @@
 
         msg += '<br/><br/>' + Globalize.translate('AlreadyPaidHelp2');
 
-        Dashboard.confirm(msg, Globalize.translate('AlreadyPaid'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
-                launchEmail();
-            }
+            confirm(msg, Globalize.translate('AlreadyPaid')).then(launchEmail);
+
         });
     }
 
