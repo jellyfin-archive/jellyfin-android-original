@@ -23,6 +23,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.Build;
 
+import com.mb.android.MainActivity;
+import com.mb.android.logging.AppLogger;
+
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Arrays;
@@ -32,6 +35,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+
+import mediabrowser.model.logging.ILogger;
 
 public class Launcher extends CordovaPlugin {
 	public static final String TAG = "Launcher Plugin";
@@ -59,6 +64,22 @@ public class Launcher extends CordovaPlugin {
 		return false;
 	}
 
+    private ILogger getLogger(){
+        return AppLogger.getLogger(webView.getContext());
+    }
+
+    private void logd(String msg){
+        getLogger().Debug(msg);
+    }
+
+    private void logi(String msg){
+        getLogger().Info(msg);
+    }
+
+    private void loge(String msg){
+        getLogger().Error(msg);
+    }
+
 	private boolean canLaunch(JSONArray args) throws JSONException {
 		final JSONObject options = args.getJSONObject(0);
 		final CordovaInterface mycordova = cordova;
@@ -79,16 +100,16 @@ public class Launcher extends CordovaPlugin {
 					final ActivityInfo appInfo = getAppInfo(intent, packageName);
 
 					if (appInfo != null) {
-						Log.d(TAG, "App Info found for " + packageName);
+                        logd("App Info found for " + packageName);
 						callbackContext.success();
 					} else {
 						final PackageManager pm = plugin.webView.getContext().getPackageManager();
 						final Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
 						if (launchIntent != null) {
-							Log.d(TAG, "Launch Intent for " + packageName + " found.");
+                            logd("Launch Intent for " + packageName + " found.");
 							callbackContext.success();
 						} else {
-							Log.d(TAG, "Could not find launch intent for package: " + packageName);
+                            logd("Could not find launch intent for package: " + packageName);
 							callbackContext.error("Application is not installed.");
 						}
 					}
@@ -111,7 +132,7 @@ public class Launcher extends CordovaPlugin {
 
 					List<ResolveInfo> resInfos = pm.queryIntentActivities(intent, 0);
 					if (resInfos.size() > 0) {
-						Log.d(TAG, "Found Activities that handle uri: " + uri);
+                        logd("Found Activities that handle uri: " + uri);
 
 						boolean shouldGetAppList = false;
 						try {
@@ -140,7 +161,7 @@ public class Launcher extends CordovaPlugin {
 							callbackContext.success();
 						}
 					} else {
-						Log.d(TAG, "No Activities found that handle uri: " + uri);
+                        logd("No Activities found that handle uri: " + uri);
 						callbackContext.error("No application found.");
 					}
 				}
@@ -153,9 +174,9 @@ public class Launcher extends CordovaPlugin {
 	private ActivityInfo getAppInfo(final Intent intent, final String appPackageName) {
 		final PackageManager pm = webView.getContext().getPackageManager();
 		try {
-			Log.d(TAG, pm.getApplicationInfo(appPackageName, 0) + "");
+            logd(pm.getApplicationInfo(appPackageName, 0) + "");
 		}catch (NameNotFoundException e) {
-			Log.i(TAG, "No info found for package: " + appPackageName);
+            logi("No info found for package: " + appPackageName);
 		}
 		return null;
 	}
@@ -201,7 +222,7 @@ public class Launcher extends CordovaPlugin {
 						try {
 							extras.putByte(extraName, ((byte) extra.getInt("value")));
 						} catch (Exception e) {
-							Log.e(TAG, "Error converting to byte for extra: " + extraName);
+							loge("Error converting to byte for extra: " + extraName);
 							e.printStackTrace();
 							throw e;
 						}
@@ -209,7 +230,7 @@ public class Launcher extends CordovaPlugin {
 						try {
 							extras.putByteArray(extraName, ParseTypes.toByteArray(extra.getJSONArray("value")));
 						} catch (Exception e) {
-							Log.e(TAG, "Error converting to byte for extra: " + extraName);
+                            loge("Error converting to byte for extra: " + extraName);
 							e.printStackTrace();
 							throw e;
 						}
@@ -217,7 +238,7 @@ public class Launcher extends CordovaPlugin {
 						try {
 							extras.putShort(extraName, ((short) extra.getInt("value")));
 						} catch (Exception e) {
-							Log.e(TAG, "Error converting to short for extra: " + extraName);
+                            loge("Error converting to short for extra: " + extraName);
 							e.printStackTrace();
 							throw e;
 						}
@@ -237,7 +258,7 @@ public class Launcher extends CordovaPlugin {
 						try {
 							extras.putFloat(extraName, Float.parseFloat(extra.getString("value")));
 						} catch (Exception e) {
-							Log.e(TAG, "Error parsing float for extra: " + extraName);
+                            loge("Error parsing float for extra: " + extraName);
 							e.printStackTrace();
 							throw e;
 						}
@@ -245,7 +266,7 @@ public class Launcher extends CordovaPlugin {
 						try {
 							extras.putFloatArray(extraName, ParseTypes.toFloatArray(extra.getJSONArray("value")));
 						} catch (Exception e) {
-							Log.e(TAG, "Error parsing float for extra: " + extraName);
+                            loge("Error parsing float for extra: " + extraName);
 							e.printStackTrace();
 							throw e;
 						}
@@ -281,7 +302,7 @@ public class Launcher extends CordovaPlugin {
 					*/
 					} else if (dataType.toLowerCase().contains("parcelable")) {
 						if (!extra.has("paType")) {
-							Log.e(TAG, "Property 'paType' must be provided if dataType is " + dataType + ".");
+                            loge("Property 'paType' must be provided if dataType is " + dataType + ".");
 							throw new Exception("Missing property paType.");
 						} else {
 							String paType = extra.getString("paType").toUpperCase();
@@ -296,21 +317,21 @@ public class Launcher extends CordovaPlugin {
 									extras.putSparseParcelableArray(extraName, ParseTypes.toSparseParcelableArray(extra.getJSONObject("value"), paType));
 								}
 							} else {
-								Log.e(TAG, "ParcelableArray type '" + paType + "' is not currently supported.");
+                                loge("ParcelableArray type '" + paType + "' is not currently supported.");
 								throw new Exception("Provided parcelable array type not supported.");
 							}
 						}
 					}
 				} catch (Exception e) {
-					Log.e(TAG, "Error processing extra. Skipping: " + extraName);
+                    loge("Error processing extra. Skipping: " + extraName);
 				}
 			} else {
-				Log.e(TAG, "Extras must have a name, value, and datatype.");
+                loge("Extras must have a name, value, and datatype.");
 			}
 		}
 
-		Log.d(TAG, "EXTRAS");
-		Log.d(TAG, "" + extras);
+        logd("EXTRAS");
+        logd("" + extras);
 
 		return extras;
 	}
@@ -338,7 +359,7 @@ public class Launcher extends CordovaPlugin {
 					mycordova.startActivityForResult(plugin, intent, LAUNCH_REQUEST);
 					((Launcher) plugin).callbackLaunched();
 				} catch(ActivityNotFoundException e) {
-					Log.e(TAG, "Error: No applications installed that can handle uri " + uri);
+                    loge("Error: No applications installed that can handle uri " + uri);
 					e.printStackTrace();
 					callbackContext.error("Application not found for uri.");
 				}
@@ -350,7 +371,7 @@ public class Launcher extends CordovaPlugin {
 	private void launchApp(final String packageName, final Bundle extras) {
 		final CordovaInterface mycordova = cordova;
 		final CordovaPlugin plugin = this;
-		Log.i(TAG, "Trying to launch app: " + packageName);
+        logi("Trying to launch app: " + packageName);
 		cordova.getThreadPool().execute(new LauncherRunnable(this.callback) {
 			public void run() {
 				final PackageManager pm = plugin.webView.getContext().getPackageManager();
@@ -363,7 +384,7 @@ public class Launcher extends CordovaPlugin {
 						mycordova.startActivityForResult(plugin, launchIntent, LAUNCH_REQUEST);
 						((Launcher) plugin).callbackLaunched();
 					} catch (ActivityNotFoundException e) {
-						Log.e(TAG, "Error: Activity for package" + packageName + " was not found.");
+                        loge("Error: Activity for package" + packageName + " was not found.");
 						e.printStackTrace();
 						callbackContext.error("Activity not found for package name.");
 					}
@@ -386,7 +407,7 @@ public class Launcher extends CordovaPlugin {
 					mycordova.startActivityForResult(plugin, intent, LAUNCH_REQUEST);
 					((Launcher) plugin).callbackLaunched();
 				} catch (ActivityNotFoundException e) {
-					Log.e(TAG, "Error: Activity for " + uri + " was not found.");
+                    loge("Error: Activity for " + uri + " was not found.");
 					e.printStackTrace();
 					callbackContext.error("Activity not found for uri.");
 				}
