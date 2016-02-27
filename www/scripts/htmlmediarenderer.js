@@ -681,6 +681,15 @@
                     currentTrack.mode = modes[mode];
                 }
             }
+
+            var newTextTrack = mediaElement.addTextTrack('subtitles', 'just a test', 'en');
+            newTextTrack.mode = 'showing';
+
+            // add some cues to show the text
+            newTextTrack.addCue(new VTTCue(0.5, 5, "My first Cue"));
+            newTextTrack.addCue(new VTTCue(5.1, 9.5, "My <u>underlined</u> Cue"));
+            newTextTrack.addCue(new VTTCue(9.6, 14.8, "My <c.small>small classname</c> Cue"));
+            newTextTrack.addCue(new VTTCue(15, 36, "My <c.customstyle>custom classname</c> Cue"));
         };
 
         self.updateTextStreamUrls = function (startPositionTicks) {
