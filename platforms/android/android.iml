@@ -101,8 +101,8 @@
     <orderEntry type="library" exported="" name="emby.googleiap-" level="project" />
     <orderEntry type="library" exported="" name="apktool-lib-1.4.4-3" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-7.8.0" level="project" />
-    <orderEntry type="library" exported="" name="okhttp-urlconnection-2.7.4" level="project" />
-    <orderEntry type="library" exported="" name="okhttp-2.7.4" level="project" />
+    <orderEntry type="library" exported="" name="okhttp-urlconnection-2.7.5" level="project" />
+    <orderEntry type="library" exported="" name="okhttp-2.7.5" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="logback-android-core-1.1.1-4" level="project" />
