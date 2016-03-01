@@ -2,8 +2,11 @@
 
     function showPlayerSelectionMenu(item, url, mimeType) {
 
+        var pathToSend = url;
+        console.log('Sending path to external player: ' + pathToSend);
+
         window.plugins.launcher.launch({
-            uri: url,
+            uri: pathToSend,
             dataType: mimeType
 
         }, function () {

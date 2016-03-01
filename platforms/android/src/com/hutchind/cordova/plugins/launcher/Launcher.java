@@ -398,6 +398,8 @@ public class Launcher extends CordovaPlugin {
 	private void launchIntent(final String uri, final Bundle extras) {
 		final CordovaInterface mycordova = cordova;
 		final CordovaPlugin plugin = this;
+
+        getLogger().Debug("Launching intent for %s", uri);
 		cordova.getThreadPool().execute(new LauncherRunnable(this.callback) {
 			public void run() {
 				Intent intent = new Intent(Intent.ACTION_VIEW);
