@@ -1124,8 +1124,20 @@ chrome.cast._ = {
 		}
 	},
 	mediaUpdated: function(isAlive, media) {
-		if (media && media.mediaSessionId !== undefined && _currentMedia) {
-			_currentMedia._update(isAlive, media);
+
+		if (media && media.mediaSessionId !== undefined)
+		{
+			if (_currentMedia) {
+				_currentMedia._update(isAlive, media);
+			} else {
+				_currentMedia = new chrome.cast.media.Media(media.sessionId, media.mediaSessionId);
+				_currentMedia.currentTime = media.currentTime;
+				_currentMedia.playerState = media.playerState;
+				_currentMedia.media = media.media;
+
+				_sessions[media.sessionId].media[0] = _currentMedia;
+				_sessionListener && _sessionListener(_sessions[media.sessionId]);
+			}
 		}
 	},
 	mediaLoaded: function(isAlive, media) {
@@ -1149,6 +1161,15 @@ chrome.cast._ = {
 		var receiver = new chrome.cast.Receiver(obj.receiver.label, obj.receiver.friendlyName, obj.receiver.capabilities || [], obj.volume || null);
 
 		var session = _sessions[sessionId] = new chrome.cast.Session(sessionId, appId, displayName, appImages, receiver);
+
+        if (obj.media && obj.media.sessionId)
+        {
+            _currentMedia = new chrome.cast.media.Media(sessionId, obj.media.mediaSessionId);
+            _currentMedia.currentTime = obj.media.currentTime;
+            _currentMedia.playerState = obj.media.playerState;
+            _currentMedia.media = obj.media.media;
+            session.media[0] = _currentMedia;
+        }
 
 		_sessionListener && _sessionListener(session);
 	},

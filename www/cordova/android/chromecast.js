@@ -28,10 +28,7 @@
 
     function getTargets() {
 
-        return new Promise(function (resolve, reject) {
-
-            resolve(chrome.cast.getRouteList().map(convertRouteToTarget));
-        });
+        return Promise.resolve(chrome.cast.getRouteList().map(convertRouteToTarget));
     }
 
     function tryPair(target) {
@@ -47,9 +44,9 @@
 
     if (MainActivity.supportsPlayStore()) {
         // Use native chromecast support
-        //document.addEventListener('chromecastloaded', onChromecastLoaded);
-        //require(['scripts/chromecast']);
-        require(['cordova/connectsdk/connectsdk']);
+        document.addEventListener('chromecastloaded', onChromecastLoaded);
+        require(['scripts/chromecast']);
+        //require(['cordova/connectsdk/connectsdk']);
     } else {
         require(['cordova/connectsdk/connectsdk']);
     }
