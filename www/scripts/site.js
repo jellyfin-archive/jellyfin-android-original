@@ -1491,7 +1491,7 @@ var AppInfo = {};
         // This doesn't perform well on iOS
         AppInfo.enableHeadRoom = !isIOS;
 
-        AppInfo.supportsDownloading = !(AppInfo.isNativeApp && isIOS);
+        AppInfo.supportsDownloading = !(AppInfo.isNativeApp);
 
         // This currently isn't working on android, unfortunately
         AppInfo.supportsFileInput = !(AppInfo.isNativeApp && isAndroid);
@@ -1500,7 +1500,6 @@ var AppInfo = {};
         AppInfo.enableBackButton = isIOS && (window.navigator.standalone || AppInfo.isNativeApp);
 
         AppInfo.supportsSyncPathSetting = isCordova && isAndroid;
-        AppInfo.supportsUserDisplayLanguageSetting = Dashboard.isConnectMode() && !isCordova;
 
         if (isCordova && isIOS) {
             AppInfo.moreIcon = 'more-horiz';
@@ -1739,7 +1738,6 @@ var AppInfo = {};
             qualityoptions: embyWebComponentsBowerPath + "/qualityoptions",
             connectservice: apiClientBowerPath + '/connectservice',
             hammer: bowerPath + "/hammerjs/hammer.min",
-            performanceManager: embyWebComponentsBowerPath + "/performancemanager",
             layoutManager: embyWebComponentsBowerPath + "/layoutmanager",
             focusManager: embyWebComponentsBowerPath + "/focusmanager",
             imageLoader: embyWebComponentsBowerPath + "/images/imagehelper"
@@ -1843,6 +1841,7 @@ var AppInfo = {};
         define("paper-item-body", ["html!" + bowerPath + "/paper-item/paper-item-body.html"]);
 
         define("paper-collapse-item", ["html!" + bowerPath + "/paper-collapse-item/paper-collapse-item.html"]);
+        define("emby-collapsible", ["html!" + bowerPath + "/emby-collapsible/emby-collapsible.html"]);
 
         define("jstree", [bowerPath + "/jstree/dist/jstree", "css!thirdparty/jstree/themes/default/style.min.css"]);
 
@@ -1903,6 +1902,9 @@ var AppInfo = {};
         define("toast", [embyWebComponentsBowerPath + "/toast/toast"], returnFirstDependency);
         define("scrollHelper", [embyWebComponentsBowerPath + "/scrollhelper"], returnFirstDependency);
 
+        define("appSettings", [embyWebComponentsBowerPath + "/appsettings"], updateAppSettings);
+        define("userSettings", [embyWebComponentsBowerPath + "/usersettings"], returnFirstDependency);
+
         // alias
         define("historyManager", [], function () {
             return {
@@ -1910,6 +1912,9 @@ var AppInfo = {};
                     state.navigate = false;
                     history.pushState(state, title, url);
                     jQuery.onStatePushed(state);
+                },
+                enableNativeHistory: function () {
+                    return true;
                 }
             };
         });
@@ -1932,7 +1937,27 @@ var AppInfo = {};
             return Globalize;
         });
 
+        define('apiClientResolver', [], function () {
+            return function () {
+                return window.ApiClient;
+            };
+        });
+
         define('dialogText', ['globalize'], getDialogText());
+    }
+
+    function updateAppSettings(appSettings) {
+
+        appSettings.enableExternalPlayers = function (val) {
+
+            if (val != null) {
+                appSettings.set('externalplayers', val.toString());
+            }
+
+            return appSettings.get('externalplayers') == 'true';
+        };
+
+        return appSettings;
     }
 
     function getDialogText() {
@@ -2067,7 +2092,6 @@ var AppInfo = {};
         deps.push('connectionmanagerfactory');
         deps.push('credentialprovider');
 
-        deps.push('scripts/appsettings');
         deps.push('scripts/extensions');
 
         require(deps, function (connectionManagerExports, credentialProviderFactory) {

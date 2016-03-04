@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['appSettings'], function (appSettings) {
 
     function connectSDKPlayer() {
 
@@ -299,7 +299,7 @@
                 return q.selected;
             })[0];
 
-            var bitrateSetting = AppSettings.maxStreamingBitrate();
+            var bitrateSetting = appSettings.maxStreamingBitrate();
 
             var profile = {};
 
@@ -672,4 +672,4 @@
 
     MediaController.registerPlayer(new connectSDKPlayer());
 
-})();
+});

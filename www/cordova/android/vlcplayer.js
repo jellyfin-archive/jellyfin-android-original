@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['appSettings'], function (appSettings) {
 
     function vlcRenderer(options) {
 
@@ -162,7 +162,7 @@
 
                 require(['qualityoptions'], function (qualityoptions) {
 
-                    var bitrateSetting = AppSettings.maxStreamingBitrate();
+                    var bitrateSetting = appSettings.maxStreamingBitrate();
 
                     var videoQualityOptions = qualityoptions.getVideoQualityOptions(bitrateSetting, videoWidth).map(function (o) {
                         return {
@@ -297,4 +297,4 @@
         return new vlcRenderer(options);
     };
 
-})();
+});
