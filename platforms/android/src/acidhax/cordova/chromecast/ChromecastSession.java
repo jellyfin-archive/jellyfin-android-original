@@ -1,7 +1,6 @@
 package acidhax.cordova.chromecast;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -368,22 +367,15 @@ public class ChromecastSession
 		@Override
 		public void onResult(ApplicationConnectionResult result) {
 			
-			ApplicationMetadata metadata = result.getApplicationMetadata();
-			ChromecastSession.this.sessionId = result.getSessionId();
-
-            // Seeing a case of this being null
-            if (metadata != null){
-                ChromecastSession.this.displayName = metadata.getName();
-                ChromecastSession.this.appImages = metadata.getImages();
-            } else{
-                ChromecastSession.this.displayName = "Chromecast";
-                ChromecastSession.this.appImages = new ArrayList<WebImage>();
-            }
-		
 			Status status = result.getStatus();
 			
 			if (status.isSuccess()) {
 				try {
+					ApplicationMetadata metadata = result.getApplicationMetadata();
+					ChromecastSession.this.sessionId = result.getSessionId();
+					ChromecastSession.this.displayName = metadata.getName();
+					ChromecastSession.this.appImages = metadata.getImages();
+			
 					ChromecastSession.this.launchCallback.onSuccess(ChromecastSession.this);
 					connectRemoteMediaPlayer();
 					ChromecastSession.this.isConnected = true;
