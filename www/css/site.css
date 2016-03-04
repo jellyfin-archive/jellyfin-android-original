@@ -1620,18 +1620,6 @@ progress {
     max-width: 200px;
 }
 
-.sessionUserInfo {
-    position: absolute;
-    right: 0;
-    bottom: 11px;
-    padding: .5em;
-    text-align: right;
-}
-
-    .sessionUserInfo img {
-        height: 24px;
-    }
-
 .sessionNowPlayingInfo {
     position: absolute;
     left: 0;
@@ -1672,7 +1660,7 @@ progress {
     color: #000;
 }
 
-.activeSession:not(.playingSession) .sessionUserInfo, .activeSession:not(.playingSession) .sessionNowPlayingInfo {
+.activeSession:not(.playingSession) .sessionNowPlayingInfo {
     bottom: 0;
 }
 
@@ -1680,7 +1668,7 @@ progress {
     color: #fff;
     position: absolute;
     right: 10px;
-    bottom: 19px;
+    bottom: 39px;
 }
 
 .sessionTranscodingFramerate {
@@ -1693,8 +1681,8 @@ progress {
 .sessionNowPlayingStreamInfo {
     color: #fff;
     position: absolute;
-    left: 10px;
-    top: 10px;
+    right: 10px;
+    bottom: 19px;
 }
 
 .activeSession .transcodingProgress {
@@ -1889,4 +1877,28 @@ progress {
 
 .actionSheetMenuItem:hover {
     background-color: #e8e8e8;
+}
+
+emby-collapsible>.style-scope {
+    margin: .5em 0;
+}
+
+.ui-body-a .emby-collapsible-button {
+    border: 1px solid #ddd;
+    background-color: #f2f2f2;
+    text-transform: none;
+}
+
+.ui-body-a .emby-collapsible-title {
+    margin: .25em 0;
+    color: #000;
+    padding: 0 0 0 .5em;
+    font-weight: 500;
+}
+
+.ui-body-a .emby-collapsible-content {
+    border: 1px solid #ddd;
+    border-width: 0 1px 1px 1px;
+    padding: 1em 1.25em;
+    background-color: #fff;
 }

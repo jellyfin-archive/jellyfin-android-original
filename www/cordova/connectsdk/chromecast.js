@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['appSettings'], function (appSettings) {
 
     function chromecastPlayer() {
 
@@ -76,7 +76,7 @@
                 receiverName: currentDevice.getFriendlyName()
             });
 
-            var bitrateSetting = AppSettings.maxChromecastBitrate();
+            var bitrateSetting = appSettings.maxChromecastBitrate();
             if (bitrateSetting) {
                 message.maxBitrate = bitrateSetting;
             }
@@ -724,4 +724,4 @@
 
     MediaController.registerPlayer(new chromecastPlayer());
 
-})();
+});
