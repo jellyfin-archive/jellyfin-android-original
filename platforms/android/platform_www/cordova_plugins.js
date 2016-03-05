@@ -20,14 +20,6 @@ module.exports = [
         "id": "cordova-plugin-chrome-apps-common.helpers"
     },
     {
-        "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
-        "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
-        "merges": [
-            "navigator.ConnectSDK",
-            "ConnectSDK"
-        ]
-    },
-    {
         "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
         "id": "com.hutchind.cordova.plugins.launcher.Launcher",
         "clobbers": [

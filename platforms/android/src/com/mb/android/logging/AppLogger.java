@@ -46,12 +46,10 @@ public class AppLogger {
 
         org.slf4j.Logger internalLogger = configureLogbackDirectly(context);
 
-        MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(new LogbackLogger(internalLogger, "SyncService"), context);
+        MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(new LogbackLogger(internalLogger, "SyncService"));
 
         return new LogbackLogger(internalLogger, "App");
     }
-
-    private static FileAppender<ILoggingEvent> syncServiceFileAppender;
 
     private static org.slf4j.Logger configureLogbackDirectly(Context context) {
 
@@ -74,12 +72,6 @@ public class AppLogger {
         fileAppender.addFilter(new LogFileFilter(false));
         fileAppender.start();
 
-        syncServiceFileAppender = new FileAppender<ILoggingEvent>();
-        syncServiceFileAppender.setContext(lc);
-        syncServiceFileAppender.setEncoder(encoder1);
-        syncServiceFileAppender.setName("syncServiceFileAppender");
-        syncServiceFileAppender.addFilter(new LogFileFilter(true));
-
         /*LogcatAppender logcatAppender = new LogcatAppender();
         logcatAppender.setContext(lc);
         logcatAppender.setEncoder(encoder1);
@@ -91,18 +83,8 @@ public class AppLogger {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.addAppender(fileAppender);
         //root.addAppender(logcatAppender);
-        root.addAppender(syncServiceFileAppender);
 
         return LoggerFactory.getLogger("App");
-    }
-
-    public static void ResetSyncLogger(Context context){
-
-        if (syncServiceFileAppender != null) {
-            syncServiceFileAppender.stop();
-            syncServiceFileAppender.setFile(getLogFilePath(context, "syncService-"));
-            syncServiceFileAppender.start();
-        }
     }
 
     private static String getLogFilePath(Context context, String prefix){

@@ -1,1 +1,1 @@
-define([],function(){function e(e,n){if("IMG"!==e.tagName){var r=new Image;r.onload=function(){e.style.backgroundImage="url('"+n+"')"},r.src=n}else e.setAttribute("src",n);return Promise.resolve(e)}return{loadImage:e}});
+define([],function(){function e(e,n){return"IMG"!==e.tagName?new Promise(function(r){var t=new Image;t.onload=function(){e.style.backgroundImage="url('"+n+"')",r(e)},t.src=n}):(e.setAttribute("src",n),Promise.resolve(e))}return{loadImage:e}});

@@ -30,6 +30,8 @@ import android.support.v7.media.MediaRouter.RouteInfo;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import mediabrowser.model.logging.ILogger;
+
 public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdatedListener, ChromecastOnSessionUpdatedListener {
 
 	private static final String SETTINGS_NAME= "CordovaChromecastSettings";
@@ -49,11 +51,19 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	private volatile ChromecastSession currentSession;
 
 	private void log(String s) {
-		sendJavascript("console.log('" + s + "');");
+        getLogger().Info(s);
 	}
 
-    public void log(String tag, String message, Object... paramList) {
-        Log.d(tag, String.format(message, paramList));
+    private void log(String message, Object... paramList) {
+        getLogger().Info(message, paramList);
+    }
+
+    public void logException(String methodName, Exception ex) {
+        getLogger().ErrorException("Error in %s", ex, methodName);
+    }
+
+    private ILogger getLogger(){
+        return AppLogger.getLogger(webView.getContext());
     }
 
 	public void initialize(final CordovaInterface cordova, CordovaWebView webView) {
@@ -345,7 +355,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 						Chromecast.this.setLastSessionId(Chromecast.this.currentSession.getSessionId());
 						sendJavascript("chrome.cast._.sessionJoined(" + Chromecast.this.currentSession.createSessionObject().toString() + ");");
 					} catch (Exception e) {
-						log("wut.... " + e.getMessage() + e.getStackTrace());
+						logException("joinSession", e);
 					}
 				}
 			}
@@ -682,7 +692,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	 */
 	protected void onRouteAdded(MediaRouter router, final RouteInfo route) {
 		if (this.autoConnect && this.currentSession == null && !route.getName().equals("Phone")) {
-			log("Attempting to join route " + route.getName());
+			log("Attempting to join route %s" ,route.getName());
 			this.joinSession(route);
 		} else {
 			log("For some reason, not attempting to join route " + route.getName() + ", " + this.currentSession + ", " + this.autoConnect);

@@ -129,7 +129,7 @@ public class MainActivity extends CordovaActivity
 
         if (enableSystemWebView()){
 
-            /*try {
+            try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     // This is causing a crash on some devices
                     WebView.setWebContentsDebuggingEnabled(true);
@@ -138,7 +138,7 @@ public class MainActivity extends CordovaActivity
             catch (Exception ex) {
                 // This is causing a crash on some devices
                 getLogger().ErrorException("Error enabling webview debugging", ex);
-            }*/
+            }
             addJavascriptInterfaces();
         }
     }
