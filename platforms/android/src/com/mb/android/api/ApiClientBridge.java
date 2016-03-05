@@ -48,7 +48,7 @@ public class ApiClientBridge {
         this.webView = webView;
         this.jsonSerializer = jsonSerializer;
 
-        MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(logger, context);
+        MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(logger);
 
         localAssetManager = new AndroidAssetManager(context, logger, this.jsonSerializer);
 

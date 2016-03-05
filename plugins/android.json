@@ -19,10 +19,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"ConnectSDK\"><param name=\"android-package\" value=\"com.connectsdk.cordova.ConnectSDKCordova\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Launcher\"><param name=\"android-package\" value=\"com.hutchind.cordova.plugins.launcher.Launcher\" /></feature>",
                             "count": 1
                         },
@@ -156,9 +152,6 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-chrome-apps-iossocketscommon": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "com.connectsdk.cordovaplugin": {
             "PACKAGE_NAME": "com.mb.android"
         },
         "com.hutchind.cordova.plugins.launcher": {

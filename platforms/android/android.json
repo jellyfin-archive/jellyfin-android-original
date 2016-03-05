@@ -15,10 +15,6 @@
                     ],
                     "/*": [
                         {
-                            "xml": "<feature name=\"ConnectSDK\"><param name=\"android-package\" value=\"com.connectsdk.cordova.ConnectSDKCordova\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Launcher\"><param name=\"android-package\" value=\"com.hutchind.cordova.plugins.launcher.Launcher\" /></feature>",
                             "count": 1
                         },
@@ -101,10 +97,6 @@
                             "count": 2
                         },
                         {
-                            "xml": "<uses-permission android:name=\"android.permission.CHANGE_WIFI_MULTICAST_STATE\" />",
-                            "count": 1
-                        },
-                        {
                             "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
                             "count": 2
                         },
@@ -115,6 +107,10 @@
                         {
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
                             "count": 2
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.CHANGE_WIFI_MULTICAST_STATE\" />",
+                            "count": 1
                         }
                     ],
                     "/manifest/application": [
@@ -161,9 +157,6 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-chrome-apps-iossocketscommon": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "com.connectsdk.cordovaplugin": {
             "PACKAGE_NAME": "com.mb.android"
         },
         "com.hutchind.cordova.plugins.launcher": {
@@ -241,14 +234,6 @@
         {
             "file": "plugins/cordova-plugin-chrome-apps-common/helpers.js",
             "id": "cordova-plugin-chrome-apps-common.helpers"
-        },
-        {
-            "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
-            "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
-            "merges": [
-                "navigator.ConnectSDK",
-                "ConnectSDK"
-            ]
         },
         {
             "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
