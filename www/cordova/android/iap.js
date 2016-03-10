@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['appStorage'], function (appStorage) {
 
     var updatedProducts = [];
 
@@ -224,4 +224,4 @@
 
     NativeIapManager.initStore();
 
-})();
+});
