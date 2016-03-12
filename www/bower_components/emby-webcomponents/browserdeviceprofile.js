@@ -88,6 +88,12 @@ define(['browser'], function (browser) {
 
         // Unfortunately there's no real way to detect mkv support
         if (browser.chrome) {
+
+            // Not supported on opera tv
+            if (browser.operaTv) {
+                return false;
+            }
+
             return true;
         }
 
@@ -100,7 +106,7 @@ define(['browser'], function (browser) {
 
     function testCanPlayTs() {
 
-        return browser.tizen || browser.webos;
+        return browser.tizen || browser.web0s;
     }
 
     function getDirectPlayProfileForVideoContainer(container) {
@@ -123,7 +129,16 @@ define(['browser'], function (browser) {
                 break;
             case 'm2ts':
             case 'wmv':
-                supported = browser.tizen || browser.webos;
+                supported = browser.tizen || browser.web0s;
+                break;
+            case 'ts':
+                supported = browser.tizen || browser.web0s;
+                if (supported) {
+                    return {
+                        Container: 'ts,mpegts',
+                        Type: 'Video'
+                    };
+                }
                 break;
             default:
                 break;
@@ -231,17 +246,8 @@ define(['browser'], function (browser) {
             });
         }
 
-        if (canPlayTs) {
-            profile.DirectPlayProfiles.push({
-                Container: 'ts,mpegts',
-                Type: 'Video',
-                VideoCodec: 'h264',
-                AudioCodec: videoAudioCodecs.join(',')
-            });
-        }
-
         // These are formats we can't test for but some devices will support
-        ['m2ts', 'wmv'].map(getDirectPlayProfileForVideoContainer).filter(function (i) {
+        ['m2ts', 'wmv', 'ts'].map(getDirectPlayProfileForVideoContainer).filter(function (i) {
             return i != null;
 
         }).forEach(function (i) {

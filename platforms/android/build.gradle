@@ -310,8 +310,7 @@ dependencies {
     releaseCompile project(path: "CordovaLib", configuration: "release")
     compile "com.squareup.okhttp:okhttp-urlconnection:2+"
     // SUB-PROJECT DEPENDENCIES END
-    compile files('libs/emby.apiclient.jar')
-    compile files('libs/emby.apiclient.android.jar')
+    compile files('libs/apiclient.jar')
     compile 'com.google.guava:guava:19.0'
     // FLAVOR-SPECIFIC DEPENDENCIES
     googlex86Compile(name: 'emby.googleiap', ext: 'aar')

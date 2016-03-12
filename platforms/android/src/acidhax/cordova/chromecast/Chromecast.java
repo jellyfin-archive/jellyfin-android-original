@@ -776,6 +776,8 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 
 	@Override
 	public void onMessage(ChromecastSession session, String namespace, String message) {
+
+        //getLogger().Info("Chromecast.onMessage: %s", message);
 		sendJavascript("chrome.cast._.onMessage('" + session.getSessionId() +"', '" + namespace + "', '" + message  + "')");
 	}
 

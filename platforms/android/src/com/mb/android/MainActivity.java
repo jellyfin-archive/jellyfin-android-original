@@ -426,6 +426,9 @@ public class MainActivity extends CordovaActivity
     public void updateMediaSession(String action, boolean isLocalPlayer, String itemId, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            getLogger().Info("updateMediaSession isPaused: %s", isPaused);
+
             Intent intent = new Intent( this, RemotePlayerService.class );
             intent.setAction( Constants.ACTION_REPORT );
 
