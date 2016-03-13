@@ -278,8 +278,12 @@ html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'San Francisco', 'Helvetica Neue', 'Segoe UI', sans-serif;
+    font-family: 'San Francisco', 'Helvetica Neue', Roboto, 'Open Sans', 'Segoe UI', sans-serif;
     font-size: 14px;
+}
+
+html.smallerDefault {
+    font-size: 13px;
 }
 
 body {
@@ -332,16 +336,8 @@ h1, h1 a {
 }
 
 h2 {
-    font-weight: 400;
+    font-weight: 300;
 }
-
-/*a, a.ui-link {
-    font-weight: normal;
-}
-
-.ui-controlgroup a, a.ui-btn {
-    font-weight: bold;
-}*/
 
 .ui-btn {
     font-family: inherit;

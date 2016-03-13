@@ -1633,9 +1633,13 @@ var AppInfo = {};
 
     }
 
-    function setDocumentClasses() {
+    function setDocumentClasses(browser) {
 
         var elem = document.documentElement;
+
+        if (!browser.android && !browser.mobile) {
+            elem.classList.add('smallerDefault');
+        }
 
         if (AppInfo.isTouchPreferred) {
             elem.classList.add('touch');
@@ -2306,6 +2310,12 @@ var AppInfo = {};
 
             postInitDependencies.push('components/remotecontrolautoplay');
 
+            // Prefer custom font over Segoe if on desktop windows
+            if (!browserInfo.mobile && navigator.userAgent.toLowerCase().indexOf('windows') != -1) {
+                //postInitDependencies.push('opensansFont');
+                postInitDependencies.push('robotoFont');
+            }
+
             require(postInitDependencies);
         });
     }
@@ -2431,7 +2441,7 @@ var AppInfo = {};
             window.browserInfo = browser;
 
             setAppInfo();
-            setDocumentClasses();
+            setDocumentClasses(browser);
 
             getHostingAppInfo().then(init);
         });
