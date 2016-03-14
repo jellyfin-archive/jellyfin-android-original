@@ -1,0 +1,1 @@
+$.fn.checked=function(c){return c===!0||c===!1?$(this).each(function(){this.checked=c}):this.length&&this[0].checked};
