@@ -434,7 +434,7 @@ var Dashboard = {
         if (preserveQueryString && queryString) {
             url += queryString;
         }
-        
+
         if (url.indexOf('/') != 0) {
             if (url.indexOf('http') != 0 && url.indexOf('file:') != 0) {
                 url = '/' + url;
@@ -2938,7 +2938,9 @@ var AppInfo = {};
             window.Emby.Page = pageObjects;
             window.Emby.TransparencyLevel = pageObjects.TransparencyLevel;
             defineCoreRoutes();
-            Emby.Page.start();
+            Emby.Page.start({
+                click: true
+            });
 
             var postInitDependencies = [];
 
