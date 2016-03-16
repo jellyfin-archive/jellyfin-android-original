@@ -15,7 +15,7 @@
                 Dashboard.navigate('favorites.html');
                 break;
             case 'Library':
-                Dashboard.navigate('index.html');
+                Dashboard.navigate('home.html');
                 break;
             case 'Search':
                 Dashboard.navigate('search.html');

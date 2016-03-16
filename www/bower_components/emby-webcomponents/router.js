@@ -69,6 +69,8 @@ define(['loading', 'viewManager', 'skinManager', 'pluginManager', 'backdrop', 'b
 
         var url = route.contentPath || route.path;
 
+        var isFileProtocol = url.indexOf('file:') == 0;
+
         if (url.toLowerCase().indexOf('http') != 0 && url.indexOf('file:') != 0) {
             url = baseUrl() + '/' + url;
         }
@@ -171,7 +173,7 @@ define(['loading', 'viewManager', 'skinManager', 'pluginManager', 'backdrop', 'b
     }
 
     var firstConnectionResult;
-    function start() {
+    function start(options) {
 
         loading.show();
 
@@ -185,8 +187,10 @@ define(['loading', 'viewManager', 'skinManager', 'pluginManager', 'backdrop', 'b
 
                 loading.hide();
 
+                options = options || {};
+
                 page({
-                    click: true,
+                    click: options.click || false,
                     hashbang: true,
                     enableHistory: enableHistory()
                 });
