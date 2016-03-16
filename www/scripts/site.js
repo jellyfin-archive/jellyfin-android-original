@@ -331,18 +331,7 @@ var Dashboard = {
 
     reloadPage: function () {
 
-        var currentUrl = window.location.href.toLowerCase();
-        var newUrl;
-
-        // If they're on a plugin config page just go back to the dashboard
-        // The plugin may not have been loaded yet, or could have been uninstalled
-        if (currentUrl.indexOf('configurationpage') != -1) {
-            newUrl = "index.html#!/dashboard.html";
-        } else {
-            newUrl = window.location.href;
-        }
-
-        window.location.href = newUrl;
+        window.location.reload(true);
     },
 
     hideDashboardVersionWarning: function () {
@@ -1558,22 +1547,7 @@ var AppInfo = {};
 
             if (Dashboard.isConnectMode()) {
 
-                var server = ConnectionManager.getLastUsedServer();
-
-                if (!Dashboard.isServerlessPage()) {
-
-                    if (server && server.UserId && server.AccessToken) {
-                        Dashboard.showLoadingMsg();
-
-                        return ConnectionManager.connectToServer(server).then(function (result) {
-                            Dashboard.hideLoadingMsg();
-
-                            if (result.State == MediaBrowser.ConnectionState.SignedIn) {
-                                window.ApiClient = result.ApiClient;
-                            }
-                        });
-                    }
-                }
+                return Promise.resolve();
 
             } else {
 
@@ -1983,7 +1957,12 @@ var AppInfo = {};
             };
 
             embyRouter.showWelcome = function () {
-                Dashboard.navigate('connectlogin.html?mode=welcome');
+
+                if (Dashboard.isConnectMode()) {
+                    Dashboard.navigate('connectlogin.html?mode=welcome');
+                } else {
+                    Dashboard.navigate('login.html');
+                }
             };
 
             embyRouter.showSettings = function () {
@@ -2220,7 +2199,8 @@ var AppInfo = {};
         defineRoute({
             path: '/about.html',
             dependencies: ['jQuery'],
-            autoFocus: false
+            autoFocus: false,
+            controller: 'scripts/aboutpage'
         });
 
         defineRoute({
@@ -2882,7 +2862,9 @@ var AppInfo = {};
         defineRoute({
             path: '/configurationpage',
             dependencies: ['jQuery'],
-            autoFocus: false
+            autoFocus: false,
+            enableCache: false,
+            enableContentQueryString: true
         });
 
         defineRoute({
