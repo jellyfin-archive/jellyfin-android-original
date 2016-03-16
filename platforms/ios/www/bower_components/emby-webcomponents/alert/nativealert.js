@@ -1,0 +1,1 @@
+define([],function(){function t(t,n,e){return t.split(n).join(e)}return function(n){"string"==typeof n&&(n={text:n});var e=t(n.text||"","<br/>","\n");return alert(e),Promise.resolve()}});
