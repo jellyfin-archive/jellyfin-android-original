@@ -1,1 +1,1 @@
-!function(n,e){n(e).on("pageshow","#aboutPage",function(){var e=this,o=n("#appVersionNumber",e);o.html(o.html().replace("{0}",ConnectionManager.appVersion()))})}(jQuery,document);
+define([],function(){return function(e){e.addEventListener("viewbeforeshow",function(){var n=e.querySelector("#appVersionNumber");n.innerHTML=n.innerHTML.replace("{0}",ConnectionManager.appVersion())})}});
