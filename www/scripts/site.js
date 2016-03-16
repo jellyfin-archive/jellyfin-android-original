@@ -1518,8 +1518,8 @@ var AppInfo = {};
         //});
 
         events.on(connectionManager, 'localusersignedin', function (e, user) {
-
             localApiClient = connectionManager.getApiClient(user.ServerId);
+            window.ApiClient = localApiClient;
         });
     }
 
@@ -2943,7 +2943,7 @@ var AppInfo = {};
             defineCoreRoutes();
             Emby.Page.start({
                 click: true,
-                hashbang: Dashboard.isRunningInCordova()
+                hashbang: true
             });
 
             var postInitDependencies = [];
