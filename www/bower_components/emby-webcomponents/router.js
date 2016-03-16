@@ -334,7 +334,24 @@ define(['loading', 'viewManager', 'skinManager', 'pluginManager', 'backdrop', 'b
         ctx.handled = true;
     }
 
-    var baseRoute = window.location.href.split('?')[0].replace('/index.html', '');
+    function getRequestFile() {
+        var path = window.location.pathname || '';
+
+        var index = path.lastIndexOf('/');
+        if (index != -1) {
+            path = path.substring(index);
+        } else {
+            path = '/' + path;
+        }
+
+        if (!path || path == '/') {
+            path = '/index.html';
+        }
+
+        return path;
+    }
+
+    var baseRoute = window.location.href.split('?')[0].replace(getRequestFile(), '');
     // support hashbang
     baseRoute = baseRoute.split('#')[0];
     if (baseRoute.lastIndexOf('/') == baseRoute.length - 1) {
@@ -489,7 +506,7 @@ define(['loading', 'viewManager', 'skinManager', 'pluginManager', 'backdrop', 'b
     }
 
     function setBaseRoute() {
-        var baseRoute = window.location.pathname.replace('/index.html', '');
+        var baseRoute = window.location.pathname.replace(getRequestFile(), '');
         if (baseRoute.lastIndexOf('/') == baseRoute.length - 1) {
             baseRoute = baseRoute.substring(0, baseRoute.length - 1);
         }
@@ -517,6 +534,7 @@ define(['loading', 'viewManager', 'skinManager', 'pluginManager', 'backdrop', 'b
     embyRouter.getRoutes = getRoutes;
     embyRouter.pushState = pushState;
     embyRouter.enableNativeHistory = enableNativeHistory;
+    embyRouter.showVideoOsd = showVideoOsd;
     embyRouter.TransparencyLevel = {
         None: 0,
         Backdrop: 1,
