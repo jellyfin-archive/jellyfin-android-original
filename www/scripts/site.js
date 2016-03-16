@@ -1971,6 +1971,27 @@ var AppInfo = {};
         });
 
         define('dialogText', ['globalize'], getDialogText());
+
+        define("router", [embyWebComponentsBowerPath + '/router'], function (embyRouter) {
+
+            embyRouter.showLocalLogin = function (apiClient, serverId, manualLogin) {
+                Dashboard.navigate('login.html?serverid=' + serverId);
+            };
+
+            embyRouter.showSelectServer = function () {
+                Dashboard.navigate('selectserver.html');
+            };
+
+            embyRouter.showWelcome = function () {
+                Dashboard.navigate('connectlogin.html?mode=welcome');
+            };
+
+            embyRouter.showSettings = function () {
+                Dashboard.navigate('mypreferencesmenu.html?userId=' + ApiClient.getCurrentUserId());
+            };
+
+            return embyRouter;
+        });
     }
 
     function updateAppSettings(appSettings) {
@@ -2884,7 +2905,7 @@ var AppInfo = {};
         var deps = [];
 
         deps.push('imageLoader');
-        deps.push('bower_components/emby-webcomponents/router');
+        deps.push('router');
 
         if (!(AppInfo.isNativeApp && browserInfo.android)) {
             document.documentElement.classList.add('minimumSizeTabs');
