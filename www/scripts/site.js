@@ -1379,6 +1379,7 @@ var AppInfo = {};
         AppInfo.enableHomeTabs = true;
         AppInfo.enableNowPlayingPageBottomTabs = true;
         AppInfo.enableAutoSave = browserInfo.mobile;
+        AppInfo.enableHashBang = Dashboard.isRunningInCordova();
 
         AppInfo.enableAppStorePolicy = isCordova;
 
@@ -1506,7 +1507,9 @@ var AppInfo = {};
 
             if (!localApiClient) {
                 var server = connectionManager.getLastUsedServer();
-                localApiClient = connectionManager.getApiClient(server.Id);
+                if (server) {
+                    localApiClient = connectionManager.getApiClient(server.Id);
+                }
             }
             return localApiClient;
         };
@@ -1921,8 +1924,10 @@ var AppInfo = {};
 
         // mock this for now. not used in this app
         define("skinManager", [], function () {
+
             return {
                 loadUserSkin: function () {
+
                     Emby.Page.show('/home.html');
                 }
             };
@@ -2943,7 +2948,7 @@ var AppInfo = {};
             defineCoreRoutes();
             Emby.Page.start({
                 click: true,
-                hashbang: true
+                hashbang: AppInfo.enableHashBang
             });
 
             var postInitDependencies = [];
