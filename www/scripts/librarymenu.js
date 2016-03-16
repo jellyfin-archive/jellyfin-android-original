@@ -319,7 +319,7 @@
 
         var html = '';
 
-        var homeHref = window.ApiClient ? 'index.html' : 'selectserver.html?showuser=1';
+        var homeHref = window.ApiClient ? 'home.html' : 'selectserver.html?showuser=1';
 
         html += '<div style="margin-top:5px;"></div>';
 

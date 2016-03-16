@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define([], function () {
 
     function searchMenu() {
 
@@ -30,5 +30,5 @@
     }
 
     window.SearchMenu = new searchMenu();
-
-})();
+    return window.SearchMenu;
+});
