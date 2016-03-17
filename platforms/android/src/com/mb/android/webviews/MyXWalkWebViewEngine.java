@@ -27,20 +27,7 @@ public class MyXWalkWebViewEngine extends XWalkWebViewEngine {
     }
 
     @Override
-    public void loadUrl(String url, boolean clearNavigationStack) {
-        if (!activityDelegate.isXWalkReady()) {
-            startUrl = url;
-
-            CordovaPlugin initPlugin = new CordovaPlugin() {
-                @Override
-                public void onResume(boolean multitasking) {
-                    activityDelegate.onResume();
-                }
-            };
-            pluginManager.addService(new PluginEntry("XWalkInit", initPlugin));
-            return;
-        }
-
+    public void loadUrlOnReady(String url) {
         AddJavascriptInterfaces();
         webView.load(url, null);
     }

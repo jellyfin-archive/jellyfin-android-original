@@ -335,9 +335,6 @@
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-file-transfer": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -360,6 +357,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cc.fovea.cordova.purchase": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

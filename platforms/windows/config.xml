@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="20000586" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.5.86" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="20000614" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.6.14" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <name>Emby</name>
     <description>
@@ -28,7 +28,7 @@
     <preference name="windows-phone-target-version" value="10.0" />
     <icon src="res/icon.png" />
     <preference name="xwalkUserAgent" value="crosswalk/16 android" />
-    <preference name="xwalkVersion" value="16+" />
+    <preference name="xwalkVersion" value="17+" />
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />

@@ -22,6 +22,7 @@ def SHARED_MODE = "shared"
 def DEFAULT_GROUP_ID = "org.xwalk:"
 def SHARED_ARTIFACT_ID = "xwalk_shared_library:"
 def EMBEDD_ARTIFACT_ID = "xwalk_core_library:"
+def BIT_64 = ":64bit@aar"
 
 repositories {
   maven {
@@ -49,9 +50,14 @@ def getConfigPreference(name) {
     return ret ? ret : defaultValue
 }
 
-if (cdvBuildMultipleApks == null) {
-    ext.cdvBuildMultipleApks = getConfigPreference("xwalkMultipleApk").toBoolean();
+if (!project.hasProperty('xwalk64bit')) {
+    ext.xwalk64bit = getConfigPreference("xwalk64bit");
+    println xwalk64bit
 }
+if (cdvBuildMultipleApks == null) {
+    ext.xwalkMultipleApk = getConfigPreference("xwalkMultipleApk").toBoolean();
+}
+
 if (cdvMinSdkVersion == null) {
     def minSdk = getConfigPreference("android-minSdkVersion");
     ext.cdvMinSdkVersion =  minSdk && minSdk.toInteger() > 14 ? minSdk : 14;
@@ -62,15 +68,43 @@ if (!project.hasProperty('xwalkMode')) {
     println mode
     ext.artifactid = mode == SHARED_MODE ? SHARED_ARTIFACT_ID : EMBEDD_ARTIFACT_ID;
 }
+if (artifactid == SHARED_ARTIFACT_ID) {
+    // Build one apk at shared mode because the value of
+    // ext.cdvBuildMultipleApks is false by default.
+    xwalk64bit = null;
+} else if (xwalk64bit == null) {
+    // Build embedded 32 bit crosswalk will generate two apks by default.
+    ext.cdvBuildMultipleApks = xwalkMultipleApk;
+}
+
 // Set defaults before project's build-extras.gradle
 if (!project.hasProperty('xwalkVersion')) {
     ext.xwalkVersion = getConfigPreference("xwalkVersion")
 }
+
 if (!project.hasProperty('xwalkCommandLine')) {
     ext.xwalkCommandLine = getConfigPreference("xwalkCommandLine")
 }
 // Apply values after project's build-extras.gradle
 cdvPluginPostBuildExtras.add({
+    android {
+        if (xwalk64bit != null) {
+            productFlavors {
+                x86_64 {
+                    versionCode defaultConfig.versionCode + 6
+                    ndk {
+                       abiFilters "x86_64", ""
+                    }
+                }
+                arm64 {
+                    versionCode defaultConfig.versionCode + 9
+                    ndk {
+                        abiFilters "arm64-v8a", ""
+                    }
+                }
+            }
+        }
+    }
 
     def xwalkSpec = xwalkVersion
     if ((xwalkSpec =~ /:/).count == 1) {
@@ -80,6 +114,9 @@ cdvPluginPostBuildExtras.add({
             xwalkSpec = "${xwalkSpec}+"
         }
         xwalkSpec = DEFAULT_GROUP_ID + artifactid + xwalkSpec
+    }
+    if (xwalk64bit != null) {
+        xwalkSpec = xwalkSpec + BIT_64
     }
     println xwalkSpec
 
