@@ -71,7 +71,7 @@
                             "count": 1
                         },
                         {
-                            "xml": "<preference default=\"16+\" name=\"xwalkVersion\" />",
+                            "xml": "<preference default=\"17+\" name=\"xwalkVersion\" />",
                             "count": 1
                         },
                         {

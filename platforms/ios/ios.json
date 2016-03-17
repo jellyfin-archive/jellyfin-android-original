@@ -621,6 +621,6 @@
         "cordova-plugin-media": "1.0.1",
         "cordova-plugin-x-socialsharing": "5.0.7",
         "cc.fovea.cordova.purchase": "4.0.0",
-        "cordova-plugin-crosswalk-webview": "1.5.0"
+        "cordova-plugin-crosswalk-webview": "1.6.0"
     }
 }

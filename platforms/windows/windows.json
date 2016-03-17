@@ -67,9 +67,6 @@
         "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "Emby"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "Emby"
-        },
         "cordova-plugin-device": {
             "PACKAGE_NAME": "Emby"
         },
@@ -110,6 +107,9 @@
             "PACKAGE_NAME": "Emby"
         },
         "uk.co.whiteoctober.cordova.appversion": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "Emby"
         }
     },

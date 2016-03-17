@@ -100,6 +100,12 @@ You can also set user agent with the preference of xwalkUserAgent.
 
 ### Release Notes
 
+#### 1.6.0 (March 11, 2016)
+* Uses the latest Crosswalk 17 stable version by default
+* Support to [package apps for 64-bit devices](https://crosswalk-project.org/documentation/android/android_64bit.html), it's possible to specify 64-bit targets using the `--xwalk64bit` option in the build command:
+
+        cordova build android --xwalk64bit
+
 #### 1.5.0 (January 18, 2016)
 * Uses the latest Crosswalk 16 stable version by default
 * The message of xwalk's ready can be listened
