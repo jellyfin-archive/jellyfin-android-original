@@ -46,7 +46,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	private String lastAppId = null;
 
 	private SharedPreferences settings;
-
+    private static ArrayList<String> _joinedDevices = new ArrayList<>();
 
 	private volatile ChromecastSession currentSession;
 
@@ -305,7 +305,14 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	 * @param callbackContext
 	 */
 	private void createSession(RouteInfo routeInfo, final CallbackContext callbackContext) {
-		this.currentSession = new ChromecastSession(routeInfo, this.cordova, this, this);
+
+        getLogger().Info("Chromecast.createSession route %s, id: %s", routeInfo.getName(), routeInfo.getId());
+
+        synchronized (_joinedDevices){
+            _joinedDevices.add(routeInfo.getId());
+        }
+
+        this.currentSession = new ChromecastSession(routeInfo, this.cordova, this, this);
 
 		// Launch the app.
 		this.currentSession.launch(this.appId, new ChromecastSessionCallback() {
@@ -344,7 +351,14 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	}
 
 	private void joinSession(RouteInfo routeInfo) {
-		ChromecastSession sessionJoinAttempt = new ChromecastSession(routeInfo, this.cordova, this, this);
+
+        getLogger().Info("Chromecast.joinSession route %s, id: %s", routeInfo.getName(), routeInfo.getId());
+
+        synchronized (_joinedDevices){
+            _joinedDevices.add(routeInfo.getId());
+        }
+
+        ChromecastSession sessionJoinAttempt = new ChromecastSession(routeInfo, this.cordova, this, this);
 		sessionJoinAttempt.join(this.appId, this.lastSessionId, new ChromecastSessionCallback() {
 
 			@Override
@@ -691,9 +705,19 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	 * @param route
 	 */
 	protected void onRouteAdded(MediaRouter router, final RouteInfo route) {
-		if (this.autoConnect && this.currentSession == null && !route.getName().equals("Phone")) {
-			log("Attempting to join route %s" ,route.getName());
-			this.joinSession(route);
+
+        if (this.autoConnect && this.currentSession == null && !route.getName().equals("Phone")) {
+
+            synchronized (_joinedDevices){
+
+                if (_joinedDevices.indexOf(route.getId()) != -1) {
+                    log("Auto-connecting to route %s" ,route.getName());
+                    this.joinSession(route);
+                } else{
+                    log("Skipping auto-connect to route %s" ,route.getName());
+                }
+            }
+
 		} else {
 			log("For some reason, not attempting to join route " + route.getName() + ", " + this.currentSession + ", " + this.autoConnect);
 		}
