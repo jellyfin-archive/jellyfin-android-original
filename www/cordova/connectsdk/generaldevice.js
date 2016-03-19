@@ -541,13 +541,9 @@
 
         self.getPlayerState = function () {
 
-            var deferred = $.Deferred();
-
             var result = self.getPlayerStateInternal();
 
-            deferred.resolveWith(null, [result]);
-
-            return deferred.promise();
+            return Promise.resolve(result);
         };
 
         self.lastPlayerData = {};
@@ -596,8 +592,6 @@
 
         self.tryPair = function (target) {
 
-            var deferred = $.Deferred();
-
             var device = ConnectSDKHelper.getDeviceList().filter(function (d) {
 
                 return d.getId() == target.id;
@@ -605,39 +599,40 @@
 
             if (device) {
 
-                self.tryPairWithDevice(device, deferred);
+                return self.tryPairWithDevice(device);
 
             } else {
-                deferred.reject();
+                return Promise.reject();
             }
-
-            return deferred.promise();
         };
 
-        self.tryPairWithDevice = function (device, deferred) {
+        self.tryPairWithDevice = function (device) {
 
-            Logger.log('Will attempt to connect to Connect Device');
+            return new Promise(function (resolve, reject) {
 
-            device.on("disconnect", function () {
-                device.off("ready");
-                device.off("disconnect");
-            });
+                Logger.log('Will attempt to connect to Connect Device');
 
-            if (device.isReady()) {
-                Logger.log('Device is already ready, calling onDeviceReady');
-                onDeviceReady(device);
-            } else {
-
-                Logger.log('Binding device ready handler');
-
-                device.on("ready", function () {
-                    Logger.log('device.ready fired');
-                    onDeviceReady(device);
+                device.on("disconnect", function () {
+                    device.off("ready");
+                    device.off("disconnect");
                 });
 
-                Logger.log('Calling device.connect');
-                device.connect();
-            }
+                if (device.isReady()) {
+                    Logger.log('Device is already ready, calling onDeviceReady');
+                    onDeviceReady(device);
+                } else {
+
+                    Logger.log('Binding device ready handler');
+
+                    device.on("ready", function () {
+                        Logger.log('device.ready fired');
+                        onDeviceReady(device);
+                    });
+
+                    Logger.log('Calling device.connect');
+                    device.connect();
+                }
+            });
         };
 
         Events.on(MediaController, 'playerchange', function (e, newPlayer, newTarget) {

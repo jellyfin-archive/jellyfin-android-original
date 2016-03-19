@@ -1,1 +1,1 @@
-!function(){function n(){var n=$(document);n.scrollTop(n.scrollTop()+1)}function o(){n();for(var o=0;500>=o;o+=100)setTimeout(n,o)}window.addEventListener("orientationchange",o)}();
+define(["jQuery"],function(n){function o(){var o=n(document);o.scrollTop(o.scrollTop()+1)}function e(){o();for(var n=0;500>=n;n+=100)setTimeout(o,n)}window.addEventListener("orientationchange",e)});

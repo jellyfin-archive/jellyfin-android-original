@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['jQuery'], function ($) {
 
     function getRegistrationInfo(feature) {
 
@@ -474,4 +474,4 @@
         requirejs(['cordova/iap'], onIapManagerLoaded);
     }
 
-})();
+});
