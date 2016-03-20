@@ -29,7 +29,6 @@
         }
 
         if (item.TrailerCount) {
-
             sections.push({
                 name: Globalize.translate('TabTrailers'),
                 type: 'Trailer'
