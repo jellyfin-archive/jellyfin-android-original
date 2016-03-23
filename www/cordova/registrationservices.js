@@ -5,12 +5,7 @@
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
     }
 
-    function validateFeature(feature, resolve, reject) {
-
-        if (isConnectUserSupporter()) {
-            resolve();
-            return;
-        }
+    function validateFeature(feature) {
 
         var unlockableProduct = IapManager.getProductInfo(feature);
 
@@ -23,34 +18,28 @@
         } : null;
 
         if (unlockableProduct && unlockableProduct.owned) {
-            resolve();
-            return;
+            return Promise.resolve();
         }
 
         var prefix = browserInfo.android ? 'android' : 'ios';
 
-        IapManager.isUnlockedOverride(feature).then(function (isUnlocked) {
+        return IapManager.isUnlockedOverride(feature).then(function (isUnlocked) {
 
             if (isUnlocked) {
-                resolve();
-                return;
+                return Promise.resolve();
             }
 
-            function onRegistrationInfoResponse(registrationInfo) {
+            return IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
 
-                if (registrationInfo.IsRegistered) {
-                    resolve();
+                if (subscriptionOptions.filter(function (p) {
+                    return p.owned;
+                }).length > 0) {
+                    return Promise.resolve();
                     return;
                 }
 
-                IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
-
-                    if (subscriptionOptions.filter(function (p) {
-                        return p.owned;
-                    }).length > 0) {
-                        resolve();
-                        return;
-                    }
+                // Get supporter status
+                return getRegistrationInfo(prefix + 'appunlock').catch(function () {
 
                     var dialogOptions = {
                         title: Globalize.translate('HeaderUnlockApp'),
@@ -58,28 +47,10 @@
                         feature: feature
                     };
 
-                    showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+                    return showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions);
                 });
-            }
-
-            // Get supporter status
-            getRegistrationInfo(prefix + 'appunlock').then(onRegistrationInfoResponse, function () {
-                onRegistrationInfoResponse({});
             });
         });
-    }
-
-    function isConnectUserSupporter() {
-
-        if (ConnectionManager.isLoggedIntoConnect()) {
-
-            var connectUser = ConnectionManager.connectUser();
-
-            if (connectUser && connectUser.IsSupporter) {
-                return true;
-            }
-        }
-        return false;
     }
 
     function cancelInAppPurchase() {
@@ -343,18 +314,21 @@
         });
     }
 
-    function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
+    function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions) {
 
-        require(['paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (paperdialoghelper) {
+        return new Promise(function (resolve, reject) {
 
-            if (window.TabBar) {
-                TabBar.hide();
-            }
+            require(['paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (paperdialoghelper) {
 
-            showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+                if (window.TabBar) {
+                    TabBar.hide();
+                }
 
-            currentDisplayingResolve = resolve;
-            currentDisplayingReject = reject;
+                showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+
+                currentDisplayingResolve = resolve;
+                currentDisplayingReject = reject;
+            });
         });
     }
 
@@ -407,35 +381,19 @@
         }
     }
 
-    function validateSync(resolve, reject) {
+    function validateSync() {
 
-        Dashboard.getPluginSecurityInfo().then(function (pluginSecurityInfo) {
+        // Get supporter status
+        return getRegistrationInfo('Sync').catch(function () {
 
-            if (pluginSecurityInfo.IsMBSupporter) {
-                resolve();
-                return;
-            }
+            return IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
 
-            function onRegistrationInfoResponse(registrationInfo) {
-                if (registrationInfo.IsRegistered) {
-                    resolve();
-                    return;
-                }
+                var dialogOptions = {
+                    title: Globalize.translate('HeaderUnlockSync'),
+                    feature: 'sync'
+                };
 
-                IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
-
-                    var dialogOptions = {
-                        title: Globalize.translate('HeaderUnlockSync'),
-                        feature: 'sync'
-                    };
-
-                    showInAppPurchaseInfo(subscriptionOptions, null, dialogOptions, resolve, reject);
-                });
-            }
-
-            // Get supporter status
-            getRegistrationInfo('Sync').then(onRegistrationInfoResponse, function () {
-                onRegistrationInfoResponse({});
+                return showInAppPurchaseInfo(subscriptionOptions, null, dialogOptions);
             });
         });
     }
@@ -449,18 +407,15 @@
 
         validateFeature: function (name) {
 
-            return new Promise(function (resolve, reject) {
-
-                if (name == 'playback') {
-                    validateFeature(name, resolve, reject);
-                } else if (name == 'livetv') {
-                    validateFeature(name, resolve, reject);
-                } else if (name == 'sync') {
-                    validateSync(resolve, reject);
-                } else {
-                    resolve();
-                }
-            });
+            if (name == 'playback') {
+                return validateFeature(name);
+            } else if (name == 'livetv') {
+                return validateFeature(name);
+            } else if (name == 'sync') {
+                return validateSync();
+            } else {
+                return Promise.resolve();
+            }
         }
     };
 
