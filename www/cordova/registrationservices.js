@@ -57,9 +57,9 @@
 
         var elem = document.querySelector('.inAppPurchaseOverlay');
         if (elem) {
-            require(['paperdialoghelper'], function (paperdialoghelper) {
+            require(['dialogHelper'], function (dialogHelper) {
 
-                paperdialoghelper.close(elem);
+                dialogHelper.close(elem);
             });
         }
     }
@@ -75,7 +75,7 @@
         currentDisplayingReject = null;
     }
 
-    function showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
+    function showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
 
         cancelInAppPurchase();
 
@@ -86,7 +86,7 @@
             currentDisplayingProductInfos.push(unlockableProductInfo);
         }
 
-        var dlg = paperdialoghelper.createDialog({
+        var dlg = dialogHelper.createDialog({
             size: 'fullscreen-border'
         });
 
@@ -173,11 +173,11 @@
 
         initInAppPurchaseElementEvents(dlg, dialogOptions.feature, resolve, reject);
 
-        paperdialoghelper.open(dlg);
+        dialogHelper.open(dlg);
 
         $('.btnCloseDialog', dlg).on('click', function () {
 
-            paperdialoghelper.close(dlg);
+            dialogHelper.close(dlg);
         });
 
         $(dlg).on('iron-overlay-closed', function () {
@@ -318,13 +318,13 @@
 
         return new Promise(function (resolve, reject) {
 
-            require(['paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (paperdialoghelper) {
+            require(['dialogHelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (dialogHelper) {
 
                 if (window.TabBar) {
                     TabBar.hide();
                 }
 
-                showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+                showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
 
                 currentDisplayingResolve = resolve;
                 currentDisplayingReject = reject;
