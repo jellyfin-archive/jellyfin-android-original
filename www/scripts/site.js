@@ -113,10 +113,7 @@ var Dashboard = {
         // Try to get the server address from the browser url
         // This will preserve protocol, hostname, port and subdirectory
         var urlLower = window.location.href.toLowerCase();
-        var index = urlLower.indexOf('/web');
-        if (index == -1) {
-            index = urlLower.indexOf('/dashboard');
-        }
+        var index = urlLower.lastIndexOf('/web');
 
         if (index != -1) {
             return urlLower.substring(0, index);
@@ -1881,7 +1878,7 @@ var AppInfo = {};
 
         define("swiper", [bowerPath + "/Swiper/dist/js/swiper.min", "css!" + bowerPath + "/Swiper/dist/css/swiper.min"], returnFirstDependency);
 
-        define("paperdialoghelper", [embyWebComponentsBowerPath + "/paperdialoghelper/paperdialoghelper"], returnFirstDependency);
+        define("dialogHelper", [embyWebComponentsBowerPath + "/dialoghelper/dialoghelper"], returnFirstDependency);
         define("toast", [embyWebComponentsBowerPath + "/toast/toast"], returnFirstDependency);
         define("scrollHelper", [embyWebComponentsBowerPath + "/scrollhelper"], returnFirstDependency);
 
