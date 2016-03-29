@@ -19,6 +19,7 @@
 
 package com.mb.android;
 
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,8 +27,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
@@ -59,8 +62,12 @@ import org.apache.cordova.engine.SystemWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
@@ -846,5 +853,34 @@ public class MainActivity extends CordovaActivity
         receivers[0] = to;
 
         draft.putExtra(Intent.EXTRA_EMAIL, receivers);
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void downloadFile(String url, String path) {
+
+        getLogger().Info("Downloading file %s", url);
+        String filename = "download";
+
+        if (path != null && path.length() > 0){
+            filename = new File(path).getName();
+        }
+
+        DownloadManager.Request r = new DownloadManager.Request(android.net.Uri.parse(url));
+
+        // This put the download in the same Download dir the browser uses
+        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+
+        // When downloading music and videos they will be listed in the player
+        // (Seems to be available since Honeycomb only)
+        r.allowScanningByMediaScanner();
+
+        // Notify user when download is completed
+        // (Seems to be available since Honeycomb only)
+        r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+        // Start download
+        DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        dm.enqueue(r);
     }
 }
