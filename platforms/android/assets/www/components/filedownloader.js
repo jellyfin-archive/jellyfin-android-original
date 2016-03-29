@@ -1,0 +1,1 @@
+define([],function(){return function(n){n.forEach(function(n){window.location.href=n.url})}});
