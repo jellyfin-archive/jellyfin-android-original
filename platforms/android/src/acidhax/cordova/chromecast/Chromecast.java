@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
+import com.mb.android.MainActivity;
 import com.mb.android.logging.AppLogger;
 
 import org.apache.cordova.CordovaPlugin;
@@ -638,7 +639,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 
 				for (RouteInfo route : routeList) {
 					if (!route.getName().equals("Phone") && route.getId().indexOf("Cast") > -1) {
-						sendJavascript("chrome.cast._.routeAdded(" + routeToJSON(route) + ")");
+						sendJavascript("chrome.cast._.routeAdded(" + routeToJSON(route) + ");");
 					}
 				}
 			}
@@ -722,7 +723,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 			log("For some reason, not attempting to join route " + route.getName() + ", " + this.currentSession + ", " + this.autoConnect);
 		}
 		if (!route.getName().equals("Phone") && route.getId().indexOf("Cast") > -1) {
-			sendJavascript("chrome.cast._.routeAdded(" + routeToJSON(route) + ")");
+			sendJavascript("chrome.cast._.routeAdded(" + routeToJSON(route) + ");");
 		}
 		this.checkReceiverAvailable();
 	}
@@ -735,7 +736,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	protected void onRouteRemoved(MediaRouter router, RouteInfo route) {
 		this.checkReceiverAvailable();
 		if (!route.getName().equals("Phone") && route.getId().indexOf("Cast") > -1) {
-			sendJavascript("chrome.cast._.routeRemoved(" + routeToJSON(route) + ")");
+			sendJavascript("chrome.cast._.routeRemoved(" + routeToJSON(route) + ");");
 		}
 	}
 
@@ -802,14 +803,16 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 	public void onMessage(ChromecastSession session, String namespace, String message) {
 
         //getLogger().Info("Chromecast.onMessage: %s", message);
-		sendJavascript("chrome.cast._.onMessage('" + session.getSessionId() +"', '" + namespace + "', '" + message  + "')");
+		sendJavascript("chrome.cast._.onMessage('" + session.getSessionId() +"', '" + namespace + "', " + message  + ");");
 	}
 
 	//Change all @deprecated this.webView.sendJavascript(String) to this local function sendJavascript(String)
 	@TargetApi(Build.VERSION_CODES.KITKAT)
 	private void sendJavascript(final String javascript) {
 
-		webView.getView().post(new Runnable() {
+		//getLogger().Info("Chromecast sending javascript: %s--", javascript);
+		MainActivity.RespondToWebView(javascript);
+		/*webView.getView().post(new Runnable() {
 			@Override
 			public void run() {
 				// See: https://github.com/GoogleChrome/chromium-webview-samples/blob/master/jsinterface-example/app/src/main/java/jsinterfacesample/android/chrome/google/com/jsinterface_example/MainFragment.java
@@ -819,7 +822,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 					webView.loadUrl("javascript:" + javascript);
 				}
 			}
-		});
+		});*/
 	}
 
 }

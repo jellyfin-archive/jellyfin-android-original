@@ -864,6 +864,12 @@ public class MainActivity extends CordovaActivity
 
         if (path != null && path.length() > 0){
             filename = new File(path).getName();
+
+            // This doesn't appear to handle windows paths
+            int index = filename.lastIndexOf('\\');
+            if (index != -1) {
+                filename = filename.substring(index + 1);
+            }
         }
 
         DownloadManager.Request r = new DownloadManager.Request(android.net.Uri.parse(url));
