@@ -1,0 +1,1 @@
+define([],function(){return function(n){n.forEach(function(n){ApiClient.getItem(Dashboard.getCurrentUserId(),n.itemId).then(function(t){MainActivity.downloadFile(n.url,t.Path)})})}});

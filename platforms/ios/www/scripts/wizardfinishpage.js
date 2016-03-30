@@ -1,1 +1,1 @@
-!function(){function t(){ApiClient.ajax({url:ApiClient.getUrl("Startup/Complete"),type:"POST"}).then(function(){Dashboard.navigate("dashboard.html")})}$(document).on("pageinit","#wizardFinishPage",function(){$(".btnWizardNext",this).on("click",t)})}();
+define(["jQuery"],function(n){function t(){ApiClient.ajax({url:ApiClient.getUrl("Startup/Complete"),type:"POST"}).then(function(){Dashboard.navigate("dashboard.html")})}n(document).on("pageinit","#wizardFinishPage",function(){n(".btnWizardNext",this).on("click",t)})});
