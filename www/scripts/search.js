@@ -203,7 +203,10 @@
           { opacity: '0', offset: 0 },
           { opacity: '1', offset: 1 }];
         var timing = { duration: 200, iterations: iterations, fill: 'both' };
-        elem.animate(keyframes, timing);
+
+        if (elem.animate) {
+            elem.animate(keyframes, timing);
+        }
     }
 
     function fadeOut(elem, iterations) {
@@ -211,9 +214,16 @@
           { opacity: '1', offset: 0 },
           { opacity: '0', offset: 1 }];
         var timing = { duration: 600, iterations: iterations, fill: 'both' };
-        elem.animate(keyframes, timing).onfinish = function () {
+
+        var onfinish = function () {
             elem.parentNode.removeChild(elem);
         };
+
+        if (elem.animate) {
+            elem.animate(keyframes, timing).onfinish = onfinish;
+        } else {
+            onfinish();
+        }
     }
 
     function bindSearchEvents() {
