@@ -29,7 +29,7 @@
 - (void)muteMedia:(CDVInvokedUrlCommand*)command;
 - (void)setVolumeForMedia:(CDVInvokedUrlCommand*)command;
 - (void)seekMedia:(CDVInvokedUrlCommand*)command;
-- (void)sendMessage:(NSString*)message;
+- (void)sendMessage:(CDVInvokedUrlCommand*)command;
 @property(nonatomic, strong) DeviceScannerDelegate* deviceScannerDelegate;
 @property(nonatomic, strong) SelectDeviceDelegate* selectDeviceDelegate;
 @property(nonatomic, strong) MediaChannelDelegate* mediaChannelDelegate;
