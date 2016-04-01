@@ -1,4 +1,4 @@
-﻿define(['appSettings', 'events', jQuery], function (appSettings, events, $) {
+﻿define(['appSettings', 'events', 'jQuery'], function (appSettings, events, $) {
 
     var GCK = cordova.require('fw-cordova-chromecast.FWChromecast');
 
