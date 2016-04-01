@@ -4,19 +4,26 @@
 
     function updateProductInfo(id, owned, price) {
 
-        updatedProducts = updatedProducts.filter(function (r) {
-            return r.id != id;
-        });
+        var currentProduct = updatedProducts.filter(function (r) {
+            return r.id == id;
+        })[0];
 
-        var product = {
-            id: id,
-            owned: owned,
-            price: price
-        };
+        if (!currentProduct) {
+            currentProduct = {
+                id: id,
+                owned: owned,
+                price: price
+            };
 
-        updatedProducts.push(product);
+            updatedProducts.push(currentProduct);
+        }
 
-        Events.trigger(IapManager, 'productupdated', [product]);
+        currentProduct.price = price;
+        currentProduct.owned = currentProduct.owned || owned;
+        currentProduct.id = id;
+
+        console.log('Product updated: ' + JSON.stringify(currentProduct));
+        Events.trigger(IapManager, 'productupdated', [currentProduct]);
     }
 
     function getProduct(feature) {

@@ -7,7 +7,18 @@
 
     function validateFeature(feature) {
 
+        console.log('validateFeature: ' + feature);
+
         var unlockableProduct = IapManager.getProductInfo(feature);
+
+        if (unlockableProduct) {
+            console.log('unlockableProduct: ' + JSON.stringify(unlockableProduct));
+            if (unlockableProduct.owned) {
+                return Promise.resolve();
+            }
+        } else {
+            console.log('unlockableProduct not found for this feature.');
+        }
 
         var unlockableProductInfo = unlockableProduct ? {
             enableAppUnlock: true,
@@ -16,10 +27,6 @@
             feature: feature
 
         } : null;
-
-        if (unlockableProduct && unlockableProduct.owned) {
-            return Promise.resolve();
-        }
 
         var prefix = browserInfo.android ? 'android' : 'ios';
 
