@@ -32,6 +32,9 @@
 - (void)joinApplication:(NSString *)receiverAppId {
     [self.deviceManager joinApplication:receiverAppId];
 }
+- (void)sendMessage:(NSString *)message {
+    [self.textChannel sendTextMessage:message];
+}
 
 - (void)disconnect {
     [self.deviceManager leaveApplication];
@@ -66,6 +69,9 @@ didConnectToCastApplication:(GCKApplicationMetadata *)applicationMetadata
                           launchedApplication, @"launchedApplication",
                           applicationMetadata.senderAppLaunchURL, @"senderAppLaunchURL", nil];
     [self sendResponse:data from:@"applicationLaunched" andKeepItAlive:true];
+	
+	self.textChannel = [[DeviceTextChannel alloc] initWithNamespace:@"urn:x-cast:com.connectsdk"];
+    [self.deviceManager addChannel:self.textChannel];
 }
 
 - (void)deviceManager:(GCKDeviceManager *)deviceManager
