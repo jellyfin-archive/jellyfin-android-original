@@ -53,7 +53,7 @@
     [self.selectDeviceDelegate joinApplication:self.receiverAppId];
 }
 
-- (void)disconnect
+- (void)disconnect:(CDVInvokedUrlCommand*)command
 {
     if(self.selectDeviceDelegate != nil) {
         [self.selectDeviceDelegate disconnect];
