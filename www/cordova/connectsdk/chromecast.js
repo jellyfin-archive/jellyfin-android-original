@@ -300,7 +300,20 @@
                     name: device.friendlyName,
                     deviceName: device.friendlyName,
                     playerName: PlayerName,
-                    id: device.id
+                    playableMediaTypes: ["Audio", "Video"],
+                    isLocalPlayer: false,
+                    id: device.id,
+                    supportedCommands: ["VolumeUp",
+                                        "VolumeDown",
+                                        "Mute",
+                                        "Unmute",
+                                        "ToggleMute",
+                                        "SetVolume",
+                                        "SetAudioStreamIndex",
+                                        "SetSubtitleStreamIndex",
+                                        "DisplayContent",
+                                        "SetRepeatMode",
+                                        "EndSession"]
                 });
             }
 
