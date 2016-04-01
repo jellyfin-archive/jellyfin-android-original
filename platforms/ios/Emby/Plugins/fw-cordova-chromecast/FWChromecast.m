@@ -41,6 +41,15 @@
     [self.selectDeviceDelegate launchApplication:self.receiverAppId];
 }
 
+- (void)joinApplication:(CDVInvokedUrlCommand*)command
+{
+    if(self.selectDeviceDelegate == nil || self.receiverAppId == nil) {
+        CDVPluginResult*pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_INVALID_ACTION messageAsString:@"In order to launch an application you need to select a device first."];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+    [self.selectDeviceDelegate joinApplication:self.receiverAppId];
+}
+
 - (void)disconnect
 {
     if(self.selectDeviceDelegate != nil) {
