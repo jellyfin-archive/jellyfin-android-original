@@ -19,6 +19,7 @@
 - (void)scanForDevices:(CDVInvokedUrlCommand*)command;
 - (void)selectDevice:(CDVInvokedUrlCommand*)command;
 - (void)launchApplication:(CDVInvokedUrlCommand*)command;
+- (void)joinApplication:(CDVInvokedUrlCommand*)command;
 - (void)disconnect;
 - (void)startMediaChannel:(CDVInvokedUrlCommand*)command;
 - (void)loadMedia:(CDVInvokedUrlCommand*)command;

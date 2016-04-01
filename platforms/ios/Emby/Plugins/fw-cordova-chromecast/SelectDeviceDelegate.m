@@ -28,6 +28,11 @@
     [self.deviceManager launchApplication:receiverAppId];
 }
 
+
+- (void)joinApplication:(NSString *)receiverAppId {
+    [self.deviceManager joinApplication:receiverAppId];
+}
+
 - (void)disconnect {
     [self.deviceManager leaveApplication];
     [self.deviceManager disconnect];
