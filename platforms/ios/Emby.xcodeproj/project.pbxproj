@@ -363,7 +363,6 @@
 		AA77B17EB92A4D56B9C35BF9 /* SelectDeviceDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SelectDeviceDelegate.h"; path = "fw-cordova-chromecast/SelectDeviceDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		9D5CABDF3ABF43F3946686CB /* MediaChannelDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MediaChannelDelegate.h"; path = "fw-cordova-chromecast/MediaChannelDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; };
 		289911663402421B8083F577 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = unknown; name = "libc++.tbd"; path = "libc++.tbd"; sourceTree = "<group>"; fileEncoding = 4; };
-		9FCAFB1E1DE44EBDB98C4719 /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "GoogleCast.framework"; path = "Emby/Plugins/fw-cordova-chromecast/GoogleCast.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
