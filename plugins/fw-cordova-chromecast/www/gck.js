@@ -102,13 +102,33 @@ exports.launchApplication = function () {
 
     return new Promise(function (resolve, reject) {
 
-        $(t).on("applicationLaunched", function (e, metadata) {
+        $(t).one("applicationLaunched", function (e, metadata) {
             resolve(metadata);
         });
-        $(t).on("ffailToConnectToApp", function (e, error) {
+        $(t).one("ffailToConnectToApp", function (e, error) {
             reject(error);
         });
         cordova.exec(undefined, t.unhandledException, "FWChromecast", "launchApplication", []);
+    });
+};
+
+/**
+ * After selecting a device, we can finally start the application.
+ *
+ * @param receiverAppId, the receiverAppId of the app to start.
+ */
+exports.joinApplication = function () {
+    var t = this;
+
+    return new Promise(function (resolve, reject) {
+
+        $(t).one("applicationLaunched", function (e, metadata) {
+            resolve(metadata);
+        });
+        $(t).one("ffailToConnectToApp", function (e, error) {
+            reject(error);
+        });
+        cordova.exec(undefined, t.unhandledException, "FWChromecast", "joinApplication", []);
     });
 };
 
