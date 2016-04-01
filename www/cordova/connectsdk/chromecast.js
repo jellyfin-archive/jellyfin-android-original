@@ -505,10 +505,14 @@
 
             return GCK.selectDevice(target.id).then(function () {
 
-                currentDeviceId = target.id;
-                currentDeviceFriendlyName = target.name;
-
-                return Promise.resolve();
+                var onLaunch = function() {
+                    currentDeviceId = target.id;
+                    currentDeviceFriendlyName = target.name;
+                };
+                return GCK.joinApplication().then(onLaunch, function() {
+                    
+                    return GCK.launchApplication().then(onLaunch);
+                });
             });
         };
 
