@@ -113,8 +113,11 @@ exports.launchApplication = function () {
         }
 
         function onFailed(e, error) {
-            unbind();
-            reject(error);
+
+            setTimeout(function() {
+                unbind();
+                reject(error);
+            }, 500);
         }
 
         $(t).on("applicationLaunched", onLaunched);
@@ -144,8 +147,10 @@ exports.joinApplication = function () {
         }
 
         function onFailed(e, error) {
-            unbind();
-            reject(error);
+            setTimeout(function () {
+                unbind();
+                reject(error);
+            }, 500);
         }
 
         $(t).on("applicationLaunched", onLaunched);
