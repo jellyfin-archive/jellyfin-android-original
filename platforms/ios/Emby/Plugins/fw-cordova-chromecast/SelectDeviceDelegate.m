@@ -25,15 +25,27 @@
 
 
 - (void)launchApplication:(NSString *)receiverAppId {
+    
+    NSLog(@"Chromecast launchApplication");
     [self.deviceManager launchApplication:receiverAppId];
 }
 
 
 - (void)joinApplication:(NSString *)receiverAppId {
+    NSLog(@"Chromecast joinApplication");
     [self.deviceManager joinApplication:receiverAppId];
 }
 - (void)sendMessage:(NSString *)message {
-    [self.textChannel sendTextMessage:message];
+    
+    if (self.textChannel) {
+        NSLog(@"Chromecast sending text message: %@", message);
+        
+        NSString *textMessage = message;
+        [self.textChannel sendTextMessage:textMessage];
+    } else{
+        NSLog(@"Chromecast cannot send text message because textChannel is null!");
+    }
+    
 }
 
 - (void)disconnect {
@@ -54,6 +66,8 @@
                           self.device.friendlyName, @"friendlyName",
                           self.device.ipAddress, @"ipAddress",
                           [[NSNumber alloc] initWithUnsignedInt:self.device.servicePort], @"servicePort", nil];
+    
+    NSLog(@"Chromecast firing deviceConnected");
     [self sendResponse:data from:@"deviceConnected" andKeepItAlive:true];
 }
 // [END launch-application]
@@ -69,23 +83,30 @@ didConnectToCastApplication:(GCKApplicationMetadata *)applicationMetadata
                           launchedApplication, @"launchedApplication",
                           applicationMetadata.senderAppLaunchURL, @"senderAppLaunchURL", nil];
 	
-	self.textChannel = [[DeviceTextChannel alloc] initWithNamespace:@"urn:x-cast:com.connectsdk"];
+    NSLog(@"Chromecast application launched. Opening text channel.");
+    self.textChannel = [[DeviceTextChannel alloc] initWithNamespace:@"urn:x-cast:com.connectsdk"];
+    self.textChannel.commandDelegate = self;
     [self.deviceManager addChannel:self.textChannel];
+    
+    NSLog(@"Chromecast firing applicationLaunched");
     [self sendResponse:data from:@"applicationLaunched" andKeepItAlive:true];
 }
 
 - (void)deviceManager:(GCKDeviceManager *)deviceManager
 didFailToConnectToApplicationWithError:(NSError *)error {
+    NSLog(@"Chromecast firing failToConnectToApp");
     [self sendResponse:[NSString stringWithFormat:@"%@", error] from:@"failToConnectToApp" andKeepItAlive:true];
 }
 
 - (void)deviceManager:(GCKDeviceManager *)deviceManager
 didFailToConnectWithError:(GCKError *)error {
+    NSLog(@"Chromecast firing failToConnect");
     [self sendResponse:[NSString stringWithFormat:@"%@", error] from:@"failToConnect" andKeepItAlive:true];
 }
 
 - (void)deviceManager:(GCKDeviceManager *)deviceManager
 didDisconnectWithError:(GCKError *)error {
+    NSLog(@"Chromecast firing disconnectWithError");
     [self sendResponse:[NSString stringWithFormat:@"%@", error] from:@"disconnectWithError" andKeepItAlive:true];
 }
 
