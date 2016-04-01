@@ -298,6 +298,7 @@
 
                 list.push({
                     name: device.friendlyName,
+                    deviceName: device.friendlyName,
                     id: device.id
                 });
             }
@@ -512,7 +513,9 @@
 
         function endSessionInternal(closeWebApp, retainDeviceId) {
 
-            GCK.disconnect();
+            if (closeWebApp) {
+                GCK.disconnect();
+            }
 
             cleanupSession();
             currentDeviceFriendlyName = null;
