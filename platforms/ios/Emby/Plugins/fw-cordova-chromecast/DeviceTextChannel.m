@@ -10,10 +10,6 @@
 #import "DeviceTextChannel.h"
 #import <GoogleCast/GoogleCast.h>
 
-@interface DeviceTextChannel() <GCKDeviceScannerListener> {
-}
-@end
-
 @implementation DeviceTextChannel
 
 - (void)didReceiveTextMessage:(NSString*)message {

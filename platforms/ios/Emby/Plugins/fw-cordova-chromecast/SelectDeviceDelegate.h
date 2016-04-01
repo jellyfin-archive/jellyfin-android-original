@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Cordova/CDV.h>
 #import "CommandDelegate.h"
-#import "DeviceTextChannel*.h"
+#import "DeviceTextChannel.h"
 #import <GoogleCast/GoogleCast.h>
 
 
