@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		03E43C0F75344D119263D8FE /* CDVFileTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = 62ECCF6FEDFF445F9C911FA5 /* CDVFileTransfer.m */; };
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
@@ -118,6 +117,13 @@
 		F45E8A84EC4F4EB7849E9329 /* ActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = C1FC9294024A446E876ED9A6 /* ActionSheet.m */; };
 		F8002EF797EA4200A619F27E /* BackgroundDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3919BA32D920484AB566C454 /* BackgroundDownload.m */; };
 		FBE24A9494544F8C96D924DB /* ConnectSDKCordova.m in Sources */ = {isa = PBXBuildFile; fileRef = BA105F4B960D4371924E7D79 /* ConnectSDKCordova.m */; };
+		2490413FA4C7402B8D9C1993 /* FWChromecast.m in Sources */ = {isa = PBXBuildFile; fileRef = 54A11146A123446EBA6DB15D /* FWChromecast.m */; };
+		5B6A09A6E6CF42079D76A3C1 /* CommandDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D9AE1924B8724E35B840A1D3 /* CommandDelegate.m */; };
+		0C1D2EB896FC40B8BF2C0CDC /* DeviceScannerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FFF6BD34834D4D8B89C4FF2C /* DeviceScannerDelegate.m */; };
+		20DCCDABC35A463C94516888 /* SelectDeviceDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 73292DB4B28E4328BBFB7615 /* SelectDeviceDelegate.m */; };
+		30856C5D8E8F4BB9A0420D20 /* MediaChannelDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 11C1A0A629C745D8A8E7849B /* MediaChannelDelegate.m */; };
+		50E6D23955BE453394A4809A /* libc++.tbd in Resources */ = {isa = PBXBuildFile; fileRef = 289911663402421B8083F577 /* libc++.tbd */; };
+		C008D268C3CE48F48721B905 /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FCAFB1E1DE44EBDB98C4719 /* GoogleCast.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -346,6 +352,18 @@
 		FA9D2FFF85E542F6B61AA2B2 /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDTTYLogger.h; path = "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin/DDTTYLogger.h"; sourceTree = "<group>"; };
 		FBCDE143BB9B4505999B57C4 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncSocket.h; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncSocket.h"; sourceTree = "<group>"; };
 		FF79FCE3E00F451CA348FDEE /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDTTYLogger.m; path = "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin/DDTTYLogger.m"; sourceTree = "<group>"; };
+		54A11146A123446EBA6DB15D /* FWChromecast.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "FWChromecast.m"; path = "fw-cordova-chromecast/FWChromecast.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		D9AE1924B8724E35B840A1D3 /* CommandDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CommandDelegate.m"; path = "fw-cordova-chromecast/CommandDelegate.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		FFF6BD34834D4D8B89C4FF2C /* DeviceScannerDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "DeviceScannerDelegate.m"; path = "fw-cordova-chromecast/DeviceScannerDelegate.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		73292DB4B28E4328BBFB7615 /* SelectDeviceDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "SelectDeviceDelegate.m"; path = "fw-cordova-chromecast/SelectDeviceDelegate.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		11C1A0A629C745D8A8E7849B /* MediaChannelDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "MediaChannelDelegate.m"; path = "fw-cordova-chromecast/MediaChannelDelegate.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		8056EE44CBFA4DA9B9708A0F /* FWChromecast.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "FWChromecast.h"; path = "fw-cordova-chromecast/FWChromecast.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		C5FCEE75AC0A4BBD8328D39D /* CommandDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CommandDelegate.h"; path = "fw-cordova-chromecast/CommandDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		5681F00574DF4467811AD489 /* DeviceScannerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "DeviceScannerDelegate.h"; path = "fw-cordova-chromecast/DeviceScannerDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		AA77B17EB92A4D56B9C35BF9 /* SelectDeviceDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "SelectDeviceDelegate.h"; path = "fw-cordova-chromecast/SelectDeviceDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		9D5CABDF3ABF43F3946686CB /* MediaChannelDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MediaChannelDelegate.h"; path = "fw-cordova-chromecast/MediaChannelDelegate.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		289911663402421B8083F577 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = unknown; name = "libc++.tbd"; path = "libc++.tbd"; sourceTree = "<group>"; fileEncoding = 4; };
+		9FCAFB1E1DE44EBDB98C4719 /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "GoogleCast.framework"; path = "Emby/Plugins/fw-cordova-chromecast/GoogleCast.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -385,6 +403,8 @@
 				6715DB69A20B40FE99913161 /* WebKit.framework in Frameworks */,
 				1D1F6C6270914ECB81B91D59 /* StoreKit.framework in Frameworks */,
 				7658267831064B06BEB15EAF /* GCDWebServer.framework in Frameworks */,
+				50E6D23955BE453394A4809A /* libc++.tbd in Resources */,
+				C008D268C3CE48F48721B905 /* GoogleCast.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,6 +510,8 @@
 				B971AD058EEB4524A7D2862D /* WebKit.framework */,
 				96813CCE77A64CC499AFB989 /* StoreKit.framework */,
 				EDF4486EF8F840A295E02124 /* GCDWebServer.framework */,
+				289911663402421B8083F577 /* libc++.tbd */,
+				9FCAFB1E1DE44EBDB98C4719 /* GoogleCast.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -602,6 +624,16 @@
 				CC5FC6A46C5045BCBDBFB872 /* InAppPurchase.h */,
 				1EFFEF64308B47ECBAD35C50 /* SKProduct+LocalizedPrice.h */,
 				033F46B6B2F948158E88D3C9 /* FileUtility.h */,
+				54A11146A123446EBA6DB15D /* FWChromecast.m */,
+				D9AE1924B8724E35B840A1D3 /* CommandDelegate.m */,
+				FFF6BD34834D4D8B89C4FF2C /* DeviceScannerDelegate.m */,
+				73292DB4B28E4328BBFB7615 /* SelectDeviceDelegate.m */,
+				11C1A0A629C745D8A8E7849B /* MediaChannelDelegate.m */,
+				8056EE44CBFA4DA9B9708A0F /* FWChromecast.h */,
+				C5FCEE75AC0A4BBD8328D39D /* CommandDelegate.h */,
+				5681F00574DF4467811AD489 /* DeviceScannerDelegate.h */,
+				AA77B17EB92A4D56B9C35BF9 /* SelectDeviceDelegate.h */,
+				9D5CABDF3ABF43F3946686CB /* MediaChannelDelegate.h */,
 			);
 			name = Plugins;
 			path = Emby/Plugins;
@@ -893,6 +925,11 @@
 				184AAC1F7E5C490693F39711 /* InAppPurchase.m in Sources */,
 				D049B5BA18FD4868B048F54F /* SKProduct+LocalizedPrice.m in Sources */,
 				C9D4002264FC4C239BBACC37 /* FileUtility.m in Sources */,
+				2490413FA4C7402B8D9C1993 /* FWChromecast.m in Sources */,
+				5B6A09A6E6CF42079D76A3C1 /* CommandDelegate.m in Sources */,
+				0C1D2EB896FC40B8BF2C0CDC /* DeviceScannerDelegate.m in Sources */,
+				20DCCDABC35A463C94516888 /* SelectDeviceDelegate.m in Sources */,
+				30856C5D8E8F4BB9A0420D20 /* MediaChannelDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -934,6 +971,7 @@
 					"/Users/luke/Connect-SDK-iOS-1.4",
 					/Users/luke/MediaBrowser.Mobile/plugins/org.nypr.cordova.vlcplugin/VLCKit/build,
 					"\"EmbyPluginscordova-plugin-webserver\"",
+					"\"Emby\Plugins\fw-cordova-chromecast\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -989,6 +1027,7 @@
 					"/Users/luke/Connect-SDK-iOS-1.4",
 					/Users/luke/MediaBrowser.Mobile/plugins/org.nypr.cordova.vlcplugin/VLCKit/build,
 					"\"EmbyPluginscordova-plugin-webserver\"",
+					"\"Emby\Plugins\fw-cordova-chromecast\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Emby/Emby-Prefix.pch";

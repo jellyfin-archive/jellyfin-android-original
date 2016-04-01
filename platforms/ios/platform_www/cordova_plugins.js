@@ -372,6 +372,14 @@ module.exports = [
         "clobbers": [
             "store"
         ]
+    },
+    {
+        "file": "plugins/fw-cordova-chromecast/www/gck.js",
+        "id": "fw-cordova-chromecast.FWChromecast",
+        "pluginId": "fw-cordova-chromecast",
+        "clobbers": [
+            "cordova.plugins.FWChromecast"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -402,7 +410,8 @@ module.exports.metadata =
     "cordova-plugin-media": "1.0.1",
     "cordova-plugin-x-socialsharing": "5.0.7",
     "cc.fovea.cordova.purchase": "4.0.0",
-    "cordova-plugin-crosswalk-webview": "1.6.0"
+    "cordova-plugin-crosswalk-webview": "1.6.0",
+    "fw-cordova-chromecast": "0.0.1"
 }
 // BOTTOM OF METADATA
 });
