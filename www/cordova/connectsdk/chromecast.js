@@ -299,6 +299,7 @@
                 list.push({
                     name: device.friendlyName,
                     deviceName: device.friendlyName,
+                    playerName: PlayerName,
                     id: device.id
                 });
             }
