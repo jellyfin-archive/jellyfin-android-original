@@ -123,7 +123,6 @@
 		20DCCDABC35A463C94516888 /* SelectDeviceDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 73292DB4B28E4328BBFB7615 /* SelectDeviceDelegate.m */; };
 		30856C5D8E8F4BB9A0420D20 /* MediaChannelDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 11C1A0A629C745D8A8E7849B /* MediaChannelDelegate.m */; };
 		50E6D23955BE453394A4809A /* libc++.tbd in Resources */ = {isa = PBXBuildFile; fileRef = 289911663402421B8083F577 /* libc++.tbd */; };
-		C008D268C3CE48F48721B905 /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FCAFB1E1DE44EBDB98C4719 /* GoogleCast.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -403,7 +402,6 @@
 				1D1F6C6270914ECB81B91D59 /* StoreKit.framework in Frameworks */,
 				7658267831064B06BEB15EAF /* GCDWebServer.framework in Frameworks */,
 				50E6D23955BE453394A4809A /* libc++.tbd in Resources */,
-				C008D268C3CE48F48721B905 /* GoogleCast.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,7 +508,6 @@
 				96813CCE77A64CC499AFB989 /* StoreKit.framework */,
 				EDF4486EF8F840A295E02124 /* GCDWebServer.framework */,
 				289911663402421B8083F577 /* libc++.tbd */,
-				9FCAFB1E1DE44EBDB98C4719 /* GoogleCast.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
