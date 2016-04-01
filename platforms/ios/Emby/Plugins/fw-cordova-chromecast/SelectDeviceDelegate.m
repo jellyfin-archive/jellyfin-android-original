@@ -68,10 +68,10 @@ didConnectToCastApplication:(GCKApplicationMetadata *)applicationMetadata
                           applicationMetadata.senderAppIdentifier, @"senderAppIdentifier",
                           launchedApplication, @"launchedApplication",
                           applicationMetadata.senderAppLaunchURL, @"senderAppLaunchURL", nil];
-    [self sendResponse:data from:@"applicationLaunched" andKeepItAlive:true];
 	
 	self.textChannel = [[DeviceTextChannel alloc] initWithNamespace:@"urn:x-cast:com.connectsdk"];
     [self.deviceManager addChannel:self.textChannel];
+    [self sendResponse:data from:@"applicationLaunched" andKeepItAlive:true];
 }
 
 - (void)deviceManager:(GCKDeviceManager *)deviceManager
