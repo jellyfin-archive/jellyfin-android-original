@@ -133,7 +133,8 @@ exports.joinApplication = function () {
 };
 
 exports.sendMessage = function (message) {
-    cordova.exec(undefined, t.unhandledException, "FWChromecast", "sendMessage", [message]);
+    var t = this;
+	cordova.exec(undefined, t.unhandledException, "FWChromecast", "sendMessage", [message]);
 };
 
 /**
