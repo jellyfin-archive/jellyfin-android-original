@@ -85,7 +85,6 @@ exports.selectDevice = function (device) {
 
             if (response.command == 'receiveMessage') {
                 $(t).trigger('receiveMessage', response.data);
-                $(t).trigger('receiveMessage:' + response.data.channelName, response.data);
             }
 
         }, t.unhandledException, "FWChromecast", "selectDevice", [device]);
