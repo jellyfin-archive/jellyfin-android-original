@@ -97,6 +97,7 @@
             var json = JSON.stringify(message);
 
             // TODO: Send message
+			GCK.sendMessage(json);
         }
 
         self.play = function (options) {
@@ -508,6 +509,9 @@
                 var onLaunch = function() {
                     currentDeviceId = target.id;
                     currentDeviceFriendlyName = target.name;
+					
+					// in iOS, we don't wait for the opening of the text channel, so give this sufficient time
+					setTimeout(sendIdentifyMessage, 2000);
                 };
                 return GCK.joinApplication().then(onLaunch, function() {
                     
