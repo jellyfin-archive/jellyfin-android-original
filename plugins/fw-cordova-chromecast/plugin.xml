@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="fw-cordova-chromecast" version="0.0.1">
+    <name>FW Chromecast</name>
+    <description>Cordova Plugin to communicate with chromecast.</description>
+
+    <js-module src="www/gck.js" name="FWChromecast">
+        <clobbers target="cordova.plugins.FWChromecast" />
+    </js-module>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+      		<feature name="FWChromecast">
+      			<param name="ios-package" value="FWChromecast"/>
+      		</feature>
+        </config-file>
+
+      	<header-file src="src/ios/FWChromecast.h" />
+      	<source-file src="src/ios/FWChromecast.m" />
+        <header-file src="src/ios/CommandDelegate.h" />
+      	<source-file src="src/ios/CommandDelegate.m" />
+        <header-file src="src/ios/DeviceScannerDelegate.h" />
+      	<source-file src="src/ios/DeviceScannerDelegate.m" />
+        <header-file src="src/ios/SelectDeviceDelegate.h" />
+      	<source-file src="src/ios/SelectDeviceDelegate.m" />
+        <header-file src="src/ios/MediaChannelDelegate.h" />
+      	<source-file src="src/ios/MediaChannelDelegate.m" />
+
+        <framework src="Accelerate.framework" />
+        <framework src="AudioToolbox.framework" />
+        <framework src="AVFoundation.framework" />
+        <framework src="CoreBluetooth.framework" />
+        <framework src="CoreText.framework" />
+        <framework src="libc++.tbd" />
+        <framework src="MediaAccessibility.framework" />
+        <framework src="MediaPlayer.framework" />
+        <framework src="MediaToolbox.framework" />
+        <framework src="SystemConfiguration.framework" />
+        <framework src="src/ios/Frameworks/GoogleCast.framework" custom="true" />
+    </platform>
+</plugin>
