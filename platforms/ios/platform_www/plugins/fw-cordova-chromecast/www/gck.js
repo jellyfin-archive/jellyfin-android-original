@@ -105,7 +105,7 @@ exports.launchApplication = function () {
         $(t).one("applicationLaunched", function (e, metadata) {
             resolve(metadata);
         });
-        $(t).one("ffailToConnectToApp", function (e, error) {
+        $(t).one("failToConnectToApp", function (e, error) {
             reject(error);
         });
         cordova.exec(undefined, t.unhandledException, "FWChromecast", "launchApplication", []);
@@ -125,7 +125,7 @@ exports.joinApplication = function () {
         $(t).one("applicationLaunched", function (e, metadata) {
             resolve(metadata);
         });
-        $(t).one("ffailToConnectToApp", function (e, error) {
+        $(t).one("failToConnectToApp", function (e, error) {
             reject(error);
         });
         cordova.exec(undefined, t.unhandledException, "FWChromecast", "joinApplication", []);
