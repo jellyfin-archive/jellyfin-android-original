@@ -102,12 +102,23 @@ exports.launchApplication = function () {
 
     return new Promise(function (resolve, reject) {
 
-        $(t).one("applicationLaunched", function (e, metadata) {
+        function unbind() {
+            $(t).off("applicationLaunched", onLaunched);
+            $(t).off("failToConnectToApp", onFailed);
+        }
+
+        function onLaunched(e, metadata) {
+            unbind();
             resolve(metadata);
-        });
-        $(t).one("failToConnectToApp", function (e, error) {
+        }
+
+        function onFailed(e, error) {
+            unbind();
             reject(error);
-        });
+        }
+
+        $(t).on("applicationLaunched", onLaunched);
+        $(t).on("failToConnectToApp", onFailed);
         cordova.exec(undefined, t.unhandledException, "FWChromecast", "launchApplication", []);
     });
 };
@@ -122,12 +133,23 @@ exports.joinApplication = function () {
 
     return new Promise(function (resolve, reject) {
 
-        $(t).one("applicationLaunched", function (e, metadata) {
+        function unbind() {
+            $(t).off("applicationLaunched", onLaunched);
+            $(t).off("failToConnectToApp", onFailed);
+        }
+
+        function onLaunched(e, metadata) {
+            unbind();
             resolve(metadata);
-        });
-        $(t).one("failToConnectToApp", function (e, error) {
+        }
+
+        function onFailed(e, error) {
+            unbind();
             reject(error);
-        });
+        }
+
+        $(t).on("applicationLaunched", onLaunched);
+        $(t).on("failToConnectToApp", onFailed);
         cordova.exec(undefined, t.unhandledException, "FWChromecast", "joinApplication", []);
     });
 };
