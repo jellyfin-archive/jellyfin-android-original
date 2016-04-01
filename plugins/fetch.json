@@ -272,5 +272,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "fw-cordova-chromecast": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/MediaBrowser/cordova-chromecast-ios",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

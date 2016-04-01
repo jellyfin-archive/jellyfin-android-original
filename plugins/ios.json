@@ -361,6 +361,9 @@
         },
         "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "fw-cordova-chromecast": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {
