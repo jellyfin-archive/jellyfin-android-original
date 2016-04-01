@@ -14,6 +14,11 @@
 
 - (void)didReceiveTextMessage:(NSString*)message {
   NSLog(@"received message: %@", message);
+    
+    if (self.commandDelegate) {
+        NSLog(@"Passing received Chromecast message to UI");
+        [self.commandDelegate sendResponse:[NSString stringWithFormat:@"%@", message] from:@"receiveMessage" andKeepItAlive:true];
+    }
 }
 
 @end
