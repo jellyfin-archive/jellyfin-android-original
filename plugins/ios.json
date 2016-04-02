@@ -299,9 +299,6 @@
         "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.connectsdk.cordovaplugin": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.emby.mobile"
         },

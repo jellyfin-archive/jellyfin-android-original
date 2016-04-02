@@ -24,16 +24,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "com.connectsdk.cordovaplugin": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ConnectSDK/Connect-SDK-Cordova-Plugin.git",
-            "subdir": ".",
-            "ref": "master"
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "org.apache.cordova.device": {
         "source": {
             "type": "registry",

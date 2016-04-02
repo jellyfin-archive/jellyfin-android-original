@@ -1,15 +1,6 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
-        "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
-        "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
-        "pluginId": "com.connectsdk.cordovaplugin",
-        "merges": [
-            "navigator.ConnectSDK",
-            "ConnectSDK"
-        ]
-    },
-    {
         "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
         "id": "com.hutchind.cordova.plugins.launcher.Launcher",
         "pluginId": "com.hutchind.cordova.plugins.launcher",
@@ -386,7 +377,6 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
-    "com.connectsdk.cordovaplugin": "1.2.0",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",

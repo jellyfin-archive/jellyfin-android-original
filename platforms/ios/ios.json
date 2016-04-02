@@ -31,10 +31,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"ConnectSDK\"><param name=\"ios-package\" value=\"ConnectSDKCordova\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Launcher\"><param name=\"ios-package\" value=\"Launcher\" /></feature>",
                             "count": 1
                         },
@@ -147,9 +143,6 @@
         "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.connectsdk.cordovaplugin": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -228,15 +221,6 @@
     },
     "dependent_plugins": {},
     "modules": [
-        {
-            "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
-            "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
-            "pluginId": "com.connectsdk.cordovaplugin",
-            "merges": [
-                "navigator.ConnectSDK",
-                "ConnectSDK"
-            ]
-        },
         {
             "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
             "id": "com.hutchind.cordova.plugins.launcher.Launcher",
@@ -612,7 +596,6 @@
     ],
     "plugin_metadata": {
         "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
-        "com.connectsdk.cordovaplugin": "1.2.0",
         "com.hutchind.cordova.plugins.launcher": "0.2.2",
         "nl.x-services.plugins.actionsheet": "1.1.7",
         "nl.x-services.plugins.backgroundaudio": "1.0.1",

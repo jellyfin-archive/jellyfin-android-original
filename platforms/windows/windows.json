@@ -37,9 +37,6 @@
         "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "Emby"
         },
-        "com.connectsdk.cordovaplugin": {
-            "PACKAGE_NAME": "Emby"
-        },
         "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "Emby"
         },
@@ -147,15 +144,6 @@
             "pluginId": "cc.fovea.cordova.purchase",
             "merges": [
                 ""
-            ]
-        },
-        {
-            "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
-            "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
-            "pluginId": "com.connectsdk.cordovaplugin",
-            "merges": [
-                "navigator.ConnectSDK",
-                "ConnectSDK"
             ]
         },
         {
