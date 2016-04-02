@@ -158,6 +158,8 @@
 
             document.body.appendChild(div);
             libraryBrowser.createCardMenus(div);
+
+            elem = div;
         }
 
         return elem;
