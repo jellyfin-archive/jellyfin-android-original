@@ -35,15 +35,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.connectsdk.cordovaplugin/www/ConnectSDK.js",
-        "id": "com.connectsdk.cordovaplugin.ConnectSDK.js",
-        "pluginId": "com.connectsdk.cordovaplugin",
-        "merges": [
-            "navigator.ConnectSDK",
-            "ConnectSDK"
-        ]
-    },
-    {
         "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
         "id": "com.drifty.cordova.cameraroll.CameraRoll",
         "pluginId": "com.drifty.cordova.cameraroll",
