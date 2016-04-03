@@ -1,4 +1,4 @@
-﻿define(['jQuery'], function ($) {
+﻿define(['jQuery', 'appSettings'], function ($, appSettings) {
 
     function getRegistrationInfo(feature) {
 
@@ -13,7 +13,15 @@
 
         if (unlockableProduct) {
             console.log('unlockableProduct: ' + JSON.stringify(unlockableProduct));
+            var unlockableCacheKey = 'productpurchased-' + unlockableProduct.id;
             if (unlockableProduct.owned) {
+
+                // Cache this to eliminate the store as a possible point of failure in the future
+                appSettings.set(unlockableCacheKey, '1');
+                return Promise.resolve();
+            }
+
+            if (appSettings.get(unlockableCacheKey) == '1') {
                 return Promise.resolve();
             }
         } else {
