@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		03E43C0F75344D119263D8FE /* CDVFileTransfer.m in Sources */ = {isa = PBXBuildFile; fileRef = 62ECCF6FEDFF445F9C911FA5 /* CDVFileTransfer.m */; };
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
@@ -87,7 +88,6 @@
 		A1AC1FD0E3C441919EBF93F8 /* DDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = DF4C5816A53C4A32A9CA5F30 /* DDASLLogCapture.m */; };
 		A34CA9211BC96F0000177D9F /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A34CA9201BC96F0000177D9F /* Launch Screen.storyboard */; settings = {ASSET_TAGS = (); }; };
 		A3A0168D1B3111590089774E /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A0168C1B3111590089774E /* GoogleCast.framework */; };
-		A3A016951B311C000089774E /* libConnectSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A016871B310C850089774E /* libConnectSDK.a */; };
 		A3C30B091CAEEF4300DB4916 /* DeviceTextChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = A3C30B081CAEEF4300DB4916 /* DeviceTextChannel.m */; settings = {ASSET_TAGS = (); }; };
 		A3E7DCD01B086136007556B9 /* MediaAccessibility.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3E7DCCF1B086136007556B9 /* MediaAccessibility.framework */; };
 		A3E9F8D01AF9509800F2026A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3E9F8CF1AF9509800F2026A /* Images.xcassets */; };
@@ -137,41 +137,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = CordovaLib;
-		};
-		A3A016861B310C850089774E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EA61EB1018FE485B00D75696;
-			remoteInfo = ConnectSDK;
-		};
-		A3A016881B310C850089774E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4480857A1A12A7BE00E13938;
-			remoteInfo = ConnectSDKTests;
-		};
-		A3A0168A1B310CD30089774E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = EA61EB0F18FE485B00D75696;
-			remoteInfo = ConnectSDK;
-		};
-		A3F1357A1C0CF4750010885D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 449A37021B0FDC1C00E47DAC;
-			remoteInfo = ConnectSDKIntegrationTests;
-		};
-		A3F1357C1C0CF4750010885D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 44166C501B4203880052F9EC;
-			remoteInfo = ConnectSDKAcceptanceTests;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -286,7 +251,6 @@
 		A32B6159575649DBB5296E31 /* NSLoggerCocoaLumberjackConnectorPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSLoggerCocoaLumberjackConnectorPlugin.h; path = "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin/NSLoggerCocoaLumberjackConnectorPlugin.h"; sourceTree = "<group>"; };
 		A34CA9011BC8B05700177D9F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		A34CA9201BC96F0000177D9F /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		A3A016801B310C840089774E /* ConnectSDK.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConnectSDK.xcodeproj; path = "../../../Connect-SDK-iOS-1.4/ConnectSDK.xcodeproj"; sourceTree = "<group>"; };
 		A3A0168C1B3111590089774E /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleCast.framework; path = "../../../Connect-SDK-iOS-1.4/GoogleCast.framework"; sourceTree = "<group>"; };
 		A3C30B071CAEEF4300DB4916 /* DeviceTextChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceTextChannel.h; path = "fw-cordova-chromecast/DeviceTextChannel.h"; sourceTree = "<group>"; };
 		A3C30B081CAEEF4300DB4916 /* DeviceTextChannel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DeviceTextChannel.m; path = "fw-cordova-chromecast/DeviceTextChannel.m"; sourceTree = "<group>"; };
@@ -379,7 +343,6 @@
 				04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */,
 				A3A0168D1B3111590089774E /* GoogleCast.framework in Frameworks */,
 				B40F3BFFEB2C408EA34A2AA8 /* libicucore.dylib in Frameworks */,
-				A3A016951B311C000089774E /* libConnectSDK.a in Frameworks */,
 				B5BACF4ED8274178BEE337D4 /* SystemConfiguration.framework in Frameworks */,
 				6EB006F92FD94E1BA33765E9 /* Social.framework in Frameworks */,
 				3FA5C557A8EA4A0288AD3AC4 /* MessageUI.framework in Frameworks */,
@@ -427,7 +390,6 @@
 			isa = PBXGroup;
 			children = (
 				A34CA9201BC96F0000177D9F /* Launch Screen.storyboard */,
-				A3A016801B310C840089774E /* ConnectSDK.xcodeproj */,
 				EB87FDF41871DAF40020F90C /* config.xml */,
 				EB87FDF31871DA8E0020F90C /* www */,
 				EB87FDF21871DA7A0020F90C /* merges */,
@@ -664,17 +626,6 @@
 			path = splash;
 			sourceTree = "<group>";
 		};
-		A3A016811B310C840089774E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A3A016871B310C850089774E /* libConnectSDK.a */,
-				A3A016891B310C850089774E /* ConnectSDKTests.xctest */,
-				A3F1357B1C0CF4750010885D /* ConnectSDKIntegrationTests.xctest */,
-				A3F1357D1C0CF4750010885D /* ConnectSDKAcceptanceTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		EB87FDF11871DA420020F90C /* Staging */ = {
 			isa = PBXGroup;
 			children = (
@@ -699,7 +650,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A3A0168B1B310CD30089774E /* PBXTargetDependency */,
 				301BF551109A68C00062928A /* PBXTargetDependency */,
 			);
 			name = Emby;
@@ -746,10 +696,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = A3A016811B310C840089774E /* Products */;
-					ProjectRef = A3A016801B310C840089774E /* ConnectSDK.xcodeproj */;
-				},
-				{
 					ProductGroup = 301BF52E109A57CC0062928A /* Products */;
 					ProjectRef = 301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */;
 				},
@@ -767,34 +713,6 @@
 			fileType = archive.ar;
 			path = libCordova.a;
 			remoteRef = 301BF534109A57CC0062928A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A3A016871B310C850089774E /* libConnectSDK.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libConnectSDK.a;
-			remoteRef = A3A016861B310C850089774E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A3A016891B310C850089774E /* ConnectSDKTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = ConnectSDKTests.xctest;
-			remoteRef = A3A016881B310C850089774E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A3F1357B1C0CF4750010885D /* ConnectSDKIntegrationTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = ConnectSDKIntegrationTests.xctest;
-			remoteRef = A3F1357A1C0CF4750010885D /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A3F1357D1C0CF4750010885D /* ConnectSDKAcceptanceTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = ConnectSDKAcceptanceTests.xctest;
-			remoteRef = A3F1357C1C0CF4750010885D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -924,11 +842,6 @@
 			isa = PBXTargetDependency;
 			name = CordovaLib;
 			targetProxy = 301BF550109A68C00062928A /* PBXContainerItemProxy */;
-		};
-		A3A0168B1B310CD30089774E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ConnectSDK;
-			targetProxy = A3A0168A1B310CD30089774E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
