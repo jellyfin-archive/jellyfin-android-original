@@ -5,10 +5,10 @@
     "MessageUI.framework": 2,
     "libz.dylib": 1,
     "CFNetwork.framework": 2,
-    "SystemConfiguration.framework": 2,
-    "AudioToolbox.framework": 1,
-    "MediaPlayer.framework": 1,
-    "CoreText.framework": 1,
+    "SystemConfiguration.framework": 3,
+    "AudioToolbox.framework": 2,
+    "MediaPlayer.framework": 2,
+    "CoreText.framework": 2,
     "QuartzCore.framework": 1,
     "OpenGLES.framework": 1,
     "libstdc++.6.0.9.dylib": 1,
@@ -17,5 +17,11 @@
     "ImageIO.framework": 1,
     "CoreLocation.framework": 1,
     "WebKit.framework": 1,
-    "StoreKit.framework": 2
+    "StoreKit.framework": 2,
+    "Accelerate.framework": 1,
+    "AVFoundation.framework": 1,
+    "CoreBluetooth.framework": 1,
+    "libc++.tbd": 1,
+    "MediaAccessibility.framework": 1,
+    "MediaToolbox.framework": 1
 }

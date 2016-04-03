@@ -106,22 +106,6 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
     */
     @Override
     public void onReceivedSslError(XWalkView view, ValueCallback<Boolean> callback, SslError error) {
-        final String packageName = parentEngine.cordova.getActivity().getPackageName();
-        final PackageManager pm = parentEngine.cordova.getActivity().getPackageManager();
-
-        ApplicationInfo appInfo;
-        try {
-            appInfo = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            if ((appInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-                // debug = true
-                callback.onReceiveValue(true);
-            } else {
-                // debug = false
-                callback.onReceiveValue(false);
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            // When it doubt, lock it out!
-            callback.onReceiveValue(false);
-        }
+        callback.onReceiveValue(true);
     }
 }
