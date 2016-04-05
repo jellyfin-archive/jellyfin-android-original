@@ -1832,6 +1832,8 @@ var AppInfo = {};
             define("actionsheet", [embyWebComponentsBowerPath + "/actionsheet/actionsheet"], returnFirstDependency);
         }
 
+        define("libjass", [bowerPath + "/libjass/libjass", "css!" + bowerPath + "/libjass/libjass"], returnFirstDependency);
+
         define("backdrop", [embyWebComponentsBowerPath + "/backdrop/backdrop"], returnFirstDependency);
         define("fetchHelper", [embyWebComponentsBowerPath + "/fetchhelper"], returnFirstDependency);
 
@@ -2698,8 +2700,9 @@ var AppInfo = {};
 
         defineRoute({
             path: '/movies.html',
-            dependencies: [],
-            autoFocus: false
+            dependencies: ['paper-tabs', 'paper-checkbox', 'paper-fab', 'scripts/alphapicker'],
+            autoFocus: false,
+            controller: 'scripts/moviesrecommended'
         });
 
         defineRoute({
@@ -3093,6 +3096,8 @@ var AppInfo = {};
         deps.push('css!css/card.css');
 
         require(deps, function (imageLoader, pageObjects) {
+
+            console.log('Loaded dependencies in onAppReady');
 
             imageLoader.enableFade = browserInfo.animate && !browserInfo.mobile;
             window.ImageLoader = imageLoader;
