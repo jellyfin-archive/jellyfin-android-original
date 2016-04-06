@@ -143,7 +143,7 @@
 
                     var legacyDeviceId = MainActivity.getLegacyDeviceId();
                     if (legacyDeviceId) {
-                        return testDeviceId(legacyDeviceId);
+                        return testDeviceId(legacyDeviceId, ConnectionManager.deviceId());
                     }
 
                     return false;
@@ -152,9 +152,9 @@
         });
     }
 
-    function testDeviceId(deviceId) {
+    function testDeviceId(deviceId, alias) {
 
-        var cacheKey = 'oldapp3-' + deviceId;
+        var cacheKey = 'oldapp4-' + deviceId;
         var cacheValue = appStorage.getItem(cacheKey);
         if (cacheValue) {
 
@@ -167,7 +167,12 @@
 
             console.log('testing play access for device id: ' + deviceId);
 
-            return fetch('http://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId, {
+            var fetchUrl = 'http://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId;
+            if (alias) {
+                fetchUrl += '&alias=' + alias;
+            }
+
+            return fetch(fetchUrl, {
                 method: 'GET'
 
             }).then(function (response) {
@@ -212,7 +217,9 @@
         var serverInfo = ApiClient.serverInfo() || {};
         var serverId = serverInfo.Id || 'Unknown';
 
-        var body = 'Please assist in restoring my previous purchase. ' + serverId + '|' + ConnectionManager.deviceId();
+        var body = 'Order number: ';
+        body += '\n\nPlease enter order number above or attach screenshot of order information.';
+        body += '\n\n' + serverId + '|' + ConnectionManager.deviceId();
 
         MainActivity.sendEmail('apps@emby.media', 'Android Activation', body);
     }

@@ -1,7 +1,6 @@
 ﻿define(['jQuery', 'appSettings'], function ($, appSettings) {
 
     function getRegistrationInfo(feature) {
-
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
     }
 
@@ -50,7 +49,6 @@
                     return p.owned;
                 }).length > 0) {
                     return Promise.resolve();
-                    return;
                 }
 
                 // Get supporter status
@@ -298,7 +296,7 @@
         $('.btnRestorePurchase', elem).on('click', function () {
 
             isCancelled = false;
-            IapManager.restorePurchase();
+            restorePurchase();
         });
 
         $(elem).on('iron-overlay-closed', function () {
@@ -326,6 +324,66 @@
             } else {
                 $(this).remove();
             }
+        });
+    }
+
+    function restorePurchase() {
+
+        require(['dialogHelper'], function (dialogHelper) {
+
+            var dlg = dialogHelper.createDialog({
+                size: 'fullscreen-border'
+            });
+
+            dlg.classList.add('ui-body-b');
+            dlg.classList.add('background-theme-b');
+
+            var html = '';
+            html += '<h2 class="dialogHeader">';
+            html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog" tabindex=-1""></paper-fab>';
+            html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + Globalize.translate('ButtonRestorePreviousPurchase') + '</div>';
+            html += '</h2>';
+
+            html += '<div class="editorContent">';
+
+            html += '<p style="margin:2em 0;">';
+            html += Globalize.translate('HowDidYouPay');
+            html += '</p>';
+
+            html += '<p>';
+            html += '<paper-button raised class="secondary block btnRestoreSub subdued"><span>' + Globalize.translate('IHaveEmbyPremiere') + '</span></paper-button>';
+            html += '</p>';
+            html += '<p>';
+            html += '<paper-button raised class="secondary block btnRestoreUnlock subdued"><span>' + Globalize.translate('IPurchasedThisApp') + '</span></paper-button>';
+            html += '</p>';
+
+            html += '</div>';
+
+            dlg.innerHTML = html;
+            document.body.appendChild(dlg);
+
+            dialogHelper.open(dlg);
+
+            dlg.querySelector('.btnCloseDialog').addEventListener('click', function () {
+
+                dialogHelper.close(dlg);
+            });
+
+            dlg.querySelector('.btnRestoreSub').addEventListener('click', function () {
+
+                dialogHelper.close(dlg);
+                Dashboard.alert({
+                    message: Globalize.translate('MessageToValidateSupporter'),
+                    title: Globalize.translate('TabEmbyPremiere')
+                });
+
+            });
+
+            dlg.querySelector('.btnRestoreUnlock').addEventListener('click', function () {
+
+                dialogHelper.close(dlg);
+                IapManager.restorePurchase();
+            });
         });
     }
 
