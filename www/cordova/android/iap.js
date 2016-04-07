@@ -143,7 +143,7 @@
 
                     var legacyDeviceId = MainActivity.getLegacyDeviceId();
                     if (legacyDeviceId) {
-                        return testDeviceId(legacyDeviceId, ConnectionManager.deviceId());
+                        return testDeviceId(legacyDeviceId, device.uuid);
                     }
 
                     return false;
@@ -154,7 +154,7 @@
 
     function testDeviceId(deviceId, alias) {
 
-        var cacheKey = 'oldapp4-' + deviceId;
+        var cacheKey = 'oldapp5-' + deviceId;
         var cacheValue = appStorage.getItem(cacheKey);
         if (cacheValue) {
 
