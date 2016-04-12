@@ -431,8 +431,7 @@ body:not(.dashboardDocument) .btnNotifications {
 }
 
 .adminDrawerPanel .sidebarLinkIcon {
-    color: #666 !important;
-    height: 12px;
+    color: #666 ;
     margin-right: 1em;
 }
 
