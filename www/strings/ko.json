@@ -1,7 +1,4 @@
 {
-    "LabelAllowHWTranscoding": "Allow hardware transcoding",
-    "AllowHWTranscodingHelp": "If enabled, allow the tuner to transcode streams on the fly. This may help reduce transcoding required by Emby Server.",
-    "OptionRequirePerfectSubtitleMatch": "Only download subtitles that are a perfect match for my video files",
     "LabelExit": "\uc885\ub8cc",
     "LabelVisitCommunity": "\ucee4\ubba4\ub2c8\ud2f0 \ubc29\ubb38",
     "LabelGithub": "Github",
@@ -1586,6 +1583,7 @@
     "LabelMovie": "\uc601\ud654",
     "LabelMusicVideo": "\ubba4\uc9c1 \ube44\ub514\uc624",
     "LabelEpisode": "\uc5d0\ud53c\uc18c\ub4dc",
+    "Series": "Series",
     "LabelStopping": "Stopping",
     "LabelCancelled": "(\ucde8\uc18c\ub428)",
     "ButtonDownload": "\ub2e4\uc6b4\ub85c\ub4dc",
@@ -2330,5 +2328,11 @@
     "IHaveEmbyPremiere": "I have Emby Premiere",
     "IPurchasedThisApp": "I purchased this app",
     "DrmChannelsNotImported": "Channels with DRM will not be imported.",
-    "ConfigureDateAdded": "Configure how date added is determined in the Emby Server dashboard under Library settings"
+    "ConfigureDateAdded": "Configure how date added is determined in the Emby Server dashboard under Library settings",
+    "LabelAllowHWTranscoding": "Allow hardware transcoding",
+    "AllowHWTranscodingHelp": "If enabled, allow the tuner to transcode streams on the fly. This may help reduce transcoding required by Emby Server.",
+    "OptionRequirePerfectSubtitleMatch": "Only download subtitles that are a perfect match for my video files",
+    "ErrorAddingGuestAccount1": "There was an error adding the Emby Connect account. Has your guest created an Emby account? They can sign up at {0}.",
+    "ErrorAddingGuestAccount2": "Please ensure your guest has completed activation by following the instructions in the email sent after creating the account. If they did not receive this email then please send an email to {0}, and include your email address as well as theirs.",
+    "GuestUserNotFound": "User not found. Please ensure the name is correct and try again, or try entering their email address."
 }
