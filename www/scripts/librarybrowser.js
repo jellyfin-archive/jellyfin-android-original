@@ -1,4 +1,4 @@
-﻿define(['playlistManager', 'appSettings', 'appStorage', 'jQuery', 'scrollStyles'], function (playlistManager, appSettings, appStorage, $) {
+﻿define(['playlistManager', 'appSettings', 'appStorage', 'apphost', 'jQuery', 'scrollStyles'], function (playlistManager, appSettings, appStorage, appHost, $) {
 
     var libraryBrowser = (function (window, document, screen) {
 
@@ -769,7 +769,7 @@
                 }
 
                 if (item.CanDownload) {
-                    if (AppInfo.supportsDownloading) {
+                    if (appHost.supports('filedownload')) {
                         commands.push('download');
                     }
                 }
@@ -987,7 +987,8 @@
                                                 api_key: ApiClient.accessToken()
                                             });
 
-                                            fileDownloader([{
+                                            fileDownloader.download([
+                                            {
                                                 url: downloadHref,
                                                 itemId: itemId
                                             }]);
@@ -1101,6 +1102,10 @@
                         return 'photos.html?topParentId=' + item.Id;
                     }
                 }
+                else if (item.IsFolder) {
+                    return id ? "itemlist.html?parentId=" + id : "#";
+                }
+
                 if (item.Type == 'CollectionFolder') {
                     return 'itemlist.html?topParentId=' + item.Id + '&parentId=' + item.Id;
                 }

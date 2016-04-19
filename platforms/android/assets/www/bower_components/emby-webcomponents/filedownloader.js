@@ -1,0 +1,1 @@
+define(["multi-download"],function(n){return{download:function(o){n(o.map(function(n){return n.url}))}}});

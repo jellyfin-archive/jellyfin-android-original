@@ -2139,7 +2139,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             mService.setTranscodingOffsetPositionTicks(startPositionTicks);
 
             // If transcoding with a known runtime, switch to .ts to work around the Vlc seek issue with HLS
-            return location.replace("master.m3u8", "stream.mkv") + "&StartTimeTicks=" + String.valueOf(startPositionTicks);
+            return location;
+            //return location.replace("master.m3u8", "stream.mkv") + "&StartTimeTicks=" + String.valueOf(startPositionTicks);
         }
 
         mService.setEnableServerSeek(false);

@@ -774,13 +774,38 @@ paper-input + .fieldDescription {
     padding-top: 70px;
 }
 
-.mainDrawerPanel:not([narrow]) .content-primary {
-    padding: 110px 1.5em 3em 3em;
+.withTabs .content-primary {
+    padding-top: 115px;
 }
 
-    .mainDrawerPanel:not([narrow]) .content-primary ul:first-child {
-        margin-top: 0;
+.mainDrawerPanel:not([narrow]) .content-primary {
+    padding-top: 110px;
+    padding-bottom: 3em;
+}
+
+@media all and (min-width: 800px) {
+
+    .mainDrawerPanel:not([narrow]) .content-primary {
+        padding-right: 1.5em;
+        padding-left: 1.5em;
     }
+}
+
+@media all and (min-width: 1200px) {
+
+    .mainDrawerPanel:not([narrow]) .content-primary {
+        padding-right: 1.5em;
+        padding-left: 3em;
+    }
+}
+
+.mainDrawerPanel:not([narrow]) .withTabs .content-primary {
+    padding-top: 135px !important;
+}
+
+.mainDrawerPanel:not([narrow]) .content-primary ul:first-child {
+    margin-top: 0;
+}
 
 .background-theme-a, .dialog.background-theme-a {
     background-color: #f5f5f5;

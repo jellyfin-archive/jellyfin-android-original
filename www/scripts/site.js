@@ -171,41 +171,6 @@ var Dashboard = {
         }
     },
 
-    importCss: function (url) {
-
-        var originalUrl = url;
-        url += "?v=" + AppInfo.appVersion;
-
-        if (!Dashboard.importedCss) {
-            Dashboard.importedCss = [];
-        }
-
-        if (Dashboard.importedCss.indexOf(url) != -1) {
-            return;
-        }
-
-        Dashboard.importedCss.push(url);
-
-        if (document.createStyleSheet) {
-            document.createStyleSheet(url);
-        } else {
-            var link = document.createElement('link');
-            link.setAttribute('rel', 'stylesheet');
-            link.setAttribute('data-url', originalUrl);
-            link.setAttribute('type', 'text/css');
-            link.setAttribute('href', url);
-            document.head.appendChild(link);
-        }
-    },
-
-    removeStylesheet: function (url) {
-
-        var elem = document.querySelector('link[data-url=\'' + url + '\']');
-        if (elem) {
-            elem.parentNode.removeChild(elem);
-        }
-    },
-
     updateSystemInfo: function (info) {
 
         Dashboard.lastSystemInfo = info;
@@ -684,6 +649,10 @@ var Dashboard = {
 
             item = items[i];
 
+            if (item.divider) {
+                menuHtml += "<div class='sidebarDivider'></div>";
+            }
+
             if (item.items) {
 
                 var style = item.color ? ' iconstyle="color:' + item.color + '"' : '';
@@ -714,246 +683,109 @@ var Dashboard = {
     getToolsMenuLinks: function () {
 
         return [{
-            name: Globalize.translate('TabServer'),
-            expanded: true,
-            items: [
-                {
-                    name: Globalize.translate('TabDashboard'),
-                    href: "dashboard.html",
-                    pageIds: ['dashboardPage'],
-                    icon: 'dashboard'
-                }, {
-                    name: Globalize.translate('TabSettings'),
-                    href: "dashboardgeneral.html",
-                    pageIds: ['dashboardGeneralPage'],
-                    icon: 'settings'
-                }, {
-                    name: Globalize.translate('TabDevices'),
-                    href: "devices.html",
-                    pageIds: ['devicesPage'],
-                    icon: 'tablet'
-                }, {
-                    name: Globalize.translate('TabUsers'),
-                    href: "userprofiles.html",
-                    pageIds: ['userProfilesPage'],
-                    icon: 'people'
-                }
-            ]
+            name: Globalize.translate('TabServer')
         }, {
+            name: Globalize.translate('TabDashboard'),
+            href: "dashboard.html",
+            pageIds: ['dashboardPage'],
+            icon: 'dashboard'
+        }, {
+            name: Globalize.translate('TabSettings'),
+            href: "dashboardgeneral.html",
+            pageIds: ['dashboardGeneralPage'],
+            icon: 'settings'
+        }, {
+            name: Globalize.translate('TabDevices'),
+            href: "devices.html",
+            pageIds: ['devicesPage', 'devicePage'],
+            icon: 'tablet'
+        }, {
+            name: Globalize.translate('TabUsers'),
+            href: "userprofiles.html",
+            pageIds: ['userProfilesPage', 'newUserPage', 'editUserPage', 'userLibraryAccessPage', 'userParentalControlPage', 'userPasswordPage'],
+            icon: 'people'
+        }, {
+            divider: true,
             name: Globalize.translate('TabLibrary'),
-            expanded: true,
-            items: [
-                {
-                    name: Globalize.translate('TabFolders'),
-                    href: "library.html",
-                    pageIds: ['mediaLibraryPage'],
-                    icon: 'folder'
-                },
-                {
-                    name: Globalize.translate('TabMetadata'),
-                    href: "metadata.html",
-                    pageIds: ['metadataConfigurationPage'],
-                    icon: 'insert-drive-file'
-                },
-                {
-                    name: Globalize.translate('TabServices'),
-                    href: "metadataimages.html",
-                    pageIds: ['metadataImagesConfigurationPage'],
-                    icon: 'insert-drive-file'
-                },
-                {
-                    name: Globalize.translate('TabNfoSettings'),
-                    href: "metadatanfo.html",
-                    pageIds: ['metadataNfoPage'],
-                    icon: 'insert-drive-file'
-                },
-                {
-                    name: Globalize.translate('TabPathSubstitution'),
-                    href: "librarypathmapping.html",
-                    pageIds: ['libraryPathMappingPage'],
-                    icon: 'mode-edit'
-                },
-                {
-                    name: Globalize.translate('TabSubtitles'),
-                    href: "metadatasubtitles.html",
-                    pageIds: ['metadataSubtitlesPage'],
-                    icon: 'closed-caption'
-                },
-                {
-                    name: Globalize.translate('TabAdvanced'),
-                    href: "librarysettings.html",
-                    pageIds: ['librarySettingsPage'],
-                    icon: 'settings'
-                }
-            ]
+            href: "library.html",
+            pageIds: ['mediaLibraryPage', 'libraryPathMappingPage', 'librarySettingsPage'],
+            icon: 'folder',
+            color: '#009688'
         }, {
-            name: Globalize.translate('DLNA'),
-            items: [
-                {
-                    name: Globalize.translate('TabSettings'),
-                    href: "dlnasettings.html",
-                    pageIds: ['dlnaSettingsPage'],
-                    icon: 'settings'
-                },
-                {
-                    name: Globalize.translate('TabProfiles'),
-                    href: "dlnaprofiles.html",
-                    pageIds: ['dlnaProfilesPage', 'dlnaProfilePage'],
-                    icon: 'live-tv'
-                }
-            ]
+            name: Globalize.translate('TabMetadata'),
+            href: "metadata.html",
+            pageIds: ['metadataConfigurationPage', 'metadataImagesConfigurationPage', 'metadataNfoPage'],
+            icon: 'insert-drive-file',
+            color: '#FF9800'
         }, {
-            name: Globalize.translate('TabLiveTV'),
-            items: [
-                {
-                    name: Globalize.translate('TabSettings'),
-                    href: "livetvstatus.html",
-                    pageIds: ['liveTvStatusPage'],
-                    icon: 'settings'
-                },
-                {
-                    name: Globalize.translate('TabAdvanced'),
-                    href: "livetvsettings.html",
-                    pageIds: ['liveTvSettingsPage'],
-                    icon: 'settings'
-                },
-                {
-                    name: Globalize.translate('TabServices'),
-                    href: "appservices.html?context=livetv",
-                    //selected: (isServicesPage && context == 'livetv'),
-                    icon: 'add-shopping-cart'
-                }
-            ]
-        }, {
-            name: Globalize.translate('TabNotifications'),
-            icon: 'notifications',
-            color: 'brown',
-            href: "notificationsettings.html"
+            name: Globalize.translate('TabSubtitles'),
+            href: "metadatasubtitles.html",
+            pageIds: ['metadataSubtitlesPage'],
+            icon: 'closed-caption'
         }, {
             name: Globalize.translate('TabPlayback'),
             icon: 'play-circle-filled',
             color: '#E5342E',
-            items: [
-                {
-                    name: Globalize.translate('TabCinemaMode'),
-                    href: "cinemamodeconfiguration.html",
-                    pageIds: ['cinemaModeConfigurationPage'],
-                    icon: 'local-movies'
-                },
-                {
-                    name: Globalize.translate('TabResumeSettings'),
-                    href: "playbackconfiguration.html",
-                    pageIds: ['playbackConfigurationPage'],
-                    icon: 'play-circle-filled'
-                },
-                {
-                    name: Globalize.translate('TabStreaming'),
-                    href: "streamingsettings.html",
-                    pageIds: ['streamingSettingsPage'],
-                    icon: 'wifi'
-                },
-                {
-                    name: Globalize.translate('TabTranscoding'),
-                    href: "encodingsettings.html",
-                    pageIds: ['encodingSettingsPage'],
-                    icon: 'play-circle-filled'
-                }
-            ]
+            href: "cinemamodeconfiguration.html",
+            pageIds: ['cinemaModeConfigurationPage', 'playbackConfigurationPage', 'streamingSettingsPage', 'encodingSettingsPage']
+        }, {
+            name: Globalize.translate('TabSync'),
+            icon: 'sync',
+            href: "syncactivity.html",
+            pageIds: ['syncActivityPage', 'syncJobPage', 'devicesUploadPage', 'syncSettingsPage']
+        }, {
+            divider: true,
+            name: Globalize.translate('TabExtras')
+        }, {
+            name: Globalize.translate('TabAutoOrganize'),
+            color: '#01C0DD',
+            href: "autoorganizelog.html",
+            pageIds: ['libraryFileOrganizerPage', 'libraryFileOrganizerSmartMatchPage', 'libraryFileOrganizerLogPage'],
+            icon: 'folder'
+        }, {
+            name: Globalize.translate('DLNA'),
+            href: "dlnasettings.html",
+            pageIds: ['dlnaSettingsPage', 'dlnaProfilesPage', 'dlnaProfilePage'],
+            icon: 'settings'
+        }, {
+            name: Globalize.translate('TabLiveTV'),
+            href: "livetvstatus.html",
+            pageIds: ['liveTvStatusPage', 'liveTvSettingsPage', 'liveTvTunerProviderHdHomerunPage', 'liveTvTunerProviderM3UPage', 'liveTvTunerProviderSatPage'],
+            icon: 'dvr'
+        }, {
+            name: Globalize.translate('TabNotifications'),
+            icon: 'notifications',
+            color: 'brown',
+            href: "notificationsettings.html",
+            pageIds: ['notificationSettingsPage', 'notificationSettingPage']
         }, {
             name: Globalize.translate('TabPlugins'),
             icon: 'add-shopping-cart',
             color: '#9D22B1',
-            items: [
-                {
-                    name: Globalize.translate('TabMyPlugins'),
-                    href: "plugins.html",
-                    pageIds: ['pluginsPage'],
-                    icon: 'file-download'
-                }, {
-                    name: Globalize.translate('TabCatalog'),
-                    href: "plugincatalog.html",
-                    pageIds: ['pluginCatalogPage'],
-                    icon: 'add-shopping-cart'
-                }
-            ]
+            href: "plugins.html",
+            pageIds: ['pluginsPage', 'pluginCatalogPage']
         }, {
-            name: Globalize.translate('TabSync'),
-            icon: 'sync',
-            items: [
-                {
-                    name: Globalize.translate('TabSyncJobs'),
-                    href: "syncactivity.html",
-                    pageIds: ['syncActivityPage', 'syncJobPage'],
-                    icon: 'menu'
-                }, {
-                    name: Globalize.translate('TabCameraUpload'),
-                    href: "devicesupload.html",
-                    pageIds: ['devicesUploadPage'],
-                    icon: 'photo'
-                }, {
-                    name: Globalize.translate('TabServices'),
-                    href: "appservices.html?context=sync",
-                    //selected: (isServicesPage && context == 'sync'),
-                    icon: 'add-shopping-cart'
-                }, {
-                    name: Globalize.translate('TabSettings'),
-                    href: "syncsettings.html",
-                    pageIds: ['syncSettingsPage'],
-                    icon: 'settings'
-                }
-            ]
+            divider: true,
+            name: Globalize.translate('TabExpert')
         }, {
             name: Globalize.translate('TabAdvanced'),
             icon: 'settings',
+            href: "dashboardhosting.html",
             color: '#F16834',
-            items: [
-                {
-                    name: Globalize.translate('TabAutoOrganize'),
-                    href: "autoorganizelog.html",
-                    pageIds: ['libraryFileOrganizerPage', 'libraryFileOrganizerSmartMatchPage', 'libraryFileOrganizerLogPage'],
-                    icon: 'folder'
-                },
-                {
-                    name: Globalize.translate('TabHosting'),
-                    href: "dashboardhosting.html",
-                    pageIds: ['dashboardHostingPage'],
-                    icon: 'wifi'
-                }, {
-                    name: Globalize.translate('TabScheduledTasks'),
-                    href: "scheduledtasks.html",
-                    pageIds: ['scheduledTasksPage', 'scheduledTaskPage'],
-                    icon: 'schedule'
-                },
-                {
-                    name: Globalize.translate('TabSecurity'),
-                    href: "serversecurity.html",
-                    pageIds: ['serverSecurityPage'],
-                    icon: 'lock'
-                }
-            ]
+            pageIds: ['dashboardHostingPage', 'serverSecurityPage']
+        }, {
+            name: Globalize.translate('TabScheduledTasks'),
+            color: '#38c',
+            href: "scheduledtasks.html",
+            pageIds: ['scheduledTasksPage', 'scheduledTaskPage'],
+            icon: 'schedule'
         }, {
             name: Globalize.translate('TabHelp'),
-            icon: 'info',
-            items: [
-                {
-                    name: Globalize.translate('TabAbout'),
-                    href: "about.html",
-                    pageIds: ['aboutPage'],
-                    icon: 'info'
-                },
-                {
-                    name: Globalize.translate('TabLogs'),
-                    href: "log.html",
-                    pageIds: ['logPage'],
-                    icon: 'menu'
-                },
-                {
-                    name: Globalize.translate('TabEmbyPremiere'),
-                    href: "supporterkey.html",
-                    pageIds: ['supporterKeyPage'],
-                    icon: 'add-circle'
-                }
-            ]
+            href: "about.html",
+            icon: 'help',
+            color: '#679C34',
+            divider: true,
+            pageIds: ['supporterKeyPage', 'logPage', 'aboutPage']
         }];
 
     },
@@ -1516,8 +1348,6 @@ var AppInfo = {};
         // This doesn't perform well on iOS
         AppInfo.enableHeadRoom = !isIOS;
 
-        AppInfo.supportsDownloading = !(AppInfo.isNativeApp && isIOS);
-
         // This currently isn't working on android, unfortunately
         AppInfo.supportsFileInput = !(AppInfo.isNativeApp && isAndroid);
 
@@ -1571,6 +1401,9 @@ var AppInfo = {};
     }
 
     function defineConnectionManager(connectionManager) {
+
+        window.ConnectionManager = connectionManager;
+
         define('connectionManager', [], function () {
             return connectionManager;
         });
@@ -1578,6 +1411,8 @@ var AppInfo = {};
 
     var localApiClient;
     function bindConnectionManagerEvents(connectionManager, events) {
+
+        Events.on(ConnectionManager, 'apiclientcreated', onApiClientCreated);
 
         connectionManager.currentApiClient = function () {
 
@@ -1605,42 +1440,51 @@ var AppInfo = {};
     //localStorage.clear();
     function createConnectionManager(credentialProviderFactory, capabilities) {
 
-        var credentialKey = Dashboard.isConnectMode() ? null : 'servercredentials4';
-        var credentialProvider = new credentialProviderFactory(credentialKey);
-
         return getSyncProfile().then(function (deviceProfile) {
 
-            capabilities.DeviceProfile = deviceProfile;
+            return new Promise(function (resolve, reject) {
 
-            window.ConnectionManager = new MediaBrowser.ConnectionManager(credentialProvider, AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, capabilities, window.devicePixelRatio);
+                require(['connectionManagerFactory', 'apphost', 'credentialprovider', 'events'], function (connectionManagerExports, apphost, credentialProvider, events) {
 
-            defineConnectionManager(window.ConnectionManager);
-            bindConnectionManagerEvents(window.ConnectionManager, Events);
+                    window.MediaBrowser = Object.assign(window.MediaBrowser || {}, connectionManagerExports);
 
-            console.log('binding to apiclientcreated');
-            Events.on(ConnectionManager, 'apiclientcreated', onApiClientCreated);
+                    var credentialProviderInstance = new credentialProvider();
 
-            if (Dashboard.isConnectMode()) {
+                    apphost.appInfo().then(function (appInfo) {
 
-                return Promise.resolve();
+                        var capabilities = Dashboard.capabilities();
+                        capabilities.DeviceProfile = deviceProfile;
 
-            } else {
+                        connectionManager = new MediaBrowser.ConnectionManager(credentialProviderInstance, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities, window.devicePixelRatio);
 
-                console.log('loading ApiClient singleton');
+                        defineConnectionManager(connectionManager);
+                        bindConnectionManagerEvents(connectionManager, events);
 
-                return getRequirePromise(['apiclient']).then(function (apiClientFactory) {
+                        if (Dashboard.isConnectMode()) {
 
-                    console.log('creating ApiClient singleton');
+                            resolve();
 
-                    var apiClient = new apiClientFactory(Dashboard.serverAddress(), AppInfo.appName, AppInfo.appVersion, AppInfo.deviceName, AppInfo.deviceId, window.devicePixelRatio);
-                    apiClient.enableAutomaticNetworking = false;
-                    ConnectionManager.addApiClient(apiClient);
-                    Dashboard.importCss(apiClient.getUrl('Branding/Css'));
-                    window.ApiClient = apiClient;
-                    localApiClient = apiClient;
-                    console.log('loaded ApiClient singleton');
+                        } else {
+
+                            console.log('loading ApiClient singleton');
+
+                            return getRequirePromise(['apiclient']).then(function (apiClientFactory) {
+
+                                console.log('creating ApiClient singleton');
+
+                                var apiClient = new apiClientFactory(Dashboard.serverAddress(), appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, window.devicePixelRatio);
+                                apiClient.enableAutomaticNetworking = false;
+                                connectionManager.addApiClient(apiClient);
+                                require(['css!' + apiClient.getUrl('Branding/Css')]);
+                                window.ApiClient = apiClient;
+                                localApiClient = apiClient;
+                                console.log('loaded ApiClient singleton');
+                                resolve();
+                            });
+                        } 
+                    });
                 });
-            }
+            });
         });
     }
 
@@ -1779,7 +1623,7 @@ var AppInfo = {};
             events: apiClientBowerPath + '/events',
             credentialprovider: apiClientBowerPath + '/credentials',
             apiclient: apiClientBowerPath + '/apiclient',
-            connectionmanagerfactory: apiClientBowerPath + '/connectionmanager',
+            connectionManagerFactory: bowerPath + '/emby-apiclient/connectionmanager',
             visibleinviewport: embyWebComponentsBowerPath + "/visibleinviewport",
             browserdeviceprofile: embyWebComponentsBowerPath + "/browserdeviceprofile",
             browser: embyWebComponentsBowerPath + "/browser",
@@ -1829,8 +1673,10 @@ var AppInfo = {};
         // hack for an android test before browserInfo is loaded
         if (Dashboard.isRunningInCordova() && window.MainActivity) {
             paths.appStorage = "cordova/android/appstorage";
+            paths.apphost = "cordova/apphost";
         } else {
             paths.appStorage = apiClientBowerPath + "/appstorage";
+            paths.apphost = "components/apphost";
         }
 
         paths.playlistManager = "scripts/playlistmanager";
@@ -1934,6 +1780,7 @@ var AppInfo = {};
         define('objectassign', [embyWebComponentsBowerPath + '/objectassign']);
         define('webcomponentsjs', [bowerPath + '/webcomponentsjs/webcomponents-lite.min.js']);
         define('native-promise-only', [bowerPath + '/native-promise-only/lib/npo.src']);
+        define("fingerprintjs2", [bowerPath + '/fingerprintjs2/fingerprint2'], returnFirstDependency);
 
         if (Dashboard.isRunningInCordova()) {
             define('registrationservices', ['cordova/registrationservices']);
@@ -2107,14 +1954,16 @@ var AppInfo = {};
             define("loading", [embyWebComponentsBowerPath + "/loading/loading-lite"], returnFirstDependency);
         }
 
+        define("multi-download", [embyWebComponentsBowerPath + '/multidownload'], returnFirstDependency);
+
         if (Dashboard.isRunningInCordova() && browser.android) {
             define("fileDownloader", ['cordova/android/filedownloader'], returnFirstDependency);
         } else {
-            define("fileDownloader", ['components/filedownloader'], returnFirstDependency);
+            define("fileDownloader", [embyWebComponentsBowerPath + '/filedownloader'], returnFirstDependency);
         }
     }
 
-    function init(hostingAppInfo) {
+    function init() {
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
             define("nativedirectorychooser", ["cordova/android/nativedirectorychooser"]);
@@ -2146,14 +1995,8 @@ var AppInfo = {};
             define("localsync", ["scripts/localsync"]);
         }
 
-        define("livetvcss", [], function () {
-            Dashboard.importCss('css/livetv.css');
-            return {};
-        });
-        define("detailtablecss", [], function () {
-            Dashboard.importCss('css/detailtable.css');
-            return {};
-        });
+        define("livetvcss", ['css!css/livetv.css']);
+        define("detailtablecss", ['css!css/detailtable.css']);
         define("tileitemcss", ['css!css/tileitem.css']);
 
         define("sharingmanager", ["scripts/sharingmanager"]);
@@ -2176,10 +2019,6 @@ var AppInfo = {};
         require(deps, function (events) {
 
             window.Events = events;
-
-            for (var i in hostingAppInfo) {
-                AppInfo[i] = hostingAppInfo[i];
-            }
 
             initAfterDependencies();
         });
@@ -2212,9 +2051,6 @@ var AppInfo = {};
         }
 
         var deps = [];
-        deps.push('connectionmanagerfactory');
-        deps.push('credentialprovider');
-
         deps.push('scripts/extensions');
 
         if (!window.fetch) {
@@ -2225,14 +2061,9 @@ var AppInfo = {};
             deps.push('objectassign');
         }
 
-        require(deps, function (connectionManagerExports, credentialProviderFactory) {
+        require(deps, function () {
 
-            window.MediaBrowser = window.MediaBrowser || {};
-            for (var i in connectionManagerExports) {
-                MediaBrowser[i] = connectionManagerExports[i];
-            }
-
-            createConnectionManager(credentialProviderFactory, Dashboard.capabilities()).then(function () {
+            createConnectionManager().then(function () {
 
                 console.log('initAfterDependencies promises resolved');
                 MediaController.init();
@@ -2759,6 +2590,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/notificationsettings.html',
+            controller: 'scripts/notificationsettings',
             dependencies: [],
             autoFocus: false,
             roles: 'admin'
@@ -3050,8 +2882,6 @@ var AppInfo = {};
             deps.push('css!devices/ios/ios.css');
         } else if (AppInfo.isNativeApp && browserInfo.edge) {
             deps.push('css!devices/windowsphone/wp.css');
-        } else if (!browserInfo.android) {
-            deps.push('css!devices/android/android.css');
         }
 
         loadTheme();
@@ -3080,6 +2910,8 @@ var AppInfo = {};
         deps.push('scripts/librarymenu');
 
         deps.push('css!css/card.css');
+
+        console.log('onAppReady - loading dependencies');
 
         require(deps, function (imageLoader, pageObjects, layoutManager) {
 
@@ -3155,117 +2987,6 @@ var AppInfo = {};
         });
     }
 
-    function getCordovaHostingAppInfo() {
-
-        return new Promise(function (resolve, reject) {
-
-            document.addEventListener("deviceready", function () {
-
-                cordova.getAppVersion.getVersionNumber(function (appVersion) {
-
-                    require(['appStorage'], function (appStorage) {
-
-                        var name = browserInfo.android ? "Emby for Android Mobile" : (browserInfo.safari ? "Emby for iOS" : "Emby Mobile");
-
-                        // Remove special characters
-                        var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
-
-                        var deviceId = null;
-
-                        if (window.MainActivity) {
-
-                            deviceId = appStorage.getItem('legacyDeviceId');
-
-                            if (!deviceId) {
-                                deviceId = MainActivity.getLegacyDeviceId();
-                                appStorage.setItem('legacyDeviceId', deviceId);
-                            }
-                        }
-
-                        resolve({
-                            deviceId: deviceId || device.uuid,
-                            deviceName: cleanDeviceName,
-                            appName: name,
-                            appVersion: appVersion
-                        });
-                    });
-
-                });
-
-            }, false);
-        });
-    }
-
-    function getWebHostingAppInfo() {
-
-        return new Promise(function (resolve, reject) {
-
-            require(['appStorage'], function (appStorage) {
-                var deviceName;
-
-                if (browserInfo.chrome) {
-                    deviceName = "Chrome";
-                } else if (browserInfo.edge) {
-                    deviceName = "Edge";
-                } else if (browserInfo.firefox) {
-                    deviceName = "Firefox";
-                } else if (browserInfo.msie) {
-                    deviceName = "Internet Explorer";
-                } else {
-                    deviceName = "Web Browser";
-                }
-
-                if (browserInfo.version) {
-                    deviceName += " " + browserInfo.version;
-                }
-
-                if (browserInfo.ipad) {
-                    deviceName += " Ipad";
-                } else if (browserInfo.iphone) {
-                    deviceName += " Iphone";
-                } else if (browserInfo.android) {
-                    deviceName += " Android";
-                }
-
-                function onDeviceAdAcquired(id) {
-
-                    resolve({
-                        deviceId: id,
-                        deviceName: deviceName,
-                        appName: "Emby Web Client",
-                        appVersion: window.dashboardVersion
-                    });
-                }
-
-                var deviceIdKey = '_deviceId1';
-                var deviceId = appStorage.getItem(deviceIdKey);
-
-                if (deviceId) {
-                    onDeviceAdAcquired(deviceId);
-                } else {
-                    require(['cryptojs-sha1'], function () {
-                        var keys = [];
-                        keys.push(navigator.userAgent);
-                        keys.push((navigator.cpuClass || ""));
-                        keys.push(new Date().getTime());
-                        var randomId = CryptoJS.SHA1(keys.join('|')).toString();
-                        appStorage.setItem(deviceIdKey, randomId);
-                        onDeviceAdAcquired(randomId);
-                    });
-                }
-            });
-        });
-    }
-
-    function getHostingAppInfo() {
-
-        if (Dashboard.isRunningInCordova()) {
-            return getCordovaHostingAppInfo();
-        }
-
-        return getWebHostingAppInfo();
-    }
-
     initRequire();
 
     function onWebComponentsReady() {
@@ -3287,7 +3008,7 @@ var AppInfo = {};
             setAppInfo();
             setDocumentClasses(browser);
 
-            getHostingAppInfo().then(init);
+            init();
         });
     }
 

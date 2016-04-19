@@ -262,10 +262,8 @@
 
                 if (user.HasConfiguredEasyPassword) {
                     $('#txtEasyPassword', page).val('').attr('placeholder', '******');
-                    $('#btnResetEasyPassword', page).removeClass('hide');
                 } else {
                     $('#txtEasyPassword', page).val('').attr('placeholder', '');
-                    $('#btnResetEasyPassword', page).addClass('hide');
                 }
 
                 page.querySelector('.chkEnableLocalEasyPassword').checked = user.Configuration.EnableLocalPassword;
@@ -410,36 +408,6 @@
                 });
             });
 
-        };
-
-        self.resetEasyPassword = function () {
-
-            var msg = Globalize.translate('PinCodeResetConfirmation');
-
-            var page = $($.mobile.activePage)[0];
-
-            require(['confirm'], function (confirm) {
-
-                confirm(msg, Globalize.translate('HeaderPinCodeReset')).then(function () {
-
-                    var userId = getParameterByName("userId");
-
-                    Dashboard.showLoadingMsg();
-
-                    ApiClient.resetEasyPassword(userId).then(function () {
-
-                        Dashboard.hideLoadingMsg();
-
-                        Dashboard.alert({
-                            message: Globalize.translate('PinCodeResetComplete'),
-                            title: Globalize.translate('HeaderPinCodeReset')
-                        });
-
-                        loadUser(page);
-
-                    });
-                });
-            });
         };
     }
 
