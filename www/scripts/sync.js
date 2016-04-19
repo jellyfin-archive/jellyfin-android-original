@@ -1,4 +1,4 @@
-﻿define(['jQuery'], function ($) {
+﻿define(['apphost', 'jQuery'], function (appHost, $) {
 
     var currentDialogOptions;
 
@@ -82,13 +82,15 @@
         return new Promise(function (resolve, reject) {
 
             require(['paper-checkbox', 'paper-input', 'emby-collapsible'], function () {
-                renderFormInternal(options);
-                resolve();
+
+                appHost.appInfo().then(function (appInfo) {
+                    renderFormInternal(options, appInfo, resolve);
+                });
             });
         });
     }
 
-    function renderFormInternal(options) {
+    function renderFormInternal(options, appInfo, resolve) {
 
         var elem = options.elem;
         var dialogOptions = options.dialogOptions;
@@ -114,7 +116,7 @@
 
             html += targets.map(function (t) {
 
-                var isSelected = t.Id == AppInfo.deviceId;
+                var isSelected = t.Id == appInfo.deviceId;
                 var selectedHtml = isSelected ? ' selected="selected"' : '';
                 return '<option' + selectedHtml + ' value="' + t.Id + '">' + t.Name + '</option>';
 
@@ -189,7 +191,7 @@
 
         $('#selectSyncTarget', elem).on('change', function () {
 
-            loadQualityOptions(elem, this.value, options.dialogOptionsFn);
+            loadQualityOptions(elem, this.value, options.dialogOptionsFn).then(resolve);
 
         }).trigger('change');
 
@@ -319,12 +321,14 @@
             return o.Id == profileId;
         })[0];
 
+        var qualityOptions = options.QualityOptions || [];
+
         if (option) {
             $('.profileDescription', form).html(option.Description || '');
-            setQualityFieldVisible(form, options.QualityOptions.length > 0 && option.EnableQualityOptions && options.Options.indexOf('Quality') != -1);
+            setQualityFieldVisible(form, qualityOptions.length > 0 && option.EnableQualityOptions && options.Options.indexOf('Quality') != -1);
         } else {
             $('.profileDescription', form).html('');
-            setQualityFieldVisible(form, options.QualityOptions.length > 0 && options.Options.indexOf('Quality') != -1);
+            setQualityFieldVisible(form, qualityOptions.length > 0 && options.Options.indexOf('Quality') != -1);
         }
     }
 
@@ -381,9 +385,9 @@
 
     function loadQualityOptions(form, targetId, dialogOptionsFn) {
 
-        dialogOptionsFn(targetId).then(function (options) {
+        return dialogOptionsFn(targetId).then(function (options) {
 
-            renderTargetDialogOptions(form, options);
+            return renderTargetDialogOptions(form, options);
         });
     }
 
