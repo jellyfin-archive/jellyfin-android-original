@@ -1525,9 +1525,11 @@
   "DeleteUser": "Delete User",
   "DeleteUserConfirmation": "Are you sure you wish to delete this user?",
   "PasswordResetHeader": "Reset Password",
-  "PasswordResetComplete": "The password has been reset and is now empty. A password will not be needed to login.",
+  "PasswordResetComplete": "The password has been reset.",
+  "PinCodeResetComplete": "The pin code has been reset.",
   "PasswordResetConfirmation": "Are you sure you wish to reset the password?",
   "PinCodeResetConfirmation": "Are you sure you wish to reset the pin code?",
+  "HeaderPinCodeReset": "Reset Pin Code",
   "PasswordSaved": "Password saved.",
   "PasswordMatchError": "Password and password confirmation must match.",
   "UninstallPluginHeader": "Uninstall Plugin",
@@ -2335,5 +2337,10 @@
   "GuestUserNotFound": "User not found. Please ensure the name is correct and try again, or try entering their email address.",
   "MarkPlayed": "Mark played",
   "MarkUnplayed": "Mark unplayed",
-  "Yesterday": "Yesterday"
+  "Yesterday": "Yesterday",
+  "DownloadImagesInAdvanceWarning": "Downloading all images in advance will result in longer library scan times.",
+  "MetadataSettingChangeHelp": "Changing metadata settings will affect new content that is added going forward. To refresh existing content, open the detail screen and click the refresh button, or perform bulk refreshes using the metadata manager.",
+  "LabelTitle": "Title:",
+  "LabelOriginalTitle": "Original title:",
+  "LabelSortTitle": "Sort title:"
 }

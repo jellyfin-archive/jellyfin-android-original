@@ -899,6 +899,8 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         long positionMs = completed ? 0 : (lastReportedPositionTicks / 10000);
 
+        positionMs -= (getTranscodingOffsetPositionTicks() / 10000);
+
         MainActivity.RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s);", !completed, error, positionMs));
     }
 
@@ -1489,7 +1491,12 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public long getTimeTicks() {
-        return (mMediaPlayer.getTime() * 10000) + getTranscodingOffsetPositionTicks();
+
+        long mediaPlayerTime = mMediaPlayer.getTime();
+
+        //logger.Info("mediaPlayerTime %s. adding transcoding offset ticks %s", mediaPlayerTime, getTranscodingOffsetPositionTicks());
+
+        return (mediaPlayerTime * 10000) + getTranscodingOffsetPositionTicks();
     }
 
     @MainThread
