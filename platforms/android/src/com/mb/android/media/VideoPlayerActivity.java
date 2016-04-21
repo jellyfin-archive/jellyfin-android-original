@@ -3147,6 +3147,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         });
     }
 
+    public long getTranscodingOffsetTicks(){
+        return mService.getTranscodingOffsetPositionTicks();
+    }
+
     private void updateSubtitles(long positionMs) {
 
         if (lastReportedPositionMs > 0){

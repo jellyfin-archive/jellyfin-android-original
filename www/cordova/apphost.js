@@ -52,52 +52,36 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
                     cordova.getAppVersion.getVersionNumber(function (appVersion) {
 
-                        require(['appStorage'], function (appStorage) {
+                        var name = browserInfo.android ? "Emby for Android Mobile" : (browserInfo.safari ? "Emby for iOS" : "Emby Mobile");
 
-                            var name = browserInfo.android ? "Emby for Android Mobile" : (browserInfo.safari ? "Emby for iOS" : "Emby Mobile");
+                        // Remove special characters
+                        var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
 
-                            // Remove special characters
-                            var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
+                        var deviceId = null;
 
-                            var deviceId = null;
+                        if (window.MainActivity) {
 
-                            if (window.MainActivity) {
+                            deviceId = appStorage.getItem('legacyDeviceId');
 
-                                deviceId = appStorage.getItem('legacyDeviceId');
-
-                                if (!deviceId) {
-                                    deviceId = MainActivity.getLegacyDeviceId();
-                                    appStorage.setItem('legacyDeviceId', deviceId);
-                                }
+                            if (!deviceId) {
+                                deviceId = MainActivity.getLegacyDeviceId();
+                                appStorage.setItem('legacyDeviceId', deviceId);
                             }
+                        }
 
-                            appInfo = {
-                                deviceId: deviceId || device.uuid,
-                                deviceName: cleanDeviceName,
-                                appName: name,
-                                appVersion: appVersion
-                            };
+                        appInfo = {
+                            deviceId: deviceId || device.uuid,
+                            deviceName: cleanDeviceName,
+                            appName: name,
+                            appVersion: appVersion
+                        };
 
-                            resolve(appInfo);
-                        });
+                        resolve(appInfo);
 
                     });
 
                 }, false);
             });
-        },
-        appName: function () {
-            return appInfo.appName;
-        },
-        appVersion: function () {
-            return appInfo.appVersion;
-        },
-        deviceName: function () {
-            return appInfo.deviceName;
-        },
-        deviceId: function () {
-
-            return appInfo.deviceId;
         },
         capabilities: getCapabilities
     };
