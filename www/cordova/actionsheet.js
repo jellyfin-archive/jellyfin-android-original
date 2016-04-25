@@ -9,7 +9,7 @@
 
         // If any items have an icon, give them all an icon just to make sure they're all lined up evenly
         var renderIcon = options.items.filter(function (o) {
-            return o.ironIcon == 'check';
+            return o.selected;
         }).length;
 
         if (renderIcon) {
@@ -18,14 +18,10 @@
 
                 var option = options.items[i];
 
-                switch (option.ironIcon) {
-
-                    case 'check':
-                        option.name = '• ' + option.name;
-                        break;
-                    default:
-                        option.name = '  ' + option.name;
-                        break;
+                if (option.selected) {
+                    option.name = '• ' + option.name;
+                } else {
+                    option.name = '  ' + option.name;
                 }
             }
         }

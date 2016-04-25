@@ -1606,6 +1606,8 @@ var AppInfo = {};
         var paths = {
             velocity: bowerPath + "/velocity/velocity.min",
             tvguide: 'components/tvguide/tvguide',
+            ironCardList: 'components/ironcardlist/ironcardlist',
+            scrollThreshold: 'components/scrollthreshold',
             directorybrowser: 'components/directorybrowser/directorybrowser',
             collectioneditor: 'components/collectioneditor/collectioneditor',
             playlisteditor: 'components/playlisteditor/playlisteditor',
@@ -1714,6 +1716,7 @@ var AppInfo = {};
         // Done
         define("emby-icons", ["html!" + bowerPath + "/emby-icons/emby-icons.html"]);
 
+        define("lazyload-image", ["html!" + bowerPath + "/emby-lazyload-image/lazyload-image.html"]);
         define("paper-spinner", ["html!" + bowerPath + "/paper-spinner/paper-spinner.html"]);
         define("paper-toast", ["html!" + bowerPath + "/paper-toast/paper-toast.html"]);
         define("paper-slider", ["html!" + bowerPath + "/paper-slider/paper-slider.html"]);
@@ -1741,6 +1744,8 @@ var AppInfo = {};
         define("fade-out-animation", ["html!" + bowerPath + "/neon-animation/animations/fade-out-animation.html"]);
         define("scale-up-animation", ["html!" + bowerPath + "/neon-animation/animations/scale-up-animation.html"]);
         define("paper-fab", ["html!" + bowerPath + "/paper-fab/paper-fab.html"]);
+        define("iron-list", ["html!" + bowerPath + "/iron-list/iron-list.html"]);
+        define("iron-scroll-threshold", ["html!" + bowerPath + "/iron-scroll-threshold/iron-scroll-threshold.html"]);
         define("paper-progress", ["html!" + bowerPath + "/paper-progress/paper-progress.html"]);
         define("paper-input", ["html!" + bowerPath + "/paper-input/paper-input.html"]);
         define("paper-icon-item", ["html!" + bowerPath + "/paper-item/paper-icon-item.html"]);
@@ -2200,7 +2205,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/connectlogin.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false,
             anonymous: true
         });
@@ -2355,7 +2360,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/itemdetails.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false
         });
 
@@ -2474,7 +2479,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/login.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false,
             anonymous: true
         });
@@ -2529,31 +2534,31 @@ var AppInfo = {};
 
         defineRoute({
             path: '/mypreferencesdisplay.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false
         });
 
         defineRoute({
             path: '/mypreferenceshome.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false
         });
 
         defineRoute({
             path: '/mypreferenceslanguages.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false
         });
 
         defineRoute({
             path: '/mypreferencesmenu.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false
         });
 
         defineRoute({
             path: '/myprofile.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false
         });
 
@@ -2730,7 +2735,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/tv.html',
-            dependencies: ['paper-tabs', 'paper-checkbox'],
+            dependencies: ['paper-tabs', 'paper-checkbox', 'paper-button'],
             autoFocus: false,
             controller: 'scripts/tvrecommended'
         });
@@ -3102,11 +3107,11 @@ pageClassOn('viewshow', "page", function () {
         page.classList.remove('ui-body-a');
     }
 
-    if (currentTheme != 'a' && !browserInfo.mobile) {
-        document.documentElement.classList.add('darkScrollbars');
-    } else {
-        document.documentElement.classList.remove('darkScrollbars');
-    }
+    //if (currentTheme != 'a' && !browserInfo.mobile) {
+    //    document.documentElement.classList.add('darkScrollbars');
+    //} else {
+    //    document.documentElement.classList.remove('darkScrollbars');
+    //}
 
     var apiClient = window.ApiClient;
 
