@@ -135,19 +135,7 @@
                     return true;
                 }
 
-                return testDeviceId(MainActivity.getAndroidDeviceId()).then(function (isUnlocked) {
-
-                    if (isUnlocked) {
-                        return true;
-                    }
-
-                    var legacyDeviceId = MainActivity.getLegacyDeviceId();
-                    if (legacyDeviceId) {
-                        return testDeviceId(legacyDeviceId, device.uuid);
-                    }
-
-                    return false;
-                })
+                return testDeviceId(MainActivity.getAndroidDeviceId());
             });
         });
     }

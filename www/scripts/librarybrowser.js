@@ -173,7 +173,6 @@
 
             enableFullPaperTabs: function () {
 
-                return true;
                 if (browserInfo.animate && !browserInfo.mobile) {
                     //return true;
                 }
@@ -3420,10 +3419,6 @@
                     html += '</paper-radio-group>';
                     html += '</div>';
 
-                    //html += '<div class="buttons">';
-                    //html += '<paper-button dialog-dismiss>' + Globalize.translate('ButtonClose') + '</paper-button>';
-                    //html += '</div>';
-
                     dlg.innerHTML = html;
                     document.body.appendChild(dlg);
 
@@ -3878,13 +3873,13 @@
                 if (item.IsSeries && !item.IsRepeat) {
 
                     require(['livetvcss']);
-                    miscInfo.push('<span class="newTvProgram">' + Globalize.translate('LabelNewProgram') + '</span>');
+                    miscInfo.push('<span class="newTvProgram">' + Globalize.translate('AttributeNew') + '</span>');
 
                 }
 
                 if (item.IsLive) {
 
-                    miscInfo.push('<span class="liveTvProgram">' + Globalize.translate('LabelLiveProgram') + '</span>');
+                    miscInfo.push('<span class="liveTvProgram">' + Globalize.translate('AttributeLive') + '</span>');
 
                 }
 
