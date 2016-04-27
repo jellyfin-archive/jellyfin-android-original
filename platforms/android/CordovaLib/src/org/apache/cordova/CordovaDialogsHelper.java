@@ -21,6 +21,7 @@ package org.apache.cordova;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.view.KeyEvent;
 import android.widget.EditText;
 

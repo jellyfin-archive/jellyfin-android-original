@@ -502,4 +502,5 @@
         requirejs(['cordova/iap'], onIapManagerLoaded);
     }
 
+    return window.RegistrationServices;
 });

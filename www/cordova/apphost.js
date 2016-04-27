@@ -62,11 +62,6 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
                         if (window.MainActivity) {
 
                             deviceId = appStorage.getItem('legacyDeviceId');
-
-                            if (!deviceId) {
-                                deviceId = MainActivity.getLegacyDeviceId();
-                                appStorage.setItem('legacyDeviceId', deviceId);
-                            }
                         }
 
                         appInfo = {
