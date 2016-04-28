@@ -101,8 +101,13 @@
         };
 
         self.volume = function (val) {
+
+            var media = currentMedia;
+
             if (val != null) {
-                // TODO
+                if (media) {
+                    media.setVolume(val / 100);
+                }
                 return;
             }
 
@@ -180,6 +185,7 @@
                             } else {
                                 state.currentTime = 0;
                             }
+                            onTimeUpdate();
                         }
                     );
                 }, 1000);
