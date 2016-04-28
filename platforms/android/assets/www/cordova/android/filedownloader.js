@@ -1,1 +1,1 @@
-define([],function(){return{download:function(n){n.forEach(function(n){ApiClient.getItem(Dashboard.getCurrentUserId(),n.itemId).then(function(t){MainActivity.downloadFile(n.url,t.Path)})})}}});
+define(["connectionManager"],function(n){return{download:function(e){e.forEach(function(e){var t=n.getApiClient(e.serverId);t.getItem(t.getCurrentUserId(),e.itemId).then(function(n){MainActivity.downloadFile(e.url,n.Path)})})}}});
