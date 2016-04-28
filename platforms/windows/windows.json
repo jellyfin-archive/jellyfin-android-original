@@ -100,6 +100,9 @@
         },
         "cordova-plugin-media": {
             "PACKAGE_NAME": "Emby"
+        },
+        "com.rd11.remote-controls": {
+            "PACKAGE_NAME": "Emby"
         }
     },
     "dependent_plugins": {},
@@ -520,6 +523,14 @@
             "pluginId": "cordova-plugin-media",
             "merges": [
                 ""
+            ]
+        },
+        {
+            "file": "plugins/com.rd11.remote-controls/www/RemoteControls.js",
+            "id": "com.rd11.remote-controls.RemoteControls",
+            "pluginId": "com.rd11.remote-controls",
+            "clobbers": [
+                "window.remoteControls"
             ]
         }
     ]

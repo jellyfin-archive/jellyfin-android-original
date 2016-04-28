@@ -81,6 +81,9 @@
         },
         "cordova-plugin-media": {
             "PACKAGE_NAME": "Emby"
+        },
+        "com.rd11.remote-controls": {
+            "PACKAGE_NAME": "Emby"
         }
     },
     "dependent_plugins": {

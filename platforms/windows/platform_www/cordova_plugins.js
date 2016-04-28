@@ -417,6 +417,14 @@ module.exports = [
         "merges": [
             ""
         ]
+    },
+    {
+        "file": "plugins/com.rd11.remote-controls/www/RemoteControls.js",
+        "id": "com.rd11.remote-controls.RemoteControls",
+        "pluginId": "com.rd11.remote-controls",
+        "clobbers": [
+            "window.remoteControls"
+        ]
     }
 ];
 module.exports.metadata = 
