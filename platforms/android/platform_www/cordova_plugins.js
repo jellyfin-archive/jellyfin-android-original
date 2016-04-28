@@ -55,20 +55,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-file-transfer/www/FileTransferError.js",
-        "id": "cordova-plugin-file-transfer.FileTransferError",
-        "clobbers": [
-            "window.FileTransferError"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-file-transfer/www/FileTransfer.js",
-        "id": "cordova-plugin-file-transfer.FileTransfer",
-        "clobbers": [
-            "window.FileTransfer"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-chrome-apps-sockets-udp/sockets.udp.js",
         "id": "cordova-plugin-chrome-apps-sockets-udp.sockets.udp",
         "clobbers": [
@@ -102,6 +88,28 @@ module.exports = [
         "id": "cordova-plugin-network-information.Connection",
         "clobbers": [
             "Connection"
+        ]
+    },
+    {
+        "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
+        "id": "acidhax.cordova.chromecast.ChromecastApi",
+        "clobbers": [
+            "chrome.cast"
+        ]
+    },
+    {
+        "file": "plugins/acidhax.cordova.chromecast/EventEmitter.js",
+        "id": "acidhax.cordova.chromecast.EventEmitter"
+    },
+    {
+        "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
+        "id": "acidhax.cordova.chromecast.tests"
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
         ]
     },
     {
@@ -231,6 +239,11 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-file/www/browser/isChrome.js",
+        "id": "cordova-plugin-file.isChrome",
+        "runs": true
+    },
+    {
         "file": "plugins/cordova-plugin-file/www/android/FileSystem.js",
         "id": "cordova-plugin-file.androidFileSystem",
         "merges": [
@@ -251,6 +264,20 @@ module.exports = [
         "runs": true
     },
     {
+        "file": "plugins/cordova-plugin-file-transfer/www/FileTransferError.js",
+        "id": "cordova-plugin-file-transfer.FileTransferError",
+        "clobbers": [
+            "window.FileTransferError"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-file-transfer/www/FileTransfer.js",
+        "id": "cordova-plugin-file-transfer.FileTransfer",
+        "clobbers": [
+            "window.FileTransfer"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-media/www/MediaError.js",
         "id": "cordova-plugin-media.MediaError",
         "clobbers": [
@@ -263,34 +290,16 @@ module.exports = [
         "clobbers": [
             "window.Media"
         ]
-    },
-    {
-        "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
-        "id": "acidhax.cordova.chromecast.ChromecastApi",
-        "clobbers": [
-            "chrome.cast"
-        ]
-    },
-    {
-        "file": "plugins/acidhax.cordova.chromecast/EventEmitter.js",
-        "id": "acidhax.cordova.chromecast.EventEmitter"
-    },
-    {
-        "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
-        "id": "acidhax.cordova.chromecast.tests"
-    },
-    {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "cordova-plugin-x-socialsharing": "5.0.12"
+    "cordova-plugin-x-socialsharing": "5.0.12",
+    "cordova-plugin-compat": "1.0.0",
+    "cordova-plugin-file": "4.2.0",
+    "cordova-plugin-file-transfer": "1.5.1",
+    "cordova-plugin-media": "2.3.0"
 };
 // BOTTOM OF METADATA
 });

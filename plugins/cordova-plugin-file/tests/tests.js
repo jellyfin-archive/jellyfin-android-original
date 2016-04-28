@@ -18,9 +18,8 @@
  *
  */
 
-/*global cordova, exports*/
-/*jshint jasmine: true*/
-/*global FileError, LocalFileSystem, Metadata, Flags*/
+/* jshint jasmine: true */
+/* global WebKitBlobBuilder */
 
 exports.defineAutoTests = function () {
     var isBrowser = (cordova.platformId === "browser");
@@ -30,9 +29,8 @@ exports.defineAutoTests = function () {
     var isIndexedDBShim = isBrowser && !isChrome;   // Firefox and IE for example
 
     var isWindows = (cordova.platformId === "windows" || cordova.platformId === "windows8");
-    
+
     var MEDIUM_TIMEOUT = 15000;
-    var LONG_TIMEOUT = 60000;
 
     describe('File API', function () {
         // Adding a Jasmine helper matcher, to report errors when comparing to FileError better.
@@ -173,12 +171,12 @@ exports.defineAutoTests = function () {
                 }, success, error);
             }, error);
         };
-        var failed = function (done, msg, error) {
+        function failed(done, msg, error) {
             var info = typeof msg == 'undefined' ? 'Unexpected error callback' : msg;
             var codeMsg = (error && error.code) ? (': ' + fileErrorMap[error.code]) : '';
             expect(true).toFailWithMessage(info + '\n' + JSON.stringify(error) + codeMsg);
             done();
-        };
+        }
         var succeed = function (done, msg) {
             var info = typeof msg == 'undefined' ? 'Unexpected success callback' : msg;
             expect(true).toFailWithMessage(info);
@@ -222,8 +220,11 @@ exports.defineAutoTests = function () {
                     var win = function (fileSystem) {
                         expect(fileSystem).toBeDefined();
                         expect(fileSystem.name).toBeDefined();
-                        isChrome ? expect(fileSystem.name).toContain("Persistent")
-                            : expect(fileSystem.name).toBe("persistent");
+                        if (isChrome) {
+                            expect(fileSystem.name).toContain("Persistent");
+                        } else {
+                            expect(fileSystem.name).toBe("persistent");
+                        }
                         expect(fileSystem.root).toBeDefined();
                         expect(fileSystem.root.filesystem).toBeDefined();
                         // Shouldn't use cdvfile by default.
@@ -232,14 +233,21 @@ exports.defineAutoTests = function () {
                         expect(fileSystem.root.toURL()).toMatch(/\/$/);
                         done();
                     };
+
+                    // Request a little bit of space on the filesystem, unless we're running in a browser where that could cause a prompt.
+                    var spaceRequired = isBrowser ? 0 : 1024;
+
                     // retrieve PERSISTENT file system
-                    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, win, failed.bind(null, done, 'window.requestFileSystem - Error retrieving PERSISTENT file system'));
+                    window.requestFileSystem(LocalFileSystem.PERSISTENT, spaceRequired, win, failed.bind(null, done, 'window.requestFileSystem - Error retrieving PERSISTENT file system'));
                 });
                 it("file.spec.5 should be able to retrieve a TEMPORARY file system", function (done) {
                     var win = function (fileSystem) {
                         expect(fileSystem).toBeDefined();
-                        isChrome ? expect(fileSystem.name).toContain("Temporary")
-                            : expect(fileSystem.name).toBe("temporary");
+                        if (isChrome) {
+                            expect(fileSystem.name).toContain("Temporary");
+                        } else {
+                            expect(fileSystem.name).toBe("temporary");
+                        }
                         expect(fileSystem.root).toBeDefined();
                         expect(fileSystem.root.filesystem).toBeDefined();
                         expect(fileSystem.root.filesystem).toBe(fileSystem);
@@ -293,6 +301,8 @@ exports.defineAutoTests = function () {
                     var fileName = 'file.spec.9';
                     var win = function (fileEntry) {
                         expect(fileEntry).toBeDefined();
+                        expect(fileEntry.isFile).toBe(true);
+                        expect(fileEntry.isDirectory).toBe(false);
                         expect(fileEntry.name).toCanonicallyMatch(fileName);
                         expect(fileEntry.toURL()).not.toMatch(/^cdvfile:/, 'should not use cdvfile URL');
                         expect(fileEntry.toURL()).not.toMatch(/\/$/, 'URL should not end with a slash');
@@ -303,10 +313,29 @@ exports.defineAutoTests = function () {
                         window.resolveLocalFileSystemURL(entry.toURL(), win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - Error resolving file URL: ' + entry.toURL()));
                     }, failed.bind(null, done, 'createFile - Error creating file: ' + fileName), failed.bind(null, done, 'createFile - Error creating file: ' + fileName));
                 });
+                it("file.spec.9.1 should resolve a file even with a terminating slash", function (done) {
+                    var fileName = 'file.spec.9.1';
+                    var win = function (fileEntry) {
+                        expect(fileEntry).toBeDefined();
+                        expect(fileEntry.isFile).toBe(true);
+                        expect(fileEntry.isDirectory).toBe(false);
+                        expect(fileEntry.name).toCanonicallyMatch(fileName);
+                        expect(fileEntry.toURL()).not.toMatch(/^cdvfile:/, 'should not use cdvfile URL');
+                        expect(fileEntry.toURL()).not.toMatch(/\/$/, 'URL should not end with a slash');
+                        // Clean-up
+                        deleteEntry(fileName, done);
+                    };
+                    createFile(fileName, function (entry) {
+                        var entryURL = entry.toURL() + '/';
+                        window.resolveLocalFileSystemURL(entryURL, win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - Error resolving file URL: ' + entryURL));
+                    }, failed.bind(null, done, 'createFile - Error creating file: ' + fileName), failed.bind(null, done, 'createFile - Error creating file: ' + fileName));
+                });
                 it("file.spec.9.5 should resolve a directory", function (done) {
                     var fileName = 'file.spec.9.5';
                     var win = function (fileEntry) {
                         expect(fileEntry).toBeDefined();
+                        expect(fileEntry.isFile).toBe(false);
+                        expect(fileEntry.isDirectory).toBe(true);
                         expect(fileEntry.name).toCanonicallyMatch(fileName);
                         expect(fileEntry.toURL()).not.toMatch(/^cdvfile:/, 'should not use cdvfile URL');
                         expect(fileEntry.toURL()).toMatch(/\/$/, 'URL end with a slash');
@@ -316,6 +345,26 @@ exports.defineAutoTests = function () {
                     function gotDirectory(entry) {
                         // lookup file system entry
                         window.resolveLocalFileSystemURL(entry.toURL(), win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - Error resolving directory URL: ' + entry.toURL()));
+                    }
+                    createDirectory(fileName, gotDirectory, failed.bind(null, done, 'createDirectory - Error creating directory: ' + fileName), failed.bind(null, done, 'createDirectory - Error creating directory: ' + fileName));
+                });
+                it("file.spec.9.6 should resolve a directory even without a terminating slash", function (done) {
+                    var fileName = 'file.spec.9.6';
+                    var win = function (fileEntry) {
+                        expect(fileEntry).toBeDefined();
+                        expect(fileEntry.isFile).toBe(false);
+                        expect(fileEntry.isDirectory).toBe(true);
+                        expect(fileEntry.name).toCanonicallyMatch(fileName);
+                        expect(fileEntry.toURL()).not.toMatch(/^cdvfile:/, 'should not use cdvfile URL');
+                        expect(fileEntry.toURL()).toMatch(/\/$/, 'URL end with a slash');
+                        // cleanup
+                        deleteEntry(fileName, done);
+                    };
+                    function gotDirectory(entry) {
+                        // lookup file system entry
+                        var entryURL = entry.toURL();
+                        entryURL = entryURL.substring(0, entryURL.length - 1);
+                        window.resolveLocalFileSystemURL(entryURL, win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - Error resolving directory URL: ' + entryURL));
                     }
                     createDirectory(fileName, gotDirectory, failed.bind(null, done, 'createDirectory - Error creating directory: ' + fileName), failed.bind(null, done, 'createDirectory - Error creating directory: ' + fileName));
                 });
@@ -336,8 +385,8 @@ exports.defineAutoTests = function () {
                     }, failed.bind(null, done, 'createFile - Error creating file: ' + fileName));
                 });
                 it("file.spec.11 should error (NOT_FOUND_ERR) when resolving (non-existent) invalid file name", function (done) {
-                    var fileName = cordova.platformId === 'windowsphone' ? root.toURL() + "/" + "this.is.not.a.valid.file.txt" : joinURL(root.toURL(), "this.is.not.a.valid.file.txt");
-                    fail = function (error) {
+                    var fileName = cordova.platformId === 'windowsphone' ? root.toURL() + "/" + "this.is.not.a.valid.file.txt" : joinURL(root.toURL(), "this.is.not.a.valid.file.txt"),
+                        fail = function (error) {
                         expect(error).toBeDefined();
                         expect(error).toBeFileError(FileError.NOT_FOUND_ERR);
                         done();
@@ -347,7 +396,7 @@ exports.defineAutoTests = function () {
                 });
                 it("file.spec.12 should error (ENCODING_ERR) when resolving invalid URI with leading /", function (done) {
                     var fileName = "/this.is.not.a.valid.url",
-                    fail = function (error) {
+                        fail = function (error) {
                         expect(error).toBeDefined();
                         expect(error).toBeFileError(FileError.ENCODING_ERR);
                         done();
@@ -401,7 +450,6 @@ exports.defineAutoTests = function () {
         describe('DirectoryEntry', function () {
             it("file.spec.16 getFile: get Entry for file that does not exist", function (done) {
                 var fileName = "de.no.file",
-                filePath = joinURL(root.fullPath, fileName),
                 fail = function (error) {
                     expect(error).toBeDefined();
                     expect(error).toBeFileError(FileError.NOT_FOUND_ERR);
@@ -449,14 +497,9 @@ exports.defineAutoTests = function () {
             });
             it("file.spec.19 getFile: create file that already exists", function (done) {
                 var fileName = "de.create.existing.file",
-                filePath = joinURL(root.fullPath, fileName),
-                getFile = function (file) {
-                    // create:true, exclusive:false, file exists
-                    root.getFile(fileName, {
-                        create : true
-                    }, win, failed.bind(null, done, 'root.getFile - Error creating file: ' + fileName));
-                },
-                win = function (entry) {
+                filePath = joinURL(root.fullPath, fileName);
+
+                function win(entry) {
                     expect(entry).toBeDefined();
                     expect(entry.isFile).toBe(true);
                     expect(entry.isDirectory).toBe(false);
@@ -464,26 +507,25 @@ exports.defineAutoTests = function () {
                     expect(entry.fullPath).toCanonicallyMatch(filePath);
                     // cleanup
                     deleteEntry(entry.name, done);
-                };
+                }
+
+                function getFile(file) {
+                    // create:true, exclusive:false, file exists
+                    root.getFile(fileName, {
+                        create : true
+                    }, win, failed.bind(null, done, 'root.getFile - Error creating file: ' + fileName));
+                }
+
                 // create file to kick off it
                 root.getFile(fileName, {
                     create : true
                 }, getFile, failed.bind(null, done, 'root.getFile - Error on initial creating file: ' + fileName));
             });
             it("file.spec.20 getFile: create file that already exists (exclusive)", function (done) {
-
                 var fileName = "de.create.exclusive.existing.file",
-                filePath = joinURL(root.fullPath, fileName),
-                existingFile,
-                getFile = function (file) {
-                    existingFile = file;
-                    // create:true, exclusive:true, file exists
-                    root.getFile(fileName, {
-                        create : true,
-                        exclusive : true
-                    }, succeed.bind(null, done, 'root.getFile - getFile function - Error unexpected callback, file should exists: ' + fileName), fail);
-                },
-                fail = function (error) {
+                existingFile;
+
+                function fail(error) {
                     expect(error).toBeDefined();
                     if (isChrome) {
                         /*INVALID_MODIFICATION_ERR (code: 9) is thrown instead of PATH_EXISTS_ERR(code: 12)
@@ -494,7 +536,17 @@ exports.defineAutoTests = function () {
                     }
                     // cleanup
                     deleteEntry(existingFile.name, done);
-                };
+                }
+
+                function getFile(file) {
+                    existingFile = file;
+                    // create:true, exclusive:true, file exists
+                    root.getFile(fileName, {
+                        create : true,
+                        exclusive : true
+                    }, succeed.bind(null, done, 'root.getFile - getFile function - Error unexpected callback, file should exists: ' + fileName), fail);
+                }
+
                 // create file to kick off it
                 root.getFile(fileName, {
                     create : true
@@ -534,7 +586,6 @@ exports.defineAutoTests = function () {
 
                 var fileName = "de:invalid:path",
                 fail = function (error) {
-                    console.error(error);
                     expect(error).toBeDefined();
                     expect(error).toBeFileError(FileError.ENCODING_ERR);
                     done();
@@ -546,7 +597,6 @@ exports.defineAutoTests = function () {
             });
             it("file.spec.23 DirectoryEntry.getDirectory: get Entry for directory that does not exist", function (done) {
                 var dirName = "de.no.dir",
-                dirPath = joinURL(root.fullPath, dirName),
                 fail = function (error) {
                     expect(error).toBeDefined();
                     expect(error).toBeFileError(FileError.NOT_FOUND_ERR);
@@ -558,16 +608,9 @@ exports.defineAutoTests = function () {
                 }, succeed.bind(null, done, 'root.getDirectory - Error unexpected callback, directory should not exists: ' + dirName), fail);
             });
             it("file.spec.24 DirectoryEntry.getDirectory: create new dir with space then resolveLocalFileSystemURL", function (done) {
-                var dirName = "de create dir",
-                dirPath = joinURL(root.fullPath, encodeURIComponent(dirName)),
-                getDir = function (dirEntry) {
-                    expect(dirEntry.filesystem).toBeDefined();
-                    expect(dirEntry.filesystem).toBe(root.filesystem);
-                    var dirURI = dirEntry.toURL();
-                    // now encode URI and try to resolve
-                    window.resolveLocalFileSystemURL(dirURI, win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - getDir function - Error resolving directory: ' + dirURI));
-                },
-                win = function (directory) {
+                var dirName = "de create dir";
+
+                function win(directory) {
                     expect(directory).toBeDefined();
                     expect(directory.isFile).toBe(false);
                     expect(directory.isDirectory).toBe(true);
@@ -575,7 +618,16 @@ exports.defineAutoTests = function () {
                     expect(directory.fullPath).toCanonicallyMatch(joinURL(root.fullPath, dirName));
                     // cleanup
                     deleteEntry(directory.name, done);
-                };
+                }
+
+                function getDir(dirEntry) {
+                    expect(dirEntry.filesystem).toBeDefined();
+                    expect(dirEntry.filesystem).toBe(root.filesystem);
+                    var dirURI = dirEntry.toURL();
+                    // now encode URI and try to resolve
+                    window.resolveLocalFileSystemURL(dirURI, win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - getDir function - Error resolving directory: ' + dirURI));
+                }
+
                 // create:true, exclusive:false, directory does not exist
                 root.getDirectory(dirName, {
                     create : true
@@ -589,13 +641,9 @@ exports.defineAutoTests = function () {
             // backend.
             xit("file.spec.25 DirectoryEntry.getDirectory: create new dir with space resolveLocalFileSystemURL with encoded URI", function (done) {
                 var dirName = "de create dir2",
-                dirPath = joinURL(root.fullPath, dirName),
-                getDir = function (dirEntry) {
-                    var dirURI = dirEntry.toURL();
-                    // now encode URI and try to resolve
-                    window.resolveLocalFileSystemURL(encodeURI(dirURI), win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - getDir function - Error resolving directory: ' + dirURI));
-                },
-                win = function (directory) {
+                dirPath = joinURL(root.fullPath, dirName);
+
+                function win(directory) {
                     expect(directory).toBeDefined();
                     expect(directory.isFile).toBe(false);
                     expect(directory.isDirectory).toBe(true);
@@ -603,7 +651,14 @@ exports.defineAutoTests = function () {
                     expect(directory.fullPath).toCanonicallyMatch(dirPath);
                     // cleanup
                     deleteEntry(directory.name, done);
-                };
+                }
+
+                function getDir(dirEntry) {
+                    var dirURI = dirEntry.toURL();
+                    // now encode URI and try to resolve
+                    window.resolveLocalFileSystemURL(encodeURI(dirURI), win, failed.bind(null, done, 'window.resolveLocalFileSystemURL - getDir function - Error resolving directory: ' + dirURI));
+                }
+
                 // create:true, exclusive:false, directory does not exist
                 root.getDirectory(dirName, {
                     create : true
@@ -672,7 +727,6 @@ exports.defineAutoTests = function () {
             it("file.spec.29 DirectoryEntry.getDirectory: create directory that already exists (exclusive)", function (done) {
 
                 var dirName = "de.create.exclusive.existing.dir",
-                dirPath = joinURL(root.fullPath, dirName),
                 existingDir,
                 fail = function (error) {
                     expect(error).toBeDefined();
@@ -740,7 +794,6 @@ exports.defineAutoTests = function () {
             it("file.spec.32 DirectoryEntry.getDirectory: get DirectoryEntry for existing file", function (done) {
                 var fileName = "de.existing.file",
                 existingFile,
-                filePath = joinURL(root.fullPath, fileName),
                 fail = function (error) {
                     expect(error).toBeDefined();
                     expect(error).toBeFileError(FileError.TYPE_MISMATCH_ERR);
@@ -760,7 +813,6 @@ exports.defineAutoTests = function () {
             it("file.spec.33 DirectoryEntry.getFile: get FileEntry for existing directory", function (done) {
                 var dirName = "de.existing.dir",
                 existingDir,
-                dirPath = joinURL(root.fullPath, dirName),
                 fail = function (error) {
                     expect(error).toBeDefined();
                     expect(error).toBeFileError(FileError.TYPE_MISMATCH_ERR);
@@ -780,8 +832,6 @@ exports.defineAutoTests = function () {
             it("file.spec.34 DirectoryEntry.removeRecursively on directory", function (done) {
                 var dirName = "de.removeRecursively",
                 subDirName = "dir",
-                dirPath = joinURL(root.fullPath, dirName),
-                subDirPath = joinURL(dirPath, subDirName),
                 dirExists = function (error) {
                     expect(error).toBeDefined();
                     expect(error).toBeFileError(FileError.NOT_FOUND_ERR);
@@ -896,8 +946,7 @@ exports.defineAutoTests = function () {
                 });
             });
             it("file.spec.38 should read contents of directory that has been removed", function (done) {
-                var dirName = "de.createReader.notfound",
-                dirPath = joinURL(root.fullPath, dirName);
+                var dirName = "de.createReader.notfound";
                 // create a new directory entry to kick off it
                 root.getDirectory(dirName, {
                     create : true
@@ -1140,6 +1189,21 @@ exports.defineAutoTests = function () {
             });
             it("file.spec.53 Entry.remove on file", function (done) {
                 var fileName = "entr .rm.file";
+                // create a new file entry
+                createFile(fileName, function (entry) {
+                    expect(entry).toBeDefined();
+                    entry.remove(function () {
+                        root.getFile(fileName, null, succeed.bind(null, done, 'root.getFile - Unexpected success callback, it should not get deleted file : ' + fileName), function (error) {
+                            expect(error).toBeDefined();
+                            expect(error).toBeFileError(FileError.NOT_FOUND_ERR);
+                            // cleanup
+                            deleteEntry(fileName, done);
+                        });
+                    }, failed.bind(null, done, 'entry.remove - Error removing entry : ' + fileName));
+                }, failed.bind(null, done, 'createFile - Error creating file : ' + fileName));
+            });
+            it("file.spec.53.1 Entry.remove on filename with #s", function (done) {
+                var fileName = "entry.#rm#.file";
                 // create a new file entry
                 createFile(fileName, function (entry) {
                     expect(entry).toBeDefined();
@@ -1542,7 +1606,6 @@ exports.defineAutoTests = function () {
                 var file1 = "file1",
                 srcDir = "entry.move.dsp.srcDir",
                 dstDir = "entry.move.dsp.dstDir",
-                srcPath = joinURL(root.fullPath, srcDir),
                 dstPath = joinURL(root.fullPath, dstDir),
                 filePath = joinURL(dstPath, file1);
                 // ensure destination directory is cleaned up before it
@@ -1592,7 +1655,6 @@ exports.defineAutoTests = function () {
                 var file1 = "file1",
                 srcDir = "entry.move.dsp.srcDir",
                 dstDir = "entry.move.dsp.srcDir-backup",
-                srcPath = joinURL(root.fullPath, srcDir),
                 dstPath = joinURL(root.fullPath, dstDir),
                 filePath = joinURL(dstPath, file1);
                 // ensure destination directory is cleaned up before it
@@ -1642,7 +1704,6 @@ exports.defineAutoTests = function () {
                 var file1 = "file1",
                 srcDir = "entry.move.dnp.srcDir",
                 dstDir = "entry.move.dnp.dstDir",
-                srcPath = joinURL(root.fullPath, srcDir),
                 dstPath = joinURL(root.fullPath, dstDir),
                 filePath = joinURL(dstPath, file1);
                 // ensure destination directory is cleaned up before it
@@ -1757,8 +1818,7 @@ exports.defineAutoTests = function () {
                 }
 
                 var srcDir = "entry.move.dis.srcDir",
-                dstDir = "entry.move.dis.srcDir-backup",
-                srcPath = joinURL(root.fullPath, srcDir);
+                dstDir = "entry.move.dis.srcDir-backup";
                 // create a new directory entry to kick off it
                 createDirectory(srcDir, function (srcDirEntry) {
                 deleteEntry(dstDir, function () {
@@ -1980,7 +2040,6 @@ exports.defineAutoTests = function () {
             it("file.spec.77 moveTo: file replace existing file", function (done) {
                 var file1 = "entry.move.frf.file1",
                 file2 = "entry.move.frf.file2",
-                file1Path = joinURL(root.fullPath, file1),
                 file2Path = joinURL(root.fullPath, file2);
                 // create a new directory entry to kick off it
                 createFile(file1, function (entry) {
@@ -2026,7 +2085,6 @@ exports.defineAutoTests = function () {
                 var file1 = "file1",
                 srcDir = "entry.move.drd.srcDir",
                 dstDir = "entry.move.drd.dstDir",
-                srcPath = joinURL(root.fullPath, srcDir),
                 dstPath = joinURL(root.fullPath, dstDir),
                 filePath = dstPath + '/' + file1;
                 // ensure destination directory is cleaned up before it
@@ -2080,7 +2138,7 @@ exports.defineAutoTests = function () {
                 // create a new file entry to kick off it
                 createFile(file1, function (entry) {
                     // move file to directory that does not exist
-                    directory = new DirectoryEntry();
+                    var directory = new DirectoryEntry();
                     directory.filesystem = root.filesystem;
                     directory.fullPath = dstPath;
                     entry.moveTo(directory, null, succeed.bind(null, done, 'entry.moveTo - Unexpected success callback, parent directory: ' + dstPath + ' should not exists'), function (error) {
@@ -2201,31 +2259,36 @@ exports.defineAutoTests = function () {
                 fileData = fileContents !== undefined ? fileContents :
                     '\u20AC\xEB - There is an exception to every rule. Except this one.',
                 fileDataAsBinaryString = fileContents !== undefined ? fileContents :
-                    '\xe2\x82\xac\xc3\xab - There is an exception to every rule. Except this one.',
-                createWriter = function (fe) {
+                    '\xe2\x82\xac\xc3\xab - There is an exception to every rule. Except this one.';
+
+                function createWriter(fe) {
                     fileEntry = fe;
                     fileEntry.createWriter(writeFile, failed.bind(null, done, 'fileEntry.createWriter - Error reading file: ' + fileName));
-                }, // writes file and reads it back in
-                writeFile = function (writer) {
+                }
+
+                // writes file and reads it back in
+                function writeFile(writer) {
                     writer.onwriteend = function () {
                         fileEntry.file(function (f) {
                             callback(fileEntry, f, fileData, fileDataAsBinaryString);
                         }, failed.bind(null, done, 'writer.onwriteend - Error writing data on file: ' + fileName));
                     };
                     writer.write(fileData);
-                };
+                }
+
                 fileData += writeBinary ? 'bin:\x01\x00' : '';
                 fileDataAsBinaryString += writeBinary ? 'bin:\x01\x00' : '';
                 // create a file, write to it, and read it in again
                 createFile(fileName, createWriter, failed.bind(null, done, 'createFile - Error creating file: ' + fileName));
             }
-            function runReaderTest(funcName, writeBinary, done, verifierFunc, sliceStart, sliceEnd, fileContents) {
+            function runReaderTest(funcName, writeBinary, done, progressFunc, verifierFunc, sliceStart, sliceEnd, fileContents) {
                 writeDummyFile(writeBinary, function (fileEntry, file, fileData, fileDataAsBinaryString) {
                     var verifier = function (evt) {
                         expect(evt).toBeDefined();
                         verifierFunc(evt, fileData, fileDataAsBinaryString);
                     };
                     var reader = new FileReader();
+                    reader.onprogress = progressFunc;
                     reader.onload = verifier;
                     reader.onerror = failed.bind(null, done, 'reader.onerror - Error reading file: ' + file + ' using function: ' + funcName);
                     if (sliceEnd !== undefined) {
@@ -2247,20 +2310,20 @@ exports.defineAutoTests = function () {
                 return match;
             }
             it("file.spec.84 should read file properly, readAsText", function (done) {
-                runReaderTest('readAsText', false, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsText', false, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toBe(fileData);
                     done();
                 });
             });
             it("file.spec.84.1 should read JSON file properly, readAsText", function (done) {
                 var testObject = {key1: "value1", key2: 2};
-                runReaderTest('readAsText', false, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsText', false, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toEqual(JSON.stringify(testObject));
                     done();
                 }, undefined, undefined, JSON.stringify(testObject));
             });
             it("file.spec.85 should read file properly, Data URI", function (done) {
-                runReaderTest('readAsDataURL', true, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsDataURL', true, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     /* `readAsDataURL` function is supported, but the mediatype in Chrome depends on entry name extension,
                         mediatype in IE is always empty (which is the same as `text-plain` according the specification),
                         the mediatype in Firefox is always `application/octet-stream`.
@@ -2284,7 +2347,7 @@ exports.defineAutoTests = function () {
                     pending();
                 }
 
-                runReaderTest('readAsBinaryString', true, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsBinaryString', true, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toBe(fileDataAsBinaryString);
                     done();
                 });
@@ -2295,37 +2358,37 @@ exports.defineAutoTests = function () {
                     expect(true).toFailWithMessage('Platform does not supported this feature');
                     done();
                 }
-                runReaderTest('readAsArrayBuffer', true, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsArrayBuffer', true, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(arrayBufferEqualsString(evt.target.result, fileDataAsBinaryString)).toBe(true);
                     done();
                 });
             });
             it("file.spec.88 should read sliced file: readAsText", function (done) {
-                runReaderTest('readAsText', false, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsText', false, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toBe(fileDataAsBinaryString.slice(10, 40));
                     done();
                 }, 10, 40);
             });
             it("file.spec.89 should read sliced file: slice past eof", function (done) {
-                runReaderTest('readAsText', false, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsText', false, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toBe(fileData.slice(-5, 9999));
                     done();
                 }, -5, 9999);
             });
             it("file.spec.90 should read sliced file: slice to eof", function (done) {
-                runReaderTest('readAsText', false, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsText', false, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toBe(fileData.slice(-5));
                     done();
                 }, -5);
             });
             it("file.spec.91 should read empty slice", function (done) {
-                runReaderTest('readAsText', false, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsText', false, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toBe('');
                     done();
                 }, 0, 0);
             });
             it("file.spec.92 should read sliced file properly, readAsDataURL", function (done) {
-                runReaderTest('readAsDataURL', true, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsDataURL', true, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     /* `readAsDataURL` function is supported, but the mediatype in Chrome depends on entry name extension,
                         mediatype in IE is always empty (which is the same as `text-plain` according the specification),
                         the mediatype in Firefox is always `application/octet-stream`.
@@ -2349,7 +2412,7 @@ exports.defineAutoTests = function () {
                     pending();
                 }
 
-                runReaderTest('readAsBinaryString', true, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsBinaryString', true, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(evt.target.result).toBe(fileDataAsBinaryString.slice(-10, -5));
                     done();
                 }, -10, -5);
@@ -2360,12 +2423,53 @@ exports.defineAutoTests = function () {
                     expect(true).toFailWithMessage('Platform does not supported this feature');
                     done();
                 }
-                runReaderTest('readAsArrayBuffer', true, done, function (evt, fileData, fileDataAsBinaryString) {
+                runReaderTest('readAsArrayBuffer', true, done, null, function (evt, fileData, fileDataAsBinaryString) {
                     expect(arrayBufferEqualsString(evt.target.result, fileDataAsBinaryString.slice(0, -1))).toBe(true);
                     done();
                 }, 0, -1);
             });
-        });
+            it("file.spec.94.5 should read large file in multiple chunks, readAsArrayBuffer", function (done) {
+                // Skip test if ArrayBuffers are not supported (e.g.: Android 2.3).
+                if (typeof window.ArrayBuffer == 'undefined') {
+                    expect(true).toFailWithMessage('Platform does not supported this feature');
+                    done();
+                }
+
+                var largeText = "";
+                for (var i = 0; i < 1000; i++) {
+                    largeText += "Test " + i + "\n";
+                }
+
+                // Set the chunk size so that the read will take 5 chunks
+                FileReader.READ_CHUNK_SIZE = Math.floor(largeText.length / 4) + 1;
+
+                var chunkCount = 0;
+                var lastProgressValue = -1;
+                var progressFunc = function (evt) {
+                    expect(evt.loaded).toBeDefined();
+                    expect(evt.total).toBeDefined();
+
+                    expect(evt.total >= largeText.length).toBe(true);
+                    expect(evt.total <= largeText.length + 5).toBe(true);
+                    expect(evt.loaded > lastProgressValue).toBe(true);
+                    expect(evt.loaded <= evt.total).toBe(true);
+
+                    lastProgressValue = evt.loaded;
+                    chunkCount++;
+                };
+
+                runReaderTest(
+                    'readAsArrayBuffer', true, done, progressFunc,
+                    function (evt, fileData, fileDataAsBinaryString) {
+                        expect(arrayBufferEqualsString(evt.target.result, fileDataAsBinaryString.slice(0, -1))).toBe(true);
+                        expect(lastProgressValue >= largeText.length).toBe(true);
+                        expect(lastProgressValue <= largeText.length + 5).toBe(true);
+                        expect(chunkCount).toBe(5);
+                        done();
+                    },
+                    0, -1, largeText);
+            });
+       });
         //Read method
         describe('FileWriter', function () {
             it("file.spec.95 should have correct methods", function (done) {
@@ -2396,7 +2500,7 @@ exports.defineAutoTests = function () {
                     // writes initial file content
                     fileEntry.createWriter(function (writer) {
                         //Verifiers declaration
-                        var verifier = function (evt) {
+                        function verifier(evt) {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             // Append some more data
@@ -2404,20 +2508,21 @@ exports.defineAutoTests = function () {
                             length += exception.length;
                             writer.seek(writer.length);
                             writer.write(exception);
-                        },
-                        secondVerifier = function (evt) {
+                        }
+                        function secondVerifier(evt) {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             var reader = new FileReader();
                             reader.onloadend = thirdVerifier;
                             reader.onerror = failed.bind(null, done, 'reader.onerror - Error reading file: ' + fileName);
                             fileEntry.file(function(f){reader.readAsText(f);});
-                        },
-                        thirdVerifier = function (evt) {
+                        }
+                        function thirdVerifier(evt) {
                             expect(evt.target.result).toBe(content+exception);
                             // cleanup
                             deleteFile(fileName, done);
-                        };
+                        }
+
                         //Write process
                         writer.onwriteend = verifier;
                         writer.write(content);
@@ -2434,7 +2539,7 @@ exports.defineAutoTests = function () {
                 }, function (fileEntry) {
                     fileEntry.createWriter(function (writer) {
                         //Verifiers declaration
-                        var verifier = function () {
+                        function verifier() {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             // Append some more data
@@ -2442,20 +2547,21 @@ exports.defineAutoTests = function () {
                             length += exception.length;
                             writer.seek(writer.length);
                             writer.write(exception);
-                        },
-                        secondVerifier = function () {
+                        }
+                        function secondVerifier() {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             var reader = new FileReader();
                             reader.onloadend = thirdVerifier;
                             reader.onerror = failed.bind(null, done, 'reader.onerror - Error reading file: ' + fileName);
                             fileEntry.file(function(f){reader.readAsText(f);});
-                        },
-                        thirdVerifier = function (evt) {
+                        }
+                        function thirdVerifier(evt) {
                             expect(evt.target.result).toBe(content+exception);
                             // cleanup
                             deleteFile(fileName, done);
-                        };
+                        }
+
                         //Write process
                         writer.onwriteend = verifier;
                         writer.write(content);
@@ -2471,7 +2577,7 @@ exports.defineAutoTests = function () {
                 createFile(fileName, function (fileEntry) {
                     fileEntry.createWriter(function (writer) {
                         //Verifiers declaration
-                        var verifier = function (evt) {
+                        function verifier(evt) {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             // Append some more data
@@ -2479,20 +2585,21 @@ exports.defineAutoTests = function () {
                             length = 12 + exception.length;
                             writer.seek(12);
                             writer.write(exception);
-                        },
-                        secondVerifier = function (evt) {
+                        }
+                        function secondVerifier(evt) {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             var reader = new FileReader();
                             reader.onloadend = thirdVerifier;
                             reader.onerror = failed.bind(null, done, 'reader.onerror - Error reading file: ' + fileName);
                             fileEntry.file(function(f){reader.readAsText(f);});
-                        },
-                        thirdVerifier = function (evt) {
+                        }
+                        function thirdVerifier(evt) {
                             expect(evt.target.result).toBe(content.substr(0,12)+exception);
                             // cleanup
                             deleteFile(fileName, done);
-                        };
+                        }
+
                         //Write process
                         writer.onwriteend = verifier;
                         writer.write(content);
@@ -2514,7 +2621,7 @@ exports.defineAutoTests = function () {
                 createFile(fileName, function (fileEntry) {
                     fileEntry.createWriter(function (writer) {
                         // Verifiers declaration
-                        var verifier = function (evt) {
+                        function verifier(evt) {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             // Append some more data
@@ -2522,20 +2629,21 @@ exports.defineAutoTests = function () {
                             length = 8 + exception.length;
                             writer.seek(8);
                             writer.write(exception);
-                        },
-                        secondVerifier = function (evt) {
+                        }
+                        function secondVerifier(evt) {
                             expect(writer.length).toBe(length);
                             expect(writer.position).toBe(length);
                             var reader = new FileReader();
                             reader.onloadend = thirdVerifier;
                             reader.onerror = failed.bind(null, done, 'reader.onerror - Error reading file: ' + fileName);
                             fileEntry.file(function(f){reader.readAsText(f);});
-                        },
-                        thirdVerifier = function (evt) {
+                        }
+                        function thirdVerifier(evt) {
                             expect(evt.target.result).toBe(content.substr(0,8)+exception);
                             // cleanup
                             deleteFile(fileName, done);
-                        };
+                        }
+
                         //Write process
                         writer.onwriteend = verifier;
                         writer.write(content);
@@ -2649,7 +2757,7 @@ exports.defineAutoTests = function () {
                 data = new ArrayBuffer(32),
                 dataView = new Int8Array(data), // for verifying file length
                 length = 32;
-                for (i = 0; i < dataView.length; i++) {
+                for (var i = 0; i < dataView.length; i++) {
                     dataView[i] = i;
                 }
                 // creates file, then write content
@@ -2681,7 +2789,7 @@ exports.defineAutoTests = function () {
                 dataView = new Int8Array(data),
                 blob, // for verifying file length
                 length = 32;
-                for (i = 0; i < dataView.length; i++) {
+                for (var i = 0; i < dataView.length; i++) {
                     dataView[i] = i;
                 }
                 try {
@@ -2729,9 +2837,8 @@ exports.defineAutoTests = function () {
                 },
                 writeFile = function (fileName, fileData, win) {
                     var theWriter,
-                    filePath = joinURL(root.fullPath, fileName), // writes file content to new file
                     write_file = function (fileEntry) {
-                        writerEntry = fileEntry;
+                        // writes file content to new file
                         fileEntry.createWriter(function (writer) {
                             theWriter = writer;
                             writer.onwriteend = function (ev) {
@@ -2771,9 +2878,8 @@ exports.defineAutoTests = function () {
                 },
                 writeFile = function (fileName, fileData, win) {
                     var theWriter,
-                    filePath = joinURL(root.fullPath, fileName), // writes file content to new file
                     write_file = function (fileEntry) {
-                        writerEntry = fileEntry;
+                        // writes file content to new file
                         fileEntry.createWriter(function (writer) {
                             theWriter = writer;
                             writer.onwriteend = function (ev) {
@@ -2823,9 +2929,8 @@ exports.defineAutoTests = function () {
                 },
                 writeFile = function (fileName, fileData, win) {
                     var theWriter,
-                    filePath = joinURL(root.fullPath, fileName), // writes file content to new file
                     write_file = function (fileEntry) {
-                        writerEntry = fileEntry;
+                        // writes file content to new file
                         fileEntry.createWriter(function (writer) {
                             theWriter = writer;
                             writer.onwriteend = function (ev) {
@@ -2848,7 +2953,7 @@ exports.defineAutoTests = function () {
                         fileEntry.file(callback, failed.bind(null, done, 'fileEntry.file - Error reading file using fileEntry: ' + fileEntry.name));
                     }, failed.bind(null, done, 'root.getFile - Error getting file: ' + fileName));
                 };
-                for (i = 0; i < dataView.length; i++) {
+                for (var i = 0; i < dataView.length; i++) {
                     dataView[i] = i;
                 }
                 try {
@@ -3002,9 +3107,6 @@ exports.defineAutoTests = function () {
                     expect(entry.name).toCanonicallyMatch(fileName);
                     expect(typeof entry.toNativeURL).toBe('function');
                     var nativeURL = entry.toNativeURL();
-                    var indexOfRoot = isWindows ? nativeURL.indexOf(":") :
-                                      isChrome ? 'filesystem:file://'.length : // Chrome uses own prefix for all filesystem urls
-                                      7; //default value - length of 'file://' string
                     expect(typeof nativeURL).toBe("string");
                     expect(nativeURL.substring(0, pathExpect.length)).toEqual(pathExpect);
                     expect(nativeURL.substring(nativeURL.length - fileName.length)).toEqual(fileName);
@@ -3015,6 +3117,7 @@ exports.defineAutoTests = function () {
             it("file.spec.115 DirectoryReader should return entries with toNativeURL method", function (done) {
                 var dirName = 'nativeEntries.dir',
                 fileName = 'nativeEntries.file',
+                directory,
                 checkEntries = function (entries) {
                     expect(entries).toBeDefined();
                     expect(entries instanceof Array).toBe(true);
@@ -3022,9 +3125,6 @@ exports.defineAutoTests = function () {
                     expect(entries[0].toNativeURL).toBeDefined();
                     expect(typeof entries[0].toNativeURL).toBe('function');
                     var nativeURL = entries[0].toNativeURL();
-                    var indexOfRoot = isWindows ? nativeURL.indexOf(":") :
-                                      isChrome ? 'filesystem:file://'.length : // Chrome uses own prefix for all filesystem urls
-                                      7; //default value - length of 'file://' string
                     expect(typeof nativeURL).toBe("string");
                     expect(nativeURL.substring(0, pathExpect.length)).toEqual(pathExpect);
                     expect(nativeURL.substring(nativeURL.length - fileName.length)).toEqual(fileName);
@@ -3035,7 +3135,8 @@ exports.defineAutoTests = function () {
                 // create a new file entry
                 root.getDirectory(dirName, {
                     create : true
-                }, function (directory) {
+                }, function (dir) {
+                    directory = dir;
                     directory.getFile(fileName, {
                         create : true
                     }, function (fileEntry) {
@@ -3053,9 +3154,6 @@ exports.defineAutoTests = function () {
                         expect(entry.name).toCanonicallyMatch(fileName);
                         expect(typeof entry.toNativeURL).toBe('function');
                         var nativeURL = entry.toNativeURL();
-                        var indexOfRoot = isWindows ? nativeURL.indexOf(":") :
-                                      isChrome ? 'filesystem:file://'.length : // Chrome uses own prefix for all filesystem urls
-                                      7; //default value - length of 'file://' string
                         expect(typeof nativeURL).toBe("string");
                         expect(nativeURL.substring(0, pathExpect.length)).toEqual(pathExpect);
                         expect(nativeURL.substring(nativeURL.length - fileName.length)).toEqual(fileName);
@@ -3166,8 +3264,11 @@ exports.defineAutoTests = function () {
                     expect(entry.name).toCanonicallyMatch(file2);
                     expect(entry.fullPath).toCanonicallyMatch(fullPath);
                     expect(entry.filesystem).toBeDefined();
-                    isChrome ? expect(entry.filesystem.name).toContain("Persistent")
-                        : expect(entry.filesystem.name).toEqual("persistent");
+                    if (isChrome) {
+                        expect(entry.filesystem.name).toContain("Persistent");
+                    } else {
+                        expect(entry.filesystem.name).toEqual("persistent");
+                    }
                     // cleanup
                     deleteEntry(entry.name);
                     deleteEntry(sourceEntry.name, done);
@@ -3177,8 +3278,11 @@ exports.defineAutoTests = function () {
                         create : true
                     }, function (entry) {
                         expect(entry.filesystem).toBeDefined();
-                        isChrome ? expect(entry.filesystem.name).toContain("Temporary")
-                            : expect(entry.filesystem.name).toEqual("temporary");
+                        if (isChrome) {
+                            expect(entry.filesystem.name).toContain("Temporary");
+                        } else {
+                            expect(entry.filesystem.name).toEqual("temporary");
+                        }
                         sourceEntry = entry;
                         // Save for later cleanup
                         entry.copyTo(persistent_root, file2, validateFile, failed.bind(null, done, 'entry.copyTo - Error copying file: ' + file1 + ' to PERSISTENT root as: ' + file2));
@@ -3200,8 +3304,11 @@ exports.defineAutoTests = function () {
                     expect(entry.isDirectory).toBe(false);
                     expect(entry.name).toCanonicallyMatch(file2);
                     expect(entry.fullPath).toCanonicallyMatch(fullPath);
-                    isChrome ? expect(entry.filesystem.name).toContain("Temporary")
-                        : expect(entry.filesystem.name).toEqual("temporary");
+                    if (isChrome) {
+                        expect(entry.filesystem.name).toContain("Temporary");
+                    } else {
+                        expect(entry.filesystem.name).toEqual("temporary");
+                    }
                     // cleanup
                     deleteEntry(entry.name);
                     deleteEntry(sourceEntry.name, done);
@@ -3212,8 +3319,11 @@ exports.defineAutoTests = function () {
                     }, function (entry) {
                         expect(entry).toBeDefined();
                         expect(entry.filesystem).toBeDefined();
-                        isChrome ? expect(entry.filesystem.name).toContain("Persistent")
-                            : expect(entry.filesystem.name).toEqual("persistent");
+                        if (isChrome) {
+                            expect(entry.filesystem.name).toContain("Persistent");
+                        } else {
+                            expect(entry.filesystem.name).toEqual("persistent");
+                        }
                         sourceEntry = entry;
                         // Save for later cleanup
                         entry.copyTo(temp_root, file2, validateFile, failed.bind(null, done, 'entry.copyTo - Error copying file: ' + file1 + ' to TEMPORAL root as: ' + file2));
@@ -3237,8 +3347,11 @@ exports.defineAutoTests = function () {
                     expect(entry.name).toCanonicallyMatch(file2);
                     expect(entry.fullPath).toCanonicallyMatch(fullPath);
                     expect(entry.filesystem).toBeDefined();
-                    isChrome ? expect(entry.filesystem.name).toContain("Persistent")
-                        : expect(entry.filesystem.name).toEqual("persistent");
+                    if (isChrome) {
+                        expect(entry.filesystem.name).toContain("Persistent");
+                    } else {
+                        expect(entry.filesystem.name).toEqual("persistent");
+                    }
                     // cleanup
                     deleteEntry(entry.name);
                     deleteEntry(sourceEntry.name, done);
@@ -3248,8 +3361,11 @@ exports.defineAutoTests = function () {
                         create : true
                     }, function (entry) {
                         expect(entry.filesystem).toBeDefined();
-                        isChrome ? expect(entry.filesystem.name).toContain("Temporary")
-                            : expect(entry.filesystem.name).toEqual("temporary");
+                        if (isChrome) {
+                            expect(entry.filesystem.name).toContain("Temporary");
+                        } else {
+                            expect(entry.filesystem.name).toEqual("temporary");
+                        }
                         sourceEntry = entry;
                         // Save for later cleanup
                         entry.moveTo(persistent_root, file2, validateFile, failed.bind(null, done, 'entry.moveTo - Error moving file: ' + file1 + ' to PERSISTENT root as: ' + file2));
@@ -3271,8 +3387,11 @@ exports.defineAutoTests = function () {
                     expect(entry.isDirectory).toBe(false);
                     expect(entry.name).toCanonicallyMatch(file2);
                     expect(entry.fullPath).toCanonicallyMatch(fullPath);
-                    isChrome ? expect(entry.filesystem.name).toContain("Temporary")
-                        : expect(entry.filesystem.name).toEqual("temporary");
+                    if(isChrome) {
+                        expect(entry.filesystem.name).toContain("Temporary");
+                    } else {
+                        expect(entry.filesystem.name).toEqual("temporary");
+                    }
                     // cleanup
                     deleteEntry(entry.name);
                     deleteEntry(sourceEntry.name, done);
@@ -3283,8 +3402,11 @@ exports.defineAutoTests = function () {
                     }, function (entry) {
                         expect(entry).toBeDefined();
                         expect(entry.filesystem).toBeDefined();
-                        isChrome ? expect(entry.filesystem.name).toContain("Persistent")
-                            : expect(entry.filesystem.name).toEqual("persistent");
+                        if (isChrome) {
+                            expect(entry.filesystem.name).toContain("Persistent");
+                        } else {
+                            expect(entry.filesystem.name).toEqual("persistent");
+                        }
                         sourceEntry = entry;
                         // Save for later cleanup
                         entry.moveTo(temp_root, file2, validateFile, failed.bind(null, done, 'entry.moveTo - Error moving file: ' + file1 + ' to TEMPORAL root as: ' + file2));
@@ -3298,11 +3420,17 @@ exports.defineAutoTests = function () {
             it("file.spec.129 cordova.file.*Directory are set", function () {
                 var expectedPaths = ['applicationDirectory', 'applicationStorageDirectory', 'dataDirectory', 'cacheDirectory'];
                 if (cordova.platformId == 'android' || cordova.platformId == 'amazon-fireos') {
-                    expectedPaths.push('externalApplicationStorageDirectory', 'externalRootDirectory', 'externalCacheDirectory', 'externalDataDirectory');
+                    if (cordova.file.externalApplicationStorageDirectory !== null) {
+                        // https://issues.apache.org/jira/browse/CB-10411
+                        // If external storage can't be mounted, the cordova.file.external* properties are null.
+                        expectedPaths.push('externalApplicationStorageDirectory', 'externalRootDirectory', 'externalCacheDirectory', 'externalDataDirectory');
+                    }
                 } else if (cordova.platformId == 'blackberry10') {
                     expectedPaths.push('externalRootDirectory', 'sharedDirectory');
                 } else if (cordova.platformId == 'ios') {
                     expectedPaths.push('syncedDataDirectory', 'documentsDirectory', 'tempDirectory');
+                } else if (cordova.platformId == 'osx') {
+                    expectedPaths.push('documentsDirectory', 'tempDirectory', 'rootDirectory');
                 } else {
                     console.log('Skipping test due on unsupported platform.');
                     return;
@@ -3484,19 +3612,50 @@ exports.defineAutoTests = function () {
                     }, failed.bind(null, done, 'resolveLocalFileSystemURL failed for content provider'));
                 });
             });
+
+            // these tests ensure that you can read and copy from android_asset folder
+            // for details see https://issues.apache.org/jira/browse/CB-6428
+            // and https://mail-archives.apache.org/mod_mbox/cordova-dev/201508.mbox/%3C782154441.8406572.1440182722528.JavaMail.yahoo%40mail.yahoo.com%3E
             describe('asset: URLs', function() {
                 it("file.spec.141 filePaths.applicationStorage", function() {
                     expect(cordova.file.applicationDirectory).toEqual('file:///android_asset/');
                 }, MEDIUM_TIMEOUT);
                 it("file.spec.142 assets should be enumerable", function(done) {
-                    resolveLocalFileSystemURL('file:///android_asset/www/', function(entry) {
+                    resolveLocalFileSystemURL('file:///android_asset/www/fixtures/asset-test', function(entry) {
                         var reader = entry.createReader();
                         reader.readEntries(function (entries) {
                             expect(entries.length).not.toBe(0);
                             done();
                         }, failed.bind(null, done, 'reader.readEntries - Error during reading of entries from assets directory'));
                     }, failed.bind(null, done, 'resolveLocalFileSystemURL failed for assets'));
-                }, LONG_TIMEOUT);
+                }, MEDIUM_TIMEOUT);
+                it("file.spec.145 asset subdirectories should be obtainable", function(done) {
+                    resolveLocalFileSystemURL('file:///android_asset/www/fixtures', function(entry) {
+                        entry.getDirectory('asset-test', { create: false }, function (subDir) {
+                            expect(subDir).toBeDefined();
+                            expect(subDir.isFile).toBe(false);
+                            expect(subDir.isDirectory).toBe(true);
+                            expect(subDir.name).toCanonicallyMatch('asset-test');
+                            done();
+                        }, failed.bind(null, done, 'entry.getDirectory - Error getting asset subdirectory'));
+                    }, failed.bind(null, done, 'resolveLocalFileSystemURL failed for assets'));
+                }, MEDIUM_TIMEOUT);
+                it("file.spec.146 asset files should be readable", function(done) {
+                    resolveLocalFileSystemURL('file:///android_asset/www/fixtures/asset-test/asset-test.txt', function(entry) {
+                        expect(entry.isFile).toBe(true);
+                        entry.file(function (file) {
+                            expect(file).toBeDefined();
+                            var reader = new FileReader();
+                            reader.onerror = failed.bind(null, done, 'reader.readAsText - Error reading asset text file');
+                            reader.onloadend = function () {
+                                expect(this.result).toBeDefined();
+                                expect(this.result.length).not.toBe(0);
+                                done();
+                            };
+                            reader.readAsText(file);
+                        }, failed.bind(null, done, 'entry.file - Error reading asset file'));
+                    }, failed.bind(null, done, 'resolveLocalFileSystemURL failed for assets'));
+                }, MEDIUM_TIMEOUT);
                 it("file.spec.143 copyTo: asset -> temporary", function(done) {
                     var file2 = "entry.copy.file2b",
                     fullPath = joinURL(temp_root.fullPath, file2),
@@ -3522,7 +3681,7 @@ exports.defineAutoTests = function () {
                 }, MEDIUM_TIMEOUT);
             });
             it("file.spec.144 copyTo: asset directory", function (done) {
-                var srcUrl = 'file:///android_asset/www';
+                var srcUrl = 'file:///android_asset/www/fixtures/asset-test';
                 var dstDir = "entry.copy.dstDir";
                 var dstPath = joinURL(root.fullPath, dstDir);
                 // create a new directory entry to kick off it
@@ -3542,7 +3701,7 @@ exports.defineAutoTests = function () {
                                 expect(dirEntry.isDirectory).toBe(true);
                                 expect(dirEntry.fullPath).toCanonicallyMatch(dstPath);
                                 expect(dirEntry.name).toCanonicallyMatch(dstDir);
-                                dirEntry.getFile('cordova.js', {
+                                dirEntry.getFile('asset-test.txt', {
                                     create : false
                                 }, function (fileEntry) {
                                     expect(fileEntry).toBeDefined();
@@ -3554,7 +3713,7 @@ exports.defineAutoTests = function () {
                         }, failed.bind(null, done, 'directory.copyTo - Error copying directory'));
                     }, failed.bind(null, done, 'resolving src dir'));
                 }, failed.bind(null, done, 'deleteEntry - Error removing directory : ' + dstDir));
-            }, LONG_TIMEOUT);
+            }, MEDIUM_TIMEOUT);
         }
     });
 
@@ -3582,7 +3741,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
     }
 
     function testPrivateURL() {
-        requestFileSystem(TEMPORARY, 0, function (fileSystem) {
+        requestFileSystem(LocalFileSystem.TEMPORARY, 0, function (fileSystem) {
             logMessage("Temporary root is at " + fileSystem.root.toNativeURL());
             fileSystem.root.getFile("testfile", {
                 create : true
@@ -3626,6 +3785,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
 
     var fsRoots = {
         "ios" : "library,library-nosync,documents,documents-nosync,cache,bundle,root,private",
+        "osx" : "library,library-nosync,documents,documents-nosync,cache,bundle,root,private",
         "android" : "files,files-external,documents,sdcard,cache,cache-external,root",
         "amazon-fireos" : "files,files-external,documents,sdcard,cache,cache-external,root",
         "windows": "temporary,persistent"

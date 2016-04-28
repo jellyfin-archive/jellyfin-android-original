@@ -303,7 +303,7 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
      * @return                  T=streaming, F=local
      */
     public boolean isStreaming(String file) {
-        if (file.contains("http://") || file.contains("https://")) {
+        if (file.contains("http://") || file.contains("https://") || file.contains("rtsp://")) {
             return true;
         }
         else {
@@ -490,10 +490,24 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
                 case MEDIA_STOPPED:
                     //if we are readying the same file
                     if (this.audioFile.compareTo(file) == 0) {
-                        //reset the audio file
-                        player.seekTo(0);
-                        player.pause();
-                        return true;
+                        //maybe it was recording?
+                        if(this.recorder!=null && player==null) {
+                            this.player = new MediaPlayer();
+                            this.prepareOnly = false;
+
+                            try {
+                                this.loadAudioFile(file);
+                            } catch (Exception e) {
+                                sendErrorStatus(MEDIA_ERR_ABORTED);
+                            }
+                            return false;//we´re not ready yet
+                        }
+                        else {
+                           //reset the audio file
+                            player.seekTo(0);
+                            player.pause();
+                            return true;
+                        }
                     } else {
                         //reset the player
                         this.player.reset();
@@ -583,5 +597,24 @@ public class AudioPlayer implements OnCompletionListener, OnPreparedListener, On
         }
 
         this.handler.sendEventMessage("status", statusDetails);
+    }
+
+    /**
+     * Get current amplitude of recording.
+     *
+     * @return amplitude or 0 if not recording
+     */
+    public float getCurrentAmplitude() {
+        if (this.recorder != null) {
+            try{
+                if (this.state == STATE.MEDIA_RUNNING) {
+                    return (float) this.recorder.getMaxAmplitude() / 32762;
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
     }
 }
