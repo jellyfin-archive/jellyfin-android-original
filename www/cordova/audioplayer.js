@@ -164,6 +164,8 @@
 
                 });
 
+                media.play();
+
                 currentMedia = media;
 
                 media.progressInterval = setInterval(function () {
