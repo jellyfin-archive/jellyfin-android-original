@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
 
     var data = {};
     function getPageData() {
@@ -71,13 +71,10 @@
 
             if (result.TotalRecordCount) {
 
-                var context = getParameterByName('context');
-
                 if (view == "List") {
 
                     html = LibraryBrowser.getListViewHtml({
                         items: result.Items,
-                        context: context,
                         sortBy: query.SortBy
                     });
                 }
@@ -85,17 +82,16 @@
                     html = LibraryBrowser.getPosterViewHtml({
                         items: result.Items,
                         shape: "auto",
-                        context: context,
                         showTitle: true,
                         centerText: true,
-                        lazy: true
+                        lazy: true,
+                        overlayPlayButton: true
                     });
                 }
                 else if (view == "PosterCard") {
                     html = LibraryBrowser.getPosterViewHtml({
                         items: result.Items,
                         shape: "auto",
-                        context: context,
                         showTitle: true,
                         cardLayout: true,
                         lazy: true,
@@ -106,18 +102,17 @@
                     html = LibraryBrowser.getPosterViewHtml({
                         items: result.Items,
                         shape: "backdrop",
-                        context: context,
                         showTitle: true,
                         centerText: true,
                         lazy: true,
-                        preferThumb: true
+                        preferThumb: true,
+                        overlayPlayButton: true
                     });
                 }
                 else if (view == "ThumbCard") {
                     html = LibraryBrowser.getPosterViewHtml({
                         items: result.Items,
                         shape: "backdrop",
-                        context: context,
                         showTitle: true,
                         lazy: true,
                         preferThumb: true,
@@ -203,7 +198,7 @@
     }
 
     pageIdOn('pageinit', 'boxsetsPage', function () {
-        
+
         var page = this;
 
         var content = page;
@@ -221,16 +216,19 @@
 
     });
 
-    window.MoviesPage = window.MoviesPage || {};
-    window.MoviesPage.renderCollectionsTab = function (page, tabContent) {
+    return function (view, params, tabContent) {
 
-        if (LibraryBrowser.needsRefresh(tabContent)) {
+        var self = this;
+
+        self.initTab = function () {
+
+            initPage(tabContent);
+        };
+
+        self.renderTab = function () {
+
             reloadItems(tabContent);
-        }
-    };
-    window.MoviesPage.initCollectionsTab = function (page, tabContent) {
-
-        initPage(tabContent);
+        };
     };
 
-})(jQuery, document);
+});

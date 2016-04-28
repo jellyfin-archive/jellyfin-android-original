@@ -1,5 +1,33 @@
 ﻿define(['isMobile'], function (isMobile) {
 
+    function isTv() {
+
+        // This is going to be really difficult to get right
+        var userAgent = navigator.userAgent.toLowerCase();
+
+        if (userAgent.indexOf('tv') != -1) {
+            return true;
+        }
+
+        if (userAgent.indexOf('samsungbrowser') != -1) {
+            return true;
+        }
+
+        if (userAgent.indexOf('nintendo') != -1) {
+            return true;
+        }
+
+        if (userAgent.indexOf('viera') != -1) {
+            return true;
+        }
+
+        if (userAgent.indexOf('webos') != -1) {
+            return true;
+        }
+
+        return false;
+    }
+
     var uaMatch = function (ua) {
         ua = ua.toLowerCase();
 
@@ -20,13 +48,17 @@
 
         var browser = match[1] || "";
 
-        if (ua.indexOf("windows phone") != -1 || ua.indexOf("iemobile") != -1) {
+        if (browser == "edge") {
+            platform_match = [""];
+        } else {
+            if (ua.indexOf("windows phone") != -1 || ua.indexOf("iemobile") != -1) {
 
-            // http://www.neowin.net/news/ie11-fakes-user-agent-to-fool-gmail-in-windows-phone-81-gdr1-update
-            browser = "msie";
-        }
-        else if (ua.indexOf("like gecko") != -1 && ua.indexOf('webkit') == -1 && ua.indexOf('opera') == -1 && ua.indexOf('chrome') == -1 && ua.indexOf('safari') == -1) {
-            browser = "msie";
+                // http://www.neowin.net/news/ie11-fakes-user-agent-to-fool-gmail-in-windows-phone-81-gdr1-update
+                browser = "msie";
+            }
+            else if (ua.indexOf("like gecko") != -1 && ua.indexOf('webkit') == -1 && ua.indexOf('opera') == -1 && ua.indexOf('chrome') == -1 && ua.indexOf('safari') == -1) {
+                browser = "msie";
+            }
         }
 
         if (browser == 'opr') {
@@ -61,7 +93,13 @@
         browser.mobile = true;
     }
 
+    browser.xboxOne = userAgent.toLowerCase().indexOf('xbox') != -1;
     browser.animate = document.documentElement.animate != null;
+    browser.tizen = userAgent.toLowerCase().indexOf('tizen') != -1;
+    browser.web0s = userAgent.toLowerCase().indexOf('Web0S'.toLowerCase()) != -1;
+
+    browser.tv = isTv();
+    browser.operaTv = browser.tv && userAgent.toLowerCase().indexOf('opr/') != -1;
 
     return browser;
 });

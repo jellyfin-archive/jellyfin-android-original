@@ -1,4 +1,4 @@
-﻿var URLHelper = {
+var URLHelper = {
 
   // build an absolute URL from a relative one using the provided baseURL
   // if relativeURL is an absolute URL it will be returned as is.
@@ -33,7 +33,7 @@
       baseURL = baseURLQuerySplit[1];
     }
 
-    var baseURLDomainSplit = /^((([a-z]+):)?\/\/[a-z0-9\.-]+(:[0-9]+)?\/)(.*)$/i.exec(baseURL);
+    var baseURLDomainSplit = /^((([a-z]+):)?\/\/[a-z0-9\.\-_~]+(:[0-9]+)?\/)(.*)$/i.exec(baseURL);
     var baseURLProtocol = baseURLDomainSplit[3];
     var baseURLDomain = baseURLDomainSplit[1];
     var baseURLPath = baseURLDomainSplit[5];

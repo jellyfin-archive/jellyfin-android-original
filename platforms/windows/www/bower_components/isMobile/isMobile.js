@@ -1,4 +1,4 @@
-﻿/**
+/**
  * isMobile.js v0.3.9
  *
  * A simple library to detect Apple phones and tablets,

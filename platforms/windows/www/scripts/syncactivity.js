@@ -1,12 +1,13 @@
-﻿(function () {
+﻿define(['jQuery'], function ($) {
 
     function cancelJob(page, id) {
 
         var msg = Globalize.translate('CancelSyncJobConfirmation');
 
-        Dashboard.confirm(msg, Globalize.translate('HeaderCancelSyncJob'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
+            confirm(msg, Globalize.translate('HeaderCancelSyncJob')).then(function () {
+
                 Dashboard.showLoadingMsg();
 
                 ApiClient.ajax({
@@ -18,7 +19,7 @@
 
                     reloadData(page);
                 });
-            }
+            });
         });
     }
 
@@ -381,6 +382,22 @@
 
     }
 
+    function getTabs() {
+        return [
+        {
+            href: 'syncactivity.html',
+            name: Globalize.translate('TabSyncJobs')
+        },
+         {
+             href: 'devicesupload.html',
+             name: Globalize.translate('TabCameraUpload')
+         },
+         {
+             href: 'syncsettings.html',
+             name: Globalize.translate('TabSettings')
+         }];
+    }
+
     $(document).on('pageinit', ".syncActivityPage", function () {
 
         var page = this;
@@ -395,6 +412,9 @@
 
     }).on('pageshow', ".syncActivityPage", function () {
 
+        if (this.id == 'syncActivityPage') {
+            LibraryMenu.setTabs('syncadmin', 0, getTabs);
+        }
         var page = this;
 
         Dashboard.getPluginSecurityInfo().then(function (pluginSecurityInfo) {
@@ -431,4 +451,4 @@
         Events.off(ApiClient, "websocketmessage", onWebSocketMessage);
     });
 
-})();
+});

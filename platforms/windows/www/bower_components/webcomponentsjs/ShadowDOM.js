@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
  * This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -7,7 +7,7 @@
  * Code distributed by Google as part of the polymer project is also
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
-// @version 0.7.20
+// @version 0.7.22
 if (typeof WeakMap === "undefined") {
   (function() {
     var defineProperty = Object.defineProperty;
@@ -3411,10 +3411,7 @@ window.ShadowDOMPolyfill = {};
       var unwrappedActiveElement = unwrap(this).ownerDocument.activeElement;
       if (!unwrappedActiveElement || !unwrappedActiveElement.nodeType) return null;
       var activeElement = wrap(unwrappedActiveElement);
-      if (activeElement === this.host) {
-        return null;
-      }
-      while (!this.contains(activeElement) && !this.host.contains(activeElement)) {
+      while (!this.contains(activeElement)) {
         while (activeElement.parentNode) {
           activeElement = activeElement.parentNode;
         }

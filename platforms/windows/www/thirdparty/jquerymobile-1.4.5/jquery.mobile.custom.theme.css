@@ -1,4 +1,4 @@
-﻿/*
+/*
 * jQuery Mobile v1.4.5
 * http://jquerymobile.com
 *
@@ -198,16 +198,14 @@ body.ui-mobile-viewport,
 div.ui-mobile-viewport {
     overflow-x: hidden;
 }
+
 /* "page" containers - full-screen views, one should always be in view post-pageload */
-.ui-mobile [data-role=page],
-.ui-mobile [data-role=dialog],
-.ui-page {
+.ui-mobile [data-role=dialog] {
     top: 0;
     left: 0;
     width: 100%;
     min-height: 100%;
     position: absolute;
-    display: none;
     border: 0;
 }
 
@@ -260,13 +258,6 @@ div.ui-mobile-viewport {
         font-size: 1em;
         display: inline-block;
     }
-
-.ui-content {
-    border-width: 0;
-    overflow: visible;
-    overflow-x: hidden;
-    padding: 1em;
-}
 
 /* Buttons and icons */
 .ui-btn, ul[data-role="listview"] a + a {

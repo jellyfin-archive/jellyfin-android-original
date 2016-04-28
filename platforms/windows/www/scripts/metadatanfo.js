@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['jQuery'], function ($) {
 
     var metadataKey = "xbmcmetadata";
 
@@ -12,9 +12,10 @@
 
         $('#selectUser', page).html(html).val(config.UserId || '');
         $('#selectReleaseDateFormat', page).val(config.ReleaseDateFormat);
-        $('#chkSaveImagePaths', page).checked(config.SaveImagePathsInNfo).checkboxradio('refresh');
-        $('#chkEnablePathSubstitution', page).checked(config.EnablePathSubstitution).checkboxradio('refresh');
-        $('#chkEnableExtraThumbs', page).checked(config.EnableExtraThumbsDuplication).checkboxradio('refresh');
+
+        page.querySelector('#chkSaveImagePaths').checked = config.SaveImagePathsInNfo;
+        page.querySelector('#chkEnablePathSubstitution').checked = config.EnablePathSubstitution;
+        page.querySelector('#chkEnableExtraThumbs').checked = config.EnableExtraThumbsDuplication;
 
         Dashboard.hideLoadingMsg();
     }
@@ -28,15 +29,49 @@
 
             config.UserId = $('#selectUser', form).val() || null;
             config.ReleaseDateFormat = $('#selectReleaseDateFormat', form).val();
-            config.SaveImagePathsInNfo = $('#chkSaveImagePaths', form).checked();
-            config.EnablePathSubstitution = $('#chkEnablePathSubstitution', form).checked();
-            config.EnableExtraThumbsDuplication = $('#chkEnableExtraThumbs', form).checked();
 
-            ApiClient.updateNamedConfiguration(metadataKey, config).then(Dashboard.processServerConfigurationUpdateResult);
+            config.SaveImagePathsInNfo = form.querySelector('#chkSaveImagePaths').checked;
+            config.EnablePathSubstitution = form.querySelector('#chkEnablePathSubstitution').checked;
+            config.EnableExtraThumbsDuplication = form.querySelector('#chkEnableExtraThumbs').checked;
+
+            ApiClient.updateNamedConfiguration(metadataKey, config).then(function () {
+                Dashboard.processServerConfigurationUpdateResult();
+
+                showConfirmMessage(config);
+            });
         });
 
         // Disable default form submission
         return false;
+    }
+
+    function showConfirmMessage(config) {
+
+        var msg = [];
+
+        msg.push(Globalize.translate('MetadataSettingChangeHelp'));
+
+        require(['alert'], function (alert) {
+            alert({
+                text: msg.join('<br/><br/>')
+            });
+        });
+    }
+
+    function getTabs() {
+        return [
+        {
+            href: 'metadata.html',
+            name: Globalize.translate('TabSettings')
+        },
+         {
+             href: 'metadataimages.html',
+             name: Globalize.translate('TabServices')
+         },
+         {
+             href: 'metadatanfo.html',
+             name: Globalize.translate('TabNfoSettings')
+         }];
     }
 
     $(document).on('pageinit', "#metadataNfoPage", function () {
@@ -45,6 +80,7 @@
 
     }).on('pageshow', "#metadataNfoPage", function () {
 
+        LibraryMenu.setTabs('metadata', 2, getTabs);
         Dashboard.showLoadingMsg();
 
         var page = this;
@@ -58,4 +94,4 @@
         });
     });
 
-})(jQuery, document, window);
+});

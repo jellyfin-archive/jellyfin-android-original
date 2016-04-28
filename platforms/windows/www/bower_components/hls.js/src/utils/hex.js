@@ -1,4 +1,4 @@
-﻿class Hex {
+class Hex {
 
   static hexDump(array) {
     var i, str = '';

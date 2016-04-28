@@ -1,22 +1,29 @@
-﻿(function () {
+﻿define(['appStorage'], function (appStorage) {
 
     var updatedProducts = [];
 
     function updateProductInfo(id, owned, price) {
 
-        updatedProducts = updatedProducts.filter(function (r) {
-            return r.id != id;
-        });
+        var currentProduct = updatedProducts.filter(function (r) {
+            return r.id == id;
+        })[0];
 
-        var product = {
-            id: id,
-            owned: owned,
-            price: price
-        };
+        if (!currentProduct) {
+            currentProduct = {
+                id: id,
+                owned: owned,
+                price: price
+            };
 
-        updatedProducts.push(product);
+            updatedProducts.push(currentProduct);
+        }
 
-        Events.trigger(IapManager, 'productupdated', [product]);
+        currentProduct.price = price;
+        currentProduct.owned = currentProduct.owned || owned;
+        currentProduct.id = id;
+
+        console.log('Product updated: ' + JSON.stringify(currentProduct));
+        Events.trigger(IapManager, 'productupdated', [currentProduct]);
     }
 
     function getProduct(feature) {
@@ -128,26 +135,14 @@
                     return true;
                 }
 
-                return testDeviceId(MainActivity.getAndroidDeviceId()).then(function (isUnlocked) {
-
-                    if (isUnlocked) {
-                        return true;
-                    }
-
-                    var legacyDeviceId = MainActivity.getLegacyDeviceId();
-                    if (legacyDeviceId) {
-                        return testDeviceId(legacyDeviceId);
-                    }
-
-                    return false;
-                })
+                return testDeviceId(MainActivity.getAndroidDeviceId());
             });
         });
     }
 
-    function testDeviceId(deviceId) {
+    function testDeviceId(deviceId, alias) {
 
-        var cacheKey = 'oldapp3-' + deviceId;
+        var cacheKey = 'oldapp5-' + deviceId;
         var cacheValue = appStorage.getItem(cacheKey);
         if (cacheValue) {
 
@@ -160,7 +155,12 @@
 
             console.log('testing play access for device id: ' + deviceId);
 
-            return fetch('http://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId, {
+            var fetchUrl = 'http://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId;
+            if (alias) {
+                fetchUrl += '&alias=' + alias;
+            }
+
+            return fetch(fetchUrl, {
                 method: 'GET'
 
             }).then(function (response) {
@@ -193,11 +193,10 @@
 
         msg += '<br/><br/>' + Globalize.translate('AlreadyPaidHelp2');
 
-        Dashboard.confirm(msg, Globalize.translate('AlreadyPaid'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
-                launchEmail();
-            }
+            confirm(msg, Globalize.translate('AlreadyPaid')).then(launchEmail);
+
         });
     }
 
@@ -206,7 +205,9 @@
         var serverInfo = ApiClient.serverInfo() || {};
         var serverId = serverInfo.Id || 'Unknown';
 
-        var body = 'Please assist in restoring my previous purchase. ' + serverId + '|' + ConnectionManager.deviceId();
+        var body = 'Order number: ';
+        body += '\n\nPlease enter order number above or attach screenshot of order information.';
+        body += '\n\n' + serverId + '|' + ConnectionManager.deviceId();
 
         MainActivity.sendEmail('apps@emby.media', 'Android Activation', body);
     }
@@ -225,4 +226,4 @@
 
     NativeIapManager.initStore();
 
-})();
+});

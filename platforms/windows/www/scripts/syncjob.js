@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['jQuery', 'paper-progress', 'paper-fab', 'paper-item-body', 'paper-icon-item', 'paper-icon-button', 'paper-button'], function ($) {
 
     function renderJob(page, job, dialogOptions) {
 
@@ -17,14 +17,17 @@
         html += '</button>';
 
         $('.syncJobForm', page).html(html);
-        SyncManager.renderForm({
-            elem: $('.formFields', page),
-            dialogOptions: dialogOptions,
-            dialogOptionsFn: getTargetDialogOptionsFn(dialogOptions),
-            showName: true,
-            readOnlySyncTarget: true
-        }).then(function () {
-            fillJobValues(page, job, dialogOptions);
+
+        require(['syncDialog'], function (syncDialog) {
+            syncDialog.renderForm({
+                elem: $('.formFields', page),
+                dialogOptions: dialogOptions,
+                dialogOptionsFn: getTargetDialogOptionsFn(dialogOptions),
+                showName: true,
+                readOnlySyncTarget: true
+            }).then(function () {
+                fillJobValues(page, job, dialogOptions);
+            });
         });
     }
 
@@ -332,7 +335,7 @@
 
     function loadJobInfo(page, job, jobItems) {
 
-        renderJob(page, job, _jobOptions);
+        //renderJob(page, job, _jobOptions);
         renderJobItems(page, jobItems);
         Dashboard.hideLoadingMsg();
     }
@@ -344,19 +347,23 @@
 
         ApiClient.getJSON(ApiClient.getUrl('Sync/Jobs/' + id)).then(function (job) {
 
-            SyncManager.setJobValues(job, page);
+            require(['syncDialog'], function (syncDialog) {
+                syncDialog.setJobValues(job, page);
 
-            ApiClient.ajax({
+                ApiClient.ajax({
 
-                url: ApiClient.getUrl('Sync/Jobs/' + id),
-                type: 'POST',
-                data: JSON.stringify(job),
-                contentType: "application/json"
+                    url: ApiClient.getUrl('Sync/Jobs/' + id),
+                    type: 'POST',
+                    data: JSON.stringify(job),
+                    contentType: "application/json"
 
-            }).then(function () {
+                }).then(function () {
 
-                Dashboard.hideLoadingMsg();
-                Dashboard.alert(Globalize.translate('SettingsSaved'));
+                    Dashboard.hideLoadingMsg();
+                    require(['toast'], function (toast) {
+                        toast(Globalize.translate('SettingsSaved'));
+                    });
+                });
             });
         });
 
@@ -421,4 +428,4 @@
         Events.off(ApiClient, "websocketmessage", onWebSocketMessage);
     });
 
-})();
+});

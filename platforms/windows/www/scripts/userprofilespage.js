@@ -1,19 +1,21 @@
-﻿(function (document, window, $) {
+﻿define(['jQuery'], function ($) {
 
     function deleteUser(page, id) {
 
         var msg = Globalize.translate('DeleteUserConfirmation');
 
-        Dashboard.confirm(msg, Globalize.translate('DeleteUser'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
+            confirm(msg, Globalize.translate('DeleteUser')).then(function () {
+
                 Dashboard.showLoadingMsg();
 
                 ApiClient.deleteUser(id).then(function () {
 
                     loadData(page);
                 });
-            }
+            });
+
         });
     }
 
@@ -170,7 +172,7 @@
 
         var html = getUserSectionHtml(users, addConnectIndicator);
 
-        elem.html(html).trigger('create');
+        elem.html(html);
 
         $('.btnUserMenu', elem).on('click', function () {
             showUserMenu(this);
@@ -282,7 +284,7 @@
 
         var html = users.map(getPendingUserHtml).join('');
 
-        var elem = $('.pending', page).html(html).trigger('create');
+        var elem = $('.pending', page).html(html);
 
         $('.btnUserMenu', elem).on('click', function () {
             showPendingUserMenu(this);
@@ -338,9 +340,11 @@
                 msg += '<a href="useredit.html?userId=' + user.Id + '">' + Globalize.translate('ButtonLinkMyEmbyAccount') + '</a>';
                 msg += '<br/>';
 
-                Dashboard.alert({
-                    message: msg,
-                    title: Globalize.translate('HeaderInviteGuest')
+                require(['alert'], function (alert) {
+                    alert({
+                        title: Globalize.translate('HeaderInviteGuest'),
+                        text: msg
+                    });
                 });
                 return;
             }
@@ -375,4 +379,4 @@
         loadData(page);
     });
 
-})(document, window, jQuery);
+});

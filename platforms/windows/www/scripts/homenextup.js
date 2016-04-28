@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
 
     function reload(page) {
 
@@ -50,15 +50,16 @@
             elem.innerHTML = html;
             ImageLoader.lazyChildren(elem);
             Dashboard.hideLoadingMsg();
-
-            LibraryBrowser.setLastRefreshed(page);
         });
     }
+    return function (view, params, tabContent) {
 
-    window.HomePage.renderNextUp = function (page, tabContent) {
-        if (LibraryBrowser.needsRefresh(tabContent)) {
+        var self = this;
+
+        self.renderTab = function () {
+
             reload(tabContent);
-        }
+        };
     };
 
-})(jQuery, document);
+});

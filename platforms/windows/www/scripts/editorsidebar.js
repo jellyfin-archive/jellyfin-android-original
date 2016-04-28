@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['jQuery'], function ($) {
 
     function getNode(item, folderState, selected) {
 
@@ -60,14 +60,10 @@
         var htmlName = "<div class='" + cssClass + "'>";
 
         if (item.LockData) {
-            htmlName += '<img src="css/images/editor/lock.png" />';
+            htmlName += '<iron-icon icon="lock" style="height:18px"></iron-icon>';
         }
 
         htmlName += name;
-
-        if (!item.LocalTrailerCount && item.Type == "Movie") {
-            htmlName += '<img src="css/images/editor/missingtrailer.png" title="' + Globalize.translate('MissingLocalTrailer') + '" />';
-        }
 
         if (!item.ImageTags || !item.ImageTags.Primary) {
             htmlName += '<img src="css/images/editor/missingprimaryimage.png" title="' + Globalize.translate('MissingPrimaryImage') + '" />';
@@ -398,7 +394,7 @@
 
     }).on('pagebeforeshow', ".metadataEditorPage", function () {
 
-        Dashboard.importCss('css/metadataeditor.css');
+        require(['css!css/metadataeditor.css']);
 
     }).on('pagebeforeshow', ".metadataEditorPage", function () {
 
@@ -433,7 +429,16 @@
 
     });
 
+    var itemId;
+    function setCurrentItemId(id) {
+        itemId = id;
+    }
+
     function getCurrentItemId() {
+
+        if (itemId) {
+            return itemId;
+        }
 
         var url = window.location.hash || window.location.href;
 
@@ -450,7 +455,8 @@
 
             return ApiClient.getRootFolder(Dashboard.getCurrentUserId());
         },
-        getCurrentItemId: getCurrentItemId
+        getCurrentItemId: getCurrentItemId,
+        setCurrentItemId: setCurrentItemId
     };
 
-})(jQuery, document, window);
+});

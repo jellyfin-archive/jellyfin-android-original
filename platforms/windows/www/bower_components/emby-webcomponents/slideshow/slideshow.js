@@ -1,16 +1,117 @@
-﻿define(['paperdialoghelper', 'inputManager', 'connectionManager', 'browser', 'css!./style', 'html!./icons', 'iron-icon-set', 'paper-fab', 'paper-icon-button', 'paper-spinner'], function (paperdialoghelper, inputmanager, connectionManager, browser) {
+define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'focusManager', 'apphost', 'css!./style', 'html!./icons', 'iron-icon-set', 'paper-icon-button', 'paper-spinner'], function (dialogHelper, inputmanager, connectionManager, layoutManager, focusManager, appHost) {
+
+    function getImageUrl(item, options, apiClient) {
+
+        options = options || {};
+        options.type = options.type || "Primary";
+
+        if (typeof (item) === 'string') {
+            return apiClient.getScaledImageUrl(item, options);
+        }
+
+        if (item.ImageTags && item.ImageTags[options.type]) {
+
+            options.tag = item.ImageTags[options.type];
+            return apiClient.getScaledImageUrl(item.Id, options);
+        }
+
+        if (options.type == 'Primary') {
+            if (item.AlbumId && item.AlbumPrimaryImageTag) {
+
+                options.tag = item.AlbumPrimaryImageTag;
+                return apiClient.getScaledImageUrl(item.AlbumId, options);
+            }
+
+            //else if (item.AlbumId && item.SeriesPrimaryImageTag) {
+
+            //    imgUrl = ApiClient.getScaledImageUrl(item.SeriesId, {
+            //        type: "Primary",
+            //        width: downloadWidth,
+            //        tag: item.SeriesPrimaryImageTag,
+            //        minScale: minScale
+            //    });
+
+            //}
+            //else if (item.ParentPrimaryImageTag) {
+
+            //    imgUrl = ApiClient.getImageUrl(item.ParentPrimaryImageItemId, {
+            //        type: "Primary",
+            //        width: downloadWidth,
+            //        tag: item.ParentPrimaryImageTag,
+            //        minScale: minScale
+            //    });
+            //}
+        }
+
+        return null;
+    }
+
+    function getBackdropImageUrl(item, options, apiClient) {
+
+        options = options || {};
+        options.type = options.type || "Backdrop";
+
+        options.width = null;
+        delete options.width;
+        options.maxWidth = null;
+        delete options.maxWidth;
+        options.maxHeight = null;
+        delete options.maxHeight;
+        options.height = null;
+        delete options.height;
+
+        // If not resizing, get the original image
+        if (!options.maxWidth && !options.width && !options.maxHeight && !options.height) {
+            options.quality = 100;
+        }
+
+        if (item.BackdropImageTags && item.BackdropImageTags.length) {
+
+            options.tag = item.BackdropImageTags[0];
+            return apiClient.getScaledImageUrl(item.Id, options);
+        }
+
+        return null;
+    }
+
+    function getImgUrl(item, original) {
+
+        var apiClient = connectionManager.getApiClient(item.ServerId);
+        var imageOptions = {};
+
+        if (!original) {
+            imageOptions.maxWidth = screen.availWidth;
+        }
+        if (item.BackdropImageTags && item.BackdropImageTags.length) {
+            return getBackdropImageUrl(item, imageOptions, apiClient);
+        } else {
+
+            if (item.MediaType == 'Photo' && original) {
+                return apiClient.getUrl("Items/" + item.Id + "/Download", {
+                    api_key: apiClient.accessToken()
+                });
+            }
+            imageOptions.type = "Primary";
+            return getImageUrl(item, imageOptions, apiClient);
+        }
+    }
 
     return function (options) {
 
         var self = this;
         var swiperInstance;
         var dlg;
+        var currentTimeout;
+        var currentIntervalMs;
+        var currentOptions;
+        var currentIndex;
 
         function createElements(options) {
 
-            dlg = paperdialoghelper.createDialog({
+            dlg = dialogHelper.createDialog({
                 exitAnimationDuration: options.interactive ? 400 : 800,
-                size: 'fullscreen'
+                size: 'fullscreen',
+                autoFocus: false
             });
 
             dlg.classList.add('slideshowDialog');
@@ -22,13 +123,21 @@
                 html += '<div>';
                 html += '<div class="slideshowSwiperContainer"><div class="swiper-wrapper"></div></div>';
 
-                html += '<paper-fab mini icon="slideshow:arrow-back" class="btnSlideshowExit" tabindex="-1"></paper-fab>';
+                html += '<paper-icon-button icon="slideshow:keyboard-arrow-left" class="btnSlideshowPrevious slideshowButton" tabindex="-1"></paper-icon-button>';
+                html += '<paper-icon-button icon="slideshow:keyboard-arrow-right" class="btnSlideshowNext slideshowButton" tabindex="-1"></paper-icon-button>';
 
-                html += '<div class="slideshowControlBar">';
-                html += '<paper-icon-button icon="slideshow:skip-previous" class="btnSlideshowPrevious slideshowButton"></paper-icon-button>';
+                html += '<paper-icon-button icon="slideshow:close" class="btnSlideshowExit" tabindex="-1"></paper-icon-button>';
+
+                html += '<div class="slideshowBottomBar hide">';
+
+                //html += '<paper-icon-button icon="slideshow:share" class="btnShare slideshowButton"></paper-icon-button>';
                 html += '<paper-icon-button icon="slideshow:pause" class="btnSlideshowPause slideshowButton" autoFocus></paper-icon-button>';
-                html += '<paper-icon-button icon="slideshow:skip-next" class="btnSlideshowNext slideshowButton"></paper-icon-button>';
+                if (appHost.supports('filedownload')) {
+                    html += '<paper-icon-button icon="slideshow:file-download" class="btnDownload slideshowButton"></paper-icon-button>';
+                }
+
                 html += '</div>';
+
                 html += '</div>';
 
             } else {
@@ -40,24 +149,39 @@
             if (options.interactive) {
                 dlg.querySelector('.btnSlideshowExit').addEventListener('click', function (e) {
 
-                    paperdialoghelper.close(dlg);
+                    dialogHelper.close(dlg);
                 });
                 dlg.querySelector('.btnSlideshowNext').addEventListener('click', nextImage);
                 dlg.querySelector('.btnSlideshowPrevious').addEventListener('click', previousImage);
-                dlg.querySelector('.btnSlideshowPause').addEventListener('click', playPause);
+
+                var btnPause = dlg.querySelector('.btnSlideshowPause');
+                if (btnPause) {
+                    btnPause.addEventListener('click', playPause);
+                }
+
+                var btnDownload = dlg.querySelector('.btnDownload');
+                if (btnDownload) {
+                    btnDownload.addEventListener('click', download);
+                }
+
+                var btnShare = dlg.querySelector('.btnShare');
+                if (btnShare) {
+                    btnShare.addEventListener('click', share);
+                }
             }
 
             document.body.appendChild(dlg);
 
-            paperdialoghelper.open(dlg).then(function () {
+            dialogHelper.open(dlg).then(function () {
 
                 stopInterval();
                 dlg.parentNode.removeChild(dlg);
             });
 
             inputmanager.on(window, onInputCommand);
+            document.addEventListener('mousemove', onMouseMove);
 
-            dlg.addEventListener('iron-overlay-closed', onDialogClosed);
+            dlg.addEventListener('close', onDialogClosed);
 
             if (options.interactive) {
                 loadSwiper(dlg);
@@ -90,7 +214,7 @@
                 swiperInstance.on('onLazyImageLoad', onSlideChangeStart);
                 swiperInstance.on('onLazyImageReady', onSlideChangeEnd);
 
-                if (browser.mobile) {
+                if (layoutManager.mobile) {
                     pause();
                 } else {
                     play();
@@ -101,9 +225,11 @@
         function getSwiperSlideHtmlFromItem(item) {
 
             return getSwiperSlideHtmlFromSlide({
-                imageUrl: getImgUrl(item)
+                imageUrl: getImgUrl(item),
+                originalImage: getImgUrl(item, true),
                 //title: item.Name,
                 //description: item.Overview
+                Id: item.Id
             });
         }
 
@@ -128,7 +254,7 @@
         function getSwiperSlideHtmlFromSlide(item) {
 
             var html = '';
-            html += '<div class="swiper-slide">';
+            html += '<div class="swiper-slide" data-original="' + item.originalImage + '" data-itemid="' + item.Id + '">';
             html += '<img data-src="' + item.imageUrl + '" class="swiper-lazy">';
             html += '<paper-spinner></paper-spinner>';
             if (item.title || item.subtitle) {
@@ -167,7 +293,7 @@
                 if (options.loop === false) {
 
                     if (swiperInstance.activeIndex >= swiperInstance.slides.length - 1) {
-                        paperdialoghelper.close(dlg);
+                        dialogHelper.close(dlg);
                         return;
                     }
                 }
@@ -177,6 +303,44 @@
                 stopInterval();
                 showNextImage(currentIndex + 1);
             }
+        }
+
+        function getCurrentItemId() {
+
+
+            if (swiperInstance) {
+                return document.querySelector('.swiper-slide-active').getAttribute('data-itemid');
+            } else {
+                return null;
+            }
+        }
+
+        function getCurrentImageUrl() {
+
+
+            if (swiperInstance) {
+                return document.querySelector('.swiper-slide-active').getAttribute('data-original');
+            } else {
+                return null;
+            }
+        }
+
+        function download() {
+
+            var url = getCurrentImageUrl();
+            var itemId = getCurrentItemId();
+            alert(itemId);
+            require(['fileDownloader'], function (fileDownloader) {
+                fileDownloader.download([
+                {
+                    url: url,
+                    itemId: itemId
+                }]);
+            });
+        }
+
+        function share() {
+
         }
 
         function play() {
@@ -212,12 +376,8 @@
             }
 
             inputmanager.off(window, onInputCommand);
+            document.removeEventListener('mousemove', onMouseMove);
         }
-
-        var currentTimeout;
-        var currentIntervalMs;
-        var currentOptions;
-        var currentIndex;
 
         function startInterval(options) {
 
@@ -232,94 +392,137 @@
             }
         }
 
-        function getImgUrl(item) {
+        var _osdOpen = false;
+        function isOsdOpen() {
+            return _osdOpen;
+        }
 
-            var apiClient = connectionManager.getApiClient(item.ServerId);
-            if (item.BackdropImageTags && item.BackdropImageTags.length) {
-                return getBackdropImageUrl(item, {
-                    maxWidth: screen.availWidth
-                }, apiClient);
-            } else {
-                return getImageUrl(item, {
-                    type: "Primary",
-                    maxWidth: screen.availWidth
-                }, apiClient);
+        function getOsdBottom() {
+            return dlg.querySelector('.slideshowBottomBar');
+        }
+
+        function showOsd() {
+
+            slideUpToShow(getOsdBottom());
+            startHideTimer();
+        }
+
+        function hideOsd() {
+
+            slideDownToHide(getOsdBottom());
+        }
+
+        var hideTimeout;
+        function startHideTimer() {
+            stopHideTimer();
+            hideTimeout = setTimeout(hideOsd, 4000);
+        }
+        function stopHideTimer() {
+            if (hideTimeout) {
+                clearTimeout(hideTimeout);
+                hideTimeout = null;
             }
         }
 
-        function getBackdropImageUrl(item, options, apiClient) {
+        function slideUpToShow(elem) {
 
-            options = options || {};
-            options.type = options.type || "Backdrop";
-
-            options.width = null;
-            delete options.width;
-            options.maxWidth = null;
-            delete options.maxWidth;
-            options.maxHeight = null;
-            delete options.maxHeight;
-            options.height = null;
-            delete options.height;
-
-            // If not resizing, get the original image
-            if (!options.maxWidth && !options.width && !options.maxHeight && !options.height) {
-                options.quality = 100;
-                options.format = 'jpg';
+            if (!elem.classList.contains('hide')) {
+                return;
             }
 
-            if (item.BackdropImageTags && item.BackdropImageTags.length) {
+            _osdOpen = true;
+            elem.classList.remove('hide');
 
-                options.tag = item.BackdropImageTags[0];
-                return apiClient.getScaledImageUrl(item.Id, options);
-            }
+            requestAnimationFrame(function () {
 
-            return null;
+                var keyframes = [
+                  { transform: 'translate3d(0,' + elem.offsetHeight + 'px,0)', opacity: '.3', offset: 0 },
+                  { transform: 'translate3d(0,0,0)', opacity: '1', offset: 1 }];
+                var timing = { duration: 300, iterations: 1, easing: 'ease-out' };
+                elem.animate(keyframes, timing).onfinish = function () {
+                    focusManager.focus(elem.querySelector('.btnSlideshowPause'));
+                };
+            });
         }
 
-        function getImageUrl(item, options, apiClient) {
+        function slideDownToHide(elem) {
 
-            options = options || {};
-            options.type = options.type || "Primary";
-
-            if (typeof (item) === 'string') {
-                return apiClient.getScaledImageUrl(item, options);
+            if (elem.classList.contains('hide')) {
+                return;
             }
 
-            if (item.ImageTags && item.ImageTags[options.type]) {
+            requestAnimationFrame(function () {
 
-                options.tag = item.ImageTags[options.type];
-                return apiClient.getScaledImageUrl(item.Id, options);
+                var keyframes = [
+                  { transform: 'translate3d(0,0,0)', opacity: '1', offset: 0 },
+                  { transform: 'translate3d(0,' + elem.offsetHeight + 'px,0)', opacity: '.3', offset: 1 }];
+                var timing = { duration: 300, iterations: 1, easing: 'ease-out' };
+                elem.animate(keyframes, timing).onfinish = function () {
+                    elem.classList.add('hide');
+                    _osdOpen = false;
+                };
+            });
+        }
+
+        var lastMouseMoveData;
+        function onMouseMove(e) {
+
+            var eventX = e.screenX || 0;
+            var eventY = e.screenY || 0;
+
+            var obj = lastMouseMoveData;
+            if (!obj) {
+                lastMouseMoveData = {
+                    x: eventX,
+                    y: eventY
+                };
+                return;
             }
 
-            if (options.type == 'Primary') {
-                if (item.AlbumId && item.AlbumPrimaryImageTag) {
-
-                    options.tag = item.AlbumPrimaryImageTag;
-                    return apiClient.getScaledImageUrl(item.AlbumId, options);
-                }
-
-                //else if (item.AlbumId && item.SeriesPrimaryImageTag) {
-
-                //    imgUrl = ApiClient.getScaledImageUrl(item.SeriesId, {
-                //        type: "Primary",
-                //        width: downloadWidth,
-                //        tag: item.SeriesPrimaryImageTag,
-                //        minScale: minScale
-                //    });
-
-                //}
-                //else if (item.ParentPrimaryImageTag) {
-
-                //    imgUrl = ApiClient.getImageUrl(item.ParentPrimaryImageItemId, {
-                //        type: "Primary",
-                //        width: downloadWidth,
-                //        tag: item.ParentPrimaryImageTag,
-                //        minScale: minScale
-                //    });
-                //}
+            // if coord are same, it didn't move
+            if (Math.abs(eventX - obj.x) < 10 && Math.abs(eventY - obj.y) < 10) {
+                return;
             }
 
-            return null;
+            obj.x = eventX;
+            obj.y = eventY;
+
+            showOsd();
+        }
+
+        function onInputCommand(e) {
+
+            switch (e.detail.command) {
+
+                case 'left':
+                    if (!isOsdOpen()) {
+                        e.preventDefault();
+                        previousImage();
+                    }
+                    break;
+                case 'right':
+                    if (!isOsdOpen()) {
+                        e.preventDefault();
+                        nextImage();
+                    }
+                    break;
+                case 'up':
+                case 'down':
+                case 'select':
+                case 'menu':
+                case 'info':
+                case 'play':
+                case 'playpause':
+                case 'pause':
+                case 'fastforward':
+                case 'rewind':
+                case 'next':
+                case 'previous':
+                    showOsd();
+                    break;
+                default:
+                    break;
+            }
         }
 
         function showNextImage(index, skipPreload) {
@@ -398,33 +601,6 @@
             }
         }
 
-        function onInputCommand(e) {
-
-            switch (e.detail.command) {
-
-                case 'left':
-                    previousImage();
-                    break;
-                case 'right':
-                    nextImage();
-                    break;
-                case 'play':
-                    play();
-                    break;
-                case 'pause':
-                    pause();
-                    break;
-                case 'playpause':
-                    playPause();
-                    break;
-                default:
-                    return
-                    break;
-            }
-
-            e.preventDefault();
-        }
-
         self.show = function () {
             startInterval(options);
         };
@@ -434,7 +610,7 @@
             var dialog = dlg;
             if (dialog) {
 
-                paperdialoghelper.close(dialog);
+                dialogHelper.close(dialog);
             }
         };
     }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * dummy remuxer
 */
 
@@ -8,8 +8,8 @@ class DummyRemuxer {
     this.observer = observer;
   }
 
-  get timescale() {
-    return this.PES_TIMESCALE;
+  get passthrough() {
+    return false;
   }
 
   destroy() {

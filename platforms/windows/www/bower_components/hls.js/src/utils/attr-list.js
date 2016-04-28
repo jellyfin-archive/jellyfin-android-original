@@ -1,4 +1,4 @@
-﻿
+
 // adapted from https://github.com/kanongil/node-m3u8parse/blob/master/attrlist.js
 class AttrList {
 

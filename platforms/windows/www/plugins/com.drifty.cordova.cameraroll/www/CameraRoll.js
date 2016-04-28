@@ -1,4 +1,4 @@
-﻿cordova.define("com.drifty.cordova.cameraroll.CameraRoll", function(require, exports, module) {
+cordova.define("com.drifty.cordova.cameraroll.CameraRoll", function(require, exports, module) {
 var exec = require('cordova/exec');
 
 var cameraRoll = {};

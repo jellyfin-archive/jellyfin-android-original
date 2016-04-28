@@ -1,4 +1,4 @@
-﻿cordova.define("uk.co.whiteoctober.cordova.appversion.AppVersionProxy", function(require, exports, module) {
+cordova.define("uk.co.whiteoctober.cordova.appversion.AppVersionProxy", function(require, exports, module) {
 AppVersionProxy = {
   getVersionNumber: function (successCallback, failCallback, args) {
     var version = Windows.ApplicationModel.Package.current.id.version;

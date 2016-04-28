@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -528,8 +528,8 @@ Custom property | Description | Default
       },
 
       _positionKnob: function(ratio) {
-        this._setImmediateValue(this._calcStep(this._calcKnobPosition(ratio)));
-        this._setPinValue(this.immediateValue);
+          this._setImmediateValue(this._calcStep(this._calcKnobPosition(ratio)));
+          this._setPinValue(this.immediateValue);
         this._setRatio(this._calcRatio(this.immediateValue));
 
         this.$.sliderKnob.style.left = (this.ratio * 100) + '%';
@@ -583,7 +583,7 @@ Custom property | Description | Default
         // update knob's position
         var translateX = ((this._calcRatio(this.immediateValue) * this._w) - this._knobstartx);
         this.translate3d(translateX + 'px', 0, 0, this.$.sliderKnob);
-        this._setPinValue(immediateValue);
+        this._setPinValue(this.immediateValue);
       },
 
       _trackEnd: function() {
@@ -638,6 +638,9 @@ Custom property | Description | Default
 
         // cancel selection
         event.preventDefault();
+
+        // set the focus manually because we will called prevent default
+        this.focus();
       },
 
       _knobTransitionEnd: function(event) {
@@ -650,7 +653,7 @@ Custom property | Description | Default
         if (!this.snaps) {
           this._setMarkers([]);
         }
-        var steps = Math.floor((this.max - this.min) / this.step);
+        var steps = Math.round((this.max - this.min) / this.step);
         if (steps > maxMarkers) {
           steps = maxMarkers;
         }
@@ -724,9 +727,9 @@ Custom property | Description | Default
         if (this.hasRipple()) {
           // note, ripple must be un-hidden prior to setting `holdDown`
           if (receivedFocusFromKeyboard) {
-            this._ripple.removeAttribute('hidden');
+            this._ripple.style.display = '';
           } else {
-            this._ripple.setAttribute('hidden', '');
+            this._ripple.style.display = 'none';
           }
           this._ripple.holdDown = receivedFocusFromKeyboard;
         }

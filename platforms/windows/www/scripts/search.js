@@ -1,4 +1,4 @@
-﻿(function ($, document, window, clearTimeout, setTimeout) {
+﻿define(['libraryBrowser', 'scrollStyles'], function (libraryBrowser) {
 
     var searchHintTimeout;
 
@@ -44,7 +44,7 @@
         }
         else if (hint.Type == "Series") {
 
-            return [Globalize.translate('LabelSeries')];
+            return [Globalize.translate('Series')];
         }
         else if (hint.Type == "BoxSet") {
 
@@ -84,7 +84,7 @@
             return i;
         });
 
-        var html = LibraryBrowser.getPosterViewHtml({
+        var html = libraryBrowser.getPosterViewHtml({
             items: hints,
             shape: "auto",
             lazy: true,
@@ -109,7 +109,7 @@
         ApiClient.getSearchHints({
 
             userId: Dashboard.getCurrentUserId(),
-            searchTerm: searchTerm,
+            searchTerm: (searchTerm || '').trim(),
             limit: 30
 
         }).then(function (result) {
@@ -128,7 +128,10 @@
 
         if (!searchTerm) {
 
-            $('.itemsContainer', elem).empty();
+            var itemsContainer = elem.querySelector('.itemsContainer');
+            if (itemsContainer) {
+                itemsContainer.innerHTML = '';
+            }
             clearSearchHintTimeout();
             return;
         }
@@ -148,12 +151,15 @@
 
         if (createIfNeeded && !elem) {
 
-            var html = '<div class="searchResultsOverlay ui-body-b smoothScrollY background-theme-b">';
+            var div = document.createElement('div');
+            div.className = 'searchResultsOverlay ui-body-b smoothScrollY background-theme-b';
 
-            html += '<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';
+            div.innerHTML = '<div class="searchResultsContainer"><div class="itemsContainer"></div></div></div>';
 
-            elem = $(html).appendTo(document.body)[0];
-            $(elem).createCardMenus();
+            document.body.appendChild(div);
+            libraryBrowser.createCardMenus(div);
+
+            elem = div;
         }
 
         return elem;
@@ -199,7 +205,10 @@
           { opacity: '0', offset: 0 },
           { opacity: '1', offset: 1 }];
         var timing = { duration: 200, iterations: iterations, fill: 'both' };
-        elem.animate(keyframes, timing);
+
+        if (elem.animate) {
+            elem.animate(keyframes, timing);
+        }
     }
 
     function fadeOut(elem, iterations) {
@@ -207,16 +216,23 @@
           { opacity: '1', offset: 0 },
           { opacity: '0', offset: 1 }];
         var timing = { duration: 600, iterations: iterations, fill: 'both' };
-        elem.animate(keyframes, timing).onfinish = function () {
+
+        var onfinish = function () {
             elem.parentNode.removeChild(elem);
         };
+
+        if (elem.animate) {
+            elem.animate(keyframes, timing).onfinish = onfinish;
+        } else {
+            onfinish();
+        }
     }
 
     function bindSearchEvents() {
 
-        require(['searchmenu'], function () {
-            Events.on(SearchMenu, 'closed', closeSearchResults);
-            Events.on(SearchMenu, 'change', function (e, value) {
+        require(['searchmenu'], function (searchmenu) {
+            Events.on(window.SearchMenu, 'closed', closeSearchResults);
+            Events.on(window.SearchMenu, 'change', function (e, value) {
 
                 onHeaderSearchChange(value);
             });
@@ -230,14 +246,14 @@
     }
 
     function showSearchMenu() {
-        require(['searchmenu'], function () {
-            SearchMenu.show();
+        require(['searchmenu'], function (searchmenu) {
+            window.SearchMenu.show();
         });
     }
 
     function hideSearchMenu() {
-        require(['searchmenu'], function () {
-            SearchMenu.hide();
+        require(['searchmenu'], function (searchmenu) {
+            window.SearchMenu.hide();
         });
     }
 
@@ -248,4 +264,4 @@
         bindSearchEvents();
     });
 
-})(jQuery, document, window, clearTimeout, setTimeout);
+});

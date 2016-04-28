@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -175,9 +175,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       _scrollInteractionHandler: function(event) {
+        var scrolledElement =
+            /** @type {HTMLElement} */(Polymer.dom(event).rootTarget);
         if (Polymer
               .IronDropdownScrollManager
-              .elementIsScrollLocked(Polymer.dom(event).rootTarget)) {
+              .elementIsScrollLocked(scrolledElement)) {
           if (event.type === 'keydown' &&
               !Polymer.IronDropdownScrollManager._isScrollingKeypress(event)) {
             return;

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AAC demuxer
  */
 import ADTS from './adts';
@@ -11,7 +11,7 @@ import ID3 from '../demux/id3';
     this.observer = observer;
     this.remuxerClass = remuxerClass;
     this.remuxer = new this.remuxerClass(observer);
-    this._aacTrack = {type: 'audio', id :-1, sequenceNumber: 0, samples : [], len : 0};
+    this._aacTrack = {container : 'audio/adts', type: 'audio', id :-1, sequenceNumber: 0, samples : [], len : 0};
   }
 
   static probe(data) {
@@ -49,8 +49,7 @@ import ID3 from '../demux/id3';
       track.audiosamplerate = config.samplerate;
       track.channelCount = config.channelCount;
       track.codec = config.codec;
-      track.timescale = config.samplerate;
-      track.duration = config.samplerate * duration;
+      track.duration = duration;
       logger.log(`parsed codec:${track.codec},rate:${config.samplerate},nb channel:${config.channelCount}`);
     }
     frameIndex = 0;
@@ -83,7 +82,7 @@ import ID3 from '../demux/id3';
         break;
       }
     }
-    this.remuxer.remux(this._aacTrack,{samples : []}, {samples : [ { pts: pts, dts : pts, unit : id3.payload} ]}, timeOffset);
+    this.remuxer.remux(this._aacTrack,{samples : []}, {samples : [ { pts: pts, dts : pts, unit : id3.payload} ]}, { samples: [] }, timeOffset);
   }
 
   destroy() {

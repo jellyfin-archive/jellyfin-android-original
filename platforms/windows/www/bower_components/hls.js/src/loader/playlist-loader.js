@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Playlist Loader
 */
 
@@ -42,7 +42,7 @@ class PlaylistLoader extends EventHandler {
     this.url = url;
     this.id = id1;
     this.id2 = id2;
-    if(this.id === undefined) {
+    if(this.id === null) {
       retry = config.manifestLoadingMaxRetry;
       timeout = config.manifestLoadingTimeOut;
       retryDelay = config.manifestLoadingRetryDelay;
@@ -75,7 +75,7 @@ class PlaylistLoader extends EventHandler {
         level.width = resolution.width;
         level.height = resolution.height;
       }
-      level.bitrate = attrs.decimalInteger('BANDWIDTH');
+      level.bitrate = attrs.decimalInteger('AVERAGE-BANDWIDTH') || attrs.decimalInteger('BANDWIDTH');
       level.name = attrs.NAME;
 
       var codecs = attrs.CODECS;
@@ -265,7 +265,9 @@ class PlaylistLoader extends EventHandler {
       details = ErrorDetails.LEVEL_LOAD_ERROR;
       fatal = false;
     }
-    this.loader.abort();
+    if (this.loader) {
+      this.loader.abort();
+    }
     this.hls.trigger(Event.ERROR, {type: ErrorTypes.NETWORK_ERROR, details: details, fatal: fatal, url: this.url, loader: this.loader, response: event.currentTarget, level: this.id, id: this.id2});
   }
 
@@ -278,8 +280,10 @@ class PlaylistLoader extends EventHandler {
       details = ErrorDetails.LEVEL_LOAD_TIMEOUT;
       fatal = false;
     }
-   this.loader.abort();
-   this.hls.trigger(Event.ERROR, {type: ErrorTypes.NETWORK_ERROR, details: details, fatal: fatal, url: this.url, loader: this.loader, level: this.id, id: this.id2});
+    if (this.loader) {
+      this.loader.abort();
+    }
+    this.hls.trigger(Event.ERROR, {type: ErrorTypes.NETWORK_ERROR, details: details, fatal: fatal, url: this.url, loader: this.loader, level: this.id, id: this.id2});
   }
 }
 

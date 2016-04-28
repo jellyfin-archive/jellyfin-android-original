@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  * This file contains an adaptation of the AES decryption algorithm
  * from the Standford Javascript Cryptography Library. That work is

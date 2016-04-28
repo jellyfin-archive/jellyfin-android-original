@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['jQuery'], function ($) {
 
     function populateHistory(packageInfo, page) {
 
@@ -199,20 +199,13 @@
 
         var context = getParameterByName('context');
 
-        $('.syncTabs', page).hide();
-        $('.pluginTabs', page).hide();
-        $('.livetvTabs', page).hide();
         $('.notificationsTabs', page).hide();
 
         if (context == 'sync') {
-            $('.syncTabs', page).show();
-
             page.setAttribute('data-helpurl', 'https://github.com/MediaBrowser/Wiki/wiki/Sync');
             Dashboard.setPageTitle(Globalize.translate('TitleSync'));
         }
         else if (context == 'livetv') {
-
-            $('.livetvTabs', page).show();
 
             Dashboard.setPageTitle(Globalize.translate('TitleLiveTV'));
             page.setAttribute('data-helpurl', 'https://github.com/MediaBrowser/Wiki/wiki/Live%20TV');
@@ -225,8 +218,6 @@
             page.setAttribute('data-helpurl', 'https://github.com/MediaBrowser/Wiki/wiki/Notifications');
         }
         else {
-            $('.pluginTabs', page).show();
-
             page.setAttribute('data-helpurl', 'https://github.com/MediaBrowser/Wiki/wiki/Plugins');
             Dashboard.setPageTitle(Globalize.translate('TitlePlugins'));
         }
@@ -242,6 +233,8 @@
             if (confirmed) {
 
                 Dashboard.showLoadingMsg();
+
+                page.querySelector('#btnInstall').disabled = true;
 
                 ApiClient.installPlugin(packageName, guid, updateClass, version).then(function () {
 
@@ -259,7 +252,17 @@
             msg += '<br/>';
             msg += Globalize.translate('PleaseConfirmPluginInstallation');
 
-            Dashboard.confirm(msg, Globalize.translate('HeaderConfirmPluginInstallation'), alertCallback);
+            require(['confirm'], function (confirm) {
+
+                confirm(msg, Globalize.translate('HeaderConfirmPluginInstallation')).then(function () {
+
+                    alertCallback(true);
+                }, function () {
+
+                    alertCallback(false);
+                });
+
+            });
 
         } else {
             alertCallback(true);
@@ -274,9 +277,7 @@
 
             Dashboard.showLoadingMsg();
 
-            var page = $(this).parents('#addPluginPage');
-
-            $('#btnInstall', page).buttonEnabled(false);
+            var page = $(this).parents('#addPluginPage')[0];
 
             var name = getParameterByName('name');
             var guid = getParameterByName('guid');
@@ -310,4 +311,4 @@
 
     window.AddPluginPage = new addPluginpage();
 
-})(jQuery, document, window);
+});

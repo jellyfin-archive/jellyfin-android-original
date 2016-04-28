@@ -1,4 +1,4 @@
-﻿var BinarySearch = {
+var BinarySearch = {
     /**
      * Searches for an item in an array which matches a certain condition.
      * This requires the condition to only match one item in the array,

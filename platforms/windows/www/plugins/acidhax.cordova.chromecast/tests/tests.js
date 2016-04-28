@@ -1,4 +1,4 @@
-﻿cordova.define("acidhax.cordova.chromecast.tests", function(require, exports, module) {
+cordova.define("acidhax.cordova.chromecast.tests", function(require, exports, module) {
 exports.init = function() {
   eval(require('org.apache.cordova.test-framework.test').injectJasmineInterface(this, 'this'));
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 25000;

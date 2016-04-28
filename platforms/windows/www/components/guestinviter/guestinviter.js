@@ -1,23 +1,19 @@
-﻿define(['paperdialoghelper', 'paper-input', 'paper-button', 'jqmcollapsible'], function (paperDialogHelper) {
+﻿define(['dialogHelper', 'jQuery', 'paper-input', 'paper-button', 'emby-collapsible', 'paper-checkbox'], function (dialogHelper, $) {
 
     function renderLibrarySharingList(context, result) {
 
         var folderHtml = '';
 
-        folderHtml += '<div data-role="controlgroup">';
+        folderHtml += '<div class="paperCheckboxList">';
 
         folderHtml += result.Items.map(function (i) {
 
             var currentHtml = '';
 
-            var id = 'chkShareFolder' + i.Id;
-
-            currentHtml += '<label for="' + id + '">' + i.Name + '</label>';
-
             var isChecked = true;
             var checkedHtml = isChecked ? ' checked="checked"' : '';
 
-            currentHtml += '<input data-mini="true" class="chkShareFolder" data-folderid="' + i.Id + '" type="checkbox" id="' + id + '"' + checkedHtml + ' />';
+            currentHtml += '<paper-checkbox class="chkShareFolder" data-folderid="' + i.Id + '" type="checkbox"' + checkedHtml + '>' + i.Name + '</paper-checkbox>';
 
             return currentHtml;
 
@@ -25,7 +21,7 @@
 
         folderHtml += '</div>';
 
-        $('.librarySharingList', context).html(folderHtml).trigger('create');
+        context.querySelector('.librarySharingList').innerHTML = folderHtml;
     }
 
     function inviteUser(dlg) {
@@ -34,7 +30,11 @@
 
         ApiClient.getJSON(ApiClient.getUrl("Channels", {})).then(function (channelsResult) {
 
-            var shareExcludes = $(".chkShareFolder:checked", dlg).get().map(function (i) {
+            var shareExcludes = $(".chkShareFolder", dlg).get().filter(function (i) {
+
+                return i.checked;
+
+            }).map(function (i) {
 
                 return i.getAttribute('data-folderid');
             });
@@ -47,7 +47,7 @@
                 dataType: 'json',
                 data: {
 
-                    ConnectUsername: $('#txtConnectUsername', dlg).val(),
+                    ConnectUsername: dlg.querySelector('#txtConnectUsername').value,
                     EnabledLibraries: shareExcludes.join(','),
                     SendingUserId: Dashboard.getCurrentUserId(),
                     EnableLiveTv: false
@@ -56,12 +56,53 @@
             }).then(function (result) {
 
                 dlg.submitted = true;
-                paperDialogHelper.close(dlg);
+                dialogHelper.close(dlg);
 
                 Dashboard.hideLoadingMsg();
 
                 showNewUserInviteMessage(dlg, result);
 
+            }, function (response) {
+
+                Dashboard.hideLoadingMsg();
+
+                if (!response.status) {
+                    // General error
+                    require(['alert'], function (alert) {
+                        alert({
+                            text: Globalize.translate('DefaultErrorMessage')
+                        });
+                    });
+                } else if (response.status == 404) {
+                    // User doesn't exist
+                    require(['alert'], function (alert) {
+                        alert({
+                            text: Globalize.translate('GuestUserNotFound')
+                        });
+                    });
+                } else {
+
+                    // status 400 = account not activated
+
+                    // General error
+                    showAccountErrorMessage();
+                }
+            });
+        });
+    }
+
+    function showAccountErrorMessage() {
+
+        var html = Globalize.translate('ErrorAddingGuestAccount1', '<a href="https://emby.media/connect" target="_blank">https://emby.media/connect</a>');
+        html += '<br/><br/>' + Globalize.translate('ErrorAddingGuestAccount2', 'apps@emby.media');
+
+        var text = Globalize.translate('ErrorAddingGuestAccount1', 'https://emby.media/connect');
+        text += '\n\n' + Globalize.translate('ErrorAddingGuestAccount2', 'apps@emby.media');
+
+        require(['alert'], function (alert) {
+            alert({
+                text: text,
+                html: html
             });
         });
     }
@@ -78,9 +119,11 @@
             Globalize.translate('MessageInvitationSentToNewUser', result.GuestDisplayName) :
             Globalize.translate('MessageInvitationSentToUser', result.GuestDisplayName);
 
-        Dashboard.alert({
-            message: message,
-            title: Globalize.translate('HeaderInvitationSent')
+        require(['alert'], function (alert) {
+            alert({
+                text: message,
+                title: Globalize.translate('HeaderInvitationSent')
+            });
         });
     }
 
@@ -94,7 +137,7 @@
                 xhr.onload = function (e) {
 
                     var template = this.response;
-                    var dlg = paperDialogHelper.createDialog({
+                    var dlg = dialogHelper.createDialog({
                         removeOnClose: true,
                         size: 'small'
                     });
@@ -109,13 +152,11 @@
                     html += Globalize.translateDocument(template);
 
                     dlg.innerHTML = html;
-                    // needed for the collapsible
                     document.body.appendChild(dlg);
-                    $(dlg.querySelector('form')).trigger('create');
 
-                    paperDialogHelper.open(dlg);
+                    dialogHelper.open(dlg);
 
-                    dlg.addEventListener('iron-overlay-closed', function () {
+                    dlg.addEventListener('close', function () {
 
                         if (dlg.submitted) {
                             resolve();
@@ -126,7 +167,7 @@
 
                     dlg.querySelector('.btnCancel').addEventListener('click', function (e) {
 
-                        paperDialogHelper.close(dlg);
+                        dialogHelper.close(dlg);
                     });
 
                     dlg.querySelector('form').addEventListener('submit', function (e) {

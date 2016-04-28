@@ -1,9 +1,9 @@
-﻿define(['paperdialoghelper', 'paper-checkbox', 'paper-dialog', 'paper-input'], function (paperDialogHelper) {
+﻿define(['dialogHelper', 'jQuery', 'paper-checkbox', 'paper-input'], function (dialogHelper, $) {
 
     function onSubmit() {
         Dashboard.showLoadingMsg();
 
-        var panel = $(this).parents('paper-dialog')[0];
+        var panel = $(this).parents('.dialog')[0];
 
         var collectionId = $('#selectCollectionToAddTo', panel).val();
 
@@ -39,7 +39,7 @@
 
             var id = result.Id;
 
-            paperDialogHelper.close(dlg);
+            dialogHelper.close(dlg);
             redirectToCollection(id);
 
         });
@@ -71,9 +71,11 @@
 
             Dashboard.hideLoadingMsg();
 
-            paperDialogHelper.close(dlg);
+            dialogHelper.close(dlg);
 
-            Dashboard.alert(Globalize.translate('MessageItemsAdded'));
+            require(['toast'], function (toast) {
+                toast(Globalize.translate('MessageItemsAdded'));
+            });
         });
     }
 
@@ -122,7 +124,7 @@
         html += '<form class="newCollectionForm" style="margin:auto;">';
 
         html += '<div class="fldSelectCollection">';
-        html += '<label for="selectCollectionToAddTo">' + Globalize.translate('LabelSelectCollection') + '</label>';
+        html += '<label for="selectCollectionToAddTo" class="selectLabel">' + Globalize.translate('LabelSelectCollection') + '</label>';
         html += '<select id="selectCollectionToAddTo" data-mini="true"></select>';
         html += '</div>';
 
@@ -189,7 +191,7 @@
 
             items = items || [];
 
-            var dlg = paperDialogHelper.createDialog({
+            var dlg = dialogHelper.createDialog({
                 size: 'small'
             });
 
@@ -200,7 +202,7 @@
             var title = items.length ? Globalize.translate('HeaderAddToCollection') : Globalize.translate('HeaderNewCollection');
 
             html += '<div class="dialogHeader">';
-            html += '<paper-icon-button icon="close" class="btnCancel" tabindex="-1"></paper-icon-button>';
+            html += '<paper-icon-button icon="arrow-back" class="btnCancel" tabindex="-1"></paper-icon-button>';
             html += '<div class="dialogHeaderTitle">';
             html += title;
             html += '</div>';
@@ -213,13 +215,13 @@
 
             initEditor(dlg, items);
 
-            $(dlg).on('iron-overlay-closed', onDialogClosed);
+            $(dlg).on('close', onDialogClosed);
 
-            paperDialogHelper.open(dlg);
+            dialogHelper.open(dlg);
 
             $('.btnCancel', dlg).on('click', function () {
 
-                paperDialogHelper.close(dlg);
+                dialogHelper.close(dlg);
             });
         };
     }

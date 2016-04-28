@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @author RubaXa <trash@rubaxa.org>
  * @licence MIT
  */

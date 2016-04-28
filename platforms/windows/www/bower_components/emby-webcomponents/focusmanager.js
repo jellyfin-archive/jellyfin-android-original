@@ -1,31 +1,39 @@
-﻿define([], function () {
+define([], function () {
 
     function autoFocus(view, defaultToFirst) {
 
         var element = view.querySelector('*[autofocus]');
         if (element) {
             focus(element);
+            return element;
         } else if (defaultToFirst !== false) {
             element = getFocusableElements(view)[0];
 
             if (element) {
                 focus(element);
+                return element;
             }
         }
+
+        return null;
     }
 
     function focus(element) {
 
         var tagName = element.tagName;
         if (tagName == 'PAPER-INPUT' || tagName == 'PAPER-DROPDOWN-MENU' || tagName == 'EMBY-DROPDOWN-MENU') {
-            element = element.querySelector('input');
+            element = element.querySelector('input') || element;
         }
 
-        element.focus();
+        try {
+            element.focus();
+        } catch (err) {
+            console.log('Error in focusManager.autoFocus: ' + err);
+        }
     }
 
-    var focusableTagNames = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A', 'PAPER-BUTTON', 'PAPER-INPUT', 'PAPER-TEXTAREA', 'PAPER-ICON-BUTTON', 'PAPER-FAB', 'PAPER-ICON-ITEM', 'PAPER-MENU-ITEM', 'PAPER-DROPDOWN-MENU', 'EMBY-DROPDOWN-MENU'];
-    var focusableContainerTagNames = ['BODY', 'PAPER-DIALOG'];
+    var focusableTagNames = ['INPUT', 'TEXTAREA', 'SELECT', 'BUTTON', 'A', 'PAPER-BUTTON', 'PAPER-INPUT', 'PAPER-TEXTAREA', 'PAPER-ICON-BUTTON', 'PAPER-FAB', 'PAPER-CHECKBOX', 'PAPER-ICON-ITEM', 'PAPER-MENU-ITEM', 'PAPER-DROPDOWN-MENU', 'EMBY-DROPDOWN-MENU'];
+    var focusableContainerTagNames = ['BODY', 'PAPER-DIALOG', 'DIALOG'];
     var focusableQuery = focusableTagNames.join(',') + ',.focusable';
 
     function isFocusable(elem) {
@@ -54,7 +62,8 @@
         return elem;
     }
 
-    function isFocusableElementValid(elem) {
+    // Determines if a focusable element can be focused at a given point in time 
+    function isCurrentlyFocusable(elem) {
 
         if (elem.disabled) {
             return false;
@@ -80,7 +89,7 @@
 
             var elem = elems[i];
 
-            if (isFocusableElementValid(elem)) {
+            if (isCurrentlyFocusable(elem)) {
                 focusableElements.push(elem);
             }
         }
@@ -120,36 +129,37 @@
         return elem;
     }
 
-    function getOffset(elem, doc) {
+    function getWindowData(win, documentElement) {
+
+        return {
+            pageYOffset: win.pageYOffset,
+            pageXOffset: win.pageXOffset,
+            clientTop: documentElement.clientTop,
+            clientLeft: documentElement.clientLeft
+        };
+    }
+
+    function getOffset(elem, windowData) {
 
         var box = { top: 0, left: 0 };
-
-        if (!doc) {
-            return box;
-        }
-
-        var docElem = doc.documentElement;
 
         // Support: BlackBerry 5, iOS 3 (original iPhone)
         // If we don't have gBCR, just use 0,0 rather than error
         if (elem.getBoundingClientRect) {
             box = elem.getBoundingClientRect();
         }
-        var win = doc.defaultView;
         return {
-            top: box.top + win.pageYOffset - docElem.clientTop,
-            left: box.left + win.pageXOffset - docElem.clientLeft
+            top: box.top + windowData.pageYOffset - windowData.clientTop,
+            left: box.left + windowData.pageXOffset - windowData.clientLeft
         };
     }
 
-    function getViewportBoundingClientRect(elem) {
+    function getViewportBoundingClientRect(elem, windowData) {
 
-        var doc = elem.ownerDocument;
-        var offset = getOffset(elem, doc);
-        var win = doc.defaultView;
+        var offset = getOffset(elem, windowData);
 
-        var posY = offset.top - win.pageXOffset;
-        var posX = offset.left - win.pageYOffset;
+        var posY = offset.top - windowData.pageXOffset;
+        var posX = offset.left - windowData.pageYOffset;
 
         var width = elem.offsetWidth;
         var height = elem.offsetHeight;
@@ -162,11 +172,6 @@
             right: posX + width,
             bottom: posY + height
         };
-        var scrollLeft = (((t = document.documentElement) || (t = document.body.parentNode))
-            && typeof t.scrollLeft == 'number' ? t : document.body).scrollLeft;
-
-        var scrollTop = (((t = document.documentElement) || (t = document.body.parentNode))
-            && typeof t.scrollTop == 'number' ? t : document.body).scrollTop;
     }
 
     function nav(activeElement, direction) {
@@ -186,7 +191,9 @@
 
         var focusableContainer = parentWithClass(activeElement, 'focusable');
 
-        var rect = getViewportBoundingClientRect(activeElement);
+        var doc = activeElement.ownerDocument;
+        var windowData = getWindowData(doc.defaultView, doc.documentElement);
+        var rect = getViewportBoundingClientRect(activeElement, windowData);
         var focusableElements = [];
 
         var focusable = container.querySelectorAll(focusableQuery);
@@ -201,11 +208,11 @@
                 continue;
             }
 
-            if (!isFocusableElementValid(curr)) {
+            if (!isCurrentlyFocusable(curr)) {
                 continue;
             }
 
-            var elementRect = getViewportBoundingClientRect(curr);
+            var elementRect = getViewportBoundingClientRect(curr, windowData);
 
             switch (direction) {
 
@@ -285,7 +292,23 @@
         return elem;
     }
 
+    function intersectsInternal(a1, a2, b1, b2) {
+
+        return (b1 >= a1 && b1 <= a2) || (b2 >= a1 && b2 <= a2);
+    }
+
+    function intersects(a1, a2, b1, b2) {
+
+        return intersectsInternal(a1, a2, b1, b2) || intersectsInternal(b1, b2, a1, a2);
+    }
+
+    var enableDebugInfo = false;
+
     function getNearestElements(elementInfos, options, direction) {
+
+        if (enableDebugInfo) {
+            removeAll();
+        }
 
         // Get elements and work out x/y points
         var cache = [],
@@ -310,58 +333,67 @@
                 x = off.left,
                 y = off.top,
                 x2 = x + off.width - 1,
-                y2 = y + off.height - 1,
-                maxX1 = max(x, point1x),
-                minX2 = min(x2, point2x),
-                maxY1 = max(y, point1y),
-                minY2 = min(y2, point2y),
-                intersectX = minX2 >= maxX1,
-                intersectY = minY2 >= maxY1;
+                y2 = y + off.height - 1;
+
+            var intersectX = intersects(point1x, point2x, x, x2);
+            var intersectY = intersects(point1y, point2y, y, y2);
 
             var midX = off.left + (off.width / 2);
             var midY = off.top + (off.height / 2);
 
             var distX;
             var distY;
+            var distX2;
+            var distY2;
 
             switch (direction) {
 
                 case 0:
                     // left
-                    distX = intersectX ? 0 : Math.abs(point1x - x2);
+                    distX = distX2 = Math.abs(point1x - Math.min(point1x, x2));
                     distY = intersectY ? 0 : Math.abs(sourceMidY - midY);
+                    distY2 = Math.abs(sourceMidY - midY);
                     break;
                 case 1:
                     // right
-                    distX = intersectX ? 0 : Math.abs(x - point2x);
+                    distX = distX2 = Math.abs(point2x - Math.max(point2x, x));
                     distY = intersectY ? 0 : Math.abs(sourceMidY - midY);
+                    distY2 = Math.abs(sourceMidY - midY);
                     break;
                 case 2:
                     // up
-                    distY = intersectY ? 0 : Math.abs(point1y - y2);
+                    distY = distY2 = Math.abs(point1y - Math.min(point1y, y2));
                     distX = intersectX ? 0 : Math.abs(sourceMidX - midX);
+                    distX2 = Math.abs(sourceMidX - midX);
                     break;
                 case 3:
                     // down
-                    distY = intersectY ? 0 : Math.abs(y - point2y);
+                    distY = distY2 = Math.abs(point2y - Math.max(point2y, y));
                     distX = intersectX ? 0 : Math.abs(sourceMidX - midX);
+                    distX2 = Math.abs(sourceMidX - midX);
                     break;
                 default:
                     break;
             }
 
+            if (enableDebugInfo) {
+                addDebugInfo(elem, distX, distY);
+            }
+
             var distT = Math.sqrt(distX * distX + distY * distY);
+            var distT2 = Math.sqrt(distX2 * distX2 + distY2 * distY2);
 
             cache.push({
                 node: elem,
                 distX: distX,
                 distY: distY,
-                distT: distT
+                distT: distT,
+                distT2: distT2
             });
         }
 
         cache.sort(sortNodesT);
-        //if (direction < 2) {
+        //if (direction >= 2) {
         //    cache.sort(sortNodesX);
         //} else {
         //    cache.sort(sortNodesY);
@@ -370,28 +402,70 @@
         return cache;
     }
 
+    function addDebugInfo(elem, distX, distY) {
+
+        var div = elem.querySelector('focusInfo');
+
+        if (!div) {
+            div = document.createElement('div');
+            div.classList.add('focusInfo');
+            elem.appendChild(div);
+
+            if (getComputedStyle(elem, null).getPropertyValue('position') == 'static') {
+                elem.style.position = 'relative';
+            }
+            div.style.position = 'absolute';
+            div.style.left = '0';
+            div.style.top = '0';
+            div.style.color = 'white';
+            div.style.backgroundColor = 'red';
+            div.style.padding = '2px';
+        }
+
+        div.innerHTML = Math.round(distX) + ',' + Math.round(distY);
+    }
+
+    function removeAll() {
+        var elems = document.querySelectorAll('.focusInfo');
+        for (var i = 0, length = elems.length; i < length; i++) {
+            elems[i].parentNode.removeChild(elems[i]);
+        }
+    }
+
     function sortNodesX(a, b) {
         var result = a.distX - b.distX;
 
         if (result == 0) {
-            return a.distY - b.distY;
+            return a.distT - b.distT;
         }
 
         return result;
     }
 
     function sortNodesT(a, b) {
-        return a.distT - b.distT;
+        var result = a.distT - b.distT;
+
+        if (result == 0) {
+            return a.distT2 - b.distT2;
+        }
+
+        return result;
     }
 
     function sortNodesY(a, b) {
         var result = a.distY - b.distY;
 
         if (result == 0) {
-            return a.distX - b.distX;
+            return a.distT - b.distT;
         }
 
         return result;
+    }
+
+    function sendText(text) {
+        var elem = document.activeElement;
+
+        elem.value = text;
     }
 
     return {
@@ -410,6 +484,8 @@
         },
         moveDown: function (sourceElement) {
             nav(sourceElement, 3);
-        }
+        },
+        sendText: sendText,
+        isCurrentlyFocusable: isCurrentlyFocusable
     };
 });

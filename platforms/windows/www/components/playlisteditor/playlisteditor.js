@@ -1,4 +1,4 @@
-﻿define(['paperdialoghelper', 'paper-dialog', 'paper-input'], function (paperDialogHelper) {
+﻿define(['dialogHelper', 'jQuery', 'paper-input'], function (dialogHelper, $) {
 
     var lastPlaylistId = '';
 
@@ -17,7 +17,7 @@
 
         Dashboard.showLoadingMsg();
 
-        var panel = $(this).parents('paper-dialog')[0];
+        var panel = $(this).parents('.dialog')[0];
 
         var playlistId = $('#selectPlaylistToAddTo', panel).val();
 
@@ -52,7 +52,7 @@
 
             var id = result.Id;
 
-            paperDialogHelper.close(dlg);
+            dialogHelper.close(dlg);
             redirectToPlaylist(id);
         });
     }
@@ -73,8 +73,10 @@
 
             Dashboard.hideLoadingMsg();
 
-            paperDialogHelper.close(dlg);
-            Dashboard.alert(Globalize.translate('MessageAddedToPlaylistSuccess'));
+            dialogHelper.close(dlg);
+            require(['toast'], function (toast) {
+                toast(Globalize.translate('MessageAddedToPlaylistSuccess'));
+            });
 
         });
     }
@@ -130,7 +132,7 @@
         html += '<form style="margin:auto;">';
 
         html += '<div class="fldSelectPlaylist">';
-        html += '<label for="selectPlaylistToAddTo">' + Globalize.translate('LabelSelectPlaylist') + '</label>';
+        html += '<label for="selectPlaylistToAddTo" class="selectLabel">' + Globalize.translate('LabelSelectPlaylist') + '</label>';
         html += '<select id="selectPlaylistToAddTo" data-mini="true"></select>';
         html += '</div>';
 
@@ -194,7 +196,7 @@
 
             items = items || [];
 
-            var dlg = paperDialogHelper.createDialog({
+            var dlg = dialogHelper.createDialog({
                 size: 'small'
             });
 
@@ -206,7 +208,7 @@
             var title = Globalize.translate('HeaderAddToPlaylist');
 
             html += '<div class="dialogHeader">';
-            html += '<paper-icon-button icon="close" class="btnCancel" tabindex="-1"></paper-icon-button>';
+            html += '<paper-icon-button icon="arrow-back" class="btnCancel" tabindex="-1"></paper-icon-button>';
             html += '<div class="dialogHeaderTitle">';
             html += title;
             html += '</div>';
@@ -219,13 +221,13 @@
 
             initEditor(dlg, items);
 
-            $(dlg).on('iron-overlay-closed', onDialogClosed);
+            $(dlg).on('close', onDialogClosed);
 
-            paperDialogHelper.open(dlg);
+            dialogHelper.open(dlg);
 
             $('.btnCancel', dlg).on('click', function () {
 
-                paperDialogHelper.close(dlg);
+                dialogHelper.close(dlg);
             });
         };
     }

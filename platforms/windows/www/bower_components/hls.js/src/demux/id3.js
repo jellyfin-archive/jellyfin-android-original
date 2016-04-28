@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ID3 parser
  */
 import {logger} from '../utils/logger';

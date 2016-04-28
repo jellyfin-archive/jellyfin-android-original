@@ -1,4 +1,4 @@
-﻿define(function () {
+define(function () {
     var requireCss = {};
 
     requireCss.normalize = function (name, normalize) {
@@ -47,7 +47,13 @@
             link.setAttribute('rel', 'stylesheet');
             link.setAttribute('type', 'text/css');
             link.onload = load;
-            link.setAttribute('href', url + "?" + config.urlArgs);
+
+            var linkUrl = url;
+
+            if (config.urlArgs) {
+                linkUrl += config.urlArgs(cssId, url);
+            }
+            link.setAttribute('href', linkUrl);
             document.head.appendChild(link);
         } else {
             load();

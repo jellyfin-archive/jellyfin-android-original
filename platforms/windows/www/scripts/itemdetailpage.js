@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['layoutManager', 'jQuery', 'scrollStyles'], function (layoutManager, $) {
 
     var currentItem;
 
@@ -45,7 +45,6 @@
         getPromise().then(function (item) {
 
             reloadFromItem(page, item);
-            window.scrollTo(0, 0);
         });
     }
 
@@ -55,7 +54,8 @@
 
         var context = getContext(item);
 
-        renderHeader(page, item, context);
+        LibraryMenu.setBackButtonVisible(true);
+        LibraryMenu.setMenuButtonVisible(false);
 
         LibraryBrowser.renderName(item, $('.itemName', page), false, context);
         LibraryBrowser.renderParentName(item, $('.parentName', page), context);
@@ -71,9 +71,11 @@
             var hasBackdrop = false;
 
             // For these types, make the backdrop a little smaller so that the items are more quickly accessible
-            if (item.Type == 'MusicArtist' || item.Type == "MusicAlbum" || item.Type == "Playlist" || item.Type == "BoxSet" || item.Type == "Audio") {
+            if (item.Type == 'MusicArtist' || item.Type == "MusicAlbum" || item.Type == "Playlist" || item.Type == "BoxSet" || item.MediaType == "Audio" || !layoutManager.mobile) {
                 $('#itemBackdrop', page).addClass('noBackdrop').css('background-image', 'none');
-                Backdrops.setBackdrops(page, [item]);
+                require(['backdrop'], function (backdrop) {
+                    backdrop.setBackdrops([item]);
+                });
             }
             else {
                 //$('#itemBackdrop', page).addClass('noBackdrop').css('background-image', 'none');
@@ -112,7 +114,7 @@
                 $('.btnPlayTrailer', page).addClass('hide');
             }
 
-            if (SyncManager.isAvailable(item, user)) {
+            if (LibraryBrowser.enableSync(item, user)) {
                 $('.btnSync', page).removeClass('hide');
             } else {
                 $('.btnSync', page).addClass('hide');
@@ -291,7 +293,7 @@
 
     function setPeopleHeader(page, item) {
 
-        if (item.Type == "Audio" || item.Type == "MusicAlbum" || item.MediaType == "Book" || item.MediaType == "Photo") {
+        if (item.MediaType == "Audio" || item.Type == "MusicAlbum" || item.MediaType == "Book" || item.MediaType == "Photo") {
             $('#peopleHeader', page).html(Globalize.translate('HeaderPeople'));
         } else {
             $('#peopleHeader', page).html(Globalize.translate('HeaderCastAndCrew'));
@@ -304,22 +306,46 @@
         return getParameterByName('context');
     }
 
-    function renderHeader(page, item, context) {
+    function renderNextUp(page, item, user) {
 
-        $('.itemTabs', page).hide();
+        var section = page.querySelector('.nextUpSection');
 
-        if (context == 'tv') {
+        var userData = item.UserData || {};
 
-            $(page).removeClass('noSecondaryNavPage');
-
-            $('#tvShowsTabs', page).show();
-            LibraryMenu.setMenuButtonVisible(true);
+        if (item.Type != 'Series' || !userData.PlayedPercentage) {
+            section.classList.add('hide');
+            return;
         }
-        else {
-            $(page).addClass('noSecondaryNavPage');
-            LibraryMenu.setBackButtonVisible(true);
-            LibraryMenu.setMenuButtonVisible(false);
-        }
+
+        ApiClient.getNextUpEpisodes({
+
+            SeriesId: item.Id,
+            UserId: user.Id
+
+        }).then(function (result) {
+
+            if (result.Items.length) {
+                section.classList.remove('hide');
+            } else {
+                section.classList.add('hide');
+            }
+
+            var html = LibraryBrowser.getPosterViewHtml({
+                items: result.Items,
+                shape: "detailPage169",
+                showTitle: true,
+                displayAsSpecial: item.Type == "Season" && item.IndexNumber,
+                overlayText: true,
+                lazy: true,
+                overlayPlayButton: true
+            });
+
+            var itemsContainer = section.querySelector('.nextUpItems');
+            
+            itemsContainer.innerHTML = html;
+            ImageLoader.lazyChildren(itemsContainer);
+            $(itemsContainer).createCardMenus();
+        });
     }
 
     function setInitialCollapsibleState(page, item, context, user) {
@@ -352,6 +378,13 @@
         }
         else {
             $('#childrenCollapsible', page).addClass('hide');
+        }
+
+        if (item.Type == 'Series') {
+
+            renderNextUp(page, item, user);
+        } else {
+            page.querySelector('.nextUpSection').classList.add('hide');
         }
 
         if (item.MediaSources && item.MediaSources.length) {
@@ -408,7 +441,10 @@
     function renderDetails(page, item, context, isStatic) {
 
         renderSimilarItems(page, item, context);
-        renderSiblingLinks(page, item, context);
+
+        if (!isStatic) {
+            renderSiblingLinks(page, item, context);
+        }
 
         if (item.Taglines && item.Taglines.length) {
             $('.tagline', page).html(item.Taglines[0]).show();
@@ -677,8 +713,8 @@
 
         var options = {
             userId: Dashboard.getCurrentUserId(),
-            limit: screenWidth > 800 && shape == "detailPagePortrait" ? 5 : 4,
-            fields: "PrimaryImageAspectRatio,UserData,SyncInfo"
+            limit: screenWidth > 800 && shape == "detailPagePortrait" ? 4 : 4,
+            fields: "PrimaryImageAspectRatio,UserData,SyncInfo,CanDelete"
         };
 
         if (screenWidth >= 800 && screenHeight >= 1000) {
@@ -829,7 +865,7 @@
 
         _childrenItemsFunction = null;
 
-        var fields = "ItemCounts,AudioInfo,PrimaryImageAspectRatio,SyncInfo";
+        var fields = "ItemCounts,AudioInfo,PrimaryImageAspectRatio,SyncInfo,CanDelete";
 
         var query = {
             ParentId: item.Id,
@@ -864,7 +900,8 @@
             _childrenItemsFunction = getEpisodesFunction(item.SeriesId, {
 
                 seasonId: item.Id,
-                userId: user.Id
+                userId: user.Id,
+                Fields: fields
             });
         }
         else if (item.Type == "MusicAlbum") {
@@ -903,10 +940,12 @@
                     shape: getPortraitShape(),
                     showTitle: true,
                     centerText: true,
-                    lazy: true
+                    lazy: true,
+                    overlayPlayButton: true
                 });
             }
             else if (item.Type == "Season") {
+
                 html = LibraryBrowser.getPosterViewHtml({
                     items: result.Items,
                     shape: "detailPage169",
@@ -916,7 +955,7 @@
                     overlayText: true,
                     lazy: true,
                     showDetailsMenu: true,
-                    overlayMoreButton: AppInfo.enableAppLayouts
+                    overlayPlayButton: AppInfo.enableAppLayouts
                 });
             }
             else if (item.Type == "GameSystem") {
@@ -1112,7 +1151,7 @@
 
     function renderUserDataIcons(page, item) {
 
-        $('.userDataIcons', page).html(LibraryBrowser.getUserDataIconsHtml(item, true, 'fab'));
+        $('.userDataIcons', page).html(LibraryBrowser.getUserDataIconsHtml(item, true, 'icon-button'));
     }
 
     function renderCriticReviews(page, item, limit) {
@@ -1280,7 +1319,7 @@
             SortOrder: "Ascending",
             IncludeItemTypes: "MusicVideo",
             Recursive: true,
-            Fields: "DateCreated,SyncInfo",
+            Fields: "DateCreated,SyncInfo,CanDelete",
             Albums: item.Name
 
         }).then(function (result) {
@@ -1336,7 +1375,7 @@
 
             var onclick = item.PlayAccess == 'Full' && !isStatic ? ' onclick="ItemDetailPage.play(' + chapter.StartPositionTicks + ');"' : '';
 
-            html += '<a class="card ' + getThumbShape() + 'Card" href="#play-Chapter-' + i + '"' + onclick + '>';
+            html += '<a class="card ' + getThumbShape() + 'Card" href="#"' + onclick + '>';
 
             html += '<div class="cardBox">';
             html += '<div class="cardScalable">';
@@ -1444,6 +1483,10 @@
                 attributes.push(createAttribute(Globalize.translate('MediaInfoCodecTag'), stream.CodecTag));
             }
 
+            if (stream.IsAVC != null) {
+                attributes.push(createAttribute('AVC', stream.IsAVC));
+            }
+
             if (stream.Profile) {
                 attributes.push(createAttribute(Globalize.translate('MediaInfoProfile'), stream.Profile));
             }
@@ -1499,8 +1542,8 @@
                 attributes.push(createAttribute(Globalize.translate('MediaInfoRefFrames'), stream.RefFrames));
             }
 
-            if (stream.KeyFrames) {
-                //attributes.push(createAttribute(Globalize.translate('MediaInfoKeyFrames'), stream.KeyFrames.join(', ')));
+            if (stream.NalLengthSize) {
+                attributes.push(createAttribute('NAL', stream.NalLengthSize));
             }
 
             if (stream.Type != "Video") {
@@ -1513,10 +1556,6 @@
 
             if (stream.Type == "Video" && version.Timestamp) {
                 attributes.push(createAttribute(Globalize.translate('MediaInfoTimestamp'), version.Timestamp));
-            }
-
-            if (stream.IsCabac != null) {
-                attributes.push(createAttribute(Globalize.translate('CABAC'), (stream.IsCabac ? 'Yes' : 'No')));
             }
 
             html += attributes.join('<br/>');
@@ -1882,9 +1921,9 @@
 
         var id = getParameterByName('id');
 
-        Dashboard.confirm("Are you sure you wish to split the media sources into separate items?", "Split Media Apart", function (confirmResult) {
+        require(['confirm'], function (confirm) {
 
-            if (confirmResult) {
+            confirm("Are you sure you wish to split the media sources into separate items?", "Split Media Apart").then(function () {
 
                 Dashboard.showLoadingMsg();
 
@@ -1898,7 +1937,7 @@
 
                     reload(page);
                 });
-            }
+            });
         });
     }
 
@@ -1917,7 +1956,7 @@
             if (currentItem.Type == 'Recording') {
                 LibraryBrowser.showTab('livetv.html', 3);
             } else {
-                Dashboard.navigate('index.html');
+                Dashboard.navigate('home.html');
             }
         }
     }
@@ -1947,20 +1986,21 @@
 
     function deleteTimer(page, id) {
 
-        Dashboard.confirm(Globalize.translate('MessageConfirmRecordingCancellation'), Globalize.translate('HeaderConfirmRecordingCancellation'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
+            confirm(Globalize.translate('MessageConfirmRecordingCancellation'), Globalize.translate('HeaderConfirmRecordingCancellation')).then(function () {
 
                 Dashboard.showLoadingMsg();
 
                 ApiClient.cancelLiveTvTimer(id).then(function () {
 
-                    Dashboard.alert(Globalize.translate('MessageRecordingCancelled'));
+                    require(['toast'], function (toast) {
+                        toast(Globalize.translate('MessageRecordingCancelled'));
+                    });
 
                     reload(page);
                 });
-            }
-
+            });
         });
     }
 
@@ -1983,8 +2023,10 @@
 
         $('.btnSync', page).on('click', function () {
 
-            SyncManager.showMenu({
-                items: [currentItem]
+            require(['syncDialog'], function (syncDialog) {
+                syncDialog.showMenu({
+                    items: [currentItem]
+                });
             });
         });
 
@@ -2092,4 +2134,4 @@
 
     window.ItemDetailPage = new itemDetailPage();
 
-})(jQuery, document, window);
+});

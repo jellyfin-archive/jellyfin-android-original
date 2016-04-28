@@ -1,4 +1,4 @@
-﻿cordova.define("org.apache.cordova.background-download.Promise", function(require, exports, module) {
+cordova.define("org.apache.cordova.background-download.Promise", function(require, exports, module) {
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one

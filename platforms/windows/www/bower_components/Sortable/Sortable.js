@@ -1,4 +1,4 @@
-﻿/**!
+/**!
  * Sortable
  * @author	RubaXa   <trash@rubaxa.org>
  * @license MIT

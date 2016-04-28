@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * Social Share Kit v1.0.3 (http://socialsharekit.com)
  * Copyright 2015 Social Share Kit / Kaspars Sprogis.
  * Licensed under Creative Commons Attribution-NonCommercial 3.0 license:

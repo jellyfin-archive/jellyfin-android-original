@@ -1,4 +1,4 @@
-﻿define(['paperdialoghelper', 'paper-fab', 'paper-item-body', 'paper-icon-item'], function (paperDialogHelper) {
+﻿define(['dialogHelper', 'appStorage', 'jQuery', 'paper-fab', 'paper-item-body', 'paper-icon-item'], function (dialogHelper, appStorage, $) {
 
     var currentItem;
 
@@ -56,7 +56,9 @@
 
         }).then(function () {
 
-            Dashboard.alert(Globalize.translate('MessageDownloadQueued'));
+            require(['toast'], function (toast) {
+                toast(Globalize.translate('MessageDownloadQueued'));
+            });
         });
     }
 
@@ -64,9 +66,9 @@
 
         var msg = Globalize.translate('MessageAreYouSureDeleteSubtitles');
 
-        Dashboard.confirm(msg, Globalize.translate('HeaderConfirmDeletion'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
+            confirm(msg, Globalize.translate('HeaderConfirmDeletion')).then(function () {
 
                 Dashboard.showLoadingMsg();
 
@@ -82,8 +84,7 @@
 
                     reload(page, itemId);
                 });
-
-            }
+            });
         });
     }
 
@@ -156,7 +157,7 @@
             html += '</div>';
         }
 
-        var elem = $('.subtitleList', page).html(html).trigger('create');
+        var elem = $('.subtitleList', page).html(html);
 
         $('.btnViewSubtitles', elem).on('click', function () {
 
@@ -266,7 +267,7 @@
             html += '</div>';
         }
 
-        var elem = $('.subtitleResults', page).html(html).trigger('create');
+        var elem = $('.subtitleResults', page).html(html);
 
         $('.btnViewSubtitle', elem).on('click', function () {
 
@@ -352,7 +353,7 @@
             var template = this.response;
             ApiClient.getItem(Dashboard.getCurrentUserId(), itemId).then(function (item) {
 
-                var dlg = paperDialogHelper.createDialog({
+                var dlg = dialogHelper.createDialog({
                     size: 'small',
                     removeOnClose: true
                 });
@@ -379,7 +380,7 @@
 
                 $('.subtitleSearchForm', dlg).off('submit', onSearchSubmit).on('submit', onSearchSubmit);
 
-                paperDialogHelper.open(dlg);
+                dialogHelper.open(dlg);
 
                 var editorContent = dlg.querySelector('.editorContent');
                 reload(editorContent, item);
@@ -391,7 +392,7 @@
 
                 $('.btnCancel', dlg).on('click', function () {
 
-                    paperDialogHelper.close(dlg);
+                    dialogHelper.close(dlg);
                 });
             });
         }

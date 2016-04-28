@@ -87,9 +87,11 @@
 
         }
 
+		var now = new Date().getTime();
+		
         // Don't go crazy reporting position changes
         if (eventName == 'positionchange') {
-            if (lastUpdateTime) {
+            if ((now - lastUpdateTime) < 5000) {
                 // Only report if this item hasn't been reported yet, or if there's an actual playback change.
                 // Don't report on simple time updates
                 return;
@@ -97,7 +99,7 @@
         }
 
         MainActivity.updateMediaSession(eventName, isLocalPlayer, itemId, title, artist, album, parseInt(duration), parseInt(position), url, canSeek, isPaused);
-        lastUpdateTime = new Date().getTime();
+        lastUpdateTime = now;
     }
 
     function onStateChanged(e, state) {

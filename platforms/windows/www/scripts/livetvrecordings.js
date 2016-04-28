@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
 
     function getRecordingGroupHtml(group) {
 
@@ -99,7 +99,7 @@
             userId: Dashboard.getCurrentUserId(),
             limit: 12,
             IsInProgress: false,
-            Fields: 'CanDelete'
+            Fields: 'CanDelete,PrimaryImageAspectRatio'
 
         }).then(function (result) {
 
@@ -125,4 +125,4 @@
         }
     };
 
-})(jQuery, document);
+});

@@ -1,11 +1,12 @@
-﻿define(['events', 'apiclient'], function (Events, apiClientFactory) {
+﻿define(['events', 'apiclient', 'appStorage'], function (Events, apiClientFactory, appStorage) {
 
     var ConnectionState = {
         Unavailable: 0,
         ServerSelection: 1,
         ServerSignIn: 2,
         SignedIn: 3,
-        ConnectSignIn: 4
+        ConnectSignIn: 4,
+        ServerUpdateNeeded: 5
     };
 
     var ConnectionMode = {
@@ -214,6 +215,16 @@
             return connectUser;
         };
 
+        var minServerVersion = '3.0.5782';
+        self.minServerVersion = function (val) {
+
+            if (val) {
+                minServerVersion = val;
+            }
+
+            return minServerVersion;
+        };
+
         self.appVersion = function () {
             return appVersion;
         };
@@ -297,9 +308,6 @@
             var existingServer = existingServers.length ? existingServers[0] : {};
             existingServer.DateLastAccessed = new Date().getTime();
             existingServer.LastConnectionMode = ConnectionMode.Manual;
-            if (existingServer.LastConnectionMode == ConnectionMode.Local) {
-                existingServer.DateLastLocalConnection = new Date().getTime();
-            }
             existingServer.ManualAddress = apiClient.serverAddress();
             apiClient.serverInfo(existingServer);
 
@@ -401,10 +409,6 @@
 
             if (options.updateDateLastAccessed !== false) {
                 server.DateLastAccessed = new Date().getTime();
-
-                if (server.LastConnectionMode == ConnectionMode.Local) {
-                    server.DateLastLocalConnection = new Date().getTime();
-                }
             }
             server.Id = result.ServerId;
 
@@ -553,53 +557,51 @@
 
         function validateAuthentication(server, connectionMode) {
 
-            return new Promise(function (resolve, reject) {
+            var url = ServerInfo.getServerAddress(server, connectionMode);
 
-                var url = ServerInfo.getServerAddress(server, connectionMode);
+            return ajax({
 
-                ajax({
+                type: "GET",
+                url: getEmbyServerUrl(url, "System/Info"),
+                dataType: "json",
+                headers: {
+                    "X-MediaBrowser-Token": server.AccessToken
+                }
 
-                    type: "GET",
-                    url: getEmbyServerUrl(url, "System/Info"),
-                    dataType: "json",
-                    headers: {
-                        "X-MediaBrowser-Token": server.AccessToken
-                    }
+            }).then(function (systemInfo) {
 
-                }).then(function (systemInfo) {
+                updateServerInfo(server, systemInfo);
 
-                    updateServerInfo(server, systemInfo);
+                if (server.UserId) {
 
-                    if (server.UserId) {
+                    return ajax({
+                        type: "GET",
+                        url: getEmbyServerUrl(url, "users/" + server.UserId),
+                        dataType: "json",
+                        headers: {
+                            "X-MediaBrowser-Token": server.AccessToken
+                        }
 
-                        ajax({
+                    }).then(function(user) {
 
-                            type: "GET",
-                            url: getEmbyServerUrl(url, "users/" + server.UserId),
-                            dataType: "json",
-                            headers: {
-                                "X-MediaBrowser-Token": server.AccessToken
-                            }
+                        onLocalUserSignIn(server, connectionMode, user);
+                        return Promise.resolve();
 
-                        }).then(function (user) {
+                    }, function() {
 
-                            onLocalUserSignIn(server, connectionMode, user);
-                            resolve();
+                        server.UserId = null;
+                        server.AccessToken = null;
+                        return Promise.resolve();
+                    });
+                } else {
+                    return Promise.resolve();
+                }
 
-                        }, function () {
+            }, function () {
 
-                            server.UserId = null;
-                            server.AccessToken = null;
-                            resolve();
-                        });
-                    }
-
-                }, function () {
-
-                    server.UserId = null;
-                    server.AccessToken = null;
-                    resolve();
-                });
+                server.UserId = null;
+                server.AccessToken = null;
+                return Promise.resolve();
             });
         }
 
@@ -858,8 +860,7 @@
                         var info = {
                             Id: foundServer.Id,
                             LocalAddress: convertEndpointAddressToManualAddress(foundServer) || foundServer.Address,
-                            Name: foundServer.Name,
-                            DateLastLocalConnection: new Date().getTime()
+                            Name: foundServer.Name
                         };
 
                         info.LastConnectionMode = info.ManualAddress ? ConnectionMode.Manual : ConnectionMode.Local;
@@ -1014,6 +1015,30 @@
             return (str1 || '').toLowerCase() == (str2 || '').toLowerCase();
         }
 
+        function compareVersions(a, b) {
+
+            // -1 a is smaller
+            // 1 a is larger
+            // 0 equal
+            a = a.split('.');
+            b = b.split('.');
+
+            for (var i = 0, length = Math.max(a.length, b.length) ; i < length; i++) {
+                var aVal = parseInt(a[i] || '0');
+                var bVal = parseInt(b[i] || '0');
+
+                if (aVal < bVal) {
+                    return -1;
+                }
+
+                if (aVal > bVal) {
+                    return 1;
+                }
+            }
+
+            return 0;
+        }
+
         function testNextConnectionMode(tests, index, server, wakeOnLanSendTime, options, resolve) {
 
             if (index >= tests.length) {
@@ -1052,8 +1077,18 @@
 
             tryConnect(address, timeout).then(function (result) {
 
-                console.log('calling onSuccessfulConnection with connection mode ' + mode + ' with server ' + server.Name);
-                onSuccessfulConnection(server, result, mode, options, resolve);
+                if (compareVersions(self.minServerVersion(), result.Version) == 1) {
+
+                    console.log('minServerVersion requirement not met. Server version: ' + result.Version);
+                    resolve({
+                        State: ConnectionState.ServerUpdateNeeded,
+                        Servers: [server]
+                    });
+
+                } else {
+                    console.log('calling onSuccessfulConnection with connection mode ' + mode + ' with server ' + server.Name);
+                    onSuccessfulConnection(server, result, mode, options, resolve);
+                }
 
             }, function () {
 
@@ -1120,10 +1155,6 @@
 
             if (options.updateDateLastAccessed !== false) {
                 server.DateLastAccessed = new Date().getTime();
-
-                if (connectionMode == ConnectionMode.Local) {
-                    server.DateLastLocalConnection = new Date().getTime();
-                }
             }
             credentialProvider.addOrUpdateServer(credentials.Servers, server);
             credentialProvider.credentials(credentials);
@@ -1464,74 +1495,82 @@
 
         self.getRegistrationInfo = function (feature, apiClient) {
 
-            if (isConnectUserSupporter()) {
-                return Promise.resolve({
-                    Name: feature,
-                    IsRegistered: true,
-                    IsTrial: false
+            var params = {
+                serverId: apiClient.serverInfo().Id,
+                deviceId: self.deviceId(),
+                deviceName: deviceName,
+                appName: appName,
+                appVersion: appVersion,
+                embyUserName: ''
+            };
+
+            var cacheKey = 'regInfo-' + params.serverId;
+            var regInfo = JSON.parse(appStorage.getItem(cacheKey) || '{}');
+
+            var updateDevicePromise;
+
+            // Cache for 3 days
+            if (params.deviceId && (new Date().getTime() - (regInfo.lastValidDate || 0)) < 259200000) {
+
+                console.log('getRegistrationInfo has cached info');
+
+                if (regInfo.deviceId == params.deviceId) {
+                    console.log('getRegistrationInfo returning cached info');
+                    return Promise.resolve();
+                }
+
+                updateDevicePromise = ajax({
+                    url: 'https://mb3admin.com/admin/service/registration/updateDevice?' + paramsToString({
+                        serverId: params.serverId,
+                        oldDeviceId: regInfo.deviceId,
+                        newDeviceId: params.deviceId
+                    }),
+                    type: 'POST'
                 });
             }
 
-            return self.getAvailableServers().then(function (servers) {
+            if (!updateDevicePromise) {
+                updateDevicePromise = Promise.resolve();
+            }
 
-                var matchedServers = servers.filter(function (s) {
-                    return stringEqualsIgnoreCase(s.Id, apiClient.serverInfo().Id);
-                });
+            return updateDevicePromise.then(function () {
+                return apiClient.getCurrentUser().then(function (user) {
 
-                if (!matchedServers.length) {
-                    return {};
-                }
+                    params.embyUserName = user.Name;
 
-                var match = matchedServers[0];
+                    return ajax({
+                        url: 'https://mb3admin.com/admin/service/registration/validateDevice?' + paramsToString(params),
+                        type: 'POST'
 
-                if (!match.DateLastLocalConnection) {
+                    }).then(function (response) {
 
-                    return ApiClient.getJSON(ApiClient.getUrl('System/Endpoint')).then(function (info) {
+                        var status = response.status;
+                        console.log('getRegistrationInfo response: ' + status);
 
-                        if (info.IsInNetwork) {
-
-                            updateDateLastLocalConnection(match.Id);
-                            return apiClient.getRegistrationInfo(feature);
-                        } else {
-                            return {};
+                        if (status == 200) {
+                            appStorage.setItem(cacheKey, JSON.stringify({
+                                lastValidDate: new Date().getTime(),
+                                deviceId: params.deviceId
+                            }));
+                            return Promise.resolve();
+                        }
+                        if (status == 401) {
+                            return Promise.reject();
+                        }
+                        if (status == 403) {
+                            return Promise.reject('overlimit');
                         }
 
-                    });
+                        // general error
+                        return Promise.reject();
 
-                } else {
-                    return apiClient.getRegistrationInfo(feature);
-                }
+                    }, function (err) {
+                        console.log('getRegistrationInfo failed');
+                        throw err;
+                    });
+                });
             });
         };
-
-        function isConnectUserSupporter() {
-
-            if (self.isLoggedIntoConnect()) {
-
-                var connectUser = self.connectUser();
-
-                if (connectUser && connectUser.IsSupporter) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        function updateDateLastLocalConnection(serverId) {
-
-            var credentials = credentialProvider.credentials();
-            var servers = credentials.Servers.filter(function (s) {
-                return s.Id == serverId;
-            });
-
-            var server = servers.length ? servers[0] : null;
-
-            if (server) {
-                server.DateLastLocalConnection = new Date().getTime();
-                credentialProvider.addOrUpdateServer(credentials.Servers, server);
-                credentialProvider.credentials(credentials);
-            }
-        }
 
         function addAppInfoToConnectRequest(request) {
             request.headers = request.headers || {};

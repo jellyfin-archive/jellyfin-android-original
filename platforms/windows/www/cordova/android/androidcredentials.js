@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['apphost'], function (appHost) {
 
     function updateCredentials() {
 
@@ -25,7 +25,9 @@
 
         var capabilities = ConnectionManager.capabilities();
 
-        ApiClientBridge.init(AppInfo.appName, AppInfo.appVersion, AppInfo.deviceId, AppInfo.deviceName, JSON.stringify(capabilities));
+        appHost.appInfo().then(function (appInfo) {
+            ApiClientBridge.init(appInfo.appName, appInfo.appVersion, appInfo.deviceId, appInfo.deviceName, JSON.stringify(capabilities));
+        });
     }
 
     function getDownloadSpeed(bytes, url) {
@@ -92,4 +94,4 @@
         }
     };
 
-})();
+});

@@ -1,12 +1,15 @@
 ﻿<div class="dialogHeader">
-    <paper-icon-button icon="close" class="btnCancel" tabindex="-1"></paper-icon-button>
+    <paper-icon-button icon="arrow-back" class="btnCancel" tabindex="-1"></paper-icon-button>
     <div class="dialogHeaderTitle">
         ${ButtonEdit}
     </div>
-    <paper-button class="btnHeaderSave accent" tabindex="-1" style="margin-left:auto;">
-        <iron-icon icon="check"></iron-icon>
-        <span>${ButtonSave}</span>
-    </paper-button>
+    <div style="margin-left:auto; display: flex; align-items: center; justify-content: center;">
+        <paper-button class="btnHeaderSave accent" tabindex="-1">
+            <iron-icon icon="check"></iron-icon>
+            <span>${ButtonSave}</span>
+        </paper-button>
+        <paper-icon-button icon="more-vert" tabindex="-1" class="btnMore"></paper-icon-button>
+    </div>
 </div>
 
 <form class="editItemMetadataForm editMetadataForm" style="margin:0;">
@@ -21,13 +24,18 @@
                 <paper-input id="txtPath" type="text" label="${LabelPath}" readonly></paper-input>
             </div>
             <div>
-                <paper-input id="txtName" type="text" label="${LabelName}" required="required"></paper-input>
+                <paper-input id="txtName" type="text" label="${LabelTitle}" required="required"></paper-input>
+            </div>
+            <div id="fldOriginalName">
+                <paper-input id="txtOriginalName" type="text" label="${LabelOriginalTitle}"></paper-input>
             </div>
             <div id="fldSortName" style="display: none;">
-                <paper-input id="txtSortName" type="text" label="${LabelSortName}"></paper-input>
+                <paper-input id="txtSortName" type="text" label="${LabelSortTitle}"></paper-input>
             </div>
             <div id="fldDateAdded" style="display: none;">
                 <paper-input id="txtDateAdded" type="date" label="${LabelDateAdded}"></paper-input>
+                <div class="fieldDescription">${ConfigureDateAdded}</div>
+                <br/>
             </div>
             <div id="fldStatus" style="display: none;margin:1em 0;">
                 <label for="selectStatus" class="selectLabel">${LabelStatus}</label>
@@ -144,6 +152,7 @@
                     <option value="HalfTopAndBottom">HTAB</option>
                     <option value="FullSideBySide">FSBS</option>
                     <option value="FullTopAndBottom">FTAB</option>
+                    <option value="MVC">MVC</option>
                 </select>
             </div>
         </div>

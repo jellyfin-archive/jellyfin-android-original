@@ -1,4 +1,4 @@
-﻿cordova.define("cordova-plugin-x-socialsharing.SocialSharingProxy", function(require, exports, module) {
+cordova.define("cordova-plugin-x-socialsharing.SocialSharingProxy", function(require, exports, module) {
 var cordova = require('cordova');
 
 module.exports = {

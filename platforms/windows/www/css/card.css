@@ -1,24 +1,24 @@
 ﻿.card {
     display: inline-block;
     text-align: left;
-    -webkit-transition: all 500ms ease;
-    -moz-transition: all 500ms ease;
-    -o-transition: all 500ms ease;
-    -ms-transition: all 500ms ease;
-    transition: all 500ms ease;
     position: relative;
 }
 
-    .card, .card a {
-        text-decoration: none;
-        font-weight: 400 !important;
-    }
+iron-list .card {
+    display: block;
+}
+
+.card, .card a {
+    text-decoration: none;
+    font-weight: 400 !important;
+}
 
 .cardOverlayTarget {
     position: absolute;
     right: 0;
     left: 0;
     bottom: 0;
+    top: 0;
     background-color: rgba(0, 0, 0, .85);
     z-index: 998;
     display: none;
@@ -44,26 +44,26 @@
 }
 
 .cardBox {
-    margin: 1px;
+    margin: 4px;
 }
 
-@media all and (max-width: 800px) {
+@media all and (max-width: 500px) {
 
     .cardBox {
-        margin: 1px;
+        margin: 3px;
     }
 }
 
+.cardImage {
+    border-radius: 3px;
+}
+
 .defaultBackground .cardImage {
-    background-color: #333;
+    background-color: #303030;
 }
 
 .homeTopViews .defaultBackground .cardImage {
     background-color: #181818;
-}
-
-.homeTopViews .cardImage {
-    border-radius: 2px;
 }
 
 .cardOverlayButtonContainer {
@@ -109,7 +109,7 @@
 }
 
 .ui-body-b .visualCardBox {
-    background: rgba(40,40,40,.85);
+    background: rgba(56,56,56,.85);
     border-radius: 3px;
 }
 
@@ -212,7 +212,6 @@
     padding: 10px !important;
     margin: 0 !important;
     color: inherit;
-    font-size: 20px;
 }
 
 .cardText {
@@ -225,10 +224,6 @@
     line-height: 1.4;
 }
 
-.homeTopViews .cardText {
-    font-size: 15px;
-}
-
 .cardButtonContainer {
     text-align: right;
     float: right;
@@ -236,7 +231,7 @@
 }
 
 .cardContent .cardFooter .cardText {
-    font-size: 16px;
+    font-size: 115%;
 }
 
 .cardOverlayInner {
@@ -598,14 +593,6 @@
 
     .detailPagePortraitCard {
         width: 25%;
-    }
-}
-
-
-@media all and (min-width: 800px) {
-
-    .detailPagePortraitCard {
-        width: 20%;
     }
 }
 
