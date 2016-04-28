@@ -1,1 +1,1 @@
-!function(){function n(n,a,l){var r=a;window.plugins.launcher.launch({uri:r,dataType:l},function(){Logger.log("plugin launch success"),ExternalPlayer.onPlaybackStart()},function(){Logger.log("plugin launch error"),ExternalPlayer.onPlaybackStart()})}window.ExternalPlayer.showPlayerSelectionMenu=n}();
+!function(){function n(n,a,l){var t=a;window.plugins.launcher.launch({uri:t,dataType:l},function(){ExternalPlayer.onPlaybackStart()},function(){ExternalPlayer.onPlaybackStart()})}window.ExternalPlayer.showPlayerSelectionMenu=n}();
