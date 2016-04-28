@@ -71,7 +71,11 @@
     function releaseCurrentPlayer() {
 
         if (currentPlayer) {
-            $(currentPlayer).off('playbackstart', onPlaybackStart).off('playbackstop', onPlaybackStopped).off('playstatechange', onStateChanged).off('positionchange', onStateChanged); currentPlayer.endPlayerUpdates();
+            events.off(player, 'playbackstart', onPlaybackStart);
+            events.off(player, 'playbackstop', onPlaybackStopped);
+            events.off(player, 'playstatechange', onStateChanged);
+            events.off(player, 'positionchange', onStateChanged);
+            currentPlayer.endPlayerUpdates();
             currentPlayer = null;
             hideNowPlayingBar();
         }
@@ -117,7 +121,10 @@
             onStateChanged.call(player, { type: 'init' }, state);
         });
 
-        $(player).on('playbackstart', onPlaybackStart).on('playbackstop', onPlaybackStopped).on('playstatechange', onStateChanged).on('positionchange', onStateChanged);
+        events.on(player, 'playbackstart', onPlaybackStart);
+        events.on(player, 'playbackstop', onPlaybackStopped);
+        events.on(player, 'playstatechange', onStateChanged);
+        events.on(player, 'positionchange', onStateChanged);
     }
 
     events.on(MediaController, 'playerchange', function () {
