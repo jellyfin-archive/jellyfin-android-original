@@ -39,10 +39,6 @@
     <feature name="SearchBar">
         <param name="ios-package" value="SearchBar" />
     </feature>
-    <feature name="AudioPlayerPlugin">
-        <param name="ios-package" value="VLCPlugin" />
-        <param name="onload" value="true" />
-    </feature>
     <feature name="CameraRoll">
         <param name="ios-package" value="IonicCameraRoll" />
     </feature>
@@ -54,10 +50,6 @@
     </feature>
     <feature name="WKWebViewPolyfill">
         <param name="ios-package" value="WKWebViewPolyfill" />
-    </feature>
-    <feature name="NSLoggerCocoaLumberjackConnectorPlugin">
-        <param name="ios-package" value="NSLoggerCocoaLumberjackConnectorPlugin" />
-        <param name="onload" value="true" />
     </feature>
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <feature name="File">

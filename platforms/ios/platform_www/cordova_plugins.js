@@ -25,14 +25,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/org.nypr.cordova.vlcplugin/www/audioplayer.js",
-        "id": "org.nypr.cordova.vlcplugin.AudioPlayer",
-        "pluginId": "org.nypr.cordova.vlcplugin",
-        "clobbers": [
-            "audioplayer"
-        ]
-    },
-    {
         "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
         "id": "com.drifty.cordova.cameraroll.CameraRoll",
         "pluginId": "com.drifty.cordova.cameraroll",
@@ -300,19 +292,43 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-device/www/device.js",
-        "id": "cordova-plugin-device.device",
-        "pluginId": "cordova-plugin-device",
-        "clobbers": [
-            "device"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-statusbar/www/statusbar.js",
         "id": "cordova-plugin-statusbar.statusbar",
         "pluginId": "cordova-plugin-statusbar",
         "clobbers": [
             "window.StatusBar"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
+        "pluginId": "cordova-plugin-x-socialsharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
+        ]
+    },
+    {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+        "id": "cc.fovea.cordova.purchase.InAppPurchase",
+        "pluginId": "cc.fovea.cordova.purchase",
+        "clobbers": [
+            "store"
+        ]
+    },
+    {
+        "file": "plugins/fw-cordova-chromecast/www/gck.js",
+        "id": "fw-cordova-chromecast.FWChromecast",
+        "pluginId": "fw-cordova-chromecast",
+        "clobbers": [
+            "cordova.plugins.FWChromecast"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device/www/device.js",
+        "id": "cordova-plugin-device.device",
+        "pluginId": "cordova-plugin-device",
+        "clobbers": [
+            "device"
         ]
     },
     {
@@ -347,30 +363,6 @@ module.exports = [
         "clobbers": [
             "window.Media"
         ]
-    },
-    {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "pluginId": "cordova-plugin-x-socialsharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
-    },
-    {
-        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
-        "id": "cc.fovea.cordova.purchase.InAppPurchase",
-        "pluginId": "cc.fovea.cordova.purchase",
-        "clobbers": [
-            "store"
-        ]
-    },
-    {
-        "file": "plugins/fw-cordova-chromecast/www/gck.js",
-        "id": "fw-cordova-chromecast.FWChromecast",
-        "pluginId": "fw-cordova-chromecast",
-        "clobbers": [
-            "cordova.plugins.FWChromecast"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -382,7 +374,6 @@ module.exports.metadata =
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",
     "com.dieam.searchbar": "2.1.6",
-    "org.nypr.cordova.vlcplugin": "0.1.0",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "org.apache.cordova.background-download": "0.0.2",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
@@ -390,18 +381,17 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.6.3",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
-    "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": "0.1.0",
     "cordova-plugin-file": "3.0.0",
     "cordova-plugin-file-transfer": "1.4.0",
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
-    "cordova-plugin-device": "1.1.0",
     "cordova-plugin-statusbar": "2.0.0",
-    "cordova-plugin-network-information": "1.1.0",
-    "cordova-plugin-media": "1.0.1",
     "cordova-plugin-x-socialsharing": "5.0.7",
     "cc.fovea.cordova.purchase": "4.0.0",
     "cordova-plugin-crosswalk-webview": "1.6.0",
-    "fw-cordova-chromecast": "0.0.1"
+    "fw-cordova-chromecast": "0.0.1",
+    "cordova-plugin-device": "1.1.0",
+    "cordova-plugin-network-information": "1.1.0",
+    "cordova-plugin-media": "1.0.1"
 }
 // BOTTOM OF METADATA
 });

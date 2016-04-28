@@ -85,28 +85,10 @@
         "is_top_level": true,
         "variables": {}
     },
-    "org.nypr.cordova.vlcplugin": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/wnyc/cordova-plugin-vlc.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "org.apache.cordova.file": {
         "source": {
             "type": "registry",
             "id": "org.apache.cordova.file"
-        },
-        "is_top_level": false,
-        "variables": {}
-    },
-    "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/wnyc/cordova-plugin-nslogger-cocoalumberjack-connector.git",
-            "subdir": "."
         },
         "is_top_level": false,
         "variables": {}

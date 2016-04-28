@@ -314,9 +314,6 @@
         "com.dieam.searchbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "org.nypr.cordova.vlcplugin": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -368,9 +365,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-chrome-apps-iossocketscommon": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-file": {

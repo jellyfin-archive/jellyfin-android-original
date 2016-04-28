@@ -47,10 +47,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"AudioPlayerPlugin\"><param name=\"ios-package\" value=\"VLCPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"CameraRoll\"><param name=\"ios-package\" value=\"IonicCameraRoll\" /></feature>",
                             "count": 1
                         },
@@ -67,10 +63,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"NSLoggerCocoaLumberjackConnectorPlugin\"><param name=\"ios-package\" value=\"NSLoggerCocoaLumberjackConnectorPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<preference name=\"AndroidPersistentFileLocation\" value=\"Internal\" />",
                             "count": 1
                         },
@@ -80,10 +72,6 @@
                         },
                         {
                             "xml": "<feature name=\"FileTransfer\"><param name=\"ios-package\" value=\"CDVFileTransfer\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
                             "count": 1
                         },
                         {
@@ -99,14 +87,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"Media\"><param name=\"ios-package\" value=\"CDVSound\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"SocialSharing\"><param name=\"ios-package\" value=\"SocialSharing\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -116,6 +96,18 @@
                         },
                         {
                             "xml": "<feature name=\"FWChromecast\"><param name=\"ios-package\" value=\"FWChromecast\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Device\"><param name=\"ios-package\" value=\"CDVDevice\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"NetworkStatus\"><param name=\"ios-package\" value=\"CDVConnection\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Media\"><param name=\"ios-package\" value=\"CDVSound\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -158,9 +150,6 @@
         "com.dieam.searchbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "org.nypr.cordova.vlcplugin": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -182,9 +171,6 @@
         "cordova-plugin-chrome-apps-iossocketscommon": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-file": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -194,16 +180,7 @@
         "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-network-information": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-media": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-x-socialsharing": {
@@ -216,6 +193,15 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "fw-cordova-chromecast": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-media": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
@@ -243,14 +229,6 @@
             "pluginId": "com.dieam.searchbar",
             "clobbers": [
                 "cordova.searchbar"
-            ]
-        },
-        {
-            "file": "plugins/org.nypr.cordova.vlcplugin/www/audioplayer.js",
-            "id": "org.nypr.cordova.vlcplugin.AudioPlayer",
-            "pluginId": "org.nypr.cordova.vlcplugin",
-            "clobbers": [
-                "audioplayer"
             ]
         },
         {
@@ -521,19 +499,43 @@
             ]
         },
         {
-            "file": "plugins/cordova-plugin-device/www/device.js",
-            "id": "cordova-plugin-device.device",
-            "pluginId": "cordova-plugin-device",
-            "clobbers": [
-                "device"
-            ]
-        },
-        {
             "file": "plugins/cordova-plugin-statusbar/www/statusbar.js",
             "id": "cordova-plugin-statusbar.statusbar",
             "pluginId": "cordova-plugin-statusbar",
             "clobbers": [
                 "window.StatusBar"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+            "id": "cordova-plugin-x-socialsharing.SocialSharing",
+            "pluginId": "cordova-plugin-x-socialsharing",
+            "clobbers": [
+                "window.plugins.socialsharing"
+            ]
+        },
+        {
+            "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+            "id": "cc.fovea.cordova.purchase.InAppPurchase",
+            "pluginId": "cc.fovea.cordova.purchase",
+            "clobbers": [
+                "store"
+            ]
+        },
+        {
+            "file": "plugins/fw-cordova-chromecast/www/gck.js",
+            "id": "fw-cordova-chromecast.FWChromecast",
+            "pluginId": "fw-cordova-chromecast",
+            "clobbers": [
+                "cordova.plugins.FWChromecast"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-device/www/device.js",
+            "id": "cordova-plugin-device.device",
+            "pluginId": "cordova-plugin-device",
+            "clobbers": [
+                "device"
             ]
         },
         {
@@ -568,30 +570,6 @@
             "clobbers": [
                 "window.Media"
             ]
-        },
-        {
-            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-            "id": "cordova-plugin-x-socialsharing.SocialSharing",
-            "pluginId": "cordova-plugin-x-socialsharing",
-            "clobbers": [
-                "window.plugins.socialsharing"
-            ]
-        },
-        {
-            "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
-            "id": "cc.fovea.cordova.purchase.InAppPurchase",
-            "pluginId": "cc.fovea.cordova.purchase",
-            "clobbers": [
-                "store"
-            ]
-        },
-        {
-            "file": "plugins/fw-cordova-chromecast/www/gck.js",
-            "id": "fw-cordova-chromecast.FWChromecast",
-            "pluginId": "fw-cordova-chromecast",
-            "clobbers": [
-                "cordova.plugins.FWChromecast"
-            ]
         }
     ],
     "plugin_metadata": {
@@ -601,7 +579,6 @@
         "nl.x-services.plugins.backgroundaudio": "1.0.1",
         "cordova-plugin-webserver": "1.0.3",
         "com.dieam.searchbar": "2.1.6",
-        "org.nypr.cordova.vlcplugin": "0.1.0",
         "com.drifty.cordova.cameraroll": "0.2.1",
         "org.apache.cordova.background-download": "0.0.2",
         "uk.co.whiteoctober.cordova.appversion": "0.1.7",
@@ -609,17 +586,16 @@
         "com.telerik.plugins.wkwebview": "0.6.3",
         "cordova-plugin-chrome-apps-common": "1.0.7",
         "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
-        "org.nypr.cordova.nslogger-cocoalumberjack-connector-plugin": "0.1.0",
         "cordova-plugin-file": "3.0.0",
         "cordova-plugin-file-transfer": "1.4.0",
         "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
-        "cordova-plugin-device": "1.1.0",
         "cordova-plugin-statusbar": "2.0.0",
-        "cordova-plugin-network-information": "1.1.0",
-        "cordova-plugin-media": "1.0.1",
         "cordova-plugin-x-socialsharing": "5.0.7",
         "cc.fovea.cordova.purchase": "4.0.0",
         "cordova-plugin-crosswalk-webview": "1.6.0",
-        "fw-cordova-chromecast": "0.0.1"
+        "fw-cordova-chromecast": "0.0.1",
+        "cordova-plugin-device": "1.1.0",
+        "cordova-plugin-network-information": "1.1.0",
+        "cordova-plugin-media": "1.0.1"
     }
 }
