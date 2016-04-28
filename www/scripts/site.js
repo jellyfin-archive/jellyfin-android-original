@@ -2001,8 +2001,11 @@ var AppInfo = {};
         }
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
+
+            define("audiorenderer", ["cordova/mediaplayer"]);
+
             if (MainActivity.getChromeVersion() >= 48) {
-                define("audiorenderer", ["scripts/htmlmediarenderer"]);
+                //define("audiorenderer", ["scripts/htmlmediarenderer"]);
                 //define("audiorenderer", ["cordova/android/vlcplayer"]);
             } else {
                 window.VlcAudio = true;
@@ -2011,7 +2014,7 @@ var AppInfo = {};
             define("videorenderer", ["cordova/android/vlcplayer"]);
         }
         else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
-            define("audiorenderer", ["cordova/ios/vlcplayer"]);
+            define("audiorenderer", ["cordova/mediaplayer"]);
             define("videorenderer", ["scripts/htmlmediarenderer"]);
         }
         else {
