@@ -1,1 +1,1 @@
-cordova.define("cordova-plugin-file.iosFileSystem",function(e,o,i){FILESYSTEM_PROTOCOL="cdvfile",i.exports={__format__:function(e){var o=("/"+this.name+("/"===e[0]?"":"/")+encodeURI(e)).replace("//","/");return FILESYSTEM_PROTOCOL+"://localhost"+o}}});
+cordova.define("cordova-plugin-file.iosFileSystem",function(e,o,i){FILESYSTEM_PROTOCOL="cdvfile",i.exports={__format__:function(e){var o=("/"+this.name+("/"===e[0]?"":"/")+FileSystem.encodeURIPath(e)).replace("//","/");return FILESYSTEM_PROTOCOL+"://localhost"+o}}});
