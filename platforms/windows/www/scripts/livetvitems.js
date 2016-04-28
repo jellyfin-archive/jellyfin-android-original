@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
 
     var view = LibraryBrowser.getDefaultItemsView('Poster', 'Poster');
 
@@ -106,9 +106,7 @@
 
         LibraryBrowser.loadSavedQueryValues(viewkey, query);
 
-        QueryFilters.onPageShow(page, query);
-
         reloadItems(page);
     });
 
-})(jQuery, document);
+});

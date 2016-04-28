@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery', 'scrollStyles'], function ($) {
 
     function itemsPerRow() {
 
@@ -151,7 +151,6 @@
             SortOrder: "Ascending",
             IncludeItemTypes: "Playlist",
             Recursive: true,
-            ParentId: parentId,
             Fields: "PrimaryImageAspectRatio,SortName,CumulativeRunTimeTicks,CanDelete,SyncInfo",
             StartIndex: 0,
             Limit: itemsPerRow()
@@ -207,9 +206,9 @@
             loadRecentlyPlayed(tabContent, parentId);
             loadFrequentlyPlayed(tabContent, parentId);
 
-            require(['scripts/favorites'], function () {
+            require(['components/favoriteitems'], function (favoriteItems) {
 
-                FavoriteItems.render(tabContent, Dashboard.getCurrentUserId(), parentId, ['favoriteArtists', 'favoriteAlbums', 'favoriteSongs']);
+                favoriteItems.render(tabContent, Dashboard.getCurrentUserId(), parentId, ['favoriteArtists', 'favoriteAlbums', 'favoriteSongs']);
 
             });
         }
@@ -233,25 +232,20 @@
                 depends.push('scripts/musicalbums');
                 renderMethod = 'renderAlbumsTab';
                 initMethod = 'initAlbumsTab';
-                depends.push('scripts/queryfilters');
                 break;
             case 2:
                 depends.push('scripts/musicalbumartists');
                 renderMethod = 'renderAlbumArtistsTab';
                 initMethod = 'initAlbumArtistsTab';
-                depends.push('scripts/queryfilters');
                 break;
             case 3:
                 depends.push('scripts/musicartists');
                 renderMethod = 'renderArtistsTab';
                 initMethod = 'initArtistsTab';
-                depends.push('scripts/queryfilters');
                 break;
             case 4:
                 depends.push('scripts/songs');
                 renderMethod = 'renderSongsTab';
-                initMethod = 'initSongsTab';
-                depends.push('scripts/queryfilters');
                 depends.push('paper-icon-item');
                 depends.push('paper-item-body');
                 break;
@@ -292,7 +286,7 @@
         $('.recommendations', page).createCardMenus();
 
         var tabs = page.querySelector('paper-tabs');
-        var pages = page.querySelector('neon-animated-pages');
+        var pageTabsContainer = page.querySelector('.pageTabsContainer');
 
         var baseUrl = 'music.html';
         var topParentId = LibraryMenu.getTopParentId();
@@ -300,10 +294,10 @@
             baseUrl += '?topParentId=' + topParentId;
         }
 
-        LibraryBrowser.configurePaperLibraryTabs(page, tabs, pages, baseUrl);
+        LibraryBrowser.configurePaperLibraryTabs(page, tabs, pageTabsContainer, baseUrl);
 
-        pages.addEventListener('tabchange', function (e) {
-            loadTab(page, parseInt(e.target.selected));
+        pageTabsContainer.addEventListener('tabchange', function (e) {
+            loadTab(page, parseInt(e.detail.selectedTabIndex));
         });
 
     });
@@ -334,4 +328,4 @@
     });
 
 
-})(jQuery, document);
+});

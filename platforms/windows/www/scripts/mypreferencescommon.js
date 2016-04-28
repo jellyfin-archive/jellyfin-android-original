@@ -31,17 +31,17 @@ pageIdOn('pageshow', 'myPreferencesMenuPage', function () {
 
         page.querySelector('.headerUser').innerHTML = user.Name;
 
-        if (AppInfo.isNativeApp && browserInfo.safari && user.Policy.IsAdministrator) {
-            page.querySelector('.adminSection').classList.add('hide');
+        if (!(AppInfo.isNativeApp && browserInfo.safari) && user.Policy.IsAdministrator) {
+            page.querySelector('.adminSection').classList.remove('hide');
         } else {
             page.querySelector('.adminSection').classList.add('hide');
         }
     });
 
-    if (AppInfo.isNativeApp && browserInfo.safari) {
-        page.querySelector('.userSection').classList.remove('hide');
+    if (Dashboard.isConnectMode()) {
+        page.querySelector('.selectServer').classList.remove('hide');
     } else {
-        page.querySelector('.userSection').classList.add('hide');
+        page.querySelector('.selectServer').classList.add('hide');
     }
 
 });

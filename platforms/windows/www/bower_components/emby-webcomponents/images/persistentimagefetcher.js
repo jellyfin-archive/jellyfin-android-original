@@ -1,13 +1,15 @@
-﻿define(['cryptojs-md5'], function () {
+define(['cryptojs-md5'], function () {
 
-    function setImageIntoElement(elem, url) {
+    function loadImage(elem, url) {
 
         if (elem.tagName !== "IMG") {
 
             elem.style.backgroundImage = "url('" + url + "')";
+            return Promise.resolve(elem);
 
         } else {
             elem.setAttribute("src", url);
+            return Promise.resolve(elem);
         }
     }
 
@@ -44,11 +46,94 @@
 
                     imageCacheDirectoryEntry = dirEntry;
 
+                    // TODO: find a better time to schedule this
+                    setTimeout(cleanCache, 60000);
                 });
 
             });
 
         });
+
+    function toArray(list) {
+        return Array.prototype.slice.call(list || [], 0);
+    }
+
+    function cleanCache() {
+
+        var dirReader = imageCacheDirectoryEntry.createReader();
+        var entries = [];
+
+        var onReadFail = function () {
+            console.log('dirReader.readEntries failed');
+        };
+
+        // Keep calling readEntries() until no more results are returned.
+        var readEntries = function () {
+            dirReader.readEntries(function (results) {
+                if (!results.length) {
+                    entries.forEach(cleanFile);
+                } else {
+                    entries = entries.concat(toArray(results));
+                    readEntries();
+                }
+            }, onReadFail);
+        };
+
+        // Start reading the directory.
+        readEntries();
+    }
+
+    function cleanFile(fileEntry) {
+        if (!fileEntry.isFile) {
+            return;
+        }
+
+        fileEntry.file(function (file) {
+
+            getLastModified(file, fileEntry).then(function (lastModifiedDate) {
+
+                var elapsed = new Date().getTime() - lastModifiedDate;
+                // 40 days
+                var maxElapsed = 3456000000;
+                if (elapsed >= maxElapsed) {
+
+                    var fullPath = fileEntry.fullPath;
+                    console.log('deleting file: ' + fullPath);
+
+                    fileEntry.remove(function () {
+                        console.log('File deleted: ' + fullPath);
+                    }, function () {
+                        console.log('Failed to delete file: ' + fullPath);
+                    });
+                }
+            });
+
+        });
+    }
+
+    function getLastModified(file, fileEntry) {
+
+        var lastModifiedDate = file.lastModified || file.lastModifiedDate || file.modificationTime;
+        if (lastModifiedDate) {
+            if (lastModifiedDate.getTime) {
+                lastModifiedDate = lastModifiedDate.getTime();
+            }
+            return Promise.resolve(lastModifiedDate);
+        }
+
+        return new Promise(function (resolve, reject) {
+
+            fileEntry.getMetadata(function (metadata) {
+                var lastModifiedDate = metadata.lastModified || metadata.lastModifiedDate || metadata.modificationTime;
+                if (lastModifiedDate) {
+                    if (lastModifiedDate.getTime) {
+                        lastModifiedDate = lastModifiedDate.getTime();
+                    }
+                }
+                resolve(lastModifiedDate);
+            });
+        });
+    }
 
     function getCacheKey(url) {
 
@@ -151,12 +236,10 @@
 
             return getImageUrl(url).then(function (localUrl) {
 
-                setImageIntoElement(elem, localUrl);
-                return elem;
+                return loadImage(elem, localUrl);
 
             }, function () {
-                setImageIntoElement(elem, url);
-                return elem;
+                return loadImage(elem, url);
             });
         }
     };

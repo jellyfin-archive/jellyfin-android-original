@@ -1,18 +1,5 @@
-﻿html, body, .ui-btn, .pageTitle {
-    font-family: San Francisco, Helvetica Neue;
-}
-
-body {
+﻿html {
     font-size: 15px;
-}
-
-.ui-body-b a:visited {
-    color: #007AFF /*{b-link-visited}*/;
-}
-
-.ui-body-b a {
-    color: #007AFF /*{b-link-color}*/;
-    font-weight: 500;
 }
 
 .ui-body-b select {
@@ -32,7 +19,7 @@ body {
     background-attachment: initial;
 }
 
-.background-theme-b, paper-dialog.background-theme-b {
+.background-theme-b, .dialog.background-theme-b {
     background: #181818;
 }
 
@@ -56,6 +43,10 @@ body {
     .viewMenuBar.semiTransparent {
         background-color: #000;
     }
+
+.libraryViewNav {
+    box-shadow: none;
+}
 
     .libraryViewNav a {
         font-weight: 400;
@@ -115,14 +106,6 @@ body {
     color: #52B54B !important;
 }
 
-.channelTimeslotHeader {
-    border-right-color: #52B54B !important;
-}
-
-.channelTimeslotHeader, .timeslotHeader {
-    background: #52B54B !important;
-}
-
 .libraryViewNav, paper-tabs {
     font-size: 12px;
 }
@@ -135,34 +118,17 @@ h1, h1 a {
     font-weight: 400;
 }
 
-.channelList {
-    font-weight: 400;
-}
-
-.channelHeaderCellInner {
-    font-weight: 400;
-}
-
-.tvGuideHeader {
-    top: 86px !important;
-}
-
 .libraryMenuButtonText {
     font-weight: 500 !important;
     position: absolute;
     left: 100px;
     right: 100px;
+    top: 12px;
     text-align: center;
     font-size: 16px;
     margin: 0 auto !important;
     padding: 0 !important;
-}
-
-@media all and (max-width: 400px) {
-
-    .libraryMenuButtonText {
-        display: block;
-    }
+    justify-content: center;
 }
 
 .libraryPanelHeader span {
@@ -202,18 +168,6 @@ div.cardBox {
     background: #1c1c1c;
 }
 
-@media (min-width: 600px) {
-
-    /* This needs a little extra space to account for the longer date format */
-    .channelHeaderCell, .channelTimeslotHeader {
-        width: 209px;
-    }
-
-    .programGrid, .timeslotHeaders {
-        margin-left: 210px;
-    }
-}
-
 .bottomFab {
     bottom: 120px !important;
 }
@@ -241,4 +195,8 @@ div.cardBox {
 
 .localSyncStatus .labelSyncStatus {
     display: none !important;
+}
+
+.videoSubtitles {
+    font-size: 200% !important;
 }

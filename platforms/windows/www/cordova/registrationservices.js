@@ -1,18 +1,31 @@
-﻿(function () {
+﻿define(['jQuery', 'appSettings'], function ($, appSettings) {
 
     function getRegistrationInfo(feature) {
-
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
     }
 
-    function validateFeature(feature, resolve, reject) {
+    function validateFeature(feature) {
 
-        if (isConnectUserSupporter()) {
-            resolve();
-            return;
-        }
+        console.log('validateFeature: ' + feature);
 
         var unlockableProduct = IapManager.getProductInfo(feature);
+
+        if (unlockableProduct) {
+            console.log('unlockableProduct: ' + JSON.stringify(unlockableProduct));
+            var unlockableCacheKey = 'productpurchased-' + unlockableProduct.id;
+            if (unlockableProduct.owned) {
+
+                // Cache this to eliminate the store as a possible point of failure in the future
+                appSettings.set(unlockableCacheKey, '1');
+                return Promise.resolve();
+            }
+
+            if (appSettings.get(unlockableCacheKey) == '1') {
+                return Promise.resolve();
+            }
+        } else {
+            console.log('unlockableProduct not found for this feature.');
+        }
 
         var unlockableProductInfo = unlockableProduct ? {
             enableAppUnlock: true,
@@ -22,35 +35,24 @@
 
         } : null;
 
-        if (unlockableProduct && unlockableProduct.owned) {
-            resolve();
-            return;
-        }
-
         var prefix = browserInfo.android ? 'android' : 'ios';
 
-        IapManager.isUnlockedOverride(feature).then(function (isUnlocked) {
+        return IapManager.isUnlockedOverride(feature).then(function (isUnlocked) {
 
             if (isUnlocked) {
-                resolve();
-                return;
+                return Promise.resolve();
             }
 
-            function onRegistrationInfoResponse(registrationInfo) {
+            return IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
 
-                if (registrationInfo.IsRegistered) {
-                    resolve();
-                    return;
+                if (subscriptionOptions.filter(function (p) {
+                    return p.owned;
+                }).length > 0) {
+                    return Promise.resolve();
                 }
 
-                IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
-
-                    if (subscriptionOptions.filter(function (p) {
-                        return p.owned;
-                    }).length > 0) {
-                        resolve();
-                        return;
-                    }
+                // Get supporter status
+                return getRegistrationInfo(prefix + 'appunlock').catch(function () {
 
                     var dialogOptions = {
                         title: Globalize.translate('HeaderUnlockApp'),
@@ -58,37 +60,19 @@
                         feature: feature
                     };
 
-                    showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+                    return showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions);
                 });
-            }
-
-            // Get supporter status
-            getRegistrationInfo(prefix + 'appunlock').then(onRegistrationInfoResponse, function () {
-                onRegistrationInfoResponse({});
             });
         });
-    }
-
-    function isConnectUserSupporter() {
-
-        if (ConnectionManager.isLoggedIntoConnect()) {
-
-            var connectUser = ConnectionManager.connectUser();
-
-            if (connectUser && connectUser.IsSupporter) {
-                return true;
-            }
-        }
-        return false;
     }
 
     function cancelInAppPurchase() {
 
         var elem = document.querySelector('.inAppPurchaseOverlay');
         if (elem) {
-            require(['paperdialoghelper'], function (paperdialoghelper) {
+            require(['dialogHelper'], function (dialogHelper) {
 
-                paperdialoghelper.close(elem);
+                dialogHelper.close(elem);
             });
         }
     }
@@ -104,7 +88,7 @@
         currentDisplayingReject = null;
     }
 
-    function showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
+    function showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
 
         cancelInAppPurchase();
 
@@ -115,7 +99,7 @@
             currentDisplayingProductInfos.push(unlockableProductInfo);
         }
 
-        var dlg = paperdialoghelper.createDialog({
+        var dlg = dialogHelper.createDialog({
             size: 'fullscreen-border'
         });
 
@@ -202,11 +186,11 @@
 
         initInAppPurchaseElementEvents(dlg, dialogOptions.feature, resolve, reject);
 
-        paperdialoghelper.open(dlg);
+        dialogHelper.open(dlg);
 
         $('.btnCloseDialog', dlg).on('click', function () {
 
-            paperdialoghelper.close(dlg);
+            dialogHelper.close(dlg);
         });
 
         $(dlg).on('iron-overlay-closed', function () {
@@ -312,7 +296,7 @@
         $('.btnRestorePurchase', elem).on('click', function () {
 
             isCancelled = false;
-            IapManager.restorePurchase();
+            restorePurchase();
         });
 
         $(elem).on('iron-overlay-closed', function () {
@@ -343,18 +327,81 @@
         });
     }
 
-    function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
+    function restorePurchase() {
 
-        require(['paperdialoghelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (paperdialoghelper) {
+        require(['dialogHelper'], function (dialogHelper) {
 
-            if (window.TabBar) {
-                TabBar.hide();
-            }
+            var dlg = dialogHelper.createDialog({
+                size: 'fullscreen-border'
+            });
 
-            showInAppPurchaseElement(paperdialoghelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+            dlg.classList.add('ui-body-b');
+            dlg.classList.add('background-theme-b');
 
-            currentDisplayingResolve = resolve;
-            currentDisplayingReject = reject;
+            var html = '';
+            html += '<h2 class="dialogHeader">';
+            html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog" tabindex=-1""></paper-fab>';
+            html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + Globalize.translate('ButtonRestorePreviousPurchase') + '</div>';
+            html += '</h2>';
+
+            html += '<div class="editorContent">';
+
+            html += '<p style="margin:2em 0;">';
+            html += Globalize.translate('HowDidYouPay');
+            html += '</p>';
+
+            html += '<p>';
+            html += '<paper-button raised class="secondary block btnRestoreSub subdued"><span>' + Globalize.translate('IHaveEmbyPremiere') + '</span></paper-button>';
+            html += '</p>';
+            html += '<p>';
+            html += '<paper-button raised class="secondary block btnRestoreUnlock subdued"><span>' + Globalize.translate('IPurchasedThisApp') + '</span></paper-button>';
+            html += '</p>';
+
+            html += '</div>';
+
+            dlg.innerHTML = html;
+            document.body.appendChild(dlg);
+
+            dialogHelper.open(dlg);
+
+            dlg.querySelector('.btnCloseDialog').addEventListener('click', function () {
+
+                dialogHelper.close(dlg);
+            });
+
+            dlg.querySelector('.btnRestoreSub').addEventListener('click', function () {
+
+                dialogHelper.close(dlg);
+                Dashboard.alert({
+                    message: Globalize.translate('MessageToValidateSupporter'),
+                    title: Globalize.translate('TabEmbyPremiere')
+                });
+
+            });
+
+            dlg.querySelector('.btnRestoreUnlock').addEventListener('click', function () {
+
+                dialogHelper.close(dlg);
+                IapManager.restorePurchase();
+            });
+        });
+    }
+
+    function showInAppPurchaseInfo(subscriptionOptions, unlockableProductInfo, dialogOptions) {
+
+        return new Promise(function (resolve, reject) {
+
+            require(['dialogHelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (dialogHelper) {
+
+                if (window.TabBar) {
+                    TabBar.hide();
+                }
+
+                showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
+
+                currentDisplayingResolve = resolve;
+                currentDisplayingReject = reject;
+            });
         });
     }
 
@@ -378,13 +425,10 @@
         require(['prompt'], function (prompt) {
 
             prompt({
-                text: Globalize.translate('TextPleaseEnterYourEmailAddressForSubscription'),
-                title: Globalize.translate('HeaderEmailAddress'),
-                callback: function (email) {
-
-                    if (email) {
-                        IapManager.beginPurchase(feature, email);
-                    }
+                label: Globalize.translate('TextPleaseEnterYourEmailAddressForSubscription')
+            }).then(function (email) {
+                if (email) {
+                    IapManager.beginPurchase(feature, email);
                 }
             });
         });
@@ -410,35 +454,19 @@
         }
     }
 
-    function validateSync(resolve, reject) {
+    function validateSync() {
 
-        Dashboard.getPluginSecurityInfo().then(function (pluginSecurityInfo) {
+        // Get supporter status
+        return getRegistrationInfo('Sync').catch(function () {
 
-            if (pluginSecurityInfo.IsMBSupporter) {
-                resolve();
-                return;
-            }
+            return IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
 
-            function onRegistrationInfoResponse(registrationInfo) {
-                if (registrationInfo.IsRegistered) {
-                    resolve();
-                    return;
-                }
+                var dialogOptions = {
+                    title: Globalize.translate('HeaderUnlockSync'),
+                    feature: 'sync'
+                };
 
-                IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
-
-                    var dialogOptions = {
-                        title: Globalize.translate('HeaderUnlockSync'),
-                        feature: 'sync'
-                    };
-
-                    showInAppPurchaseInfo(subscriptionOptions, null, dialogOptions, resolve, reject);
-                });
-            }
-
-            // Get supporter status
-            getRegistrationInfo('Sync').then(onRegistrationInfoResponse, function () {
-                onRegistrationInfoResponse({});
+                return showInAppPurchaseInfo(subscriptionOptions, null, dialogOptions);
             });
         });
     }
@@ -452,18 +480,15 @@
 
         validateFeature: function (name) {
 
-            return new Promise(function (resolve, reject) {
-
-                if (name == 'playback') {
-                    validateFeature(name, resolve, reject);
-                } else if (name == 'livetv') {
-                    validateFeature(name, resolve, reject);
-                } else if (name == 'sync') {
-                    validateSync(resolve, reject);
-                } else {
-                    resolve();
-                }
-            });
+            if (name == 'playback') {
+                return validateFeature(name);
+            } else if (name == 'livetv') {
+                return validateFeature(name);
+            } else if (name == 'sync') {
+                return validateSync();
+            } else {
+                return Promise.resolve();
+            }
         }
     };
 
@@ -477,4 +502,5 @@
         requirejs(['cordova/iap'], onIapManagerLoaded);
     }
 
-})();
+    return window.RegistrationServices;
+});

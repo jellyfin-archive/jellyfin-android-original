@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
 
     var data = {};
     function getPageData() {
@@ -67,7 +67,7 @@
                 html = LibraryBrowser.getPosterViewHtml({
                     items: result.Items,
                     shape: "square",
-                    context: 'music',
+                    context: 'folders',
                     showTitle: true,
                     showParentTitle: true,
                     lazy: true,
@@ -107,4 +107,4 @@
         }
     };
 
-})(jQuery, document);
+});

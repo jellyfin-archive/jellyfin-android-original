@@ -1,9 +1,9 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
 
     var data = {};
 
-    function getPageData() {
-        var key = getSavedQueryKey();
+    function getPageData(context) {
+        var key = getSavedQueryKey(context);
         var pageData = data[key];
 
         if (!pageData) {
@@ -22,19 +22,35 @@
         return pageData;
     }
 
-    function getQuery() {
+    function getQuery(context) {
 
-        return getPageData().query;
+        return getPageData(context).query;
     }
 
-    function getSavedQueryKey() {
+    function getSavedQueryKey(context) {
 
-        return LibraryBrowser.getSavedQueryKey('movies');
+        if (!context.savedQueryKey) {
+            context.savedQueryKey = LibraryBrowser.getSavedQueryKey('channelitems');
+        }
+        return context.savedQueryKey;
+    }
+
+    function getParam(context, name) {
+        
+        if (!context.pageParams) {
+            context.pageParams = {};
+        }
+
+        if (!context.pageParams[name]) {
+            context.pageParams[name] = getParameterByName(name);
+        }
+
+        return context.pageParams[name];
     }
 
     function reloadFeatures(page) {
 
-        var channelId = getParameterByName('id');
+        var channelId = getParam(page, 'id');
 
         ApiClient.getJSON(ApiClient.getUrl("Channels/" + channelId + "/Features")).then(function (features) {
 
@@ -55,12 +71,12 @@
 
             var maxPageSize = features.MaxPageSize;
 
-            var query = getQuery();
+            var query = getQuery(page);
             if (maxPageSize) {
                 query.Limit = Math.min(maxPageSize, query.Limit || maxPageSize);
             }
 
-            getPageData().sortFields = features.DefaultSortFields;
+            getPageData(page).sortFields = features.DefaultSortFields;
 
             reloadItems(page);
         });
@@ -70,10 +86,10 @@
 
         Dashboard.showLoadingMsg();
 
-        var channelId = getParameterByName('id');
-        var folderId = getParameterByName('folderId');
+        var channelId = getParam(page, 'id');
+        var folderId = getParam(page, 'folderId');
 
-        var query = getQuery();
+        var query = getQuery(page);
         query.UserId = Dashboard.getCurrentUserId();
 
         if (folderId) {
@@ -103,11 +119,10 @@
                 startIndex: query.StartIndex,
                 limit: query.Limit,
                 totalRecordCount: result.TotalRecordCount,
-                viewButton: true,
                 showLimit: false,
                 updatePageSizeSetting: false,
-                viewIcon: 'filter-list',
-                sortButton: true
+                sortButton: true,
+                filterButton: true
             });
 
             page.querySelector('.listTopPaging').innerHTML = pagingHtml;
@@ -140,6 +155,10 @@
                 reloadItems(page);
             });
 
+            $('.btnFilter', page).on('click', function () {
+                showFilterMenu(page);
+            });
+
             // On callback make sure to set StartIndex = 0
             $('.btnSort', page).on('click', function () {
                 showSortMenu(page);
@@ -153,9 +172,25 @@
         });
     }
 
+    function showFilterMenu(page) {
+
+        require(['components/filterdialog/filterdialog'], function (filterDialogFactory) {
+
+            var filterDialog = new filterDialogFactory({
+                query: getQuery(page)
+            });
+
+            Events.on(filterDialog, 'filterchange', function () {
+                reloadItems(page);
+            });
+
+            filterDialog.show();
+        });
+    }
+
     function showSortMenu(page) {
 
-        var sortFields = getPageData().sortFields;
+        var sortFields = getPageData(page).sortFields;
 
         var items = [];
 
@@ -206,22 +241,13 @@
             callback: function () {
                 reloadItems(page);
             },
-            query: getQuery()
+            query: getQuery(page)
         });
     }
 
     function updateFilterControls(page) {
 
-        var query = getQuery();
-        $('.chkStandardFilter', page).each(function () {
-
-            var filters = "," + (query.Filters || "");
-            var filterName = this.getAttribute('data-filter');
-
-            this.checked = filters.indexOf(',' + filterName) != -1;
-
-        });
-
+        var query = getQuery(page);
         $('.alphabetPicker', page).alphaValue(query.NameStartsWith);
     }
 
@@ -229,27 +255,9 @@
 
         var page = this;
 
-        $('.chkStandardFilter', this).on('change', function () {
-
-            var query = getQuery();
-            var filterName = this.getAttribute('data-filter');
-            var filters = query.Filters || "";
-
-            filters = (',' + filters).replace(',' + filterName, '').substring(1);
-
-            if (this.checked) {
-                filters = filters ? (filters + ',' + filterName) : filterName;
-            }
-
-            query.StartIndex = 0;
-            query.Filters = filters;
-
-            reloadItems(page);
-        });
-
         $('.alphabetPicker', this).on('alphaselect', function (e, character) {
 
-            var query = getQuery();
+            var query = getQuery(page);
             query.NameStartsWithOrGreater = character;
             query.StartIndex = 0;
 
@@ -257,7 +265,7 @@
 
         }).on('alphaclear', function (e) {
 
-            var query = getQuery();
+            var query = getQuery(page);
             query.NameStartsWithOrGreater = '';
 
             reloadItems(page);
@@ -272,4 +280,4 @@
         updateFilterControls(page);
     });
 
-})(jQuery, document);
+});

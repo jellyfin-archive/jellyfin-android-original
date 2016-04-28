@@ -1,4 +1,4 @@
-﻿// Adapter for "promises-aplus-tests" test runner
+// Adapter for "promises-aplus-tests" test runner
 
 var path = require("path");
 var Promise = require(path.join(__dirname,"lib","npo.src.js"));

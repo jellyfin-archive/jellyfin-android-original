@@ -1,4 +1,4 @@
-﻿define(['paperdialoghelper', 'scripts/livetvcomponents', 'livetvcss', 'paper-checkbox', 'paper-input', 'paper-toggle-button'], function (paperDialogHelper) {
+﻿define(['dialogHelper', 'jQuery', 'scripts/livetvcomponents', 'livetvcss', 'paper-checkbox', 'paper-input', 'paper-toggle-button'], function (dialogHelper, $) {
 
     var currentProgramId;
     var currentDialog;
@@ -40,7 +40,7 @@
     function closeDialog(isSubmitted) {
 
         recordingCreated = isSubmitted;
-        paperDialogHelper.close(currentDialog);
+        dialogHelper.close(currentDialog);
     }
 
     function onSubmit() {
@@ -48,6 +48,13 @@
         Dashboard.showLoadingMsg();
 
         var form = this;
+
+        ApiClient.getNamedConfiguration("livetv").then(function (config) {
+
+            config.EnableRecordingEncoding = $('#chkConvertRecordings', form).checked();
+
+            ApiClient.updateNamedConfiguration("livetv", config).then(Dashboard.processServerConfigurationUpdateResult);
+        });
 
         ApiClient.getNewLiveTvTimerDefaults({ programId: currentProgramId }).then(function (item) {
 
@@ -126,12 +133,6 @@
             } else {
 
                 context.querySelector('.supporterContainer').classList.remove('hide');
-
-                if (AppInfo.enableSupporterMembership) {
-                    context.querySelector('.btnSupporter').classList.remove('hide');
-                } else {
-                    context.querySelector('.btnSupporter').classList.add('hide');
-                }
 
                 if (regInfo.TrialVersion) {
                     context.querySelector('.supporterTrial').classList.remove('hide');
@@ -216,6 +217,26 @@
         });
 
         $('form', context).off('submit', onSubmit).on('submit', onSubmit);
+
+        var supporterButtons = context.querySelectorAll('.btnSupporter');
+        for (var i = 0, length = supporterButtons.length; i < length; i++) {
+            if (AppInfo.enableSupporterMembership) {
+                supporterButtons[i].classList.remove('hide');
+            } else {
+                supporterButtons[i].classList.add('hide');
+            }
+        }
+
+        if (AppInfo.enableSupporterMembership) {
+            context.querySelector('.btnSupporterForConverting a').href = 'https://emby.media/premiere';
+        } else {
+            context.querySelector('.btnSupporterForConverting a').href = '#';
+        }
+
+        ApiClient.getNamedConfiguration("livetv").then(function (config) {
+
+            $('#chkConvertRecordings', context).checked(config.EnableRecordingEncoding);
+        });
     }
 
     function selectDays(page, days) {
@@ -227,7 +248,6 @@
             var day = daysOfWeek[i];
 
             $('#chk' + day, page).checked(days.indexOf(day) != -1);
-
         }
     }
 
@@ -258,7 +278,30 @@
 
         selectDays(context, defaultTimer.Days);
 
+        if (program.ServiceName == 'Emby') {
+            context.querySelector('.convertRecordingsContainer').classList.remove('hide');
+            showConvertRecordingsUnlockMessage(context);
+        } else {
+            context.querySelector('.convertRecordingsContainer').classList.add('hide');
+        }
+
         Dashboard.hideLoadingMsg();
+    }
+
+    function showConvertRecordingsUnlockMessage(context) {
+
+        Dashboard.getPluginSecurityInfo().then(function(regInfo) {
+
+            if (regInfo.IsMBSupporter) {
+                context.querySelector('.btnSupporterForConverting').classList.add('hide');
+            } else {
+                context.querySelector('.btnSupporterForConverting').classList.remove('hide');
+            }
+
+        }, function() {
+            
+            context.querySelector('.btnSupporterForConverting').classList.remove('hide');
+        });
     }
 
     function reload(context, programId) {
@@ -291,7 +334,7 @@
             xhr.onload = function (e) {
 
                 var template = this.response;
-                var dlg = paperDialogHelper.createDialog({
+                var dlg = dialogHelper.createDialog({
                     removeOnClose: true,
                     size: 'small'
                 });
@@ -308,14 +351,16 @@
                 dlg.innerHTML = html;
                 document.body.appendChild(dlg);
 
-                paperDialogHelper.open(dlg);
+                dialogHelper.open(dlg);
 
                 currentDialog = dlg;
 
-                dlg.addEventListener('iron-overlay-closed', function () {
+                dlg.addEventListener('close', function () {
 
                     if (recordingCreated) {
-                        Dashboard.alert(Globalize.translate('MessageRecordingScheduled'));
+                        require(['toast'], function (toast) {
+                            toast(Globalize.translate('MessageRecordingScheduled'));
+                        });
                         resolve();
                     } else {
                         reject();

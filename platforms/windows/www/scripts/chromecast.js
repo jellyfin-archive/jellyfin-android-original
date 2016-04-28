@@ -1,4 +1,4 @@
-﻿define([], function () {
+﻿define(['appSettings'], function (appSettings) {
 
     // Based on https://github.com/googlecast/CastVideos-chrome/blob/master/CastVideos.js
     var currentResolve;
@@ -106,7 +106,8 @@
         var sessionRequest = new chrome.cast.SessionRequest(applicationID);
         var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
           this.sessionListener.bind(this),
-          this.receiverListener.bind(this));
+          this.receiverListener.bind(this),
+            "origin_scoped");
 
         console.log('chromecast.initialize');
 
@@ -153,7 +154,9 @@
 
     CastPlayer.prototype.messageListener = function (namespace, message) {
 
-        message = JSON.parse(message);
+        if (typeof (message) === 'string') {
+            message = JSON.parse(message);
+        }
 
         if (message.type == 'playbackerror') {
 
@@ -177,9 +180,8 @@
             }, 300);
 
         }
-        else if (message.type && message.type.indexOf('playback') == 0) {
+        else if (message.type) {
             Events.trigger(this, message.type, [message.data]);
-
         }
     };
 
@@ -276,13 +278,6 @@
         console.log("chromecast launch error");
         this.deviceState = DEVICE_STATE.ERROR;
 
-        //Dashboard.alert({
-
-        //    title: Globalize.translate("Error"),
-        //    message: Globalize.translate("ErrorLaunchingChromecast")
-
-        //});
-
         sendConnectionResult(false);
     };
 
@@ -349,7 +344,7 @@
             receiverName = castPlayer.session.receiver.friendlyName;
         }
 
-        message = $.extend(message, {
+        message = Object.assign(message, {
             userId: Dashboard.getCurrentUserId(),
             deviceId: ApiClient.deviceId(),
             accessToken: ApiClient.accessToken(),
@@ -357,7 +352,7 @@
             receiverName: receiverName
         });
 
-        var bitrateSetting = AppSettings.maxChromecastBitrate();
+        var bitrateSetting = appSettings.maxChromecastBitrate();
         if (bitrateSetting) {
             message.maxBitrate = bitrateSetting;
         }
@@ -468,14 +463,11 @@
             var userId = Dashboard.getCurrentUserId();
 
             if (query.Ids && query.Ids.split(',').length == 1) {
-                return new Promise(function (resolve, reject) {
-
-                    ApiClient.getItem(userId, query.Ids.split(',')).then(function (item) {
-                        resolve({
-                            Items: [item],
-                            TotalRecordCount: 1
-                        });
-                    });
+                return ApiClient.getItem(userId, query.Ids.split(',')).then(function (item) {
+                    return {
+                        Items: [item],
+                        TotalRecordCount: 1
+                    };
                 });
             }
             else {
@@ -527,6 +519,22 @@
             var state = self.getPlayerStateInternal(data);
 
             Events.trigger(self, "positionchange", [state]);
+        });
+
+        Events.on(castPlayer, "volumechange", function (e, data) {
+
+            console.log('cc: volumechange');
+            var state = self.getPlayerStateInternal(data);
+
+            Events.trigger(self, "volumechange", [state]);
+        });
+
+        Events.on(castPlayer, "playstatechange", function (e, data) {
+
+            console.log('cc: playstatechange');
+            var state = self.getPlayerStateInternal(data);
+
+            Events.trigger(self, "playstatechange", [state]);
         });
 
         self.play = function (options) {
@@ -621,7 +629,7 @@
         };
 
         self.queue = function (options) {
-            self.playWithCommnd(options, 'PlayLast');
+            self.playWithCommand(options, 'PlayLast');
         };
 
         self.queueNext = function (options) {
@@ -678,16 +686,13 @@
 
         self.getTargets = function () {
 
-            return new Promise(function (resolve, reject) {
+            var targets = [];
 
-                var targets = [];
+            if (castPlayer.hasReceivers) {
+                targets.push(self.getCurrentTargetInfo());
+            }
 
-                if (castPlayer.hasReceivers) {
-                    targets.push(self.getCurrentTargetInfo());
-                }
-
-                resolve(targets);
-            });
+            return Promise.resolve(targets);
         };
 
         self.getCurrentTargetInfo = function () {
@@ -821,11 +826,8 @@
 
         self.getPlayerState = function () {
 
-            return new Promise(function (resolve, reject) {
-
-                var result = self.getPlayerStateInternal();
-                resolve(result);
-            });
+            var result = self.getPlayerStateInternal();
+            return Promise.resolve(result);
         };
 
         self.lastPlayerData = {};

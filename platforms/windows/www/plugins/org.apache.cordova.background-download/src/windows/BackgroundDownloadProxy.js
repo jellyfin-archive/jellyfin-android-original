@@ -1,4 +1,4 @@
-﻿cordova.define("org.apache.cordova.background-download.BackgroundDownload", function(require, exports, module) {
+cordova.define("org.apache.cordova.background-download.BackgroundDownload", function(require, exports, module) {
 module.exports = {
     startAsync: function (success, fail, args) {
         try {

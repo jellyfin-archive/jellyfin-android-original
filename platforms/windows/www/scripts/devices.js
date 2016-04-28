@@ -1,12 +1,13 @@
-﻿(function () {
+﻿define(['jQuery'], function ($) {
 
     function deleteDevice(page, id) {
 
         var msg = Globalize.translate('DeleteDeviceConfirmation');
 
-        Dashboard.confirm(msg, Globalize.translate('HeaderDeleteDevice'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
+            confirm(msg, Globalize.translate('HeaderDeleteDevice')).then(function () {
+
                 Dashboard.showLoadingMsg();
 
                 ApiClient.ajax({
@@ -19,7 +20,8 @@
 
                     loadData(page);
                 });
-            }
+            });
+
         });
     }
 
@@ -104,4 +106,4 @@
 
     });
 
-})();
+});

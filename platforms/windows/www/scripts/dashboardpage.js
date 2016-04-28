@@ -13,7 +13,7 @@
         }
 
         if (Dashboard.lastSystemInfo) {
-            Dashboard.setPageTitle(Dashboard.lastSystemInfo.ServerName);
+            page.querySelector('.serverNameHeader').innerHTML = Dashboard.lastSystemInfo.ServerName;
         }
 
         DashboardPage.newsStartIndex = 0;
@@ -84,7 +84,7 @@
 
         ApiClient.getSystemInfo().then(function (systemInfo) {
 
-            Dashboard.setPageTitle(systemInfo.ServerName);
+            page.querySelector('.serverNameHeader').innerHTML = systemInfo.ServerName;
             Dashboard.updateSystemInfo(systemInfo);
 
             $('#appVersionNumber', page).html(Globalize.translate('LabelVersionNumber').replace('{0}', systemInfo.Version));
@@ -171,7 +171,7 @@
 
             html = html.join('') + pagingHtml;
 
-            var elem = $('.latestNewsItems', page).html(html).trigger('create');
+            var elem = $('.latestNewsItems', page).html(html);
 
             $('.btnNextPage', elem).on('click', function () {
                 DashboardPage.newsStartIndex += query.Limit;
@@ -297,7 +297,7 @@
 
             html += '<div class="' + className + '" id="' + rowId + '">';
 
-            html += '<div class="cardBox">';
+            html += '<div class="cardBox" style="box-shadow:0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);margin:4px;">';
             html += '<div class="cardScalable">';
 
             html += '<div class="cardPadder"></div>';
@@ -330,22 +330,16 @@
 
             html += '</div>';
 
-            html += '<div class="sessionUserInfo">';
+            html += '<div class="sessionNowPlayingTime">' + DashboardPage.getSessionNowPlayingTime(session) + '</div>';
 
-            var userImage = DashboardPage.getUserImage(session);
-            if (userImage) {
-                html += '<div class="sessionUserImage" data-src="' + userImage + '">';
-                html += '<img src="' + userImage + '" />';
-            } else {
-                html += '<div class="sessionUserImage">';
-            }
-            html += '</div>';
+            html += '<div class="sessionNowPlayingStreamInfo">' + DashboardPage.getSessionNowPlayingStreamInfo(session) + '</div>';
 
-            html += '<div class="sessionUserName">';
-            html += DashboardPage.getUsersHtml(session);
-            html += '</div>';
+            //if (session.TranscodingInfo && session.TranscodingInfo.Framerate) {
 
-            html += '</div>';
+            //    html += '<div class="sessionTranscodingFramerate">' + session.TranscodingInfo.Framerate + ' fps</div>';
+            //} else {
+            //    html += '<div class="sessionTranscodingFramerate"></div>';
+            //}
 
             var nowPlayingName = DashboardPage.getNowPlayingName(session);
 
@@ -372,22 +366,23 @@
 
             html += '</div>';
 
-            html += '<div class="cardOverlayTarget">';
-
-            html += '<div class="sessionNowPlayingStreamInfo">' + DashboardPage.getSessionNowPlayingStreamInfo(session) + '</div>';
-            html += '<div class="sessionNowPlayingTime">' + DashboardPage.getSessionNowPlayingTime(session) + '</div>';
-
-            if (session.TranscodingInfo && session.TranscodingInfo.Framerate) {
-
-                html += '<div class="sessionTranscodingFramerate">' + session.TranscodingInfo.Framerate + ' fps</div>';
-            } else {
-                html += '<div class="sessionTranscodingFramerate"></div>';
-            }
-            html += '</div>';
-
             html += '</div>';
 
             // cardScalable
+            html += '</div>';
+
+            html += '<div style="padding:1em;border-top:1px solid #eee;background:#fff;text-align:center;text-transform:uppercase;display:flex;align-items:center;justify-content:center;">';
+
+            var userImage = DashboardPage.getUserImage(session);
+            if (userImage) {
+                html += '<img style="border-radius:50px;margin-right:.5em;" src="' + userImage + '" />';
+            } else {
+                html += '<div style="height:24px;"></div>';
+            }
+
+            html += '<div class="sessionUserName">';
+            html += DashboardPage.getUsersHtml(session) || '&nbsp;';
+            html += '</div>';
             html += '</div>';
 
             // cardBox
@@ -395,10 +390,9 @@
 
             // card
             html += '</div>';
-
         }
 
-        parentElement.append(html).createSessionItemMenus().trigger('create');
+        parentElement.append(html);
 
         $('.deadSession', parentElement).remove();
     },
@@ -407,56 +401,61 @@
 
         var html = '';
 
-        html += '<div>';
+        //html += '<div>';
 
         if (session.TranscodingInfo && session.TranscodingInfo.IsAudioDirect && session.TranscodingInfo.IsVideoDirect) {
             html += Globalize.translate('LabelPlayMethodDirectStream');
         }
         else if (session.PlayState.PlayMethod == 'Transcode') {
             html += Globalize.translate('LabelPlayMethodTranscoding');
+
+            if (session.TranscodingInfo && session.TranscodingInfo.Framerate) {
+
+                html += ' - '+session.TranscodingInfo.Framerate + ' fps';
+            }
         }
         else if (session.PlayState.PlayMethod == 'DirectStream') {
-            html += Globalize.translate('LabelPlayMethodDirectStream');
+            html += Globalize.translate('LabelPlayMethodDirectPlay');
         }
         else if (session.PlayState.PlayMethod == 'DirectPlay') {
             html += Globalize.translate('LabelPlayMethodDirectPlay');
         }
 
-        html += '</div>';
+        //html += '</div>';
 
-        if (session.TranscodingInfo) {
+        //if (session.TranscodingInfo) {
 
-            html += '<br/>';
+        //    html += '<br/>';
 
-            var line = [];
+        //    var line = [];
 
-            if (session.TranscodingInfo.Container) {
+        //    if (session.TranscodingInfo.Container) {
 
-                line.push(session.TranscodingInfo.Container);
-            }
-            if (session.TranscodingInfo.Bitrate) {
+        //        line.push(session.TranscodingInfo.Container);
+        //    }
+        //    if (session.TranscodingInfo.Bitrate) {
 
-                if (session.TranscodingInfo.Bitrate > 1000000) {
-                    line.push((session.TranscodingInfo.Bitrate / 1000000).toFixed(1) + ' Mbps');
-                } else {
-                    line.push(Math.floor(session.TranscodingInfo.Bitrate / 1000) + ' kbps');
-                }
-            }
-            if (line.length) {
+        //        if (session.TranscodingInfo.Bitrate > 1000000) {
+        //            line.push((session.TranscodingInfo.Bitrate / 1000000).toFixed(1) + ' Mbps');
+        //        } else {
+        //            line.push(Math.floor(session.TranscodingInfo.Bitrate / 1000) + ' kbps');
+        //        }
+        //    }
+        //    if (line.length) {
 
-                html += '<div>' + line.join(' ') + '</div>';
-            }
+        //        html += '<div>' + line.join(' ') + '</div>';
+        //    }
 
-            if (session.TranscodingInfo.VideoCodec) {
+        //    if (session.TranscodingInfo.VideoCodec) {
 
-                html += '<div>' + Globalize.translate('LabelVideoCodec').replace('{0}', session.TranscodingInfo.VideoCodec) + '</div>';
-            }
-            if (session.TranscodingInfo.AudioCodec && session.TranscodingInfo.AudioCodec != session.TranscodingInfo.Container) {
+        //        html += '<div>' + Globalize.translate('LabelVideoCodec').replace('{0}', session.TranscodingInfo.VideoCodec) + '</div>';
+        //    }
+        //    if (session.TranscodingInfo.AudioCodec && session.TranscodingInfo.AudioCodec != session.TranscodingInfo.Container) {
 
-                html += '<div>' + Globalize.translate('LabelAudioCodec').replace('{0}', session.TranscodingInfo.AudioCodec) + '</div>';
-            }
+        //        html += '<div>' + Globalize.translate('LabelAudioCodec').replace('{0}', session.TranscodingInfo.AudioCodec) + '</div>';
+        //    }
 
-        }
+        //}
 
         return html;
     },
@@ -587,7 +586,7 @@
         $('.sessionNowPlayingStreamInfo', row).html(DashboardPage.getSessionNowPlayingStreamInfo(session));
         $('.sessionNowPlayingTime', row).html(DashboardPage.getSessionNowPlayingTime(session));
 
-        $('.sessionUserName', row).html(DashboardPage.getUsersHtml(session));
+        $('.sessionUserName', row).html(DashboardPage.getUsersHtml(session) || '&nbsp;');
 
         $('.sessionAppSecondaryText', row).html(DashboardPage.getAppSecondaryText(session));
 
@@ -770,7 +769,7 @@
         }
 
 
-        $('#divRunningTasks', page).html(html).trigger('create');
+        $('#divRunningTasks', page).html(html);
     },
 
     renderUrls: function (page, systemInfo) {
@@ -836,10 +835,10 @@
                 var version = packageInfo[0];
 
                 if (!version) {
-                    $('#pUpToDate', page).show();
+                    page.querySelector('#pUpToDate').classList.remove('hide');
                     $('#pUpdateNow', page).hide();
                 } else {
-                    $('#pUpToDate', page).hide();
+                    page.querySelector('#pUpToDate').classList.add('hide');
 
                     $('#pUpdateNow', page).show();
 
@@ -850,7 +849,7 @@
 
         } else {
 
-            $('#pUpToDate', page).hide();
+            page.querySelector('#pUpToDate').classList.add('hide');
 
             $('#pUpdateNow', page).hide();
         }
@@ -913,7 +912,7 @@
                 html += '<button type="button" data-icon="arrow-d" data-theme="b" onclick="DashboardPage.installPluginUpdate(this);" data-name="' + update.name + '" data-guid="' + update.guid + '" data-version="' + update.versionStr + '" data-classification="' + update.classification + '">' + Globalize.translate('ButtonUpdateNow') + '</button>';
             }
 
-            elem.html(html).trigger('create');
+            elem.html(html);
 
         });
     },
@@ -971,103 +970,32 @@
 
     restart: function () {
 
-        Dashboard.confirm(Globalize.translate('MessageConfirmRestart'), Globalize.translate('HeaderRestart'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
+            confirm(Globalize.translate('MessageConfirmRestart'), Globalize.translate('HeaderRestart')).then(function () {
+
                 $('#btnRestartServer').buttonEnabled(false);
                 $('#btnShutdown').buttonEnabled(false);
                 Dashboard.restartServer();
-            }
-
+            });
         });
     },
 
     shutdown: function () {
 
-        Dashboard.confirm(Globalize.translate('MessageConfirmShutdown'), Globalize.translate('HeaderShutdown'), function (result) {
+        require(['confirm'], function (confirm) {
 
-            if (result) {
+            confirm(Globalize.translate('MessageConfirmShutdown'), Globalize.translate('HeaderShutdown')).then(function () {
+
                 $('#btnRestartServer').buttonEnabled(false);
                 $('#btnShutdown').buttonEnabled(false);
                 ApiClient.shutdownServer();
-            }
-
+            });
         });
     }
 };
 
 $(document).on('pageshow', "#dashboardPage", DashboardPage.onPageShow).on('pagebeforehide', "#dashboardPage", DashboardPage.onPageHide);
-
-(function ($, document, window) {
-
-    var showOverlayTimeout;
-
-    function onHoverOut() {
-
-        if (showOverlayTimeout) {
-            clearTimeout(showOverlayTimeout);
-            showOverlayTimeout = null;
-        }
-
-        var elem = this.querySelector('.cardOverlayTarget');
-
-        if ($(elem).is(':visible')) {
-            require(["jquery", "velocity"], function ($, Velocity) {
-
-                Velocity.animate(elem, { "height": "0" },
-                {
-                    complete: function () {
-                        $(elem).hide();
-                    }
-                });
-            });
-        }
-    }
-
-    $.fn.createSessionItemMenus = function () {
-
-        function onShowTimerExpired(elem) {
-
-            if ($('.itemSelectionPanel:visible', elem).length) {
-                return;
-            }
-
-            var innerElem = $('.cardOverlayTarget', elem);
-
-            innerElem.show().each(function () {
-
-                this.style.height = 0;
-
-            }).animate({ "height": "100%" }, "fast");
-        }
-
-        function onHoverIn() {
-
-            if (showOverlayTimeout) {
-                clearTimeout(showOverlayTimeout);
-                showOverlayTimeout = null;
-            }
-
-            var elem = this;
-
-            showOverlayTimeout = setTimeout(function () {
-
-                onShowTimerExpired(elem);
-
-            }, 1000);
-        }
-
-        if (AppInfo.isTouchPreferred) {
-            /* browser with either Touch Events of Pointer Events
-               running on touch-capable device */
-            return this;
-        }
-
-        return this.off('mouseenter', '.playingSession', onHoverIn).off('mouseleave', '.playingSession', onHoverOut).on('mouseenter', '.playingSession', onHoverIn).on('mouseleave', '.playingSession', onHoverOut);
-    };
-
-})(jQuery, document, window);
-
 
 (function ($, document, window) {
 
@@ -1132,7 +1060,7 @@ $(document).on('pageshow', "#dashboardPage", DashboardPage.onPageShow).on('pageb
             });
         }
 
-        $(elem).html(html).trigger('create');
+        $(elem).html(html);
 
         $('.btnNextPage', elem).on('click', function () {
             reloadData(elem, startIndex + limit, limit);
@@ -1315,17 +1243,17 @@ $(document).on('pageshow', "#dashboardPage", DashboardPage.onPageShow).on('pageb
         require(['slideshow'], function () {
 
             var slides = [
-                    { imageUrl: 'css/images/tour/dashboard/dashboard.png', title: Globalize.translate('DashboardTourDashboard') },
-                    { imageUrl: 'css/images/tour/dashboard/help.png', title: Globalize.translate('DashboardTourHelp') },
-                    { imageUrl: 'css/images/tour/dashboard/users.png', title: Globalize.translate('DashboardTourUsers') },
-                    { imageUrl: 'css/images/tour/dashboard/sync.png', title: Globalize.translate('DashboardTourSync') },
-                    { imageUrl: 'css/images/tour/dashboard/cinemamode.png', title: Globalize.translate('DashboardTourCinemaMode') },
-                    { imageUrl: 'css/images/tour/dashboard/chapters.png', title: Globalize.translate('DashboardTourChapters') },
-                    { imageUrl: 'css/images/tour/dashboard/subtitles.png', title: Globalize.translate('DashboardTourSubtitles') },
-                    { imageUrl: 'css/images/tour/dashboard/plugins.png', title: Globalize.translate('DashboardTourPlugins') },
-                    { imageUrl: 'css/images/tour/dashboard/notifications.png', title: Globalize.translate('DashboardTourNotifications') },
-                    { imageUrl: 'css/images/tour/dashboard/scheduledtasks.png', title: Globalize.translate('DashboardTourScheduledTasks') },
-                    { imageUrl: 'css/images/tour/dashboard/mobile.png', title: Globalize.translate('DashboardTourMobile') },
+                    { imageUrl: 'css/images/tour/admin/dashboard.png', title: Globalize.translate('DashboardTourDashboard') },
+                    { imageUrl: 'css/images/tour/admin/help.png', title: Globalize.translate('DashboardTourHelp') },
+                    { imageUrl: 'css/images/tour/admin/users.png', title: Globalize.translate('DashboardTourUsers') },
+                    { imageUrl: 'css/images/tour/admin/sync.png', title: Globalize.translate('DashboardTourSync') },
+                    { imageUrl: 'css/images/tour/admin/cinemamode.png', title: Globalize.translate('DashboardTourCinemaMode') },
+                    { imageUrl: 'css/images/tour/admin/chapters.png', title: Globalize.translate('DashboardTourChapters') },
+                    { imageUrl: 'css/images/tour/admin/subtitles.png', title: Globalize.translate('DashboardTourSubtitles') },
+                    { imageUrl: 'css/images/tour/admin/plugins.png', title: Globalize.translate('DashboardTourPlugins') },
+                    { imageUrl: 'css/images/tour/admin/notifications.png', title: Globalize.translate('DashboardTourNotifications') },
+                    { imageUrl: 'css/images/tour/admin/scheduledtasks.png', title: Globalize.translate('DashboardTourScheduledTasks') },
+                    { imageUrl: 'css/images/tour/admin/mobile.png', title: Globalize.translate('DashboardTourMobile') },
                     { imageUrl: 'css/images/tour/enjoy.jpg', title: Globalize.translate('MessageEnjoyYourStay') }
             ];
 
@@ -1380,7 +1308,7 @@ $(document).on('pageshow', "#dashboardPage", DashboardPage.onPageShow).on('pageb
 
                 if (!pluginSecurityInfo.IsMBSupporter && AppInfo.enableSupporterMembership) {
 
-                    var html = '<div class="supporterPromotion"><a class="clearLink" href="http://emby.media/premiere" target="_blank" style="font-size:14px;"><paper-button raised class="block" style="text-transform:none;background-color:#52B54B;color:#fff;"><div>' + Globalize.translate('HeaderSupportTheTeam') + '</div><div style="font-weight:normal;margin-top:5px;">' + Globalize.translate('TextEnjoyBonusFeatures') + '</div></paper-button></a></div>';
+                    var html = '<div class="supporterPromotion"><a class="clearLink" href="http://emby.media/premiere" target="_blank"><paper-button raised class="block" style="text-transform:none;background-color:#52B54B;color:#fff;"><div>' + Globalize.translate('HeaderSupportTheTeam') + '</div><div style="font-weight:normal;margin-top:5px;">' + Globalize.translate('TextEnjoyBonusFeatures') + '</div></paper-button></a></div>';
 
                     $('.content-primary', page).append(html);
                 }

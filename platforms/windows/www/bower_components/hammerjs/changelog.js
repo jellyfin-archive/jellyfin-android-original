@@ -1,4 +1,4 @@
-﻿var changelog = require( "changelogplease" );
+var changelog = require( "changelogplease" );
 var gittags = require( "git-tags" ).get( function( error, tags ) {
 	if ( error ) {
 		throw error

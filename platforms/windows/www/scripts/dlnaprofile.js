@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['jQuery'], function ($) {
 
     var currentProfile;
 
@@ -866,7 +866,9 @@
                 contentType: "application/json"
             }).then(function () {
 
-                Dashboard.alert('Settings saved.');
+                require(['toast'], function (toast) {
+                    toast('Settings saved.');
+                });
             });
 
         } else {
@@ -1172,4 +1174,4 @@
         }
     };
 
-})(jQuery, document, window);
+});

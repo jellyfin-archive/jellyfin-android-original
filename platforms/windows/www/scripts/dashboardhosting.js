@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['jQuery'], function ($) {
 
     function loadPage(page, config) {
 
@@ -40,8 +40,21 @@
         return false;
     }
 
+    function getTabs() {
+        return [
+        {
+            href: 'dashboardhosting.html',
+            name: Globalize.translate('TabHosting')
+        },
+         {
+             href: 'serversecurity.html',
+             name: Globalize.translate('TabSecurity')
+         }];
+    }
+
     $(document).on('pageshow', "#dashboardHostingPage", function () {
 
+        LibraryMenu.setTabs('adminadvanced', 0, getTabs);
         Dashboard.showLoadingMsg();
 
         var page = this;
@@ -83,4 +96,4 @@
         $('.dashboardHostingForm').off('submit', onSubmit).on('submit', onSubmit);
     });
 
-})(jQuery, document, window);
+});

@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery', 'scrollStyles'], function ($) {
 
     function enableScrollX() {
         return browserInfo.mobile && AppInfo.enableAppLayouts;
@@ -162,7 +162,6 @@
                 depends.push('paper-icon-item');
                 depends.push('paper-item-body');
                 renderMethod = 'renderChannelsTab';
-                initMethod = 'initChannelsTab';
                 break;
             case 3:
                 depends.push('scripts/livetvrecordings');
@@ -198,14 +197,30 @@
         var page = this;
 
         var tabs = page.querySelector('paper-tabs');
-        var pages = page.querySelector('neon-animated-pages');
+        var pageTabsContainer = page.querySelector('.pageTabsContainer');
 
-        LibraryBrowser.configurePaperLibraryTabs(page, tabs, pages, 'livetv.html');
+        LibraryBrowser.configurePaperLibraryTabs(page, tabs, pageTabsContainer, 'livetv.html');
 
-        pages.addEventListener('tabchange', function (e) {
-            loadTab(page, parseInt(e.target.selected));
+        pageTabsContainer.addEventListener('tabchange', function (e) {
+            loadTab(page, parseInt(e.detail.selectedTabIndex));
         });
 
+    });
+
+    pageIdOn('viewshow', "liveTvSuggestedPage", function () {
+
+        var page = this;
+
+        // Needed on the guide tab
+        // Ideally this should be moved to the guide tab on show/hide
+        document.body.classList.add('autoScrollY');
+    });
+
+    pageIdOn('viewbeforehide', "liveTvSuggestedPage", function () {
+
+        var page = this;
+
+        document.body.classList.remove('autoScrollY');
     });
 
     window.LiveTvPage = {
@@ -213,4 +228,4 @@
         initSuggestedTab: initSuggestedTab
     };
 
-})(jQuery, document);
+});

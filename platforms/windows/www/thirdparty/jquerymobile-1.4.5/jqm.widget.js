@@ -1,8 +1,100 @@
-﻿(function () {
+﻿define(['jQuery'], function () {
 
-    if (jQuery.widget) {
-        return;
-    }
+    jQuery.mobile = {};
+
+    (function ($, window, undefined) {
+
+        function parentWithClass(elem, className) {
+
+            while (!elem.classList || !elem.classList.contains(className)) {
+                elem = elem.parentNode;
+
+                if (!elem) {
+                    return null;
+                }
+            }
+
+            return elem;
+        }
+
+        $.extend($.mobile, {
+
+            // Place to store various widget extensions
+            behaviors: {}
+        });
+
+        // plugins
+        $.fn.extend({
+            // Enhance child elements
+            enhanceWithin: function () {
+                var index,
+                    widgetElements = {},
+                    that = this;
+
+                // Enhance widgets
+                $.each($.mobile.widgets, function (name, constructor) {
+
+                    // If initSelector not false find elements
+                    if (constructor.initSelector) {
+
+                        // Filter elements that should not be enhanced based on parents
+                        var elements = that[0].querySelectorAll(constructor.initSelector);
+
+                        // Enhance whatever is left
+                        if (elements.length > 0) {
+                            widgetElements[constructor.prototype.widgetName] = $(elements);
+                        }
+                    }
+                });
+
+                for (index in widgetElements) {
+                    widgetElements[index][index]();
+                }
+
+                return this;
+            }
+        });
+
+    })(jQuery, this);
+
+    jQuery.mobile.widgets = {};
+
+    // plugins
+    $.fn.extend({
+        // Enhance child elements
+        enhanceWithin: function () {
+            var index,
+                widgetElements = {},
+                that = this;
+
+            // Enhance widgets
+            $.each($.mobile.widgets, function (name, constructor) {
+
+                // If initSelector not false find elements
+                if (constructor.initSelector) {
+
+                    // Filter elements that should not be enhanced based on parents
+                    var elements = that[0].querySelectorAll(constructor.initSelector);
+
+                    // Enhance whatever is left
+                    if (elements.length > 0) {
+                        widgetElements[constructor.prototype.widgetName] = $(elements);
+                    }
+                }
+            });
+
+            for (index in widgetElements) {
+                widgetElements[index][index]();
+            }
+
+            return this;
+        }
+    });
+
+    // For backcompat remove in 1.5
+    jQuery(document).on("create", function (event) {
+        jQuery(event.target).enhanceWithin();
+    });
 
     /*!
      * jQuery UI Widget c0ab71056b936627e8a7821f03c044aec6280a40
@@ -416,16 +508,16 @@
                         eventName = match[1] + instance.eventNamespace,
                         selector = match[2];
                     if (selector) {
-                        delegateElement.delegate(selector, eventName, handlerProxy);
+                        delegateElement.on(eventName, selector, handlerProxy);
                     } else {
-                        element.bind(eventName, handlerProxy);
+                        element.on(eventName, handlerProxy);
                     }
                 });
             },
 
             _off: function (element, eventName) {
                 eventName = (eventName || "").split(" ").join(this.eventNamespace + " ") + this.eventNamespace;
-                element.unbind(eventName).undelegate(eventName);
+                element.off(eventName).off(eventName);
             },
 
             _trigger: function (type, event, data) {
@@ -498,7 +590,7 @@
     (function ($, undefined) {
 
 
-        var originalWidget = $.widget
+        var originalWidget = $.widget;
 
         $.widget = (function (orig) {
             return function () {
@@ -519,5 +611,4 @@
 
     })(jQuery);
 
-
-})();
+});

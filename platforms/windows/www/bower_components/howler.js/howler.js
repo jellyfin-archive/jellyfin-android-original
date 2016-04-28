@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  *  howler.js v1.1.29
  *  howlerjs.com
  *

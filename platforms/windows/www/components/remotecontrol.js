@@ -1,4 +1,4 @@
-﻿define(['browser', 'paper-fab', 'paper-tabs', 'paper-slider', 'paper-icon-button'], function (browser) {
+﻿define(['browser', 'jQuery', 'paper-fab', 'paper-tabs', 'paper-slider', 'paper-icon-button'], function (browser, $) {
 
     function showSlideshowMenu(context) {
         require(['scripts/slideshow'], function () {
@@ -196,7 +196,9 @@
             // But for now, if you change songs but keep the same artist, the backdrop will flicker because in-between songs it clears out the image
             if (!browser.mobile) {
                 // Exclude from mobile because it just doesn't perform well
-                Backdrops.setBackdropUrl(context, backdropUrl);
+                require(['backdrop'], function (backdrop) {
+                    backdrop.setBackdrop(backdropUrl);
+                });
             }
 
             ApiClient.getItem(Dashboard.getCurrentUserId(), item.Id).then(function (fullItem) {
@@ -759,7 +761,9 @@
             }, currentPlayer);
 
             $('input', form).val('');
-            Dashboard.alert('Message sent.');
+            require(['toast'], function (toast) {
+                toast('Message sent.');
+            });
 
             e.preventDefault();
             e.stopPropagation();
@@ -780,7 +784,9 @@
             }, currentPlayer);
 
             $('input', form).val('');
-            Dashboard.alert('Text sent.');
+            require(['toast'], function (toast) {
+                toast('Text sent.');
+            });
 
             e.preventDefault();
             e.stopPropagation();
@@ -807,7 +813,7 @@
 
         function init(context) {
 
-            Dashboard.importCss('css/nowplaying.css');
+            require(['css!css/nowplaying.css']);
             bindEvents(context);
 
             context.querySelector('.sendMessageForm').addEventListener('submit', onMessageSubmit);
@@ -835,8 +841,6 @@
                 context.querySelector('.libraryViewNav').classList.remove('hide');
             }
 
-            tabs.classList.add('bottom');
-            tabs.alignBottom = true;
             tabs.noSlide = true;
 
             tabs.addEventListener('iron-select', function (e) {

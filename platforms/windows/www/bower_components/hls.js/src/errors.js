@@ -1,10 +1,10 @@
-﻿export const ErrorTypes = {
+export const ErrorTypes = {
   // Identifier for a network error (loading error / timeout ...)
-  NETWORK_ERROR: 'hlsNetworkError',
+  NETWORK_ERROR: 'networkError',
   // Identifier for a media Error (video/parsing/mediasource error)
-  MEDIA_ERROR: 'hlsMediaError',
+  MEDIA_ERROR: 'mediaError',
   // Identifier for all other errors
-  OTHER_ERROR: 'hlsOtherError'
+  OTHER_ERROR: 'otherError'
 };
 
 export const ErrorDetails = {
@@ -14,6 +14,8 @@ export const ErrorDetails = {
   MANIFEST_LOAD_TIMEOUT: 'manifestLoadTimeOut',
   // Identifier for a manifest parsing error - data: { url : faulty URL, reason : error reason}
   MANIFEST_PARSING_ERROR: 'manifestParsingError',
+  // Identifier for a manifest with only incompatible codecs error - data: { url : faulty URL, reason : error reason}
+  MANIFEST_INCOMPATIBLE_CODECS_ERROR: 'manifestIncompatibleCodecsError',
   // Identifier for playlist load error - data: { url : faulty URL, response : XHR response}
   LEVEL_LOAD_ERROR: 'levelLoadError',
   // Identifier for playlist load timeout - data: { url : faulty URL, response : XHR response}
@@ -39,5 +41,11 @@ export const ErrorDetails = {
   // Identifier for a buffer appending error event - data: appending error description
   BUFFER_APPENDING_ERROR: 'bufferAppendingError',
   // Identifier for a buffer stalled error event
-  BUFFER_STALLED_ERROR: 'bufferStalledError'
+  BUFFER_STALLED_ERROR: 'bufferStalledError',
+  // Identifier for a buffer full event
+  BUFFER_FULL_ERROR: 'bufferFullError',
+  // Identifier for a buffer seek over hole event
+  BUFFER_SEEK_OVER_HOLE: 'bufferSeekOverHole',
+  // Identifier for an internal exception happening inside hls.js while handling an event
+  INTERNAL_EXCEPTION: 'internalException'
 };

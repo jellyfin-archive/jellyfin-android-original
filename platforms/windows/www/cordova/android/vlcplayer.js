@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['appSettings'], function (appSettings) {
 
     function vlcRenderer(options) {
 
@@ -137,11 +137,9 @@
 
             var val = streamInfo.url;
             var tIndex = val.indexOf('#t=');
-            var startPosMs = 0;
+            var startPosMs = (streamInfo.startPositionInSeekParam || 0) * 1000;
 
             if (tIndex != -1) {
-                startPosMs = val.substring(tIndex + 3);
-                startPosMs = parseFloat(startPosMs) * 1000;
                 val = val.split('#')[0];
             }
 
@@ -162,7 +160,7 @@
 
                 require(['qualityoptions'], function (qualityoptions) {
 
-                    var bitrateSetting = AppSettings.maxStreamingBitrate();
+                    var bitrateSetting = appSettings.maxStreamingBitrate();
 
                     var videoQualityOptions = qualityoptions.getVideoQualityOptions(bitrateSetting, videoWidth).map(function (o) {
                         return {
@@ -171,12 +169,14 @@
                         };
                     });
 
+                    var userStartPos = playbackStartInfo.PlayMethod == 'Transcode' ? ((streamInfo.startTimeTicksOffset || 0) / 10000) : startPosMs;
+
                     MediaPlayer.getDeviceProfile().then(function (deviceProfile) {
 
                         var timeLimitMs = MediaController.playbackTimeLimitMs || 0;
 
                         AndroidVlcPlayer.playVideoVlc(val,
-                            startPosMs,
+                            userStartPos,
                             item.Name,
                             JSON.stringify(item),
                             JSON.stringify(mediaSource),
@@ -297,4 +297,4 @@
         return new vlcRenderer(options);
     };
 
-})();
+});

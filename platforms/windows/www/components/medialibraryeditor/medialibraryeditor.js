@@ -1,4 +1,4 @@
-﻿define(['paperdialoghelper', 'paper-fab', 'paper-item-body', 'paper-icon-item'], function (paperDialogHelper) {
+﻿define(['dialogHelper', 'jQuery', 'paper-fab', 'paper-item-body', 'paper-icon-item'], function (dialogHelper, $) {
 
     var currentDeferred;
     var hasChanges;
@@ -17,7 +17,9 @@
 
         }, function () {
 
-            Dashboard.alert(Globalize.translate('ErrorAddingMediaPathToVirtualFolder'));
+            require(['toast'], function (toast) {
+                toast(Globalize.translate('ErrorAddingMediaPathToVirtualFolder'));
+            });
         });
     }
 
@@ -30,9 +32,9 @@
 
         var location = virtualFolder.Locations[index];
 
-        Dashboard.confirm(Globalize.translate('MessageConfirmRemoveMediaLocation'), Globalize.translate('HeaderRemoveMediaLocation'), function (confirmResult) {
+        require(['confirm'], function (confirm) {
 
-            if (confirmResult) {
+            confirm(Globalize.translate('MessageConfirmRemoveMediaLocation'), Globalize.translate('HeaderRemoveMediaLocation')).then(function () {
 
                 var refreshAfterChange = currentOptions.refresh;
 
@@ -43,9 +45,11 @@
 
                 }, function () {
 
-                    Dashboard.alert(Globalize.translate('DefaultErrorMessage'));
+                    require(['toast'], function (toast) {
+                        toast(Globalize.translate('DefaultErrorMessage'));
+                    });
                 });
-            }
+            });
         });
     }
 
@@ -134,7 +138,7 @@
 
         self.show = function (options) {
 
-            var deferred = DeferredBuilder.Deferred();
+            var deferred = jQuery.Deferred();
 
             currentOptions = options;
             currentDeferred = deferred;
@@ -146,7 +150,7 @@
             xhr.onload = function (e) {
 
                 var template = this.response;
-                var dlg = paperDialogHelper.createDialog({
+                var dlg = dialogHelper.createDialog({
                     size: 'small',
 
                     // In (at least) chrome this is causing the text field to not be editable
@@ -174,13 +178,13 @@
                 var editorContent = dlg.querySelector('.editorContent');
                 initEditor(editorContent, options);
 
-                $(dlg).on('iron-overlay-closed', onDialogClosed);
+                $(dlg).on('close', onDialogClosed);
 
-                paperDialogHelper.open(dlg);
+                dialogHelper.open(dlg);
 
                 $('.btnCloseDialog', dlg).on('click', function () {
 
-                    paperDialogHelper.close(dlg);
+                    dialogHelper.close(dlg);
                 });
 
                 refreshLibraryFromServer(editorContent);

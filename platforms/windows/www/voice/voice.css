@@ -3,10 +3,6 @@
     margin: auto;
 }
 
-.exampleCommands {
-    font-size: 15px;
-}
-
 .exampleCommand {
     margin: 1em 0;
 }
@@ -21,5 +17,4 @@
 
 .voiceInputContainer {
     margin: 1.5em 0;
-    font-size: 15px;
 }

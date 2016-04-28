@@ -1,4 +1,4 @@
-﻿cordova.define("acidhax.cordova.chromecast.EventEmitter", function(require, exports, module) {
+cordova.define("acidhax.cordova.chromecast.EventEmitter", function(require, exports, module) {
 /*!
  * EventEmitter v4.2.11 - git.io/ee
  * Unlicense - http://unlicense.org/

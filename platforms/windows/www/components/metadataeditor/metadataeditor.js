@@ -1,19 +1,27 @@
-﻿define(['paperdialoghelper', 'paper-checkbox', 'paper-dialog', 'paper-input', 'paper-item-body', 'paper-icon-item', 'paper-textarea'], function (paperDialogHelper) {
+﻿define(['dialogHelper', 'jQuery', 'paper-checkbox', 'paper-input', 'paper-item-body', 'paper-icon-item', 'paper-textarea', 'paper-fab'], function (dialogHelper, $) {
 
-    var currentDialog;
+    var currentContext;
     var metadataEditorInfo;
     var currentItem;
 
+    function isDialog() {
+        return currentContext.classList.contains('dialog');
+    }
+
     function closeDialog(isSubmitted) {
 
-        paperDialogHelper.close(currentDialog);
+        if (isDialog()) {
+            dialogHelper.close(currentContext);
+        }
     }
 
     function submitUpdatedItem(form, item) {
 
         function afterContentTypeUpdated() {
 
-            Dashboard.alert(Globalize.translate('MessageItemSaved'));
+            require(['toast'], function (toast) {
+                toast(Globalize.translate('MessageItemSaved'));
+            });
 
             Dashboard.hideLoadingMsg();
             closeDialog(true);
@@ -114,6 +122,7 @@
             var item = {
                 Id: currentItem.Id,
                 Name: $('#txtName', form).val(),
+                OriginalTitle: $('#txtOriginalName', form).val(),
                 ForcedSortName: $('#txtSortName', form).val(),
                 DisplayMediaType: $('#txtDisplayMediaType', form).val(),
                 CommunityRating: $('#txtCommunityRating', form).val(),
@@ -228,7 +237,7 @@
         require(['prompt'], function (prompt) {
 
             prompt({
-                title: 'Value:'
+                label: 'Value:'
             }).then(function (text) {
                 var list = $(source).parents('.editableListviewContainer').find('.paperList');
                 var items = editableListViewValues(list);
@@ -259,11 +268,179 @@
         });
     }
 
+    function showRefreshMenu(context, button) {
+
+        var items = [];
+
+        items.push({
+            name: Globalize.translate('ButtonLocalRefresh'),
+            id: 'local',
+            ironIcon: 'refresh'
+        });
+
+        items.push({
+            name: Globalize.translate('ButtonAddMissingData'),
+            id: 'missing',
+            ironIcon: 'refresh'
+        });
+
+        items.push({
+            name: Globalize.translate('ButtonFullRefresh'),
+            id: 'full',
+            ironIcon: 'refresh'
+        });
+
+        require(['actionsheet'], function (actionsheet) {
+
+            actionsheet.show({
+                items: items,
+                positionTo: button,
+                callback: function (id) {
+
+                    if (id) {
+
+                        Dashboard.showLoadingMsg();
+                        // For now this is a hack
+                        setTimeout(function () {
+                            Dashboard.hideLoadingMsg();
+                        }, 5000);
+                    }
+
+                    switch (id) {
+
+                        case 'local':
+                            ApiClient.refreshItem(currentItem.Id, {
+                                Recursive: true,
+                                ImageRefreshMode: 'None',
+                                MetadataRefreshMode: 'ValidationOnly',
+                                ReplaceAllImages: false,
+                                ReplaceAllMetadata: false
+                            });
+                            break;
+                        case 'missing':
+                            ApiClient.refreshItem(currentItem.Id, {
+                                Recursive: true,
+                                ImageRefreshMode: 'FullRefresh',
+                                MetadataRefreshMode: 'FullRefresh',
+                                ReplaceAllImages: false,
+                                ReplaceAllMetadata: false
+                            });
+                            break;
+                        case 'full':
+                            ApiClient.refreshItem(currentItem.Id, {
+                                Recursive: true,
+                                ImageRefreshMode: 'FullRefresh',
+                                MetadataRefreshMode: 'FullRefresh',
+                                ReplaceAllImages: false,
+                                ReplaceAllMetadata: true
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+
+        });
+
+    }
+
+    function showMoreMenu(context, button) {
+
+        var items = [];
+
+        items.push({
+            name: Globalize.translate('ButtonEditImages'),
+            id: 'images',
+            ironIcon: 'photo'
+        });
+
+        items.push({
+            name: Globalize.translate('ButtonIdentify'),
+            id: 'identify',
+            ironIcon: 'info'
+        });
+
+        items.push({
+            name: Globalize.translate('ButtonRefresh'),
+            id: 'refresh',
+            ironIcon: 'refresh'
+        });
+
+        require(['actionsheet'], function (actionsheet) {
+
+            actionsheet.show({
+                items: items,
+                positionTo: button,
+                callback: function (id) {
+
+                    switch (id) {
+
+                        case 'identify':
+                            LibraryBrowser.identifyItem(currentItem.Id);
+                            break;
+                        case 'refresh':
+                            showRefreshMenu(context, button);
+                            break;
+                        case 'images':
+                            LibraryBrowser.editImages(currentItem.Id);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+
+        });
+
+    }
+
+    function onWebSocketMessageReceived(e, data) {
+
+        var msg = data;
+
+        if (msg.MessageType === "LibraryChanged") {
+
+            if (msg.Data.ItemsUpdated.indexOf(currentItem.Id) != -1) {
+
+                console.log('Item updated - reloading metadata');
+                reload(currentContext, currentItem.Id);
+            }
+        }
+    }
+
+    function bindItemChanged(context) {
+
+        Events.on(ApiClient, "websocketmessage", onWebSocketMessageReceived);
+    }
+
+    function unbindItemChanged(context) {
+
+        Events.off(ApiClient, "websocketmessage", onWebSocketMessageReceived);
+    }
+
+    function onEditorClick(e) {
+        var btnRemoveFromEditorList = parentWithClass(e.target, 'btnRemoveFromEditorList');
+        if (btnRemoveFromEditorList) {
+            removeElementFromListview(btnRemoveFromEditorList);
+        }
+
+        var btnAddTextItem = parentWithClass(e.target, 'btnAddTextItem');
+        if (btnAddTextItem) {
+            addElementToEditableListview(btnAddTextItem);
+        }
+    }
+
     function init(context) {
 
         $('.btnCancel', context).on('click', function () {
 
             closeDialog(false);
+        });
+
+        context.querySelector('.btnMore').addEventListener('click', function (e) {
+
+            showMoreMenu(context, e.target);
         });
 
         context.querySelector('.btnHeaderSave').addEventListener('click', function (e) {
@@ -280,19 +457,8 @@
             }
         });
 
-        context.addEventListener('click', function (e) {
-
-            var btnRemoveFromEditorList = parentWithClass(e.target, 'btnRemoveFromEditorList');
-            if (btnRemoveFromEditorList) {
-                removeElementFromListview(btnRemoveFromEditorList);
-            }
-
-            var btnAddTextItem = parentWithClass(e.target, 'btnAddTextItem');
-            if (btnAddTextItem) {
-                addElementToEditableListview(btnAddTextItem);
-            }
-
-        });
+        context.removeEventListener('click', onEditorClick);
+        context.addEventListener('click', onEditorClick);
 
         $('form', context).off('submit', onSubmit).on('submit', onSubmit);
 
@@ -300,6 +466,11 @@
 
             editPerson(context, {}, -1);
         });
+
+        // For now this is only supported in dialog mode because we have a way of knowing when it closes
+        if (isDialog()) {
+            bindItemChanged(context);
+        }
     }
 
     function getItem(itemId) {
@@ -409,7 +580,7 @@
             html += '</div>';
         }
 
-        var elem = $('.externalIds', context).html(html).trigger('create');
+        var elem = $('.externalIds', context).html(html);
 
         $('.txtExternalId', elem).on('change', onExternalIdChange).trigger('change');
     }
@@ -420,6 +591,12 @@
             $('#fldPath', context).show();
         } else {
             $('#fldPath', context).hide();
+        }
+
+        if (item.Type == "Series" || item.Type == "Movie" || item.Type == "Trailer") {
+            $('#fldOriginalName', context).show();
+        } else {
+            $('#fldOriginalName', context).hide();
         }
 
         if (item.Type == "Series") {
@@ -585,13 +762,13 @@
 
         if (item.Type == "Person") {
             context.querySelector('#txtProductionYear').label = Globalize.translate('LabelBirthYear');
-            context.querySelector("#txtPremiereDate").innerHTML = Globalize.translate('LabelBirthDate');
-            context.querySelector("#txtEndDate").innerHTML = Globalize.translate('LabelDeathDate');
+            context.querySelector("#txtPremiereDate").label = Globalize.translate('LabelBirthDate');
+            context.querySelector("#txtEndDate").label = Globalize.translate('LabelDeathDate');
             $('#fldPlaceOfBirth', context).show();
         } else {
             context.querySelector('#txtProductionYear').label = Globalize.translate('LabelYear');
-            context.querySelector("#txtPremiereDate").innerHTML = Globalize.translate('LabelReleaseDate');
-            context.querySelector("#txtEndDate").innerHTML = Globalize.translate('LabelEndDate');
+            context.querySelector("#txtPremiereDate").label = Globalize.translate('LabelReleaseDate');
+            context.querySelector("#txtEndDate").label = Globalize.translate('LabelEndDate');
             $('#fldPlaceOfBirth', context).hide();
         }
 
@@ -708,6 +885,7 @@
 
         $('#txtPath', context).val(item.Path || '');
         $('#txtName', context).val(item.Name || "");
+        $('#txtOriginalName', context).val(item.OriginalTitle || "");
         context.querySelector('#txtOverview').value = item.Overview || '';
         $('#txtShortOverview', context).val(item.ShortOverview || "");
         $('#txtTagline', context).val((item.Taglines && item.Taglines.length ? item.Taglines[0] : ''));
@@ -1054,7 +1232,7 @@
                 xhr.onload = function (e) {
 
                     var template = this.response;
-                    var dlg = paperDialogHelper.createDialog({
+                    var dlg = dialogHelper.createDialog({
                         removeOnClose: true,
                         size: 'medium'
                     });
@@ -1071,17 +1249,44 @@
                     dlg.innerHTML = html;
                     document.body.appendChild(dlg);
 
-                    paperDialogHelper.open(dlg);
+                    dialogHelper.open(dlg);
 
-                    dlg.addEventListener('iron-overlay-closed', function () {
+                    dlg.addEventListener('close', function () {
+                        unbindItemChanged(dlg);
                         resolve();
                     });
 
-                    currentDialog = dlg;
+                    currentContext = dlg;
 
                     init(dlg);
 
                     reload(dlg, itemId);
+                }
+
+                xhr.send();
+            });
+        },
+
+        embed: function (elem, itemId) {
+            return new Promise(function (resolve, reject) {
+
+                Dashboard.showLoadingMsg();
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'components/metadataeditor/metadataeditor.template.html', true);
+
+                xhr.onload = function (e) {
+
+                    var template = this.response;
+
+                    elem.innerHTML = Globalize.translateDocument(template);
+
+                    elem.querySelector('.btnCancel').classList.add('hide');
+
+                    currentContext = elem;
+
+                    init(elem);
+                    reload(elem, itemId);
                 }
 
                 xhr.send();

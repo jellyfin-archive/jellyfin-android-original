@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
 
     function reloadList(page) {
 
@@ -80,8 +80,6 @@
 
         var context = getParameterByName('context');
 
-        $('.sectionTabs', page).hide();
-
         if (context == 'sync') {
             Dashboard.setPageTitle(Globalize.translate('TitleSync'));
             page.setAttribute('data-helpurl', 'https://github.com/MediaBrowser/Wiki/wiki/Sync');
@@ -95,9 +93,6 @@
             page.setAttribute('data-helpurl', 'https://github.com/MediaBrowser/Wiki/wiki/Notifications');
         }
 
-        $('.sectionTabs', page).hide();
-        $('.' + context + 'SectionTabs', page).show();
-
     }).on('pageshow', "#appServicesPage", function () {
 
         var page = this;
@@ -105,4 +100,4 @@
         reloadList(page);
     });
 
-})(jQuery, document);
+});

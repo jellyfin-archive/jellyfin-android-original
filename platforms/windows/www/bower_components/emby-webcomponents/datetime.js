@@ -1,4 +1,4 @@
-﻿define([], function () {
+﻿define(['globalize'], function (globalize) {
 
     function parseISO8601Date(s, toLocal) {
 
@@ -94,8 +94,56 @@
         return parts.join(':');
     }
 
+    var toLocaleTimeStringSupportsLocales = function toLocaleTimeStringSupportsLocales() {
+        try {
+            new Date().toLocaleTimeString('i');
+        } catch (e) {
+            return e.name === 'RangeError';
+        }
+        return false;
+    }();
+
+    function getDisplayTime(date) {
+
+        var currentLocale = globalize.getCurrentLocale();
+
+        var time = currentLocale && toLocaleTimeStringSupportsLocales ?
+            date.toLocaleTimeString(currentLocale) :
+            date.toLocaleTimeString();
+
+        var timeLower = time.toLowerCase();
+
+        if (timeLower.indexOf('am') != -1 || timeLower.indexOf('pm') != -1) {
+
+            time = timeLower;
+            var hour = date.getHours() % 12;
+            var suffix = date.getHours() > 11 ? 'pm' : 'am';
+            if (!hour) {
+                hour = 12;
+            }
+            var minutes = date.getMinutes();
+
+            if (minutes < 10) {
+                minutes = '0' + minutes;
+            }
+            time = hour + ':' + minutes + suffix;
+        } else {
+
+            var timeParts = time.split(':');
+
+            // Trim off seconds
+            if (timeParts.length > 2) {
+                timeParts.length -= 1;
+                time = timeParts.join(':');
+            }
+        }
+
+        return time;
+    }
+
     return {
         parseISO8601Date: parseISO8601Date,
-        getDisplayRunningTime: getDisplayRunningTime
+        getDisplayRunningTime: getDisplayRunningTime,
+        getDisplayTime: getDisplayTime
     };
 });

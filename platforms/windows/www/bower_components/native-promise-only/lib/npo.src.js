@@ -1,4 +1,4 @@
-﻿/*! Native Promise Only
+/*! Native Promise Only
     v0.8.0-a (c) Kyle Simpson
     MIT License: http://getify.mit-license.org
 */

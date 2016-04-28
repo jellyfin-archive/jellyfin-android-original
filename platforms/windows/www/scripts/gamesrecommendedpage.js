@@ -1,4 +1,4 @@
-﻿(function ($, document) {
+define(['jQuery'], function ($) {
 
     $(document).on('pagebeforeshow', "#gamesRecommendedPage", function () {
 
@@ -68,4 +68,4 @@
 
     });
 
-})(jQuery, document);
+});

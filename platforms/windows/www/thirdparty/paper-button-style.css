@@ -1,4 +1,4 @@
-﻿paper-button {
+﻿paper-button, .paper-button-0 {
     font-weight: 500;
     vertical-align: middle;
     margin-top: 5px;
@@ -7,6 +7,7 @@
 
     paper-button.block {
         display: block;
+        margin: .25em 0;
     }
 
     paper-button.blue {
@@ -183,20 +184,6 @@ paper-button.notext {
         margin-right: 0;
     }
 
-.promptDialogContent paper-button {
-    color: #43A047;
-}
-
-.docspinner {
-    display: block;
-    margin-top: -14px;
-    margin-left: -14px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 9999999;
-}
-
 /*paper-toast {
     background-color: #eee;
     color: #000;
@@ -225,14 +212,6 @@ iron-overlay-backdrop {
     padding: 0 12px;
 }
 
-paper-dialog > *:last-child:not(.buttons) {
-    margin-bottom: 12px;
-}
-
-paper-dialog > *:first-child:not(h2) {
-    margin-top: 12px;
-}
-
 paper-icon-button paper-ripple {
     color: inherit !important;
 }
@@ -250,7 +229,7 @@ paper-dialog[role="alertdialog"] + iron-overlay-backdrop {
 }
 
 paper-tabs {
-    background-color: #111;
+    background-color: #020202;
     color: #fff;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
 }
@@ -448,11 +427,16 @@ paper-input label, paper-textarea label {
     font-family: inherit !important;
 }
 
-.ui-body-b .paper-input-container-0 .input-content.paper-input-container label, .ui-body-b .paper-input-container-0 .input-content.paper-input-container .paper-input-label, .ui-body-b paper-textarea label, .ui-body-b .selectLabel, .ui-body-b .fieldDescription {
+.paperListLabel {
+    font-size: 16px;
+    margin-bottom: .5em;
+}
+
+.ui-body-b .paper-input-container-0 .input-content.paper-input-container label, .ui-body-b .paper-input-container-0 .input-content.paper-input-container .paper-input-label, .ui-body-b paper-textarea label, .ui-body-b .selectLabel, .ui-body-b .paperListLabel, .ui-body-b .fieldDescription {
     color: #ccc;
 }
 
-.ui-body-a .paper-input-container-0 .input-content.paper-input-container label, .ui-body-a .paper-input-container-0 .input-content.paper-input-container .paper-input-label, .ui-body-a paper-textarea label, .ui-body-a .selectLabel, .ui-body-a .fieldDescription {
+.ui-body-a .paper-input-container-0 .input-content.paper-input-container label, .ui-body-a .paper-input-container-0 .input-content.paper-input-container .paper-input-label, .ui-body-a paper-textarea label, .ui-body-a .selectLabel, .ui-body-a .paperListLabel, .ui-body-a .fieldDescription {
     color: #656565;
 }
 
@@ -481,14 +465,18 @@ paper-textarea.mono textarea {
 }
 
 .paperList {
-    padding-top: 12px;
+    padding: .5em 0;
     margin: 12px auto;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
     background-color: #fff;
 }
 
+.paperCheckboxList.paperList {
+    padding: .5em 1em;
+}
+
 .ui-body-b .paperList {
-    background-color: #2b2b2b;
+    background-color: #323232;
 }
 
 paper-dropdown-menu {
@@ -502,8 +490,8 @@ paper-dropdown-menu {
         display: block;
     }
 
-paper-dialog paper-radio-group paper-radio-button {
-    padding: 6px 12px;
+paper-radio-group > * {
+    padding: .5em;
 }
 
 .likePaperText {
@@ -563,7 +551,7 @@ div.dialogHeader {
     margin-left: .75em;
 }
 
-paper-dialog.popupEditor h2.dialogHeader {
+.dialog.popupEditor h2.dialogHeader {
     font-weight: inherit !important;
     line-height: 36px;
     padding: 0 1em;
@@ -575,7 +563,7 @@ paper-dialog.popupEditor h2.dialogHeader {
     margin-bottom: 0;
 }
 
-paper-dialog.popupEditor {
+.dialog.popupEditor {
     padding-bottom: 100px;
 }
 

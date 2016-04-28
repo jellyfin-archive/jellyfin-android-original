@@ -38,7 +38,7 @@
     }
 
     function getCameraPhotos() {
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         if (window.CameraRoll) {
 
@@ -85,7 +85,7 @@
 
     function saveOfflineUser(user) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineUserdb(function (db) {
 
@@ -105,7 +105,7 @@
 
     function deleteOfflineUser(id) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineUserdb(function (db) {
 
@@ -145,7 +145,7 @@
 
     function getOfflineActions(serverId) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineActionsDb(function (db) {
 
@@ -173,7 +173,7 @@
 
         var ids = actions.map(function (a) { return "'" + a.Id + "'"; }).join(',');
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineActionsDb(function (db) {
 
@@ -217,7 +217,7 @@
 
     function getServerItemIds(serverId) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineItemsDb(function (db) {
 
@@ -243,7 +243,7 @@
 
     function getUserIdsWithAccess(itemId, serverId) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineItemsDb(function (db) {
 
@@ -273,7 +273,7 @@
 
         Logger.log('saveUserIdsWithAccess');
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineItemsDb(function (db) {
 
@@ -324,7 +324,7 @@
 
         Logger.log('addOrUpdateLocalItem');
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getOfflineItemsDb(function (db) {
 
@@ -343,7 +343,7 @@
 
     function removeLocalItem(itemId, serverId) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         getLocalItem(itemId, serverId).then(function (item) {
 
@@ -371,7 +371,7 @@
     }
 
     function deleteFiles(files) {
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
         deleteNextFile(files, 0, deferred);
         return deferred.promise();
     }
@@ -392,7 +392,7 @@
 
     function deleteFile(path) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         Logger.log('Deleting ' + path);
         resolveFile(path, null, function (fileEntry) {
@@ -439,7 +439,7 @@
 
         var item = {};
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         var localPath = path.join('/');
 
@@ -523,7 +523,7 @@
             return downloadWithFileTransfer(url, localPath, enableBackground);
         }
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         if (localStorage.getItem('sync-' + url) == '1') {
             Logger.log('file was downloaded previously');
@@ -608,7 +608,7 @@
 
     function downloadWithFileTransfer(url, localPath, enableBackground) {
 
-        var deferred = DeferredBuilder.Deferred();
+        var deferred = jQuery.Deferred();
 
         if (localStorage.getItem('sync-' + url) == '1') {
             Logger.log('file was downloaded previously');

@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['jQuery'], function ($) {
 
     var query = {
 
@@ -33,8 +33,8 @@
         if (infos.length > 0) {
             infos = infos.sort(function (a, b) {
 
-                a = a.OrganizerType + " " + a.Name;
-                b = b.OrganizerType + " " + b.Name;
+                a = a.OrganizerType + " " + (a.DisplayName || a.ItemName);
+                b = b.OrganizerType + " " + (b.DisplayName || b.ItemName);
 
                 if (a == b) {
                     return 0;
@@ -49,44 +49,51 @@
         }
 
         var html = "";
-        var currentType;
+
+        if (infos.length) {
+            html += '<div class="paperList">';
+        }
 
         for (var i = 0, length = infos.length; i < length; i++) {
 
             var info = infos[i];
 
-            if (info.OrganizerType != currentType) {
-                currentType = info.OrganizerType;
+            html += '<paper-icon-item>';
 
-                if (html.length > 0) {
-                    html += "</ul>";
-                }
+            html += '<paper-fab mini icon="folder" item-icon class="blue"></paper-fab>';
 
-                html += "<h2>" + currentType + "</h2>";
+            html += (info.DisplayName || info.ItemName);
 
-                html += '<ul data-role="listview" data-inset="true" data-auto-enhanced="false" data-split-icon="action">';
-            }
+            html += '</paper-icon-item>';
 
-            html += "<li data-role='list-divider'><h3 style='font-weight:bold'>" + info.Name + "</h3></li>";
+            var matchStringIndex = 0;
 
-            for (var n = 0; n < info.MatchStrings.length; n++) {
-                html += "<li title='" + info.MatchStrings[n] + "'>";
+            html += info.MatchStrings.map(function (m) {
 
-                html += "<a style='padding-top: 0.5em; padding-bottom: 0.5em'>";
+                var matchStringHtml = '';
+                matchStringHtml += '<paper-icon-item>';
 
-                html += "<p>" + info.MatchStrings[n] + "</p>";
+                matchStringHtml += '<paper-item-body>';
 
-                html += "<a id='btnDeleteMatchEntry" + info.Id + "' class='btnDeleteMatchEntry' href='#' data-id='" + info.Id + "' data-matchstring='" + info.MatchStrings[n] + "' data-icon='delete'>" + Globalize.translate('ButtonDelete') + "</a>";
+                matchStringHtml += "<div secondary>" + m + "</div>";
 
-                html += "</a>";
+                matchStringHtml += '</paper-item-body>';
 
-                html += "</li>";
-            }
+                matchStringHtml += '<paper-icon-button icon="delete" class="btnDeleteMatchEntry" data-index="' + i + '" data-matchindex="' + matchStringIndex + '" title="' + Globalize.translate('ButtonDelete') + '"></paper-icon-button>';
+
+                matchStringHtml += '</paper-icon-item>';
+                matchStringIndex++;
+
+                return matchStringHtml;
+
+            }).join('');
         }
 
-        html += "</ul>";
+        if (infos.length) {
+            html += "</div>";
+        }
 
-        $('.divMatchInfos', page).html(html).trigger('create');
+        $('.divMatchInfos', page).html(html);
     }
 
     function onApiFailure(e) {
@@ -98,6 +105,22 @@
         });
     }
 
+    function getTabs() {
+        return [
+        {
+            href: 'autoorganizelog.html',
+            name: Globalize.translate('TabActivityLog')
+        },
+         {
+             href: 'autoorganizetv.html',
+             name: Globalize.translate('TabTV')
+         },
+         {
+             href: 'autoorganizesmart.html',
+             name: Globalize.translate('TabSmartMatches')
+         }];
+    }
+
     $(document).on('pageinit', "#libraryFileOrganizerSmartMatchPage", function () {
 
         var page = this;
@@ -105,14 +128,17 @@
         $('.divMatchInfos', page).on('click', '.btnDeleteMatchEntry', function () {
 
             var button = this;
-            var id = button.getAttribute('data-id');
+            var index = parseInt(button.getAttribute('data-index'));
+            var matchIndex = parseInt(button.getAttribute('data-matchindex'));
 
-            var options = {
+            var info = currentResult.Items[index];
+            var entries = [
+            {
+                Name: info.ItemName,
+                Value: info.MatchStrings[matchIndex]
+            }];
 
-                MatchString: button.getAttribute('data-matchstring')
-            };
-
-            ApiClient.deleteSmartMatchEntry(id, options).then(function () {
+            ApiClient.deleteSmartMatchEntries(entries).then(function () {
 
                 reloadList(page);
 
@@ -124,6 +150,8 @@
 
         var page = this;
 
+        LibraryMenu.setTabs('autoorganize', 2, getTabs);
+
         Dashboard.showLoadingMsg();
 
         reloadList(page);
@@ -134,4 +162,4 @@
         currentResult = null;
     });
 
-})(jQuery, document, window);
+});

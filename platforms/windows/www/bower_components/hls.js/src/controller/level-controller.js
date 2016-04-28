@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Level Controller
 */
 
@@ -20,9 +20,22 @@ class LevelController extends EventHandler {
 
   destroy() {
     if (this.timer) {
-     clearInterval(this.timer);
+      clearInterval(this.timer);
+      this.timer = null;
     }
     this._manualLevel = -1;
+  }
+
+  startLoad() {
+    this.canload = true;
+    // speed up live playlist refresh if timer exists
+    if (this.timer) {
+      this.tick();
+    }
+  }
+
+  stopLoad() {
+    this.canload = false;
   }
 
   onManifestLoaded(data) {
@@ -86,7 +99,7 @@ class LevelController extends EventHandler {
       }
       hls.trigger(Event.MANIFEST_PARSED, {levels: this._levels, firstLevel: this._firstLevel, stats: data.stats});
     } else {
-      hls.trigger(Event.ERROR, {type: ErrorTypes.NETWORK_ERROR, details: ErrorDetails.MANIFEST_PARSING_ERROR, fatal: true, url: hls.url, reason: 'no compatible level found in manifest'});
+      hls.trigger(Event.ERROR, {type: ErrorTypes.MEDIA_ERROR, details: ErrorDetails.MANIFEST_INCOMPATIBLE_CODECS_ERROR, fatal: true, url: hls.url, reason: 'no level with compatible codecs found in manifest'});
     }
     return;
   }
@@ -213,7 +226,7 @@ class LevelController extends EventHandler {
           }
           // redispatch same error but with fatal set to true
           data.fatal = true;
-          hls.trigger(event, data);
+          hls.trigger(Event.ERROR, data);
         }
       }
     }
@@ -235,17 +248,24 @@ class LevelController extends EventHandler {
 
   tick() {
     var levelId = this._level;
-    if (levelId !== undefined) {
+    if (levelId !== undefined && this.canload) {
       var level = this._levels[levelId], urlId = level.urlId;
       this.hls.trigger(Event.LEVEL_LOADING, {url: level.url[urlId], level: levelId, id: urlId});
     }
   }
 
-  nextLoadLevel() {
+  get nextLoadLevel() {
     if (this._manualLevel !== -1) {
       return this._manualLevel;
     } else {
      return this.hls.abrController.nextAutoLevel;
+    }
+  }
+
+  set nextLoadLevel(nextLevel) {
+    this.level = nextLevel;
+    if (this._manualLevel === -1) {
+      this.hls.abrController.nextAutoLevel = nextLevel;
     }
   }
 }

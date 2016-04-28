@@ -1,4 +1,4 @@
-﻿cordova.define("com.hutchind.cordova.plugins.launcher.Launcher", function(require, exports, module) {
+cordova.define("com.hutchind.cordova.plugins.launcher.Launcher", function(require, exports, module) {
 "use strict";
 function Launcher() {}
 

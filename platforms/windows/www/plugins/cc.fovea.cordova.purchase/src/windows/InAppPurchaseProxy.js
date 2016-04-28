@@ -1,4 +1,4 @@
-﻿cordova.define("cc.fovea.cordova.purchase.InAppPurchaseProxy", function(require, exports, module) {
+cordova.define("cc.fovea.cordova.purchase.InAppPurchaseProxy", function(require, exports, module) {
 var cordova = require('cordova');
 
 module.exports = {

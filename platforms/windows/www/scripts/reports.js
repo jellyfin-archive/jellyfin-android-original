@@ -1,4 +1,5 @@
-﻿(function ($, document) {
+﻿define(['jQuery'], function ($) {
+
     var defaultSortBy = "SortName";
     var topItems = 5;
 
@@ -130,7 +131,7 @@
                 break;
             case "LockDataImage":
                 if (rRow.HasLockData) {
-                    html += '<img src="css/images/editor/lock.png"  style="width:18px"/>';
+                    html += '<iron-icon icon="lock" style="height:18px"></iron-icon>';
                 }
                 break;
             case "TagsPrimaryImage":
@@ -168,11 +169,11 @@
                 break;
             case "StatusImage":
                 if (rRow.HasLockData) {
-                    html += '<img src="css/images/editor/lock.png"  style="width:18px"/>';
+                    html += '<iron-icon icon="lock" style="height:18px"></iron-icon>';
                 }
 
                 if (!rRow.HasLocalTrailer && rRow.RowType === "Movie") {
-                    html += '<img src="css/images/editor/missingtrailer.png" title="Missing local trailer."  style="width:18px"/>';
+                    html += '<iron-icon icon="videocam" title="Missing local trailer." style="height:18px"></iron-icon>';
                 }
 
                 if (!rRow.HasImageTagsPrimary) {
@@ -323,7 +324,7 @@
 
 
             $('.listTopPaging', page).html(pagingHtml).trigger('create');
-           // page.querySelector('.listTopPaging').innerHTML = pagingHtml;
+            // page.querySelector('.listTopPaging').innerHTML = pagingHtml;
             $('.listTopPaging', page).show();
 
             $('.listBottomPaging', page).html(pagingHtml).trigger('create');
@@ -525,7 +526,7 @@
             $('#isFavorite').val("-");
         }
 
-        
+
     }
 
     var filtersLoaded;
@@ -910,10 +911,6 @@
 	    updateFilterControls(this);
 	});
 
-})(jQuery, document);
-
-(function (window) {
-
     function renderOptions(page, selector, cssClass, items) {
 
         var elem;
@@ -1145,4 +1142,4 @@
         loadColumns: loadColumns,
         onPageShow: onPageReportColumnsShow
     };
-})(window);
+});

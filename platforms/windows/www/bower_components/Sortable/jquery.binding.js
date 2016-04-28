@@ -1,4 +1,4 @@
-﻿/**
+/**
  * jQuery plugin for Sortable
  * @author	RubaXa   <trash@rubaxa.org>
  * @license MIT

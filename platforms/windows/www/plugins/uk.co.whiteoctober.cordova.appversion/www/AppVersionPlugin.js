@@ -1,4 +1,4 @@
-﻿cordova.define("uk.co.whiteoctober.cordova.appversion.AppVersionPlugin", function(require, exports, module) {
+cordova.define("uk.co.whiteoctober.cordova.appversion.AppVersionPlugin", function(require, exports, module) {
 /*jslint indent: 2 */
 /*global window, jQuery, angular, cordova */
 "use strict";

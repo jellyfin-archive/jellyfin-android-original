@@ -104,7 +104,7 @@
             if (user.Policy.IsAdministrator && !serverId) {
                 newUrl = "dashboard.html";
             } else {
-                newUrl = "index.html";
+                newUrl = "home.html";
             }
 
             Dashboard.hideLoadingMsg();
@@ -121,7 +121,9 @@
             Dashboard.hideLoadingMsg();
 
             setTimeout(function () {
-                Dashboard.alert(Globalize.translate('MessageInvalidUser'));
+                require(['toast'], function (toast) {
+                    toast(Globalize.translate('MessageInvalidUser'));
+                });
             }, 300);
         });
 

@@ -59,25 +59,31 @@
         self.getCurrentUser = function () {
 
             if (currentUser) {
-                return new Promise(function (resolve, reject) {
-
-                    resolve(currentUser);
-                });
+                return Promise.resolve(currentUser);
             }
 
             var userId = self.getCurrentUserId();
 
             if (!userId) {
-                return new Promise(function (resolve, reject) {
-
-                    reject();
-                });
+                return Promise.reject();
             }
 
             return self.getUser(userId).then(function (user) {
                 currentUser = user;
                 return user;
             });
+        };
+
+        self.isLoggedIn = function() {
+
+            var info = self.serverInfo();
+            if (info) {
+                if (info.UserId && info.AccessToken) {
+                    return true;
+                }
+            }
+
+            return false;
         };
 
         /**
@@ -135,7 +141,7 @@
             {
                 url: url,
                 status: response.status,
-                errorCode: response.headers ? response.headers["X-Application-Error-Code"] : null
+                errorCode: response.headers ? response.headers.get('X-Application-Error-Code') : null
             }]);
         }
 
@@ -520,6 +526,14 @@
             }
         };
 
+        self.ensureWebSocket = function() {
+            if (self.isWebSocketOpenOrConnecting() || !self.isWebSocketSupported()) {
+                return;
+            }
+
+            self.openWebSocket();
+        };
+
         self.openWebSocket = function () {
 
             var accessToken = self.accessToken();
@@ -549,9 +563,7 @@
                 }, 0);
             };
             webSocket.onerror = function () {
-                setTimeout(function () {
-                    Events.trigger(self, 'websocketerror');
-                }, 0);
+                Events.trigger(self, 'websocketerror');
             };
             webSocket.onclose = function () {
                 setTimeout(function () {
@@ -1119,11 +1131,13 @@
 
         self.performEpisodeOrganization = function (id, options) {
 
-            var url = self.getUrl("Library/FileOrganizations/" + id + "/Episode/Organize", options || {});
+            var url = self.getUrl("Library/FileOrganizations/" + id + "/Episode/Organize");
 
             return self.ajax({
                 type: "POST",
-                url: url
+                url: url,
+                data: JSON.stringify(options),
+                contentType: 'application/json'
             });
         };
 
@@ -3428,12 +3442,12 @@
             });
         };
 
-        self.deleteSmartMatchEntry = function (name, options) {
+        self.deleteSmartMatchEntries = function (entries) {
 
-            var url = self.getUrl("Library/FileOrganizations/SmartMatches", options || {});
+            var url = self.getUrl("Library/FileOrganizations/SmartMatches/Delete");
 
             var postData = {
-                Name: name
+                Entries: entries
             };
 
             return self.ajax({
@@ -3442,6 +3456,58 @@
                 url: url,
                 data: JSON.stringify(postData),
                 contentType: "application/json"
+            });
+        };
+
+        self.createPin = function () {
+
+            return self.ajax({
+                type: "POST",
+                url: self.getUrl('Auth/Pin'),
+                data: {
+                    deviceId: self.deviceId(),
+                    appName: self.appName()
+                },
+                dataType: "json"
+            });
+        };
+
+        self.getPinStatus = function (pinInfo) {
+
+            var queryString = {
+                deviceId: pinInfo.DeviceId,
+                pin: pinInfo.Pin
+            };
+
+            return self.ajax({
+                type: 'GET',
+                url: self.getUrl('Auth/Pin', queryString),
+                dataType: 'json'
+            });
+        };
+
+        function exchangePin(pinInfo) {
+
+            return self.ajax({
+                type: 'POST',
+                url: self.getUrl('Auth/Pin/Exchange'),
+                data: {
+                    deviceId: pinInfo.DeviceId,
+                    pin: pinInfo.Pin
+                },
+                dataType: 'json'
+            });
+        }
+
+        self.exchangePin = function (pinInfo) {
+
+            return exchangePin(pinInfo).then(function (result) {
+
+                if (self.onAuthenticated) {
+                    self.onAuthenticated(self, result);
+                }
+
+                return result;
             });
         };
     };

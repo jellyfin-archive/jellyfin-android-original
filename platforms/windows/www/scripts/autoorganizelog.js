@@ -1,4 +1,4 @@
-﻿(function ($, document, window) {
+﻿define(['jQuery'], function ($) {
 
     var query = {
 
@@ -11,30 +11,29 @@
     function showStatusMessage(id) {
 
         var item = currentResult.Items.filter(function (i) {
-            return i.Id == id;
 
+            return i.Id == id;
         })[0];
 
         Dashboard.alert({
 
             title: getStatusText(item, false),
             message: item.StatusMessage
-
         });
     }
 
     function deleteOriginalFile(page, id) {
 
         var item = currentResult.Items.filter(function (i) {
-            return i.Id == id;
 
+            return i.Id == id;
         })[0];
 
-        var message = Globalize.translate('MessageFileWillBeDeleted') + '<p style="word-wrap:break-word;">' + item.OriginalPath + '</p><p>' + Globalize.translate('MessageSureYouWishToProceed') + '</p>';
+        var message = Globalize.translate('MessageFileWillBeDeleted') + '<br/><br/>' + item.OriginalPath + '<br/><br/>' + Globalize.translate('MessageSureYouWishToProceed');
 
-        Dashboard.confirm(message, Globalize.translate('HeaderDeleteFile'), function (confirmResult) {
+        require(['confirm'], function (confirm) {
 
-            if (confirmResult) {
+            confirm(message, Globalize.translate('HeaderDeleteFile')).then(function () {
 
                 Dashboard.showLoadingMsg();
 
@@ -45,81 +44,54 @@
                     reloadItems(page);
 
                 }, onApiFailure);
-            }
-
+            });
         });
     }
 
-    function organizeEpsiodeWithCorrections(page, item) {
+    function organizeFileWithCorrections(page, item) {
 
-        Dashboard.showLoadingMsg();
-
-        ApiClient.getItems(null, {
-            recursive: true,
-            includeItemTypes: 'Series',
-            sortBy: 'SortName'
-
-        }).then(function (result) {
-            Dashboard.hideLoadingMsg();
-            showEpisodeCorrectionPopup(page, item, result.Items);
-        }, onApiFailure);
-
+        showCorrectionPopup(page, item);
     }
 
-    function showEpisodeCorrectionPopup(page, item, allSeries) {
+    function showCorrectionPopup(page, item) {
 
-        var popup = $('.episodeCorrectionPopup', page).popup("open");
+        require(['components/fileorganizer/fileorganizer'], function (fileorganizer) {
 
-        $('.inputFile', popup).html(item.OriginalFileName);
-
-        $('#txtSeason', popup).val(item.ExtractedSeasonNumber);
-        $('#txtEpisode', popup).val(item.ExtractedEpisodeNumber);
-        $('#txtEndingEpisode', popup).val(item.ExtractedEndingEpisodeNumber);
-
-        $('#chkRememberCorrection', popup).val(false);
-
-        $('#hfResultId', popup).val(item.Id);
-
-        var seriesHtml = allSeries.map(function (s) {
-
-            return '<option value="' + s.Id + '">' + s.Name + '</option>';
-
-        }).join('');
-
-        seriesHtml = '<option value=""></option>' + seriesHtml;
-
-        $('#selectSeries', popup).html(seriesHtml);
+            fileorganizer.show(item).then(function () {
+                reloadItems(page);
+            });
+        });
     }
 
     function organizeFile(page, id) {
 
         var item = currentResult.Items.filter(function (i) {
-            return i.Id == id;
 
+            return i.Id == id;
         })[0];
 
         if (!item.TargetPath) {
 
             if (item.Type == "Episode") {
-                organizeEpsiodeWithCorrections(page, item);
+                organizeFileWithCorrections(page, item);
             }
 
             return;
         }
 
-        var message = Globalize.translate('MessageFollowingFileWillBeMovedFrom') + '<p style="word-wrap:break-word;">' + item.OriginalPath + '</p><p>' + Globalize.translate('MessageDestinationTo') + '</p><p style="word-wrap:break-word;">' + item.TargetPath + '</p>';
+        var message = Globalize.translate('MessageFollowingFileWillBeMovedFrom') + '<br/><br/>' + item.OriginalPath + '<br/><br/>' + Globalize.translate('MessageDestinationTo') + '<br/><br/>' + item.TargetPath;
 
         if (item.DuplicatePaths.length) {
-            message += '<p><b>' + Globalize.translate('MessageDuplicatesWillBeDeleted') + '</b></p>';
+            message += '<br/><br/>' + Globalize.translate('MessageDuplicatesWillBeDeleted');
 
-            message += '<p style="word-wrap:break-word;">' + item.DuplicatePaths.join('<br/>') + '</p>';
+            message += '<br/><br/>' + item.DuplicatePaths.join('<br/>');
         }
 
-        message += '<p>' + Globalize.translate('MessageSureYouWishToProceed') + '</p>';
+        message += '<br/><br/>' + Globalize.translate('MessageSureYouWishToProceed');
 
-        Dashboard.confirm(message, Globalize.translate('HeaderOrganizeFile'), function (confirmResult) {
+        require(['confirm'], function (confirm) {
 
-            if (confirmResult) {
+            confirm(message, Globalize.translate('HeaderOrganizeFile')).then(function () {
 
                 Dashboard.showLoadingMsg();
 
@@ -130,37 +102,8 @@
                     reloadItems(page);
 
                 }, onApiFailure);
-            }
-
+            });
         });
-    }
-
-    function submitEpisodeForm(form) {
-
-        Dashboard.showLoadingMsg();
-
-        var page = $(form).parents('.page');
-
-        var resultId = $('#hfResultId', form).val();
-
-        var options = {
-
-            SeriesId: $('#selectSeries', form).val(),
-            SeasonNumber: $('#txtSeason', form).val(),
-            EpisodeNumber: $('#txtEpisode', form).val(),
-            EndingEpisodeNumber: $('#txtEndingEpisode', form).val(),
-            RememberCorrection: $('#chkRememberCorrection', form).checked()
-        };
-
-        ApiClient.performEpisodeOrganization(resultId, options).then(function () {
-
-            Dashboard.hideLoadingMsg();
-
-            $('.episodeCorrectionPopup', page).popup("close");
-
-            reloadItems(page);
-
-        }, onApiFailure);
     }
 
     function reloadItems(page) {
@@ -173,9 +116,7 @@
             renderResults(page, result);
 
             Dashboard.hideLoadingMsg();
-
         }, onApiFailure);
-
     }
 
     function getStatusText(item, enhance) {
@@ -206,7 +147,6 @@
             }
         }
 
-
         return status;
     }
 
@@ -229,9 +169,9 @@
             var status = item.Status;
 
             if (status == 'SkippedExisting') {
-                html += '<div style="color:blue;">';
+                html += '<a data-resultid="' + item.Id + '" style="color:blue;" href="#" class="btnShowStatusMessage">';
                 html += item.OriginalFileName;
-                html += '</div>';
+                html += '</a>';
             }
             else if (status == 'Failure') {
                 html += '<a data-resultid="' + item.Id + '" style="color:red;" href="#" class="btnShowStatusMessage">';
@@ -250,7 +190,6 @@
 
             html += '<td class="organizerButtonCell">';
 
-
             if (item.Status != 'Success') {
                 html += '<paper-icon-button data-resultid="' + item.Id + '" icon="folder" class="btnProcessResult organizerButton" title="' + Globalize.translate('ButtonOrganizeFile') + '"></paper-icon-button>';
                 html += '<paper-icon-button data-resultid="' + item.Id + '" icon="delete" class="btnDeleteResult organizerButton" title="' + Globalize.translate('ButtonDeleteFile') + '"></paper-icon-button>';
@@ -263,7 +202,7 @@
             return html;
         }).join('');
 
-        var elem = $('.resultBody', page).html(rows).parents('.tblOrganizationResults').table("refresh").trigger('create');
+        var elem = $('.resultBody', page).html(rows).parents('.tblOrganizationResults').table('refresh').trigger('create');
 
         $('.btnShowStatusMessage', elem).on('click', function () {
 
@@ -297,17 +236,21 @@
         $(page)[0].querySelector('.listTopPaging').innerHTML = pagingHtml;
 
         if (result.TotalRecordCount > query.Limit && result.TotalRecordCount > 50) {
+
             $('.listBottomPaging', page).html(pagingHtml).trigger('create');
         } else {
+
             $('.listBottomPaging', page).empty();
         }
 
         $('.btnNextPage', page).on('click', function () {
+
             query.StartIndex += query.Limit;
             reloadItems(page);
         });
 
         $('.btnPreviousPage', page).on('click', function () {
+
             query.StartIndex -= query.Limit;
             reloadItems(page);
         });
@@ -323,14 +266,9 @@
 
         var page = $.mobile.activePage;
 
-        if (msg.MessageType == "ScheduledTaskEnded") {
+        if ((msg.MessageType == 'ScheduledTaskEnded' && msg.Data.Key == 'AutoOrganize') || msg.MessageType == 'AutoOrganizeUpdate') {
 
-            var result = msg.Data;
-
-            if (result.Key == 'AutoOrganize') {
-
-                reloadItems(page);
-            }
+            reloadItems(page);
         }
     }
 
@@ -338,15 +276,36 @@
 
         Dashboard.hideLoadingMsg();
 
-        Dashboard.alert({
-            title: Globalize.translate('AutoOrganizeError'),
-            message: Globalize.translate('ErrorOrganizingFileWithErrorCode', e.getResponseHeader("X-Application-Error-Code"))
-        });
+        if (e.status == 0) {
+
+            Dashboard.alert({
+                title: 'Auto-Organize',
+                message: 'The operation is going to take a little longer. The view will be updated on completion.'
+            });
+        }
+        else {
+
+            Dashboard.alert({
+                title: Globalize.translate('AutoOrganizeError'),
+                message: Globalize.translate('ErrorOrganizingFileWithErrorCode', e.headers.get('X-Application-Error-Code'))
+            });
+        }
     }
 
-    function onEpisodeCorrectionFormSubmit() {
-        submitEpisodeForm(this);
-        return false;
+    function getTabs() {
+        return [
+        {
+            href: 'autoorganizelog.html',
+            name: Globalize.translate('TabActivityLog')
+        },
+         {
+             href: 'autoorganizetv.html',
+             name: Globalize.translate('TabTV')
+         },
+         {
+             href: 'autoorganizesmart.html',
+             name: Globalize.translate('TabSmartMatches')
+         }];
     }
 
     $(document).on('pageinit', "#libraryFileOrganizerLogPage", function () {
@@ -358,12 +317,11 @@
             ApiClient.clearOrganizationLog().then(function () {
                 reloadItems(page);
             }, onApiFailure);
-
         });
 
-        $('.episodeCorrectionForm').off('submit', onEpisodeCorrectionFormSubmit).on('submit', onEpisodeCorrectionFormSubmit);
+    }).on('pageshow', '#libraryFileOrganizerLogPage', function () {
 
-    }).on('pageshow', "#libraryFileOrganizerLogPage", function () {
+        LibraryMenu.setTabs('autoorganize', 0, getTabs);
 
         var page = this;
 
@@ -377,9 +335,9 @@
             taskKey: 'AutoOrganize'
         });
 
-        $(ApiClient).on("websocketmessage.autoorganizelog", onWebSocketMessage);
+        Events.on(ApiClient, 'websocketmessage', onWebSocketMessage);
 
-    }).on('pagebeforehide', "#libraryFileOrganizerLogPage", function () {
+    }).on('pagebeforehide', '#libraryFileOrganizerLogPage', function () {
 
         var page = this;
 
@@ -390,7 +348,7 @@
             mode: 'off'
         });
 
-        $(ApiClient).off("websocketmessage.autoorganizelog", onWebSocketMessage);
+        Events.off(ApiClient, 'websocketmessage', onWebSocketMessage);
     });
 
-})(jQuery, document, window);
+});
