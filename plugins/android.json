@@ -174,9 +174,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -189,9 +186,6 @@
         "cordova-plugin-network-information": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-media": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "acidhax.cordova.chromecast": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -200,10 +194,19 @@
         },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {
-        "cordova-plugin-file": {
+        "cordova-plugin-compat": {
             "PACKAGE_NAME": "com.mb.android"
         }
     }

@@ -19,7 +19,8 @@
  *
 */
 
-var cordova = require('cordova');
+/* global Windows, WinJS, MSApp */
+
 var File = require('./File'),
     FileError = require('./FileError'),
     Flags = require('./Flags'),
@@ -154,7 +155,7 @@ var WinFS = function(name, root) {
         this.winpath += "/";
     }
     this.makeNativeURL = function(path) {
-        return encodeURI(this.root.nativeURL + sanitize(path.replace(':','%3A')));};
+        return FileSystem.encodeURIPath(this.root.nativeURL + sanitize(path.replace(':','%3A')));};
     root.fullPath = '/';
     if (!root.nativeURL)
             root.nativeURL = 'file://'+sanitize(this.winpath + root.fullPath).replace(':','%3A');
@@ -164,16 +165,23 @@ var WinFS = function(name, root) {
 utils.extend(WinFS, FileSystem);
 
 WinFS.prototype.__format__ = function(fullPath) {
-    var path = sanitize('/'+this.name+(fullPath[0]==='/'?'':'/')+encodeURI(fullPath));
+    var path = sanitize('/'+this.name+(fullPath[0]==='/'?'':'/')+FileSystem.encodeURIPath(fullPath));
     return 'cdvfile://localhost' + path;
+};
+
+var windowsPaths = {
+    dataDirectory: "ms-appdata:///local/",
+    cacheDirectory: "ms-appdata:///temp/",
+    tempDirectory: "ms-appdata:///temp/",
+    syncedDataDirectory: "ms-appdata:///roaming/",
+    applicationDirectory: "ms-appx:///",
+    applicationStorageDirectory: "ms-appx:///"
 };
 
 var AllFileSystems; 
 
 function getAllFS() {
     if (!AllFileSystems) {
-        var storageFolderPermanent = Windows.Storage.ApplicationData.current.localFolder.path,
-            storageFolderTemporary = Windows.Storage.ApplicationData.current.temporaryFolder.path;
         AllFileSystems = {
             'persistent':
             Object.freeze(new WinFS('persistent', { 
@@ -225,7 +233,7 @@ function getFilesystemFromPath(path) {
 var msapplhRE = new RegExp('^ms-appdata://localhost/');
 function pathFromURL(url) {
     url=url.replace(msapplhRE,'ms-appdata:///');
-    var path = decodeURI(url);
+    var path = decodeURIComponent(url);
     // support for file name with parameters
     if (/\?/g.test(path)) {
         path = String(path).split("?")[0];
@@ -247,7 +255,7 @@ function pathFromURL(url) {
         }
     });
     
-    return path.replace('%3A',':').replace(driveRE,'$1');
+    return path.replace(driveRE,'$1');
 }
 
 function getFilesystemFromURL(url) {
@@ -343,23 +351,23 @@ function copyFolder(src,dst,name) {
                 }
                 var todo = the.files.length;
                 var copyfolders = function() {
-                    if (!todo--) {
+                    if (!(todo--)) {
                         complete();
                         return;
                     }
                     copyFolder(the.folders[todo],dst)
-                    .done(function() {copyfolders(); }, failed);
+                    .done(function() { copyfolders(); }, failed);
                 };
                 var copyfiles = function() {
-                    if (!todo--) {
+                    if (!(todo--)) {
                         todo = the.folders.length;
                         copyfolders();
                         return;
                     }
                     the.files[todo].copyAsync(the.fld)
-                    .done(function() {copyfiles(); }, failed);
+                    .done(function() { copyfiles(); }, failed);
                 };
-                copyfiles();                
+                copyfiles();
             },
             failed
         );
@@ -369,11 +377,10 @@ function copyFolder(src,dst,name) {
 function moveFolder(src,dst,name) {
     name = name?name:src.name;
     return new WinJS.Promise(function (complete,failed) {
-        var pending = [];
         WinJS.Promise.join({
-            fld:dst.createFolderAsync(name, Windows.Storage.CreationCollisionOption.openIfExists),
-            files:src.getFilesAsync(),
-            folders:src.getFoldersAsync()
+            fld: dst.createFolderAsync(name, Windows.Storage.CreationCollisionOption.openIfExists),
+            files: src.getFilesAsync(),
+            folders: src.getFoldersAsync()
         }).done(
             function(the) {
                 if (!(the.files.length || the.folders.length)) {
@@ -382,7 +389,7 @@ function moveFolder(src,dst,name) {
                 }
                 var todo = the.files.length;
                 var movefolders = function() {
-                    if (!todo--) {
+                    if (!(todo--)) {
                         src.deleteAsync().done(complete,failed);
                         return;
                     }
@@ -390,15 +397,15 @@ function moveFolder(src,dst,name) {
                     .done(movefolders,failed); 
                 };
                 var movefiles = function() {
-                    if (!todo--) {
+                    if (!(todo--)) {
                         todo = the.folders.length;
                         movefolders();
                         return;
                     }
                     the.files[todo].moveAsync(the.fld)
-                    .done(function() {movefiles(); }, failed);
+                    .done(function() { movefiles(); }, failed);
                 };
-                movefiles();                
+                movefiles();
             },
             failed
         );
@@ -440,10 +447,9 @@ function transport(success, fail, args, ops) { // ["fullPath","parent", "newName
                 fail(FileError.NOT_FOUND_ERR);
                 return;
             }
-            if (   (the.src.folder && the.tgt.file) 
-                || (the.src.file && the.tgt.folder)
-                || (the.tgt.folder && (the.tgt.files.length || the.tgt.folders.length))) 
-            {
+            if ((the.src.folder && the.tgt.file) ||
+                (the.src.file && the.tgt.folder) ||
+                (the.tgt.folder && (the.tgt.files.length || the.tgt.folders.length))) {
                 fail(FileError.INVALID_MODIFICATION_ERR);
                 return;
             }
@@ -486,6 +492,9 @@ function transport(success, fail, args, ops) { // ["fullPath","parent", "newName
 module.exports = {
     requestAllFileSystems: function() {
         return getAllFS();
+    },
+    requestAllPaths: function(success){
+        success(windowsPaths);
     },
     getFileMetadata: function (success, fail, args) {
         module.exports.getMetadata(success, fail, args);
@@ -593,7 +602,12 @@ module.exports = {
 
                 return stream.readAsync(buffer, readSize, Windows.Storage.Streams.InputStreamOptions.none);
             }).done(function(buffer) {
-                win(Windows.Security.Cryptography.CryptographicBuffer.convertBinaryToString(encoding, buffer));
+            	try {
+            		win(Windows.Security.Cryptography.CryptographicBuffer.convertBinaryToString(encoding, buffer));
+                }
+                catch (e) {
+                	fail(FileError.ENCODING_ERR);
+                }
             },function() {
                 fail(FileError.NOT_FOUND_ERR);
             });
@@ -1077,7 +1091,6 @@ module.exports = {
                 if (Number(size) >= 0) {
                     Windows.Storage.FileIO.readTextAsync(storageFile, Windows.Storage.Streams.UnicodeEncoding.utf8).then(function (fileContent) {
                         fileContent = fileContent.substr(0, size);
-                        var fullPath = storageFile.path;
                         var name = storageFile.name;
                         storageFile.deleteAsync().then(function () {
                             return getFolderFromPathAsync(dirwpath);
@@ -1153,7 +1166,6 @@ module.exports = {
     resolveLocalFileSystemURI: function (success, fail, args) {
 
         var uri = args[0];
-        var inputURL;
 
         var path = pathFromURL(uri);
         var fs = getFilesystemFromURL(uri);

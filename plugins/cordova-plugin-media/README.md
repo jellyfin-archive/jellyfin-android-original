@@ -17,9 +17,10 @@
 #         under the License.
 -->
 
+[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-media)
+
 # cordova-plugin-media
 
-[![Build Status](https://travis-ci.org/apache/cordova-plugin-media.svg)](https://travis-ci.org/apache/cordova-plugin-media)
 
 This plugin provides the ability to record and play back audio files on a device.
 
@@ -36,6 +37,9 @@ Although in the global scope, it is not available until after the `deviceready` 
     function onDeviceReady() {
         console.log(Media);
     }
+
+Report issues with this plugin on the [Apache Cordova issue tracker](https://issues.apache.org/jira/issues/?jql=project%20%3D%20CB%20AND%20status%20in%20%28Open%2C%20%22In%20Progress%22%2C%20Reopened%29%20AND%20resolution%20%3D%20Unresolved%20AND%20component%20%3D%20%22Plugin%20Media%22%20ORDER%20BY%20priority%20DESC%2C%20summary%20ASC%2C%20updatedDate%20DESC)
+
 
 ## Installation
 
@@ -56,10 +60,6 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 - Only one media file can be played back at a time.
 
-- There are strict restrictions on how your application interacts with other media. See the [Microsoft documentation for details][url].
-
-[url]: http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh184838(v=vs.92).aspx
-
 ## Media
 
     var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
@@ -74,6 +74,11 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 - __mediaStatus__: (Optional) The callback that executes to indicate status changes. _(Function)_
 
+__NOTE__: `cdvfile` path is supported as `src` parameter:
+```javascript
+var my_media = new Media('cdvfile://localhost/temporary/recording.mp3', ...);
+```
+
 ### Constants
 
 The following constants are reported as the only parameter to the
@@ -86,6 +91,8 @@ The following constants are reported as the only parameter to the
 - `Media.MEDIA_STOPPED`  = 4;
 
 ### Methods
+
+- `media.getCurrentAmplitude`: Returns the current position within an audio file.
 
 - `media.getCurrentPosition`: Returns the current position within an audio file.
 
@@ -113,6 +120,47 @@ The following constants are reported as the only parameter to the
     - Not automatically updated during play; call `getCurrentPosition` to update.
 
 - __duration__: The duration of the media, in seconds.
+
+
+## media.getCurrentAmplitude
+
+Returns the current amplitude of the current recording.
+
+    media.getCurrentAmplitude(mediaSuccess, [mediaError]);
+
+### Supported Platforms
+
+- Android
+- iOS
+
+### Parameters
+
+- __mediaSuccess__: The callback that is passed the current amplitude (0.0 - 1.0).
+
+- __mediaError__: (Optional) The callback to execute if an error occurs.
+
+### Quick Example
+
+    // Audio player
+    //
+    var my_media = new Media(src, onSuccess, onError);
+
+    // Record audio
+    my_media.startRecord();
+
+    mediaTimer = setInterval(function () {
+        // get media amplitude
+        my_media.getCurrentAmplitude(
+            // success callback
+            function (amp) {
+                console.log(amp + "%");
+            },
+            // error callback
+            function (e) {
+                console.log("Error getting amp=" + e);
+            }
+        );
+    }, 1000);
 
 
 ## media.getCurrentPosition
@@ -204,7 +252,7 @@ Pauses playing an audio file.
 
         // Pause after 10 seconds
         setTimeout(function () {
-            media.pause();
+            my_media.pause();
         }, 10000);
     }
 
@@ -408,7 +456,7 @@ Starts recording an audio file.
 
 - Windows devices can use MP3, M4A and WMA formats for recorded audio. However in most cases it is not possible to use MP3 for audio recording on _Windows Phone 8.1_ devices, because an MP3 encoder is [not shipped with Windows Phone](https://msdn.microsoft.com/en-us/library/windows/apps/windows.media.mediaproperties.mediaencodingprofile.createmp3.aspx).
 
-- If a full path is not provided, the recording is placed in the AppData/temp directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY` or 'ms-appdata:///temp/<filename>' URI.
+- If a full path is not provided, the recording is placed in the `AppData/temp` directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY` or `ms-appdata:///temp/<filename>` URI.
 
 - Any subdirectory specified at record time must already exist.
 
@@ -511,4 +559,3 @@ function when an error occurs.
 - `MediaError.MEDIA_ERR_NETWORK`        = 2
 - `MediaError.MEDIA_ERR_DECODE`         = 3
 - `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
-

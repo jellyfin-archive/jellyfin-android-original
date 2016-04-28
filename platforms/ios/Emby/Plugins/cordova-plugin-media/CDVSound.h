@@ -6,9 +6,7 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
-
  http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -69,12 +67,14 @@ typedef NSUInteger CDVMediaMsg;
     CDVAudioPlayer* player;
     CDVAudioRecorder* recorder;
     NSNumber* volume;
+    NSNumber* rate;
 }
 
 @property (nonatomic, strong) NSString* resourcePath;
 @property (nonatomic, strong) NSURL* resourceURL;
 @property (nonatomic, strong) CDVAudioPlayer* player;
 @property (nonatomic, strong) NSNumber* volume;
+@property (nonatomic, strong) NSNumber* rate;
 
 @property (nonatomic, strong) CDVAudioRecorder* recorder;
 
@@ -83,10 +83,13 @@ typedef NSUInteger CDVMediaMsg;
 @interface CDVSound : CDVPlugin <AVAudioPlayerDelegate, AVAudioRecorderDelegate>
 {
     NSMutableDictionary* soundCache;
+    NSString* currMediaId;
     AVAudioSession* avSession;
+    AVPlayer* avPlayer;
 }
 @property (nonatomic, strong) NSMutableDictionary* soundCache;
 @property (nonatomic, strong) AVAudioSession* avSession;
+@property (nonatomic, strong) NSString* currMediaId;
 
 - (void)startPlayingAudio:(CDVInvokedUrlCommand*)command;
 - (void)pausePlayingAudio:(CDVInvokedUrlCommand*)command;
@@ -107,7 +110,9 @@ typedef NSUInteger CDVMediaMsg;
 
 - (void)startRecordingAudio:(CDVInvokedUrlCommand*)command;
 - (void)stopRecordingAudio:(CDVInvokedUrlCommand*)command;
+- (void)getCurrentAmplitudeAudio:(CDVInvokedUrlCommand*)command;
 
 - (void)setVolume:(CDVInvokedUrlCommand*)command;
+- (void)setRate:(CDVInvokedUrlCommand*)command;
 
 @end

@@ -18,22 +18,19 @@
  */
 package org.apache.cordova.file;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.apache.cordova.CordovaResourceApi;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import org.apache.cordova.CordovaResourceApi;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ContentFilesystem extends Filesystem {
 
@@ -127,7 +124,9 @@ public class ContentFilesystem extends Filesystem {
         try {
         	if (cursor != null && cursor.moveToFirst()) {
         		size = resourceSizeForCursor(cursor);
-        		lastModified = lastModifiedDateForCursor(cursor);
+                Long modified = lastModifiedDateForCursor(cursor);
+                if (modified != null)
+                    lastModified = modified.longValue();
         	} else {
                 // Some content providers don't support cursors at all!
                 CordovaResourceApi.OpenForReadResult offr = resourceApi.openForRead(nativeUri);
@@ -185,12 +184,14 @@ public class ContentFilesystem extends Filesystem {
 	}
 	
 	protected Long lastModifiedDateForCursor(Cursor cursor) {
-        final String[] LOCAL_FILE_PROJECTION = { MediaStore.MediaColumns.DATE_MODIFIED };
-        int columnIndex = cursor.getColumnIndex(LOCAL_FILE_PROJECTION[0]);
+        int columnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATE_MODIFIED);
+        if (columnIndex == -1) {
+            columnIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_LAST_MODIFIED);
+        }
         if (columnIndex != -1) {
             String dateStr = cursor.getString(columnIndex);
             if (dateStr != null) {
-            	return Long.parseLong(dateStr);
+                return Long.parseLong(dateStr);
             }
         }
         return null;

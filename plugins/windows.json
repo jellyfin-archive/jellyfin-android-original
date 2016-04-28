@@ -46,15 +46,6 @@
         "cordova-plugin-device": {
             "PACKAGE_NAME": "Emby"
         },
-        "cordova-plugin-file": {
-            "PACKAGE_NAME": "Emby"
-        },
-        "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "Emby"
-        },
-        "cordova-plugin-media": {
-            "PACKAGE_NAME": "Emby"
-        },
         "cordova-plugin-network-information": {
             "PACKAGE_NAME": "Emby"
         },
@@ -81,7 +72,20 @@
         },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "Emby"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "Emby"
+        }
+    }
 }

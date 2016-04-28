@@ -82,6 +82,128 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-statusbar/www/statusbar.js",
+        "id": "cordova-plugin-statusbar.statusbar",
+        "pluginId": "cordova-plugin-statusbar",
+        "clobbers": [
+            "window.StatusBar"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-statusbar/src/windows/StatusBarProxy.js",
+        "id": "cordova-plugin-statusbar.StatusBarProxy",
+        "pluginId": "cordova-plugin-statusbar",
+        "runs": true
+    },
+    {
+        "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
+        "id": "nl.x-services.plugins.actionsheet.ActionSheet",
+        "pluginId": "nl.x-services.plugins.actionsheet",
+        "clobbers": [
+            "window.plugins.actionsheet"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/www/Promise.js",
+        "id": "org.apache.cordova.background-download.Promise",
+        "pluginId": "org.apache.cordova.background-download"
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/www/BackgroundDownloader.js",
+        "id": "org.apache.cordova.background-download.BackgroundDownloader",
+        "pluginId": "org.apache.cordova.background-download",
+        "clobbers": [
+            "BackgroundTransfer.BackgroundDownloader"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/www/DownloadOperation.js",
+        "id": "org.apache.cordova.background-download.DownloadOperation",
+        "pluginId": "org.apache.cordova.background-download",
+        "clobbers": [
+            "DownloadOperation"
+        ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.background-download/src/windows/BackgroundDownloadProxy.js",
+        "id": "org.apache.cordova.background-download.BackgroundDownload",
+        "pluginId": "org.apache.cordova.background-download",
+        "merges": [
+            ""
+        ]
+    },
+    {
+        "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
+        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
+        "pluginId": "uk.co.whiteoctober.cordova.appversion",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
+    },
+    {
+        "file": "plugins/uk.co.whiteoctober.cordova.appversion/src/windows8/AppVersionProxy.js",
+        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionProxy",
+        "pluginId": "uk.co.whiteoctober.cordova.appversion",
+        "merges": [
+            ""
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device/www/device.js",
+        "id": "cordova-plugin-device.device",
+        "pluginId": "cordova-plugin-device",
+        "clobbers": [
+            "device"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device/src/windows/DeviceProxy.js",
+        "id": "cordova-plugin-device.DeviceProxy",
+        "pluginId": "cordova-plugin-device",
+        "merges": [
+            ""
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-network-information/www/network.js",
+        "id": "cordova-plugin-network-information.network",
+        "pluginId": "cordova-plugin-network-information",
+        "clobbers": [
+            "navigator.connection",
+            "navigator.network.connection"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-network-information/www/Connection.js",
+        "id": "cordova-plugin-network-information.Connection",
+        "pluginId": "cordova-plugin-network-information",
+        "clobbers": [
+            "Connection"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-network-information/src/windows/NetworkInfoProxy.js",
+        "id": "cordova-plugin-network-information.NetworkInfoProxy",
+        "pluginId": "cordova-plugin-network-information",
+        "runs": true
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
+        "pluginId": "cordova-plugin-x-socialsharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/src/windows/SocialSharingProxy.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharingProxy",
+        "pluginId": "cordova-plugin-x-socialsharing",
+        "merges": [
+            ""
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
         "id": "cordova-plugin-file.DirectoryEntry",
         "pluginId": "cordova-plugin-file",
@@ -226,12 +348,27 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-file/www/browser/isChrome.js",
+        "id": "cordova-plugin-file.isChrome",
+        "pluginId": "cordova-plugin-file",
+        "runs": true
+    },
+    {
         "file": "plugins/cordova-plugin-file/src/windows/FileProxy.js",
         "id": "cordova-plugin-file.FileProxy",
         "pluginId": "cordova-plugin-file",
         "merges": [
             ""
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-file/www/fileSystemPaths.js",
+        "id": "cordova-plugin-file.fileSystemPaths",
+        "pluginId": "cordova-plugin-file",
+        "merges": [
+            "cordova"
+        ],
+        "runs": true
     },
     {
         "file": "plugins/cordova-plugin-file-transfer/www/FileTransferError.js",
@@ -258,89 +395,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-statusbar/www/statusbar.js",
-        "id": "cordova-plugin-statusbar.statusbar",
-        "pluginId": "cordova-plugin-statusbar",
-        "clobbers": [
-            "window.StatusBar"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-statusbar/src/windows/StatusBarProxy.js",
-        "id": "cordova-plugin-statusbar.StatusBarProxy",
-        "pluginId": "cordova-plugin-statusbar",
-        "runs": true
-    },
-    {
-        "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
-        "id": "nl.x-services.plugins.actionsheet.ActionSheet",
-        "pluginId": "nl.x-services.plugins.actionsheet",
-        "clobbers": [
-            "window.plugins.actionsheet"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.background-download/www/Promise.js",
-        "id": "org.apache.cordova.background-download.Promise",
-        "pluginId": "org.apache.cordova.background-download"
-    },
-    {
-        "file": "plugins/org.apache.cordova.background-download/www/BackgroundDownloader.js",
-        "id": "org.apache.cordova.background-download.BackgroundDownloader",
-        "pluginId": "org.apache.cordova.background-download",
-        "clobbers": [
-            "BackgroundTransfer.BackgroundDownloader"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.background-download/www/DownloadOperation.js",
-        "id": "org.apache.cordova.background-download.DownloadOperation",
-        "pluginId": "org.apache.cordova.background-download",
-        "clobbers": [
-            "DownloadOperation"
-        ]
-    },
-    {
-        "file": "plugins/org.apache.cordova.background-download/src/windows/BackgroundDownloadProxy.js",
-        "id": "org.apache.cordova.background-download.BackgroundDownload",
-        "pluginId": "org.apache.cordova.background-download",
-        "merges": [
-            ""
-        ]
-    },
-    {
-        "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
-        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
-        "pluginId": "uk.co.whiteoctober.cordova.appversion",
-        "clobbers": [
-            "cordova.getAppVersion"
-        ]
-    },
-    {
-        "file": "plugins/uk.co.whiteoctober.cordova.appversion/src/windows8/AppVersionProxy.js",
-        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionProxy",
-        "pluginId": "uk.co.whiteoctober.cordova.appversion",
-        "merges": [
-            ""
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-device/www/device.js",
-        "id": "cordova-plugin-device.device",
-        "pluginId": "cordova-plugin-device",
-        "clobbers": [
-            "device"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-device/src/windows/DeviceProxy.js",
-        "id": "cordova-plugin-device.DeviceProxy",
-        "pluginId": "cordova-plugin-device",
-        "merges": [
-            ""
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-media/www/MediaError.js",
         "id": "cordova-plugin-media.MediaError",
         "pluginId": "cordova-plugin-media",
@@ -360,45 +414,6 @@ module.exports = [
         "file": "plugins/cordova-plugin-media/src/windows/MediaProxy.js",
         "id": "cordova-plugin-media.MediaProxy",
         "pluginId": "cordova-plugin-media",
-        "merges": [
-            ""
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-network-information/www/network.js",
-        "id": "cordova-plugin-network-information.network",
-        "pluginId": "cordova-plugin-network-information",
-        "clobbers": [
-            "navigator.connection",
-            "navigator.network.connection"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-network-information/www/Connection.js",
-        "id": "cordova-plugin-network-information.Connection",
-        "pluginId": "cordova-plugin-network-information",
-        "clobbers": [
-            "Connection"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-network-information/src/windows/NetworkInfoProxy.js",
-        "id": "cordova-plugin-network-information.NetworkInfoProxy",
-        "pluginId": "cordova-plugin-network-information",
-        "runs": true
-    },
-    {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "pluginId": "cordova-plugin-x-socialsharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-x-socialsharing/src/windows/SocialSharingProxy.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharingProxy",
-        "pluginId": "cordova-plugin-x-socialsharing",
         "merges": [
             ""
         ]
