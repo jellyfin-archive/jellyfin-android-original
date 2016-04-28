@@ -265,13 +265,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
-    },
-    {
         "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
         "id": "acidhax.cordova.chromecast.ChromecastApi",
         "clobbers": [
@@ -285,10 +278,19 @@ module.exports = [
     {
         "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
         "id": "acidhax.cordova.chromecast.tests"
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
+        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
-{}
+{
+    "cordova-plugin-x-socialsharing": "5.0.12"
+};
 // BOTTOM OF METADATA
 });

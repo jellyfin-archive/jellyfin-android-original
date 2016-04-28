@@ -59,10 +59,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"SocialSharing\"><param name=\"android-package\" value=\"nl.xservices.plugins.SocialSharing\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"Chromecast\"><param name=\"android-package\" value=\"acidhax.cordova.chromecast.Chromecast\" /></feature>",
                             "count": 1
                         },
@@ -84,6 +80,10 @@
                         },
                         {
                             "xml": "<preference default=\"true\" name=\"xwalkMultipleApk\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SocialSharing\"><param name=\"android-package\" value=\"nl.xservices.plugins.SocialSharing\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -200,13 +200,13 @@
         "cordova-plugin-media": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "acidhax.cordova.chromecast": {
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
@@ -477,13 +477,6 @@
             ]
         },
         {
-            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-            "id": "cordova-plugin-x-socialsharing.SocialSharing",
-            "clobbers": [
-                "window.plugins.socialsharing"
-            ]
-        },
-        {
             "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
             "id": "acidhax.cordova.chromecast.ChromecastApi",
             "clobbers": [
@@ -497,6 +490,16 @@
         {
             "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
             "id": "acidhax.cordova.chromecast.tests"
+        },
+        {
+            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+            "id": "cordova-plugin-x-socialsharing.SocialSharing",
+            "clobbers": [
+                "window.plugins.socialsharing"
+            ]
         }
-    ]
+    ],
+    "plugin_metadata": {
+        "cordova-plugin-x-socialsharing": "5.0.12"
+    }
 }

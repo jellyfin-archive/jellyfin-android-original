@@ -51,7 +51,7 @@
             setTimeout(function () {
 
                 // clone the array in case the callback is still getting called
-                Logger.log('Found ' + photos.length + ' in camera roll');
+                console.log('Found ' + photos.length + ' in camera roll');
 
                 deferred.resolveWith(null, [photos]);
 
@@ -271,7 +271,7 @@
 
     function saveUserIdsWithAccess(itemId, serverId, userIds) {
 
-        Logger.log('saveUserIdsWithAccess');
+        console.log('saveUserIdsWithAccess');
 
         var deferred = jQuery.Deferred();
 
@@ -322,7 +322,7 @@
 
     function addOrUpdateLocalItem(item) {
 
-        Logger.log('addOrUpdateLocalItem');
+        console.log('addOrUpdateLocalItem');
 
         var deferred = jQuery.Deferred();
 
@@ -394,21 +394,21 @@
 
         var deferred = jQuery.Deferred();
 
-        Logger.log('Deleting ' + path);
+        console.log('Deleting ' + path);
         resolveFile(path, null, function (fileEntry) {
 
             fileEntry.remove(function () {
-                Logger.log('Deleted ' + path);
+                console.log('Deleted ' + path);
                 deferred.resolve();
             }, function () {
 
-                Logger.log('Error deleting ' + path);
+                console.log('Error deleting ' + path);
                 deferred.reject();
             });
 
         }, function () {
 
-            Logger.log('Skipping deletion because file does not exist: ' + path);
+            console.log('Skipping deletion because file does not exist: ' + path);
             deferred.resolve();
         });
 
@@ -526,7 +526,7 @@
         var deferred = jQuery.Deferred();
 
         if (localStorage.getItem('sync-' + url) == '1') {
-            Logger.log('file was downloaded previously');
+            console.log('file was downloaded previously');
             deferred.resolveWith(null, [localPath, false]);
             return deferred.promise();
         }
@@ -536,7 +536,7 @@
             return deferred.promise();
         }
 
-        Logger.log('downloading: ' + url + ' to ' + localPath);
+        console.log('downloading: ' + url + ' to ' + localPath);
 
         createDirectory(getParentDirectoryPath(localPath)).then(function () {
 
@@ -561,7 +561,7 @@
 
                     clearTimeout(timeoutHandle);
                     // on success
-                    Logger.log('Downloaded local url: ' + localPath);
+                    console.log('Downloaded local url: ' + localPath);
 
                     // If we've already moved on, set this property so that we'll see it later
                     localStorage.setItem('sync-' + url, '1');
@@ -576,7 +576,7 @@
                     clearTimeout(timeoutHandle);
 
                     // on error
-                    Logger.log('Error downloading url: ' + url);
+                    console.log('Error downloading url: ' + url);
 
                     if (!isResolved) {
                         deferred.reject();
@@ -585,7 +585,7 @@
                 }, function (value) {
 
                     // on progress
-                    //Logger.log('download progress: ' + value);
+                    //console.log('download progress: ' + value);
                 });
 
             });
@@ -611,7 +611,7 @@
         var deferred = jQuery.Deferred();
 
         if (localStorage.getItem('sync-' + url) == '1') {
-            Logger.log('file was downloaded previously');
+            console.log('file was downloaded previously');
             deferred.resolveWith(null, [localPath]);
             return deferred.promise();
         }
@@ -621,7 +621,7 @@
             deferred.resolveWith(null, [localPath, true]);
         }
 
-        Logger.log('downloading: ' + url + ' to ' + localPath);
+        console.log('downloading: ' + url + ' to ' + localPath);
 
         createDirectory(getParentDirectoryPath(localPath)).then(function () {
 
@@ -637,7 +637,7 @@
                     removeDownload(downloadKey);
 
                     if (enableBackground) {
-                        Logger.log('Downloaded local url: ' + localPath);
+                        console.log('Downloaded local url: ' + localPath);
                         localStorage.setItem('sync-' + url, '1');
                         isQueued = false;
                     } else {
@@ -648,7 +648,7 @@
 
                     removeDownload(downloadKey);
 
-                    Logger.log('Error downloading url: ' + url);
+                    console.log('Error downloading url: ' + url);
 
                     if (enableBackground) {
                         isError = true;
@@ -672,7 +672,7 @@
 
             }, function () {
 
-                Logger.log('getFile failed for ' + localPath);
+                console.log('getFile failed for ' + localPath);
                 deferred.reject();
             });
 
@@ -708,19 +708,19 @@
 
     function createDirectoryInternal(path) {
 
-        Logger.log('creating directory: ' + path);
+        console.log('creating directory: ' + path);
 
         return new Promise(function (resolve, reject) {
             getFileSystem().then(function (fileSystem) {
 
                 fileSystem.root.getDirectory(path, { create: true, exclusive: false }, function (targetFile) {
 
-                    Logger.log('createDirectory succeeded');
+                    console.log('createDirectory succeeded');
                     resolve();
 
                 }, function () {
 
-                    Logger.log('createDirectory failed');
+                    console.log('createDirectory failed');
                     reject();
                 });
 
@@ -816,17 +816,17 @@
         return new Promise(function (resolve, reject) {
             if (window.NativeFileSystem) {
                 var exists = NativeFileSystem.fileExists(path);
-                Logger.log('fileExists: ' + exists + ' - path: ' + path);
+                console.log('fileExists: ' + exists + ' - path: ' + path);
                 resolve(exists);
                 return;
             }
 
             resolveFile(path, null, function (fileEntry) {
-                Logger.log('fileExists: true - path: ' + path);
+                console.log('fileExists: true - path: ' + path);
                 resolve(true);
 
             }, function () {
-                Logger.log('fileExists: false - path: ' + path);
+                console.log('fileExists: false - path: ' + path);
                 resolve(false);
             });
         });
@@ -863,12 +863,12 @@
             }
 
             resolveFile(path, null, function (fileEntry) {
-                Logger.log('translateFilePath fileExists: true - path: ' + path);
-                Logger.log('translateFilePath resolving with: ' + fileEntry.toURL());
+                console.log('translateFilePath fileExists: true - path: ' + path);
+                console.log('translateFilePath resolving with: ' + fileEntry.toURL());
                 resolve(fileEntry.toURL());
 
             }, function () {
-                Logger.log('translateFilePath fileExists: false - path: ' + path);
+                console.log('translateFilePath fileExists: false - path: ' + path);
                 resolve(path);
             });
         });

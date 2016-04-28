@@ -347,9 +347,6 @@
         "cordova-plugin-media": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -357,6 +354,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "fw-cordova-chromecast": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

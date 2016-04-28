@@ -226,6 +226,18 @@ iOS Quirks:
 <button onclick="window.plugins.socialsharing.shareViaWhatsApp('Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')}, function(errormsg){alert(errormsg)})">msg via WhatsApp (with errcallback)</button>
 ```
 
+##### Experimental feature: sharing directly to someone
+Available in 5.0.8 and up - please let me know if this works for your device! Open an issue if not..
+
+```html
+<button onclick="window.plugins.socialsharing.shareViaWhatsAppToReceiver(receiver, 'Message via WhatsApp', null /* img */, null /* url */, function() {console.log('share ok')})">msg via WhatsApp for Addressbook ID 101</button>
+```
+For `receiver` on iOS pass in the Addressbook ID (or 'abid'). You can find those abid's by using the [Cordova Contacts Plugin](https://github.com/apache/cordova-plugin-contacts).
+The result in the success callback of the `find` function is a JSON array of contact objects, use the 'id' you find in those objects.
+Don't pass in an image on iOS because that can't be sent to someone directly unfortunately. Message and URL are fine though.
+
+On Android pass in the phone number of the person you want to send a message to (untested at the moment).
+
 ####SMS
 Note that on Android, SMS via Hangouts may not behave correctly
 ```html
@@ -446,26 +458,3 @@ window.plugins.socialsharing.share('Hello from iOS :)')
 This plugin was enhanced for Plugman / PhoneGap Build by [Eddy Verbruggen](http://www.x-services.nl).
 The Android and Windows Phone code was entirely created by the author.
 The first iteration of the iOS code was inspired by [Cameron Lerch](https://github.com/bfcam/phonegap-ios-social-plugin).
-
-
-## 6. License
-
-[The MIT License (MIT)](http://www.opensource.org/licenses/mit-license.html)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.

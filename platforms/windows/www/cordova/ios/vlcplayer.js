@@ -44,7 +44,7 @@
         function onError() {
 
             var errorCode = this.error ? this.error.code : '';
-            Logger.log('Media element error code: ' + errorCode);
+            console.log('Media element error code: ' + errorCode);
 
             Events.trigger(window.AudioRenderer.Current, 'error');
         }
@@ -55,9 +55,9 @@
 
             if (val != null) {
                 window.audioplayer.seekto(function () {
-                    Logger.log('set currentTime succeeded!');
+                    console.log('set currentTime succeeded!');
                 }, function () {
-                    Logger.log('set currentTime failed!');
+                    console.log('set currentTime failed!');
 
                 }, val / 1000);
                 return;
@@ -76,31 +76,31 @@
 
         self.stop = function () {
             window.audioplayer.stop(function (result) {
-                Logger.log('Stop succeeded!');
+                console.log('Stop succeeded!');
                 reportEvent('playbackstop', result);
 
             }, function () {
-                Logger.log('Stop failed!');
+                console.log('Stop failed!');
             });
         };
 
         self.pause = function () {
             window.audioplayer.pause(function (result) {
-                Logger.log('Pause succeeded!');
+                console.log('Pause succeeded!');
                 reportEvent('sepaused', result);
 
             }, function () {
-                Logger.log('Pause failed!');
+                console.log('Pause failed!');
             });
         };
 
         self.unpause = function () {
             window.audioplayer.pause(function (result) {
-                Logger.log('Unpause succeeded!');
+                console.log('Unpause succeeded!');
                 reportEvent('playing', result);
 
             }, function () {
-                Logger.log('Unpause failed!');
+                console.log('Unpause failed!');
             });
         };
 
@@ -156,7 +156,7 @@
 
                 window.audioplayer.playstream(successHandler, function () {
 
-                    Logger.log('playstream failed!');
+                    console.log('playstream failed!');
                     //onError();
                 },
                                               {
@@ -205,7 +205,7 @@
                 return;
             }
 
-            Logger.log('eventName: ' + eventName + '. position: ' + position);
+            console.log('eventName: ' + eventName + '. position: ' + position);
 
             if (eventName == 'playbackstop') {
                 onEnded();

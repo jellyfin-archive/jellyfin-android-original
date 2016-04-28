@@ -71,25 +71,25 @@
 
             var key = getCacheKey(originalUrl);
 
-            //Logger.log('getImageUrl:' + originalUrl);
+            //console.log('getImageUrl:' + originalUrl);
 
             getFileSystem().then(function (fileSystem) {
                 var path = fileSystem.root.toURL() + "/emby/cache/" + key;
 
                 resolveLocalFileSystemURL(path, function (fileEntry) {
                     var localUrl = normalizeReturnUrl(fileEntry.toURL());
-                    //Logger.log('returning cached file: ' + localUrl);
+                    //console.log('returning cached file: ' + localUrl);
                     resolve(localUrl);
 
                 }, function () {
 
-                    //Logger.log('downloading: ' + originalUrl);
+                    //console.log('downloading: ' + originalUrl);
                     var ft = new FileTransfer();
                     ft.download(originalUrl, path, function (entry) {
 
                         var localUrl = normalizeReturnUrl(entry.toURL());
 
-                        //Logger.log(localUrl);
+                        //console.log(localUrl);
                         resolve(localUrl);
                     });
                 });

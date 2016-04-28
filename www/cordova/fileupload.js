@@ -15,12 +15,12 @@
                         var mimeType = (file.type || '');
 
                         if (mimeType.indexOf('image/') != 0) {
-                            Logger.log('Skipping upload because file is not an image. path: ' + path + ' mimeType: ' + mimeType);
+                            console.log('Skipping upload because file is not an image. path: ' + path + ' mimeType: ' + mimeType);
                             reject();
                             return;
                         }
 
-                        Logger.log('mimeType for file ' + path + ' is ' + file);
+                        console.log('mimeType for file ' + path + ' is ' + file);
 
                         var onSuccess = function (r) {
                             console.log("Code = " + r.responseCode);
@@ -46,13 +46,13 @@
                         new FileTransfer().upload(path, url, onSuccess, onFail, options);
 
                     }, function () {
-                        Logger.log('File upload failed. fileEntry.file returned an error');
+                        console.log('File upload failed. fileEntry.file returned an error');
                         reject();
                     });
 
                 }, function () {
 
-                    Logger.log('File upload failed. resolveLocalFileSystemURL returned an error');
+                    console.log('File upload failed. resolveLocalFileSystemURL returned an error');
                     reject();
                 });
             });
