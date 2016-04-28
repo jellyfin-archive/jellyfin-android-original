@@ -76,9 +76,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "Emby"
         },
-        "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "Emby"
-        },
         "nl.x-services.plugins.actionsheet": {
             "PACKAGE_NAME": "Emby"
         },
@@ -101,6 +98,9 @@
             "PACKAGE_NAME": "Emby"
         },
         "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "Emby"
         }
     },
@@ -378,22 +378,6 @@
             "runs": true
         },
         {
-            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-            "id": "cordova-plugin-x-socialsharing.SocialSharing",
-            "pluginId": "cordova-plugin-x-socialsharing",
-            "clobbers": [
-                "window.plugins.socialsharing"
-            ]
-        },
-        {
-            "file": "plugins/cordova-plugin-x-socialsharing/src/windows/SocialSharingProxy.js",
-            "id": "cordova-plugin-x-socialsharing.SocialSharingProxy",
-            "pluginId": "cordova-plugin-x-socialsharing",
-            "merges": [
-                ""
-            ]
-        },
-        {
             "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
             "id": "nl.x-services.plugins.actionsheet.ActionSheet",
             "pluginId": "nl.x-services.plugins.actionsheet",
@@ -508,6 +492,22 @@
             "id": "cordova-plugin-network-information.NetworkInfoProxy",
             "pluginId": "cordova-plugin-network-information",
             "runs": true
+        },
+        {
+            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+            "id": "cordova-plugin-x-socialsharing.SocialSharing",
+            "pluginId": "cordova-plugin-x-socialsharing",
+            "clobbers": [
+                "window.plugins.socialsharing"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-x-socialsharing/src/windows/SocialSharingProxy.js",
+            "id": "cordova-plugin-x-socialsharing.SocialSharingProxy",
+            "pluginId": "cordova-plugin-x-socialsharing",
+            "merges": [
+                ""
+            ]
         }
     ]
 }

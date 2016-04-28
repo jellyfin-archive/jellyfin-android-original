@@ -11,12 +11,12 @@
 
         }, function () {
 
-            Logger.log('plugin launch success');
+            console.log('plugin launch success');
             ExternalPlayer.onPlaybackStart();
 
         }, function () {
 
-            Logger.log('plugin launch error');
+            console.log('plugin launch error');
             ExternalPlayer.onPlaybackStart();
         });
     }

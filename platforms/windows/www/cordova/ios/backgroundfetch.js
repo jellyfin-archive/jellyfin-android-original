@@ -13,7 +13,7 @@
 
     function onSyncFinish() {
 
-        Logger.log('BackgroundFetch completed');
+        console.log('BackgroundFetch completed');
 
         var fetcher = window.BackgroundFetch;
         fetcher.finish();   // <-- N.B. You MUST called #finish so that native-side can signal completion of the background-thread to the os.
@@ -21,7 +21,7 @@
 
     function onSyncFail() {
 
-        Logger.log('BackgroundFetch completed - sync failed');
+        console.log('BackgroundFetch completed - sync failed');
 
         var fetcher = window.BackgroundFetch;
         fetcher.finish();   // <-- N.B. You MUST called #finish so that native-side can signal completion of the background-thread to the os.
@@ -47,7 +47,7 @@
 
     function onBackgroundFetch() {
 
-        Logger.log('BackgroundFetch initiated');
+        console.log('BackgroundFetch initiated');
 
         startSync(true, {
             uploadPhotos: false,
@@ -56,7 +56,7 @@
     }
 
     function onBackgroundFetchFailed() {
-        Logger.log('- BackgroundFetch failed');
+        console.log('- BackgroundFetch failed');
     }
 
     var syncInterval = 900000;

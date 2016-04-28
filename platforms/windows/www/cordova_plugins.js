@@ -272,22 +272,6 @@ module.exports = [
         "runs": true
     },
     {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "pluginId": "cordova-plugin-x-socialsharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-x-socialsharing/src/windows/SocialSharingProxy.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharingProxy",
-        "pluginId": "cordova-plugin-x-socialsharing",
-        "merges": [
-            ""
-        ]
-    },
-    {
         "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
         "id": "nl.x-services.plugins.actionsheet.ActionSheet",
         "pluginId": "nl.x-services.plugins.actionsheet",
@@ -402,6 +386,22 @@ module.exports = [
         "id": "cordova-plugin-network-information.NetworkInfoProxy",
         "pluginId": "cordova-plugin-network-information",
         "runs": true
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
+        "pluginId": "cordova-plugin-x-socialsharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/src/windows/SocialSharingProxy.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharingProxy",
+        "pluginId": "cordova-plugin-x-socialsharing",
+        "merges": [
+            ""
+        ]
     }
 ];
 module.exports.metadata = 

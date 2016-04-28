@@ -39,9 +39,6 @@
     <feature name="Media">
         <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
     </feature>
-    <feature name="SocialSharing">
-        <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
-    </feature>
     <feature name="Chromecast">
         <param name="android-package" value="acidhax.cordova.chromecast.Chromecast" />
     </feature>
@@ -51,6 +48,9 @@
     <preference default="embedded" name="xwalkMode" />
     <preference default="true" name="xwalkMultipleApk" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
+    <feature name="SocialSharing">
+        <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
+    </feature>
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-targetSdkVersion" value="22" />
     <preference name="StatusBarOverlaysWebView" value="false" />

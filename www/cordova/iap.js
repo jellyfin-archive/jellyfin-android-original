@@ -204,7 +204,7 @@
         store.when(id).updated(function (product) {
 
             if (product.loaded && product.valid && product.state == store.APPROVED) {
-                Logger.log('finishing previously created transaction');
+                console.log('finishing previously created transaction');
                 if (requiresVerification) {
                     //product.verify();
                     if (product.owned) {
@@ -234,7 +234,7 @@
         // go ask your boss about it! (just in case)
         store.ready(function () {
 
-            Logger.log("Store ready");
+            console.log("Store ready");
         });
 
         // After we've done our setup, we tell the store to do

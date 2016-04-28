@@ -2,7 +2,7 @@
 
     function updateCredentials() {
 
-        Logger.log('sending updated credentials to ApiClientBridge');
+        console.log('sending updated credentials to ApiClientBridge');
 
         var json = JSON.stringify(ConnectionManager.credentialProvider().credentials());
         var credentials = JSON.parse(json);
@@ -21,7 +21,7 @@
 
     function initNativeConnectionManager() {
 
-        Logger.log('initNativeConnectionManager');
+        console.log('initNativeConnectionManager');
 
         var capabilities = ConnectionManager.capabilities();
 
