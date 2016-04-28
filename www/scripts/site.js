@@ -2002,7 +2002,7 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
 
-            define("audiorenderer", ["cordova/mediaplayer"]);
+            define("audiorenderer", ["cordova/audioplayer"]);
 
             if (MainActivity.getChromeVersion() >= 48) {
                 //define("audiorenderer", ["scripts/htmlmediarenderer"]);
@@ -2014,7 +2014,7 @@ var AppInfo = {};
             define("videorenderer", ["cordova/android/vlcplayer"]);
         }
         else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
-            define("audiorenderer", ["cordova/mediaplayer"]);
+            define("audiorenderer", ["cordova/audioplayer"]);
             define("videorenderer", ["scripts/htmlmediarenderer"]);
         }
         else {
