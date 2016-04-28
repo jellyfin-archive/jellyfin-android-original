@@ -37,6 +37,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             if (!browser.safari) {
                 features.push('filedownload');
             }
+            features.push('sharing');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
