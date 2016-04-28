@@ -7,7 +7,7 @@
     "CFNetwork.framework": 1,
     "SystemConfiguration.framework": 1,
     "AudioToolbox.framework": 1,
-    "MediaPlayer.framework": 1,
+    "MediaPlayer.framework": 2,
     "CoreText.framework": 1,
     "QuartzCore.framework": 1,
     "OpenGLES.framework": 1,

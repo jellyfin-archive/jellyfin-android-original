@@ -369,6 +369,14 @@ module.exports = [
         "clobbers": [
             "window.Media"
         ]
+    },
+    {
+        "file": "plugins/com.rd11.remote-controls/www/RemoteControls.js",
+        "id": "com.rd11.remote-controls.RemoteControls",
+        "pluginId": "com.rd11.remote-controls",
+        "clobbers": [
+            "window.remoteControls"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -398,7 +406,8 @@ module.exports.metadata =
     "cordova-plugin-compat": "1.0.0",
     "cordova-plugin-file": "4.2.0",
     "cordova-plugin-file-transfer": "1.5.1",
-    "cordova-plugin-media": "2.3.0"
+    "cordova-plugin-media": "2.3.0",
+    "com.rd11.remote-controls": "1.0.1"
 }
 // BOTTOM OF METADATA
 });
