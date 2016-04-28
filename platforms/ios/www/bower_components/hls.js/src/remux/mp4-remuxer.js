@@ -190,8 +190,8 @@ class MP4Remuxer {
         ptsnorm = this._PTSNormalize(pts, nextAvcDts);
         dtsnorm = this._PTSNormalize(dts, nextAvcDts);
         delta = Math.round((dtsnorm - nextAvcDts) / 90);
-        // if fragment are contiguous, or delta less than 600ms, ensure there is no overlap/hole between fragments
-        if (contiguous || Math.abs(delta) < 600) {
+        // if fragment are contiguous, detect hole/overlapping between fragments
+        if (contiguous) {
           if (delta) {
             if (delta > 1) {
               logger.log(`AVC:${delta} ms hole between fragments detected,filling it`);
@@ -314,20 +314,20 @@ class MP4Remuxer {
         ptsnorm = this._PTSNormalize(pts, nextAacPts);
         dtsnorm = this._PTSNormalize(dts, nextAacPts);
         delta = Math.round(1000 * (ptsnorm - nextAacPts) / pesTimeScale);
-        // if fragment are contiguous, or delta less than 600ms, ensure there is no overlap/hole between fragments
-        if (contiguous || Math.abs(delta) < 600) {
+        // if fragment are contiguous, detect hole/overlapping between fragments
+        if (contiguous) {
           // log delta
           if (delta) {
             if (delta > 0) {
               logger.log(`${delta} ms hole between AAC samples detected,filling it`);
-              // if we have frame overlap, overlapping for more than half a frame duraion
+              // if we have frame overlap, overlapping for more than half a frame duration
             } else if (delta < -12) {
               // drop overlapping audio frames... browser will deal with it
               logger.log(`${(-delta)} ms overlapping between AAC samples detected, drop frame`);
               track.len -= unit.byteLength;
               continue;
             }
-            // set DTS to next DTS
+            // set PTS/DTS to next PTS/DTS
             ptsnorm = dtsnorm = nextAacPts;
           }
         }

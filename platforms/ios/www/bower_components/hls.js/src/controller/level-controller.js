@@ -20,7 +20,8 @@ class LevelController extends EventHandler {
 
   destroy() {
     if (this.timer) {
-     clearInterval(this.timer);
+      clearInterval(this.timer);
+      this.timer = null;
     }
     this._manualLevel = -1;
   }
@@ -225,7 +226,7 @@ class LevelController extends EventHandler {
           }
           // redispatch same error but with fatal set to true
           data.fatal = true;
-          hls.trigger(event, data);
+          hls.trigger(Event.ERROR, data);
         }
       }
     }

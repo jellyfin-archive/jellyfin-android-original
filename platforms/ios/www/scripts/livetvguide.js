@@ -1,1 +1,1 @@
-define([],function(){window.LiveTvPage.initGuideTab=function(){},window.LiveTvPage.renderGuideTab=function(e,n){e.guideInstance?LibraryBrowser.needsRefresh(n)&&e.guideInstance.refresh():require(["tvguide"],function(i){e.guideInstance=new i({element:n,enableHeadRoom:!0})})}});
+define(["tvguide"],function(e){window.LiveTvPage.initGuideTab=function(){},window.LiveTvPage.renderGuideTab=function(n,i){n.guideInstance||(n.guideInstance=new e({element:i}))}});
