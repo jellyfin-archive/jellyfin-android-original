@@ -178,12 +178,15 @@
                     media.getCurrentPosition(
                         // success callback
                         function (position) {
+
                             var state = AudioRenderer.Current.playerState;
 
-                            if (position > -1) {
-                                state.currentTime = position * 1000;
-                            } else {
+                            // It will come through as -1 when unknown
+                            if (isNaN(position) || position <= 0) {
                                 state.currentTime = 0;
+                            }
+                            else {
+                                state.currentTime = position * 1000;
                             }
                             onTimeUpdate();
                         }
