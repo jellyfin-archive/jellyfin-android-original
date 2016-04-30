@@ -120,7 +120,7 @@ public class CordovaDialogsHelper {
      */
     public void showPrompt(String message, String defaultValue, final Result result) {
         // Returning false would also show a dialog, but the default one shows the origin (ugly).
-        AlertDialog.Builder dlg = new AlertDialog.Builder(context, getTheme());
+        AlertDialog.Builder dlg = new AlertDialog.Builder(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
         dlg.setMessage(message);
         final EditText input = new EditText(context);
         if (defaultValue != null) {
