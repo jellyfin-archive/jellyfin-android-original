@@ -89,6 +89,7 @@ public class VLCInstance {
             }
 
             sLibVLC = new LibVLC(VLCOptions.getLibOptions(context));
+            logger.Info("Vlc version %s", sLibVLC.version());
             LibVLC.setOnNativeCrashListener(new LibVLC.OnNativeCrashListener() {
                 @Override
                 public void onNativeCrash() {

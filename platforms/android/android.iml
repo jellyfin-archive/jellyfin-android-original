@@ -120,7 +120,7 @@
     <orderEntry type="library" exported="" name="in-app-purchasing-2.0.61" level="project" />
     <orderEntry type="library" exported="" name="okhttp-urlconnection-2.7.5" level="project" />
     <orderEntry type="library" exported="" name="okhttp-2.7.5" level="project" />
-    <orderEntry type="library" exported="" name="libvlc_arm" level="project" />
+    <orderEntry type="library" exported="" name="libvlc" level="project" />
     <orderEntry type="library" exported="" name="logback-android-core-1.1.1-4" level="project" />
     <orderEntry type="library" exported="" name="library-1.0.19" level="project" />
     <orderEntry type="library" exported="" name="library-3.0" level="project" />
