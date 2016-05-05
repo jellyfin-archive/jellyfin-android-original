@@ -84,10 +84,17 @@ You can use the Crosswalk [shared mode](https://crosswalk-project.org/documentat
     <!-- These are all equivalent -->
     cordova plugin add cordova-plugin-crosswalk-webview  --variable XWALK_MODE="shared"
     <preference name="xwalkMode" value="shared" />
-Note that if you want to specify the Crosswalk version when using shared mode, you need to use the shared version of the library, e.g.: 
+
+You can also use a Crosswalk beta version on shared mode, e.g.:
 
     <!-- Using a Crosswalk shared mode beta version -->
     cordova plugin add cordova-plugin-crosswalk-webview --variable XWALK_VERSION="org.xwalk:xwalk_shared_library_beta:14+"
+
+You can use the Crosswalk [lite mode](https://crosswalk-project.org/documentation/crosswalk_lite.html) which is the Crosswalk runtime designed to be as small as possible by removing less common libraries and features and compressing the APK.
+
+    <!-- These are all equivalent -->
+    cordova plugin add cordova-plugin-crosswalk-webview  --variable XWALK_MODE="lite"
+    <preference name="xwalkMode" value="lite" />
 
 You can set background color with the preference of BackgroundColor.
 
@@ -99,6 +106,11 @@ You can also set user agent with the preference of xwalkUserAgent.
     <preference name="xwalkUserAgent" value="customer UA" />
 
 ### Release Notes
+
+#### 1.7.0 (May 4, 2016)
+* Uses the latest Crosswalk 18 stable version by default
+* Support to use [Crosswalk Lite](https://crosswalk-project.org/documentation/crosswalk_lite.html), It's possible to specify lite value with the variable of XWALK_MODE at install plugin time.
+* [Cordova screenshot plugin](https://github.com/gitawego/cordova-screenshot.git) can capture the visible content of web page with Crosswalk library.
 
 #### 1.6.0 (March 11, 2016)
 * Uses the latest Crosswalk 17 stable version by default

@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-crosswalk-webview"
-        version="1.6.0">
+        version="1.7.0">
 
     <name>Crosswalk WebView Engine</name>
     <description>Changes the default WebView to CrossWalk</description>
@@ -21,7 +21,8 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine"/>
-            <preference name="xwalkVersion" default="17+"/>
+            <preference name="xwalkVersion" default="xwalk_core_library_beta:18+"/>
+            <preference name="xwalkLiteVersion" default="xwalk_core_library_canary:17+"/>
             <preference name="xwalkCommandLine" default="--disable-pull-to-refresh-effect"/>
             <preference name="xwalkMode" default="embedded" />
             <preference name="xwalkMultipleApk" default="true" />
@@ -38,6 +39,8 @@
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaUiClient.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaView.java" target-dir="src/org/crosswalk/engine"/>
         <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaCookieManager.java" target-dir="src/org/crosswalk/engine"/>
+        <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaClientCertRequest.java" target-dir="src/org/crosswalk/engine"/>
+        <source-file src="platforms/android/src/org/crosswalk/engine/XWalkCordovaHttpAuthHandler.java" target-dir="src/org/crosswalk/engine"/>
 
         <framework src="platforms/android/xwalk.gradle" custom="true" type="gradleReference"/>
 

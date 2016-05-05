@@ -19,16 +19,12 @@
 
 def EMBEDDED_MODE = "embedded"
 def SHARED_MODE = "shared"
+def LITE_MODE = "lite"
 def DEFAULT_GROUP_ID = "org.xwalk:"
 def SHARED_ARTIFACT_ID = "xwalk_shared_library:"
 def EMBEDD_ARTIFACT_ID = "xwalk_core_library:"
+def CANARY_ARTIFACT_ID = "xwalk_core_library_canary:"
 def BIT_64 = ":64bit@aar"
-
-repositories {
-  maven {
-    url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2'
-  }
-}
 
 def getConfigPreference(name) {
     name = name.toLowerCase()
@@ -64,11 +60,11 @@ if (cdvMinSdkVersion == null) {
 }
 
 if (!project.hasProperty('xwalkMode')) {
-    def mode = getConfigPreference("xwalkMode")
-    println mode
-    ext.artifactid = mode == SHARED_MODE ? SHARED_ARTIFACT_ID : EMBEDD_ARTIFACT_ID;
+    ext.xwalkMode = getConfigPreference("xwalkMode");
 }
-if (artifactid == SHARED_ARTIFACT_ID) {
+
+
+if (ext.xwalkMode == SHARED_MODE) {
     // Build one apk at shared mode because the value of
     // ext.cdvBuildMultipleApks is false by default.
     xwalk64bit = null;
@@ -87,6 +83,16 @@ if (!project.hasProperty('xwalkCommandLine')) {
 }
 // Apply values after project's build-extras.gradle
 cdvPluginPostBuildExtras.add({
+    def xwalkMavenRepo = 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2';
+    if (xwalkMode == LITE_MODE) {
+        xwalkMavenRepo = 'https://download.01.org/crosswalk/releases/crosswalk-lite/android/maven2';
+    }
+    repositories {
+      maven {
+        url xwalkMavenRepo
+      }
+    }
+
     android {
         if (xwalk64bit != null) {
             productFlavors {
@@ -112,6 +118,13 @@ cdvPluginPostBuildExtras.add({
     } else if ((xwalkSpec =~ /:/).count == 0) {
         if (xwalkSpec ==~ /\d+/) {
             xwalkSpec = "${xwalkSpec}+"
+        }
+
+        def artifactid = EMBEDD_ARTIFACT_ID;
+        if (ext.xwalkMode == SHARED_MODE) {
+            artifactid = SHARED_ARTIFACT_ID;
+        } else if (ext.xwalkMode == LITE_MODE) {
+            artifactid = CANARY_ARTIFACT_ID;
         }
         xwalkSpec = DEFAULT_GROUP_ID + artifactid + xwalkSpec
     }

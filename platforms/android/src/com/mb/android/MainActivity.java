@@ -104,7 +104,7 @@ public class MainActivity extends CordovaActivity
         return AppLogger.getLogger(this);
     }
 
-    private int chromeVersion = 46;
+    private int chromeVersion = 47;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -166,7 +166,6 @@ public class MainActivity extends CordovaActivity
         }
 
         chromeVersion = systemWebViewVersion;
-
         return true;
     }
 
