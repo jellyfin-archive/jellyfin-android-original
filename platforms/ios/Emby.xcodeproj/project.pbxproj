@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		0693067B697E40ED8F4B9125 /* CDVConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = C40BB7DB6F0A4E25978AA560 /* CDVConnection.m */; };
@@ -74,6 +75,7 @@
 		8CB79D171E4848D6A69CAFFA /* Launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = E8B0D7710AD54D1A93E25CC9 /* Launcher.m */; };
 		8EEF0700C07D44F084A80265 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05DA4705271F494CAE647F27 /* ImageIO.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		911AA1AB9EE541B3A44292FB /* CDVFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 84F353ABE78240208B57DFEF /* CDVFile.m */; };
+		93953DFD1C00480AADAD091A /* MainViewController+RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E83E1B43DBE472B896D7240 /* MainViewController+RemoteControls.m */; };
 		9AA7A4671E7A49FBBA638914 /* libstdc++.6.0.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 500661F9C5DA4578BA9B65FB /* libstdc++.6.0.9.dylib */; };
 		A34CA9211BC96F0000177D9F /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A34CA9201BC96F0000177D9F /* Launch Screen.storyboard */; settings = {ASSET_TAGS = (); }; };
 		A3A0168D1B3111590089774E /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3A0168C1B3111590089774E /* GoogleCast.framework */; };
@@ -100,14 +102,13 @@
 		D7494241BECE4915B3897488 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 562A1E17127948228E93614C /* libiconv.dylib */; };
 		DAD4F33F3F8C452E939B15CF /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C3770D599CE442B867BF80D /* GCDAsyncSocket.m */; };
 		DCE29083083645D694DA1D6D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7C4837BBC2A4789B82A1ADC /* AudioToolbox.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		E0C10C6B3E8A47CBA2EBD253 /* RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 5016B0BD5FED4DF4B26546DD /* RemoteControls.m */; };
 		E6D56FF12D1741EAB97B6CD1 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = AB595525E9D34A8290EC4DCC /* ChromeSocketsUdp.m */; };
 		ED4C68483A2D4445A65B47F9 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C9A2390BFF4C4D9050DB93 /* OpenGLES.framework */; };
 		EFA1E7345A1442C6860324F5 /* CDVBackgroundColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 293FBA41653A4475BD17BD45 /* CDVBackgroundColor.m */; };
 		F2108806943F41EA8774FDFC /* CDVStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 880C43A564BB4F8299A4E04F /* CDVStatusBar.m */; };
 		F45E8A84EC4F4EB7849E9329 /* ActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = C1FC9294024A446E876ED9A6 /* ActionSheet.m */; };
 		F8002EF797EA4200A619F27E /* BackgroundDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3919BA32D920484AB566C454 /* BackgroundDownload.m */; };
-		E0C10C6B3E8A47CBA2EBD253 /* RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 5016B0BD5FED4DF4B26546DD /* RemoteControls.m */; };
-		93953DFD1C00480AADAD091A /* MainViewController+RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E83E1B43DBE472B896D7240 /* MainViewController+RemoteControls.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,6 +181,7 @@
 		4330620717C0471DB4E477AC /* libicucore.dylib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		48B92DCE92C24939AA3B27CF /* BackgroundDownload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BackgroundDownload.h; path = "org.apache.cordova.background-download/BackgroundDownload.h"; sourceTree = "<group>"; };
 		500661F9C5DA4578BA9B65FB /* libstdc++.6.0.9.dylib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.0.9.dylib"; path = "usr/lib/libstdc++.6.0.9.dylib"; sourceTree = SDKROOT; };
+		5016B0BD5FED4DF4B26546DD /* RemoteControls.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RemoteControls.m; path = "com.rd11.remote-controls/RemoteControls.m"; sourceTree = "<group>"; };
 		54A11146A123446EBA6DB15D /* FWChromecast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FWChromecast.m; path = "fw-cordova-chromecast/FWChromecast.m"; sourceTree = "<group>"; };
 		562A1E17127948228E93614C /* libiconv.dylib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		5681F00574DF4467811AD489 /* DeviceScannerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceScannerDelegate.h; path = "fw-cordova-chromecast/DeviceScannerDelegate.h"; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 		880C43A564BB4F8299A4E04F /* CDVStatusBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVStatusBar.m; path = "cordova-plugin-statusbar/CDVStatusBar.m"; sourceTree = "<group>"; };
 		88CE6D848EA24CC788C8B58C /* SearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SearchBar.m; path = com.dieam.searchbar/SearchBar.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Emby-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Emby-Info.plist"; path = "../Emby-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		8E83E1B43DBE472B896D7240 /* MainViewController+RemoteControls.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MainViewController+RemoteControls.m"; path = "com.rd11.remote-controls/MainViewController+RemoteControls.m"; sourceTree = "<group>"; };
 		8F23067EAAAE45D890E44B4D /* CDVReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVReachability.m; path = "cordova-plugin-network-information/CDVReachability.m"; sourceTree = "<group>"; };
 		96813CCE77A64CC499AFB989 /* StoreKit.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		9AF3A54C672247169A7323B1 /* IonicCameraRoll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IonicCameraRoll.m; path = com.drifty.cordova.cameraroll/IonicCameraRoll.m; sourceTree = "<group>"; };
@@ -263,12 +266,14 @@
 		E79410C29F1C406BAB77B6E8 /* AppDelegate+WKWebViewPolyfill.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+WKWebViewPolyfill.h"; path = "com.telerik.plugins.wkwebview/AppDelegate+WKWebViewPolyfill.h"; sourceTree = "<group>"; };
 		E7C4837BBC2A4789B82A1ADC /* AudioToolbox.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		E8B0D7710AD54D1A93E25CC9 /* Launcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Launcher.m; path = com.hutchind.cordova.plugins.launcher/Launcher.m; sourceTree = "<group>"; };
+		EB46367E21A0418586508762 /* RemoteControls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RemoteControls.h; path = "com.rd11.remote-controls/RemoteControls.h"; sourceTree = "<group>"; };
 		EB87FDF21871DA7A0020F90C /* merges */ = {isa = PBXFileReference; lastKnownFileType = folder; name = merges; path = ../../merges; sourceTree = "<group>"; };
 		EB87FDF31871DA8E0020F90C /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; name = www; path = ../../www; sourceTree = "<group>"; };
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		EDF4486EF8F840A295E02124 /* GCDWebServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GCDWebServer.framework; path = "Emby/Plugins/cordova-plugin-webserver/GCDWebServer.framework"; sourceTree = "<group>"; };
 		EE7AA692E43540C68C8150C9 /* ReroutingUIWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ReroutingUIWebView.m; path = com.telerik.plugins.wkwebview/ReroutingUIWebView.m; sourceTree = "<group>"; };
 		F08D7A9ADF3B41668D53A788 /* CDVReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVReachability.h; path = "cordova-plugin-network-information/CDVReachability.h"; sourceTree = "<group>"; };
+		F101CFA1AC26437DB0574DF0 /* MainViewController+RemoteControls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MainViewController+RemoteControls.h"; path = "com.rd11.remote-controls/MainViewController+RemoteControls.h"; sourceTree = "<group>"; };
 		F1F3819CF1764CECBBC497E4 /* CDVLocalFilesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVLocalFilesystem.h; path = "cordova-plugin-file/CDVLocalFilesystem.h"; sourceTree = "<group>"; };
 		F49AFC21E7B24FE48B85D9DC /* CDVFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVFile.h; path = "cordova-plugin-file/CDVFile.h"; sourceTree = "<group>"; };
 		F56589A630DC417D9D78FCD1 /* CFNetwork.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -277,10 +282,6 @@
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = Emby/config.xml; sourceTree = "<group>"; };
 		FBCDE143BB9B4505999B57C4 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncSocket.h; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncSocket.h"; sourceTree = "<group>"; };
 		FFF6BD34834D4D8B89C4FF2C /* DeviceScannerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DeviceScannerDelegate.m; path = "fw-cordova-chromecast/DeviceScannerDelegate.m"; sourceTree = "<group>"; };
-		5016B0BD5FED4DF4B26546DD /* RemoteControls.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "RemoteControls.m"; path = "com.rd11.remote-controls/RemoteControls.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		8E83E1B43DBE472B896D7240 /* MainViewController+RemoteControls.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "MainViewController+RemoteControls.m"; path = "com.rd11.remote-controls/MainViewController+RemoteControls.m"; sourceTree = "<group>"; fileEncoding = 4; };
-		EB46367E21A0418586508762 /* RemoteControls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RemoteControls.h"; path = "com.rd11.remote-controls/RemoteControls.h"; sourceTree = "<group>"; fileEncoding = 4; };
-		F101CFA1AC26437DB0574DF0 /* MainViewController+RemoteControls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "MainViewController+RemoteControls.h"; path = "com.rd11.remote-controls/MainViewController+RemoteControls.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

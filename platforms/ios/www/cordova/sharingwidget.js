@@ -1,1 +1,1 @@
-define([],function(){function n(n,e,i){var r=n.share;window.plugins.socialsharing.share(r.Overview,r.Name,r.ImageUrl,r.Url,function(){e(n)},function(){i(n)})}return{showMenu:n}});
+define([],function(){function n(n){return new Promise(function(e,r){var i=n.share;window.plugins.socialsharing.share(i.Overview,i.Name,i.ImageUrl,i.Url,e,r)})}return{showMenu:n}});
