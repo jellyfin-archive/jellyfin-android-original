@@ -7,16 +7,22 @@ import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewEngine;
 
 public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.EngineView {
+
+    public static final String TAG = "XWalkCordovaView";
+
     protected XWalkCordovaResourceClient resourceClient;
     protected XWalkCordovaUiClient uiClient;
     protected XWalkWebViewEngine parentEngine;
@@ -32,10 +38,7 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            boolean prefAnimatable = preferences == null ? false : preferences.getBoolean("CrosswalkAnimatable", false);
-            boolean manifestAnimatable = ai.metaData == null ? false : ai.metaData.getBoolean("CrosswalkAnimatable");
-
-            try {
+			try {
                 // Selects between a TextureView (obeys framework transforms applied to view) or a SurfaceView (better performance).
                 XWalkPreferences.setValue(XWalkPreferences.ANIMATABLE_XWALK_VIEW, false);
                 if ((ai.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
@@ -46,8 +49,7 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
             }
             catch (Exception ex) {
                 Log.e("XWalkCordovaView", "Error in setGlobalPrefs", ex);
-            }
-
+            }            boolean prefAnimatable = preferences == null ? false : preferences.getBoolean("CrosswalkAnimatable", false);
         }
         return context;
     }
@@ -86,6 +88,21 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
             this.uiClient = (XWalkCordovaUiClient)client;
         }
         super.setUIClient(client);
+    }
+
+    // Call CordovaInterface to start activity for result to make sure
+    // onActivityResult() callback will be triggered from CordovaActivity correctly.
+    // Todo(leonhsl) How to handle |options|?
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode, Bundle options) {
+        parentEngine.cordova.startActivityForResult(new CordovaPlugin() {
+            @Override
+            public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+                // Route to XWalkView.
+                Log.i(TAG, "Route onActivityResult() to XWalkView");
+                XWalkCordovaView.this.onActivityResult(requestCode, resultCode, intent);
+            }
+        }, intent, requestCode);
     }
 
     @Override

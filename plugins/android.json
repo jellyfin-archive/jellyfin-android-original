@@ -189,9 +189,6 @@
         "acidhax.cordova.chromecast": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-crosswalk-webview": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -202,6 +199,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-media": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

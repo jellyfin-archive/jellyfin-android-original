@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-    <Identity Name="com.emby.mobile" Publisher="CN=$username$" Version="2.6.52.0" />
+    <Identity Name="com.emby.mobile" Publisher="CN=$username$" Version="2.6.56.0" />
     <Properties>
         <DisplayName>Emby</DisplayName>
         <PublisherDisplayName>Emby</PublisherDisplayName>

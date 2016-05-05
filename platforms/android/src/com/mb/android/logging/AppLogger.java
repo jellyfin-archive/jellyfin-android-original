@@ -24,14 +24,14 @@ import mediabrowser.model.logging.NullLogger;
 
 public class AppLogger {
 
-    private static ILogger logger;
+    public static ILogger Current;
 
     public static ILogger getLogger(Context context){
 
-        if (logger == null){
-            logger = createLogger(context);
+        if (Current == null){
+            Current = createLogger(context);
         }
-        return logger;
+        return Current;
     }
 
     private static boolean enableLogging() {

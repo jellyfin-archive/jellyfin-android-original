@@ -21,8 +21,15 @@ package org.crosswalk.engine;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
+
+import java.io.File;
+import java.io.IOException;
 
 import junit.framework.Assert;
 
@@ -40,6 +47,7 @@ import org.apache.cordova.PluginManager;
 import org.xwalk.core.XWalkActivityDelegate;
 import org.xwalk.core.XWalkNavigationHistory;
 import org.xwalk.core.XWalkView;
+import org.xwalk.core.XWalkGetBitmapCallback;
 
 /**
  * Glue class between CordovaWebView (main Cordova logic) and XWalkCordovaView (the actual View).
@@ -49,6 +57,8 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     public static final String TAG = "XWalkWebViewEngine";
     public static final String XWALK_USER_AGENT = "xwalkUserAgent";
     public static final String XWALK_Z_ORDER_ON_TOP = "xwalkZOrderOnTop";
+
+    private static final String XWALK_EXTENSIONS_FOLDER = "xwalk-extensions";
 
     protected final XWalkCordovaView webView;
     protected XWalkCordovaCookieManager cookieManager;
@@ -79,6 +89,37 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
 
                 initWebViewSettings();
                 exposeJsInterface(webView, bridge);
+                loadExtensions();
+
+                CordovaPlugin notifPlugin = new CordovaPlugin() {
+                    @Override
+                    public void onNewIntent(Intent intent) {
+                        Log.i(TAG, "notifPlugin route onNewIntent() to XWalkView: " + intent.toString());
+                        XWalkWebViewEngine.this.webView.onNewIntent(intent);
+                    }
+
+                    @Override
+                    public Object onMessage(String id, Object data) {
+                        if (id.equals("captureXWalkBitmap")) {
+                            // Capture bitmap on UI thread.
+                            XWalkWebViewEngine.this.cordova.getActivity().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    XWalkWebViewEngine.this.webView.captureBitmapAsync(
+                                            new XWalkGetBitmapCallback() {
+                                        @Override
+                                        public void onFinishGetBitmap(Bitmap bitmap,
+                                                int response) {
+                                            pluginManager.postMessage(
+                                                    "onGotXWalkBitmap", bitmap);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        return null;
+                    }
+                };
+                pluginManager.addService(new PluginEntry("XWalkNotif", notifPlugin));
 
                 // Send the massage of xwalk's ready to plugin.
                 if (pluginManager != null) {
@@ -156,6 +197,12 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
         if (!xwalkUserAgent.isEmpty()) {
             webView.setUserAgentString(xwalkUserAgent);
         }
+        
+        String appendUserAgent = preferences.getString("AppendUserAgent", "");
+        if (!appendUserAgent.isEmpty()) {
+            webView.setUserAgentString(webView.getUserAgentString() + " " + appendUserAgent);
+        }
+        
         if (preferences.contains("BackgroundColor")) {
             int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
             webView.setBackgroundColor(backgroundColor);
@@ -165,6 +212,24 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     private static void exposeJsInterface(XWalkView webView, CordovaBridge bridge) {
         XWalkExposedJsApi exposedJsApi = new XWalkExposedJsApi(bridge);
         webView.addJavascriptInterface(exposedJsApi, "_cordovaNative");
+    }
+
+    private void loadExtensions() {
+        AssetManager assetManager = cordova.getActivity().getAssets();
+        String[] extList;
+        try {
+            Log.i(TAG, "Iterate assets/xwalk-extensions folder");
+            extList = assetManager.list(XWALK_EXTENSIONS_FOLDER);
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to iterate assets/xwalk-extensions folder");
+            return;
+        }
+
+        for (String path : extList) {
+            // Load the extension.
+            Log.i(TAG, "Start to load extension: " + path);
+            webView.getExtensionManager().loadExtension(XWALK_EXTENSIONS_FOLDER + File.separator + path);
+        }
     }
 
     @Override
@@ -231,14 +296,13 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
     @Override
     public void loadUrl(String url, boolean clearNavigationStack) {
         if (!activityDelegate.isXWalkReady()) {
-            Assert.assertNull(startUrl);
             startUrl = url;
             return;
         }
         loadUrlOnReady(url);
     }
 
-    protected void loadUrlOnReady(String url) {
+    public void loadUrlOnReady(String url) {
         webView.load(url, null);
     }
 

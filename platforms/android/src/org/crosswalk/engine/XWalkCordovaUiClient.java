@@ -18,12 +18,16 @@
 */
 package org.crosswalk.engine;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.webkit.ConsoleMessage;
 import android.webkit.ValueCallback;
+
+import com.mb.android.logging.AppLogger;
 
 import org.apache.cordova.CordovaDialogsHelper;
 import org.apache.cordova.CordovaPlugin;
@@ -43,6 +47,17 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
         super(parentEngine.webView);
         this.parentEngine = parentEngine;
         dialogsHelper = new CordovaDialogsHelper(parentEngine.webView.getContext());
+    }
+
+    @Override
+    public boolean onConsoleMessage(XWalkView view, String message, int lineNumber, String sourceId, XWalkUIClient.ConsoleMessageType messageType) {
+
+        if (message != null && AppLogger.Current != null) {
+
+            AppLogger.Current.Info("%s: Line %s : %s", sourceId, lineNumber, message);
+        }
+
+        return super.onConsoleMessage(view, message, lineNumber, sourceId, messageType);
     }
 
     @Override

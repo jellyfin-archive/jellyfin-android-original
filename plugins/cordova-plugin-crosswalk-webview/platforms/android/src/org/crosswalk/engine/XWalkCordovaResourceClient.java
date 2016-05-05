@@ -28,6 +28,9 @@ import android.webkit.WebResourceResponse;
 import org.apache.cordova.CordovaResourceApi;
 import org.apache.cordova.CordovaResourceApi.OpenForReadResult;
 import org.apache.cordova.LOG;
+import org.apache.cordova.PluginManager;
+import org.xwalk.core.ClientCertRequest;
+import org.xwalk.core.XWalkHttpAuthHandler;
 import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkView;
 
@@ -123,5 +126,34 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
             // When it doubt, lock it out!
             callback.onReceiveValue(false);
         }
+    }
+
+    @Override
+    public void onReceivedHttpAuthRequest(XWalkView view, XWalkHttpAuthHandler handler,
+            String host, String realm) {
+        // Check if there is some plugin which can resolve this auth challenge
+        PluginManager pluginManager = parentEngine.pluginManager;
+        if (pluginManager != null && pluginManager.onReceivedHttpAuthRequest(
+                parentEngine.parentWebView,
+                new XWalkCordovaHttpAuthHandler(handler), host, realm)) {
+            parentEngine.client.clearLoadTimeoutTimer();
+            return;
+        }
+
+        // By default handle 401 like we'd normally do!
+        super.onReceivedHttpAuthRequest(view, handler, host, realm);
+    }
+
+    @Override
+    public void onReceivedClientCertRequest(XWalkView view, ClientCertRequest request) {
+        // Check if there is some plugin which can resolve this certificate request
+        PluginManager pluginManager = parentEngine.pluginManager;
+        if (pluginManager != null && pluginManager.onReceivedClientCertRequest(
+                parentEngine.parentWebView, new XWalkCordovaClientCertRequest(request))) {
+            parentEngine.client.clearLoadTimeoutTimer();
+            return;
+        }
+
+        super.onReceivedClientCertRequest(view, request);
     }
 }

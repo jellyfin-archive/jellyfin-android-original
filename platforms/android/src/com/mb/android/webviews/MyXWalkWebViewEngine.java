@@ -7,6 +7,7 @@ import com.mb.android.MainActivity;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaPreferences;
 import org.apache.cordova.PluginEntry;
+import org.crosswalk.engine.XWalkCordovaUiClient;
 import org.crosswalk.engine.XWalkWebViewEngine;
 
 /**
