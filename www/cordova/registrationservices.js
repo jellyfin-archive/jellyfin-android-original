@@ -449,7 +449,7 @@
                 isCancelled = false;
 
                 cancelInAppPurchase();
-                resolve.resolve();
+                resolve();
             }
         }
     }

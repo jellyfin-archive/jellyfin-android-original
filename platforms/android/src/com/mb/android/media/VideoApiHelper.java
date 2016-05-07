@@ -134,7 +134,7 @@ public class VideoApiHelper {
         changeStream(currentMediaSource, newPositionTicks, null, null, null);
     }
 
-    public void setAudioStreamIndex(MediaPlayer vlc, int index){
+    public void setAudioStreamIndex(MediaPlayer vlc, PlaybackService mService, int index){
 
         logger.Info("setAudioStreamIndex %s", index);
 
@@ -146,7 +146,7 @@ public class VideoApiHelper {
 
             // If transcoding, we're going to need to stop and restart the stream
 
-            long positionTicks = vlc.getTime() * 10000;
+            long positionTicks = mService.getTimeTicks();
             changeStream(currentMediaSource, positionTicks, index, null, null);
         }
         else{
@@ -182,7 +182,7 @@ public class VideoApiHelper {
         }
     }
 
-    public void setSubtitleStreamIndex(MediaPlayer vlc, int index, boolean isInitialPlayback){
+    public void setSubtitleStreamIndex(MediaPlayer vlc, PlaybackService mService, int index, boolean isInitialPlayback){
 
         logger.Info("setSubtitleStreamIndex %s", index);
 
@@ -203,7 +203,7 @@ public class VideoApiHelper {
             if (stream != null && stream.getDeliveryMethod() == SubtitleDeliveryMethod.Encode) {
 
                 // if the current subtitle stream is being burned in, we're going to have to change the transcoding stream
-                long positionTicks = vlc.getTime() * 10000;
+                long positionTicks = mService.getTimeTicks();
                 changeStream(currentMediaSource, positionTicks, null, index, null);
                 return;
             }
@@ -241,7 +241,7 @@ public class VideoApiHelper {
 
             // Subs have to be burned in
             activity.updateExternalSubtitles(null);
-            long positionTicks = vlc.getTime() * 10000;
+            long positionTicks = mService.getTimeTicks();
             changeStream(currentMediaSource, positionTicks, null, index, null);
         }
     }
@@ -319,7 +319,7 @@ public class VideoApiHelper {
         });
     }
 
-    public void setQuality(MediaPlayer vlc, int bitrate, int maxHeight) {
+    public void setQuality(PlaybackService mService, int bitrate, int maxHeight) {
 
         preferencesProvider.set("preferredVideoBitrate", String.valueOf(bitrate));
 
@@ -334,7 +334,7 @@ public class VideoApiHelper {
             }
         }
 
-        long positionTicks = vlc.getTime() * 10000;
+        long positionTicks = mService.getTimeTicks();
 
         logger.Info("Changing quality to %s", bitrate);
         changeStream(currentMediaSource, positionTicks, null, null, bitrate);

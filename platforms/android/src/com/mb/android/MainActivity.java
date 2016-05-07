@@ -27,7 +27,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,7 +40,6 @@ import com.mb.android.iap.IapLogger;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.logging.AppLogger;
-import com.mb.android.logging.LoggingBridge;
 import com.mb.android.media.MediaService;
 import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
@@ -65,9 +63,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
@@ -243,7 +238,6 @@ public class MainActivity extends CordovaActivity
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
         webView.addJavascriptInterface(this, "AndroidVlcPlayer");
         webView.addJavascriptInterface(this, "AndroidSync");
-        webView.addJavascriptInterface(new LoggingBridge(getLogger()), "LoggingBridge");
 
         PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
 

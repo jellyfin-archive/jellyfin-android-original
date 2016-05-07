@@ -103,7 +103,26 @@
         return false;
     }();
 
+    function toLocaleDateString(date) {
+        
+        var currentLocale = globalize.getCurrentLocale();
+
+        return currentLocale && toLocaleTimeStringSupportsLocales ?
+            date.toLocaleDateString(currentLocale) :
+            date.toLocaleDateString();
+    }
+
     function getDisplayTime(date) {
+
+        if ((typeof date).toString().toLowerCase() === 'string') {
+            try {
+
+                date = parseISO8601Date(date, true);
+
+            } catch (err) {
+                return date;
+            }
+        }
 
         var currentLocale = globalize.getCurrentLocale();
 
@@ -144,6 +163,7 @@
     return {
         parseISO8601Date: parseISO8601Date,
         getDisplayRunningTime: getDisplayRunningTime,
+        toLocaleDateString: toLocaleDateString,
         getDisplayTime: getDisplayTime
     };
 });
