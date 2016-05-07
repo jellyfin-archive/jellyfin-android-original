@@ -1443,9 +1443,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         updateNavStatus();
 
         if (apiHelper.getMediaSource().getDefaultSubtitleStreamIndex() == null) {
-            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), -1, true);
+            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(),  mService, -1, true);
         } else {
-            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), apiHelper.getMediaSource().getDefaultSubtitleStreamIndex(), true);
+            apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), mService, apiHelper.getMediaSource().getDefaultSubtitleStreamIndex(), true);
         }
     }
 
@@ -2049,7 +2049,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                         int trackID = Integer.parseInt(value);
                         if (trackID < 0)
                             return false;
-                        apiHelper.setAudioStreamIndex(mService.getMediaPlayer(), trackID);
+                        apiHelper.setAudioStreamIndex(mService.getMediaPlayer(),  mService, trackID);
                         return true;
                     }
                 });
@@ -2068,7 +2068,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                         int trackID = Integer.parseInt(value);
                         if (trackID < -1)
                             return false;
-                        apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(), trackID, false);
+                        apiHelper.setSubtitleStreamIndex(mService.getMediaPlayer(),  mService, trackID, false);
                         return true;
                     }
                 });
@@ -2094,7 +2094,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                     public boolean onTrackSelected(String value) {
                         if (value == null) return  false;
                         String[] parts = value.split("-");
-                        apiHelper.setQuality(mService.getMediaPlayer(), Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+                        apiHelper.setQuality(mService, Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
                         return true;
                     }
                 });
@@ -2129,6 +2129,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         mService.restartIndex(playlistIndex, 0);
         mUri = newUri;
         mService.addCallback(this);
+
+        long startPositionMs = startPositionTicks / 10000;
+        if (startPositionMs >= 0) {
+            if (!mService.getEnableServerSeek()) {
+                seek(startPositionMs);
+            }
+        }
     }
 
     private String normalizeLocation(String location, MediaSourceInfo mediaSourceInfo, PlayMethod playMethod, long startPositionTicks) {

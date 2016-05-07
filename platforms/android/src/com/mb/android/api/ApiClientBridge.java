@@ -116,16 +116,6 @@ public class ApiClientBridge {
 
     @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
-    public void sendRequest(String requestJson, String dataType, final String callbackId) {
-
-        HttpRequest request = jsonSerializer.DeserializeFromString(requestJson, HttpRequest.class);
-
-        httpClient.Send(request, new HttpRequestResponse(jsonSerializer, webView, callbackId, logger));
-
-    }
-
-    @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void getDownloadSpeed(final long downloadBytes, final String address) {
 
         Thread thread = new Thread(new Runnable() {
