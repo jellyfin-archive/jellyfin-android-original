@@ -72,6 +72,9 @@
     function updateUserInHeader(user) {
 
         var header = document.querySelector('.viewMenuBar');
+        if (!header) {
+            return;
+        }
 
         var headerUserButton = header.querySelector('.headerUserButton');
         var hasImage;
@@ -739,7 +742,7 @@
                 var helpUrl = page.getAttribute('data-helpurl');
 
                 if (helpUrl) {
-                    html += '<a href="' + helpUrl + '" target="_blank" class="clearLink" style="margin-left:1em;" title="' + Globalize.translate('ButtonHelp') + '"><button is="paper-icon-button-light"><iron-icon icon="info"></iron-icon></button></a>';
+                    html += '<a href="' + helpUrl + '" target="_blank" class="clearLink" style="margin-left:2em;" title="' + Globalize.translate('ButtonHelp') + '"><paper-button class="accent" style="margin:0;font-weight:normal;font-size:13px;padding:.25em;display:flex;align-items:center;"><iron-icon icon="info"></iron-icon><span>Help</span></paper-button></a>';
                 }
             }
 
