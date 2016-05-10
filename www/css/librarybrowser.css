@@ -62,7 +62,7 @@
     padding-bottom: 0;
 }
 
-.pageWithAbsoluteTabs .pageTabsContainer, .libraryPage > .ui-content {
+.pageWithAbsoluteTabs .pageTabContent, .libraryPage > .ui-content {
     padding-top: 10px;
 }
 
@@ -70,6 +70,10 @@
     padding-left: .5em !important;
     padding-right: .5em !important;
 }*/
+
+.flexPageTabContent.is-active {
+    display: flex!important;
+}
 
 @media all and (max-width: 600px) {
 
@@ -1027,6 +1031,13 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     color: #fff;
     line-height: 19px;
     background-color: #52B54B;
+}
+
+.seriesTimerIndicator {
+    color: #cc3333;
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }
 
 .playedIndicator + .syncIndicator {
