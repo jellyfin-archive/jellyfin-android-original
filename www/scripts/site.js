@@ -1998,6 +1998,7 @@ var AppInfo = {};
 
         define("material-design-lite", [bowerPath + "/material-design-lite/material.min", "css!" + bowerPath + "/material-design-lite/material"]);
         define("MaterialSpinner", ["material-design-lite"]);
+        define("MaterialTabs", ["material-design-lite"]);
 
         define("jQuery", [bowerPath + '/jquery/dist/jquery.slim.min'], function () {
 
@@ -2531,7 +2532,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/home.html',
-            dependencies: ['paper-tabs'],
+            dependencies: ['MaterialTabs'],
             autoFocus: false,
             controller: 'scripts/indexpage'
         });
@@ -2628,12 +2629,6 @@ var AppInfo = {};
         });
 
         defineRoute({
-            path: '/livetvtimer.html',
-            dependencies: ['scrollStyles'],
-            autoFocus: false
-        });
-
-        defineRoute({
             path: '/livetvtunerprovider-hdhomerun.html',
             dependencies: [],
             autoFocus: false,
@@ -2706,7 +2701,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/movies.html',
-            dependencies: ['paper-tabs', 'paper-checkbox', 'paper-fab', 'scripts/alphapicker', 'paper-button'],
+            dependencies: ['MaterialTabs', 'paper-checkbox', 'paper-fab', 'scripts/alphapicker', 'paper-button'],
             autoFocus: false,
             controller: 'scripts/moviesrecommended'
         });
@@ -2920,7 +2915,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/tv.html',
-            dependencies: ['paper-checkbox', 'paper-button', 'paper-icon-button-light', 'material-design-lite'],
+            dependencies: ['paper-checkbox', 'paper-button', 'paper-icon-button-light', 'MaterialTabs'],
             autoFocus: false,
             controller: 'scripts/tvrecommended'
         });
