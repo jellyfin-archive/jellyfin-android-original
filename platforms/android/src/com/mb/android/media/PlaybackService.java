@@ -171,6 +171,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final MediaPlayer mp = new MediaPlayer(LibVLC(getApplicationContext(), logger));
         final String aout = VLCOptions.getAout(pref);
+        logger.Info("Audio output preference: %s", aout);
         if (mp.setAudioOutput(aout) && aout.equals("android_audiotrack")) {
             mIsAudioTrack = true;
             if (mHasHdmiAudio)
@@ -635,6 +636,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     @Override
     public void onSurfacesDestroyed(IVLCVout vlcVout) {
         handleVout();
+    }
+
+    @Override
+    public void onHardwareAccelerationError(IVLCVout vlcVout) {
     }
 
     private final Media.EventListener mMediaListener = new Media.EventListener() {

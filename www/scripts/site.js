@@ -1790,12 +1790,14 @@ var AppInfo = {};
             focusManager: embyWebComponentsBowerPath + "/focusmanager",
             datetime: embyWebComponentsBowerPath + "/datetime",
             globalize: embyWebComponentsBowerPath + "/globalize",
+            itemHelper: embyWebComponentsBowerPath + '/itemhelper',
             itemShortcuts: embyWebComponentsBowerPath + "/shortcuts",
             imageLoader: embyWebComponentsBowerPath + "/images/imagehelper"
         };
 
         if (navigator.webkitPersistentStorage) {
             paths.imageFetcher = embyWebComponentsBowerPath + "/images/persistentimagefetcher";
+            paths.imageFetcher = embyWebComponentsBowerPath + "/images/basicimagefetcher";
         } else if (Dashboard.isRunningInCordova()) {
             paths.imageFetcher = 'cordova/imagestore';
         } else {
@@ -1819,18 +1821,23 @@ var AppInfo = {};
 
         define("libjass", [bowerPath + "/libjass/libjass", "css!" + bowerPath + "/libjass/libjass"], returnFirstDependency);
 
+        define("recordingCreator", [embyWebComponentsBowerPath + "/recordingcreator/recordingcreator"], returnFirstDependency);
+        define("mediaInfo", [embyWebComponentsBowerPath + "/mediainfo/mediainfo"], returnFirstDependency);
         define("backdrop", [embyWebComponentsBowerPath + "/backdrop/backdrop"], returnFirstDependency);
         define("fetchHelper", [embyWebComponentsBowerPath + "/fetchhelper"], returnFirstDependency);
 
-        define("tvguide", [embyWebComponentsBowerPath + "/guide/guide", 'embyRouter'], function (tvGuide, embyRouter) {
-            tvGuide.setBaseUrl(embyRouter.baseUrl() + '/bower_components/emby-webcomponents/guide');
-            return tvGuide;
-        });
+        define("tvguide", [embyWebComponentsBowerPath + "/guide/guide", 'embyRouter'], returnFirstDependency);
 
         define("viewManager", [embyWebComponentsBowerPath + "/viewmanager"], function (viewManager) {
             viewManager.dispatchPageEvents(true);
             return viewManager;
         });
+
+        if (Dashboard.isRunningInCordova() && browserInfo.android) {
+            define("shell", ["cordova/android/shell"], returnFirstDependency);
+        } else {
+            define("shell", [embyWebComponentsBowerPath + "/shell"], returnFirstDependency);
+        }
 
         define("sharingmanager", [embyWebComponentsBowerPath + "/sharing/sharingmanager"], returnFirstDependency);
 
@@ -1866,8 +1873,9 @@ var AppInfo = {};
             waitSeconds: 0,
             map: {
                 '*': {
-                    'css': bowerPath + '/emby-webcomponents/requirecss',
-                    'html': bowerPath + '/emby-webcomponents/requirehtml'
+                    'css': bowerPath + '/emby-webcomponents/require/requirecss',
+                    'html': bowerPath + '/emby-webcomponents/require/requirehtml',
+                    'text': bowerPath + '/emby-webcomponents/require/requiretext'
                 }
             },
             urlArgs: urlArgs,
@@ -1923,8 +1931,6 @@ var AppInfo = {};
 
         define("jstree", [bowerPath + "/jstree/dist/jstree", "css!thirdparty/jstree/themes/default/style.min.css"]);
 
-        define('jqm', ['thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.js']);
-
         define("jqmbase", ['css!thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.theme.css']);
         define("jqmicons", ['jqmbase', 'css!thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.icons.css']);
         define("jqmtable", ['jqmbase', "thirdparty/jquerymobile-1.4.5/jqm.table", 'css!thirdparty/jquerymobile-1.4.5/jqm.table.css']);
@@ -1979,7 +1985,6 @@ var AppInfo = {};
 
         define("swiper", [bowerPath + "/Swiper/dist/js/swiper.min", "css!" + bowerPath + "/Swiper/dist/css/swiper.min"], returnFirstDependency);
 
-        define("dialogHelper", [embyWebComponentsBowerPath + "/dialoghelper/dialoghelper"], returnFirstDependency);
         define("toast", [embyWebComponentsBowerPath + "/toast/toast"], returnFirstDependency);
         define("scrollHelper", [embyWebComponentsBowerPath + "/scrollhelper"], returnFirstDependency);
 
@@ -2007,6 +2012,12 @@ var AppInfo = {};
                 jQuery.ajax = ApiClient.ajax;
             }
             return jQuery;
+        });
+
+        define("dialogHelper", [embyWebComponentsBowerPath + "/dialoghelper/dialoghelper"], function (dialoghelper) {
+
+            dialoghelper.setOnOpen(onDialogOpen);
+            return dialoghelper;
         });
 
         // alias
@@ -2056,8 +2067,6 @@ var AppInfo = {};
                 return window.ApiClient;
             };
         });
-
-        define('dialogText', ['globalize'], getDialogText());
 
         define("embyRouter", [embyWebComponentsBowerPath + '/router'], function (embyRouter) {
 
@@ -2111,14 +2120,13 @@ var AppInfo = {};
         return appSettings;
     }
 
-    function getDialogText() {
-        return function (globalize) {
-            return {
-                get: function (text) {
-                    return globalize.translate('Button' + text);
-                }
-            };
-        };
+    function onDialogOpen(dlg) {
+        if (dlg.classList.contains('formDialog')) {
+            if (!dlg.classList.contains('background-theme-a')) {
+                dlg.classList.add('background-theme-b');
+                dlg.classList.add('ui-body-b');
+            }
+        }
     }
 
     function initRequireWithBrowser(browser) {
@@ -2263,9 +2271,28 @@ var AppInfo = {};
 
                     window.Globalize = globalize;
 
-                    loadCoreDictionary(globalize).then(onGlobalizeInit);
+                    Promise.all([loadCoreDictionary(globalize), loadSharedComponentsDictionary(globalize)]).then(onGlobalizeInit);
                 });
             });
+        });
+    }
+
+    function loadSharedComponentsDictionary(globalize) {
+
+        var baseUrl = 'bower_components/emby-webcomponents/strings/';
+
+        var languages = ['en-US'];
+
+        var translations = languages.map(function (i) {
+            return {
+                lang: i,
+                path: baseUrl + i + '.json'
+            };
+        });
+
+        globalize.loadStrings({
+            name: 'sharedcomponents',
+            translations: translations
         });
     }
 
@@ -3287,12 +3314,6 @@ pageClassOn('viewshow', "page", function () {
         page.classList.add('ui-body-b');
         page.classList.remove('ui-body-a');
     }
-
-    //if (currentTheme != 'a' && !browserInfo.mobile) {
-    //    document.documentElement.classList.add('darkScrollbars');
-    //} else {
-    //    document.documentElement.classList.remove('darkScrollbars');
-    //}
 
     var apiClient = window.ApiClient;
 

@@ -126,7 +126,7 @@ import mediabrowser.model.session.PlayMethod;
 import mediabrowser.model.session.PlaybackProgressInfo;
 
 public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.Callback,
-        GestureDetector.OnDoubleTapListener, IDelayController, LibVLC.HardwareAccelerationError,
+        GestureDetector.OnDoubleTapListener, IDelayController,
         PlaybackService.Client.Callback, PlaybackService.Callback {
 
     public final static String TAG = "VLC/VideoPlayerActivity";
@@ -693,7 +693,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         logger.Debug("Begining startPlayback");
 
-        LibVLC(getApplicationContext(), logger).setOnHardwareAccelerationError(this);
+        //LibVLC(getApplicationContext(), logger).setOnHardwareAccelerationError(this);
         final IVLCVout vlcVout = mService.getVLCVout();
         if (mPresentation == null) {
             vlcVout.setVideoView(mSurfaceView);
@@ -763,7 +763,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         if (!mPlaybackStarted)
             return;
 
-        LibVLC(getApplicationContext(), logger).setOnHardwareAccelerationError(null);
+        //LibVLC(getApplicationContext(), logger).setOnHardwareAccelerationError(null);
 
         mPlaybackStarted = false;
 
@@ -1497,10 +1497,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         mAlertDialog.show();
     }
 
-    @Override
+    /*@Override
     public void eventHardwareAccelerationError() {
         mHandler.sendEmptyMessage(HW_ERROR);
-    }
+    }*/
 
     private void handleHardwareAccelerationError() {
         mHardwareAccelerationError = true;
@@ -3030,7 +3030,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             final int currentIdx = mService.getTitleIdx();
             for (int i = 0; i < titles.length; ++i) {
                 final MediaPlayer.Title title = titles[i];
-                if (title.menu) {
+                if (title.isMenu()) {
                     mMenuIdx = i;
                     break;
                 }
@@ -3133,6 +3133,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     @Override
     public void onSurfacesDestroyed(IVLCVout vlcVout) {
+    }
+
+    @Override
+    public void onHardwareAccelerationError(IVLCVout vlcVout) {
     }
 
     private SubtitleTrackInfo timedTextObject;
