@@ -594,6 +594,10 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
         handleVout();
     }
 
+    @Override
+    public void onHardwareAccelerationError(IVLCVout vlcVout) {
+    }
+
     private final Media.EventListener mMediaListener = new Media.EventListener() {
         @Override
         public void onEvent(Media.Event event) {
