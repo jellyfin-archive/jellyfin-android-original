@@ -22,12 +22,14 @@ package com.mb.android;
 import android.Manifest;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -47,17 +49,16 @@ import com.mb.android.media.MediaService;
 import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
+import org.apache.cordova.CordovaActivity;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.MySystemWebView;
 import com.mb.android.webviews.MyXWalkWebViewEngine;
 import com.mb.android.webviews.NativeWebView;
+import com.nononsenseapps.filepicker.FilePickerActivity;
 
-import net.rdrei.android.dirchooser.DirectoryChooserActivity;
-import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 
-import org.apache.cordova.CordovaActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
@@ -66,6 +67,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
@@ -275,16 +277,35 @@ public class MainActivity extends CordovaActivity
             }
         }
 
-        else if (requestCode == REQUEST_DIRECTORY) {
+        else if (requestCode == REQUEST_DIRECTORY && resultCode == RESULT_OK) {
 
-            if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
+            if (intent.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
+                // For JellyBean and above
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ClipData clip = intent.getClipData();
 
-                String path = intent.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR);
+                    if (clip != null) {
+                        for (int i = 0; i < clip.getItemCount(); i++) {
+                            Uri uri = clip.getItemAt(i).getUri();
+                            RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
+                        }
+                    }
+                    // For Ice Cream Sandwich
+                } else {
+                    ArrayList<String> paths = intent.getStringArrayListExtra (FilePickerActivity.EXTRA_PATHS);
 
-                RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", path));
-            }
-            else{
-                RespondToWebView("window.NativeDirectoryChooser.onChosen(null);");
+                    if (paths != null) {
+                        for (String path: paths) {
+                            Uri uri = Uri.parse(path);
+                            RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
+                        }
+                    }
+                }
+
+            } else {
+                Uri uri = intent.getData();
+                // Do something with the URI
+                RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
             }
         }
 
@@ -500,7 +521,8 @@ public class MainActivity extends CordovaActivity
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
@@ -519,18 +541,22 @@ public class MainActivity extends CordovaActivity
             return;
         }
 
-        final Intent chooserIntent = new Intent(this, DirectoryChooserActivity.class);
+        Intent intent = new Intent(this, FilePickerActivity.class);
+        // This works if you defined the intent filter
+        // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 
-        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                .newDirectoryName("embysync")
-                .allowReadOnlyDirectory(false)
-                .allowNewDirectoryNameModification(true)
-                .build();
+        // Set these depending on your use case. These are the defaults.
+        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+        intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
 
-        chooserIntent.putExtra(DirectoryChooserActivity.EXTRA_CONFIG, config);
+        // Configure initial directory by specifying a String.
+        // You could specify a String like "/storage/emulated/0/", but that can
+        // dangerous. Always use Android's API calls to get paths to the SD-card or
+        // internal memory.
+        intent.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
 
-        // REQUEST_DIRECTORY is a constant integer to identify the request, e.g. 0
-        startActivityForResult(chooserIntent, REQUEST_DIRECTORY);
+        startActivityForResult(intent, REQUEST_DIRECTORY);
     }
 
     @android.webkit.JavascriptInterface

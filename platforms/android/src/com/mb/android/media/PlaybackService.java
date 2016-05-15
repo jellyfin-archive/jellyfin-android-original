@@ -42,8 +42,6 @@ import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
 import com.mb.android.media.legacy.RemoteControlClientReceiver;
 
-import net.rdrei.android.dirchooser.DirectoryChooserActivity;
-
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
