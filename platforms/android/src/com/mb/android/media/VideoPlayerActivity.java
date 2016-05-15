@@ -2509,15 +2509,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     private void setESTrackLists() {
         if (mAudioTracksList == null)
         {
-            Map<Integer,String> audioTracks = new HashMap<Integer,String>();
+            ArrayList<NameValuePair> audioTracks = new ArrayList<NameValuePair>();
+
             for (MediaStream stream : apiHelper.getMediaSource().getMediaStreams()){
                 if (stream.getType() == MediaStreamType.Audio){
 
-                    audioTracks.put(stream.getIndex(), getAudioTrackName(stream));
+                    audioTracks.add(new NameValuePair(getAudioTrackName(stream), String.valueOf(stream.getIndex())));
                 }
             }
-
-            mAudioTracksList = GetNameValuePairs(audioTracks);
+            mAudioTracksList = audioTracks;
         }
 
         if (mSubtitleTracksList == null) {
