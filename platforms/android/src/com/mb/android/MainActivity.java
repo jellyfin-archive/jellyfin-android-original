@@ -491,6 +491,7 @@ public class MainActivity extends CordovaActivity
     }
 
     private final int ExternalStoragePermissionRequestCode = 3;
+    private final int AuthorizeStoragePermissionRequestCode = 4;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -515,9 +516,13 @@ public class MainActivity extends CordovaActivity
 
     @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
-    public void chooseDirectory() {
+    public boolean authorizeStorage(){
 
-        // Here, thisActivity is the current activity
+        return authorizeStorage(AuthorizeStoragePermissionRequestCode);
+    }
+
+    private boolean authorizeStorage(int requestCode){
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
@@ -526,17 +531,28 @@ public class MainActivity extends CordovaActivity
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, ExternalStoragePermissionRequestCode);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
             } else {
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, ExternalStoragePermissionRequestCode);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
 
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
             }
+            return false;
+        }
+
+        return true;
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void chooseDirectory() {
+
+        if (!authorizeStorage(ExternalStoragePermissionRequestCode)){
             return;
         }
 

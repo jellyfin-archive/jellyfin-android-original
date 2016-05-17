@@ -2243,7 +2243,7 @@ var AppInfo = {};
 
         var baseUrl = 'bower_components/emby-webcomponents/strings/';
 
-        var languages = ['en-US', 'kk', 'ru'];
+        var languages = ['da', 'en-US', 'kk', 'nl', 'ru'];
 
         var translations = languages.map(function (i) {
             return {
@@ -2655,9 +2655,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/login.html',
-            dependencies: ['paper-button'],
+            dependencies: ['paper-button', 'humanedate', 'paper-input'],
             autoFocus: false,
-            anonymous: true
+            anonymous: true,
+            controller: 'scripts/loginpage'
         });
 
         defineRoute({
@@ -2714,49 +2715,57 @@ var AppInfo = {};
         defineRoute({
             path: '/mypreferencesdisplay.html',
             dependencies: ['paper-button'],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
             path: '/mypreferenceshome.html',
             dependencies: ['paper-button'],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
             path: '/mypreferenceslanguages.html',
             dependencies: ['paper-button'],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
             path: '/mypreferencesmenu.html',
             dependencies: ['paper-button'],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
             path: '/myprofile.html',
             dependencies: ['paper-button'],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
             path: '/mysync.html',
             dependencies: [],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
             path: '/mysyncjob.html',
             dependencies: [],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
             path: '/mysyncsettings.html',
             dependencies: [],
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
@@ -2784,7 +2793,8 @@ var AppInfo = {};
             path: '/nowplaying.html',
             dependencies: ['paper-icon-button-light', 'paper-slider', 'paper-button'],
             controller: 'scripts/nowplayingpage',
-            autoFocus: false
+            autoFocus: false,
+            transition: 'fade'
         });
 
         defineRoute({
