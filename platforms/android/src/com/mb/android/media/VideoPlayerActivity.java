@@ -695,6 +695,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         //LibVLC(getApplicationContext(), logger).setOnHardwareAccelerationError(this);
         final IVLCVout vlcVout = mService.getVLCVout();
+
         if (mPresentation == null) {
             vlcVout.setVideoView(mSurfaceView);
             if (mSubtitlesSurfaceView.getVisibility() != View.GONE)
@@ -2514,7 +2515,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             for (MediaStream stream : apiHelper.getMediaSource().getMediaStreams()){
                 if (stream.getType() == MediaStreamType.Audio){
 
-                    audioTracks.add(new NameValuePair(getAudioTrackName(stream), String.valueOf(stream.getIndex())));
+                    audioTracks.add(new NameValuePair(stream.getDisplayTitle(), String.valueOf(stream.getIndex())));
                 }
             }
             mAudioTracksList = audioTracks;
@@ -2526,7 +2527,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             for (MediaStream stream : apiHelper.getMediaSource().getMediaStreams()){
                 if (stream.getType() == MediaStreamType.Subtitle){
 
-                    subs.add(new NameValuePair(getSubtitleTrackName(stream), String.valueOf(stream.getIndex())));
+                    subs.add(new NameValuePair(stream.getDisplayTitle(), String.valueOf(stream.getIndex())));
                 }
             }
             mSubtitleTracksList = subs;
@@ -2561,59 +2562,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         }
 
         return list;
-    }
-
-    private String getAudioTrackName(MediaStream stream) {
-
-        ArrayList<String> attributes = new ArrayList<String>();
-
-        if (stream.getLanguage() != null){
-            attributes.add(stream.getLanguage());
-        }
-
-        if (stream.getCodec() != null) {
-            attributes.add(stream.getCodec());
-        }
-        if (stream.getProfile() != null) {
-            attributes.add(stream.getProfile());
-        }
-
-        if (stream.getChannels() != null) {
-            attributes.add(stream.getChannels() + " ch");
-        }
-
-        String name = tangible.DotNetToJavaStringHelper.join(" - ", attributes.toArray(new String[attributes.size()]));
-
-        if (stream.getIsDefault()) {
-            name += " (D)";
-        }
-
-        return name;
-    }
-
-    private String getSubtitleTrackName(MediaStream stream) {
-
-        ArrayList<String> attributes = new ArrayList<String>();
-
-        if (stream.getLanguage() != null){
-            attributes.add(stream.getLanguage());
-        }
-
-        if (stream.getCodec() != null) {
-            attributes.add(stream.getCodec());
-        }
-
-        String name = tangible.DotNetToJavaStringHelper.join(" - ", attributes.toArray(new String[attributes.size()]));
-
-        if (stream.getIsDefault()) {
-            name += " (D)";
-        }
-
-        if (stream.getIsForced()) {
-            name += " (F)";
-        }
-
-        return name;
     }
 
     /**
@@ -3192,6 +3140,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                if (subtitleText == null){
+                    return;
+                }
+
                 if (textObj == null) {
                     subtitleText.setVisibility(View.INVISIBLE);
                     return;
