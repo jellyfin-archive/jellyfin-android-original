@@ -1280,19 +1280,6 @@ var Dashboard = {
                         Method: 'Embed'
                     });
 
-                    // These don't play very well
-                    profile.CodecProfiles.push({
-                        Type: 'VideoAudio',
-                        Codec: 'dca',
-                        Conditions: [
-                            {
-                                Condition: 'LessThanEqual',
-                                Property: 'AudioChannels',
-                                Value: 6
-                            }
-                        ]
-                    });
-
                     profile.CodecProfiles.push({
                         Type: 'VideoAudio',
                         Codec: 'aac,mp3',
@@ -2243,7 +2230,7 @@ var AppInfo = {};
 
         var baseUrl = 'bower_components/emby-webcomponents/strings/';
 
-        var languages = ['da', 'en-US', 'kk', 'nl', 'ru'];
+        var languages = ['da', 'en-US', 'es-MX', 'kk', 'nb', 'nl', 'ru'];
 
         var translations = languages.map(function (i) {
             return {
@@ -2404,9 +2391,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/dashboardhosting.html',
-            dependencies: [],
+            dependencies: ['paper-checkbox', 'paper-input', 'paper-button'],
             autoFocus: false,
-            roles: 'admin'
+            roles: 'admin',
+            controller: 'scripts/dashboardhosting'
         });
 
         defineRoute({
@@ -2538,7 +2526,8 @@ var AppInfo = {};
 
         defineRoute({
             path: '/itemdetails.html',
-            dependencies: ['paper-button'],
+            dependencies: ['paper-button', 'tileitemcss', 'scripts/livetvcomponents', 'paper-fab', 'paper-item-body', 'paper-icon-item', 'paper-icon-button-light'],
+            controller: 'scripts/itemdetailpage',
             autoFocus: false,
             transition: 'fade'
         });
@@ -2698,7 +2687,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/movies.html',
-            dependencies: ['paper-checkbox', 'paper-fab', 'scripts/alphapicker', 'paper-button'],
+            dependencies: ['paper-checkbox', 'scripts/alphapicker', 'paper-button'],
             autoFocus: false,
             controller: 'scripts/moviesrecommended',
             transition: 'fade'

@@ -193,7 +193,7 @@
             dialogHelper.close(dlg);
         });
 
-        $(dlg).on('iron-overlay-closed', function () {
+        dlg.addEventListener('close', function () {
 
             if (window.TabBar) {
                 TabBar.show();
@@ -299,7 +299,7 @@
             restorePurchase();
         });
 
-        $(elem).on('iron-overlay-closed', function () {
+        elem.addEventListener('close', function () {
 
             clearCurrentDisplayingInfo();
 
