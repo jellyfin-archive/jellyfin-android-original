@@ -58,13 +58,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/amazonarmv7/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/amazonarmv7/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/amazonarmv7/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testAmazonarmv7/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testAmazonarmv7/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testAmazonarmv7/assets" type="java-test-resource" />
@@ -72,6 +65,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testAmazonarmv7/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testAmazonarmv7/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testAmazonarmv7/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestAmazonarmv7/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />

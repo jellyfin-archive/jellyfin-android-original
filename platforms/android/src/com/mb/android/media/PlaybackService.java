@@ -713,6 +713,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     changeAudioFocus(false);
                     break;
                 case MediaPlayer.Event.EncounteredError:
+                    logger.Info("EncounteredError");
                     showToast(getString(R.string.invalid_location, mMediaList.getMRL(mCurrentIndex)), Toast.LENGTH_SHORT);
                     stopTimer();
                     executeUpdate();
@@ -1526,7 +1527,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     public long getLength() {
         long length = mMediaPlayer.getLength();
 
-        if (length == 0) {
+        if (length == 0 || getEnableServerSeek()) {
             if (apiHelper.getMediaSource().getRunTimeTicks() != null){
                 length = (apiHelper.getMediaSource().getRunTimeTicks()/ 10000);
             }
