@@ -1223,7 +1223,7 @@ var Dashboard = {
                     profile.DirectPlayProfiles.push({
                         Container: "m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm",
                         Type: 'Video',
-                        AudioCodec: 'aac,aac_latm,mp3,ac3,wma,dca,pcm,PCM_S16LE,PCM_S24LE,opus,flac'
+                        AudioCodec: 'aac,aac_latm,mp2,mp3,ac3,wma,dca,pcm,PCM_S16LE,PCM_S24LE,opus,flac'
                     });
 
                     profile.CodecProfiles = profile.CodecProfiles.filter(function (i) {
@@ -1278,6 +1278,18 @@ var Dashboard = {
                     profile.SubtitleProfiles.push({
                         Format: 'smi',
                         Method: 'Embed'
+                    });
+
+                    profile.CodecProfiles.push({
+                        Type: 'Video',
+                        Container: 'avi',
+                        Conditions: [
+                            {
+                                Condition: 'NotEqual',
+                                Property: 'CodecTag',
+                                Value: 'xvid'
+                            }
+                        ]
                     });
 
                     profile.CodecProfiles.push({
@@ -1709,7 +1721,6 @@ var AppInfo = {};
             ironCardList: 'components/ironcardlist/ironcardlist',
             scrollThreshold: 'components/scrollthreshold',
             directorybrowser: 'components/directorybrowser/directorybrowser',
-            collectioneditor: 'components/collectioneditor/collectioneditor',
             playlisteditor: 'components/playlisteditor/playlisteditor',
             medialibrarycreator: 'components/medialibrarycreator/medialibrarycreator',
             medialibraryeditor: 'components/medialibraryeditor/medialibraryeditor',
@@ -1768,6 +1779,9 @@ var AppInfo = {};
 
         define("libjass", [bowerPath + "/libjass/libjass", "css!" + bowerPath + "/libjass/libjass"], returnFirstDependency);
 
+        define("emby-select", [embyWebComponentsBowerPath + "/emby-select/emby-select"], returnFirstDependency);
+        define("collectionEditor", [embyWebComponentsBowerPath + "/collectioneditor/collectioneditor"], returnFirstDependency);
+        define("playlistEditor", [embyWebComponentsBowerPath + "/playlisteditor/playlisteditor"], returnFirstDependency);
         define("recordingCreator", [embyWebComponentsBowerPath + "/recordingcreator/recordingcreator"], returnFirstDependency);
         define("recordingEditor", [embyWebComponentsBowerPath + "/recordingcreator/recordingeditor"], returnFirstDependency);
         define("mediaInfo", [embyWebComponentsBowerPath + "/mediainfo/mediainfo"], returnFirstDependency);
@@ -1803,7 +1817,6 @@ var AppInfo = {};
             paths.appStorage = apiClientBowerPath + "/appstorage";
         }
 
-        paths.playlistManager = "scripts/playlistmanager";
         paths.syncDialog = "scripts/sync";
 
         var sha1Path = bowerPath + "/cryptojslib/components/sha1-min";
@@ -2083,17 +2096,27 @@ var AppInfo = {};
 
         var embyWebComponentsBowerPath = bowerPath + '/emby-webcomponents';
 
-        if (browser.mobile) {
-            define("prompt", [embyWebComponentsBowerPath + "/prompt/nativeprompt"], returnFirstDependency);
-            define("confirm", [embyWebComponentsBowerPath + "/confirm/nativeconfirm"], returnFirstDependency);
+        var preferNativeAlerts = browser.mobile || browser.tv || browser.xboxOne;
+        // use native alerts if preferred and supported (not supported in opera tv)
+        if (preferNativeAlerts && window.alert) {
             define("alert", [embyWebComponentsBowerPath + "/alert/nativealert"], returnFirstDependency);
         } else {
-            define("prompt", [embyWebComponentsBowerPath + "/prompt/prompt"], returnFirstDependency);
-            define("confirm", [embyWebComponentsBowerPath + "/confirm/confirm"], returnFirstDependency);
             define("alert", [embyWebComponentsBowerPath + "/alert/alert"], returnFirstDependency);
         }
 
-        if (browser.tv) {
+        if (preferNativeAlerts && window.confirm) {
+            define("confirm", [embyWebComponentsBowerPath + "/confirm/nativeconfirm"], returnFirstDependency);
+        } else {
+            define("confirm", [embyWebComponentsBowerPath + "/confirm/confirm"], returnFirstDependency);
+        }
+
+        if (preferNativeAlerts && window.prompt) {
+            define("prompt", [embyWebComponentsBowerPath + "/prompt/nativeprompt"], returnFirstDependency);
+        } else {
+            define("prompt", [embyWebComponentsBowerPath + "/prompt/prompt"], returnFirstDependency);
+        }
+
+        if (browser.tv && !browser.animate) {
             define("loading", [embyWebComponentsBowerPath + "/loading/loading-smarttv"], returnFirstDependency);
         } else {
             define("loading", [embyWebComponentsBowerPath + "/loading/loading-lite"], returnFirstDependency);
@@ -2971,9 +2994,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/wizardfinish.html',
-            dependencies: [],
+            dependencies: ['paper-button'],
             autoFocus: false,
-            anonymous: true
+            anonymous: true,
+            controller: 'scripts/wizardfinishpage'
         });
 
         defineRoute({
