@@ -33,11 +33,4 @@ public class NativeFileSystem {
             return false;
         }
     }
-
-    @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
-    public String translateFilePath(String path) {
-
-        return path;
-    }
 }

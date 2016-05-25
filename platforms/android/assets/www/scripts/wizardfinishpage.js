@@ -1,1 +1,1 @@
-define(["jQuery"],function(n){function t(){ApiClient.ajax({url:ApiClient.getUrl("Startup/Complete"),type:"POST"}).then(function(){Dashboard.navigate("dashboard.html")})}n(document).on("pageinit","#wizardFinishPage",function(){n(".btnWizardNext",this).on("click",t)})});
+define(["loading"],function(t){function e(){t.show(),ApiClient.ajax({url:ApiClient.getUrl("Startup/Complete"),type:"POST"}).then(function(){Dashboard.navigate("dashboard.html"),t.hide()})}return function(t){t.querySelector(".btnWizardNext").addEventListener("click",e)}});

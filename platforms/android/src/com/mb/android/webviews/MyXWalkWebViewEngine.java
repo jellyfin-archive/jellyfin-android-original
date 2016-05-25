@@ -8,6 +8,7 @@ import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaPreferences;
 import org.apache.cordova.PluginEntry;
 import org.crosswalk.engine.XWalkCordovaUiClient;
+import org.crosswalk.engine.XWalkCordovaView;
 import org.crosswalk.engine.XWalkWebViewEngine;
 
 /**
@@ -31,6 +32,11 @@ public class MyXWalkWebViewEngine extends XWalkWebViewEngine {
     public void loadUrlOnReady(String url) {
         AddJavascriptInterfaces();
         webView.load(url, null);
+    }
+
+    @Override
+    public XWalkCordovaView CreateXWalkCordovaView(Context context, CordovaPreferences preferences){
+        return new MyXWalkCordovaView(context, preferences);
     }
 
     private void AddJavascriptInterfaces(){
