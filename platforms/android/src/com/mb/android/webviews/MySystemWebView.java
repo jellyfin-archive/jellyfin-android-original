@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 
 import org.apache.cordova.engine.SystemWebChromeClient;
 import org.apache.cordova.engine.SystemWebView;
+import org.apache.cordova.engine.SystemWebViewClient;
 import org.apache.cordova.engine.SystemWebViewEngine;
 
 import mediabrowser.model.logging.ILogger;
@@ -29,5 +30,10 @@ public class MySystemWebView extends SystemWebView {
     @Override
     public SystemWebChromeClient CreateChromeClient(SystemWebViewEngine parentEngine){
         return new MySystemWebChromeClient(parentEngine, logger);
+    }
+
+    @Override
+    public SystemWebViewClient CreateSystemWebViewClient(SystemWebViewEngine parentEngine){
+        return new MySystemWebViewClient(parentEngine);
     }
 }

@@ -30,6 +30,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -106,10 +107,14 @@ public class MainActivity extends CordovaActivity
 
     private int chromeVersion = 47;
 
+    public static MainActivity Current;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        Current = this;
 
         /*new Runnable() {
             @Override
@@ -971,5 +976,10 @@ public class MainActivity extends CordovaActivity
         // Start download
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         dm.enqueue(r);
+    }
+
+    public void handleSslError(SslError error, Response<Boolean> response){
+
+        response.onResponse(true);
     }
 }

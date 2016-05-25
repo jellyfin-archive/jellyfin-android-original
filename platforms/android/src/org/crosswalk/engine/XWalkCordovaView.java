@@ -65,11 +65,15 @@ public class XWalkCordovaView extends XWalkView implements CordovaWebViewEngine.
     void init(XWalkWebViewEngine parentEngine) {
         this.parentEngine = parentEngine;
         if (resourceClient == null) {
-            setResourceClient(new XWalkCordovaResourceClient(parentEngine));
+            setResourceClient(CreateXWalkCordovaResourceClient(parentEngine));
         }
         if (uiClient == null) {
             setUIClient(new XWalkCordovaUiClient(parentEngine));
         }
+    }
+
+    public XWalkCordovaResourceClient CreateXWalkCordovaResourceClient(XWalkWebViewEngine parentEngine){
+        return new XWalkCordovaResourceClient(parentEngine);
     }
 
     @Override

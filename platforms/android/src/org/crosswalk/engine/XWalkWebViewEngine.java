@@ -133,7 +133,11 @@ public class XWalkWebViewEngine implements CordovaWebViewEngine {
         };
         activityDelegate = new XWalkActivityDelegate((Activity) context, cancelCommand, completeCommand);
 
-        webView = new XWalkCordovaView(context, preferences);
+        webView = CreateXWalkCordovaView(context, preferences);
+    }
+
+    public XWalkCordovaView CreateXWalkCordovaView(Context context, CordovaPreferences preferences){
+        return new XWalkCordovaView(context, preferences);
     }
 
     // Use two-phase init so that the control will work with XML layouts.
