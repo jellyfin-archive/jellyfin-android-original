@@ -99,19 +99,6 @@ public class XWalkCordovaResourceClient extends XWalkResourceClient {
         return parentEngine.client.onNavigationAttempt(url);
     }
 
-
-    /**
-    * Notify the host application that an SSL error occurred while loading a
-    * resource. The host application must call either callback.onReceiveValue(true)
-    * or callback.onReceiveValue(false). Note that the decision may be
-    * retained for use in response to future SSL errors. The default behavior
-    * is to pop up a dialog.
-    */
-    @Override
-    public void onReceivedSslError(XWalkView view, ValueCallback<Boolean> callback, SslError error) {
-        callback.onReceiveValue(true);
-    }
-
     @Override
     public void onReceivedHttpAuthRequest(XWalkView view, XWalkHttpAuthHandler handler,
             String host, String realm) {

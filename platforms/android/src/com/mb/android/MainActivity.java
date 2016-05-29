@@ -20,20 +20,25 @@
 package com.mb.android;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.net.http.SslCertificate;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -978,8 +983,56 @@ public class MainActivity extends CordovaActivity
         dm.enqueue(r);
     }
 
-    public void handleSslError(SslError error, Response<Boolean> response){
+    public void handleSslError(SslError error, final Response<Boolean> response){
 
-        response.onResponse(true);
+        final Context context = this;
+        SslCertificate cert = error.getCertificate();
+
+        String issuedTo = cert.getIssuedTo().getDName();
+        String issuedBy = cert.getIssuedBy().getDName();
+        String issuedOn = cert.getValidNotBeforeDate().toString();
+
+        final String srch = error.getUrl()+ "--" + issuedTo + "--" + issuedBy + "--" + issuedOn;
+        final String results = getSharedPreferences(this).getString("acurls1", "");
+
+        if (StringHelper.IndexOfIgnoreCase(results, srch) != -1){
+            response.onResponse(true);
+            return;
+        }
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        String message = getResources().getString(R.string.notification_error_ssl_cert_invalid)
+                .replace("{0}", issuedTo.replace("localhost", "Emby Server"))
+                .replace("{1}", issuedBy.replace("localhost", "Emby Server"))
+                .replace("{2}", issuedOn);
+
+        builder.setMessage(message);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                SharedPreferences settings = getSharedPreferences(context);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("acurls1", results + "|" + srch);
+                // Commit the edits!
+                boolean saved = editor.commit();
+
+                response.onResponse(true);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                response.onResponse(false);
+            }
+        });
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private static SharedPreferences getSharedPreferences(Context context) {
+
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 }
