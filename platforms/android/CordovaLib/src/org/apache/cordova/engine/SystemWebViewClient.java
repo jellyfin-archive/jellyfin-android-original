@@ -209,23 +209,6 @@ public class SystemWebViewClient extends WebViewClient {
         parentEngine.client.onReceivedError(errorCode, description, failingUrl);
     }
 
-    /**
-     * Notify the host application that an SSL error occurred while loading a resource.
-     * The host application must call either handler.cancel() or handler.proceed().
-     * Note that the decision may be retained for use in response to future SSL errors.
-     * The default behavior is to cancel the load.
-     *
-     * @param view          The WebView that is initiating the callback.
-     * @param handler       An SslErrorHandler object that will handle the user's response.
-     * @param error         The SSL error object.
-     */
-    @TargetApi(8)
-    @Override
-    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-
-        handler.proceed();
-    }
-
 
     /**
      * Sets the authentication token.
