@@ -148,6 +148,7 @@
     text-decoration: none;
     /* Needed in firefox */
     text-align: left;
+    contain: strict;
 }
 
 @media all and (min-width: 500px) {
@@ -201,7 +202,7 @@
     }
 }
 
-@media all and (max-width: 1280px) {
+@media all and (max-width: 1200px) {
 
     .channelHeaderCell.withImage .guideChannelNumber {
         display: none;
@@ -300,6 +301,7 @@
     align-items: center;
     /* Needed for Firefox */
     text-align: left;
+    contain: strict;
 }
 
 .timeslotCellInner {
