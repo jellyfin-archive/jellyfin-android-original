@@ -1166,7 +1166,11 @@ var Dashboard = {
             // The native app can handle a little bit more than safari
             if (AppInfo.isNativeApp) {
 
-                quality -= 10;
+                if (isBackdrop) {
+                    quality -= 5;
+                } else {
+                    quality -= 10;
+                }
 
             } else {
 
@@ -2250,7 +2254,7 @@ var AppInfo = {};
 
         var baseUrl = 'bower_components/emby-webcomponents/strings/';
 
-        var languages = ['da', 'en-US', 'es-MX', 'kk', 'nb', 'nl', 'ru'];
+        var languages = ['da', 'de', 'en-US', 'es-MX', 'kk', 'nb', 'nl', 'ru'];
 
         var translations = languages.map(function (i) {
             return {
@@ -3121,7 +3125,6 @@ var AppInfo = {};
 
             console.log('Loaded dependencies in onAppReady');
 
-            imageLoader.enableFade = browserInfo.animate && !browserInfo.mobile;
             window.ImageLoader = imageLoader;
 
             layoutManager.init();

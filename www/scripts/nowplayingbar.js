@@ -149,7 +149,6 @@
         });
 
         $('.stopButton', elem).on('click', function () {
-
             if (currentPlayer) {
                 currentPlayer.stop();
             }

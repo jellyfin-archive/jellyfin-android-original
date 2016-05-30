@@ -831,9 +831,18 @@
 
                 innerElem.innerHTML = getOverlayHtml(item, user, card, commands);
 
-                $('.btnPlayItem', innerElem).on('click', onPlayItemButtonClick);
-                $('.btnPlayTrailer', innerElem).on('click', onTrailerButtonClick);
-                $('.btnMoreCommands', innerElem).on('click', onMoreButtonClick);
+                var btnPlayItem = innerElem.querySelector('.btnPlayItem');
+                if (btnPlayItem) {
+                    btnPlayItem.addEventListener('click', onPlayItemButtonClick);
+                }
+                var btnPlayTrailer = innerElem.querySelector('.btnPlayTrailer');
+                if (btnPlayTrailer) {
+                    btnPlayTrailer.addEventListener('click', onTrailerButtonClick);
+                }
+                var btnMoreCommands = innerElem.querySelector('.btnMoreCommands');
+                if (btnMoreCommands) {
+                    btnMoreCommands.addEventListener('click', onMoreButtonClick);
+                }
             });
 
             slideUpToShow(innerElem);
@@ -1536,21 +1545,28 @@
         }
 
         var progressHtml = LibraryBrowser.getItemProgressBarHtml(userData);
+        var cardProgress;
 
         if (progressHtml) {
-            var cardProgress = card.querySelector('.cardProgress');
+            cardProgress = card.querySelector('.cardProgress');
 
             if (!cardProgress) {
                 cardProgress = document.createElement('div');
                 cardProgress.classList.add('cardProgress');
 
-                $('.cardFooter', card).append(cardProgress);
+                var cardFooter = card.querySelector('.cardFooter');
+                if (cardFooter) {
+                    cardFooter.appendChild(cardProgress);
+                }
             }
 
             cardProgress.innerHTML = progressHtml;
         }
         else {
-            $('.cardProgress', card).remove();
+            cardProgress = card.querySelector('.cardFooter');
+            if (cardProgress) {
+                cardProgress.parentNode.removeChild(cardProgress);
+            }
         }
     }
 
