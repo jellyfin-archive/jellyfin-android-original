@@ -1,1 +1,1 @@
-$.fn.buttonEnabled=function(t){return t?this.attr("disabled","").removeAttr("disabled"):this.attr("disabled","disabled")};
+define(["jQuery"],function(t){t.fn.buttonEnabled=function(t){return t?this.attr("disabled","").removeAttr("disabled"):this.attr("disabled","disabled")}});
