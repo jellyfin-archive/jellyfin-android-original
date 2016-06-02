@@ -55,6 +55,7 @@ define(['browser'], function (browser) {
         if (isPluginpage || (newView.classList && newView.classList.contains('type-interior'))) {
             dependencies.push('jqmlistview');
             dependencies.push('scripts/notifications');
+            dependencies.push('dashboardcss');
         }
 
         return new Promise(function (resolve, reject) {
@@ -75,7 +76,7 @@ define(['browser'], function (browser) {
                 }
 
                 if (currentPage) {
-                    if (newViewInfo.hasScript) {
+                    if (newViewInfo.hasScript && window.$) {
                         // TODO: figure this out without jQuery
                         view = $(view).appendTo(mainAnimatedPages)[0];
                         mainAnimatedPages.removeChild(currentPage);
@@ -83,7 +84,7 @@ define(['browser'], function (browser) {
                         mainAnimatedPages.replaceChild(view, currentPage);
                     }
                 } else {
-                    if (newViewInfo.hasScript) {
+                    if (newViewInfo.hasScript && window.$) {
                         // TODO: figure this out without jQuery
                         view = $(view).appendTo(mainAnimatedPages)[0];
                     } else {

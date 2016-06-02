@@ -1,4 +1,4 @@
-﻿define(['jQuery', 'appSettings'], function ($, appSettings) {
+﻿define(['appSettings'], function (appSettings) {
 
     function getRegistrationInfo(feature) {
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
@@ -188,10 +188,13 @@
 
         dialogHelper.open(dlg);
 
-        $('.btnCloseDialog', dlg).on('click', function () {
+        var btnCloseDialog = elem.querySelectorAll('.btnCloseDialog');
+        for (var i = 0, length = btnPurchases.length; i < length; i++) {
+            btnCloseDialog[i].addEventListener('click', function () {
 
-            dialogHelper.close(dlg);
-        });
+                dialogHelper.close(dlg);
+            });
+        }
 
         dlg.addEventListener('close', function () {
 
@@ -278,26 +281,33 @@
         return html;
     }
 
+    function onPurchaseButtonClick() {
+        isCancelled = false;
+
+        if (this.getAttribute('data-email') == 'true') {
+            acquireEmail(this.getAttribute('data-feature'));
+        } else {
+            IapManager.beginPurchase(this.getAttribute('data-feature'));
+        }
+    }
+
     function initInAppPurchaseElementEvents(elem, feature, resolve, reject) {
 
         isCancelled = true;
 
-        $('.btnPurchase', elem).on('click', function () {
+        var btnPurchases = elem.querySelectorAll('.btnPurchase');
+        for (var i = 0, length = btnPurchases.length; i < length; i++) {
+            btnPurchases[i].addEventListener('click', onPurchaseButtonClick);
+        }
 
-            isCancelled = false;
+        var btnRestorePurchase = elem.querySelector('.btnRestorePurchase');
+        if (btnRestorePurchase) {
+            btnRestorePurchase.addEventListener('click', function () {
 
-            if (this.getAttribute('data-email') == 'true') {
-                acquireEmail(this.getAttribute('data-feature'));
-            } else {
-                IapManager.beginPurchase(this.getAttribute('data-feature'));
-            }
-        });
-
-        $('.btnRestorePurchase', elem).on('click', function () {
-
-            isCancelled = false;
-            restorePurchase();
-        });
+                isCancelled = false;
+                restorePurchase();
+            });
+        }
 
         elem.addEventListener('close', function () {
 
@@ -313,16 +323,12 @@
                         title: Globalize.translate('HeaderTryPlayback'),
                         callback: function () {
                             reject();
-                            $(overlay).remove();
                         }
                     });
                 } else {
                     reject();
-                    $(overlay).remove();
                 }
 
-            } else {
-                $(this).remove();
             }
         });
     }
@@ -332,7 +338,8 @@
         require(['dialogHelper'], function (dialogHelper) {
 
             var dlg = dialogHelper.createDialog({
-                size: 'fullscreen-border'
+                size: 'fullscreen-border',
+                removeOnClose: true
             });
 
             dlg.classList.add('ui-body-b');

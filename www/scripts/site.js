@@ -1650,14 +1650,6 @@ var AppInfo = {};
             elem.classList.add('touch');
         }
 
-        if (!AppInfo.enableStudioTabs) {
-            elem.classList.add('studioTabDisabled');
-        }
-
-        if (!AppInfo.enableTvEpisodesTab) {
-            elem.classList.add('tvEpisodesTabDisabled');
-        }
-
         if (!AppInfo.enableSupporterMembership) {
             elem.classList.add('supporterMembershipDisabled');
         }
@@ -1865,8 +1857,6 @@ var AppInfo = {};
         define("paper-tabs", ["html!" + bowerPath + "/paper-tabs/paper-tabs.html"]);
         define("paper-menu", ["html!" + bowerPath + "/paper-menu/paper-menu.html"]);
         define("paper-material", ["html!" + bowerPath + "/paper-material/paper-material.html"]);
-        define("paper-dialog", ["html!" + bowerPath + "/paper-dialog/paper-dialog.html"]);
-        define("paper-dialog-scrollable", ["html!" + bowerPath + "/paper-dialog-scrollable/paper-dialog-scrollable.html"]);
         define("paper-button", ["html!" + bowerPath + "/paper-button/paper-button.html"]);
         define("paper-icon-button", ["html!" + bowerPath + "/paper-icon-button/paper-icon-button.html"]);
         define("paper-icon-button-light", ["html!" + bowerPath + "/paper-icon-button/paper-icon-button-light.html", 'css!css/polymer/paper-icon-button-light.css']);
@@ -1899,7 +1889,9 @@ var AppInfo = {};
 
         define("jstree", [bowerPath + "/jstree/dist/jstree", "css!thirdparty/jstree/themes/default/style.min.css"]);
 
-        define("jqmbase", ['css!css/dashboard', 'css!thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.theme.css']);
+        define("dashboardcss", ['css!css/dashboard']);
+
+        define("jqmbase", ['dashboardcss', 'css!thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.theme.css']);
         define("jqmicons", ['jqmbase', 'css!thirdparty/jquerymobile-1.4.5/jquery.mobile.custom.icons.css']);
         define("jqmtable", ['jqmbase', "thirdparty/jquerymobile-1.4.5/jqm.table", 'css!thirdparty/jquerymobile-1.4.5/jqm.table.css']);
 
@@ -2057,7 +2049,7 @@ var AppInfo = {};
                 Dashboard.navigate('mypreferencesmenu.html?userId=' + ApiClient.getCurrentUserId());
             };
 
-            embyRouter.showItem = function (item) {
+            function showItem(item) {
                 if (typeof (item) === 'string') {
                     require(['connectionManager'], function (connectionManager) {
                         var apiClient = connectionManager.currentApiClient();
@@ -2066,7 +2058,9 @@ var AppInfo = {};
                 } else {
                     Dashboard.navigate(LibraryBrowser.getHref(item));
                 }
-            };
+            }
+
+            embyRouter.showItem = showItem;
 
             return embyRouter;
         });
@@ -2992,14 +2986,14 @@ var AppInfo = {};
 
         defineRoute({
             path: '/wizardagreement.html',
-            dependencies: [],
+            dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
         });
 
         defineRoute({
             path: '/wizardfinish.html',
-            dependencies: ['paper-button'],
+            dependencies: ['paper-button', 'dashboardcss'],
             autoFocus: false,
             anonymous: true,
             controller: 'scripts/wizardfinishpage'
@@ -3007,49 +3001,49 @@ var AppInfo = {};
 
         defineRoute({
             path: '/wizardlibrary.html',
-            dependencies: [],
+            dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
         });
 
         defineRoute({
             path: '/wizardlivetvguide.html',
-            dependencies: [],
+            dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
         });
 
         defineRoute({
             path: '/wizardlivetvtuner.html',
-            dependencies: [],
+            dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
         });
 
         defineRoute({
             path: '/wizardservice.html',
-            dependencies: [],
+            dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
         });
 
         defineRoute({
             path: '/wizardsettings.html',
-            dependencies: [],
+            dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
         });
 
         defineRoute({
             path: '/wizardstart.html',
-            dependencies: [],
+            dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
         });
 
         defineRoute({
             path: '/wizarduser.html',
-            dependencies: [],
+            dependencies: ['dashboardcss', 'emby-input'],
             autoFocus: false,
             anonymous: true
         });
