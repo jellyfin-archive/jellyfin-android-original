@@ -7,6 +7,10 @@
     function validateFeature(feature) {
 
         console.log('validateFeature: ' + feature);
+        var unlockableFeatureCacheKey = 'featurepurchased-' + feature;
+        if (appSettings.get(unlockableFeatureCacheKey) == '1') {
+            return Promise.resolve();
+        }
 
         var unlockableProduct = IapManager.getProductInfo(feature);
 
@@ -16,6 +20,7 @@
             if (unlockableProduct.owned) {
 
                 // Cache this to eliminate the store as a possible point of failure in the future
+                appSettings.set(unlockableFeatureCacheKey, '1');
                 appSettings.set(unlockableCacheKey, '1');
                 return Promise.resolve();
             }
