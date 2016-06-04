@@ -1958,7 +1958,7 @@ var AppInfo = {};
         define("montserratFont", ['css!' + embyWebComponentsBowerPath + '/fonts/montserrat/style']);
         define("scrollStyles", ['css!' + embyWebComponentsBowerPath + '/scrollstyles']);
 
-        define("viewcontainer", ['components/viewcontainer-lite'], returnFirstDependency);
+        define("viewcontainer", ['components/viewcontainer-lite', embyWebComponentsBowerPath + '/viewmanager/viewcontainer-lite'], returnFirstDependency);
         define('queryString', [bowerPath + '/query-string/index'], function () {
             return queryString;
         });
@@ -2575,6 +2575,14 @@ var AppInfo = {};
         });
 
         defineRoute({
+            path: '/librarydisplay.html',
+            dependencies: ['paper-button', 'paper-checkbox'],
+            autoFocus: false,
+            roles: 'admin',
+            controller: 'scripts/librarydisplay'
+        });
+
+        defineRoute({
             path: '/librarypathmapping.html',
             dependencies: [],
             autoFocus: false,
@@ -2583,9 +2591,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/librarysettings.html',
-            dependencies: [],
+            dependencies: ['emby-collapsible', 'paper-input', 'paper-checkbox', 'paper-button'],
             autoFocus: false,
-            roles: 'admin'
+            roles: 'admin',
+            controller: 'scripts/librarysettings'
         });
 
         defineRoute({
