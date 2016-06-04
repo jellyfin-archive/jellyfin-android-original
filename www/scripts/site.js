@@ -1479,6 +1479,7 @@ var AppInfo = {};
         }
 
         AppInfo.supportsExternalPlayers = true;
+        AppInfo.enableAppLayouts = true;
 
         if (isCordova) {
             AppInfo.enableAppLayouts = true;
