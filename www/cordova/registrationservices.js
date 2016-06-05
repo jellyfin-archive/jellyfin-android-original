@@ -1,4 +1,4 @@
-﻿define(['appSettings'], function (appSettings) {
+﻿define(['appSettings', 'emby-button'], function (appSettings) {
 
     function getRegistrationInfo(feature) {
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
@@ -140,9 +140,9 @@
 
             hasProduct = true;
             html += '<p>';
-            html += '<paper-button raised class="submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
+            html += '<button is="emby-button" type="button" class="raised submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
             html += subscriptionOptions[i].buttonText;
-            html += '</span></paper-button>';
+            html += '</span></button>';
             html += '</p>';
         }
 
@@ -154,16 +154,16 @@
                 unlockText = Globalize.translate('ButtonUnlockPrice', unlockableProductInfo.price);
             }
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnPurchase" data-feature="' + unlockableProductInfo.feature + '"><iron-icon icon="check"></iron-icon><span>' + unlockText + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnPurchase" data-feature="' + unlockableProductInfo.feature + '"><iron-icon icon="check"></iron-icon><span>' + unlockText + '</span></button>';
             html += '</p>';
         }
 
         if (hasProduct && IapManager.enableRestore(dialogOptions.feature, subscriptionOptions, unlockableProductInfo)) {
             html += '<p>';
             if (browserInfo.safari) {
-                html += '<paper-button raised class="secondary block btnRestorePurchase subdued"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></paper-button>';
+                html += '<button is="emby-button" type="button" class="raised secondary block btnRestorePurchase subdued"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></button>';
             } else {
-                html += '<paper-button raised class="secondary block btnRestorePurchase subdued"><span>' + Globalize.translate('AlreadyPaid') + '</span></paper-button>';
+                html += '<button is="emby-button" type="button" class="raised secondary block btnRestorePurchase subdued"><span>' + Globalize.translate('AlreadyPaid') + '</span></button>';
             }
             html += '</p>';
         }
@@ -179,7 +179,7 @@
 
         if (dialogOptions.enablePlayMinute) {
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnCloseDialog subdued"><iron-icon icon="play-arrow"></iron-icon><span>' + Globalize.translate('ButtonPlayOneMinute') + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnCloseDialog subdued"><iron-icon icon="play-arrow"></iron-icon><span>' + Globalize.translate('ButtonPlayOneMinute') + '</span></button>';
             html += '</p>';
         }
 
@@ -363,10 +363,10 @@
             html += '</p>';
 
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnRestoreSub subdued"><span>' + Globalize.translate('IHaveEmbyPremiere') + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnRestoreSub subdued"><span>' + Globalize.translate('IHaveEmbyPremiere') + '</span></button>';
             html += '</p>';
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnRestoreUnlock subdued"><span>' + Globalize.translate('IPurchasedThisApp') + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnRestoreUnlock subdued"><span>' + Globalize.translate('IPurchasedThisApp') + '</span></button>';
             html += '</p>';
 
             html += '</div>';
