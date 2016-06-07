@@ -1,4 +1,4 @@
-﻿define(['appSettings', 'emby-button'], function (appSettings) {
+﻿define(['appSettings', 'loading', 'emby-button'], function (appSettings, loading) {
 
     function getRegistrationInfo(feature) {
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
@@ -191,14 +191,17 @@
 
         initInAppPurchaseElementEvents(dlg, dialogOptions.feature, resolve, reject);
 
+        loading.hide();
+
         dialogHelper.open(dlg);
 
-        var btnCloseDialog = elem.querySelectorAll('.btnCloseDialog');
-        for (var i = 0, length = btnPurchases.length; i < length; i++) {
-            btnCloseDialog[i].addEventListener('click', function () {
+        function onCloseButtonClick() {
+            dialogHelper.close(dlg);
+        }
 
-                dialogHelper.close(dlg);
-            });
+        var btnCloseDialogs = dlg.querySelectorAll('.btnCloseDialog');
+        for (var i = 0, length = btnCloseDialogs.length; i < length; i++) {
+            btnCloseDialogs[i].addEventListener('click', onCloseButtonClick);
         }
 
         dlg.addEventListener('close', function () {
@@ -373,6 +376,8 @@
 
             dlg.innerHTML = html;
             document.body.appendChild(dlg);
+
+            loading.hide();
 
             dialogHelper.open(dlg);
 
