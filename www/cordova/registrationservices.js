@@ -85,12 +85,10 @@
     var isCancelled = true;
     var currentDisplayingProductInfos = [];
     var currentDisplayingResolve = null;
-    var currentDisplayingReject = null;
 
     function clearCurrentDisplayingInfo() {
         currentDisplayingProductInfos = [];
         currentDisplayingResolve = null;
-        currentDisplayingReject = null;
     }
 
     function showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
@@ -417,7 +415,6 @@
                 showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
 
                 currentDisplayingResolve = resolve;
-                currentDisplayingReject = reject;
             });
         });
     }
