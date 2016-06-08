@@ -13,9 +13,6 @@
         "android.support.v4": {
             "PACKAGE_NAME": "Emby"
         },
-        "cc.fovea.cordova.purchase": {
-            "PACKAGE_NAME": "Emby"
-        },
         "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "Emby"
         },
@@ -83,6 +80,9 @@
             "PACKAGE_NAME": "Emby"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "Emby"
+        },
+        "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "Emby"
         }
     },

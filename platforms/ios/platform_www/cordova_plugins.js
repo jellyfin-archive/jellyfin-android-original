@@ -117,14 +117,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
-        "id": "cc.fovea.cordova.purchase.InAppPurchase",
-        "pluginId": "cc.fovea.cordova.purchase",
-        "clobbers": [
-            "store"
-        ]
-    },
-    {
         "file": "plugins/fw-cordova-chromecast/www/gck.js",
         "id": "fw-cordova-chromecast.FWChromecast",
         "pluginId": "fw-cordova-chromecast",
@@ -377,6 +369,14 @@ module.exports = [
         "clobbers": [
             "window.remoteControls"
         ]
+    },
+    {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+        "id": "cc.fovea.cordova.purchase.InAppPurchase",
+        "pluginId": "cc.fovea.cordova.purchase",
+        "clobbers": [
+            "store"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -397,7 +397,6 @@ module.exports.metadata =
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
     "cordova-plugin-statusbar": "2.0.0",
-    "cc.fovea.cordova.purchase": "4.0.0",
     "fw-cordova-chromecast": "0.0.1",
     "cordova-plugin-device": "1.1.0",
     "cordova-plugin-network-information": "1.1.0",
@@ -407,7 +406,8 @@ module.exports.metadata =
     "cordova-plugin-file-transfer": "1.5.1",
     "cordova-plugin-media": "2.3.0",
     "com.rd11.remote-controls": "1.0.1",
-    "cordova-plugin-crosswalk-webview": "1.7.0"
+    "cordova-plugin-crosswalk-webview": "1.7.0",
+    "cc.fovea.cordova.purchase": "6.0.0"
 }
 // BOTTOM OF METADATA
 });

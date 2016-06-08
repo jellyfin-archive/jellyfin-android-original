@@ -71,18 +71,14 @@
         });
     }
 
-    function cancelInAppPurchase() {
+    function cancelInAppPurchase(dialogHelper) {
 
         var elem = document.querySelector('.inAppPurchaseOverlay');
         if (elem) {
-            require(['dialogHelper'], function (dialogHelper) {
-
-                dialogHelper.close(elem);
-            });
+            dialogHelper.close(elem);
         }
     }
 
-    var isCancelled = true;
     var currentDisplayingProductInfos = [];
     var currentDisplayingResolve = null;
 
@@ -188,14 +184,37 @@
         dlg.innerHTML = html;
         document.body.appendChild(dlg);
 
-        initInAppPurchaseElementEvents(dlg, dialogOptions.feature, resolve, reject);
+        var btnPurchases = dlg.querySelectorAll('.btnPurchase');
+        for (var i = 0, length = btnPurchases.length; i < length; i++) {
+            btnPurchases[i].addEventListener('click', onPurchaseButtonClick);
+        }
+
+        var btnRestorePurchase = dlg.querySelector('.btnRestorePurchase');
+        if (btnRestorePurchase) {
+            btnRestorePurchase.addEventListener('click', function () {
+
+                restorePurchase();
+            });
+        }
 
         loading.hide();
 
-        dialogHelper.open(dlg);
-
         function onCloseButtonClick() {
-            dialogHelper.close(dlg);
+
+            var onConfirmed = function () {
+                dialogHelper.close(dlg);
+                reject();
+            };
+
+            if (dialogOptions.feature == 'playback') {
+                Dashboard.alert({
+                    message: Globalize.translate('ThankYouForTryingEnjoyOneMinute'),
+                    title: Globalize.translate('HeaderTryPlayback'),
+                    callback: onConfirmed
+                });
+            } else {
+                onConfirmed();
+            }
         }
 
         var btnCloseDialogs = dlg.querySelectorAll('.btnCloseDialog');
@@ -205,12 +224,16 @@
 
         dlg.addEventListener('close', function () {
 
+            clearCurrentDisplayingInfo();
+
             if (window.TabBar) {
                 TabBar.show();
             }
         });
 
         dlg.classList.add('inAppPurchaseOverlay');
+
+        dialogHelper.open(dlg);
     }
 
     function getSubscriptionBenefits() {
@@ -289,55 +312,12 @@
     }
 
     function onPurchaseButtonClick() {
-        isCancelled = false;
 
         if (this.getAttribute('data-email') == 'true') {
             acquireEmail(this.getAttribute('data-feature'));
         } else {
             IapManager.beginPurchase(this.getAttribute('data-feature'));
         }
-    }
-
-    function initInAppPurchaseElementEvents(elem, feature, resolve, reject) {
-
-        isCancelled = true;
-
-        var btnPurchases = elem.querySelectorAll('.btnPurchase');
-        for (var i = 0, length = btnPurchases.length; i < length; i++) {
-            btnPurchases[i].addEventListener('click', onPurchaseButtonClick);
-        }
-
-        var btnRestorePurchase = elem.querySelector('.btnRestorePurchase');
-        if (btnRestorePurchase) {
-            btnRestorePurchase.addEventListener('click', function () {
-
-                isCancelled = false;
-                restorePurchase();
-            });
-        }
-
-        elem.addEventListener('close', function () {
-
-            clearCurrentDisplayingInfo();
-
-            var overlay = this;
-
-            if (isCancelled) {
-
-                if (feature == 'playback') {
-                    Dashboard.alert({
-                        message: Globalize.translate('ThankYouForTryingEnjoyOneMinute'),
-                        title: Globalize.translate('HeaderTryPlayback'),
-                        callback: function () {
-                            reject();
-                        }
-                    });
-                } else {
-                    reject();
-                }
-
-            }
-        });
     }
 
     function restorePurchase() {
@@ -461,10 +441,11 @@
 
             }).length) {
 
-                isCancelled = false;
+                require(['dialogHelper'], function (dialogHelper) {
 
-                cancelInAppPurchase();
-                resolve();
+                    cancelInAppPurchase(dialogHelper);
+                    resolve();
+                });
             }
         }
     }

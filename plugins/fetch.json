@@ -170,16 +170,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "cc.fovea.cordova.purchase": {
-        "source": {
-            "type": "registry",
-            "id": "cc.fovea.cordova.purchase"
-        },
-        "is_top_level": true,
-        "variables": {
-            "BILLING_KEY": "0"
-        }
-    },
     "acidhax.cordova.chromecast": {
         "source": {
             "type": "git",
@@ -270,5 +260,15 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "cc.fovea.cordova.purchase": {
+        "source": {
+            "type": "registry",
+            "id": "cc.fovea.cordova.purchase"
+        },
+        "is_top_level": true,
+        "variables": {
+            "BILLING_KEY": "1"
+        }
     }
 }

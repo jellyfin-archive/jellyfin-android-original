@@ -75,10 +75,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"FWChromecast\"><param name=\"ios-package\" value=\"FWChromecast\" /></feature>",
                             "count": 1
                         },
@@ -108,6 +104,10 @@
                         },
                         {
                             "xml": "<feature name=\"RemoteControls\"><param name=\"ios-package\" value=\"RemoteControls\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -177,9 +177,6 @@
         "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cc.fovea.cordova.purchase": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "fw-cordova-chromecast": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -208,6 +205,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
@@ -327,14 +327,6 @@
             "pluginId": "cordova-plugin-statusbar",
             "clobbers": [
                 "window.StatusBar"
-            ]
-        },
-        {
-            "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
-            "id": "cc.fovea.cordova.purchase.InAppPurchase",
-            "pluginId": "cc.fovea.cordova.purchase",
-            "clobbers": [
-                "store"
             ]
         },
         {
@@ -590,6 +582,14 @@
             "clobbers": [
                 "window.remoteControls"
             ]
+        },
+        {
+            "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+            "id": "cc.fovea.cordova.purchase.InAppPurchase",
+            "pluginId": "cc.fovea.cordova.purchase",
+            "clobbers": [
+                "store"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -608,7 +608,6 @@
         "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
         "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
         "cordova-plugin-statusbar": "2.0.0",
-        "cc.fovea.cordova.purchase": "4.0.0",
         "fw-cordova-chromecast": "0.0.1",
         "cordova-plugin-device": "1.1.0",
         "cordova-plugin-network-information": "1.1.0",
@@ -618,6 +617,7 @@
         "cordova-plugin-file-transfer": "1.5.1",
         "cordova-plugin-media": "2.3.0",
         "com.rd11.remote-controls": "1.0.1",
-        "cordova-plugin-crosswalk-webview": "1.7.0"
+        "cordova-plugin-crosswalk-webview": "1.7.0",
+        "cc.fovea.cordova.purchase": "6.0.0"
     }
 }
