@@ -103,7 +103,8 @@
         }
 
         var dlg = dialogHelper.createDialog({
-            size: 'fullscreen-border'
+            size: 'fullscreen-border',
+            removeOnClose: true
         });
 
         dlg.classList.add('ui-body-b');
