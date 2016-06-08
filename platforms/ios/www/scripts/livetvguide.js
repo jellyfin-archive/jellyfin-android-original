@@ -1,1 +1,1 @@
-define(["tvguide"],function(e){window.LiveTvPage.initGuideTab=function(){},window.LiveTvPage.renderGuideTab=function(n,i){n.guideInstance||(n.guideInstance=new e({element:i}))}});
+define(["tvguide"],function(n){return function(e,t,i){var r,u=this;u.renderTab=function(){r||(r=new n({element:i}))}}});
