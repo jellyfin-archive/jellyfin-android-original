@@ -48,6 +48,7 @@ class Hls {
           maxBufferHole: 0.5,
           maxSeekHole: 2,
           seekHoleNudgeDuration : 0.01,
+          stalledInBufferedNudgeThreshold: 10,
           maxFragLookUpTolerance : 0.2,
           liveSyncDurationCount:3,
           liveMaxLatencyDurationCount: Infinity,
@@ -79,7 +80,11 @@ class Hls {
           streamController: StreamController,
           timelineController: TimelineController,
           enableCEA708Captions: true,
-          enableMP2TPassThrough : false
+          enableMP2TPassThrough : false,
+          abrEwmaFast: 0,
+          abrEwmaSlow: 0,
+          abrBandWidthFactor : 0.8,
+          abrBandWidthUpFactor : 0.7
         };
     }
     return Hls.defaultConfig;
