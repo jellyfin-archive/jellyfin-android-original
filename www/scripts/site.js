@@ -1762,6 +1762,7 @@ var AppInfo = {};
             itemHelper: embyWebComponentsBowerPath + '/itemhelper',
             itemShortcuts: embyWebComponentsBowerPath + "/shortcuts",
             imageLoader: embyWebComponentsBowerPath + "/images/imagehelper",
+            serverNotifications: embyWebComponentsBowerPath + '/servernotifications',
             webAnimations: bowerPath + '/web-animations-js/web-animations-next-lite.min'
         };
 
@@ -2440,7 +2441,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/dashboardhosting.html',
-            dependencies: ['paper-checkbox', 'paper-input', 'emby-button'],
+            dependencies: ['paper-checkbox', 'emby-input', 'emby-button'],
             autoFocus: false,
             roles: 'admin',
             controller: 'scripts/dashboardhosting'
