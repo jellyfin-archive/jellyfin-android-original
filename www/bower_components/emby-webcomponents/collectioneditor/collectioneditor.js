@@ -1,4 +1,4 @@
-﻿define(['shell', 'dialogHelper', 'loading', 'layoutManager', 'connectionManager', 'scrollHelper', 'embyRouter', 'globalize', 'paper-checkbox', 'emby-input', 'paper-icon-button-light', 'emby-select', 'html!./../icons/nav.html', 'css!./../formdialog', 'emby-button'], function (shell, dialogHelper, loading, layoutManager, connectionManager, scrollHelper, embyRouter, globalize) {
+﻿define(['shell', 'dialogHelper', 'loading', 'layoutManager', 'connectionManager', 'scrollHelper', 'embyRouter', 'globalize', 'emby-checkbox', 'emby-input', 'paper-icon-button-light', 'emby-select', 'material-icons', 'css!./../formdialog', 'emby-button'], function (shell, dialogHelper, loading, layoutManager, connectionManager, scrollHelper, embyRouter, globalize) {
 
     var currentServerId;
 
@@ -160,15 +160,14 @@
 
         html += '<br />';
 
-        html += '<div>';
-        html += '<paper-checkbox id="chkEnableInternetMetadata">' + globalize.translate('sharedcomponents#SearchForCollectionInternetMetadata') + '</paper-checkbox>';
-        html += '</div>';
+        html += '<label class="checkboxContainer">';
+        html += '<input is="emby-checkbox" type="checkbox" id="chkEnableInternetMetadata" />';
+        html += '<span>' + globalize.translate('sharedcomponents#SearchForCollectionInternetMetadata') + '</span>';
+        html += '</label>';
 
         // newCollectionInfo
         html += '</div>';
 
-        html += '<br />';
-        html += '<br />';
         html += '<div>';
         html += '<button is="emby-button" type="submit" class="raised btnSubmit block">' + globalize.translate('sharedcomponents#ButtonOk') + '</button>';
         html += '</div>';
@@ -246,12 +245,12 @@
             var title = items.length ? globalize.translate('sharedcomponents#AddToCollection') : globalize.translate('sharedcomponents#NewCollection');
 
             html += '<div class="dialogHeader" style="margin:0 0 2em;">';
-            html += '<button is="paper-icon-button-light" class="btnCancel" tabindex="-1"><iron-icon icon="nav:arrow-back"></iron-icon></button>';
+            html += '<button is="paper-icon-button-light" class="btnCancel autoSize" tabindex="-1"><i class="md-icon">arrow_back</i></button>';
             html += '<div class="dialogHeaderTitle">';
             html += title;
             html += '</div>';
 
-            html += '<a class="btnHelp" href="https://github.com/MediaBrowser/Wiki/wiki/Collections" target="_blank" style="margin-left:auto;margin-right:.5em;display:inline-block;padding:.25em;display:flex;align-items:center;" title="' + globalize.translate('sharedcomponents#Help') + '"><iron-icon icon="nav:info"></iron-icon><span style="margin-left:.25em;">' + globalize.translate('sharedcomponents#Help') + '</span></a>';
+            html += '<a class="btnHelp" href="https://github.com/MediaBrowser/Wiki/wiki/Collections" target="_blank" style="margin-left:auto;margin-right:.5em;display:inline-block;padding:.25em;display:flex;align-items:center;" title="' + globalize.translate('sharedcomponents#Help') + '"><i class="md-icon">info</i><span style="margin-left:.25em;">' + globalize.translate('sharedcomponents#Help') + '</span></a>';
 
             html += '</div>';
 

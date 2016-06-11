@@ -1124,6 +1124,13 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
     }
 }
 
+@media all and (max-height: 530px) {
+
+    .alphabetPicker {
+        font-size: 84%;
+    }
+}
+
 @media all and (min-height: 900px) {
 
     .alphabetPicker {
@@ -1238,10 +1245,6 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 .userProfileSettingsForm {
     max-width: 700px;
 }
-
-    .userProfileSettingsForm .detailSectionContent {
-        padding: 0 .5em;
-    }
 
 @media all and (max-width: 700px) {
 
