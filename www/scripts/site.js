@@ -52,7 +52,7 @@ var Dashboard = {
             // Bounce to the login screen, but not if a password entry fails, obviously
             if (url.indexOf('/password') == -1 &&
                 url.indexOf('/authenticate') == -1 &&
-                !$($.mobile.activePage).is('.standalonePage')) {
+                !ViewManager.currentView().classList.contains('.standalonePage')) {
 
                 if (data.errorCode == "ParentalControl") {
 
@@ -1221,7 +1221,9 @@ var Dashboard = {
     },
 
     exitOnBack: function () {
-        return $($.mobile.activePage).is('#indexPage');
+
+        var currentView = ViewManager.currentView();
+        return !currentView || currentView.id == 'indexPage';
     },
 
     exit: function () {
@@ -1798,6 +1800,7 @@ var AppInfo = {};
 
         define("emby-input", [embyWebComponentsBowerPath + "/emby-input/emby-input"], returnFirstDependency);
         define("emby-select", [embyWebComponentsBowerPath + "/emby-select/emby-select"], returnFirstDependency);
+        define("emby-checkbox", [embyWebComponentsBowerPath + "/emby-checkbox/emby-checkbox"], returnFirstDependency);
         define("collectionEditor", [embyWebComponentsBowerPath + "/collectioneditor/collectioneditor"], returnFirstDependency);
         define("playlistEditor", [embyWebComponentsBowerPath + "/playlisteditor/playlisteditor"], returnFirstDependency);
         define("recordingCreator", [embyWebComponentsBowerPath + "/recordingcreator/recordingcreator"], returnFirstDependency);
@@ -1810,6 +1813,7 @@ var AppInfo = {};
         define("tvguide", [embyWebComponentsBowerPath + "/guide/guide", 'embyRouter'], returnFirstDependency);
 
         define("viewManager", [embyWebComponentsBowerPath + "/viewmanager/viewmanager"], function (viewManager) {
+            window.ViewManager = viewManager;
             viewManager.dispatchPageEvents(true);
             return viewManager;
         });
@@ -1973,6 +1977,7 @@ var AppInfo = {};
         define("appSettings", [embyWebComponentsBowerPath + "/appsettings"], updateAppSettings);
         define("userSettings", [embyWebComponentsBowerPath + "/usersettings"], returnFirstDependency);
 
+        define("material-icons", ['css!' + embyWebComponentsBowerPath + '/fonts/material-icons/style']);
         define("robotoFont", ['css!' + embyWebComponentsBowerPath + '/fonts/roboto/style']);
         define("opensansFont", ['css!' + embyWebComponentsBowerPath + '/fonts/opensans/style']);
         define("montserratFont", ['css!' + embyWebComponentsBowerPath + '/fonts/montserrat/style']);
@@ -1997,6 +2002,13 @@ var AppInfo = {};
             dialoghelper.setOnOpen(onDialogOpen);
             return dialoghelper;
         });
+
+        if (!('registerElement' in document)) {
+            //define("registerElement", ['bower_components/webcomponentsjs/CustomElements.min']);
+            define("registerElement", [{}]);
+        } else {
+            define("registerElement", [{}]);
+        }
 
         // alias
         define("historyManager", [], function () {
@@ -2584,7 +2596,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/itemlist.html',
-            dependencies: ['paper-checkbox'],
+            dependencies: [],
             autoFocus: false,
             controller: 'scripts/itemlistpage',
             transition: 'fade'
@@ -2746,7 +2758,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/movies.html',
-            dependencies: ['paper-checkbox', 'emby-button'],
+            dependencies: ['emby-button'],
             autoFocus: false,
             controller: 'scripts/moviesrecommended',
             transition: 'fade'
@@ -2804,9 +2816,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/mysyncjob.html',
-            dependencies: [],
+            dependencies: ['paper-fab', 'paper-item-body', 'paper-icon-item'],
             autoFocus: false,
-            transition: 'fade'
+            transition: 'fade',
+            controller: 'scripts/syncjob'
         });
 
         defineRoute({
@@ -2963,8 +2976,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/syncjob.html',
-            dependencies: [],
-            autoFocus: false
+            dependencies: ['paper-fab', 'paper-item-body', 'paper-icon-item'],
+            autoFocus: false,
+            transition: 'fade',
+            controller: 'scripts/syncjob'
         });
 
         defineRoute({
@@ -2975,7 +2990,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/tv.html',
-            dependencies: ['paper-checkbox', 'paper-icon-button-light', 'emby-button'],
+            dependencies: ['paper-icon-button-light', 'emby-button'],
             autoFocus: false,
             controller: 'scripts/tvrecommended',
             transition: 'fade'
