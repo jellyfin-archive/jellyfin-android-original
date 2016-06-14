@@ -35,19 +35,9 @@ buildscript {
     // installed version of Gradle. This dependency is documented at
     // http://tools.android.com/tech-docs/new-build-system/version-compatibility
     // and https://issues.apache.org/jira/browse/CB-8143
-    if (gradle.gradleVersion >= "2.2") {
-        dependencies {
+    dependencies {
             classpath 'com.android.tools.build:gradle:1.5.0'
         }
-    } else if (gradle.gradleVersion >= "2.1") {
-        dependencies {
-            classpath 'com.android.tools.build:gradle:0.14.0+'
-        }
-    } else {
-        dependencies {
-            classpath 'com.android.tools.build:gradle:0.12.0+'
-        }
-    }
 }
 
 // Allow plugins to declare Maven dependencies via build-extras.gradle.
@@ -207,8 +197,8 @@ android {
 	println('cdvCompileSdkVersion=' + cdvCompileSdkVersion)
     println('cdvBuildToolsVersion=' + cdvBuildToolsVersion)
     
-	compileSdkVersion cdvCompileSdkVersion
-    buildToolsVersion cdvBuildToolsVersion
+	compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     if (Boolean.valueOf(cdvBuildMultipleApks)) {
         productFlavors {
