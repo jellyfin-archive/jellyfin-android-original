@@ -187,10 +187,6 @@
 
                 function allowSwipeOn(elem) {
 
-                    if (elem.tagName == 'PAPER-SLIDER') {
-                        return false;
-                    }
-
                     if (elem.classList) {
                         return !elem.classList.contains('hiddenScrollX') && !elem.classList.contains('smoothScrollX') && !elem.classList.contains('libraryViewNav');
                     }
@@ -1253,7 +1249,7 @@
 
             getListViewHtml: function (options) {
 
-                require(['paper-icon-item', 'paper-item-body']);
+                require(['paper-icon-item', 'paper-item-body', 'material-icons']);
 
                 var outerHtml = "";
 
@@ -1445,7 +1441,7 @@
                     html += '</a>';
                     html += '</paper-item-body>';
 
-                    html += '<button is="paper-icon-button-light" class="listviewMenuButton"><iron-icon icon="' + AppInfo.moreIcon + '"></iron-icon></button>';
+                    html += '<button is="paper-icon-button-light" class="listviewMenuButton autoSize"><i class="md-icon">' + AppInfo.moreIcon.replace('-', '_') + '</i></button>';
                     html += '<span class="listViewUserDataButtons">';
                     html += LibraryBrowser.getUserDataIconsHtml(item);
                     html += '</span>';
@@ -2288,10 +2284,10 @@
                 html += '</a>';
 
                 if (options.overlayPlayButton && !item.IsPlaceHolder && (item.LocationType != 'Virtual' || !item.MediaType || item.Type == 'Program') && item.Type != 'Person') {
-                    html += '<div class="cardOverlayButtonContainer"><button is="paper-icon-button-light" class="cardOverlayPlayButton" onclick="return false;"><iron-icon icon="play-arrow"></iron-icon></button></div>';
+                    html += '<div class="cardOverlayButtonContainer"><button is="paper-icon-button-light" class="cardOverlayPlayButton autoSize" onclick="return false;"><i class="md-icon">play_arrow</i></button></div>';
                 }
                 if (options.overlayMoreButton) {
-                    html += '<div class="cardOverlayButtonContainer"><button is="paper-icon-button-light" class="cardOverlayMoreButton" onclick="return false;"><iron-icon icon="' + AppInfo.moreIcon + '"></iron-icon></button></div>';
+                    html += '<div class="cardOverlayButtonContainer"><button is="paper-icon-button-light" class="cardOverlayMoreButton autoSize" onclick="return false;"><i class="md-icon">' + AppInfo.moreIcon.replace('-', '_') + '</i></button></div>';
                 }
 
                 // cardScalable
@@ -2316,7 +2312,7 @@
 
                 if (options.cardLayout) {
                     html += '<div class="cardButtonContainer">';
-                    html += '<button is="paper-icon-button-light" class="listviewMenuButton btnCardOptions"><iron-icon icon="' + AppInfo.moreIcon + '"></iron-icon></button>';
+                    html += '<button is="paper-icon-button-light" class="listviewMenuButton btnCardOptions autoSize"><i class="md-icon">' + AppInfo.moreIcon.replace('-','_') + '</i></button>';
                     html += "</div>";
                 }
 
@@ -2905,23 +2901,23 @@
 
                     if (showControls) {
 
-                        html += '<button is="paper-icon-button-light" class="btnPreviousPage" ' + (startIndex ? '' : 'disabled') + '><iron-icon icon="arrow-back"></iron-icon></button>';
-                        html += '<button is="paper-icon-button-light" class="btnNextPage" ' + (startIndex + limit >= totalRecordCount ? 'disabled' : '') + '><iron-icon icon="arrow-forward"></iron-icon></button>';
+                        html += '<button is="paper-icon-button-light" class="btnPreviousPage autoSize" ' + (startIndex ? '' : 'disabled') + '><i class="md-icon">arrow_back</i></button>';
+                        html += '<button is="paper-icon-button-light" class="btnNextPage autoSize" ' + (startIndex + limit >= totalRecordCount ? 'disabled' : '') + '><i class="md-icon">arrow_forward</i></button>';
                     }
 
                     if (options.addLayoutButton) {
 
-                        html += '<button is="paper-icon-button-light" title="' + Globalize.translate('ButtonSelectView') + '" class="btnChangeLayout" data-layouts="' + (options.layouts || '') + '" onclick="LibraryBrowser.showLayoutMenu(this, \'' + (options.currentLayout || '') + '\');"><iron-icon icon="view-comfy"></iron-icon></button>';
+                        html += '<button is="paper-icon-button-light" title="' + Globalize.translate('ButtonSelectView') + '" class="btnChangeLayout autoSize" data-layouts="' + (options.layouts || '') + '" onclick="LibraryBrowser.showLayoutMenu(this, \'' + (options.currentLayout || '') + '\');"><i class="md-icon">view_comfy</i></button>';
                     }
 
                     if (options.sortButton) {
 
-                        html += '<button is="paper-icon-button-light" class="btnSort" title="' + Globalize.translate('ButtonSort') + '"><iron-icon icon="sort-by-alpha"></iron-icon></button>';
+                        html += '<button is="paper-icon-button-light" class="btnSort autoSize" title="' + Globalize.translate('ButtonSort') + '"><i class="md-icon">sort_by_alpha</i></button>';
                     }
 
                     if (options.filterButton) {
 
-                        html += '<button is="paper-icon-button-light" class="btnFilter" title="' + Globalize.translate('ButtonFilter') + '"><iron-icon icon="filter-list"></iron-icon></button>';
+                        html += '<button is="paper-icon-button-light" class="btnFilter autoSize" title="' + Globalize.translate('ButtonFilter') + '"><i class="md-icon">filter_list</i></button>';
                     }
 
                     html += '</div>';

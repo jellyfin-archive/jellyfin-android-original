@@ -316,7 +316,9 @@ public class MainActivity extends CordovaActivity
             } else {
                 Uri uri = intent.getData();
                 // Do something with the URI
-                RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
+                if (uri != null){
+                    RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
+                }
             }
         }
 
@@ -529,6 +531,7 @@ public class MainActivity extends CordovaActivity
     @org.xwalk.core.JavascriptInterface
     public boolean authorizeStorage(){
 
+        getLogger().Info("begin authorizeStorage");
         return authorizeStorage(AuthorizeStoragePermissionRequestCode);
     }
 
@@ -536,41 +539,37 @@ public class MainActivity extends CordovaActivity
 
         final Activity activity = this;
 
+        getLogger().Info("authorizeStorage with requestCode %s", requestCode);
+
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
+            getLogger().Info("Permission for WRITE_EXTERNAL_STORAGE is not granted");
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("Emby needs your permission to access external storage.")
-                        .setTitle("Permission Required");
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int id) {
-                        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                getLogger().Info("calling ActivityCompat.requestPermissions for WRITE_EXTERNAL_STORAGE");
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
 
             } else {
 
                 // No explanation needed, we can request the permission.
 
+                getLogger().Info("calling ActivityCompat.requestPermissions for WRITE_EXTERNAL_STORAGE");
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
 
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
             }
+            getLogger().Info("authorizeStorage returning false");
             return false;
         }
 
+        getLogger().Info("Permission for WRITE_EXTERNAL_STORAGE is granted");
+        getLogger().Info("authorizeStorage returning true");
         return true;
     }
 
@@ -578,10 +577,13 @@ public class MainActivity extends CordovaActivity
     @org.xwalk.core.JavascriptInterface
     public void chooseDirectory() {
 
+        getLogger().Info("begin chooseDirectory");
+
         if (!authorizeStorage(ExternalStoragePermissionRequestCode)){
             return;
         }
 
+        getLogger().Info("creating intent for FilePickerActivity");
         Intent intent = new Intent(this, FilePickerActivity.class);
         // This works if you defined the intent filter
         // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -597,6 +599,7 @@ public class MainActivity extends CordovaActivity
         // internal memory.
         intent.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
 
+        getLogger().Info("startActivityForResult for FilePickerActivity");
         startActivityForResult(intent, REQUEST_DIRECTORY);
     }
 
