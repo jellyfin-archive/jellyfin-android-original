@@ -304,7 +304,6 @@ dependencies {
     compile "com.squareup.okhttp:okhttp-urlconnection:2+"
     // SUB-PROJECT DEPENDENCIES END
     compile files('libs/apiclient.jar')
-    compile 'com.google.guava:guava:19.0'
     // FLAVOR-SPECIFIC DEPENDENCIES
     googlex86Compile(name: 'emby.googleiap', ext: 'aar')
     googlearmv7Compile(name: 'emby.googleiap', ext: 'aar')

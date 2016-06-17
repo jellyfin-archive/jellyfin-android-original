@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.google.common.io.Files;
 import com.mb.android.preferences.PreferencesProvider;
 
 import org.videolan.libvlc.LibVLC;
