@@ -298,7 +298,7 @@ public class MainActivity extends CordovaActivity
                     if (clip != null) {
                         for (int i = 0; i < clip.getItemCount(); i++) {
                             Uri uri = clip.getItemAt(i).getUri();
-                            RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
+                            RespondToWebviewWithSelectedPath(uri);
                         }
                     }
                     // For Ice Cream Sandwich
@@ -308,7 +308,7 @@ public class MainActivity extends CordovaActivity
                     if (paths != null) {
                         for (String path: paths) {
                             Uri uri = Uri.parse(path);
-                            RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
+                            RespondToWebviewWithSelectedPath(uri);
                         }
                     }
                 }
@@ -317,7 +317,7 @@ public class MainActivity extends CordovaActivity
                 Uri uri = intent.getData();
                 // Do something with the URI
                 if (uri != null){
-                    RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", uri));
+                    RespondToWebviewWithSelectedPath(uri);
                 }
             }
         }
@@ -336,6 +336,18 @@ public class MainActivity extends CordovaActivity
 
             RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));*/
         }
+    }
+
+    private void RespondToWebviewWithSelectedPath(Uri uri){
+
+        String path = uri.toString();
+        String srch = "file://";
+
+        if (StringHelper.IndexOfIgnoreCase(path, srch) == 0){
+                path = path.substring(srch.length());
+        }
+
+        RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", path));
     }
 
     @android.webkit.JavascriptInterface
