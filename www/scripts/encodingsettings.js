@@ -7,16 +7,31 @@
         $('#selectVideoDecoder', page).val(config.HardwareAccelerationType);
         $('#selectThreadCount', page).val(config.EncodingThreadCount);
         $('#txtDownMixAudioBoost', page).val(config.DownMixAudioBoost);
+        page.querySelector('.txtEncoderPath').value = config.EncoderAppPath || '';
         $('#txtTranscodingTempPath', page).val(config.TranscodingTempPath || '');
 
         Dashboard.hideLoadingMsg();
+    }
+
+    function onSaveEncodingPathFailure(response) {
+
+        Dashboard.hideLoadingMsg();
+
+        var msg = '';
+
+        // This is a fallback that handles both 404 and 400 (no path entered)
+        msg = Globalize.translate('FFmpegSavePathNotFound');
+
+        require(['alert'], function (alert) {
+            alert(msg);
+        });
     }
 
     function onSubmit() {
 
         var form = this;
 
-        var onDecoderConfirmed = function() {
+        var onDecoderConfirmed = function () {
             Dashboard.showLoadingMsg();
 
             ApiClient.getNamedConfiguration("encoding").then(function (config) {
@@ -28,7 +43,17 @@
 
                 config.EnableThrottling = form.querySelector('#chkEnableThrottle').checked;
 
-                ApiClient.updateNamedConfiguration("encoding", config).then(Dashboard.processServerConfigurationUpdateResult);
+                ApiClient.updateNamedConfiguration("encoding", config).then(function () {
+
+                    ApiClient.ajax({
+                        url: ApiClient.getUrl('System/MediaEncoder/Path'),
+                        type: 'POST',
+                        data: {
+                            Path: form.querySelector('.txtEncoderPath').value
+                        }
+                    }).then(Dashboard.processServerConfigurationUpdateResult, onSaveEncodingPathFailure);
+
+                });
             });
         };
 
@@ -74,6 +99,26 @@
 
         var page = this;
 
+        $('#btnSelectEncoderPath', page).on("click.selectDirectory", function () {
+
+            require(['directorybrowser'], function (directoryBrowser) {
+
+                var picker = new directoryBrowser();
+
+                picker.show({
+
+                    includeFiles: true,
+                    callback: function (path) {
+
+                        if (path) {
+                            $('.txtEncoderPath', page).val(path);
+                        }
+                        picker.close();
+                    }
+                });
+            });
+        });
+
         $('#btnSelectTranscodingTempPath', page).on("click.selectDirectory", function () {
 
             require(['directorybrowser'], function (directoryBrowser) {
@@ -104,13 +149,21 @@
 
         Dashboard.showLoadingMsg();
 
-        LibraryMenu.setTabs('playback',3, getTabs);
+        LibraryMenu.setTabs('playback', 3, getTabs);
         var page = this;
 
         ApiClient.getNamedConfiguration("encoding").then(function (config) {
 
             loadPage(page, config);
+        });
 
+        ApiClient.getSystemInfo().then(function (systemInfo) {
+
+            if (systemInfo.HasExternalEncoder) {
+                page.querySelector('.fldEncoderPath').classList.add('hide');
+            } else {
+                page.querySelector('.fldEncoderPath').classList.remove('hide');
+            }
         });
     });
 

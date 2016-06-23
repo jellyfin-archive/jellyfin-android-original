@@ -1800,6 +1800,7 @@ var AppInfo = {};
         define("emby-select", [embyWebComponentsBowerPath + "/emby-select/emby-select"], returnFirstDependency);
         define("emby-slider", [embyWebComponentsBowerPath + "/emby-slider/emby-slider"], returnFirstDependency);
         define("emby-checkbox", [embyWebComponentsBowerPath + "/emby-checkbox/emby-checkbox"], returnFirstDependency);
+        define("emby-textarea", [embyWebComponentsBowerPath + "/emby-textarea/emby-textarea"], returnFirstDependency);
         define("collectionEditor", [embyWebComponentsBowerPath + "/collectioneditor/collectioneditor"], returnFirstDependency);
         define("playlistEditor", [embyWebComponentsBowerPath + "/playlisteditor/playlisteditor"], returnFirstDependency);
         define("recordingCreator", [embyWebComponentsBowerPath + "/recordingcreator/recordingcreator"], returnFirstDependency);
@@ -1873,43 +1874,27 @@ var AppInfo = {};
         define("cryptojs-md5", [md5Path]);
 
         // Done
-        define("emby-icons", ["html!" + bowerPath + "/emby-icons/emby-icons.html"]);
+        define("emby-icons", ['webcomponentsjs', "html!" + bowerPath + "/emby-icons/emby-icons.html"]);
 
-        define("lazyload-image", ["html!" + bowerPath + "/emby-lazyload-image/lazyload-image.html"]);
-        define("paper-spinner", ["html!" + bowerPath + "/paper-spinner/paper-spinner.html"]);
-        define("paper-toast", ["html!" + bowerPath + "/paper-toast/paper-toast.html"]);
-        define("paper-slider", ["html!" + bowerPath + "/paper-slider/paper-slider.html"]);
-        define("paper-tabs", ["html!" + bowerPath + "/paper-tabs/paper-tabs.html"]);
-        define("paper-menu", ["html!" + bowerPath + "/paper-menu/paper-menu.html"]);
-        define("paper-material", ["html!" + bowerPath + "/paper-material/paper-material.html"]);
+        define("paper-spinner", ['webcomponentsjs', "html!" + bowerPath + "/paper-spinner/paper-spinner.html"]);
+        define("paper-tabs", ['webcomponentsjs', "html!" + bowerPath + "/paper-tabs/paper-tabs.html"]);
         define("paper-button", ["html!" + bowerPath + "/paper-button/paper-button.html"]);
         define("paper-icon-button", ["html!" + bowerPath + "/paper-icon-button/paper-icon-button.html"]);
-        define("paper-drawer-panel", ["html!" + bowerPath + "/paper-drawer-panel/paper-drawer-panel.html"]);
         define("paper-radio-group", ["html!" + bowerPath + "/paper-radio-group/paper-radio-group.html"]);
-        define("paper-radio-button", ["html!" + bowerPath + "/paper-radio-button/paper-radio-button.html"]);
-        define("neon-animated-pages", ["html!" + bowerPath + "/neon-animation/neon-animated-pages.html"]);
-        define("paper-toggle-button", ["html!" + bowerPath + "/paper-toggle-button/paper-toggle-button.html"]);
+        define("paper-radio-button", ['webcomponentsjs', "html!" + bowerPath + "/paper-radio-button/paper-radio-button.html"]);
+        define("paper-toggle-button", ['webcomponentsjs', "html!" + bowerPath + "/paper-toggle-button/paper-toggle-button.html"]);
 
-        define("slide-right-animation", ["html!" + bowerPath + "/neon-animation/animations/slide-right-animation.html"]);
-        define("slide-left-animation", ["html!" + bowerPath + "/neon-animation/animations/slide-left-animation.html"]);
-        define("slide-from-right-animation", ["html!" + bowerPath + "/neon-animation/animations/slide-from-right-animation.html"]);
-        define("slide-from-left-animation", ["html!" + bowerPath + "/neon-animation/animations/slide-from-left-animation.html"]);
-        define("paper-textarea", ["html!" + bowerPath + "/paper-input/paper-textarea.html"]);
+        define("paper-textarea", ['webcomponentsjs', "html!" + bowerPath + "/paper-input/paper-textarea.html"]);
         define("paper-item", ["html!" + bowerPath + "/paper-item/paper-item.html"]);
         define("paper-checkbox", ["html!" + bowerPath + "/paper-checkbox/paper-checkbox.html"]);
-        define("fade-in-animation", ["html!" + bowerPath + "/neon-animation/animations/fade-in-animation.html"]);
-        define("fade-out-animation", ["html!" + bowerPath + "/neon-animation/animations/fade-out-animation.html"]);
-        define("scale-up-animation", ["html!" + bowerPath + "/neon-animation/animations/scale-up-animation.html"]);
         define("paper-fab", ["emby-icons", "html!" + bowerPath + "/paper-fab/paper-fab.html"]);
-        define("iron-list", ["html!" + bowerPath + "/iron-list/iron-list.html"]);
-        define("iron-scroll-threshold", ["html!" + bowerPath + "/iron-scroll-threshold/iron-scroll-threshold.html"]);
         define("paper-progress", ["html!" + bowerPath + "/paper-progress/paper-progress.html"]);
-        define("paper-input", ["html!" + bowerPath + "/paper-input/paper-input.html"]);
-        define("paper-icon-item", ["html!" + bowerPath + "/paper-item/paper-icon-item.html"]);
+        define("paper-input", ['webcomponentsjs', "html!" + bowerPath + "/paper-input/paper-input.html"]);
+        define("paper-icon-item", ['webcomponentsjs', "html!" + bowerPath + "/paper-item/paper-icon-item.html"]);
         define("paper-item-body", ["html!" + bowerPath + "/paper-item/paper-item-body.html"]);
 
         define("paper-collapse-item", ["html!" + bowerPath + "/paper-collapse-item/paper-collapse-item.html"]);
-        define("emby-collapsible", ["emby-button", "html!" + bowerPath + "/emby-collapsible/emby-collapsible.html"]);
+        define("emby-collapsible", ['webcomponentsjs', "emby-button", "html!" + bowerPath + "/emby-collapsible/emby-collapsible.html"]);
 
         define("jstree", [bowerPath + "/jstree/dist/jstree", "css!thirdparty/jstree/themes/default/style.min.css"]);
 
@@ -1940,12 +1925,17 @@ var AppInfo = {};
 
         define('fetch', [bowerPath + '/fetch/fetch']);
         define('objectassign', [embyWebComponentsBowerPath + '/objectassign']);
-        define('webcomponentsjs', [bowerPath + '/webcomponentsjs/webcomponents-lite.min.js']);
         define('native-promise-only', [bowerPath + '/native-promise-only/lib/npo.src']);
         define("fingerprintjs2", [bowerPath + '/fingerprintjs2/fingerprint2'], returnFirstDependency);
         define("clearButtonStyle", ['css!' + embyWebComponentsBowerPath + '/clearbutton']);
         define("listView", [embyWebComponentsBowerPath + "/listview/listview"], returnFirstDependency);
         define("listViewStyle", ['css!' + embyWebComponentsBowerPath + "/listview/listview"], returnFirstDependency);
+
+        if ('registerElement' in document && 'content' in document.createElement('template')) {
+            define('webcomponentsjs', []);
+        } else {
+            define('webcomponentsjs', [bowerPath + '/webcomponentsjs/webcomponents-lite.min.js']);
+        }
 
         if (Dashboard.isRunningInCordova()) {
             define('registrationservices', ['cordova/registrationservices'], returnFirstDependency);
@@ -1983,7 +1973,8 @@ var AppInfo = {};
         define("montserratFont", ['css!' + embyWebComponentsBowerPath + '/fonts/montserrat/style']);
         define("scrollStyles", ['css!' + embyWebComponentsBowerPath + '/scrollstyles']);
 
-        define("viewcontainer", ['components/viewcontainer-lite', embyWebComponentsBowerPath + '/viewmanager/viewcontainer-lite'], returnFirstDependency);
+        define("navdrawer", ['components/navdrawer/navdrawer'], returnFirstDependency);
+        define("viewcontainer", ['components/viewcontainer-lite', 'css!' + embyWebComponentsBowerPath + '/viewmanager/viewcontainer-lite'], returnFirstDependency);
         define('queryString', [bowerPath + '/query-string/index'], function () {
             return queryString;
         });
@@ -2005,9 +1996,9 @@ var AppInfo = {};
 
         if (!('registerElement' in document)) {
             //define("registerElement", ['bower_components/webcomponentsjs/CustomElements.min']);
-            define("registerElement", [{}]);
+            define("registerElement", ['webcomponentsjs']);
         } else {
-            define("registerElement", [{}]);
+            define("registerElement", []);
         }
 
         // alias
@@ -2221,8 +2212,6 @@ var AppInfo = {};
 
         deps.push('scripts/mediacontroller');
 
-        deps.push('paper-drawer-panel');
-
         require(deps, function (events) {
 
             window.Events = events;
@@ -2240,25 +2229,6 @@ var AppInfo = {};
     }
 
     function initAfterDependencies() {
-
-        var drawer = document.querySelector('.mainDrawerPanel');
-        drawer.classList.remove('mainDrawerPanelPreInit');
-        drawer.forceNarrow = true;
-
-        var drawerWidth = screen.availWidth - 50;
-        // At least 240
-        drawerWidth = Math.max(drawerWidth, 240);
-        // But not exceeding 270
-        drawerWidth = Math.min(drawerWidth, 270);
-
-        drawer.drawerWidth = drawerWidth + "px";
-
-        if (browserInfo.safari) {
-            drawer.disableEdgeSwipe = true;
-        }
-
-        // Default is 600px
-        drawer.responsiveWidth = '640px';
 
         var deps = [];
         deps.push('scripts/extensions');
@@ -2779,9 +2749,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/mypreferenceshome.html',
-            dependencies: ['emby-button'],
+            dependencies: ['emby-checkbox', 'paper-fab', 'paper-item-body', 'paper-icon-item', 'emby-button'],
             autoFocus: false,
-            transition: 'fade'
+            transition: 'fade',
+            controller: 'scripts/mypreferenceshome'
         });
 
         defineRoute({
@@ -2801,9 +2772,10 @@ var AppInfo = {};
 
         defineRoute({
             path: '/myprofile.html',
-            dependencies: ['emby-button'],
+            dependencies: ['emby-button', 'emby-collapsible', 'emby-checkbox', 'emby-input'],
             autoFocus: false,
-            transition: 'fade'
+            transition: 'fade',
+            controller: 'scripts/myprofile'
         });
 
         defineRoute({
@@ -3028,8 +3000,9 @@ var AppInfo = {};
 
         defineRoute({
             path: '/userpassword.html',
-            dependencies: [],
-            autoFocus: false
+            dependencies: ['emby-input', 'emby-button', 'emby-checkbox'],
+            autoFocus: false,
+            controller: 'scripts/userpasswordpage'
         });
 
         defineRoute({
@@ -3044,6 +3017,14 @@ var AppInfo = {};
             dependencies: ['dashboardcss'],
             autoFocus: false,
             anonymous: true
+        });
+
+        defineRoute({
+            path: '/wizardcomponents.html',
+            dependencies: ['dashboardcss', 'emby-button', 'emby-input'],
+            autoFocus: false,
+            anonymous: true,
+            controller: 'scripts/wizardcomponents'
         });
 
         defineRoute({
@@ -3281,13 +3262,7 @@ var AppInfo = {};
         });
     }
 
-    if ('registerElement' in document && 'content' in document.createElement('template')) {
-        // Native web components support
-        onWebComponentsReady();
-    } else {
-        document.addEventListener('WebComponentsReady', onWebComponentsReady);
-        require(['webcomponentsjs']);
-    }
+    onWebComponentsReady();
 
 })();
 
@@ -3396,3 +3371,4 @@ window.addEventListener("beforeunload", function () {
         }
     }
 });
+
