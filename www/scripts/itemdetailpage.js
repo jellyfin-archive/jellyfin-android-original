@@ -1,4 +1,4 @@
-﻿define(['layoutManager', 'datetime', 'jQuery', 'mediaInfo', 'backdrop', 'scrollStyles'], function (layoutManager, datetime, $, mediaInfo, backdrop) {
+﻿define(['layoutManager', 'datetime', 'mediaInfo', 'backdrop', 'scrollStyles'], function (layoutManager, datetime, mediaInfo, backdrop) {
 
     var currentItem;
 
@@ -48,6 +48,19 @@
         });
     }
 
+    function hideAll(page, className, show) {
+
+        var i, length;
+        var elems = page.querySelectorAll('.' + className);
+        for (i = 0, length = elems.length; i < length; i++) {
+            if (show) {
+                elems[i].classList.remove('hide');
+            } else {
+                elems[i].classList.add('hide');
+            }
+        }
+    }
+
     function reloadFromItem(page, params, item) {
 
         currentItem = item;
@@ -57,8 +70,8 @@
         LibraryMenu.setBackButtonVisible(true);
         LibraryMenu.setMenuButtonVisible(false);
 
-        LibraryBrowser.renderName(item, $('.itemName', page), false, context);
-        LibraryBrowser.renderParentName(item, $('.parentName', page), context);
+        LibraryBrowser.renderName(item, page.querySelector('.itemName'), false, context);
+        LibraryBrowser.renderParentName(item, page.querySelector('.parentName'), context);
         LibraryMenu.setTitle(item.SeriesName || item.Name);
 
         Dashboard.getCurrentUser().then(function (user) {
@@ -74,12 +87,12 @@
 
             // For these types, make the backdrop a little smaller so that the items are more quickly accessible
             if (item.Type == 'MusicArtist' || item.Type == "MusicAlbum" || item.Type == "Playlist" || item.Type == "BoxSet" || item.MediaType == "Audio" || !layoutManager.mobile) {
-                $('#itemBackdrop', page).addClass('noBackdrop').css('background-image', 'none');
+                var itemBackdropElement = page.querySelector('#itemBackdrop');
+                itemBackdropElement.classList.add('noBackdrop');
+                itemBackdropElement.style.backgroundImage = 'none';
                 backdrop.setBackdrops([item]);
             }
             else {
-                //$('#itemBackdrop', page).addClass('noBackdrop').css('background-image', 'none');
-                //Backdrops.setBackdrops(page, [item]);
                 hasBackdrop = LibraryBrowser.renderDetailPageBackdrop(page, item);
                 backdrop.clear();
             }
@@ -95,59 +108,64 @@
                 var now = new Date();
 
                 if (now >= datetime.parseISO8601Date(item.StartDate, true) && now < datetime.parseISO8601Date(item.EndDate, true)) {
-                    $('.btnPlay', page).removeClass('hide');
+                    hideAll(page, 'btnPlay', true);
                     canPlay = true;
                 } else {
-                    $('.btnPlay', page).addClass('hide');
+                    hideAll(page, 'btnPlay');
                 }
             }
             else if (MediaController.canPlay(item)) {
-                $('.btnPlay', page).removeClass('hide');
+                hideAll(page, 'btnPlay', true);
                 canPlay = true;
             }
             else {
-                $('.btnPlay', page).addClass('hide');
+                hideAll(page, 'btnPlay');
             }
 
             if (item.LocalTrailerCount && item.PlayAccess == 'Full') {
-                $('.btnPlayTrailer', page).removeClass('hide');
+                hideAll(page, 'btnPlayTrailer', true);
             } else {
-                $('.btnPlayTrailer', page).addClass('hide');
+                hideAll(page, 'btnPlayTrailer');
             }
 
             if (LibraryBrowser.enableSync(item, user)) {
-                $('.btnSync', page).removeClass('hide');
+                hideAll(page, 'btnSync', true);
             } else {
-                $('.btnSync', page).addClass('hide');
+                hideAll(page, 'btnSync');
             }
 
             if (item.Type == 'Program' && item.TimerId) {
-                $('.btnCancelRecording', page).removeClass('hide');
+                hideAll(page, 'btnCancelRecording', true);
             } else {
-                $('.btnCancelRecording', page).addClass('hide');
+                hideAll(page, 'btnCancelRecording');
             }
 
             if (item.Type == 'Program' && (!item.TimerId && !item.SeriesTimerId)) {
 
                 if (canPlay) {
-                    $('.btnRecord', page).removeClass('hide');
-                    $('.btnFloatingRecord', page).addClass('hide');
+                    hideAll(page, 'btnRecord', true);
+                    hideAll(page, 'btnFloatingRecord');
                 } else {
-                    $('.btnRecord', page).addClass('hide');
-                    $('.btnFloatingRecord', page).removeClass('hide');
+                    hideAll(page, 'btnRecord');
+                    hideAll(page, 'btnFloatingRecord', true);
                 }
             } else {
-                $('.btnRecord', page).addClass('hide');
-                $('.btnFloatingRecord', page).addClass('hide');
+                hideAll(page, 'btnRecord');
+                hideAll(page, 'btnFloatingRecord');
             }
 
-            if (!item.LocalTrailerCount && item.RemoteTrailers.length && item.PlayAccess == 'Full') {
+            var btnPlayExternalTrailer = page.querySelectorAll('.btnPlayExternalTrailer');
+            for (var i = 0, length = btnPlayExternalTrailer.length; i < length; i++) {
+                if (!item.LocalTrailerCount && item.RemoteTrailers.length && item.PlayAccess == 'Full') {
 
-                $('.btnPlayExternalTrailer', page).removeClass('hide').attr('href', item.RemoteTrailers[0].Url);
+                    btnPlayExternalTrailer[i].classList.remove('hide');
+                    btnPlayExternalTrailer[i].href = item.RemoteTrailers[0].Url;
 
-            } else {
+                } else {
 
-                $('.btnPlayExternalTrailer', page).addClass('hide').attr('href', '#');
+                    btnPlayExternalTrailer[i].classList.add('hide');
+                    btnPlayExternalTrailer[i].href = '#';
+                }
             }
 
             var groupedVersions = (item.MediaSources || []).filter(function (g) {
@@ -155,67 +173,73 @@
             });
 
             if (user.Policy.IsAdministrator && groupedVersions.length) {
-                $('.splitVersionContainer', page).show();
+                page.querySelector('.splitVersionContainer').classList.remove('hide');
             } else {
-                $('.splitVersionContainer', page).hide();
+                page.querySelector('.splitVersionContainer').classList.add('hide');
             }
 
             if (LibraryBrowser.getMoreCommands(item, user).length > 0) {
-                $('.btnMoreCommands', page).removeClass('hide');
+                hideAll(page, 'btnMoreCommands', true);
             } else {
-                $('.btnMoreCommands', page).addClass('hide');
+                hideAll(page, 'btnMoreCommands');
             }
 
             if (user.Policy.IsAdministrator) {
-                $('.chapterSettingsButton', page).show();
+                page.querySelector('.chapterSettingsButton').classList.remove('hide');
             } else {
-                $('.chapterSettingsButton', page).hide();
+                page.querySelector('.chapterSettingsButton').classList.add('hide');
             }
 
+            var itemBirthday = page.querySelector('#itemBirthday');
             if (item.Type == "Person" && item.PremiereDate) {
 
                 try {
                     var birthday = datetime.parseISO8601Date(item.PremiereDate, true).toDateString();
 
-                    $('#itemBirthday', page).show().html(Globalize.translate('BirthDateValue').replace('{0}', birthday));
+                    itemBirthday.classList.remove('hide');
+                    itemBirthday.innerHTML = Globalize.translate('BirthDateValue').replace('{0}', birthday);
                 }
                 catch (err) {
-                    $('#itemBirthday', page).hide();
+                    itemBirthday.classList.add('hide');
                 }
             } else {
-                $('#itemBirthday', page).hide();
+                itemBirthday.classList.add('hide');
             }
 
+            var itemDeathDate = page.querySelector('#itemBirthday');
             if (item.Type == "Person" && item.EndDate) {
 
                 try {
                     var deathday = datetime.parseISO8601Date(item.EndDate, true).toDateString();
 
-                    $('#itemDeathDate', page).show().html(Globalize.translate('DeathDateValue').replace('{0}', deathday));
+                    itemDeathDate.classList.remove('hide');
+                    itemDeathDate.innerHTML = Globalize.translate('DeathDateValue').replace('{0}', deathday);
                 }
                 catch (err) {
-                    $('#itemBirthday', page).hide();
+                    itemDeathDate.classList.add('hide');
                 }
             } else {
             }
 
+            var itemBirthLocation = page.querySelector('#itemBirthLocation');
             if (item.Type == "Person" && item.ProductionLocations && item.ProductionLocations.length) {
 
                 var gmap = '<a class="textlink" target="_blank" href="https://maps.google.com/maps?q=' + item.ProductionLocations[0] + '">' + item.ProductionLocations[0] + '</a>';
 
-                $('#itemBirthLocation', page).show().html(Globalize.translate('BirthPlaceValue').replace('{0}', gmap));
+                itemBirthLocation.classList.remove('hide');
+                itemBirthLocation.innerHTML = Globalize.translate('BirthPlaceValue').replace('{0}', gmap);
             } else {
-                $('#itemBirthLocation', page).hide();
+                itemBirthLocation.classList.add('hide');
             }
         });
 
-        if (item.LocationType == "Offline") {
+        //if (item.LocationType == "Offline") {
 
-            $('.offlineIndicator', page).show();
-        }
-        else {
-            $('.offlineIndicator', page).hide();
-        }
+        //    page.querySelector('.offlineIndicator').classList.remove('hide');
+        //}
+        //else {
+        //    page.querySelector('.offlineIndicator').classList.add('hide');
+        //}
 
         var isMissingEpisode = false;
 
@@ -229,13 +253,13 @@
             }
         }
 
-        if (isMissingEpisode) {
+        //if (isMissingEpisode) {
 
-            $('.missingIndicator', page).show();
-        }
-        else {
-            $('.missingIndicator', page).hide();
-        }
+        //    page.querySelector('.missingIndicator').classList.remove('hide');
+        //}
+        //else {
+        //    page.querySelector('.missingIndicator').classList.add('hide');
+        //}
 
         setPeopleHeader(page, item);
 
@@ -263,9 +287,9 @@
     function setPeopleHeader(page, item) {
 
         if (item.MediaType == "Audio" || item.Type == "MusicAlbum" || item.MediaType == "Book" || item.MediaType == "Photo") {
-            $('#peopleHeader', page).html(Globalize.translate('HeaderPeople'));
+            page.querySelector('#peopleHeader').innerHTML = Globalize.translate('HeaderPeople');
         } else {
-            $('#peopleHeader', page).html(Globalize.translate('HeaderCastAndCrew'));
+            page.querySelector('#peopleHeader').innerHTML = Globalize.translate('HeaderCastAndCrew');
         }
 
     }
@@ -314,34 +338,34 @@
 
     function setInitialCollapsibleState(page, item, context, user) {
 
-        $('.collectionItems', page).empty();
+        page.querySelector('.collectionItems').innerHTML = '';
 
         if (item.Type == 'TvChannel') {
 
-            $('#childrenCollapsible', page).removeClass('hide');
+            page.querySelector('#childrenCollapsible').classList.remove('hide');
             renderChannelGuide(page, item, user);
         }
         else if (item.Type == 'Playlist') {
 
-            $('#childrenCollapsible', page).removeClass('hide');
+            page.querySelector('#childrenCollapsible').classList.remove('hide');
             renderPlaylistItems(page, item, user);
         }
         else if (item.Type == 'Studio' || item.Type == 'Person' || item.Type == 'Genre' || item.Type == 'MusicGenre' || item.Type == 'GameGenre' || item.Type == 'MusicArtist') {
 
-            $('#childrenCollapsible', page).removeClass('hide');
+            page.querySelector('#childrenCollapsible').classList.remove('hide');
             renderItemsByName(page, item, user);
         }
         else if (item.IsFolder) {
 
             if (item.Type == "BoxSet") {
-                $('#childrenCollapsible', page).addClass('hide');
+                page.querySelector('#childrenCollapsible').classList.add('hide');
             } else {
-                $('#childrenCollapsible', page).removeClass('hide');
+                page.querySelector('#childrenCollapsible').classList.remove('hide');
             }
             renderChildren(page, item);
         }
         else {
-            $('#childrenCollapsible', page).addClass('hide');
+            page.querySelector('#childrenCollapsible').classList.add('hide');
         }
 
         if (item.Type == 'Series') {
@@ -358,30 +382,30 @@
         var chapters = item.Chapters || [];
 
         if (!chapters.length || !AppInfo.enableDetailPageChapters) {
-            $('#scenesCollapsible', page).hide();
+            page.querySelector('#scenesCollapsible').classList.add('hide');
         } else {
-            $('#scenesCollapsible', page).show();
+            page.querySelector('#scenesCollapsible').classList.remove('hide');
             renderScenes(page, item, user, 3);
         }
 
         if (!item.SpecialFeatureCount || item.SpecialFeatureCount == 0 || item.Type == "Series") {
-            $('#specialsCollapsible', page).addClass('hide');
+            page.querySelector('#scenesCollapsible').classList.add('hide');
         } else {
-            $('#specialsCollapsible', page).removeClass('hide');
+            page.querySelector('#scenesCollapsible').classList.remove('hide');
             renderSpecials(page, item, user, 6);
         }
         if (!item.People || !item.People.length) {
-            $('#castCollapsible', page).hide();
+            page.querySelector('#castCollapsible').classList.add('hide');
         } else {
-            $('#castCollapsible', page).show();
+            page.querySelector('#castCollapsible').classList.remove('hide');
             renderCast(page, item, context, enableScrollX() ? null : 6);
         }
 
         if (item.PartCount && item.PartCount > 1) {
-            $('#additionalPartsCollapsible', page).removeClass('hide');
+            page.querySelector('#additionalPartsCollapsible').classList.remove('hide');
             renderAdditionalParts(page, item, user);
         } else {
-            $('#additionalPartsCollapsible', page).addClass('hide');
+            page.querySelector('#additionalPartsCollapsible').classList.add('hide');
         }
 
         page.querySelector('#themeSongsCollapsible').classList.add('hide');
@@ -390,7 +414,7 @@
         if (item.Type == "MusicAlbum") {
             renderMusicVideos(page, item, user);
         } else {
-            $('#musicVideosCollapsible', page).hide();
+            page.querySelector('#musicVideosCollapsible').classList.add('hide');
         }
 
         renderThemeMedia(page, item, user);
@@ -410,10 +434,13 @@
             renderSiblingLinks(page, item, context);
         }
 
+        var taglineElement = page.querySelector('.tagline');
+
         if (item.Taglines && item.Taglines.length) {
-            $('.tagline', page).html(item.Taglines[0]).show();
+            taglineElement.classList.remove('hide');
+            taglineElement.innerHTML = item.Taglines[0];
         } else {
-            $('.tagline', page).hide();
+            taglineElement.classList.add('hide');
         }
 
         var topOverview = page.querySelector('.topOverview');
@@ -431,58 +458,68 @@
             bottomOverview.classList.add('hide');
         }
 
-        LibraryBrowser.renderAwardSummary($('#awardSummary', page), item);
+        LibraryBrowser.renderAwardSummary(page.querySelector('#awardSummary'), item);
 
-        $('.itemMiscInfo', page).each(function () {
-            mediaInfo.fillPrimaryMediaInfo(this, item, {
+        var i, length;
+        var itemMiscInfo = page.querySelectorAll('.itemMiscInfo');
+        for (i = 0, length = itemMiscInfo.length; i < length; i++) {
+            mediaInfo.fillPrimaryMediaInfo(itemMiscInfo[i], item, {
                 interactive: true
             });
-        });
+        }
+        var itemGenres = page.querySelectorAll('.itemGenres');
+        for (i = 0, length = itemMiscInfo.length; i < length; i++) {
+            LibraryBrowser.renderGenres(itemGenres[i], item, null, isStatic);
+        }
 
-        $('.itemGenres', page).each(function () {
-            LibraryBrowser.renderGenres(this, item, null, isStatic);
-        });
-        LibraryBrowser.renderStudios($('.itemStudios', page), item, isStatic);
+        LibraryBrowser.renderStudios(page.querySelector('.itemStudios'), item, isStatic);
         renderUserDataIcons(page, item);
         LibraryBrowser.renderLinks(page.querySelector('.itemExternalLinks'), item);
 
-        $('.criticRatingScore', page).html((item.CriticRating || '0') + '%');
+        page.querySelector('.criticRatingScore').innerHTML = (item.CriticRating || '0') + '%';
 
         if (item.CriticRatingSummary) {
-            $('#criticRatingSummary', page).show();
-            $('.criticRatingSummaryText', page).html(item.CriticRatingSummary);
+            page.querySelector('#criticRatingSummary').classList.remove('hide');
+            page.querySelector('.criticRatingSummaryText').innerHTML = item.CriticRatingSummary;
 
         } else {
-            $('#criticRatingSummary', page).hide();
+            page.querySelector('#criticRatingSummary').classList.add('hide');
         }
 
         renderTags(page, item);
 
         renderSeriesAirTime(page, item, isStatic);
 
+        var playersElement = page.querySelector('#players');
+
         if (item.Players) {
-            $('#players', page).show().html(item.Players + ' Player');
+            playersElement.classList.remove('hide');
+            playersElement.innerHTML = item.Players + ' Player';
         } else {
-            $('#players', page).hide();
+            playersElement.classList.add('hide');
         }
 
-        if (item.ArtistItems && item.ArtistItems.length && item.Type != "MusicAlbum") {
-            $('.artist', page).show().html(getArtistLinksHtml(item.ArtistItems, context));
-        } else {
-            $('.artist', page).hide();
+        var artist = page.querySelectorAll('.artist');
+        for (i = 0, length = itemMiscInfo.length; i < length; i++) {
+            if (item.ArtistItems && item.ArtistItems.length && item.Type != "MusicAlbum") {
+                artist[i].classList.remove('hide');
+                artist[i].innerHTML = getArtistLinksHtml(item.ArtistItems, context);
+            } else {
+                artist[i].classList.add('hide');
+            }
         }
 
         if (item.MediaSources && item.MediaSources.length && item.Path) {
-            $('.audioVideoMediaInfo', page).removeClass('hide');
+            page.querySelector('.audioVideoMediaInfo').classList.remove('hide');
         } else {
-            $('.audioVideoMediaInfo', page).addClass('hide');
+            page.querySelector('.audioVideoMediaInfo').classList.add('hide');
         }
 
         if (item.MediaType == 'Photo') {
-            $('.photoInfo', page).removeClass('hide');
+            page.querySelector('.photoInfo').classList.remove('hide');
             renderPhotoInfo(page, item);
         } else {
-            $('.photoInfo', page).addClass('hide');
+            page.querySelector('.photoInfo').classList.add('hide');
         }
 
         renderTabButtons(page, item);
@@ -547,20 +584,20 @@
 
         html += attributes.join('<br/>');
 
-        $('.photoInfoContent', page).html(html);
+        page.querySelector('.photoInfoContent').innerHTML = html;
     }
 
     function renderTabButtons(page, item) {
 
-        var elem = $('.tabDetails', page)[0];
+        var elem = page.querySelector('.tabDetails');
         var text = elem.textContent || elem.innerText || '';
 
         if (text.trim()) {
 
-            $('.detailsSection', page).removeClass('hide');
+            page.querySelector('.detailsSection').classList.remove('hide');
 
         } else {
-            $('.detailsSection', page).addClass('hide');
+            page.querySelector('.detailsSection').classList.add('hide');
         }
     }
 
@@ -590,9 +627,13 @@
 
     function renderSiblingLinks(page, item, context) {
 
-        $('.lnkSibling', page).addClass('hide');
+        var lnkPreviousItem = page.querySelector('.lnkPreviousItem');
+        var lnkNextItem = page.querySelector('.lnkNextItem');
 
         if ((item.Type != "Episode" && item.Type != "Season" && item.Type != "Audio" && item.Type != "Photo")) {
+            lnkNextItem.classList.add('hide');
+            lnkPreviousItem.classList.add('hide');
+
             return;
         }
 
@@ -639,11 +680,13 @@
                 }
                 else if (!foundExisting) {
 
-                    $('.lnkPreviousItem', page).removeClass('hide').attr('href', 'itemdetails.html?id=' + curr.Id + '&context=' + context);
+                    lnkPreviousItem.classList.remove('hide');
+                    lnkPreviousItem.href = 'itemdetails.html?id=' + curr.Id + '&context=' + context;
                 }
                 else {
 
-                    $('.lnkNextItem', page).removeClass('hide').attr('href', 'itemdetails.html?id=' + curr.Id + '&context=' + context);
+                    lnkNextItem.classList.remove('hide');
+                    lnkNextItem.href = 'itemdetails.html?id=' + curr.Id + '&context=' + context;
                 }
             }
         });
@@ -667,11 +710,13 @@
 
     function renderSimilarItems(page, item, context) {
 
+        var similarCollapsible = page.querySelector('#similarCollapsible');
+
         if (item.Type == "Movie" || item.Type == "Trailer" || item.Type == "Series" || item.Type == "Program" || item.Type == "Recording" || item.Type == "Game" || item.Type == "MusicAlbum" || item.Type == "MusicArtist" || item.Type == "ChannelVideoItem") {
-            $('#similarCollapsible', page).show();
+            similarCollapsible.classList.remove('hide');
         }
         else {
-            $('#similarCollapsible', page).hide();
+            similarCollapsible.classList.add('hide');
             return;
         }
 
@@ -695,15 +740,16 @@
 
         ApiClient.getSimilarItems(item.Id, options).then(function (result) {
 
+            var similarCollapsible = page.querySelector('#similarCollapsible');
+
             if (!result.Items.length) {
 
-                $('#similarCollapsible', page).hide();
+                similarCollapsible.classList.add('hide');
                 return;
             }
 
-            var elem = $('#similarCollapsible', page).show();
-
-            $('.similiarHeader', elem).html(Globalize.translate('HeaderIfYouLikeCheckTheseOut', item.Name));
+            similarCollapsible.classList.remove('hide');
+            similarCollapsible.querySelector('.similiarHeader').innerHTML = Globalize.translate('HeaderIfYouLikeCheckTheseOut', item.Name);
 
             var html = '';
 
@@ -982,9 +1028,9 @@
         }
 
         if (item.Type == "MusicAlbum") {
-            $('.childrenSectionHeader', page).hide();
+            page.querySelector('.childrenSectionHeader', page).classList.add('hide');
         } else {
-            $('.childrenSectionHeader', page).show();
+            page.querySelector('.childrenSectionHeader', page).classList.remove('hide');
         }
     }
 
@@ -1130,7 +1176,14 @@
     }
 
     function renderUserDataIcons(page, item) {
-        $('.userDataIcons', page).html(LibraryBrowser.getUserDataIconsHtml(item, true, 'icon-button'));
+
+        var userDataIcons = page.querySelectorAll('.userDataIcons');
+
+        var html = LibraryBrowser.getUserDataIconsHtml(item, true, 'icon-button');
+
+        for (var i = 0, length = userDataIcons.length; i < length; i++) {
+            userDataIcons[i].innerHTML = html;
+        }
     }
 
     function renderCriticReviews(page, item, limit) {
@@ -1162,13 +1215,12 @@
         var html = '';
 
         var reviews = result.Items;
-
         for (var i = 0, length = reviews.length; i < length; i++) {
 
             var review = reviews[i];
 
             html += '<div class="paperList criticReviewPaperList">';
-            html += '<paper-icon-item style="padding-top:.5em;padding-bottom:.5em;">';
+            html += '<div class="listItem">';
 
             if (review.Score != null) {
                 //html += review.Score;
@@ -1176,13 +1228,13 @@
             else if (review.Likes != null) {
 
                 if (review.Likes) {
-                    html += '<paper-fab mini style="background-color:transparent;background-image:url(\'css/images/fresh.png\');background-repeat:no-repeat;background-position:center center;background-size: cover;" item-icon></paper-fab>';
+                    html += '<div style="background-color:transparent;background-image:url(\'css/images/fresh.png\');background-repeat:no-repeat;background-position:center center;background-size: cover;width:40px;height:40px;"></div>';
                 } else {
-                    html += '<paper-fab mini style="background-color:transparent;background-image:url(\'css/images/rotten.png\');background-repeat:no-repeat;background-position:center center;background-size: cover;" item-icon></paper-fab>';
+                    html += '<div style="background-color:transparent;background-image:url(\'css/images/rotten.png\');background-repeat:no-repeat;background-position:center center;background-size: cover;width:40px;height:40px;"></div>';
                 }
             }
 
-            html += '<paper-item-body three-line>';
+            html += '<div class="listItemBody">';
 
             html += '<div style="white-space:normal;">' + review.Caption + '</div>';
 
@@ -1195,7 +1247,7 @@
                 vals.push(review.Publisher);
             }
 
-            html += '<div secondary>' + vals.join(', ') + '.';
+            html += '<div class="secondary">' + vals.join(', ') + '.';
             if (review.Date) {
 
                 try {
@@ -1212,12 +1264,12 @@
             html += '</div>';
 
             if (review.Url) {
-                html += '<div secondary><a class="textlink" href="' + review.Url + '" target="_blank">' + Globalize.translate('ButtonFullReview') + '</a></div>';
+                html += '<div class="secondary"><a class="textlink" href="' + review.Url + '" target="_blank">' + Globalize.translate('ButtonFullReview') + '</a></div>';
             }
 
-            html += '</paper-item-body>';
+            html += '</div>';
 
-            html += '</paper-icon-item>';
+            html += '</div>';
             html += '</div>';
         }
 
@@ -2008,32 +2060,38 @@
 
     window.ItemDetailPage = new itemDetailPage();
 
-    return function (view, params) {
+    function parentWithClass(elem, className) {
 
-        $('.btnPlay', view).on('click', function () {
-            playCurrentItem(this);
-        });
+        while (!elem.classList || !elem.classList.contains(className)) {
+            elem = elem.parentNode;
 
-        $('.btnPlayTrailer', view).on('click', function () {
-            playTrailer(view);
-        });
+            if (!elem) {
+                return null;
+            }
+        }
 
-        $('.btnSplitVersions', view).on('click', function () {
+        return elem;
+    }
 
-            splitVersions(view, params);
-        });
+    function onPlayClick() {
+        playCurrentItem(this);
+    }
 
-        $('.btnSync', view).on('click', function () {
-
-            require(['syncDialog'], function (syncDialog) {
-                syncDialog.showMenu({
-                    items: [currentItem]
-                });
+    function onSyncClick() {
+        require(['syncDialog'], function (syncDialog) {
+            syncDialog.showMenu({
+                items: [currentItem]
             });
         });
+    }
 
-        $('.btnRecord,.btnFloatingRecord', view).on('click', function () {
+    return function (view, params) {
 
+        function onPlayTrailerClick() {
+            playTrailer(view);
+        }
+
+        function onRecordClick() {
             var id = params.id;
             Dashboard.showLoadingMsg();
 
@@ -2042,53 +2100,83 @@
                     reload(view, params);
                 });
             });
+        }
 
-        });
-
-        $('.btnCancelRecording', view).on('click', function () {
-
+        function onCancelRecordingClick() {
             deleteTimer(view, params, currentItem.TimerId);
-        });
+        }
 
-        $('.btnMoreCommands', view).on('click', function () {
-
+        function onMoreCommandsClick() {
             var button = this;
 
             Dashboard.getCurrentUser().then(function (user) {
 
                 LibraryBrowser.showMoreCommands(button, currentItem.Id, currentItem.Type, LibraryBrowser.getMoreCommands(currentItem, user));
             });
+        }
+
+        var elems = view.querySelectorAll('.btnPlay');
+        var i, length;
+        for (i = 0, length = elems.length; i < length; i++) {
+            elems[i].addEventListener('click', onPlayClick);
+        }
+
+        elems = view.querySelectorAll('.btnPlayTrailer');
+        for (i = 0, length = elems.length; i < length; i++) {
+            elems[i].addEventListener('click', onPlayTrailerClick);
+        }
+
+        view.querySelector('.btnSplitVersions').addEventListener('click', function () {
+
+            splitVersions(view, params);
         });
 
-        $('.childrenItemsContainer', view).on('playallfromhere', function (e, index) {
+        elems = view.querySelectorAll('.btnSync');
+        for (i = 0, length = elems.length; i < length; i++) {
+            elems[i].addEventListener('click', onSyncClick);
+        }
 
-            LibraryBrowser.playAllFromHere(_childrenItemsFunction, index);
+        elems = view.querySelectorAll('.btnRecord,.btnFloatingRecord');
+        for (i = 0, length = elems.length; i < length; i++) {
+            elems[i].addEventListener('click', onRecordClick);
+        }
 
-        }).on('queueallfromhere', function (e, index) {
+        elems = view.querySelectorAll('.btnCancelRecording');
+        for (i = 0, length = elems.length; i < length; i++) {
+            elems[i].addEventListener('click', onCancelRecordingClick);
+        }
 
-            LibraryBrowser.queueAllFromHere(_childrenItemsFunction, index);
+        elems = view.querySelectorAll('.btnMoreCommands');
+        for (i = 0, length = elems.length; i < length; i++) {
+            elems[i].addEventListener('click', onMoreCommandsClick);
+        }
 
+        var childrenItemsContainer = view.querySelector('.childrenItemsContainer');
+        childrenItemsContainer.addEventListener('playallfromhere', function (e) {
+            LibraryBrowser.playAllFromHere(_childrenItemsFunction, e.detail.index);
+        });
+        childrenItemsContainer.addEventListener('playallfromhere', function (e) {
+            LibraryBrowser.playAllFromHere(_childrenItemsFunction, e.detail.index);
         });
 
-        $(view).on("click", ".moreScenes", function () {
+        view.addEventListener('click', function (e) {
 
-            Dashboard.getCurrentUser().then(function (user) {
-                renderScenes(view, currentItem, user);
-            });
-
-        }).on("click", ".morePeople", function () {
-
-            renderCast(view, currentItem, params.context);
-
-        }).on("click", ".moreSpecials", function () {
-
-            Dashboard.getCurrentUser().then(function (user) {
-                renderSpecials(view, currentItem, user);
-            });
-
-        }).on("click", ".moreCriticReviews", function () {
-
-            renderCriticReviews(view, currentItem);
+            if (parentWithClass(e.target, 'moreScenes')) {
+                Dashboard.getCurrentUser().then(function (user) {
+                    renderScenes(view, currentItem, user);
+                });
+            }
+            else if (parentWithClass(e.target, 'morePeople')) {
+                renderCast(view, currentItem, params.context);
+            }
+            else if (parentWithClass(e.target, 'moreSpecials')) {
+                Dashboard.getCurrentUser().then(function (user) {
+                    renderSpecials(view, currentItem, user);
+                });
+            }
+            else if (parentWithClass(e.target, 'moreCriticReviews')) {
+                renderCriticReviews(view, currentItem);
+            }
         });
 
         view.querySelector('.collectionItems').addEventListener('removefromcollection', function (e) {

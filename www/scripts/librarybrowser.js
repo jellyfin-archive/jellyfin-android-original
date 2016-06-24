@@ -2706,9 +2706,9 @@
                 Dashboard.setPageTitle(name);
 
                 if (linkToElement) {
-                    nameElem.html('<a class="detailPageParentLink" href="' + LibraryBrowser.getHref(item, context) + '">' + name + '</a>');
+                    nameElem.innerHTML = '<a class="detailPageParentLink" href="' + LibraryBrowser.getHref(item, context) + '">' + name + '</a>';
                 } else {
-                    nameElem.html(name);
+                    nameElem.innerHTML = name;
                 }
             },
 
@@ -2748,9 +2748,10 @@
                 }
 
                 if (html.length) {
-                    parentNameElem.show().html(html.join(' - '));
+                    parentNameElem.classList.remove('hide');
+                    parentNameElem.innerHTML = html.join(' - ');
                 } else {
-                    parentNameElem.hide();
+                    parentNameElem.classList.add('hide');
                 }
             },
 
@@ -3298,11 +3299,11 @@
 
                     html = Globalize.translate(translationKey, html);
 
-                    elem.show().html(html).trigger('create');
-
+                    elem.innerHTML = html;
+                    elem.classList.remove('hide');
 
                 } else {
-                    elem.hide();
+                    elem.classList.add('hide');
                 }
             },
 
@@ -3358,9 +3359,10 @@
 
             renderAwardSummary: function (elem, item) {
                 if (item.AwardSummary) {
-                    elem.show().html(Globalize.translate('ValueAwards', item.AwardSummary));
+                    elem.classList.remove('hide');
+                    elem.innerHTML = Globalize.translate('ValueAwards', item.AwardSummary);
                 } else {
-                    elem.hide();
+                    elem.classList.add('hide');
                 }
             },
 
