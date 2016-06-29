@@ -468,7 +468,7 @@
             });
         }
         var itemGenres = page.querySelectorAll('.itemGenres');
-        for (i = 0, length = itemMiscInfo.length; i < length; i++) {
+        for (i = 0, length = itemGenres.length; i < length; i++) {
             LibraryBrowser.renderGenres(itemGenres[i], item, null, isStatic);
         }
 
@@ -2222,7 +2222,6 @@
 
         view.addEventListener('viewbeforeshow', function () {
             var page = this;
-
             reload(page, params);
 
             Events.on(ApiClient, 'websocketmessage', onWebSocketMessage);
