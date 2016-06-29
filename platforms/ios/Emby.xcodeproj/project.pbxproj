@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		0693067B697E40ED8F4B9125 /* CDVConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = C40BB7DB6F0A4E25978AA560 /* CDVConnection.m */; };
@@ -55,7 +54,6 @@
 		63CB22F5F8A5478AA3D3D298 /* libbz2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 84406F29A89C4A4C8388F112 /* libbz2.dylib */; };
 		6715DB69A20B40FE99913161 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B971AD058EEB4524A7D2862D /* WebKit.framework */; };
 		67249F3F49B94034837FEDAC /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 792DC102040D47FFA67DEDD6 /* CoreText.framework */; };
-		6ABDF0990E91474C89CEC811 /* SearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 88CE6D848EA24CC788C8B58C /* SearchBar.m */; };
 		6EB006F92FD94E1BA33765E9 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C2FD61737914F109F3B9CF4 /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		70869CCC65E44A4B9A0392E5 /* ReroutingUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7AA692E43540C68C8150C9 /* ReroutingUIWebView.m */; };
 		7658267831064B06BEB15EAF /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDF4486EF8F840A295E02124 /* GCDWebServer.framework */; };
@@ -142,7 +140,6 @@
 		1D3623250D0F684500981E51 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* Emby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Emby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		21FBC895B20940959FC67977 /* MyMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyMainViewController.m; path = com.telerik.plugins.wkwebview/MyMainViewController.m; sourceTree = "<group>"; };
-		268710F2662A46B4BDCDB9DD /* SearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchBar.h; path = com.dieam.searchbar/SearchBar.h; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		289911663402421B8083F577 /* libc++.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = unknown; path = "libc++.tbd"; sourceTree = "<group>"; };
 		293FBA41653A4475BD17BD45 /* CDVBackgroundColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVBackgroundColor.m; path = "com.crewmeister.cordova-ios-backgroundcolor/CDVBackgroundColor.m"; sourceTree = "<group>"; };
@@ -208,7 +205,6 @@
 		84406F29A89C4A4C8388F112 /* libbz2.dylib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "compiled.mach-o.dylib"; name = libbz2.dylib; path = usr/lib/libbz2.dylib; sourceTree = SDKROOT; };
 		84F353ABE78240208B57DFEF /* CDVFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVFile.m; path = "cordova-plugin-file/CDVFile.m"; sourceTree = "<group>"; };
 		880C43A564BB4F8299A4E04F /* CDVStatusBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVStatusBar.m; path = "cordova-plugin-statusbar/CDVStatusBar.m"; sourceTree = "<group>"; };
-		88CE6D848EA24CC788C8B58C /* SearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SearchBar.m; path = com.dieam.searchbar/SearchBar.m; sourceTree = "<group>"; };
 		8A3C3AA533F14514914A014A /* FileUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FileUtility.m; path = cc.fovea.cordova.purchase/FileUtility.m; sourceTree = "<group>"; };
 		8BC48F65EE1D4405B366678A /* SKProduct+LocalizedPrice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "SKProduct+LocalizedPrice.h"; path = "cc.fovea.cordova.purchase/SKProduct+LocalizedPrice.h"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Emby-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Emby-Info.plist"; path = "../Emby-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
@@ -450,8 +446,6 @@
 				F6CC0FE67698461595288039 /* ActionSheet.h */,
 				38FC119E4CC9416AA4EA2946 /* BackgroundAudio.m */,
 				6AAFD15D090B49A9A0331AB7 /* BackgroundAudio.h */,
-				88CE6D848EA24CC788C8B58C /* SearchBar.m */,
-				268710F2662A46B4BDCDB9DD /* SearchBar.h */,
 				9AF3A54C672247169A7323B1 /* IonicCameraRoll.m */,
 				65CC08ADAE2F4CA894C2C936 /* IonicCameraRoll.h */,
 				3919BA32D920484AB566C454 /* BackgroundDownload.m */,
@@ -721,7 +715,6 @@
 				8CB79D171E4848D6A69CAFFA /* Launcher.m in Sources */,
 				F45E8A84EC4F4EB7849E9329 /* ActionSheet.m in Sources */,
 				2A1BEEAC35414DDE90D2914F /* BackgroundAudio.m in Sources */,
-				6ABDF0990E91474C89CEC811 /* SearchBar.m in Sources */,
 				549F66737C8F4BDBABD4002E /* IonicCameraRoll.m in Sources */,
 				F8002EF797EA4200A619F27E /* BackgroundDownload.m in Sources */,
 				C4E122F497D84864A98F483E /* AppVersion.m in Sources */,

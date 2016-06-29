@@ -30,68 +30,8 @@
         });
     }
 
-    function getDownloadSpeed(bytes, url) {
-
-        return new Promise(function (resolve, reject) {
-
-            ApiClientBridge.getDownloadSpeed(bytes, url);
-
-            Events.on(AndroidAjax, 'downloadspeedresponse', function (e, response) {
-
-                Events.off(AndroidAjax, 'downloadspeedresponse');
-
-                if (response) {
-
-                    resolve(response);
-                }
-                else {
-
-                    // Need to mimic the jquery ajax error response
-                    reject();
-                }
-
-            });
-
-        });
-    }
-
-    function initApiClient(newApiClient) {
-        newApiClient.getDownloadSpeed = function (bytes) {
-            return getDownloadSpeed(bytes, newApiClient.getUrl('Playback/BitrateTest', {
-                api_key: newApiClient.accessToken(),
-                Size: bytes
-            }));
-        };
-    }
-
-    Events.on(ConnectionManager, 'apiclientcreated', function (e, newApiClient) {
-
-        initApiClient(newApiClient);
-    });
-
     Events.on(ConnectionManager.credentialProvider(), 'credentialsupdated', updateCredentials);
 
     updateCredentials();
     initNativeConnectionManager();
-
-    if (window.ApiClient) {
-        initApiClient(window.ApiClient);
-    }
-
-    window.AndroidAjax = {
-
-        onResponse: function (id, response) {
-
-            Events.trigger(AndroidAjax, 'response' + id, [true, response]);
-        },
-        onError: function (id, response) {
-
-            Events.trigger(AndroidAjax, 'response' + id, [false, response]);
-        },
-        onDownloadSpeedResponse: function (response) {
-
-            Events.trigger(AndroidAjax, 'downloadspeedresponse', [response]);
-        }
-    };
-
 });

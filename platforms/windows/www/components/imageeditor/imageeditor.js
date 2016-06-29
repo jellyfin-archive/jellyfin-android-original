@@ -1,7 +1,8 @@
-﻿define(['dialogHelper', 'jQuery', 'css!css/metadataeditor.css', 'paper-fab'], function (dialogHelper, $) {
+﻿define(['dialogHelper', 'css!css/metadataeditor.css', 'emby-button', 'paper-icon-button-light'], function (dialogHelper) {
 
     var currentItem;
-    var currentDeferred;
+    var currentResolve;
+    var currentReject;
     var hasChanges = false;
 
     function getBaseRemoteOptions() {
@@ -27,17 +28,30 @@
         }
     }
 
+    function addListeners(elems, eventName, fn) {
+
+        for (var i = 0, length = elems.length; i < length; i++) {
+
+            elems[i].addEventListener(eventName, fn);
+        }
+    }
+
     function reloadItem(page, item) {
 
         currentItem = item;
 
         ApiClient.getRemoteImageProviders(getBaseRemoteOptions()).then(function (providers) {
 
-            if (providers.length) {
-                $('.btnBrowseAllImages', page).removeClass('hide');
-            } else {
-                $('.btnBrowseAllImages', page).addClass('hide');
+            var btnBrowseAllImages = page.querySelectorAll('.btnBrowseAllImages');
+            for (var i = 0, length = btnBrowseAllImages.length; i < length; i++) {
+
+                if (providers.length) {
+                    btnBrowseAllImages[i].classList.remove('hide');
+                } else {
+                    btnBrowseAllImages[i].classList.add('hide');
+                }
             }
+
 
             ApiClient.getItemImageInfos(currentItem.Id).then(function (imageInfos) {
 
@@ -81,24 +95,24 @@
             if (image.ImageType == "Backdrop" || image.ImageType == "Screenshot") {
 
                 if (i > 0) {
-                    html += '<paper-icon-button class="btnMoveImage" icon="chevron-left" data-imagetype="' + image.ImageType + '" data-index="' + image.ImageIndex + '" data-newindex="' + (image.ImageIndex - 1) + '" title="' + Globalize.translate('ButtonMoveLeft') + '"></paper-icon-button>';
+                    html += '<button is="paper-icon-button-light" class="btnMoveImage autoSize" data-imagetype="' + image.ImageType + '" data-index="' + image.ImageIndex + '" data-newindex="' + (image.ImageIndex - 1) + '" title="' + Globalize.translate('ButtonMoveLeft') + '"><i class="md-icon">chevron_left</i></button>';
                 } else {
-                    html += '<paper-icon-button icon="chevron-left" disabled title="' + Globalize.translate('ButtonMoveLeft') + '"></paper-icon-button>';
+                    html += '<button is="paper-icon-button-light" class="autoSize" disabled title="' + Globalize.translate('ButtonMoveLeft') + '"><i class="md-icon">chevron_left</i></button>';
                 }
 
                 if (i < length - 1) {
-                    html += '<paper-icon-button class="btnMoveImage" icon="chevron-right" data-imagetype="' + image.ImageType + '" data-index="' + image.ImageIndex + '" data-newindex="' + (image.ImageIndex + 1) + '" title="' + Globalize.translate('ButtonMoveRight') + '"></paper-icon-button>';
+                    html += '<button is="paper-icon-button-light" class="btnMoveImage autoSize" data-imagetype="' + image.ImageType + '" data-index="' + image.ImageIndex + '" data-newindex="' + (image.ImageIndex + 1) + '" title="' + Globalize.translate('ButtonMoveRight') + '"><i class="md-icon">chevron_right</i></button>';
                 } else {
-                    html += '<paper-icon-button icon="chevron-right" disabled title="' + Globalize.translate('ButtonMoveRight') + '"></paper-icon-button>';
+                    html += '<button is="paper-icon-button-light" class="autoSize" disabled title="' + Globalize.translate('ButtonMoveRight') + '"><i class="md-icon">chevron_right</i></button>';
                 }
             }
             else {
                 if (imageProviders.length) {
-                    html += '<paper-icon-button icon="search" data-imagetype="' + image.ImageType + '" class="btnSearchImages" title="' + Globalize.translate('ButtonBrowseOnlineImages') + '"></paper-icon-button>';
+                    html += '<button is="paper-icon-button-light" data-imagetype="' + image.ImageType + '" class="btnSearchImages autoSize" title="' + Globalize.translate('ButtonBrowseOnlineImages') + '"><i class="md-icon">search</i></button>';
                 }
             }
 
-            html += '<paper-icon-button icon="delete" data-imagetype="' + image.ImageType + '" data-index="' + (image.ImageIndex != null ? image.ImageIndex : "null") + '" class="btnDeleteImage" title="' + Globalize.translate('Delete') + '"></paper-icon-button>';
+            html += '<button is="paper-icon-button-light" data-imagetype="' + image.ImageType + '" data-index="' + (image.ImageIndex != null ? image.ImageIndex : "null") + '" class="btnDeleteImage autoSize" title="' + Globalize.translate('Delete') + '"><i class="md-icon">delete</i></button>';
 
             html += '</div>';
 
@@ -110,12 +124,11 @@
         elem.innerHTML = html;
         ImageLoader.lazyChildren(elem);
 
-        $('.btnSearchImages', elem).on('click', function () {
+        addListeners(elem.querySelectorAll('.btnSearchImages'), 'click', function () {
             showImageDownloader(page, this.getAttribute('data-imagetype'));
         });
 
-        $('.btnDeleteImage', elem).on('click', function () {
-
+        addListeners(elem.querySelectorAll('.btnDeleteImage'), 'click', function () {
             var type = this.getAttribute('data-imagetype');
             var index = this.getAttribute('data-index');
             index = index == "null" ? null : parseInt(index);
@@ -134,7 +147,7 @@
             });
         });
 
-        $('.btnMoveImage', elem).on('click', function () {
+        addListeners(elem.querySelectorAll('.btnMoveImage'), 'click', function () {
             var type = this.getAttribute('data-imagetype');
             var index = parseInt(this.getAttribute('data-index'));
             var newIndex = parseInt(this.getAttribute('data-newindex'));
@@ -166,10 +179,10 @@
         });
 
         if (images.length) {
-            $('#backdropsContainer', page).show();
+            page.querySelector('#backdropsContainer', page).classList.remove('hide');
             renderImages(page, item, images, imageProviders, page.querySelector('#backdrops'));
         } else {
-            $('#backdropsContainer', page).hide();
+            page.querySelector('#backdropsContainer', page).classList.add('hide');
         }
     }
 
@@ -183,30 +196,27 @@
         });
 
         if (images.length) {
-            $('#screenshotsContainer', page).show();
-            renderImages(page, item, images, imageProviders, $('#screenshots', page));
+            page.querySelector('#screenshotsContainer', page).classList.remove('hide');
+            renderImages(page, item, images, imageProviders, page.querySelector('#screenshots'));
         } else {
-            $('#screenshotsContainer', page).hide();
+            page.querySelector('#screenshotsContainer', page).classList.add('hide');
         }
     }
 
     function showImageDownloader(page, imageType) {
         require(['components/imagedownloader/imagedownloader'], function (ImageDownloader) {
 
-            ImageDownloader.show(currentItem.Id, currentItem.Type, imageType).then(function (hasChanged) {
+            ImageDownloader.show(currentItem.Id, currentItem.Type, imageType).then(function () {
 
-                if (hasChanged) {
-                    hasChanges = true;
-                    reload(page);
-                }
+                hasChanges = true;
+                reload(page);
             });
         });
     }
 
     function initEditor(page, options) {
 
-        $('.btnOpenUploadMenu', page).on('click', function () {
-
+        addListeners(page.querySelectorAll('.btnOpenUploadMenu'), 'click', function () {
             var imageType = this.getAttribute('data-imagetype');
 
             require(['components/imageuploader/imageuploader'], function (imageUploader) {
@@ -226,7 +236,7 @@
             });
         });
 
-        $('.btnBrowseAllImages', page).on('click', function () {
+        addListeners(page.querySelectorAll('.btnBrowseAllImages'), 'click', function () {
             showImageDownloader(page, this.getAttribute('data-imagetype') || 'Primary');
         });
     }
@@ -246,7 +256,8 @@
             ApiClient.getItem(Dashboard.getCurrentUserId(), itemId).then(function (item) {
 
                 var dlg = dialogHelper.createDialog({
-                    size: 'fullscreen-border'
+                    size: 'fullscreen-border',
+                    removeOnClose: true
                 });
 
                 var theme = options.theme || 'b';
@@ -257,7 +268,7 @@
 
                 var html = '';
                 html += '<h2 class="dialogHeader">';
-                html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog" tabindex="-1"></paper-fab>';
+                html += '<button type="button" is="emby-button" icon="arrow-back" class="fab mini btnCloseDialog autoSize" tabindex="-1"><i class="md-icon">arrow_back</i></button>';
                 html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + item.Name + '</div>';
                 html += '</h2>';
 
@@ -271,14 +282,14 @@
                 initEditor(dlg, options);
 
                 // Has to be assigned a z-index after the call to .open() 
-                $(dlg).on('close', onDialogClosed);
+                dlg.addEventListener('close', onDialogClosed);
 
                 dialogHelper.open(dlg);
 
                 var editorContent = dlg.querySelector('.editorContent');
                 reload(editorContent, item);
 
-                $('.btnCloseDialog', dlg).on('click', function () {
+                dlg.querySelector('.btnCloseDialog').addEventListener('click', function () {
 
                     dialogHelper.close(dlg);
                 });
@@ -290,21 +301,26 @@
 
     function onDialogClosed() {
 
-        $(this).remove();
         Dashboard.hideLoadingMsg();
-        currentDeferred.resolveWith(null, [hasChanges]);
+
+        if (hasChanges) {
+            currentResolve();
+        } else {
+            currentReject();
+        }
     }
 
     return {
         show: function (itemId, options) {
 
-            var deferred = jQuery.Deferred();
+            return new Promise(function (resolve, reject) {
 
-            currentDeferred = deferred;
-            hasChanges = false;
+                currentResolve = resolve;
+                currentReject = reject;
+                hasChanges = false;
 
-            showEditor(itemId, options);
-            return deferred.promise();
+                showEditor(itemId, options);
+            });
         }
     };
 });

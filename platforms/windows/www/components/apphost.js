@@ -91,10 +91,10 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
         supports: function (command) {
 
             var features = [
-                'filedownload'
+                'filedownload',
+                'externalpremium',
+                'sharing'
             ];
-
-            features.push('sharing');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },

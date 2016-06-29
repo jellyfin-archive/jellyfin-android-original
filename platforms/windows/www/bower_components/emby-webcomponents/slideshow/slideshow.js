@@ -1,4 +1,4 @@
-define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'focusManager', 'apphost', 'css!./style', 'html!./icons', 'iron-icon-set', 'paper-icon-button', 'paper-spinner'], function (dialogHelper, inputmanager, connectionManager, layoutManager, focusManager, appHost) {
+define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'focusManager', 'apphost', 'loading', 'css!./style', 'material-icons', 'paper-icon-button-light'], function (dialogHelper, inputmanager, connectionManager, layoutManager, focusManager, appHost, loading) {
 
     function getImageUrl(item, options, apiClient) {
 
@@ -51,15 +51,6 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
         options = options || {};
         options.type = options.type || "Backdrop";
 
-        options.width = null;
-        delete options.width;
-        options.maxWidth = null;
-        delete options.maxWidth;
-        options.maxHeight = null;
-        delete options.maxHeight;
-        options.height = null;
-        delete options.height;
-
         // If not resizing, get the original image
         if (!options.maxWidth && !options.width && !options.maxHeight && !options.height) {
             options.quality = 100;
@@ -96,6 +87,13 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
         }
     }
 
+    function getIcon(icon, cssClass, canFocus, autoFocus) {
+
+        var tabIndex = canFocus ? '' : ' tabindex="-1"';
+        autoFocus = autoFocus ? ' autofocus' : '';
+        return '<button is="paper-icon-button-light" class="autoSize ' + cssClass + '"' + tabIndex + autoFocus + '><i class="md-icon">' + icon + '</i></button>';
+    }
+
     return function (options) {
 
         var self = this;
@@ -111,7 +109,9 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
             dlg = dialogHelper.createDialog({
                 exitAnimationDuration: options.interactive ? 400 : 800,
                 size: 'fullscreen',
-                autoFocus: false
+                autoFocus: false,
+                scrollY: false,
+                exitAnimation: 'fadeout'
             });
 
             dlg.classList.add('slideshowDialog');
@@ -125,31 +125,30 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
                 html += '<div>';
                 html += '<div class="slideshowSwiperContainer"><div class="swiper-wrapper"></div></div>';
 
-                html += '<paper-icon-button icon="slideshow:keyboard-arrow-left" class="btnSlideshowPrevious slideshowButton" tabindex="-1"></paper-icon-button>';
-                html += '<paper-icon-button icon="slideshow:keyboard-arrow-right" class="btnSlideshowNext slideshowButton" tabindex="-1"></paper-icon-button>';
+                html += getIcon('keyboard_arrow_left', 'btnSlideshowPrevious slideshowButton', false);
+                html += getIcon('keyboard_arrow_right', 'btnSlideshowNext slideshowButton', false);
 
                 html += '<div class="topActionButtons">';
                 if (actionButtonsOnTop) {
                     if (appHost.supports('filedownload')) {
-                        html += '<paper-icon-button icon="slideshow:file-download" class="btnDownload slideshowButton"></paper-icon-button>';
+                        html += getIcon('file_download', 'btnDownload slideshowButton', true);
                     }
                     if (appHost.supports('sharing')) {
-                        html += '<paper-icon-button icon="slideshow:share" class="btnShare slideshowButton"></paper-icon-button>';
+                        html += getIcon('share', 'btnShare slideshowButton', true);
                     }
                 }
-                html += '<paper-icon-button icon="slideshow:close" class="btnSlideshowExit" tabindex="-1"></paper-icon-button>';
+                html += getIcon('close', 'slideshowButton btnSlideshowExit', false);
                 html += '</div>';
 
                 if (!actionButtonsOnTop) {
                     html += '<div class="slideshowBottomBar hide">';
 
-                    //html += '<paper-icon-button icon="slideshow:share" class="btnShare slideshowButton"></paper-icon-button>';
-                    html += '<paper-icon-button icon="slideshow:pause" class="btnSlideshowPause slideshowButton" autoFocus></paper-icon-button>';
+                    html += getIcon('pause', 'btnSlideshowPause slideshowButton', true, true);
                     if (appHost.supports('filedownload')) {
-                        html += '<paper-icon-button icon="slideshow:file-download" class="btnDownload slideshowButton"></paper-icon-button>';
+                        html += getIcon('file_download', 'btnDownload slideshowButton', true);
                     }
                     if (appHost.supports('sharing')) {
-                        html += '<paper-icon-button icon="slideshow:share" class="btnShare slideshowButton"></paper-icon-button>';
+                        html += getIcon('share', 'btnShare slideshowButton', true);
                     }
 
                     html += '</div>';
@@ -224,8 +223,10 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
                     preloadImages: false,
                     // Enable lazy loading
                     lazyLoading: true,
+                    lazyLoadingInPrevNext: true,
                     autoplayDisableOnInteraction: false,
-                    initialSlide: options.startIndex || 0
+                    initialSlide: options.startIndex || 0,
+                    speed: 240
                 });
 
                 swiperInstance.on('onLazyImageLoad', onSlideChangeStart);
@@ -253,20 +254,12 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
 
         function onSlideChangeStart(swiper, slide, image) {
 
-            var spinner = slide.querySelector('paper-spinner');
-            if (spinner) {
-                spinner.active = true;
-            }
+            //loading.show();
         }
 
         function onSlideChangeEnd(swiper, slide, image) {
 
-            var spinner = slide.querySelector('paper-spinner');
-            if (spinner) {
-                spinner.active = false;
-                // Remove it because in IE it might just keep in spinning forever
-                spinner.parentNode.removeChild(spinner);
-            }
+            //loading.hide();
         }
 
         function getSwiperSlideHtmlFromSlide(item) {
@@ -274,7 +267,6 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
             var html = '';
             html += '<div class="swiper-slide" data-original="' + item.originalImage + '" data-itemid="' + item.Id + '" data-serverid="' + item.ServerId + '">';
             html += '<img data-src="' + item.imageUrl + '" class="swiper-lazy">';
-            html += '<paper-spinner></paper-spinner>';
             if (item.title || item.subtitle) {
                 html += '<div class="slideText">';
                 html += '<div class="slideTextInner">';
@@ -361,9 +353,9 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
 
         function play() {
 
-            var btnSlideshowPause = dlg.querySelector('.btnSlideshowPause');
+            var btnSlideshowPause = dlg.querySelector('.btnSlideshowPause i');
             if (btnSlideshowPause) {
-                btnSlideshowPause.icon = "slideshow:pause";
+                btnSlideshowPause.innerHTML = "pause";
             }
 
             swiperInstance.startAutoplay();
@@ -371,9 +363,9 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
 
         function pause() {
 
-            var btnSlideshowPause = dlg.querySelector('.btnSlideshowPause');
+            var btnSlideshowPause = dlg.querySelector('.btnSlideshowPause i');
             if (btnSlideshowPause) {
-                btnSlideshowPause.icon = "slideshow:play-arrow";
+                btnSlideshowPause.innerHTML = "play_arrow";
             }
 
             swiperInstance.stopAutoplay();
@@ -381,7 +373,7 @@ define(['dialogHelper', 'inputManager', 'connectionManager', 'layoutManager', 'f
 
         function playPause() {
 
-            var paused = dlg.querySelector('.btnSlideshowPause').icon != "slideshow:pause";
+            var paused = dlg.querySelector('.btnSlideshowPause i').innerHTML != "pause";
             if (paused) {
                 play();
             } else {

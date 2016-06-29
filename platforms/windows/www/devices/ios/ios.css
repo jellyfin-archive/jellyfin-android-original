@@ -52,34 +52,18 @@ body:not(.dashboardDocument) .mainDrawerButton {
     box-shadow: none;
 }
 
-    .libraryViewNav a {
+    .libraryViewNav .pageTabButton {
         font-weight: 400;
         text-transform: none;
-        color: #ccc !important;
-        padding: 12px 13px 8px;
     }
 
-    .libraryViewNav .tab-content {
-        display: block !important;
-    }
+.pageTabButton.is-active .pageTabButtonSelectionBar {
+    display: none !important;
+}
 
-    .libraryViewNav paper-tabs {
-        flex-grow: 0 !important;
-        height: 36px;
-    }
-
-    .libraryViewNav paper-tab {
-        height: auto !important;
-        flex-grow: 0 !important;
-    }
-
-    .libraryViewNav #selectionBar {
-        background-color: transparent !important;
-    }
-
-    .libraryViewNav #tabsContainer {
-        flex-grow: 0 !important;
-    }
+.libraryViewNav .pageTabButton.is-active {
+    color: #52B54B !important;
+}
 
 .ui-body-b .paperList:not(.criticReviewPaperList) {
     background-color: transparent;
@@ -102,15 +86,11 @@ body:not(.dashboardDocument) .mainDrawerButton {
     }
 }
 
-.libraryViewNav a {
-    border-bottom: 0;
-}
-
-.libraryViewNav .ui-btn-active, .libraryViewNav .iron-selected, .btnActiveCast {
+.btnActiveCast {
     color: #52B54B !important;
 }
 
-.libraryViewNav, paper-tabs {
+.libraryViewNav {
     font-size: 12px;
 }
 
@@ -135,16 +115,8 @@ h1, h1 a {
     justify-content: center;
 }
 
-.libraryPanelHeader span {
-    font-weight: 400;
-}
-
 .noSecondaryNavPage .itemBackdrop {
     margin-top: 0;
-}
-
-paper-tab {
-    text-transform: none !important;
 }
 
 .visualCardBox {
@@ -159,17 +131,8 @@ paper-tab {
         padding: 0;
     }
 
-/* Need the div specifier to gain preference over the value in card.css */
-div.cardBox {
-    margin: 5px;
-}
-
 .cardImage {
     border-radius: 10px;
-}
-
-.viewMenuSearch {
-    background: #1c1c1c;
 }
 
 .bottomFab {
@@ -203,4 +166,13 @@ div.cardBox {
 
 .videoSubtitles {
     font-size: 200% !important;
+}
+
+.alphabetPicker {
+    right: 5px !important;
+}
+
+.alphaPickerButton.selected {
+    background-color: transparent !important;
+    color: #52B54B !important;
 }

@@ -133,4 +133,29 @@
 
     bindToPlayer(MediaController.getCurrentPlayer());
 
+    //listen for the event
+    document.addEventListener("remote-event", function (event) {
+        var remoteEvent = event.remoteEvent;
+
+        switch (remoteEvent.subtype) {
+            case 'playpause':
+                MediaController.pause();
+                break;
+            case 'play':
+                MediaController.unpause();
+                break;
+            case 'pause':
+                MediaController.pause();
+                break;
+            case 'prevTrack':
+                MediaController.previousTrack();
+                break;
+            case 'nextTrack':
+                MediaController.nextTrack();
+                break;
+            default:
+                break;
+        }
+    })
+
 });

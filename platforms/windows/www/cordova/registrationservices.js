@@ -1,4 +1,4 @@
-﻿define(['jQuery', 'appSettings'], function ($, appSettings) {
+﻿define(['appSettings', 'loading', 'emby-button'], function (appSettings, loading) {
 
     function getRegistrationInfo(feature) {
         return ConnectionManager.getRegistrationInfo(feature, ApiClient);
@@ -7,6 +7,10 @@
     function validateFeature(feature) {
 
         console.log('validateFeature: ' + feature);
+        var unlockableFeatureCacheKey = 'featurepurchased-' + feature;
+        if (appSettings.get(unlockableFeatureCacheKey) == '1') {
+            return Promise.resolve();
+        }
 
         var unlockableProduct = IapManager.getProductInfo(feature);
 
@@ -16,6 +20,7 @@
             if (unlockableProduct.owned) {
 
                 // Cache this to eliminate the store as a possible point of failure in the future
+                appSettings.set(unlockableFeatureCacheKey, '1');
                 appSettings.set(unlockableCacheKey, '1');
                 return Promise.resolve();
             }
@@ -66,26 +71,20 @@
         });
     }
 
-    function cancelInAppPurchase() {
+    function cancelInAppPurchase(dialogHelper) {
 
         var elem = document.querySelector('.inAppPurchaseOverlay');
         if (elem) {
-            require(['dialogHelper'], function (dialogHelper) {
-
-                dialogHelper.close(elem);
-            });
+            dialogHelper.close(elem);
         }
     }
 
-    var isCancelled = true;
     var currentDisplayingProductInfos = [];
     var currentDisplayingResolve = null;
-    var currentDisplayingReject = null;
 
     function clearCurrentDisplayingInfo() {
         currentDisplayingProductInfos = [];
         currentDisplayingResolve = null;
-        currentDisplayingReject = null;
     }
 
     function showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject) {
@@ -100,7 +99,8 @@
         }
 
         var dlg = dialogHelper.createDialog({
-            size: 'fullscreen-border'
+            size: 'fullscreen-border',
+            removeOnClose: true
         });
 
         dlg.classList.add('ui-body-b');
@@ -135,9 +135,9 @@
 
             hasProduct = true;
             html += '<p>';
-            html += '<paper-button raised class="submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
+            html += '<button is="emby-button" type="button" class="raised submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
             html += subscriptionOptions[i].buttonText;
-            html += '</span></paper-button>';
+            html += '</span></button>';
             html += '</p>';
         }
 
@@ -149,16 +149,16 @@
                 unlockText = Globalize.translate('ButtonUnlockPrice', unlockableProductInfo.price);
             }
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnPurchase" data-feature="' + unlockableProductInfo.feature + '"><iron-icon icon="check"></iron-icon><span>' + unlockText + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnPurchase" data-feature="' + unlockableProductInfo.feature + '"><iron-icon icon="check"></iron-icon><span>' + unlockText + '</span></button>';
             html += '</p>';
         }
 
         if (hasProduct && IapManager.enableRestore(dialogOptions.feature, subscriptionOptions, unlockableProductInfo)) {
             html += '<p>';
             if (browserInfo.safari) {
-                html += '<paper-button raised class="secondary block btnRestorePurchase subdued"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></paper-button>';
+                html += '<button is="emby-button" type="button" class="raised secondary block btnRestorePurchase subdued"><iron-icon icon="check"></iron-icon><span>' + Globalize.translate('ButtonRestorePreviousPurchase') + '</span></button>';
             } else {
-                html += '<paper-button raised class="secondary block btnRestorePurchase subdued"><span>' + Globalize.translate('AlreadyPaid') + '</span></paper-button>';
+                html += '<button is="emby-button" type="button" class="raised secondary block btnRestorePurchase subdued"><span>' + Globalize.translate('AlreadyPaid') + '</span></button>';
             }
             html += '</p>';
         }
@@ -174,7 +174,7 @@
 
         if (dialogOptions.enablePlayMinute) {
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnCloseDialog subdued"><iron-icon icon="play-arrow"></iron-icon><span>' + Globalize.translate('ButtonPlayOneMinute') + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnCloseDialog subdued"><iron-icon icon="play-arrow"></iron-icon><span>' + Globalize.translate('ButtonPlayOneMinute') + '</span></button>';
             html += '</p>';
         }
 
@@ -184,16 +184,47 @@
         dlg.innerHTML = html;
         document.body.appendChild(dlg);
 
-        initInAppPurchaseElementEvents(dlg, dialogOptions.feature, resolve, reject);
+        var btnPurchases = dlg.querySelectorAll('.btnPurchase');
+        for (var i = 0, length = btnPurchases.length; i < length; i++) {
+            btnPurchases[i].addEventListener('click', onPurchaseButtonClick);
+        }
 
-        dialogHelper.open(dlg);
+        var btnRestorePurchase = dlg.querySelector('.btnRestorePurchase');
+        if (btnRestorePurchase) {
+            btnRestorePurchase.addEventListener('click', function () {
 
-        $('.btnCloseDialog', dlg).on('click', function () {
+                restorePurchase();
+            });
+        }
 
-            dialogHelper.close(dlg);
-        });
+        loading.hide();
 
-        $(dlg).on('iron-overlay-closed', function () {
+        function onCloseButtonClick() {
+
+            var onConfirmed = function () {
+                dialogHelper.close(dlg);
+                reject();
+            };
+
+            if (dialogOptions.feature == 'playback') {
+                Dashboard.alert({
+                    message: Globalize.translate('ThankYouForTryingEnjoyOneMinute'),
+                    title: Globalize.translate('HeaderTryPlayback'),
+                    callback: onConfirmed
+                });
+            } else {
+                onConfirmed();
+            }
+        }
+
+        var btnCloseDialogs = dlg.querySelectorAll('.btnCloseDialog');
+        for (var i = 0, length = btnCloseDialogs.length; i < length; i++) {
+            btnCloseDialogs[i].addEventListener('click', onCloseButtonClick);
+        }
+
+        dlg.addEventListener('close', function () {
+
+            clearCurrentDisplayingInfo();
 
             if (window.TabBar) {
                 TabBar.show();
@@ -201,6 +232,8 @@
         });
 
         dlg.classList.add('inAppPurchaseOverlay');
+
+        dialogHelper.open(dlg);
     }
 
     function getSubscriptionBenefits() {
@@ -278,53 +311,13 @@
         return html;
     }
 
-    function initInAppPurchaseElementEvents(elem, feature, resolve, reject) {
+    function onPurchaseButtonClick() {
 
-        isCancelled = true;
-
-        $('.btnPurchase', elem).on('click', function () {
-
-            isCancelled = false;
-
-            if (this.getAttribute('data-email') == 'true') {
-                acquireEmail(this.getAttribute('data-feature'));
-            } else {
-                IapManager.beginPurchase(this.getAttribute('data-feature'));
-            }
-        });
-
-        $('.btnRestorePurchase', elem).on('click', function () {
-
-            isCancelled = false;
-            restorePurchase();
-        });
-
-        $(elem).on('iron-overlay-closed', function () {
-
-            clearCurrentDisplayingInfo();
-
-            var overlay = this;
-
-            if (isCancelled) {
-
-                if (feature == 'playback') {
-                    Dashboard.alert({
-                        message: Globalize.translate('ThankYouForTryingEnjoyOneMinute'),
-                        title: Globalize.translate('HeaderTryPlayback'),
-                        callback: function () {
-                            reject();
-                            $(overlay).remove();
-                        }
-                    });
-                } else {
-                    reject();
-                    $(overlay).remove();
-                }
-
-            } else {
-                $(this).remove();
-            }
-        });
+        if (this.getAttribute('data-email') == 'true') {
+            acquireEmail(this.getAttribute('data-feature'));
+        } else {
+            IapManager.beginPurchase(this.getAttribute('data-feature'));
+        }
     }
 
     function restorePurchase() {
@@ -332,7 +325,8 @@
         require(['dialogHelper'], function (dialogHelper) {
 
             var dlg = dialogHelper.createDialog({
-                size: 'fullscreen-border'
+                size: 'fullscreen-border',
+                removeOnClose: true
             });
 
             dlg.classList.add('ui-body-b');
@@ -351,16 +345,18 @@
             html += '</p>';
 
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnRestoreSub subdued"><span>' + Globalize.translate('IHaveEmbyPremiere') + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnRestoreSub subdued"><span>' + Globalize.translate('IHaveEmbyPremiere') + '</span></button>';
             html += '</p>';
             html += '<p>';
-            html += '<paper-button raised class="secondary block btnRestoreUnlock subdued"><span>' + Globalize.translate('IPurchasedThisApp') + '</span></paper-button>';
+            html += '<button is="emby-button" type="button" class="raised secondary block btnRestoreUnlock subdued"><span>' + Globalize.translate('IPurchasedThisApp') + '</span></button>';
             html += '</p>';
 
             html += '</div>';
 
             dlg.innerHTML = html;
             document.body.appendChild(dlg);
+
+            loading.hide();
 
             dialogHelper.open(dlg);
 
@@ -400,7 +396,6 @@
                 showInAppPurchaseElement(dialogHelper, subscriptionOptions, unlockableProductInfo, dialogOptions, resolve, reject);
 
                 currentDisplayingResolve = resolve;
-                currentDisplayingReject = reject;
             });
         });
     }
@@ -446,10 +441,11 @@
 
             }).length) {
 
-                isCancelled = false;
+                require(['dialogHelper'], function (dialogHelper) {
 
-                cancelInAppPurchase();
-                resolve.resolve();
+                    cancelInAppPurchase(dialogHelper);
+                    resolve();
+                });
             }
         }
     }

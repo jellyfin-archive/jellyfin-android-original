@@ -10,9 +10,6 @@
     <feature name="ActionSheet">
         <param name="android-package" value="nl.xservices.plugins.actionsheet.ActionSheet" />
     </feature>
-    <feature name="SearchBar">
-        <param name="android-package" value="net.spantree.searchbar.SearchBar" />
-    </feature>
     <feature name="AppVersion">
         <param name="android-package" value="uk.co.whiteoctober.cordova.AppVersion" />
     </feature>

@@ -35,9 +35,6 @@
         "com.crewmeister.cordova-ios-backgroundcolor": {
             "PACKAGE_NAME": "Emby"
         },
-        "com.dieam.searchbar": {
-            "PACKAGE_NAME": "Emby"
-        },
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "Emby"
         },

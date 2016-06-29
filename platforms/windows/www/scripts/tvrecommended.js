@@ -1,4 +1,4 @@
-﻿define(['libraryBrowser', 'scripts/alphapicker', 'scrollStyles'], function (libraryBrowser) {
+﻿define(['libraryBrowser', 'scrollStyles'], function (libraryBrowser) {
 
     return function (view, params) {
 
@@ -24,13 +24,9 @@
 
         function loadNextUp() {
 
-            var limit = AppInfo.hasLowImageBandwidth ?
-             16 :
-             24;
-
             var query = {
 
-                Limit: limit,
+                Limit: 24,
                 Fields: "PrimaryImageAspectRatio,SeriesInfo,DateCreated,SyncInfo",
                 UserId: Dashboard.getCurrentUserId(),
                 ImageTypeLimit: 1,
@@ -112,7 +108,8 @@
                 ExcludeLocationTypes: "Virtual",
                 ParentId: parentId,
                 ImageTypeLimit: 1,
-                EnableImageTypes: "Primary,Backdrop,Banner,Thumb"
+                EnableImageTypes: "Primary,Backdrop,Banner,Thumb",
+                EnableTotalRecordCount: false
             };
 
             ApiClient.getItems(Dashboard.getCurrentUserId(), options).then(function (result) {
@@ -231,21 +228,20 @@
             });
         }
 
+        var mdlTabs = view.querySelector('.libraryViewNav');
+
         function onPlaybackStop(e, state) {
 
             if (state.NowPlayingItem && state.NowPlayingItem.MediaType == 'Video') {
 
-                var pageTabsContainer = view.querySelector('.pageTabsContainer');
-
-                pageTabsContainer.dispatchEvent(new CustomEvent("tabchange", {
+                renderedTabs = [];
+                mdlTabs.dispatchEvent(new CustomEvent("tabchange", {
                     detail: {
-                        selectedTabIndex: libraryBrowser.selectedTab(pageTabsContainer)
+                        selectedTabIndex: libraryBrowser.selectedTab(mdlTabs)
                     }
                 }));
             }
         }
-
-        var pageTabsContainer = view.querySelector('.pageTabsContainer');
 
         var baseUrl = 'tv.html';
         var topParentId = params.topParentId;
@@ -259,10 +255,9 @@
             view.querySelector('#resumableItems').classList.remove('hiddenScrollX');
         }
         libraryBrowser.createCardMenus(view.querySelector('#resumableItems'));
+        libraryBrowser.configurePaperLibraryTabs(view, mdlTabs, view.querySelectorAll('.pageTabContent'), [0, 1, 2, 4, 5, 6]);
 
-        libraryBrowser.configurePaperLibraryTabs(view, view.querySelector('paper-tabs'), pageTabsContainer, baseUrl);
-
-        pageTabsContainer.addEventListener('tabchange', function (e) {
+        mdlTabs.addEventListener('tabchange', function (e) {
             loadTab(view, parseInt(e.detail.selectedTabIndex));
         });
 

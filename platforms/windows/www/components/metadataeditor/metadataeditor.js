@@ -1,4 +1,4 @@
-﻿define(['dialogHelper', 'jQuery', 'paper-checkbox', 'paper-input', 'paper-item-body', 'paper-icon-item', 'paper-textarea', 'paper-fab'], function (dialogHelper, $) {
+﻿define(['dialogHelper', 'datetime', 'jQuery', 'emby-checkbox', 'emby-input', 'emby-select', 'paper-item-body', 'paper-icon-item', 'emby-textarea', 'paper-fab', 'paper-icon-button-light'], function (dialogHelper, datetime, $) {
 
     var currentContext;
     var metadataEditorInfo;
@@ -96,7 +96,7 @@
 
         if (currentItem[property]) {
 
-            var date = parseISO8601Date(currentItem[property], { toLocal: true });
+            var date = datetime.parseISO8601Date(currentItem[property], true);
 
             var parts = date.toISOString().split('T');
 
@@ -133,7 +133,6 @@
                 CriticRating: $('#txtCriticRating', form).val(),
                 CriticRatingSummary: $('#txtCriticRatingSummary', form).val(),
                 IndexNumber: $('#txtIndexNumber', form).val() || null,
-                DisplaySpecialsWithSeasons: form.querySelector('#chkDisplaySpecialsInline').checked,
                 AbsoluteEpisodeNumber: $('#txtAbsoluteEpisodeNumber', form).val(),
                 DvdEpisodeNumber: $('#txtDvdEpisodeNumber', form).val(),
                 DvdSeasonNumber: $('#txtDvdSeasonNumber', form).val(),
@@ -270,82 +269,15 @@
 
     function showRefreshMenu(context, button) {
 
-        var items = [];
-
-        items.push({
-            name: Globalize.translate('ButtonLocalRefresh'),
-            id: 'local',
-            ironIcon: 'refresh'
+        require(['refreshDialog'], function (refreshDialog) {
+            new refreshDialog({
+                itemIds: [currentItem.Id],
+                serverId: ApiClient.serverInfo().Id
+            }).show();
         });
-
-        items.push({
-            name: Globalize.translate('ButtonAddMissingData'),
-            id: 'missing',
-            ironIcon: 'refresh'
-        });
-
-        items.push({
-            name: Globalize.translate('ButtonFullRefresh'),
-            id: 'full',
-            ironIcon: 'refresh'
-        });
-
-        require(['actionsheet'], function (actionsheet) {
-
-            actionsheet.show({
-                items: items,
-                positionTo: button,
-                callback: function (id) {
-
-                    if (id) {
-
-                        Dashboard.showLoadingMsg();
-                        // For now this is a hack
-                        setTimeout(function () {
-                            Dashboard.hideLoadingMsg();
-                        }, 5000);
-                    }
-
-                    switch (id) {
-
-                        case 'local':
-                            ApiClient.refreshItem(currentItem.Id, {
-                                Recursive: true,
-                                ImageRefreshMode: 'None',
-                                MetadataRefreshMode: 'ValidationOnly',
-                                ReplaceAllImages: false,
-                                ReplaceAllMetadata: false
-                            });
-                            break;
-                        case 'missing':
-                            ApiClient.refreshItem(currentItem.Id, {
-                                Recursive: true,
-                                ImageRefreshMode: 'FullRefresh',
-                                MetadataRefreshMode: 'FullRefresh',
-                                ReplaceAllImages: false,
-                                ReplaceAllMetadata: false
-                            });
-                            break;
-                        case 'full':
-                            ApiClient.refreshItem(currentItem.Id, {
-                                Recursive: true,
-                                ImageRefreshMode: 'FullRefresh',
-                                MetadataRefreshMode: 'FullRefresh',
-                                ReplaceAllImages: false,
-                                ReplaceAllMetadata: true
-                            });
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            });
-
-        });
-
     }
 
-    function showMoreMenu(context, button) {
+    function showMoreMenu(context, button, user) {
 
         var items = [];
 
@@ -355,11 +287,13 @@
             ironIcon: 'photo'
         });
 
-        items.push({
-            name: Globalize.translate('ButtonIdentify'),
-            id: 'identify',
-            ironIcon: 'info'
-        });
+        if (LibraryBrowser.canIdentify(user, currentItem.Type)) {
+            items.push({
+                name: Globalize.translate('ButtonIdentify'),
+                id: 'identify',
+                ironIcon: 'info'
+            });
+        }
 
         items.push({
             name: Globalize.translate('ButtonRefresh'),
@@ -377,7 +311,9 @@
                     switch (id) {
 
                         case 'identify':
-                            LibraryBrowser.identifyItem(currentItem.Id);
+                            LibraryBrowser.identifyItem(currentItem.Id).then(function () {
+                                reload(context, currentItem.Id);
+                            });
                             break;
                         case 'refresh':
                             showRefreshMenu(context, button);
@@ -440,7 +376,10 @@
 
         context.querySelector('.btnMore').addEventListener('click', function (e) {
 
-            showMoreMenu(context, e.target);
+            Dashboard.getCurrentUser().then(function (user) {
+                showMoreMenu(context, e.target, user);
+            });
+
         });
 
         context.querySelector('.btnHeaderSave').addEventListener('click', function (e) {
@@ -567,15 +506,19 @@
 
             var labelText = Globalize.translate('LabelDynamicExternalId').replace('{0}', idInfo.Name);
 
-            html += '<div>';
+            html += '<div class="inputContainer">';
+            html += '<div style="display: flex; align-items: center;">';
 
             var value = providerIds[idInfo.Key] || '';
 
-            html += '<paper-input style="display:inline-block;width:80%;" class="txtExternalId" value="' + value + '" data-providerkey="' + idInfo.Key + '" data-formatstring="' + formatString + '" data-buttonclass="' + buttonId + '" id="' + id + '" label="' + labelText + '"></paper-input>';
+            html += '<div style="flex-grow:1;">';
+            html += '<input is="emby-input" class="txtExternalId" value="' + value + '" data-providerkey="' + idInfo.Key + '" data-formatstring="' + formatString + '" data-buttonclass="' + buttonId + '" id="' + id + '" label="' + labelText + '"/>';
+            html += '</div>';
 
             if (formatString) {
-                html += '<a class="clearLink ' + buttonId + '" href="#" target="_blank" data-role="none" style="float: none; width: 1.75em"><paper-icon-button icon="open-in-browser"></paper-icon-button></a>';
+                html += '<a class="clearLink ' + buttonId + '" href="#" target="_blank" data-role="none" style="float: none; width: 1.75em"><button type="button" is="paper-icon-button-light"><iron-icon icon="open-in-browser"></iron-icon></button></a>';
             }
+            html += '</div>';
 
             html += '</div>';
         }
@@ -726,27 +669,15 @@
             $('#tagsCollapsible', context).hide();
             $('#metadataSettingsCollapsible', context).hide();
             $('#fldPremiereDate', context).hide();
-            $('#fldSortName', context).hide();
             $('#fldDateAdded', context).hide();
             $('#fldYear', context).hide();
         } else {
             $('#tagsCollapsible', context).show();
             $('#metadataSettingsCollapsible', context).show();
             $('#fldPremiereDate', context).show();
-            $('#fldSortName', context).show();
             $('#fldDateAdded', context).show();
             $('#fldYear', context).show();
         }
-
-        Dashboard.getCurrentUser().then(function (user) {
-
-            if (LibraryBrowser.getMoreCommands(item, user).indexOf('identify') != -1) {
-
-                $('#btnIdentify', context).show();
-            } else {
-                $('#btnIdentify', context).hide();
-            }
-        });
 
         if (item.Type == "Movie" || item.Type == "Trailer" || item.Type == "BoxSet") {
             $('#keywordsCollapsible', context).show();
@@ -761,14 +692,14 @@
         }
 
         if (item.Type == "Person") {
-            context.querySelector('#txtProductionYear').label = Globalize.translate('LabelBirthYear');
-            context.querySelector("#txtPremiereDate").label = Globalize.translate('LabelBirthDate');
-            context.querySelector("#txtEndDate").label = Globalize.translate('LabelDeathDate');
+            context.querySelector('#txtProductionYear').label(Globalize.translate('LabelBirthYear'));
+            context.querySelector("#txtPremiereDate").label(Globalize.translate('LabelBirthDate'));
+            context.querySelector("#txtEndDate").label(Globalize.translate('LabelDeathDate'));
             $('#fldPlaceOfBirth', context).show();
         } else {
-            context.querySelector('#txtProductionYear').label = Globalize.translate('LabelYear');
-            context.querySelector("#txtPremiereDate").label = Globalize.translate('LabelReleaseDate');
-            context.querySelector("#txtEndDate").label = Globalize.translate('LabelEndDate');
+            context.querySelector('#txtProductionYear').label(Globalize.translate('LabelYear'));
+            context.querySelector("#txtPremiereDate").label(Globalize.translate('LabelReleaseDate'));
+            context.querySelector("#txtEndDate").label(Globalize.translate('LabelEndDate'));
             $('#fldPlaceOfBirth', context).hide();
         }
 
@@ -782,13 +713,13 @@
             $('#fldIndexNumber', context).show();
 
             if (item.Type == "Episode") {
-                context.querySelector('#txtIndexNumber').label = Globalize.translate('LabelEpisodeNumber');
+                context.querySelector('#txtIndexNumber').label(Globalize.translate('LabelEpisodeNumber'));
             } else if (item.Type == "Season") {
-                context.querySelector('#txtIndexNumber').label = Globalize.translate('LabelSeasonNumber');
+                context.querySelector('#txtIndexNumber').label(Globalize.translate('LabelSeasonNumber'));
             } else if (item.Type == "Audio") {
-                context.querySelector('#txtIndexNumber').label = Globalize.translate('LabelTrackNumber');
+                context.querySelector('#txtIndexNumber').label(Globalize.translate('LabelTrackNumber'));
             } else {
-                context.querySelector('#txtIndexNumber').label = Globalize.translate('LabelNumber');
+                context.querySelector('#txtIndexNumber').label(Globalize.translate('LabelNumber'));
             }
         } else {
             $('#fldIndexNumber', context).hide();
@@ -798,26 +729,19 @@
             $('#fldParentIndexNumber', context).show();
 
             if (item.Type == "Episode") {
-                context.querySelector('#txtParentIndexNumber').label = Globalize.translate('LabelSeasonNumber');
+                context.querySelector('#txtParentIndexNumber').label(Globalize.translate('LabelSeasonNumber'));
             } else if (item.Type == "Audio") {
-                context.querySelector('#txtParentIndexNumber').label = Globalize.translate('LabelDiscNumber');
+                context.querySelector('#txtParentIndexNumber').label(Globalize.translate('LabelDiscNumber'));
             } else {
-                context.querySelector('#txtParentIndexNumber').label = Globalize.translate('LabelParentNumber');
+                context.querySelector('#txtParentIndexNumber').label(Globalize.translate('LabelParentNumber'));
             }
         } else {
             $('#fldParentIndexNumber', context).hide();
         }
 
-        if (item.Type == "Series") {
-            $('#fldDisplaySpecialsInline', context).show();
-        } else {
-            $('#fldDisplaySpecialsInline', context).hide();
-        }
-
         if (item.Type == "BoxSet") {
             $('#fldDisplayOrder', context).show();
 
-            $('#labelDisplayOrder', context).html(Globalize.translate('LabelTitleDisplayOrder'));
             $('#selectDisplayOrder', context).html('<option value="SortName">' + Globalize.translate('OptionSortName') + '</option><option value="PremiereDate">' + Globalize.translate('OptionReleaseDate') + '</option>');
         } else {
             $('#selectDisplayOrder', context).html('');
@@ -881,8 +805,6 @@
         }
         populateInternetProviderSettings(context, item, item.LockedFields);
 
-        context.querySelector('#chkDisplaySpecialsInline').checked = item.DisplaySpecialsWithSeasons || false;
-
         $('#txtPath', context).val(item.Path || '');
         $('#txtName', context).val(item.Name || "");
         $('#txtOriginalName', context).val(item.OriginalTitle || "");
@@ -935,7 +857,7 @@
 
         if (item.DateCreated) {
             try {
-                date = parseISO8601Date(item.DateCreated, { toLocal: true });
+                date = datetime.parseISO8601Date(item.DateCreated, true);
 
                 $('#txtDateAdded', context).val(date.toISOString().slice(0, 10));
             } catch (e) {
@@ -947,7 +869,7 @@
 
         if (item.PremiereDate) {
             try {
-                date = parseISO8601Date(item.PremiereDate, { toLocal: true });
+                date = datetime.parseISO8601Date(item.PremiereDate, true);
 
                 $('#txtPremiereDate', context).val(date.toISOString().slice(0, 10));
             } catch (e) {
@@ -959,7 +881,7 @@
 
         if (item.EndDate) {
             try {
-                date = parseISO8601Date(item.EndDate, { toLocal: true });
+                date = datetime.parseISO8601Date(item.EndDate, true);
 
                 $('#txtEndDate', context).val(date.toISOString().slice(0, 10));
             } catch (e) {
@@ -1058,7 +980,7 @@
 
             html += '</paper-item-body>';
 
-            html += '<paper-icon-button icon="delete" data-index="' + i + '" class="btnRemoveFromEditorList"></paper-icon-button>';
+            html += '<button type="button" is="paper-icon-button-light" data-index="' + i + '" class="btnRemoveFromEditorList"><iron-icon icon="delete"></iron-icon></button>';
 
             html += '</paper-icon-item>';
         }
@@ -1095,7 +1017,7 @@
             html += '</a>';
             html += '</paper-item-body>';
 
-            html += '<paper-icon-button icon="delete" data-index="' + i + '" class="btnDeletePerson"></paper-icon-button>';
+            html += '<button type="button" is="paper-icon-button-light" data-index="' + i + '" class="btnDeletePerson"><iron-icon icon="delete"></iron-icon></button>';
 
             html += '</paper-icon-item>';
         }
@@ -1127,7 +1049,10 @@
             var name = field.name;
             var value = field.value || field.name;
             var checkedHtml = currentFields.indexOf(value) == -1 ? ' checked' : '';
-            html += '<paper-checkbox class="selectLockedField" data-value="' + value + '" style="display:block;margin:1em 0;"' + checkedHtml + '>' + name + '</paper-checkbox>';
+            html += '<label>';
+            html += '<input type="checkbox" is="emby-checkbox" class="selectLockedField" data-value="' + value + '"' + checkedHtml + '/>';
+            html += '<span>' + name + '</span>';
+            html += '</label>';
         }
         return html;
     }

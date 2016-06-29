@@ -1,11 +1,9 @@
-﻿define(['jQuery'], function ($) {
+﻿define([], function () {
 
     function forceScroll() {
 
-        var doc = $(document);
-
         // Try to make it react quicker to the orientation change
-        doc.scrollTop(doc.scrollTop() + 1);
+        window.scrollTo(0, window.pageYOffset + 1);
     }
 
     function onOrientationChange() {

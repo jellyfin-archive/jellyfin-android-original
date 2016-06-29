@@ -17,14 +17,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.dieam.searchbar/www/searchbar.js",
-        "id": "com.dieam.searchbar.searchbar",
-        "pluginId": "com.dieam.searchbar",
-        "clobbers": [
-            "cordova.searchbar"
-        ]
-    },
-    {
         "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
         "id": "com.drifty.cordova.cameraroll.CameraRoll",
         "pluginId": "com.drifty.cordova.cameraroll",
@@ -387,7 +379,6 @@ module.exports.metadata =
     "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",
-    "com.dieam.searchbar": "2.1.6",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "org.apache.cordova.background-download": "0.0.2",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
