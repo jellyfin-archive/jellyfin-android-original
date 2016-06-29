@@ -56,6 +56,9 @@
 
             ApiClient.getItems(Dashboard.getCurrentUserId(), query).then(function (result) {
 
+                // Scroll back up so they can see the results from the beginning
+                window.scrollTo(0, 0);
+
                 var pagingHtml = LibraryBrowser.getQueryPagingHtml({
                     startIndex: query.StartIndex,
                     limit: query.Limit,
@@ -144,7 +147,7 @@
 
         function initPage(tabContent) {
 
-            $('.itemsContainer', tabContent).on('needsrefresh', function () {
+            tabContent.querySelector('.itemsContainer').addEventListener('needsrefresh', function () {
 
                 reloadItems(tabContent);
             });
@@ -199,12 +202,13 @@
                 });
             });
 
-            tabContent.querySelector('.btnSelectView').addEventListener('click', function (e) {
+            var btnSelectView = tabContent.querySelector('.btnSelectView');
+            btnSelectView.addEventListener('click', function (e) {
 
                 libraryBrowser.showLayoutMenu(e.target, self.getCurrentViewStyle(), 'List,Poster,PosterCard'.split(','));
             });
 
-            tabContent.querySelector('.btnSelectView').addEventListener('layoutchange', function (e) {
+            btnSelectView.addEventListener('layoutchange', function (e) {
 
                 var viewStyle = e.detail.viewStyle;
                 getPageData(tabContent).view = viewStyle;

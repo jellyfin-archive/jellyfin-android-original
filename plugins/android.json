@@ -159,9 +159,6 @@
         "nl.x-services.plugins.backgroundaudio": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.dieam.searchbar": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.mb.android"
         },

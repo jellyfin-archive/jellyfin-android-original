@@ -34,13 +34,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.dieam.searchbar/www/searchbar.js",
-        "id": "com.dieam.searchbar.searchbar",
-        "clobbers": [
-            "cordova.searchbar"
-        ]
-    },
-    {
         "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
         "id": "com.drifty.cordova.cameraroll.CameraRoll",
         "clobbers": [

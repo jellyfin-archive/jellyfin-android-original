@@ -311,9 +311,6 @@
         "cordova-plugin-webserver": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.dieam.searchbar": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.emby.mobile"
         },

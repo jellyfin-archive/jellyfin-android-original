@@ -6,8 +6,8 @@
         if (target.tagName == 'A' && target.getAttribute('target') == '_blank') {
             var url = target.href || target.getAttribute('href');
 
-            window.plugins.launcher.launch({
-                uri: url
+            require(['shell'], function (shell) {
+                shell.openUrl(url);
             });
 
             //window.open(url, '_system');

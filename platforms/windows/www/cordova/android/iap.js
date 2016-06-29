@@ -129,14 +129,7 @@
                 return true;
             }
 
-            return testDeviceId(device.uuid).then(function (isUnlocked) {
-
-                if (isUnlocked) {
-                    return true;
-                }
-
-                return testDeviceId(MainActivity.getAndroidDeviceId());
-            });
+            return testDeviceId(device.uuid);
         });
     }
 

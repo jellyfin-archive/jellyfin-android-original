@@ -3,7 +3,9 @@
     outline: 0 !important;
     vertical-align: middle;
     width: auto;
-    margin: 0 .7em;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .btnNotificationsInner {
@@ -11,7 +13,7 @@
     font-weight: 500;
     position: relative;
     border-radius: 1000px;
-    background: #2E7D32;
+    background: #444;
     line-height: 28px;
     min-width: 30px;
     display: inline-flex;
@@ -21,7 +23,7 @@
 }
 
 .levelNormal {
-    background-color: #444;
+    background-color: #43A047;
 }
 
 .levelWarning {

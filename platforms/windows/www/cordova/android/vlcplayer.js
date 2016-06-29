@@ -171,7 +171,7 @@
 
                     var userStartPos = playbackStartInfo.PlayMethod == 'Transcode' ? ((streamInfo.startTimeTicksOffset || 0) / 10000) : startPosMs;
 
-                    MediaPlayer.getDeviceProfile().then(function (deviceProfile) {
+                    Dashboard.getDeviceProfile().then(function (deviceProfile) {
 
                         var timeLimitMs = MediaController.playbackTimeLimitMs || 0;
 

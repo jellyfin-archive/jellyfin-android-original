@@ -23,10 +23,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"SearchBar\"><param name=\"android-package\" value=\"net.spantree.searchbar.SearchBar\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"AppVersion\"><param name=\"android-package\" value=\"uk.co.whiteoctober.cordova.AppVersion\" /></feature>",
                             "count": 1
                         },
@@ -163,9 +159,6 @@
         "nl.x-services.plugins.backgroundaudio": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.dieam.searchbar": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -245,13 +238,6 @@
             "id": "nl.x-services.plugins.actionsheet.ActionSheet",
             "clobbers": [
                 "window.plugins.actionsheet"
-            ]
-        },
-        {
-            "file": "plugins/com.dieam.searchbar/www/searchbar.js",
-            "id": "com.dieam.searchbar.searchbar",
-            "clobbers": [
-                "cordova.searchbar"
             ]
         },
         {
