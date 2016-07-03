@@ -4,16 +4,14 @@
 
         // android
         if (window.ApiClientBridge) {
-            return new Promise(function (resolve, reject) {
-                var json = ApiClientBridge.getLocalMediaSource(serverId, itemId);
+            var json = ApiClientBridge.getLocalMediaSource(serverId, itemId);
 
-                if (json) {
-                    resolve(JSON.parse(json));
-                }
-                else {
-                    resolve(null);
-                }
-            });
+            if (json) {
+                return Promise.resolve(JSON.parse(json));
+            }
+            else {
+                return Promise.resolve(null);
+            }
         }
 
         return getLocalItem(itemId, serverId).then(function (localItem) {
@@ -856,11 +854,12 @@
 
     function translateFilePath(path) {
 
+        // android
+        if (window.NativeFileSystem) {
+            return Promise.resolve(NativeFileSystem.translateFilePath(path));
+        }
+
         return new Promise(function (resolve, reject) {
-            if (browserInfo.android) {
-                resolve('file://' + path);
-                return;
-            }
 
             resolveFile(path, null, function (fileEntry) {
                 console.log('translateFilePath fileExists: true - path: ' + path);

@@ -215,6 +215,11 @@
                 var current = LibraryBrowser.selectedTab(tabs);
                 tabs.selectedTabIndex = selected;
                 if (current == selected) {
+                    tabs.dispatchEvent(new CustomEvent("beforetabchange", {
+                        detail: {
+                            selectedTabIndex: selected
+                        }
+                    }));
                     tabs.dispatchEvent(new CustomEvent("tabchange", {
                         detail: {
                             selectedTabIndex: selected
@@ -289,6 +294,12 @@
                         var index = parseInt(link.getAttribute('data-index'));
                         var newPanel = panels[index];
 
+                        tabs.dispatchEvent(new CustomEvent("beforetabchange", {
+                            detail: {
+                                selectedTabIndex: index
+                            }
+                        }));
+
                         // If toCenter is called syncronously within the click event, it sometimes ends up canceling it
                         setTimeout(function () {
 
@@ -355,6 +366,11 @@
                         LibraryBrowser.selectedTab(pageTabsContainer, 0);
                         return;
                     }
+                    pageTabsContainer.dispatchEvent(new CustomEvent("beforetabchange", {
+                        detail: {
+                            selectedTabIndex: LibraryBrowser.selectedTab(pageTabsContainer)
+                        }
+                    }));
                     pageTabsContainer.dispatchEvent(new CustomEvent("tabchange", {
                         detail: {
                             selectedTabIndex: LibraryBrowser.selectedTab(pageTabsContainer)
@@ -773,18 +789,24 @@
 
             editImages: function (itemId) {
 
-                require(['components/imageeditor/imageeditor'], function (ImageEditor) {
+                return new Promise(function (resolve, reject) {
 
-                    ImageEditor.show(itemId);
+                    require(['components/imageeditor/imageeditor'], function (ImageEditor) {
+
+                        ImageEditor.show(itemId).then(resolve, reject);
+                    });
                 });
             },
 
             editSubtitles: function (itemId) {
 
-                require(['subtitleEditor'], function (subtitleEditor) {
+                return new Promise(function (resolve, reject) {
 
-                    var serverId = ApiClient.serverInfo().Id;
-                    subtitleEditor.show(itemId, serverId);
+                    require(['subtitleEditor'], function (subtitleEditor) {
+
+                        var serverId = ApiClient.serverInfo().Id;
+                        subtitleEditor.show(itemId, serverId).then(resolve, reject);
+                    });
                 });
             },
 
@@ -889,93 +911,96 @@
                     });
                 }
 
-                var serverId = ApiClient.serverInfo().Id;
+                return new Promise(function (resolve, reject) {
 
-                require(['actionsheet'], function (actionsheet) {
+                    var serverId = ApiClient.serverInfo().Id;
 
-                    actionsheet.show({
-                        items: items,
-                        positionTo: positionTo,
-                        callback: function (id) {
+                    require(['actionsheet'], function (actionsheet) {
 
-                            switch (id) {
+                        actionsheet.show({
+                            items: items,
+                            positionTo: positionTo,
+                            callback: function (id) {
 
-                                case 'share':
-                                    require(['sharingmanager'], function (sharingManager) {
-                                        sharingManager.showMenu({
-                                            serverId: serverId,
-                                            itemId: itemId
+                                switch (id) {
+
+                                    case 'share':
+                                        require(['sharingmanager'], function (sharingManager) {
+                                            sharingManager.showMenu({
+                                                serverId: serverId,
+                                                itemId: itemId
+                                            });
                                         });
-                                    });
-                                    break;
-                                case 'addtocollection':
-                                    require(['collectionEditor'], function (collectionEditor) {
+                                        break;
+                                    case 'addtocollection':
+                                        require(['collectionEditor'], function (collectionEditor) {
 
-                                        new collectionEditor().show({
-                                            items: [itemId],
-                                            serverId: serverId
+                                            new collectionEditor().show({
+                                                items: [itemId],
+                                                serverId: serverId
+                                            });
                                         });
-                                    });
-                                    break;
-                                case 'playlist':
-                                    require(['playlistEditor'], function (playlistEditor) {
-                                        new playlistEditor().show({
-                                            items: [itemId],
-                                            serverId: serverId
+                                        break;
+                                    case 'playlist':
+                                        require(['playlistEditor'], function (playlistEditor) {
+                                            new playlistEditor().show({
+                                                items: [itemId],
+                                                serverId: serverId
+                                            });
                                         });
-                                    });
-                                    break;
-                                case 'delete':
-                                    LibraryBrowser.deleteItems([itemId]);
-                                    break;
-                                case 'download':
-                                    {
-                                        require(['fileDownloader'], function (fileDownloader) {
+                                        break;
+                                    case 'delete':
+                                        LibraryBrowser.deleteItems([itemId]);
+                                        break;
+                                    case 'download':
+                                        {
+                                            require(['fileDownloader'], function (fileDownloader) {
 
-                                            var downloadHref = ApiClient.getUrl("Items/" + itemId + "/Download", {
-                                                api_key: ApiClient.accessToken()
+                                                var downloadHref = ApiClient.getUrl("Items/" + itemId + "/Download", {
+                                                    api_key: ApiClient.accessToken()
+                                                });
+
+                                                fileDownloader.download([
+                                                {
+                                                    url: downloadHref,
+                                                    itemId: itemId,
+                                                    serverId: serverId
+                                                }]);
                                             });
 
-                                            fileDownloader.download([
-                                            {
-                                                url: downloadHref,
-                                                itemId: itemId,
-                                                serverId: serverId
-                                            }]);
-                                        });
-
+                                            break;
+                                        }
+                                    case 'edit':
+                                        if (itemType == 'Timer') {
+                                            LibraryBrowser.editTimer(itemId);
+                                        } else {
+                                            LibraryBrowser.editMetadata(itemId);
+                                        }
                                         break;
-                                    }
-                                case 'edit':
-                                    if (itemType == 'Timer') {
-                                        LibraryBrowser.editTimer(itemId);
-                                    } else {
-                                        LibraryBrowser.editMetadata(itemId);
-                                    }
-                                    break;
-                                case 'editsubtitles':
-                                    LibraryBrowser.editSubtitles(itemId);
-                                    break;
-                                case 'editimages':
-                                    LibraryBrowser.editImages(itemId);
-                                    break;
-                                case 'identify':
-                                    LibraryBrowser.identifyItem(itemId);
-                                    break;
-                                case 'refresh':
-                                    require(['refreshDialog'], function (refreshDialog) {
-                                        new refreshDialog({
-                                            itemIds: [itemId],
-                                            serverId: serverId
-                                        }).show();
-                                    });
-                                    break;
-                                default:
-                                    break;
+                                    case 'editsubtitles':
+                                        LibraryBrowser.editSubtitles(itemId).then(resolve, reject);
+                                        break;
+                                    case 'editimages':
+                                        LibraryBrowser.editImages(itemId).then(resolve, reject);
+                                        break;
+                                    case 'identify':
+                                        LibraryBrowser.identifyItem(itemId).then(resolve, reject);
+                                        break;
+                                    case 'refresh':
+                                        require(['refreshDialog'], function (refreshDialog) {
+                                            new refreshDialog({
+                                                itemIds: [itemId],
+                                                serverId: serverId
+                                            }).show();
+                                        });
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
-                        }
-                    });
+                        });
 
+                    });
                 });
             },
 
@@ -2254,7 +2279,7 @@
                 // cardContent
                 html += '</a>';
 
-                if (options.overlayPlayButton && !item.IsPlaceHolder && (item.LocationType != 'Virtual' || !item.MediaType || item.Type == 'Program') && item.Type != 'Person') {
+                if (options.overlayPlayButton && !item.IsPlaceHolder && (item.LocationType != 'Virtual' || !item.MediaType || item.Type == 'Program') && item.Type != 'Person' && item.PlayAccess == 'Full') {
                     html += '<div class="cardOverlayButtonContainer"><button is="paper-icon-button-light" class="cardOverlayPlayButton autoSize" onclick="return false;"><i class="md-icon">play_arrow</i></button></div>';
                 }
                 if (options.overlayMoreButton) {
@@ -3189,7 +3214,7 @@
                 html += '<div style="position:relative;">';
 
                 if (editable) {
-                    html += "<a onclick='LibraryBrowser.editImages(\"" + item.Id + "\");' class='itemDetailGalleryLink' href='#'>";
+                    html += "<a class='itemDetailGalleryLink' href='#'>";
                 }
 
                 if (detectRatio && item.PrimaryImageAspectRatio) {
