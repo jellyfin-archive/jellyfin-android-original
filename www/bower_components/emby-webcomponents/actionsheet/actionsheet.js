@@ -1,4 +1,4 @@
-﻿define(['dialogHelper', 'layoutManager', 'globalize', 'emby-button', 'css!./actionsheet', 'material-icons', 'scrollStyles'], function (dialogHelper, layoutManager, globalize) {
+﻿define(['dialogHelper', 'layoutManager', 'globalize', 'browser', 'emby-button', 'css!./actionsheet', 'material-icons', 'scrollStyles'], function (dialogHelper, layoutManager, globalize, browser) {
 
     function parentWithClass(elem, className) {
 
@@ -142,8 +142,14 @@
         }
 
         var scrollType = layoutManager.desktop ? 'smoothScrollY' : 'hiddenScrollY';
+        var style = (browser.noFlex || browser.firefox) ? 'max-height:400px;' : '';
 
-        html += '<div class="actionSheetScroller ' + scrollType + '">';
+        // Admittedly a hack but right now the scrollbar is being factored into the width which is causing truncation
+        if (options.items.length > 20) {
+            var minWidth = window.innerWidth >= 300 ? 240 : 200;
+            style += "min-width:" + minWidth + "px;";
+        }
+        html += '<div class="actionSheetScroller ' + scrollType + '" style="' + style + '">';
 
         var i, length, option;
         var renderIcon = false;

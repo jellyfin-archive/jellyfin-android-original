@@ -28,8 +28,7 @@
 }
 
 button.actionSheetMenuItem {
-    /* Reduce the right padding to offset margin hack below */
-    padding: 0 .25em 0 1.6em;
+    padding: 0 1.6em;
     margin: 0;
     text-transform: none;
     text-align: inherit;
@@ -37,9 +36,6 @@ button.actionSheetMenuItem {
     font-weight: inherit;
     align-items: center;
     flex-shrink: 0;
-    /* Some really bad margin hacks to fix content sizing when scrollbar is visible */
-    margin-left: 20px;
-    margin-right: -20px;
 }
 
 .actionSheetItemText {
@@ -69,9 +65,6 @@ button.actionSheetMenuItem {
     display: flex;
     flex-direction: column;
     width: 100%;
-    /* Some really bad margin hacks to fix content sizing when scrollbar is visible */
-    padding-right: 20px;
-    margin-right: 20px;
 }
 
 .layout-tv .actionSheetScroller {

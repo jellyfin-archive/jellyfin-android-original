@@ -2188,6 +2188,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     };
 
     private final void doPlayPause() {
+
+        if (mService == null){
+            return;
+        }
         if (mService.isPlaying()) {
             pause();
             showOverlayTimeout(OVERLAY_INFINITE);

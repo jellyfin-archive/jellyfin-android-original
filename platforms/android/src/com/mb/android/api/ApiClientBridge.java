@@ -99,7 +99,13 @@ public class ApiClientBridge {
 
         LocalItem item = localAssetManager.getLocalItem(serverId, itemId);
 
-        if (item != null && item.getItem().getMediaSources().size() > 0) {
+        if (item == null){
+
+            logger.Info("No local media source found for item id: %s", itemId);
+            return null;
+        }
+
+        if (item.getItem().getMediaSources().size() > 0) {
 
             MediaSourceInfo mediaSourceInfo = item.getItem().getMediaSources().get(0);
 

@@ -95,6 +95,7 @@ public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_REQUEST = 999;
     private final int REQUEST_DIRECTORY = 998;
+    private final int REQUEST_DIRECTORY_SAF = 996;
     public static final int VIDEO_PLAYBACK = 997;
     private final String embyAdminUrl = "http://mb3admin.com/test/admin/service/";
     private static IWebView webView;
@@ -249,7 +250,7 @@ public class MainActivity extends CordovaActivity
 
         webView.addJavascriptInterface(iapManager, "NativeIapManager");
         webView.addJavascriptInterface(ApiClientBridge.Current, "ApiClientBridge");
-        webView.addJavascriptInterface(new NativeFileSystem(logger), "NativeFileSystem");
+        webView.addJavascriptInterface(new NativeFileSystem(logger, context), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
         webView.addJavascriptInterface(this, "AndroidVlcPlayer");
@@ -288,6 +289,18 @@ public class MainActivity extends CordovaActivity
             }
         }
 
+        else if (requestCode == REQUEST_DIRECTORY_SAF && resultCode == Activity.RESULT_OK) {
+
+            Uri uri = intent.getData();
+            final int takeFlags = intent.getFlags()
+                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            // Check for the freshest data.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                getContentResolver().takePersistableUriPermission(uri, takeFlags);
+            }
+            RespondToWebviewWithSelectedPath(uri);
+        }
         else if (requestCode == REQUEST_DIRECTORY && resultCode == RESULT_OK) {
 
             if (intent.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
@@ -595,24 +608,35 @@ public class MainActivity extends CordovaActivity
             return;
         }
 
-        getLogger().Info("creating intent for FilePickerActivity");
-        Intent intent = new Intent(this, FilePickerActivity.class);
-        // This works if you defined the intent filter
-        // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
-        // Set these depending on your use case. These are the defaults.
-        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-        intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-        intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            startActivityForResult(intent, REQUEST_DIRECTORY_SAF);
+        }
+        else {
 
-        // Configure initial directory by specifying a String.
-        // You could specify a String like "/storage/emulated/0/", but that can
-        // dangerous. Always use Android's API calls to get paths to the SD-card or
-        // internal memory.
-        intent.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+            getLogger().Info("creating intent for FilePickerActivity");
+            Intent intent = new Intent(this, FilePickerActivity.class);
+            // This works if you defined the intent filter
+            // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 
-        getLogger().Info("startActivityForResult for FilePickerActivity");
-        startActivityForResult(intent, REQUEST_DIRECTORY);
+            // Set these depending on your use case. These are the defaults.
+            intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+            intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+            intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
+
+            // Configure initial directory by specifying a String.
+            // You could specify a String like "/storage/emulated/0/", but that can
+            // dangerous. Always use Android's API calls to get paths to the SD-card or
+            // internal memory.
+            intent.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+
+            getLogger().Info("startActivityForResult for FilePickerActivity");
+            startActivityForResult(intent, REQUEST_DIRECTORY);
+        }
     }
 
     @android.webkit.JavascriptInterface
