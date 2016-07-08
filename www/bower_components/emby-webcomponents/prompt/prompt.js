@@ -43,7 +43,7 @@ define(['dialogHelper', 'layoutManager', 'globalize', 'material-icons', 'css!./s
 
         html += '<div class="promptDialogContent">';
         if (backButton) {
-            html += getIcon('arrow_back', 'btnPromptExit', false);
+            html += getIcon('&#xE5C4;', 'btnPromptExit', false);
         }
 
         if (options.title) {
@@ -54,7 +54,7 @@ define(['dialogHelper', 'layoutManager', 'globalize', 'material-icons', 'css!./s
 
         html += '<form>';
 
-        html += '<div class="inputContainer">';
+        html += '<div class="inputContainer" style="margin-bottom:0;">';
         html += '<input is="emby-input" type="text" autoFocus class="txtPromptValue" value="' + (options.value || '') + '" label="' + (options.label || '') + '"/>';
 
         if (options.description) {

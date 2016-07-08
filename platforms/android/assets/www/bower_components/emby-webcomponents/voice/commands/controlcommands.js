@@ -1,0 +1,1 @@
+define(["playbackManager"],function(e){function n(n){return function(){e.trySetActiveDeviceName(n)}}return function(e){return e.properties.devicename?n(e.properties.devicename):void 0}});

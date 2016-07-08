@@ -1,0 +1,1 @@
+define(["inputManager"],function(){return function(e){switch(e.item.deviceid){default:return}}});
