@@ -1,1 +1,0 @@
-define([],function(){return function(e){e.success=!0,e.properties.devicename&&MediaController.trySetActiveDeviceName(e.properties.devicename)}});

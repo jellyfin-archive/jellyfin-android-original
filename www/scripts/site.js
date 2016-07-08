@@ -1179,20 +1179,16 @@ var Dashboard = {
             quality -= 10;
         }
 
+        if (browserInfo.mobile) {
+            quality -= 20;
+        }
+
         if (AppInfo.hasLowImageBandwidth) {
 
             // The native app can handle a little bit more than safari
-            if (AppInfo.isNativeApp) {
+            if (!AppInfo.isNativeApp) {
 
-                if (isBackdrop) {
-                    quality -= 5;
-                } else {
-                    quality -= 10;
-                }
-
-            } else {
-
-                quality -= 40;
+                quality -= 20;
             }
         }
 
@@ -1752,6 +1748,7 @@ var AppInfo = {};
             visibleinviewport: embyWebComponentsBowerPath + "/visibleinviewport",
             browserdeviceprofile: embyWebComponentsBowerPath + "/browserdeviceprofile",
             browser: embyWebComponentsBowerPath + "/browser",
+            inputManager: embyWebComponentsBowerPath + "/inputmanager",
             qualityoptions: embyWebComponentsBowerPath + "/qualityoptions",
             connectservice: apiClientBowerPath + '/connectservice',
             hammer: bowerPath + "/hammerjs/hammer.min",
@@ -1814,6 +1811,7 @@ var AppInfo = {};
         define("fetchHelper", [embyWebComponentsBowerPath + "/fetchhelper"], returnFirstDependency);
 
         define("tvguide", [embyWebComponentsBowerPath + "/guide/guide", 'embyRouter'], returnFirstDependency);
+        define("voiceDialog", [embyWebComponentsBowerPath + "/voice/voicedialog"], returnFirstDependency);
 
         define("viewManager", [embyWebComponentsBowerPath + "/viewmanager/viewmanager"], function (viewManager) {
             window.ViewManager = viewManager;
@@ -1879,7 +1877,6 @@ var AppInfo = {};
         define("emby-icons", ['webcomponentsjs', "html!" + bowerPath + "/emby-icons/emby-icons.html"]);
 
         define("paper-spinner", ['webcomponentsjs', "html!" + bowerPath + "/paper-spinner/paper-spinner.html"]);
-        define("paper-tabs", ['webcomponentsjs', "html!" + bowerPath + "/paper-tabs/paper-tabs.html"]);
         define("paper-button", ["html!" + bowerPath + "/paper-button/paper-button.html"]);
         define("paper-icon-button", ["html!" + bowerPath + "/paper-icon-button/paper-icon-button.html"]);
         define("paper-radio-group", ["html!" + bowerPath + "/paper-radio-group/paper-radio-group.html"]);
@@ -1922,7 +1919,6 @@ var AppInfo = {};
 
         define("jqmpanel", ['jqmbase', "thirdparty/jquerymobile-1.4.5/jqm.panel", 'css!thirdparty/jquerymobile-1.4.5/jqm.panel.css']);
 
-        define("iron-icon-set", ["html!" + bowerPath + "/iron-icon/iron-icon.html", "html!" + bowerPath + "/iron-iconset-svg/iron-iconset-svg.html"]);
         define("slideshow", [embyWebComponentsBowerPath + "/slideshow/slideshow"], returnFirstDependency);
 
         define('fetch', [bowerPath + '/fetch/fetch']);
@@ -1963,6 +1959,7 @@ var AppInfo = {};
 
         define("swiper", [bowerPath + "/Swiper/dist/js/swiper.min", "css!" + bowerPath + "/Swiper/dist/css/swiper.min"], returnFirstDependency);
 
+        define("scroller", [embyWebComponentsBowerPath + "/scroller/smoothscroller"], returnFirstDependency);
         define("toast", [embyWebComponentsBowerPath + "/toast/toast"], returnFirstDependency);
         define("scrollHelper", [embyWebComponentsBowerPath + "/scrollhelper"], returnFirstDependency);
 
@@ -2006,16 +2003,6 @@ var AppInfo = {};
         // alias
         define("historyManager", [], function () {
             return Emby.Page;
-        });
-
-        // mock this for now. not used in this app
-        define("inputManager", [], function () {
-            return {
-                on: function () {
-                },
-                off: function () {
-                }
-            };
         });
 
         // mock this for now. not used in this app
@@ -2081,6 +2068,22 @@ var AppInfo = {};
 
             embyRouter.showSettings = function () {
                 Dashboard.navigate('mypreferencesmenu.html?userId=' + ApiClient.getCurrentUserId());
+            };
+
+            embyRouter.showGuide = function () {
+                Dashboard.navigate('livetv.html?tab=1');
+            };
+
+            embyRouter.showLiveTV = function () {
+                Dashboard.navigate('livetv.html');
+            };
+
+            embyRouter.showRecordedTV = function () {
+                Dashboard.navigate('livetv.html?tab=3');
+            };
+
+            embyRouter.showFavorites = function () {
+                Dashboard.navigate('home.html?tab=3');
             };
 
             function showItem(item) {
@@ -2258,7 +2261,7 @@ var AppInfo = {};
 
         var baseUrl = 'bower_components/emby-webcomponents/strings/';
 
-        var languages = ['da', 'de', 'en-US', 'es-MX', 'kk', 'nb', 'nl', 'pt-BR', 'pt-PT', 'ru'];
+        var languages = ['da', 'de', 'en-US', 'es-MX', 'kk', 'nb', 'nl', 'pt-BR', 'pt-PT', 'ru', 'sv'];
 
         var translations = languages.map(function (i) {
             return {
@@ -2406,7 +2409,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/dashboardgeneral.html',
-            dependencies: ['emby-collapsible', 'paper-textarea', 'paper-input', 'paper-checkbox'],
+            dependencies: ['emby-collapsible', 'paper-textarea', 'paper-input', 'paper-checkbox', 'jqmlistview'],
             controller: 'scripts/dashboardgeneral',
             autoFocus: false,
             roles: 'admin'
@@ -2595,7 +2598,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/librarysettings.html',
-            dependencies: ['emby-collapsible', 'paper-input', 'paper-checkbox', 'emby-button'],
+            dependencies: ['emby-collapsible', 'paper-input', 'paper-checkbox', 'emby-button', 'jqmlistview'],
             autoFocus: false,
             roles: 'admin',
             controller: 'scripts/librarysettings'

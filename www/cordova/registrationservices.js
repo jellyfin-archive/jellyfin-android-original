@@ -467,6 +467,19 @@
         });
     }
 
+    function showPremiereInfo() {
+
+        return IapManager.getSubscriptionOptions().then(function (subscriptionOptions) {
+
+            var dialogOptions = {
+                title: 'Emby Premiere',
+                feature: 'sync'
+            };
+
+            return showInAppPurchaseInfo(subscriptionOptions, null, dialogOptions);
+        });
+    }
+
     window.RegistrationServices = {
 
         renderPluginInfo: function (page, pkg, pluginSecurityInfo) {
@@ -485,7 +498,9 @@
             } else {
                 return Promise.resolve();
             }
-        }
+        },
+
+        showPremiereInfo: showPremiereInfo
     };
 
     function onIapManagerLoaded() {
