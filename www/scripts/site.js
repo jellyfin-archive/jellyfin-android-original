@@ -1210,7 +1210,7 @@ var Dashboard = {
                 // The native app can handle a little bit more than safari
                 if (AppInfo.isNativeApp) {
 
-                    //quality -= 5;
+                    quality -= 5;
                 } else {
                     quality -= 15;
                 }
@@ -1906,7 +1906,6 @@ var AppInfo = {};
         define("paper-item-body", ["html!" + bowerPath + "/paper-item/paper-item-body.html"]);
 
         define("paper-collapse-item", ["html!" + bowerPath + "/paper-collapse-item/paper-collapse-item.html"]);
-        define("emby-collapsible", ['webcomponentsjs', "emby-button", "html!" + bowerPath + "/emby-collapsible/emby-collapsible.html"]);
 
         define("jstree", [bowerPath + "/jstree/dist/jstree", "css!thirdparty/jstree/themes/default/style.min.css"]);
 
@@ -2423,7 +2422,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/dashboardgeneral.html',
-            dependencies: ['emby-collapsible', 'paper-textarea', 'paper-input', 'paper-checkbox', 'jqmlistview'],
+            dependencies: ['emby-collapse', 'paper-textarea', 'paper-input', 'paper-checkbox', 'jqmlistview'],
             controller: 'scripts/dashboardgeneral',
             autoFocus: false,
             roles: 'admin'
@@ -2612,7 +2611,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/librarysettings.html',
-            dependencies: ['emby-collapsible', 'paper-input', 'paper-checkbox', 'emby-button', 'jqmlistview'],
+            dependencies: ['emby-collapse', 'paper-input', 'paper-checkbox', 'emby-button', 'jqmlistview'],
             autoFocus: false,
             roles: 'admin',
             controller: 'scripts/librarysettings'
