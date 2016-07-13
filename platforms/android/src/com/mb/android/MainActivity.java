@@ -220,9 +220,11 @@ public class MainActivity extends CordovaActivity
         Context context = getApplicationContext();
         CordovaWebViewEngine engine;
 
+        final ILogger logger = getLogger();
+
         if (enableSystemWebView()){
 
-            engine =  new SystemWebViewEngine(new MySystemWebView(this, getLogger()), preferences);
+            engine =  new SystemWebViewEngine(new MySystemWebView(this, logger), preferences);
             WebView webkitView = (WebView)engine.getView();
             webkitView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
             webView = new NativeWebView(webkitView);
@@ -233,7 +235,6 @@ public class MainActivity extends CordovaActivity
             webView = new CrosswalkWebView(xView);
         }
 
-        final ILogger logger = getLogger();
         jsonSerializer = new GsonJsonSerializer();
 
         iapManager = new IapManager(context, webView, logger);
