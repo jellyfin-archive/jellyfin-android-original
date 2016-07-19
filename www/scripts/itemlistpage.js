@@ -1,4 +1,4 @@
-﻿define(['libraryBrowser', 'alphaPicker'], function (libraryBrowser, alphaPicker) {
+﻿define(['libraryBrowser', 'alphaPicker', 'listView', 'emby-itemscontainer'], function (libraryBrowser, alphaPicker, listView) {
 
     return function (view, params) {
 
@@ -111,6 +111,13 @@
                     posterOptions.centerText = false;
 
                     html = libraryBrowser.getPosterViewHtml(posterOptions);
+                }
+                else if (viewStyle == "List") {
+
+                    html = listView.getListViewHtml({
+                        items: result.Items,
+                        sortBy: query.SortBy
+                    });
                 }
                 else if (viewStyle == "Thumb") {
 
@@ -259,7 +266,7 @@
         var btnSelectView = view.querySelector('.btnSelectView');
         btnSelectView.addEventListener('click', function (e) {
 
-            libraryBrowser.showLayoutMenu(e.target, getPageData().view, 'Poster,PosterCard,Thumb'.split(','));
+            libraryBrowser.showLayoutMenu(e.target, getPageData().view, 'List,Poster,PosterCard,Thumb'.split(','));
         });
 
         btnSelectView.addEventListener('layoutchange', function (e) {
