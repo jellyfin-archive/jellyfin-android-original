@@ -125,7 +125,7 @@ define(['datetime', 'globalize', 'embyRouter', 'material-icons', 'css!./mediainf
             }
         }
 
-        if (item.ProductionYear && item.Type == "Series") {
+        if (options.year !== false && item.ProductionYear && item.Type == "Series") {
 
             if (item.Status == "Continuing") {
                 miscInfo.push(globalize.translate('sharedcomponents#ValueSeriesYearToPresent', item.ProductionYear));
@@ -235,6 +235,10 @@ define(['datetime', 'globalize', 'embyRouter', 'material-icons', 'css!./mediainf
 
         if (item.MediaType == 'Photo' && item.Width && item.Height) {
             miscInfo.push(item.Width + "x" + item.Height);
+        }
+
+        if (options.container !== false && item.Type == 'Audio' && item.Container) {
+            miscInfo.push(item.Container);
         }
 
         html += miscInfo.map(function (m) {

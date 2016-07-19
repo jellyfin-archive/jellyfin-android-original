@@ -1,4 +1,4 @@
-﻿define(['datetime', 'scrollStyles'], function (datetime) {
+﻿define(['datetime', 'libraryBrowser', 'scrollStyles', 'emby-itemscontainer'], function (datetime, libraryBrowser) {
 
     function getUpcomingPromise(context, params) {
 
@@ -69,7 +69,7 @@
                     if (premiereDate.getDate() == new Date().getDate() - 1) {
                         dateText = Globalize.translate('Yesterday');
                     } else {
-                        dateText = LibraryBrowser.getFutureDateText(premiereDate, true);
+                        dateText = libraryBrowser.getFutureDateText(premiereDate, true);
                     }
 
                 } catch (err) {
@@ -102,12 +102,12 @@
             html += '<h1 class="listHeader">' + group.name + '</h1>';
 
             if (enableScrollX()) {
-                html += '<div class="itemsContainer hiddenScrollX">';
+                html += '<div is="emby-itemscontainer" class="itemsContainer hiddenScrollX">';
             } else {
-                html += '<div class="itemsContainer">';
+                html += '<div is="emby-itemscontainer" class="itemsContainer">';
             }
 
-            html += LibraryBrowser.getPosterViewHtml({
+            html += libraryBrowser.getPosterViewHtml({
                 items: group.items,
                 showLocationTypeIndicator: false,
                 shape: getThumbShape(),
@@ -125,7 +125,6 @@
         }
 
         elem.innerHTML = html;
-        LibraryBrowser.createCardMenus(elem);
         ImageLoader.lazyChildren(elem);
     }
     return function (view, params, tabContent) {

@@ -1,4 +1,4 @@
-﻿define(['libraryBrowser', 'scrollStyles'], function (libraryBrowser) {
+﻿define(['libraryBrowser', 'components/categorysyncbuttons', 'scrollStyles', 'emby-itemscontainer'], function (libraryBrowser, categorysyncbuttons) {
 
     return function (view, params) {
 
@@ -165,7 +165,8 @@
             } else {
                 tabContent.querySelector('#resumableItems').classList.remove('hiddenScrollX');
             }
-            libraryBrowser.createCardMenus(tabContent.querySelector('#resumableItems'));
+
+            categorysyncbuttons.init(tabContent);
         };
 
         self.renderTab = function () {
@@ -273,7 +274,6 @@
         } else {
             view.querySelector('#resumableItems').classList.remove('hiddenScrollX');
         }
-        libraryBrowser.createCardMenus(view.querySelector('#resumableItems'));
         libraryBrowser.configurePaperLibraryTabs(view, mdlTabs, view.querySelectorAll('.pageTabContent'), [0, 1, 2, 4, 5, 6]);
 
         mdlTabs.addEventListener('beforetabchange', function (e) {

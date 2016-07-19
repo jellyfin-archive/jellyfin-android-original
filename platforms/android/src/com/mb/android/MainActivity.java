@@ -148,7 +148,7 @@ public class MainActivity extends CordovaActivity
 
         if (enableSystemWebView()){
 
-            try {
+            /*try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     // This is causing a crash on some devices
                     WebView.setWebContentsDebuggingEnabled(true);
@@ -157,7 +157,7 @@ public class MainActivity extends CordovaActivity
             catch (Exception ex) {
                 // This is causing a crash on some devices
                 getLogger().ErrorException("Error enabling webview debugging", ex);
-            }
+            }*/
             addJavascriptInterfaces();
         }
     }
@@ -297,7 +297,7 @@ public class MainActivity extends CordovaActivity
                     & (Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             // Check for the freshest data.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 getContentResolver().takePersistableUriPermission(uri, takeFlags);
             }
             RespondToWebviewWithSelectedPath(uri);
@@ -609,7 +609,7 @@ public class MainActivity extends CordovaActivity
             return;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);

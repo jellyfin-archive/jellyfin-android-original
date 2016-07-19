@@ -1202,7 +1202,7 @@ var Dashboard = {
             }
 
             if (browserInfo.mobile || browserInfo.tv) {
-                quality -= 35;
+                quality -= 40;
             }
 
             if (AppInfo.hasLowImageBandwidth) {
@@ -1803,6 +1803,9 @@ var AppInfo = {};
 
         define("emby-collapse", [embyWebComponentsBowerPath + "/emby-collapse/emby-collapse"], returnFirstDependency);
         define("emby-button", [embyWebComponentsBowerPath + "/emby-button/emby-button"], returnFirstDependency);
+        define("emby-itemscontainer", [embyWebComponentsBowerPath + "/emby-itemscontainer/emby-itemscontainer"], returnFirstDependency);
+        define("itemHoverMenu", [embyWebComponentsBowerPath + "/itemhovermenu/itemhovermenu"], returnFirstDependency);
+        define("multiSelect", [embyWebComponentsBowerPath + "/multiselect/multiselect"], returnFirstDependency);
         define("alphaPicker", [embyWebComponentsBowerPath + "/alphapicker/alphapicker"], returnFirstDependency);
         define("paper-icon-button-light", [embyWebComponentsBowerPath + "/emby-button/paper-icon-button-light"]);
 
@@ -1818,6 +1821,9 @@ var AppInfo = {};
         define("recordingEditor", [embyWebComponentsBowerPath + "/recordingcreator/recordingeditor"], returnFirstDependency);
         define("subtitleEditor", [embyWebComponentsBowerPath + "/subtitleeditor/subtitleeditor"], returnFirstDependency);
         define("mediaInfo", [embyWebComponentsBowerPath + "/mediainfo/mediainfo"], returnFirstDependency);
+        define("itemContextMenu", [embyWebComponentsBowerPath + "/itemcontextmenu"], returnFirstDependency);
+        define("dom", [embyWebComponentsBowerPath + "/dom"], returnFirstDependency);
+        define("playMenu", [embyWebComponentsBowerPath + "/playmenu"], returnFirstDependency);
         define("refreshDialog", [embyWebComponentsBowerPath + "/refreshdialog/refreshdialog"], returnFirstDependency);
         define("backdrop", [embyWebComponentsBowerPath + "/backdrop/backdrop"], returnFirstDependency);
         define("fetchHelper", [embyWebComponentsBowerPath + "/fetchhelper"], returnFirstDependency);
@@ -1934,8 +1940,10 @@ var AppInfo = {};
         define('native-promise-only', [bowerPath + '/native-promise-only/lib/npo.src']);
         define("fingerprintjs2", [bowerPath + '/fingerprintjs2/fingerprint2'], returnFirstDependency);
         define("clearButtonStyle", ['css!' + embyWebComponentsBowerPath + '/clearbutton']);
+        define("userdataButtons", [embyWebComponentsBowerPath + "/userdatabuttons/userdatabuttons"], returnFirstDependency);
         define("listView", [embyWebComponentsBowerPath + "/listview/listview"], returnFirstDependency);
         define("listViewStyle", ['css!' + embyWebComponentsBowerPath + "/listview/listview"], returnFirstDependency);
+        define("indicators", [embyWebComponentsBowerPath + "/indicators/indicators"], returnFirstDependency);
 
         if ('registerElement' in document && 'content' in document.createElement('template')) {
             define('webcomponentsjs', []);
@@ -2019,6 +2027,24 @@ var AppInfo = {};
             return {
                 isPlayingVideo: function () {
                     return false;
+                },
+                play: function (options) {
+                    MediaController.play(options);
+                },
+                currentPlaylistIndex: function (options) {
+                    return MediaController.currentPlaylistIndex(options);
+                },
+                canQueueMediaType: function(mediaType) {
+                    return MediaController.canQueueMediaType(mediaType);
+                },
+                canPlay: function (item) {
+                    return MediaController.canPlay(item);
+                },
+                instantMix: function (item) {
+                    return MediaController.instantMix(item);
+                },
+                shuffle: function (item) {
+                    return MediaController.shuffle(item);
                 }
             };
         });
@@ -2271,7 +2297,7 @@ var AppInfo = {};
 
         var baseUrl = 'bower_components/emby-webcomponents/strings/';
 
-        var languages = ['da', 'de', 'en-US', 'es-MX', 'kk', 'nb', 'nl', 'pt-BR', 'pt-PT', 'ru', 'sv'];
+        var languages = ['da', 'de', 'en-US', 'es-MX', 'fr', 'kk', 'nb', 'nl', 'pt-BR', 'pt-PT', 'ru', 'sv', 'zh-TW'];
 
         var translations = languages.map(function (i) {
             return {
@@ -2564,7 +2590,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/itemdetails.html',
-            dependencies: ['emby-button', 'tileitemcss', 'scripts/livetvcomponents', 'paper-icon-button-light', 'listViewStyle'],
+            dependencies: ['emby-button', 'tileitemcss', 'scripts/livetvcomponents', 'paper-icon-button-light', 'emby-itemscontainer'],
             controller: 'scripts/itemdetailpage',
             autoFocus: false,
             transition: 'fade'
@@ -2834,7 +2860,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/nowplaying.html',
-            dependencies: ['paper-icon-button-light', 'emby-slider', 'emby-button', 'emby-input'],
+            dependencies: ['paper-icon-button-light', 'emby-slider', 'emby-button', 'emby-input', 'emby-itemscontainer'],
             controller: 'scripts/nowplayingpage',
             autoFocus: false,
             transition: 'fade'
@@ -3151,7 +3177,6 @@ var AppInfo = {};
             }
         }
 
-        deps.push('scripts/librarylist');
         deps.push('scripts/librarymenu');
 
         deps.push('css!css/card.css');
@@ -3232,7 +3257,7 @@ var AppInfo = {};
     }
 
     function upgradeLayouts() {
-        if (!AppInfo.enableAppLayouts && browserInfo.mobile) {
+        if (!AppInfo.enableAppLayouts) {
             Dashboard.getPluginSecurityInfo().then(function (info) {
                 if (info.IsMBSupporter) {
                     AppInfo.enableAppLayouts = true;
