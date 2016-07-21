@@ -1,7 +1,7 @@
 button.listItem {
     background: transparent;
-    border: 0 !important;
-    border-bottom: 1px solid #2a2a2a !important;
+    border: 0;
+    border-bottom: 1px solid #2a2a2a;
     cursor: pointer;
     outline: none !important;
     color: inherit;
@@ -102,10 +102,15 @@ div.listItem {
 }
 
 .listItemIcon {
-    width: 3vh;
-    height: 3vh;
-    font-size: 3vh;
+    width: auto !important;
+    height: auto !important;
+    font-size: 120%;
+    border-radius: 500px;
+    background-color: #52B54B;
+    padding: .5em;
+    color: #fff;
 }
+
 
 .listItem.largeImage .listItemImage {
     width: 45vh;
@@ -138,7 +143,7 @@ div.listItem {
         transform: scale(1.025, 1.025);
     }
 
-    .listItem > .fab:first-child {
+    .listItem > .fab:first-child, .listItem > i:first-child {
         margin-left: .75em;
     }
 
