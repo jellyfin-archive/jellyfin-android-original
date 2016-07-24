@@ -40,7 +40,7 @@ public class NativeFileSystem {
         logger.Info("Checking file exists: %s", path);
         try {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
                 DocumentFile documentFile = DocumentFile.fromSingleUri(context, Uri.parse(path));
                 if (documentFile != null && documentFile.exists()){
@@ -61,6 +61,21 @@ public class NativeFileSystem {
     @org.xwalk.core.JavascriptInterface
     public String translateFilePath(String path){
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            DocumentFile documentFile = DocumentFile.fromSingleUri(context, Uri.parse(path));
+            if (documentFile != null && documentFile.exists()){
+                String localPath = StorageAccessFrameworkHelper.getPath(context, documentFile.getUri());
+
+                if (localPath != null){
+                    path = localPath;
+                }
+            }
+        }
+
+        if (path.indexOf(":/") == -1){
+            path = "file://"+path;
+        }
         return path;
     }
 }
