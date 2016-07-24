@@ -168,6 +168,7 @@ define(['playbackManager', 'inputManager', 'connectionManager', 'embyRouter', 'g
         var item = {
             Type: card.getAttribute('data-type'),
             Id: card.getAttribute('data-id'),
+            ChannelId: card.getAttribute('data-channelid'),
             ServerId: card.getAttribute('data-serverid'),
             MediaType: card.getAttribute('data-mediatype'),
             IsFolder: card.getAttribute('data-isfolder') == 'true',
@@ -290,16 +291,17 @@ define(['playbackManager', 'inputManager', 'connectionManager', 'embyRouter', 'g
 
         return new Promise(function (resolve, reject) {
 
+            var serverId = apiClient.serverInfo().Id;
+
             if (item.Type == 'Timer') {
                 require(['recordingEditor'], function (recordingEditor) {
 
-                    var serverId = apiClient.serverInfo().Id;
                     recordingEditor.show(item.Id, serverId).then(resolve, reject);
                 });
             } else {
                 require(['components/metadataeditor/metadataeditor'], function (metadataeditor) {
 
-                    metadataeditor.show(item.Id).then(resolve, reject);
+                    metadataeditor.show(item.Id, serverId).then(resolve, reject);
                 });
             }
         });
