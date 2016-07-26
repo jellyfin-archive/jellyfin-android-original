@@ -565,6 +565,19 @@
 }
  */
 
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential *))completionHandler
+{
+    NSString *authenticationMethod = [[challenge protectionSpace] authenticationMethod];
+    if ([authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        // needs this handling on iOS 9
+        completionHandler(NSURLSessionAuthChallengeUseCredential, nil);
+    }
+    else {
+        //completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+        completionHandler(NSURLSessionAuthChallengeUseCredential, nil);
+    }
+}
+
 
 #pragma mark WKNavigationDelegate implementation
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation

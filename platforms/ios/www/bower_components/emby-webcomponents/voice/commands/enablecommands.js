@@ -1,0 +1,1 @@
+define(["inputManager"],function(n){function r(){return function(){n.trigger("enabledisplaymirror")}}return function(n){switch(n.item.deviceid){case"displaymirroring":return r();default:return}}});
