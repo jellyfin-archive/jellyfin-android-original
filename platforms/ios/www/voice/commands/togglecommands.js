@@ -1,1 +1,0 @@
-define([],function(){return function(e){switch(e.success=!0,e.item.deviceid){case"displaymirroring":MediaController.toggleDisplayMirroring();break;default:return void(e.success=!1)}}});
