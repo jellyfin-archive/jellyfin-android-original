@@ -1,1 +1,1 @@
-define([],function(){function n(){return new Promise(function(n){n()})}return{send:n}});
+define([],function(){function e(){return Promise.resolve()}return{send:e}});
