@@ -65,6 +65,8 @@ public class NativeFileSystem {
 
             DocumentFile documentFile = DocumentFile.fromSingleUri(context, Uri.parse(path));
             if (documentFile != null && documentFile.exists()){
+
+                logger.Info("Converting DocumentUri path %s", path);
                 String localPath = StorageAccessFrameworkHelper.getPath(context, documentFile.getUri());
 
                 if (localPath != null){

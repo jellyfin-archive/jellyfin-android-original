@@ -1420,6 +1420,7 @@ var AppInfo = {};
         define("recordingCreator", [embyWebComponentsBowerPath + "/recordingcreator/recordingcreator"], returnFirstDependency);
         define("recordingEditor", [embyWebComponentsBowerPath + "/recordingcreator/recordingeditor"], returnFirstDependency);
         define("subtitleEditor", [embyWebComponentsBowerPath + "/subtitleeditor/subtitleeditor"], returnFirstDependency);
+        define("itemIdentifier", [embyWebComponentsBowerPath + "/itemidentifier/itemidentifier"], returnFirstDependency);
         define("mediaInfo", [embyWebComponentsBowerPath + "/mediainfo/mediainfo"], returnFirstDependency);
         define("itemContextMenu", [embyWebComponentsBowerPath + "/itemcontextmenu"], returnFirstDependency);
         define("dom", [embyWebComponentsBowerPath + "/dom"], returnFirstDependency);
@@ -1428,6 +1429,11 @@ var AppInfo = {};
         define("refreshDialog", [embyWebComponentsBowerPath + "/refreshdialog/refreshdialog"], returnFirstDependency);
         define("backdrop", [embyWebComponentsBowerPath + "/backdrop/backdrop"], returnFirstDependency);
         define("fetchHelper", [embyWebComponentsBowerPath + "/fetchhelper"], returnFirstDependency);
+
+        define("cardStyle", ['css!' + embyWebComponentsBowerPath + "/cardbuilder/card"], returnFirstDependency);
+        define("cardBuilder", [embyWebComponentsBowerPath + "/cardbuilder/cardbuilder"], returnFirstDependency);
+        define("peoplecardbuilder", [embyWebComponentsBowerPath + "/cardbuilder/peoplecardbuilder"], returnFirstDependency);
+        define("chaptercardbuilder", [embyWebComponentsBowerPath + "/cardbuilder/chaptercardbuilder"], returnFirstDependency);
 
         define("tvguide", [embyWebComponentsBowerPath + "/guide/guide", 'embyRouter'], returnFirstDependency);
         define("voiceDialog", [embyWebComponentsBowerPath + "/voice/voicedialog"], returnFirstDependency);
@@ -1850,7 +1856,6 @@ var AppInfo = {};
 
         define("livetvcss", ['css!css/livetv.css']);
         define("detailtablecss", ['css!css/detailtable.css']);
-        define("tileitemcss", ['css!css/tileitem.css']);
 
         define("buttonenabled", ["legacy/buttonenabled"]);
 
@@ -2198,7 +2203,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/itemdetails.html',
-            dependencies: ['emby-button', 'tileitemcss', 'scripts/livetvcomponents', 'paper-icon-button-light', 'emby-itemscontainer'],
+            dependencies: ['emby-button', 'scripts/livetvcomponents', 'paper-icon-button-light', 'emby-itemscontainer'],
             controller: 'scripts/itemdetailpage',
             autoFocus: false,
             transition: 'fade'
@@ -2492,7 +2497,8 @@ var AppInfo = {};
             path: '/playlists.html',
             dependencies: [],
             autoFocus: false,
-            transition: 'fade'
+            transition: 'fade',
+            controller: 'scripts/playlists'
         });
 
         defineRoute({
@@ -2784,8 +2790,6 @@ var AppInfo = {};
 
         deps.push('scripts/librarymenu');
 
-        deps.push('css!css/card.css');
-
         console.log('onAppReady - loading dependencies');
 
         require(deps, function (imageLoader, pageObjects) {
@@ -2853,12 +2857,14 @@ var AppInfo = {};
 
             postInitDependencies.push('bower_components/emby-webcomponents/input/api');
 
-            if (navigator.serviceWorker && !AppInfo.isNativeApp) {
-                navigator.serviceWorker.register('serviceworker.js');
-            }
+            if (!browserInfo.tv && !AppInfo.isNativeApp) {
+                if (navigator.serviceWorker) {
+                    navigator.serviceWorker.register('serviceworker.js');
+                }
 
-            if (window.Notification && !AppInfo.isNativeApp) {
-                postInitDependencies.push('bower_components/emby-webcomponents/notifications/notifications');
+                if (window.Notification) {
+                    postInitDependencies.push('bower_components/emby-webcomponents/notifications/notifications');
+                }
             }
 
             require(postInitDependencies);

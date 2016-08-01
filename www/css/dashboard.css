@@ -242,10 +242,6 @@ paper-textarea.mono textarea {
     font-family: monospace !important;
 }
 
-.ui-body-a .paperCheckboxFieldDescription {
-    color: #333;
-}
-
 .ui-body-a paper-checkbox #checkbox.checked.paper-checkbox {
     background-color: #52B54B;
     border-color: #52B54B;

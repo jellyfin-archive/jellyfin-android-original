@@ -47,6 +47,10 @@
                 resolve(servers);
                 return;
             }
+            if (!chrome.sockets) {
+                resolve(servers);
+                return;
+            }
 
             var timeout;
             var socketId;
