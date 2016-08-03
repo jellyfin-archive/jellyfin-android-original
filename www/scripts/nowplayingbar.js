@@ -1,4 +1,4 @@
-﻿define(['datetime', 'userdataButtons', 'itemHelper', 'events', 'paper-icon-button-light'], function (datetime, userdataButtons, itemHelper, events) {
+﻿define(['datetime', 'userdataButtons', 'itemHelper', 'events', 'browser', 'paper-icon-button-light'], function (datetime, userdataButtons, itemHelper, events, browser) {
 
     var currentPlayer;
 
@@ -75,7 +75,7 @@
         return html;
     }
 
-    var translateY = '-70px';
+    var translateY = '-64px';
     function slideDown(elem) {
 
         if (elem.classList.contains('hide')) {
@@ -86,7 +86,7 @@
             elem.classList.add('hide');
         };
 
-        if (!browserInfo.animate || browserInfo.mobile) {
+        if (!browser.animate || browser.mobile) {
             onfinish();
             return;
         }
@@ -108,7 +108,7 @@
 
         elem.classList.remove('hide');
 
-        if (!browserInfo.animate || browserInfo.mobile) {
+        if (!browser.animate || browser.mobile) {
             return;
         }
 
@@ -117,6 +117,28 @@
             var keyframes = [
               { transform: 'none', offset: 0 },
               { transform: 'translateY(' + translateY + ')', offset: 1 }];
+            var timing = { duration: 200, iterations: 1, fill: 'both', easing: 'ease-out' };
+            elem.animate(keyframes, timing);
+        });
+    }
+
+    function slideUpToFullScreen(elem) {
+
+        if (!elem.classList.contains('hide')) {
+            return;
+        }
+
+        elem.classList.remove('hide');
+
+        if (!browser.animate || browser.mobile) {
+            return;
+        }
+
+        requestAnimationFrame(function () {
+
+            var keyframes = [
+              { transform: 'none', offset: 0 },
+              { transform: 'translateY(-100%)', offset: 1 }];
             var timing = { duration: 200, iterations: 1, fill: 'both', easing: 'ease-out' };
             elem.animate(keyframes, timing);
         });
@@ -298,7 +320,7 @@
                 document.body.insertAdjacentHTML('beforeend', getNowPlayingBarHtml());
                 nowPlayingBarElement = document.querySelector('.nowPlayingBar');
 
-                if (browserInfo.safari && browserInfo.mobile) {
+                if (browser.safari && browser.mobile) {
                     // Not handled well here. The wrong elements receive events, bar doesn't update quickly enough, etc.
                     nowPlayingBarElement.classList.add('noMediaProgress');
                 }
@@ -524,7 +546,7 @@
         }).join('');
 
         var url;
-        var imgHeight = 80;
+        var imgHeight = 70;
 
         var nowPlayingItem = state.NowPlayingItem;
 
