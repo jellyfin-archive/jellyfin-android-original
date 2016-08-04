@@ -426,6 +426,9 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
 
         function getCardImageUrl(item, apiClient, options) {
 
+            var imageItem = item.ProgramInfo || item;
+            item = imageItem;
+
             var width = options.width;
             var height = null;
             var primaryImageAspectRatio = imageLoader.getPrimaryImageAspectRatio([item]);
@@ -972,7 +975,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                 }
             }
 
-            return counts.join(' • ');
+            return counts.join(', ');
         }
 
         function buildCard(index, item, apiClient, options, className) {
@@ -1011,7 +1014,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
 
                 var overlayPlayButton = options.overlayPlayButton;
 
-                if (overlayPlayButton == null && !options.overlayMoreButton) {
+                if (overlayPlayButton == null && !options.overlayMoreButton && !options.cardLayout) {
                     overlayPlayButton = item.MediaType == 'Video';
                 }
 
