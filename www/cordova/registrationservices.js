@@ -108,7 +108,7 @@
 
         var html = '';
         html += '<h2 class="dialogHeader">';
-        html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog" tabindex=-1""></paper-fab>';
+        html += '<button is="paper-icon-button-light" class="btnCloseDialog autoSize" tabindex="-1"><i class="md-icon">&#xE5C4;</i></button>';
         html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + dialogOptions.title + '</div>';
         html += '</h2>';
 
@@ -282,21 +282,21 @@
         var enableLink = !browserInfo.safari;
 
         var html = '';
-        html += '<paper-icon-item>';
+        html += '<div class="listItem">';
 
-        html += '<paper-fab mini style="background-color:#52B54B;" icon="' + item.icon + '" item-icon></paper-fab>';
+        html += '<i class="listItemIcon md-icon">' + item.icon + '</i>';
 
-        html += '<paper-item-body three-line>';
+        html += '<div class="listItemBody three-line">';
 
         if (enableLink) {
             html += '<a class="clearLink" href="https://emby.media/premiere" target="_blank">';
         }
 
-        html += '<div>';
+        html += '<div class="listItemBodyText">';
         html += item.name;
         html += '</div>';
 
-        html += '<div secondary style="white-space:normal;">';
+        html += '<div class="listItemBodyText secondary" style="white-space:normal;">';
         html += item.text;
         html += '</div>';
 
@@ -304,9 +304,9 @@
             html += '</a>';
         }
 
-        html += '</paper-item-body>';
+        html += '</div>';
 
-        html += '</paper-icon-item>';
+        html += '</div>';
 
         return html;
     }
@@ -334,7 +334,7 @@
 
             var html = '';
             html += '<h2 class="dialogHeader">';
-            html += '<paper-fab icon="arrow-back" mini class="btnCloseDialog" tabindex=-1""></paper-fab>';
+            html += '<button is="paper-icon-button-light" class="btnCloseDialog autoSize" tabindex="-1"><i class="md-icon">&#xE5C4;</i></button>';
             html += '<div style="display:inline-block;margin-left:.6em;vertical-align:middle;">' + Globalize.translate('ButtonRestorePreviousPurchase') + '</div>';
             html += '</h2>';
 
@@ -387,7 +387,7 @@
 
         return new Promise(function (resolve, reject) {
 
-            require(['dialogHelper', 'paper-fab', 'paper-icon-item', 'paper-item-body'], function (dialogHelper) {
+            require(['dialogHelper', 'listViewStyle'], function (dialogHelper) {
 
                 if (window.TabBar) {
                     TabBar.hide();
