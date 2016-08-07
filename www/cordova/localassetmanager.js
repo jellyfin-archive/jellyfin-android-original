@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define([], function () {
 
     function getLocalMediaSource(serverId, itemId) {
 
@@ -20,7 +20,7 @@
 
                 var mediaSource = localItem.Item.MediaSources[0];
 
-                return fileExists(mediaSource.Path).then(function(exists) {
+                return fileExists(mediaSource.Path).then(function (exists) {
 
                     if (exists) {
                         return mediaSource;
@@ -873,7 +873,7 @@
         });
     }
 
-    window.LocalAssetManager = {
+    return {
         getLocalMediaSource: getLocalMediaSource,
         saveOfflineUser: saveOfflineUser,
         deleteOfflineUser: deleteOfflineUser,
@@ -895,4 +895,4 @@
         saveUserIdsWithAccess: saveUserIdsWithAccess
     };
 
-})();
+});
