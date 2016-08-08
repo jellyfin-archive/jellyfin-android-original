@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget android-packageName="com.mb.android" android-versionCode="20000743" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.43" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <preference name="loglevel" value="DEBUG" />
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
     </feature>
@@ -42,16 +41,22 @@
     <feature name="Media">
         <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
     </feature>
-    <preference name="android-minSdkVersion" value="14" />
-    <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
     <preference default="19+" name="xwalkVersion" />
     <preference default="xwalk_core_library_canary:17+" name="xwalkLiteVersion" />
     <preference default="--disable-pull-to-refresh-effect" name="xwalkCommandLine" />
     <preference default="embedded" name="xwalkMode" />
     <preference default="true" name="xwalkMultipleApk" />
-    <preference name="android-minSdkVersion" value="16" />
-    <preference name="android-targetSdkVersion" value="23" />
-    <preference name="StatusBarOverlaysWebView" value="false" />
+    <name>Emby</name>
+    <description>
+    Emby Mobile
+  </description>
+    <author email="apps@emby.media" href="http://emby.media">
+    Emby
+  </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="*" />
+    <icon src="res/icon.png" />
     <icon density="ldpi" src="res/android/ldpi/icon.png" />
     <icon density="mdpi" src="res/android/mdpi/icon.png" />
     <icon density="hdpi" src="res/android/hdpi/icon.png" />
@@ -70,18 +75,8 @@
     <splash density="port-xhdpi" src="res/android/xhdpi/splash-port.png" />
     <splash density="port-xxhdpi" src="res/android/xxhdpi/splash-port.png" />
     <splash density="port-xxxhdpi" src="res/android/xxxhdpi/splash-port.png" />
-    <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
-    <preference name="BackgroundColor" value="0xff222222" />
-    <name>Emby</name>
-    <description>
-    Emby Mobile
-  </description>
-    <author email="apps@emby.media" href="http://emby.media">
-    Emby
-  </author>
-    <content src="index.html" />
-    <access origin="*" />
-    <allow-intent href="*" />
+    <preference name="loglevel" value="DEBUG" />
+    <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="UIWebViewBounce" value="false" />
@@ -97,10 +92,14 @@
     <preference name="SplashMaintainAspectRatio" value="true" />
     <preference name="windows-target-version" value="10.0" />
     <preference name="windows-phone-target-version" value="10.0" />
-    <icon src="res/icon.png" />
-    <preference name="xwalkUserAgent" value="android crosswalk/18 Chrome/47 Mobile Safari/537.36" />
+    <preference name="xwalkUserAgent" value="android crosswalk/20 Chrome/50 Mobile Safari/537.36" />
     <preference name="xwalkVersion" value="19+" />
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
+    <preference name="android-minSdkVersion" value="16" />
+    <preference name="android-targetSdkVersion" value="23" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
+    <preference name="BackgroundColor" value="0xff222222" />
 </widget>
