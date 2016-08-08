@@ -256,8 +256,9 @@
     },
     "cordova-plugin-crosswalk-webview": {
         "source": {
-            "type": "registry",
-            "id": "cordova-plugin-crosswalk-webview"
+            "type": "git",
+            "url": "https://github.com/crosswalk-project/cordova-plugin-crosswalk-webview",
+            "subdir": "."
         },
         "is_top_level": true,
         "variables": {}

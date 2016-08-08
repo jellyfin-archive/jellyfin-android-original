@@ -89,8 +89,4 @@
         <preference name="BackgroundColor" value="0xff222222" />
     </platform>
     <preference name="xwalkUserAgent" value="android crosswalk/20 Chrome/50 Mobile Safari/537.36" />
-    <preference name="xwalkVersion" value="19+" />
-    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
-    <preference name="xwalkMode" value="embedded" />
-    <preference name="xwalkMultipleApk" value="true" />
 </widget>
