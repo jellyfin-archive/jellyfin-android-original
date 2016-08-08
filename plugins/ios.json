@@ -356,10 +356,10 @@
         "com.rd11.remote-controls": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-crosswalk-webview": {
+        "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cc.fovea.cordova.purchase": {
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

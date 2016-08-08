@@ -43,7 +43,9 @@ For example, building android with Crosswalk generates:
 /path/to/hello/platforms/android/build/outputs/apk/hello-armv7-debug.apk
 ```
 
-Note that it is also possible to publish a multi-APK application on the Play Store that uses Crosswalk for Pre-L devices, and the (updatable) system webview for L+:
+Note that you might have to run `cordova clean` before building, if you previously built the app without cordova-plugin-crosswalk-webview. Also, manually uninstall the app from the device/emulator before attempting to install the crosswalk-enabled version.
+
+Also note that it is also possible to publish a multi-APK application on the Play Store that uses Crosswalk for Pre-L devices, and the (updatable) system webview for L+:
 
 To build Crosswalk-enabled apks, add this plugin and run:
 
@@ -107,10 +109,14 @@ You can also set user agent with the preference of xwalkUserAgent.
 
 ### Release Notes
 
+#### 1.8.0 (June 30, 2016)
+* Uses the latest Crosswalk 19 stable version by default
+
 #### 1.7.0 (May 4, 2016)
 * Uses the latest Crosswalk 18 stable version by default
 * Support to use [Crosswalk Lite](https://crosswalk-project.org/documentation/crosswalk_lite.html), It's possible to specify lite value with the variable of XWALK_MODE at install plugin time.
 * [Cordova screenshot plugin](https://github.com/gitawego/cordova-screenshot.git) can capture the visible content of web page with Crosswalk library.
+* Doesn't work with Crosswalk 17 and earlier
 
 #### 1.6.0 (March 11, 2016)
 * Uses the latest Crosswalk 17 stable version by default

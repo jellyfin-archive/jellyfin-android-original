@@ -52,6 +52,8 @@ if (!project.hasProperty('xwalk64bit')) {
 }
 if (cdvBuildMultipleApks == null) {
     ext.xwalkMultipleApk = getConfigPreference("xwalkMultipleApk").toBoolean();
+} else {
+    ext.xwalkMultipleApk = cdvBuildMultipleApks.toBoolean();
 }
 
 if (cdvMinSdkVersion == null) {

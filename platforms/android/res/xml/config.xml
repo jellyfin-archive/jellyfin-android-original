@@ -42,13 +42,14 @@
     <feature name="Media">
         <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
     </feature>
+    <preference name="android-minSdkVersion" value="14" />
     <preference name="webView" value="org.crosswalk.engine.XWalkWebViewEngine" />
-    <preference default="xwalk_core_library_beta:18+" name="xwalkVersion" />
+    <preference default="19+" name="xwalkVersion" />
     <preference default="xwalk_core_library_canary:17+" name="xwalkLiteVersion" />
     <preference default="--disable-pull-to-refresh-effect" name="xwalkCommandLine" />
     <preference default="embedded" name="xwalkMode" />
     <preference default="true" name="xwalkMultipleApk" />
-    <preference name="android-minSdkVersion" value="14" />
+    <preference name="android-minSdkVersion" value="16" />
     <preference name="android-targetSdkVersion" value="23" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <icon density="ldpi" src="res/android/ldpi/icon.png" />
