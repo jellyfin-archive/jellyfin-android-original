@@ -76,10 +76,10 @@
         "com.rd11.remote-controls": {
             "PACKAGE_NAME": "Emby"
         },
-        "cordova-plugin-crosswalk-webview": {
+        "cc.fovea.cordova.purchase": {
             "PACKAGE_NAME": "Emby"
         },
-        "cc.fovea.cordova.purchase": {
+        "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "Emby"
         }
     },
