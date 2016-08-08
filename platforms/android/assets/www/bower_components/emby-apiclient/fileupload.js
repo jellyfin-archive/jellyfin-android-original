@@ -1,1 +1,1 @@
-!function(i){function e(){var i=this;i.upload=function(){return new Promise(function(i,e){e()})}}i.MediaBrowser||(i.MediaBrowser={}),i.MediaBrowser.FileUpload=e}(this);
+define([],function(){return function(){var n=this;n.upload=function(){return Promise.reject()}}});
