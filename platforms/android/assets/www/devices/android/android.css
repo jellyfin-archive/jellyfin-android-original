@@ -1,1 +1,1 @@
-@media all and (min-width:300px){.libraryViewNav{display:flex}.libraryViewNav .pageTabButton{flex-grow:1}}
+@media all and (min-width:300px){.libraryViewNav,.libraryViewNav>.contentScrollSlider{display:flex;flex-grow:1}.libraryViewNav .pageTabButton{flex-grow:1}}
