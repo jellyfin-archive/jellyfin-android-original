@@ -88,7 +88,7 @@
         <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
         <preference name="BackgroundColor" value="0xff222222" />
     </platform>
-    <preference name="xwalkUserAgent" value="android crosswalk/18 Chrome/47 Mobile Safari/537.36" />
+    <preference name="xwalkUserAgent" value="android crosswalk/20 Chrome/50 Mobile Safari/537.36" />
     <preference name="xwalkVersion" value="19+" />
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
     <preference name="xwalkMode" value="embedded" />
