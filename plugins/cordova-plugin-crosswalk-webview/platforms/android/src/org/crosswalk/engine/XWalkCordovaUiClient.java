@@ -133,8 +133,8 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
 
     /**
      * Notify the host application that a page has started loading.
-     * This method is called once for each main frame load so a page with iframes or framesets will call onPageStarted
-     * one time for the main frame. This also means that onPageStarted will not be called when the contents of an
+     * This method is called once for each main frame load so a page with iframes or framesets will call onPageLoadStarted
+     * one time for the main frame. This also means that onPageLoadStarted will not be called when the contents of an
      * embedded frame changes, i.e. clicking a link whose target is an iframe.
      *
      * @param view The webView initiating the callback.
@@ -142,9 +142,8 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      */
     @Override
     public void onPageLoadStarted(XWalkView view, String url) {
-
-        // Only proceed if this is a top-level navigation
-        if (view.getUrl() != null && view.getUrl().equals(url)) {
+        LOG.d(TAG, "onPageLoadStarted(" + url + ")");
+        if (view.getUrl() != null) {
             // Flush stale messages.
             parentEngine.client.onPageStarted(url);
             parentEngine.bridge.reset();
@@ -161,7 +160,7 @@ public class XWalkCordovaUiClient extends XWalkUIClient {
      */
     @Override
     public void onPageLoadStopped(XWalkView view, String url, LoadStatus status) {
-        LOG.d(TAG, "onPageFinished(" + url + ")");
+        LOG.d(TAG, "onPageLoadStopped(" + url + ")");
         if (status == LoadStatus.FINISHED) {
             parentEngine.client.onPageFinishedLoading(url);
         } else if (status == LoadStatus.FAILED) {

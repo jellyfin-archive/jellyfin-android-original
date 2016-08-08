@@ -293,7 +293,7 @@ module.exports.metadata =
     "cordova-plugin-file": "4.2.0",
     "cordova-plugin-file-transfer": "1.5.1",
     "cordova-plugin-media": "2.3.0",
-    "cordova-plugin-crosswalk-webview": "1.8.0"
+    "cordova-plugin-crosswalk-webview": "2.0.0"
 };
 // BOTTOM OF METADATA
 });
