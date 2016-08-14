@@ -1,1 +1,0 @@
-define(["events"],function(i){function a(i){i.getPlayerState().then(function(a){var n=a.NowPlayingItem;if(n){var t=a.PlayState||{};i.stop();var e=n.Id,o=t.PositionTicks||0;MediaController.play({ids:[e],startPositionTicks:o})}})}i.on(MediaController,"playerchange",function(i,n,t,e){e&&e.isLocalPlayer&&(n.isLocalPlayer||e.isPlaying()&&a(e))})});

@@ -1,1 +1,0 @@
-define(["inputManager"],function(r){function i(){return function(){r.trigger("toggledisplaymirror")}}return function(r){switch(r.item.deviceid){case"displaymirroring":return i();default:return}}});

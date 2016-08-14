@@ -1,1 +1,0 @@
-!function(){function o(){return new Promise(function(o,r){n=o,e=r,AndroidDirectoryChooser.chooseDirectory()})}function r(o){var r=n;r&&(o?r(o):reject(),n=null,e=null)}var n,e;window.NativeDirectoryChooser={chooseDirectory:o,onChosen:r}}();

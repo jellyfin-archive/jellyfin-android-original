@@ -1,1 +1,0 @@
-cordova.define("cordova-plugin-chrome-apps-common.stubs",function(n,e){e.createStub=function(n,e,o){n.__defineGetter__(e,function(){return o})}});

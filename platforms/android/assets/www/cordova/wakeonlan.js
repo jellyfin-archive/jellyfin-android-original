@@ -1,1 +1,0 @@
-define([],function(){function n(n){return new Promise(function(r){var e=window.chrome;if(!e)return void r();n.Port||9;r()})}return{send:n}});

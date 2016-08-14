@@ -1,1 +1,0 @@
-define([],function(){return function(e){e.addEventListener("viewbeforeshow",function(){var n=e.querySelector("#appVersionNumber");n.innerHTML=n.innerHTML.replace("{0}",ConnectionManager.appVersion())})}});

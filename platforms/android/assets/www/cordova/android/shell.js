@@ -1,1 +1,0 @@
-define([],function(){return{openUrl:function(n){window.plugins.launcher.launch({uri:n})},canExec:!1,exec:function(){return Promise.reject()}}});

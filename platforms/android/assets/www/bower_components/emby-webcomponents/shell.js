@@ -1,1 +1,0 @@
-define([],function(){return{openUrl:function(n){window.open(n,"_blank")},canExec:!1,exec:function(){return Promise.reject()}}});

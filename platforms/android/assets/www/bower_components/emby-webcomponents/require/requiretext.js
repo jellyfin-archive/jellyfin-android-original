@@ -1,1 +1,0 @@
-define(function(){return{load:function(n,e,r,t){0!=n.indexOf("http")&&0!=n.indexOf("file:")&&(n=t.baseUrl+n),t.urlArgs&&(n+=t.urlArgs(n,n));var i=new XMLHttpRequest;i.open("GET",n,!0),i.onload=function(){r(this.response)},i.send()},normalize:function(n,e){return e(n)}}});

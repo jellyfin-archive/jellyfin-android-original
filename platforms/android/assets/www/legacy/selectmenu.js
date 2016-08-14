@@ -1,1 +1,0 @@
-$.fn.selectmenu=function(){return this};

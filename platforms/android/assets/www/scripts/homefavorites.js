@@ -1,1 +1,0 @@
-define(["components/favoriteitems"],function(n){return function(e,r,t){var i=this;i.renderTab=function(){var e=null;n.render(t,Dashboard.getCurrentUserId(),e)}}});
