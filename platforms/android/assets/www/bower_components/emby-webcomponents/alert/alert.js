@@ -1,1 +1,0 @@
-define(["dialog","globalize"],function(t,e){return function(n,o){var r;r="string"==typeof n?{title:o,text:n}:n;var i=[];return i.push({name:e.translate("sharedcomponents#ButtonOk"),id:"ok"}),r.buttons=i,t(r).then(function(t){return"ok"==t?Promise.resolve():Promise.reject()})}});

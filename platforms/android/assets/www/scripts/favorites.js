@@ -1,1 +1,0 @@
-define(["components/favoriteitems"],function(e){return function(n){n.addEventListener("viewshow",function(r){var t=r.detail.isRestored;if(!t){var i=null;e.render(n,Dashboard.getCurrentUserId(),i)}})}});

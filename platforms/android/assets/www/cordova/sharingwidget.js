@@ -1,1 +1,0 @@
-define([],function(){function n(n){return new Promise(function(e,r){var i=n.share;window.plugins.socialsharing.share(i.Overview,i.Name,i.ImageUrl,i.Url,e,r)})}return{showMenu:n}});

@@ -1,1 +1,0 @@
-!function(){function n(n,a,l){var t=a;window.plugins.launcher.launch({uri:t,dataType:l},function(){ExternalPlayer.onPlaybackStart()},function(){ExternalPlayer.onPlaybackStart()})}window.ExternalPlayer.showPlayerSelectionMenu=n}();

@@ -1,1 +1,0 @@
-define(["serversync"],function(n){function e(r,t,i,c,u,f){var o=t.length;if(i>=o)return void u();var v=t[i];new n(r).sync(v,c).then(function(){e(r,t,i+1,c,u,f)},function(){e(r,t,i+1,c,u,f)})}return function(n){var r=this;r.sync=function(r){return new Promise(function(t,i){var c=n.getSavedServers();e(n,c,0,r,t,i)})}}});

@@ -1,1 +1,0 @@
-define([],function(){return function(){var n=this;n.upload=function(){return Promise.reject()}}});

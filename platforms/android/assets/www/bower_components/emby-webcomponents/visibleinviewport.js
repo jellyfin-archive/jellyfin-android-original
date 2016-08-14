@@ -1,1 +1,0 @@
-define(["dom"],function(t){function n(n,e,i,o,r){if(i=i||0,o=o||0,!n.getBoundingClientRect)return!0;r=r||t.getWindowSize();var g=r.innerWidth,u=r.innerHeight,d=n.getBoundingClientRect(),f=d.top>=0&&d.top<u+o,c=d.bottom>0&&d.bottom<=u+o,h=d.left>=0&&d.left<g+i,l=d.right>0&&d.right<=g+i,m=e?f||c:f&&c,b=e?h||l:h&&l;return m&&b}return n});

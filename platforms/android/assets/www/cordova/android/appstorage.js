@@ -1,1 +1,0 @@
-define([],function(){function e(){var e=this;e.setItem=function(e,n){AndroidSharedPreferences.set(e,n)},e.getItem=function(e){return AndroidSharedPreferences.get(e)},e.removeItem=function(e){AndroidSharedPreferences.remove(e)}}return new e});
