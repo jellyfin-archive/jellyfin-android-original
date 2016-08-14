@@ -186,12 +186,12 @@
         }
         var target = plugin.externalUrl ? ' target="_blank"' : '';
 
-        html += "<div class='card backdropCard bottomPaddedCard scalableCard'>";
+        html += "<div class='card backdropCard scalableCard'>";
 
-        html += '<div class="cardBox visualCardBox">';
+        html += '<div class="cardBox cardBox-bottompadded visualCardBox">';
         html += '<div class="cardScalable">';
 
-        html += '<div class="cardPadder"></div>';
+        html += '<div class="cardPadder cardPadder-backdrop"></div>';
 
         html += '<a class="cardContent" href="' + href + '"' + target + '>';
         if (plugin.thumbImage) {

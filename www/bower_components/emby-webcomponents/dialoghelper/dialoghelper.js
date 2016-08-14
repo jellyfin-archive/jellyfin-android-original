@@ -283,7 +283,14 @@
 
         if (!dlg.classList.contains('hide')) {
 
+            dlg.dispatchEvent(new CustomEvent('closing', {
+                bubbles: false,
+                cancelable: false
+            }));
+
             var onAnimationFinish = function () {
+                focusManager.popScope(dlg);
+
                 dlg.classList.add('hide');
                 if (dlg.close) {
                     dlg.close();
@@ -319,6 +326,7 @@
     function animateDialogOpen(dlg) {
 
         var onAnimationFinish = function () {
+            focusManager.pushScope(dlg);
             if (dlg.getAttribute('data-autofocus') == 'true') {
                 autoFocus(dlg);
             }
