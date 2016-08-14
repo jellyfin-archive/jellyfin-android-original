@@ -1,1 +1,0 @@
-define([],function(){function t(t){var e=this;e.localData={};var a;if(t)try{t.setItem("_test","0"),t.removeItem("_test"),a=!0}catch(n){}e.setItem=function(n,c){a?t.setItem(n,c):e.localData[n]=c},e.getItem=function(n){return a?t.getItem(n):e.localData[n]},e.removeItem=function(n){a?t.removeItem(n):e.localData[n]=null}}try{return new t(localStorage)}catch(e){return new t}});
