@@ -40,14 +40,11 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
 
     resetRegistration();
 
-    function show(title, options, timeoutMs) {
+    function showPersistentNotification(title, options, timeoutMs) {
+        serviceWorkerRegistration.showNotification(title, options);
+    }
 
-        resetRegistration();
-
-        if (serviceWorkerRegistration && !timeoutMs) {
-            serviceWorkerRegistration.showNotification(title, options);
-            return;
-        }
+    function showNonPersistentNotification(title, options, timeoutMs) {
 
         try {
             var notif = new Notification(title, options);
@@ -62,11 +59,29 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
         } catch (err) {
             if (options.actions) {
                 options.actions = [];
-                show(title, options, timeoutMs);
+                showNonPersistentNotification(title, options, timeoutMs);
             } else {
                 throw err;
             }
         }
+    }
+
+    function showNotification(options, timeoutMs, apiClient) {
+
+        var title = options.title;
+
+        options.data = options.data || {};
+        options.data.serverId = apiClient.serverInfo().Id;
+        options.icon = options.icon || getIconUrl();
+
+        resetRegistration();
+
+        if (serviceWorkerRegistration) {
+            showPersistentNotification(title, options, timeoutMs);
+            return;
+        }
+
+        showNonPersistentNotification(title, options, timeoutMs);
     }
 
     function showNewItemNotification(item, apiClient) {
@@ -94,7 +109,7 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
             });
         }
 
-        show(notification.title, notification, 15000);
+        showNotification(notification, 15000, apiClient);
     }
 
     function onLibraryChanged(data, apiClient) {
@@ -131,6 +146,9 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
     }
 
     function getIconUrl(name) {
+
+        name = name || 'notificationicon.png';
+
         return require.toUrl('.').split('?')[0] + '/' + name;
     }
 
@@ -144,8 +162,7 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
 
             var notification = {
                 tag: "install" + installation.Id,
-                data: {},
-                icon: getIconUrl('/notificationicon.png')
+                data: {}
             };
 
             if (status == 'completed') {
@@ -162,10 +179,16 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
             else if (status == 'progress') {
                 notification.title = globalize.translate('sharedcomponents#InstallingPackage').replace('{0}', installation.Name + ' ' + installation.Version);
 
-                //notification.actions =
-                //[
-                //    { action: 'cancel', title: globalize.translate('sharedcomponents#ButtonCancel')/*, icon: 'https://example/like.png'*/ }
-                //];
+                notification.actions =
+                [
+                    {
+                        action: 'cancel-install',
+                        title: globalize.translate('sharedcomponents#ButtonCancel'),
+                        icon: getIconUrl()
+                    }
+                ];
+
+                notification.data.id = installation.id;
             }
 
             if (status == 'progress') {
@@ -177,7 +200,7 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
 
             var timeout = status == 'cancelled' ? 5000 : 0;
 
-            show(notification.title, notification, timeout);
+            showNotification(notification, timeout, apiClient);
         });
     }
 
@@ -201,4 +224,41 @@ define(['serverNotifications', 'playbackManager', 'events', 'globalize', 'requir
         showPackageInstallNotification(apiClient, data, "progress");
     });
 
+    events.on(serverNotifications, 'ServerShuttingDown', function (e, apiClient, data) {
+        var serverId = apiClient.serverInfo().Id;
+        var notification = {
+            tag: "restart" + serverId,
+            title: globalize.translate('sharedcomponents#ServerNameIsShuttingDown', apiClient.serverInfo().Name)
+        };
+        showNotification(notification, 0, apiClient);
+    });
+
+    events.on(serverNotifications, 'ServerRestarting', function (e, apiClient, data) {
+        var serverId = apiClient.serverInfo().Id;
+        var notification = {
+            tag: "restart" + serverId,
+            title: globalize.translate('sharedcomponents#ServerNameIsRestarting', apiClient.serverInfo().Name)
+        };
+        showNotification(notification, 0, apiClient);
+    });
+
+    events.on(serverNotifications, 'RestartRequired', function (e, apiClient, data) {
+
+        var serverId = apiClient.serverInfo().Id;
+        var notification = {
+            tag: "restart" + serverId,
+            title: globalize.translate('sharedcomponents#PleaseRestartServerName', apiClient.serverInfo().Name)
+        };
+
+        notification.actions =
+        [
+            {
+                action: 'restart',
+                title: globalize.translate('sharedcomponents#ButtonRestart'),
+                icon: getIconUrl()
+            }
+        ];
+
+        showNotification(notification, 0, apiClient);
+    });
 });
