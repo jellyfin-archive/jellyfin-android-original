@@ -6,6 +6,7 @@ logs/
 console.log
 platforms/android/.gradle
 platforms/android/.idea
+platforms/android/assets/www
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
