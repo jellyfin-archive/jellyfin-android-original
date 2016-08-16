@@ -90,7 +90,7 @@
         var elems = page.querySelectorAll('.chkOffline');
         for (i = 0, length = elems.length; i < length; i++) {
 
-            elems[i].checked = item.SyncPercent == 100;
+            elems[i].checked = item.SyncPercent != null;
         }
     }
 
@@ -2056,13 +2056,19 @@
 
     return function (view, params) {
 
+        function resetSyncStatus() {
+            updateSyncStatus(view, currentItem);
+        }
+
         function onSyncLocalClick() {
 
             if (this.checked) {
                 require(['syncDialog'], function (syncDialog) {
                     syncDialog.showMenu({
                         items: [currentItem]
-                    });
+                    }).then(function () {
+                        reload(view, params);
+                    }, resetSyncStatus);
                 });
             } else {
 
@@ -2070,10 +2076,7 @@
 
                     confirm(Globalize.translate('ConfirmRemoveDownload')).then(function () {
                         ApiClient.cancelSyncItems([currentItem.Id]);
-                    }, function () {
-
-                        updateSyncStatus(view, currentItem);
-                    });
+                    }, resetSyncStatus);
                 });
             }
         }
