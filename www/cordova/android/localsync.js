@@ -2,10 +2,6 @@
 
     window.LocalSync = {
 
-        isSupported: function () {
-            return true;
-        },
-
         sync: function () {
             AndroidSync.startSync();
         },
