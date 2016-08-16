@@ -1049,7 +1049,7 @@
 
         _childrenItemsFunction = null;
 
-        var fields = "ItemCounts,AudioInfo,PrimaryImageAspectRatio,SyncInfo,CanDelete";
+        var fields = "ItemCounts,AudioInfo,PrimaryImageAspectRatio,BasicSyncInfo,CanDelete";
 
         var query = {
             ParentId: item.Id,
@@ -1127,7 +1127,8 @@
                     showTitle: true,
                     centerText: true,
                     lazy: true,
-                    overlayPlayButton: true
+                    overlayPlayButton: true,
+                    allowBottomPadding: !scrollX
                 });
             }
             else if (item.Type == "Season") {
@@ -1141,7 +1142,7 @@
                     overlayText: true,
                     lazy: true,
                     showDetailsMenu: true,
-                    overlayPlayButton: AppInfo.enableAppLayouts
+                    overlayPlayButton: AppInfo.enableAppLayouts,
                 });
             }
             else if (item.Type == "GameSystem") {
