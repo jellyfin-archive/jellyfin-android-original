@@ -1857,6 +1857,11 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
+    public MediaPlayer.TrackDescription[] getVideoTracks() {
+        return mMediaPlayer.getVideoTracks();
+    }
+
+    @MainThread
     public int getVideoTracksCount() {
         return mMediaPlayer.getVideoTracksCount();
     }
@@ -1879,6 +1884,16 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     @MainThread
     public boolean setSpuTrack(int index) {
         return mMediaPlayer.setSpuTrack(index);
+    }
+
+    @MainThread
+    public boolean setVideoTrack(int index) {
+        return mMediaPlayer.setVideoTrack(index);
+    }
+
+    @MainThread
+    public void setVideoTrackEnabled(boolean enabled) {
+        mMediaPlayer.setVideoTrackEnabled(enabled);
     }
 
     @MainThread
