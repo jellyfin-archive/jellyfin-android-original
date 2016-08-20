@@ -1,6 +1,6 @@
-﻿(function () {
+﻿define([], function () {
 
-    window.LocalSync = {
+    return {
 
         sync: function () {
             AndroidSync.startSync();
@@ -11,4 +11,4 @@
         }
     };
 
-})();
+});

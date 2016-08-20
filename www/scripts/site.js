@@ -1205,7 +1205,7 @@ var AppInfo = {};
     }
 
     function createMainContentHammer(Hammer) {
-        
+
         var hammer = new Hammer(document.querySelector('.mainDrawerPanelContent'), null);
         return hammer;
     }
@@ -1430,9 +1430,12 @@ var AppInfo = {};
         define("slideshow", [embyWebComponentsBowerPath + "/slideshow/slideshow"], returnFirstDependency);
 
         define('fetch', [bowerPath + '/fetch/fetch']);
-        define('objectassign', [embyWebComponentsBowerPath + '/objectassign']);
+
+        define('functionbind', [embyWebComponentsBowerPath + '/polyfills/bind']);
+        define('arraypolyfills', [embyWebComponentsBowerPath + '/polyfills/array']);
+        define('objectassign', [embyWebComponentsBowerPath + '/polyfills/objectassign']);
+
         define('native-promise-only', [bowerPath + '/native-promise-only/lib/npo.src']);
-        define("fingerprintjs2", [bowerPath + '/fingerprintjs2/fingerprint2'], returnFirstDependency);
         define("clearButtonStyle", ['css!' + embyWebComponentsBowerPath + '/clearbutton']);
         define("userdataButtons", [embyWebComponentsBowerPath + "/userdatabuttons/userdatabuttons"], returnFirstDependency);
         define("listView", [embyWebComponentsBowerPath + "/listview/listview"], returnFirstDependency);
@@ -1745,10 +1748,10 @@ var AppInfo = {};
         }
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
-            define("localsync", ["cordova/android/localsync"]);
+            define("localsync", ["cordova/android/localsync"], returnFirstDependency);
         }
         else {
-            define("localsync", ["scripts/localsync"]);
+            define("localsync", ["scripts/localsync"], returnFirstDependency);
         }
 
         define("livetvcss", ['css!css/livetv.css']);
@@ -1783,7 +1786,15 @@ var AppInfo = {};
         }
 
         if (typeof Object.assign != 'function') {
-            deps.push('objectassign');
+            list.push('objectassign');
+        }
+
+        if (!Array.prototype.filter) {
+            list.push('arraypolyfills');
+        }
+
+        if (!Function.prototype.bind) {
+            list.push('functionbind');
         }
 
         require(deps, function () {
@@ -2773,6 +2784,7 @@ var AppInfo = {};
 
             require(postInitDependencies);
             upgradeLayouts();
+            initAutoSync();
         });
     }
 
@@ -2784,6 +2796,16 @@ var AppInfo = {};
                 }
             });
         }
+    }
+
+    function initAutoSync() {
+        require(['serverNotifications', 'events'], function (serverNotifications, events) {
+            events.on(serverNotifications, 'SyncJobItemReady', function (e, apiClient, data) {
+                require(['localsync'], function (localSync) {
+                    localSync.sync({});
+                });
+            });
+        });
     }
 
     initRequire();
