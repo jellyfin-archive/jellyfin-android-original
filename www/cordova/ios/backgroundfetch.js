@@ -30,14 +30,14 @@
     function startSync(reportToFetcher, syncOptions) {
         lastStart = new Date().getTime();
 
-        require(['localsync'], function () {
+        require(['localsync'], function (localSync) {
 
-            if (LocalSync.getSyncStatus() == 'Syncing') {
+            if (localSync.getSyncStatus() == 'Syncing') {
                 onSyncFinish();
                 return;
             }
 
-            var promise = LocalSync.sync(syncOptions);
+            var promise = localSync.sync(syncOptions);
 
             if (reportToFetcher) {
                 promise.then(onSyncFinish, onSyncFail);
@@ -77,11 +77,6 @@
         options.uploadPhotos = (new Date().getTime() - lastStart) >= photoUploadInterval;
         options.syncOfflineUsers = (new Date().getTime() - lastStart) >= offlineUserSyncInterval;
     }
-
-    require(['localsync'], function () {
-
-        LocalSync.normalizeSyncOptions = normalizeSyncOptions;
-    });
 
     pageClassOn('pageshow', "libraryPage", function () {
 
