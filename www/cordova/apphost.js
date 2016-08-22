@@ -37,6 +37,8 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             if (!browser.safari) {
                 features.push('filedownload');
                 features.push('sync');
+                features.push('customsyncpath');
+                features.push('cameraupload');
             }
             features.push('sharing');
 
