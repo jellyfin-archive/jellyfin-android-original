@@ -1127,10 +1127,6 @@ var AppInfo = {};
             elem.classList.add('supporterMembershipDisabled');
         }
 
-        if (AppInfo.isNativeApp) {
-            elem.classList.add('nativeApp');
-        }
-
         if (!AppInfo.enableHomeFavorites) {
             elem.classList.add('homeFavoritesDisabled');
         }
@@ -1737,9 +1733,9 @@ var AppInfo = {};
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
 
             if (MainActivity.getChromeVersion() >= 48) {
-                define("audiorenderer", ["scripts/htmlmediarenderer"]);
-                //window.VlcAudio = true;
-                //define("audiorenderer", ["cordova/android/vlcplayer"]);
+                //define("audiorenderer", ["scripts/htmlmediarenderer"]);
+                window.VlcAudio = true;
+                define("audiorenderer", ["cordova/android/vlcplayer"]);
             } else {
                 window.VlcAudio = true;
                 define("audiorenderer", ["cordova/android/vlcplayer"]);
@@ -2707,7 +2703,6 @@ var AppInfo = {};
 
             if (browserInfo.android) {
                 deps.push('cordova/android/androidcredentials');
-                deps.push('cordova/android/links');
             }
         }
 
