@@ -67,7 +67,7 @@ public class VlcEventHandler implements MediaPlayer.EventListener {
             case MediaPlayer.Event.TimeChanged:
 
                 // Avoid overly aggressive reporting
-                if ((System.currentTimeMillis() - lastReportTime) < 1000){
+                if ((System.currentTimeMillis() - lastReportTime) < 800){
                     return;
                 }
 

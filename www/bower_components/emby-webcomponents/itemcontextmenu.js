@@ -212,7 +212,7 @@ define(['apphost', 'globalize', 'connectionManager', 'itemHelper', 'embyRouter',
                 }
             }
 
-            if (isMobileApp && options.sync !== false) {
+            if (options.sync !== false) {
                 if (itemHelper.canSync(user, item)) {
                     commands.push({
                         name: globalize.translate('sharedcomponents#SyncToOtherDevice'),
@@ -428,7 +428,8 @@ define(['apphost', 'globalize', 'connectionManager', 'itemHelper', 'embyRouter',
                                 items: [
                                 {
                                     Id: itemId
-                                }]
+                                }],
+                                serverId: serverId
                             });
                         });
                         getResolveFunction(resolve, id)();
@@ -441,7 +442,9 @@ define(['apphost', 'globalize', 'connectionManager', 'itemHelper', 'embyRouter',
                                 items: [
                                 {
                                     Id: itemId
-                                }]
+                                }],
+                                isLocalSync: true,
+                                serverId: serverId
                             });
                         });
                         getResolveFunction(resolve, id)();
