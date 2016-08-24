@@ -716,16 +716,6 @@ var Dashboard = {
         });
     },
 
-    exitOnBack: function () {
-
-        var currentView = ViewManager.currentView();
-        return !currentView || currentView.id == 'indexPage';
-    },
-
-    exit: function () {
-        Dashboard.logout();
-    },
-
     getDeviceProfile: function (maxHeight) {
 
         return new Promise(function (resolve, reject) {
@@ -1964,6 +1954,7 @@ var AppInfo = {};
             dependencies: ['emby-button', 'emby-input'],
             autoFocus: false,
             anonymous: true,
+            startup: true,
             controller: 'scripts/connectlogin'
         });
 
@@ -2063,6 +2054,7 @@ var AppInfo = {};
             path: '/forgotpassword.html',
             dependencies: ['emby-input', 'emby-button'],
             anonymous: true,
+            startup: true,
             controller: 'scripts/forgotpassword'
         });
 
@@ -2071,6 +2063,7 @@ var AppInfo = {};
             dependencies: ['emby-input', 'emby-button'],
             autoFocus: false,
             anonymous: true,
+            startup: true,
             controller: 'scripts/forgotpasswordpin'
         });
 
@@ -2252,6 +2245,7 @@ var AppInfo = {};
             dependencies: ['emby-button', 'humanedate', 'emby-input'],
             autoFocus: false,
             anonymous: true,
+            startup: true,
             controller: 'scripts/loginpage'
         });
 
@@ -2481,6 +2475,7 @@ var AppInfo = {};
             dependencies: ['listViewStyle', 'emby-button'],
             autoFocus: false,
             anonymous: true,
+            startup: true,
             controller: 'scripts/selectserver'
         });
 
@@ -2708,8 +2703,6 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova()) {
             deps.push('registrationservices');
-
-            deps.push('cordova/back');
 
             if (browserInfo.android) {
                 deps.push('cordova/android/androidcredentials');

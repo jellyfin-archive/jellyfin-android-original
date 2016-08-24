@@ -1,5 +1,7 @@
 define(['appStorage', 'browser'], function (appStorage, browser) {
 
+    console.log = function () { };
+
     function getDeviceProfile() {
 
         // TODO
@@ -28,7 +30,12 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             alert('setWindowState is not supported and should not be called');
         },
         exit: function () {
-            alert('exit is not supported and should not be called');
+
+            if (navigator.app && navigator.app.exitApp) {
+                navigator.app.exitApp();
+            } else {
+                window.close();
+            }
         },
         supports: function (command) {
 
@@ -41,6 +48,9 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
                 features.push('cameraupload');
             }
             features.push('sharing');
+            features.push('exit');
+            features.push('htmlaudioautoplay');
+            features.push('htmlvideoautoplay');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
