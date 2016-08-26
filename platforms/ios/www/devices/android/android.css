@@ -1,1 +1,1 @@
-@media all and (min-width:300px){.libraryViewNav{display:flex}.libraryViewNav .pageTabButton{flex-grow:1}}
+@media all and (min-width:300px){.libraryViewNav,.emby-tabs-slider{display:flex;flex-grow:1}.emby-tab-button{flex-grow:1}}

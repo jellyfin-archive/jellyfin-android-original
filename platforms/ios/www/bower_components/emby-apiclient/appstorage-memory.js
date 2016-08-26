@@ -1,0 +1,1 @@
+define([],function(){function t(){this.localData={}}return t.prototype.setItem=function(t,o){this.localData[t]=o},t.prototype.getItem=function(t){return this.localData[t]},t.prototype.removeItem=function(t){this.localData[t]=null},new t});
