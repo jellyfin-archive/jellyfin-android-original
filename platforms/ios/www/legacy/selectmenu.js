@@ -1,1 +1,1 @@
-$.fn.selectmenu=function(){return this};
+define(["jQuery"],function(n){n.fn.selectmenu=function(){return this}});

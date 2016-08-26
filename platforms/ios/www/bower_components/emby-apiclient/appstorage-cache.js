@@ -1,0 +1,1 @@
+define([],function(){function n(){e.put("data",new Response(JSON.stringify(t)))}var e,t,i={};return i.setItem=function(e,i){if(t){var u=t[e]!=i;u&&(t[e]=i,n())}},i.getItem=function(n){return t?t[n]:void 0},i.removeItem=function(e){t&&(t[e]=null,delete t[e],n())},i.init=function(){return caches.open("embydata").then(function(n){e=n,t={}})},i});
