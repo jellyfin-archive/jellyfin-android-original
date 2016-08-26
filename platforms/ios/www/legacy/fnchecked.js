@@ -1,1 +1,1 @@
-$.fn.checked=function(c){return c===!0||c===!1?$(this).each(function(){this.checked=c}):this.length&&this[0].checked};
+define(["jQuery"],function(e){e.fn.checked=function(c){return c===!0||c===!1?e(this).each(function(){this.checked=c}):this.length&&this[0].checked}});

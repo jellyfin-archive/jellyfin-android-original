@@ -1,1 +1,0 @@
-!function(){document.addEventListener("click",function(t){var e=t.target;if("A"==e.tagName&&"_blank"==e.getAttribute("target")){var r=e.href||e.getAttribute("href");return require(["shell"],function(t){t.openUrl(r)}),t.preventDefault(),!1}})}();
