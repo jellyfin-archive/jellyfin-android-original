@@ -2801,7 +2801,9 @@ var AppInfo = {};
                 }).then(function (reg) {
 
                     // https://github.com/WICG/BackgroundSync/blob/master/explainer.md
-                    return reg.sync.register('emby-sync');
+                    return reg.sync.register('emby-sync').then(function() {
+                        window.SyncRegistered = Dashboard.isConnectMode();
+                    });
                 });
 
             } catch (err) {
