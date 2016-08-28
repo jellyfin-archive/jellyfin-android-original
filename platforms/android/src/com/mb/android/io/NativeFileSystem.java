@@ -44,7 +44,7 @@ public class NativeFileSystem {
 
                 DocumentFile documentFile = DocumentFile.fromSingleUri(context, Uri.parse(path));
                 if (documentFile != null && documentFile.exists()){
-                    return true;
+                    return false;
                 }
             }
 
