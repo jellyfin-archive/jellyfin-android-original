@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		04F6FC7527FA4B6682BB9587 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F56589A630DC417D9D78FCD1 /* CFNetwork.framework */; };
 		0693067B697E40ED8F4B9125 /* CDVConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = C40BB7DB6F0A4E25978AA560 /* CDVConnection.m */; };
@@ -46,7 +45,6 @@
 		3FA5C557A8EA4A0288AD3AC4 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 187C1F5FEE2E4A0F8EE30CEA /* MessageUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		416AF5C9D73444C5BBB91148 /* NSString+URLEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FE53B5A27834C31B4B29B05 /* NSString+URLEncoding.m */; };
 		50E6D23955BE453394A4809A /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 289911663402421B8083F577 /* libc++.tbd */; };
-		5223387CD6274FD4B5D05632 /* CDVTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = C3DAE25350814E0C9B47D9E4 /* CDVTabBar.m */; };
 		525CD3F14EDF46D7AF28B5BA /* CDVAssetLibraryFilesystem.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C1A6E6935B45B7A4BD21A5 /* CDVAssetLibraryFilesystem.m */; };
 		549F66737C8F4BDBABD4002E /* IonicCameraRoll.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AF3A54C672247169A7323B1 /* IonicCameraRoll.m */; };
 		5B1594DD16A7569C00FEF299 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */; };
@@ -232,7 +230,6 @@
 		A3F135841C0CFAB20010885D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		A3F135861C0CFACD0010885D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		A3F3C5271BA0AE9A00B1DE6D /* MobileVLCKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileVLCKit.framework; path = ../../plugins/org.nypr.cordova.vlcplugin/VLCKit/build/MobileVLCKit.framework; sourceTree = "<group>"; };
-		A7088CD6DEFE4ABCB407AF0B /* CDVTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVTabBar.h; path = "com.squerb.cordova.plugins.ios-tab-bar/CDVTabBar.h"; sourceTree = "<group>"; };
 		A81122697F424DF99226F99B /* CDVConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVConnection.h; path = "cordova-plugin-network-information/CDVConnection.h"; sourceTree = "<group>"; };
 		A9007F559BFF42E7B665B0E4 /* CDVWebViewUIDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVWebViewUIDelegate.h; path = com.telerik.plugins.wkwebview/CDVWebViewUIDelegate.h; sourceTree = "<group>"; };
 		AA77B17EB92A4D56B9C35BF9 /* SelectDeviceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectDeviceDelegate.h; path = "fw-cordova-chromecast/SelectDeviceDelegate.h"; sourceTree = "<group>"; };
@@ -247,7 +244,6 @@
 		C1FC9294024A446E876ED9A6 /* ActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ActionSheet.m; path = "nl.x-services.plugins.actionsheet/ActionSheet.m"; sourceTree = "<group>"; };
 		C2C374D3F2B74479A84498C2 /* MediaPlayer.framework */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		C368001B670B4C5A91202EF2 /* AppVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppVersion.m; path = uk.co.whiteoctober.cordova.appversion/AppVersion.m; sourceTree = "<group>"; };
-		C3DAE25350814E0C9B47D9E4 /* CDVTabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVTabBar.m; path = "com.squerb.cordova.plugins.ios-tab-bar/CDVTabBar.m"; sourceTree = "<group>"; };
 		C40BB7DB6F0A4E25978AA560 /* CDVConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVConnection.m; path = "cordova-plugin-network-information/CDVConnection.m"; sourceTree = "<group>"; };
 		C41710C631E847CDBDEBE8F7 /* CDVAssetLibraryFilesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVAssetLibraryFilesystem.h; path = "cordova-plugin-file/CDVAssetLibraryFilesystem.h"; sourceTree = "<group>"; };
 		C5FCEE75AC0A4BBD8328D39D /* CommandDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommandDelegate.h; path = "fw-cordova-chromecast/CommandDelegate.h"; sourceTree = "<group>"; };
@@ -453,8 +449,6 @@
 				48B92DCE92C24939AA3B27CF /* BackgroundDownload.h */,
 				C368001B670B4C5A91202EF2 /* AppVersion.m */,
 				BD9073E646F8406E890B5C57 /* AppVersion.h */,
-				C3DAE25350814E0C9B47D9E4 /* CDVTabBar.m */,
-				A7088CD6DEFE4ABCB407AF0B /* CDVTabBar.h */,
 				21FBC895B20940959FC67977 /* MyMainViewController.m */,
 				586296A8CEA949309A60AEB0 /* AppDelegate+WKWebViewPolyfill.m */,
 				EE7AA692E43540C68C8150C9 /* ReroutingUIWebView.m */,
@@ -719,7 +713,6 @@
 				549F66737C8F4BDBABD4002E /* IonicCameraRoll.m in Sources */,
 				F8002EF797EA4200A619F27E /* BackgroundDownload.m in Sources */,
 				C4E122F497D84864A98F483E /* AppVersion.m in Sources */,
-				5223387CD6274FD4B5D05632 /* CDVTabBar.m in Sources */,
 				30F46BA4550448E58DF5B216 /* MyMainViewController.m in Sources */,
 				1B2E2C317D264B68AB51D044 /* AppDelegate+WKWebViewPolyfill.m in Sources */,
 				70869CCC65E44A4B9A0392E5 /* ReroutingUIWebView.m in Sources */,

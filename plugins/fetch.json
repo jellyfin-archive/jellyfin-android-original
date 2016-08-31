@@ -111,15 +111,6 @@
         "is_top_level": true,
         "variables": {}
     },
-    "com.squerb.cordova.plugins.ios-tab-bar": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/squerb/cordova-ios-tab-bar",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "com.telerik.plugins.wkwebview": {
         "source": {
             "type": "git",

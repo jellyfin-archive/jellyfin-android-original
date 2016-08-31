@@ -9,10 +9,6 @@
                 "parents": {
                     "/widget": [
                         {
-                            "xml": "<feature name=\"TabBar\"><param name=\"ios-package\" value=\"CDVTabBar\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"IosSocketsCommon\"><param name=\"ios-package\" value=\"IosSocketsCommon\" /></feature>",
                             "count": 1
                         },
@@ -152,9 +148,6 @@
         "uk.co.whiteoctober.cordova.appversion": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.squerb.cordova.plugins.ios-tab-bar": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -257,14 +250,6 @@
             "pluginId": "uk.co.whiteoctober.cordova.appversion",
             "clobbers": [
                 "cordova.getAppVersion"
-            ]
-        },
-        {
-            "file": "plugins/com.squerb.cordova.plugins.ios-tab-bar/www/tab-bar.js",
-            "id": "com.squerb.cordova.plugins.ios-tab-bar.TabBar",
-            "pluginId": "com.squerb.cordova.plugins.ios-tab-bar",
-            "clobbers": [
-                "window.TabBar"
             ]
         },
         {
@@ -586,7 +571,6 @@
         "com.drifty.cordova.cameraroll": "0.2.1",
         "org.apache.cordova.background-download": "0.0.2",
         "uk.co.whiteoctober.cordova.appversion": "0.1.7",
-        "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
         "com.telerik.plugins.wkwebview": "0.6.3",
         "cordova-plugin-chrome-apps-common": "1.0.7",
         "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
