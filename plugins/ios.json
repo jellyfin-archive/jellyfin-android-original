@@ -320,9 +320,6 @@
         "uk.co.whiteoctober.cordova.appversion": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "com.squerb.cordova.plugins.ios-tab-bar": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },

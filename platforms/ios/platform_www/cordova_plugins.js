@@ -54,14 +54,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/com.squerb.cordova.plugins.ios-tab-bar/www/tab-bar.js",
-        "id": "com.squerb.cordova.plugins.ios-tab-bar.TabBar",
-        "pluginId": "com.squerb.cordova.plugins.ios-tab-bar",
-        "clobbers": [
-            "window.TabBar"
-        ]
-    },
-    {
         "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
         "id": "com.telerik.plugins.wkwebview.wkwebview",
         "pluginId": "com.telerik.plugins.wkwebview",
@@ -382,7 +374,6 @@ module.exports.metadata =
     "com.drifty.cordova.cameraroll": "0.2.1",
     "org.apache.cordova.background-download": "0.0.2",
     "uk.co.whiteoctober.cordova.appversion": "0.1.7",
-    "com.squerb.cordova.plugins.ios-tab-bar": "1.0.0",
     "com.telerik.plugins.wkwebview": "0.6.3",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",

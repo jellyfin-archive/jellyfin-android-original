@@ -159,6 +159,20 @@
         }
     }
 
+    function addNoFlexClass(buttons) {
+
+        setTimeout(function() {
+            for (var i = 0, length = buttons.length; i < length; i++) {
+
+                var button = buttons[i];
+
+                if (button.classList.contains('emby-button-noflex')) {
+                    button.classList.add('dockedtabs-tab-button-noflex');
+                }
+            }
+        }, 300);
+    }
+
     function render(options) {
 
         var elem = document.createElement('div');
@@ -209,8 +223,11 @@
 
         var buttons = elem.querySelectorAll('.emby-tab-button');
         for (var i = 0, length = buttons.length; i < length; i++) {
-            buttons[i].addEventListener('click', onTabClick);
+
+            var button = buttons[i];
+            button.addEventListener('click', onTabClick);
         }
+        addNoFlexClass(buttons);
 
         options.appFooter.add(elem);
 
