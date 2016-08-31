@@ -1,0 +1,1 @@
+self.addEventListener("sync",function(n){"emby-sync"==n.tag});

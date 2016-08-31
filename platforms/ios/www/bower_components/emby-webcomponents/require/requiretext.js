@@ -1,1 +1,1 @@
-define(function(){return{load:function(n,e,r,t){0!=n.indexOf("http")&&0!=n.indexOf("file:")&&(n=t.baseUrl+n),t.urlArgs&&(n+=t.urlArgs(n,n));var i=new XMLHttpRequest;i.open("GET",n,!0),i.onload=function(){r(this.response)},i.send()},normalize:function(n,e){return e(n)}}});
+define(function(){return{load:function(n,e,r,o){-1==n.indexOf("://")&&(n=o.baseUrl+n),o.urlArgs&&(n+=o.urlArgs(n,n));var t=new XMLHttpRequest;t.open("GET",n,!0),t.onload=function(){r(this.response)},t.send()},normalize:function(n,e){return e(n)}}});
