@@ -1,4 +1,4 @@
-﻿define(['apphost', 'connectionManager', 'events', 'globalize', 'css!./dockedtabs', 'emby-tabs'], function (appHost, connectionManager, events, globalize) {
+﻿define(['apphost', 'connectionManager', 'events', 'globalize', 'browser', 'css!./dockedtabs', 'emby-tabs'], function (appHost, connectionManager, events, globalize, browser) {
 
     var currentUser = {};
     var currentUserViews = [];
@@ -47,7 +47,9 @@
 
     function showMenu(menuItems, button) {
 
-        require(['webActionSheet'], function (actionSheet) {
+        var actionSheetType = browser.safari ? 'actionsheet' : 'webActionSheet';
+
+        require([actionSheetType], function (actionSheet) {
 
             actionSheet.show({
 
