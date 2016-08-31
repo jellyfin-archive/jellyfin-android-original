@@ -57,7 +57,7 @@
                 exitAnimation: 'fadeout',
                 entryAnimationDuration: 160,
                 exitAnimationDuration: 100,
-                offsetTop: -40,
+                offsetTop: -30,
                 positionY: 'top',
                 dialogClass: 'dockedtabs-dlg',
                 menuItemClass: 'dockedtabs-dlg-menuitem'
@@ -99,13 +99,6 @@
             });
         }
 
-        if (currentUser.Policy.EnableSync) {
-            commands.push({
-                name: globalize.translate('SyncToOtherDevices'),
-                id: 'sync'
-            });
-        }
-
         if (Dashboard.isConnectMode()) {
             commands.push({
                 name: globalize.translate('HeaderSelectServer'),
@@ -117,6 +110,13 @@
             name: globalize.translate('TabSettings'),
             id: 'settings'
         });
+
+        if (currentUser.Policy.EnableSync) {
+            commands.push({
+                name: globalize.translate('SyncToOtherDevices'),
+                id: 'sync'
+            });
+        }
 
         commands.push({
             name: globalize.translate('ButtonSignOut'),
