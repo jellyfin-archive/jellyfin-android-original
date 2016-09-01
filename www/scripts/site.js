@@ -941,7 +941,6 @@ var AppInfo = {};
             if (isCordova) {
                 //AppInfo.enableSectionTransitions = true;
                 AppInfo.enableHomeFavorites = false;
-                AppInfo.enableHomeTabs = false;
                 AppInfo.enableNowPlayingPageBottomTabs = false;
             }
         }
@@ -952,6 +951,7 @@ var AppInfo = {};
             AppInfo.enableAppLayouts = true;
             AppInfo.supportsExternalPlayerMenu = true;
             AppInfo.isNativeApp = true;
+            AppInfo.enableHomeTabs = false;
 
             if (isIOS) {
                 AppInfo.supportsExternalPlayers = false;

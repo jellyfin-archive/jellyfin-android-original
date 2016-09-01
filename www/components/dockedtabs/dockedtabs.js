@@ -101,10 +101,14 @@
                 name: globalize.translate('ButtonManageServer'),
                 id: 'manageserver'
             });
-            commands.push({
-                name: globalize.translate('MetadataManager'),
-                id: 'metadatamanager'
-            });
+
+            if (dom.getWindowSize().innerWidth >= 800) {
+                commands.push({
+                    name: globalize.translate('MetadataManager'),
+                    id: 'metadatamanager'
+                });
+            }
+
             commands.push({
                 name: globalize.translate('ButtonReports'),
                 id: 'reports'
