@@ -1,4 +1,4 @@
-﻿define(['appSettings', 'dom', 'cardStyle', 'emby-checkbox'], function (appSettings, dom) {
+﻿define(['appSettings', 'dom', 'connectionManager', 'cardStyle', 'emby-checkbox'], function (appSettings, dom, connectionManager) {
 
     function authenticateUserByName(page, apiClient, username, password) {
 
@@ -169,7 +169,7 @@
             var serverId = params.serverid;
 
             if (serverId) {
-                return ConnectionManager.getOrCreateApiClient(serverId);
+                return connectionManager.getOrCreateApiClient(serverId);
 
             } else {
                 return ApiClient;
