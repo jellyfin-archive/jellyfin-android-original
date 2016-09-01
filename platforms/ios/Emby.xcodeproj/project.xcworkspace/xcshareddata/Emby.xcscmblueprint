@@ -14,13 +14,13 @@
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "8EF3F6B7-152A-4457-9DF0-FF3A51FD390D",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "A66AB07D00310EEAA22A90A63D173413E2D6C6BC" : "MediaBrowser.Mobile",
+    "A66AB07D00310EEAA22A90A63D173413E2D6C6BC" : "MediaBrowser.Mobile\/",
     "11E76B4A8B249084BFAB339B1C0AB3F9B9875C19" : "Connect-SDK-iOS\/core",
     "17F782690A81D001A6DE548E24007364647BAAA3" : "Connect-SDK-iOS\/modules\/google-cast",
     "0EFDF2D073A77BC2CB2CF6173E0F3A830E66F8AF" : "MediaBrowser.Mobile\/plugins\/org.nypr.cordova.vlcplugin\/VLCKit\/",
-    "F6F96CA34C5878B0A9123C7C37855491A5E599DA" : "GCDWebServer",
+    "F6F96CA34C5878B0A9123C7C37855491A5E599DA" : "GCDWebServer\/",
     "EC433DA33D9DD3B2D237C35005DC1E035C23B88C" : "Connect-SDK-iOS-1.6\/modules\/firetv\/",
-    "75793EFA09A162BA4F1A17844A987CDF3B180B54" : "Connect-SDK-iOS"
+    "75793EFA09A162BA4F1A17844A987CDF3B180B54" : "Connect-SDK-iOS-1.4\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Emby",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
