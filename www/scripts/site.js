@@ -923,7 +923,6 @@ var AppInfo = {};
 
         var isCordova = Dashboard.isRunningInCordova();
 
-        AppInfo.enableSearchInTopMenu = true;
         AppInfo.enableHomeFavorites = true;
         AppInfo.enableHomeTabs = true;
         AppInfo.enableNowPlayingPageBottomTabs = true;
@@ -941,7 +940,6 @@ var AppInfo = {};
 
             if (isCordova) {
                 //AppInfo.enableSectionTransitions = true;
-                AppInfo.enableSearchInTopMenu = false;
                 AppInfo.enableHomeFavorites = false;
                 AppInfo.enableHomeTabs = false;
                 AppInfo.enableNowPlayingPageBottomTabs = false;
@@ -962,9 +960,6 @@ var AppInfo = {};
         else {
             AppInfo.enableSupporterMembership = true;
         }
-
-        // This doesn't perform well on iOS
-        AppInfo.enableHeadRoom = !isIOS && !browserInfo.msie;
 
         // This currently isn't working on android, unfortunately
         AppInfo.supportsFileInput = !(AppInfo.isNativeApp && isAndroid);
