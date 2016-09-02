@@ -1,1 +1,0 @@
-Array.prototype.filter||(Array.prototype.filter=function(r){"use strict";if(null==this)throw new TypeError;var t=Object(this),e=t.length>>>0;if("function"!=typeof r)throw new TypeError;for(var o=[],i=arguments[1],n=0;e>n;n++)if(n in t){var f=t[n];r.call(i,f,n,t)&&o.push(f)}return o});

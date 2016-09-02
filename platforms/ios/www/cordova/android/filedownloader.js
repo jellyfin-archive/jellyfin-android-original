@@ -1,1 +1,0 @@
-define(["connectionManager"],function(n){return{download:function(e){e.forEach(function(e){var t=n.getApiClient(e.serverId);t.getItem(t.getCurrentUserId(),e.itemId).then(function(n){MainActivity.downloadFile(e.url,n.Path)})})}}});

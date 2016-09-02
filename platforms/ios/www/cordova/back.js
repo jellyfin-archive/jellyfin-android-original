@@ -1,1 +1,0 @@
-!function(){function a(a){Dashboard.exitOnBack()?(a.preventDefault(),Dashboard.exit()):history.back()}Dashboard.exit=function(){navigator.app&&navigator.app.exitApp?navigator.app.exitApp():Dashboard.logout()},document.addEventListener("backbutton",a,!1)}();

@@ -1,1 +1,0 @@
-define(["jQuery"],function(e){e(document).on("pageinit","#wizardServicePage",function(){var n=this;e("#btnNextPage",n).on("click",function(){Dashboard.navigate("wizardagreement.html")})})});

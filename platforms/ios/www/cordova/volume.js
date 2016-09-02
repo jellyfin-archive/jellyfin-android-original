@@ -1,1 +1,0 @@
-!function(){function e(){MediaController.volumeDown()}function n(){MediaController.volumeUp()}Events.on(MediaController,"playerchange",function(o,t){document.removeEventListener("volumedownbutton",e,!1),document.removeEventListener("volumeupbutton",n,!1),t.localPlayer||(document.addEventListener("volumedownbutton",e,!1),document.addEventListener("volumeupbutton",n,!1))})}();

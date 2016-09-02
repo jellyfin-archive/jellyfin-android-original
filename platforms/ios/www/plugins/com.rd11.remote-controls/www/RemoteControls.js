@@ -1,1 +1,0 @@
-cordova.define("com.rd11.remote-controls.RemoteControls",function(e,t,o){var n=o.exports;n.updateMetas=function(e,t,o){cordova.exec(e,t,"RemoteControls","updateMetas",o)},n.receiveRemoteEvent=function(e){var t=document.createEvent("HTMLEvents");t.remoteEvent=e,t.initEvent("remote-event",!0,!0,arguments),document.dispatchEvent(t)}});
