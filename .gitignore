@@ -7,12 +7,13 @@ console.log
 platforms/android/.gradle
 platforms/android/.idea
 platforms/android/assets/www
+platforms/android/CordovaLib/build
+platforms/ios/www
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
