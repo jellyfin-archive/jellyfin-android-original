@@ -1,1 +1,0 @@
-Dashboard.confirm=function(n,i,o){require(["confirm"],function(c){c(n,i).then(function(){o(!0)},function(){o(!1)})})};

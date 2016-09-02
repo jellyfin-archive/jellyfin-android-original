@@ -1,1 +1,0 @@
-define([],function(){function t(t,e,n){return t.split(e).join(n)}return function(e){"string"==typeof e&&(e={title:"",text:e});var n=t(e.text||"","<br/>","\n"),r=confirm(n);return r?Promise.resolve():Promise.reject()}});

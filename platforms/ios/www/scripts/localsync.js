@@ -1,1 +1,0 @@
-define(["appSettings","connectionManager"],function(n,e){var r;return{sync:function(t){return r?r.promise():new Promise(function(c){require(["multiserversync"],function(u){t=t||{},t.cameraUploadServers=n.cameraUploadServers(),r=new u(e).sync(t).then(function(){r=null,c()},function(){r=null})})})},getSyncStatus:function(){return null!=r?"Syncing":"Idle"}}});
