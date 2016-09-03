@@ -23,22 +23,9 @@ body:not(.dashboardDocument) .mainDrawerButton {
     background-attachment: initial;
 }
 
-.background-theme-b .backgroundContainer:not(.withBackdrop), .dialog.background-theme-b {
-    background: #181818;
-}
-
 .viewMenuBar {
     /* It needs this in order to retain height since we're positioning the contents absolutely */
     height: 50px;
-}
-
-.libraryDocument .viewMenuBar, .libraryViewNav {
-    background-color: #000 !important;
-    box-shadow: none !important;
-}
-
-.viewMenuBar.semiTransparent {
-    background-color: #000;
 }
 
 .emby-tab-button {
