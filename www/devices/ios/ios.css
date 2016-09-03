@@ -43,14 +43,6 @@ body:not(.dashboardDocument) .mainDrawerButton {
     display: none;
 }
 
-@media all and (max-width: 600px) {
-
-    .libraryViewNav a {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
-
 .libraryViewNav {
     font-size: 12px;
 }
@@ -77,10 +69,6 @@ h1, h1 a {
 
 .sidebarLinkText {
     font-weight: 400 !important;
-}
-
-.nowPlayingPageBackButton {
-    display: none !important;
 }
 
 .nowPlayingPage .libraryViewNav {
