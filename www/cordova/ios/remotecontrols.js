@@ -70,12 +70,14 @@
 
     function releaseCurrentPlayer() {
 
-        if (currentPlayer) {
+        var player = currentPlayer;
+
+        if (player) {
             events.off(player, 'playbackstart', onPlaybackStart);
             events.off(player, 'playbackstop', onPlaybackStopped);
             events.off(player, 'playstatechange', onStateChanged);
             events.off(player, 'positionchange', onStateChanged);
-            currentPlayer.endPlayerUpdates();
+            player.endPlayerUpdates();
             currentPlayer = null;
             hideNowPlayingBar();
         }
@@ -156,6 +158,6 @@
             default:
                 break;
         }
-    })
+    });
 
 });
