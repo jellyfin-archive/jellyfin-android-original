@@ -51,6 +51,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             features.push('exit');
             features.push('htmlaudioautoplay');
             features.push('htmlvideoautoplay');
+            features.push('externallinks');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
