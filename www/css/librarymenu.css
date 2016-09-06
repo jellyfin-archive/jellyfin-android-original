@@ -102,6 +102,7 @@
     height: 50px;
     display: flex;
     flex-direction: column;
+    font-size: 13px;
 }
 
 .hiddenViewMenuBar .viewMenuBar {
