@@ -1,8 +1,7 @@
 package com.mb.android.media;
 
 import android.annotation.TargetApi;
-import android.app.Notification;
-import android.app.PendingIntent;
+import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -11,12 +10,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
-import android.media.MediaMetadataRetriever;
-import android.media.RemoteControlClient;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -28,11 +24,13 @@ import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.mb.android.BuildConfig;
@@ -54,6 +52,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -64,7 +63,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.ApiEventListener;
-import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.AndroidApiClient;
 import mediabrowser.apiinteraction.android.AndroidDevice;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -84,13 +82,18 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     private static final int SHOW_PROGRESS = 0;
     private static final int SHOW_TOAST = 1;
-    public static final String ACTION_REMOTE_GENERIC = "org.videolan.vlc.remote.";
-    public static final String ACTION_REMOTE_LAST_PLAYLIST = "org.videolan.vlc.remote.LastPlaylist";
+    public static final String ACTION_REMOTE_GENERIC =  Strings.buildPkgString("remote.");
+    public static final String ACTION_REMOTE_BACKWARD = ACTION_REMOTE_GENERIC+"Backward";
+    public static final String ACTION_REMOTE_PLAY = ACTION_REMOTE_GENERIC+"Play";
+    public static final String ACTION_REMOTE_PLAYPAUSE = ACTION_REMOTE_GENERIC+"PlayPause";
+    public static final String ACTION_REMOTE_PAUSE = ACTION_REMOTE_GENERIC+"Pause";
+    public static final String ACTION_REMOTE_STOP = ACTION_REMOTE_GENERIC+"Stop";
+    public static final String ACTION_REMOTE_FORWARD = ACTION_REMOTE_GENERIC+"Forward";
+    public static final String ACTION_REMOTE_LAST_PLAYLIST = ACTION_REMOTE_GENERIC+"LastPlaylist";
+    public static final String ACTION_REMOTE_LAST_VIDEO_PLAYLIST = ACTION_REMOTE_GENERIC+"LastVideoPlaylist";
+    public static final String ACTION_REMOTE_SWITCH_VIDEO = ACTION_REMOTE_GENERIC+"SwitchToVideo";
     public static final String ACTION_REMOTE_RESUME_VIDEO = "org.videolan.vlc.remote.ResumeVideo";
     public static final String ACTION_WIDGET_INIT = "org.videolan.vlc.widget.INIT";
-    public static final String ACTION_WIDGET_UPDATE = "org.videolan.vlc.widget.UPDATE";
-    public static final String ACTION_WIDGET_UPDATE_COVER = "org.videolan.vlc.widget.UPDATE_COVER";
-    public static final String ACTION_WIDGET_UPDATE_POSITION = "org.videolan.vlc.widget.UPDATE_POSITION";
 
     private ILogger logger;
     private IJsonSerializer jsonSerializer = new GsonJsonSerializer();
@@ -101,6 +104,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     private long TranscodingOffsetPositionTicks = 0;
     private boolean EnableServerSeek = false;
     private long lastReportedPositionTicks = 0;
+    private VideoApiHelper apiHelper;
 
     public interface Callback {
         void update();
@@ -119,20 +123,24 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         return binder.getService();
     }
 
+    private SharedPreferences mSettings;
     private final IBinder mBinder = new LocalBinder();
     private MediaWrapperList mMediaList = new MediaWrapperList();
     private MediaPlayer mMediaPlayer;
+    private boolean mParsed = false;
+    private boolean mSeekable = false;
+    private boolean mPausable = false;
     private boolean mIsAudioTrack = false;
     private boolean mHasHdmiAudio = false;
+    private boolean mSwitchingToVideo = false;
+    private boolean mVideoBackground = false;
 
     final private ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private boolean mDetectHeadset = true;
-    private boolean mPebbleEnabled;
     private PowerManager.WakeLock mWakeLock;
     private final AtomicBoolean mExpanding = new AtomicBoolean(false);
 
     private static boolean mWasPlayingAudio = false; // used only if readPhoneState returns true
-    private VideoApiHelper apiHelper;
 
     // Index management
     /**
@@ -144,49 +152,52 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     private int mNextIndex; // Set to -1 if no next media
 
     // Playback management
-    private boolean mShuffling = false;
-    private RepeatType mRepeating = RepeatType.None;
-    private Random mRandom = null; // Used in shuffling process
 
+    MediaSessionCompat mMediaSession;
+    protected MediaSessionCallback mSessionCallback;
+    private static final long PLAYBACK_ACTIONS = PlaybackStateCompat.ACTION_PAUSE
+            | PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_STOP
+            | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
+
+    public static final int TYPE_AUDIO = 0;
+    public static final int TYPE_VIDEO = 1;
+
+    public static final int REPEAT_NONE = 0;
+    public static final int REPEAT_ONE = 1;
+    public static final int REPEAT_ALL = 2;
+    private boolean mShuffling = false;
+    private int mRepeating = REPEAT_NONE;
+    private Random mRandom = null; // Used in shuffling process
+    private long mSavedTime = 0l;
     private boolean mHasAudioFocus = false;
     // RemoteControlClient-related
     /**
      * RemoteControlClient is for lock screen playback control.
      */
-    private RemoteControlClient mRemoteControlClient = null;
     private RemoteControlClientReceiver mRemoteControlClientReceiver = null;
     /**
      * Last widget position update timestamp
      */
     private long mWidgetPositionTimestamp = Calendar.getInstance().getTimeInMillis();
     private ComponentName mRemoteControlClientReceiverComponent;
+    //private PopupManager mPopupManager;
 
     private static LibVLC LibVLC(Context context, ILogger logger) {
         return VLCInstance.get(context, logger);
     }
 
     private MediaPlayer newMediaPlayer() {
-        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final MediaPlayer mp = new MediaPlayer(LibVLC(getApplicationContext(), logger));
-        final String aout = VLCOptions.getAout(pref);
-        logger.Info("Audio output preference: %s", aout);
+        final String aout = VLCOptions.getAout(mSettings, logger);
         if (mp.setAudioOutput(aout) && aout.equals("android_audiotrack")) {
             mIsAudioTrack = true;
             if (mHasHdmiAudio)
                 mp.setAudioOutputDevice("hdmi");
         } else
             mIsAudioTrack = false;
+        mp.getVLCVout().addCallback(this);
+
         return mp;
-    }
-
-    public static enum RepeatType {
-        None,
-        Once,
-        All
-    }
-
-    private static boolean readPhoneState() {
-        return !AndroidUtil.isFroyoOrLater();
     }
 
     @Override
@@ -195,16 +206,19 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         logger = AppLogger.getLogger(getApplicationContext());
 
+        mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         mMediaPlayer = newMediaPlayer();
-        mMediaPlayer.getVLCVout().addCallback(this);
+        mMediaPlayer.setEqualizer(VLCOptions.getEqualizer(this));
 
         if (!VLCInstance.testCompatibleCPU(this)) {
             stopSelf();
             return;
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mDetectHeadset = prefs.getBoolean("enable_headset_detection", true);
+        if (!AndroidDevices.hasTsp() && !AndroidDevices.hasPlayServices(getApplicationContext()))
+            AndroidDevices.setRemoteControlReceiverEnabled(getApplicationContext(), true);
+
+        mDetectHeadset = mSettings.getBoolean("enable_headset_detection", true);
 
         mCurrentIndex = -1;
         mPrevIndex = -1;
@@ -232,17 +246,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         filter.addAction(Intent.ACTION_HEADSET_PLUG);
         filter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         filter.addAction(Constants.SLEEP_INTENT);
-        if (readPhoneState()) {
-            filter.addAction(Constants.INCOMING_CALL_INTENT);
-            filter.addAction(Constants.CALL_ENDED_INTENT);
-        }
+
         registerReceiver(mReceiver, filter);
         registerV21();
 
-        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean stealRemoteControl = pref.getBoolean("enable_steal_remote_control", false);
+        boolean stealRemoteControl = mSettings.getBoolean("enable_steal_remote_control", false);
 
-        if (!AndroidUtil.isFroyoOrLater() || stealRemoteControl) {
+        if (stealRemoteControl) {
             /* Backward compatibility for API 7 */
             filter = new IntentFilter();
             if (stealRemoteControl)
@@ -251,44 +261,25 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
             mRemoteControlClientReceiver = new RemoteControlClientReceiver();
             registerReceiver(mRemoteControlClientReceiver, filter);
         }
-        try {
-            getPackageManager().getPackageInfo("com.getpebble.android", PackageManager.GET_ACTIVITIES);
-            mPebbleEnabled = true;
-        } catch (PackageManager.NameNotFoundException e) {
-            mPebbleEnabled = false;
-        }
-
-    }
-
-    /**
-     * A function to control the Remote Control Client. It is needed for
-     * compatibility with devices below Ice Cream Sandwich (4.0).
-     *
-     * @param state Playback state
-     */
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void setRemoteControlClientPlaybackState(int state) {
-        if (!AndroidUtil.isICSOrLater() || mRemoteControlClient == null)
-            return;
-
-        switch (state) {
-            case MediaPlayer.Event.Playing:
-                mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
-                break;
-            case MediaPlayer.Event.Paused:
-                mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_PAUSED);
-                break;
-            case MediaPlayer.Event.Stopped:
-                mRemoteControlClient.setPlaybackState(RemoteControlClient.PLAYSTATE_STOPPED);
-                break;
-        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null)
             return START_STICKY;
+        /*if(ACTION_REMOTE_PLAYPAUSE.equals(intent.getAction())){
+            if (hasCurrentMedia())
+                return START_STICKY;
+            else
+                loadLastPlaylist(TYPE_AUDIO);
+        } else if (ACTION_REMOTE_PLAY.equals(intent.getAction())) {
+            if (hasCurrentMedia())
+                play();
+            else
+                loadLastPlaylist(TYPE_AUDIO);
+        }*/
         handleIntent(this, intent);
+        updateWidget();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -303,25 +294,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         if( mMediaPlayer == null ) {
             logger.Warn("Intent received, but VLC is not loaded, skipping.");
             return;
-        }
-
-        if (readPhoneState()) {
-                /*
-                 * Incoming Call : Pause if VLC is playing audio or video.
-                 */
-            if (action.equalsIgnoreCase(Constants.INCOMING_CALL_INTENT)) {
-                mWasPlayingAudio = mMediaPlayer.isPlaying() && hasCurrentMedia();
-                if (mWasPlayingAudio)
-                    pause();
-            }
-
-                /*
-                 * Call ended : Play only if VLC was playing audio.
-                 */
-            if (action.equalsIgnoreCase(Constants.CALL_ENDED_INTENT)
-                    && mWasPlayingAudio) {
-                play();
-            }
         }
 
         // skip all headsets events if there is a call
@@ -360,9 +332,17 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         } else if (action.equalsIgnoreCase(Constants.ACTION_NEXT)) {
             next();
         }else if (action.equalsIgnoreCase(ACTION_REMOTE_LAST_PLAYLIST)) {
-            loadLastPlaylist();
-        } else if (action.equalsIgnoreCase(ACTION_REMOTE_RESUME_VIDEO)) {
-            switchToVideo();
+            loadLastPlaylist(TYPE_AUDIO);
+        } else if (action.equalsIgnoreCase(ACTION_REMOTE_LAST_VIDEO_PLAYLIST)) {
+            loadLastPlaylist(TYPE_VIDEO);
+        } else if (action.equalsIgnoreCase(ACTION_REMOTE_SWITCH_VIDEO)) {
+            removePopup();
+            if (hasMedia()) {
+                getCurrentMediaWrapper().removeFlags(MediaWrapper.MEDIA_FORCE_AUDIO);
+                switchToVideo();
+            }
+        } else if (action.equalsIgnoreCase(ACTION_WIDGET_INIT)) {
+            updateWidget();
         }
 
             /*
@@ -442,7 +422,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         final MediaWrapper mw = new MediaWrapper(Uri.parse(path));
 
         load(mw);
-        switchToVideo();
+        //switchToVideo();
     }
 
     public void setApiHelper(VideoApiHelper helper){
@@ -453,6 +433,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     public void onDestroy() {
         super.onDestroy();
         stop();
+
+        if (!AndroidDevices.hasTsp() && !AndroidDevices.hasPlayServices(getApplicationContext()))
+            AndroidDevices.setRemoteControlReceiverEnabled(getApplicationContext(), false);
+
         if (mWakeLock.isHeld())
             mWakeLock.release();
         unregisterReceiver(mReceiver);
@@ -465,24 +449,29 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         mMediaPlayer.release();
     }
 
-
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        if (!hasCurrentMedia())
+            stopSelf();
+        return true;
     }
 
     public IVLCVout getVLCVout()  {
         return mMediaPlayer.getVLCVout();
     }
 
-    private final OnAudioFocusChangeListener mAudioFocusListener = AndroidUtil.isFroyoOrLater() ?
-            createOnAudioFocusChangeListener() : null;
+    private final OnAudioFocusChangeListener mAudioFocusListener = createOnAudioFocusChangeListener();
 
-    @TargetApi(Build.VERSION_CODES.FROYO)
     private OnAudioFocusChangeListener createOnAudioFocusChangeListener() {
         return new OnAudioFocusChangeListener() {
             private boolean mLossTransient = false;
-            private boolean mLossTransientCanDuck = false;
+            private int mLossTransientVolume = -1;
+            private boolean wasPlaying = false;
 
             @Override
             public void onAudioFocusChange(int focusChange) {
@@ -492,35 +481,35 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                 switch (focusChange) {
                     case AudioManager.AUDIOFOCUS_LOSS:
                         logger.Info("AUDIOFOCUS_LOSS");
-                        // Stop playback
+                        // Pause playback
                         changeAudioFocus(false);
-                        stop();
+                        pause();
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                         logger.Info("AUDIOFOCUS_LOSS_TRANSIENT");
                         // Pause playback
-                        if (mMediaPlayer.isPlaying()) {
-                            mLossTransient = true;
-                            mMediaPlayer.pause();
-                        }
+                        mLossTransient = true;
+                        wasPlaying = isPlaying();
+                        if (wasPlaying)
+                            pause();
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                         logger.Info("AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK");
                         // Lower the volume
                         if (mMediaPlayer.isPlaying()) {
+                            mLossTransientVolume = mMediaPlayer.getVolume();
                             mMediaPlayer.setVolume(36);
-                            mLossTransientCanDuck = true;
                         }
                         break;
                     case AudioManager.AUDIOFOCUS_GAIN:
-                        logger.Info("AUDIOFOCUS_GAIN: " + mLossTransientCanDuck + ", " + mLossTransient);
+                        logger.Info("AUDIOFOCUS_GAIN: " + mLossTransientVolume + ", " + mLossTransient);
                         // Resume playback
-                        if (mLossTransientCanDuck) {
-                            mMediaPlayer.setVolume(100);
-                            mLossTransientCanDuck = false;
-                        }
-                        if (mLossTransient) {
-                            mMediaPlayer.play();
+                        if (mLossTransientVolume != -1) {
+                            mMediaPlayer.setVolume(mLossTransientVolume);
+                            mLossTransientVolume = -1;
+                        } else if (mLossTransient) {
+                            if (wasPlaying)
+                                mMediaPlayer.play();
                             mLossTransient = false;
                         }
                         break;
@@ -529,34 +518,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         };
     }
 
-    /**
-     * Set up the remote control and tell the system we want to be the default receiver for the MEDIA buttons
-     */
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public void changeRemoteControlClient(AudioManager am, boolean acquire) {
-        if (acquire) {
-            Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-            mediaButtonIntent.setComponent(mRemoteControlClientReceiverComponent);
-            PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, 0);
-
-            // create and register the remote control client
-            mRemoteControlClient = new RemoteControlClient(mediaPendingIntent);
-            am.registerRemoteControlClient(mRemoteControlClient);
-
-            mRemoteControlClient.setTransportControlFlags(
-                    RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
-                            RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
-                            RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS |
-                            RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-                            RemoteControlClient.FLAG_KEY_MEDIA_STOP);
-        } else {
-            am.unregisterRemoteControlClient(mRemoteControlClient);
-            mRemoteControlClient = null;
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.FROYO)
-    private void changeAudioFocusFroyoOrLater(boolean acquire) {
+    private void changeAudioFocus(boolean acquire) {
         final AudioManager am = (AudioManager)getSystemService(AUDIO_SERVICE);
         if (am == null)
             return;
@@ -567,27 +529,16 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                         AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                     am.setParameters("bgm_state=true");
-                    am.registerMediaButtonEventReceiver(mRemoteControlClientReceiverComponent);
-                    if (AndroidUtil.isICSOrLater())
-                        changeRemoteControlClient(am, acquire);
                     mHasAudioFocus = true;
                 }
             }
         } else {
             if (mHasAudioFocus) {
-                final int result = am.abandonAudioFocus(mAudioFocusListener);
+                am.abandonAudioFocus(mAudioFocusListener);
                 am.setParameters("bgm_state=false");
-                am.unregisterMediaButtonEventReceiver(mRemoteControlClientReceiverComponent);
-                if (AndroidUtil.isICSOrLater())
-                    changeRemoteControlClient(am, acquire);
                 mHasAudioFocus = false;
             }
         }
-    }
-
-    private void changeAudioFocus(boolean acquire) {
-        if (AndroidUtil.isFroyoOrLater())
-            changeAudioFocusFroyoOrLater(acquire);
     }
 
 
@@ -614,6 +565,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     } : null;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
             handleIntent(context, intent);
@@ -623,70 +575,116 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @Override
     public void onNewLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
-        logger.Debug("PlaybackService.OnNewLayout width=%1 height=%2 visibleWidth=%3 visibleHeight=%4 sarNum=%5 sarDen=%6");
     }
 
     @Override
     public void onSurfacesCreated(IVLCVout vlcVout) {
-        handleVout();
+        hideNotification(false);
     }
 
     @Override
     public void onSurfacesDestroyed(IVLCVout vlcVout) {
-        handleVout();
-    }
-
-    @Override
-    public void onHardwareAccelerationError(IVLCVout vlcVout) {
+        mSwitchingToVideo = false;
     }
 
     private final Media.EventListener mMediaListener = new Media.EventListener() {
         @Override
         public void onEvent(Media.Event event) {
+            boolean update = true;
             switch (event.type) {
+                case Media.Event.MetaChanged:
+                    /* Update Meta if file is already parsed */
+                    if (mParsed && updateCurrentMeta(event.getMetaId()))
+                        executeUpdate();
+                    logger.Info("Media.Event.MetaChanged: " + event.getMetaId());
+                    break;
                 case Media.Event.ParsedChanged:
                     logger.Info("Media.Event.ParsedChanged");
-                    final MediaWrapper mw = getCurrentMedia();
-                    if (mw != null)
-                        mw.updateMeta(mMediaPlayer);
-                    executeUpdate();
-                    showNotification();
-                    updateRemoteControlClientMetadata();
+                    updateCurrentMeta(-1);
+                    mParsed = true;
                     break;
-                case Media.Event.MetaChanged:
-                    break;
+                default:
+                    update = false;
+
             }
-            for (Callback callback : mCallbacks)
-                callback.onMediaEvent(event);
+            if (update) {
+                for (Callback callback : mCallbacks)
+                    callback.onMediaEvent(event);
+                if (mParsed && mMediaSession != null)
+                    showNotification();
+            }
         }
     };
+
+    /**
+     * Update current media meta and return true if player needs to be updated
+     *
+     * @param id of the Meta event received, -1 for none
+     * @return true if UI needs to be updated
+     */
+    private boolean updateCurrentMeta(int id) {
+        if (id == Media.Meta.Publisher)
+            return false;
+        final MediaWrapper mw = getCurrentMedia();
+        if (mw != null)
+            mw.updateMeta(mMediaPlayer);
+        return id != Media.Meta.NowPlaying || getCurrentMedia().getNowPlaying() != null;
+    }
 
     private final MediaPlayer.EventListener mMediaPlayerListener = new MediaPlayer.EventListener() {
 
         private Timer timer;
         private long lastReportTime;
 
+        //KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+
         @Override
         public void onEvent(MediaPlayer.Event event) {
             switch (event.type) {
                 case MediaPlayer.Event.Playing:
+                    if(mSavedTime != 0l)
+                        seek(mSavedTime);
+                    mSavedTime = 0l;
+
                     logger.Info("MediaPlayer.Event.Playing");
                     executeUpdate();
+                    publishState(event.type);
                     executeUpdateProgress();
 
+                    /*final MediaWrapper mw = mMediaList.getMedia(mCurrentIndex);
+                    if (mw != null) {
+                        long length = mMediaPlayer.getLength();
+                        MediaDatabase dbManager = MediaDatabase.getInstance();
+                        MediaWrapper m = dbManager.getMedia(mw.getUri());
+                        *//**
+                         * 1) There is a media to update
+                         * 2) It has a length of 0
+                         * (dynamic track loading - most notably the OGG container)
+                         * 3) We were able to get a length even after parsing
+                         * (don't want to replace a 0 with a 0)
+                         *//*
+                        if (m != null && m.getLength() == 0 && length > 0) {
+                            dbManager.updateMedia(mw.getUri(),
+                                    MediaDatabase.INDEX_MEDIA_LENGTH, length);
+                        }
+                    }*/
+
                     changeAudioFocus(true);
-                    setRemoteControlClientPlaybackState(event.type);
-                    showNotification();
                     if (!mWakeLock.isHeld())
                         mWakeLock.acquire();
+                    if (/*!keyguardManager.inKeyguardRestrictedInputMode() &&*/ !mVideoBackground && switchToVideo())
+                        hideNotification(false);
+                    else
+                        showNotification();
+                    mVideoBackground = false;
                     startTimer();
                     break;
                 case MediaPlayer.Event.Paused:
                     logger.Info("MediaPlayer.Event.Paused");
                     executeUpdate();
+                    publishState(event.type);
                     executeUpdateProgress();
                     showNotification();
-                    setRemoteControlClientPlaybackState(event.type);
                     if (mWakeLock.isHeld())
                         mWakeLock.release();
                     reportState("paused", false);
@@ -695,16 +693,15 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     logger.Info("MediaPlayer.Event.Stopped");
                     stopTimer();
                     executeUpdate();
+                    publishState(event.type);
                     executeUpdateProgress();
-                    setRemoteControlClientPlaybackState(event.type);
                     if (mWakeLock.isHeld())
                         mWakeLock.release();
                     changeAudioFocus(false);
                     break;
                 case MediaPlayer.Event.EndReached:
-                    logger.Info("MediaPlayerEndReached");
+                    logger.Info("MediaPlayer.Event.EndReached");
                     stopTimer();
-                    executeUpdate();
                     executeUpdateProgress();
                     determinePrevAndNextIndices(true);
                     next();
@@ -713,9 +710,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     changeAudioFocus(false);
                     break;
                 case MediaPlayer.Event.EncounteredError:
-                    logger.Info("EncounteredError");
-                    showToast(getString(R.string.invalid_location, mMediaList.getMRL(mCurrentIndex)), Toast.LENGTH_SHORT);
                     stopTimer();
+                    showToast(getString(
+                            R.string.invalid_location,
+                            mMediaList.getMRL(mCurrentIndex)), Toast.LENGTH_SHORT);
                     executeUpdate();
                     executeUpdateProgress();
                     next();
@@ -726,18 +724,23 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     reportState("positionchange", true);
                     break;
                 case MediaPlayer.Event.PositionChanged:
+                    updateWidgetPosition(event.getPositionChanged());
                     break;
                 case MediaPlayer.Event.Vout:
                     break;
                 case MediaPlayer.Event.ESAdded:
-                    if (event.getEsChangedType() == Media.Track.Type.Video) {
-                        if (!handleVout()) {
-                            /* Update notification content intent: resume video or resume audio activity */
-                            showNotification();
-                        }
+                    if (event.getEsChangedType() == Media.Track.Type.Video && (mVideoBackground || !switchToVideo())) {
+                        /* Update notification content intent: resume video or resume audio activity */
+                        updateMetadata();
                     }
                     break;
                 case MediaPlayer.Event.ESDeleted:
+                    break;
+                case MediaPlayer.Event.PausableChanged:
+                    mPausable = event.getPausable();
+                    break;
+                case MediaPlayer.Event.SeekableChanged:
+                    mSeekable = event.getSeekable();
                     break;
             }
             for (Callback callback : mCallbacks)
@@ -870,32 +873,25 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     };
 
     public boolean canSwitchToVideo() {
-        return hasCurrentMedia()  /*&&mMediaPlayer.getVideoTracksCount() > 0*/;
-    }
-
-    private boolean handleVout() {
-        if (!canSwitchToVideo() || !mMediaPlayer.isPlaying())
-            return false;
-        if (mMediaPlayer.getVLCVout().areViewsAttached()) {
-            hideNotification(false);
-            return true;
-        } else
-            return false;
+        return hasCurrentMedia() /*&& mMediaPlayer.getVideoTracksCount() > 0*/;
     }
 
     @MainThread
     public boolean switchToVideo() {
-
-        logger.Debug("begin switchToVideo");
-        if (!canSwitchToVideo()){
-            logger.Debug("Cannot switch to video, aborting");
+        MediaWrapper media = mMediaList.getMedia(mCurrentIndex);
+        if (media == null || media.hasFlag(MediaWrapper.MEDIA_FORCE_AUDIO) || !canSwitchToVideo())
             return false;
+        mVideoBackground = false;
+        if (isVideoPlaying()) {//Player is already running, just send it an intent
+            setVideoTrackEnabled(true);
+            /*LocalBroadcastManager.getInstance(this).sendBroadcast(
+                    VideoPlayerActivity.getIntent(VideoPlayerActivity.PLAY_FROM_SERVICE,
+                            media, false, mCurrentIndex));*/
+        } else if (!mSwitchingToVideo) {//Start the video player
+            VideoPlayerActivity.startOpened(getApplicationContext(),
+                    media.getUri(), mCurrentIndex);
+            mSwitchingToVideo = true;
         }
-        if (!mMediaPlayer.getVLCVout().areViewsAttached()){
-            logger.Debug("Calling VideoPlayerActivity.startOpened");
-            VideoPlayerActivity.startOpened(getApplicationContext(), mCurrentIndex);
-        }
-
         return true;
     }
 
@@ -916,6 +912,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         for (Callback callback : mCallbacks) {
             callback.update();
         }
+        if (updateWidget)
+            updateWidget();
+        updateMetadata();
+        broadcastMetadata();
     }
 
     private void executeUpdateProgress() {
@@ -940,12 +940,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
      * @return True if a media is currently loaded, false otherwise
      */
     private boolean hasCurrentMedia() {
-        return mCurrentIndex >= 0 && mCurrentIndex < mMediaList.size();
+        return isValidIndex(mCurrentIndex);
     }
 
     private final Handler mHandler = new AudioServiceHandler(this);
 
     private static class AudioServiceHandler extends WeakHandler<PlaybackService> {
+
         public AudioServiceHandler(PlaybackService fragment) {
             super(fragment);
         }
@@ -967,57 +968,42 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     /*final Bundle bundle = msg.getData();
                     final String text = bundle.getString("text");
                     final int duration = bundle.getInt("duration");
-                    Toast.makeText(service.getApplicationContext(), text, duration).show();*/
+                    Toast.makeText(context, text, duration).show();*/
                     break;
             }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void showNotification() {
-
-        /*if (posterUrl == null || posterUrl.length() == 0) {
-            showNotification(null);
+        /*if (mMediaPlayer.getVLCVout().areViewsAttached()) {
+            hideNotification(false);
             return;
         }
-
-        GetHttpClient().getBitmap(posterUrl, new Response<Bitmap>(){
-
-            @Override
-            public void onResponse(Bitmap bitmap) {
-                showNotification(bitmap);
-            }
-
-            @Override
-            public void onError(Exception ex) {
-
-                showNotification(null);
-            }
-        });*/
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void showNotification(Bitmap cover) {
-        if (mMediaPlayer.getVLCVout().areViewsAttached())
-            return;
         try {
-            BaseItemDto item = currentItem;
-            if (item == null)
-                return;
-
-            String album = item.getAlbum() == null ? "" : item.getAlbum();
-            String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
-            String title = item.getName() == null ? "" : item.getName();
-            String itemId = item.getId();
+            boolean coverOnLockscreen = mSettings.getBoolean("lockscreen_cover", true);
+            MediaMetadataCompat metaData = mMediaSession.getController().getMetadata();
+            String title = metaData.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
+            String artist = metaData.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST);
+            String album = metaData.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+            Bitmap cover = coverOnLockscreen ?
+                    metaData.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART) :
+                    AudioUtil.getCover(this, getCurrentMedia(), 512);
+            if (cover == null)
+                cover = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.icon);
             Notification notification;
 
             //Watch notification dismissed
             PendingIntent piStop = PendingIntent.getBroadcast(this, 0,
-                    new Intent(Constants.ACTION_STOP), PendingIntent.FLAG_UPDATE_CURRENT);
+                    new Intent(ACTION_REMOTE_STOP), PendingIntent.FLAG_UPDATE_CURRENT);
 
             // add notification to status bar
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.icon)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+            builder.setSmallIcon(R.drawable.ic_stat_vlc)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setContentTitle(title)
+                    .setContentText(artist + " - " + album)
+                    .setLargeIcon(cover)
                     .setTicker(title + " - " + artist)
                     .setAutoCancel(!mMediaPlayer.isPlaying())
                     .setOngoing(mMediaPlayer.isPlaying())
@@ -1025,59 +1011,42 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
 
             PendingIntent pendingIntent;
-            if (canSwitchToVideo()) {
-
-                logger.Debug("Switching to video player activity");
-
-                /* Resume VideoPlayerActivity from from ACTION_REMOTE_RESUME_VIDEO intent */
-                final Intent notificationIntent = new Intent(ACTION_REMOTE_RESUME_VIDEO);
+            if (mVideoBackground || (canSwitchToVideo() && !mMediaList.getMedia(mCurrentIndex).hasFlag(MediaWrapper.MEDIA_FORCE_AUDIO))) {
+                *//* Resume VideoPlayerActivity from ACTION_REMOTE_SWITCH_VIDEO intent *//*
+                final Intent notificationIntent = new Intent(ACTION_REMOTE_SWITCH_VIDEO);
                 pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                switchToVideo();
             } else {
+                *//* Resume AudioPlayerActivity *//*
 
-                logger.Debug("Cannot switch to video, showing audio player activity");
-
-                /* Resume AudioPlayerActivity */
-                final Intent notificationIntent = new Intent(PlaybackService.this, MainActivity.class);
-                //notificationIntent.setAction(AudioPlayerContainerActivity.ACTION_SHOW_PLAYER);
+                final Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                notificationIntent.setAction(AudioPlayerContainerActivity.ACTION_SHOW_PLAYER);
                 notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
                 pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             }
 
-            if (AndroidUtil.isJellyBeanOrLater()) {
-                Intent iBackward = new Intent(Constants.ACTION_PREVIOUS);
-                Intent iPlay = new Intent(Constants.ACTION_PLAYPAUSE);
-                Intent iForward = new Intent(Constants.ACTION_NEXT);
-                PendingIntent piBackward = PendingIntent.getBroadcast(this, 0, iBackward, PendingIntent.FLAG_UPDATE_CURRENT);
-                PendingIntent piPlay = PendingIntent.getBroadcast(this, 0, iPlay, PendingIntent.FLAG_UPDATE_CURRENT);
-                PendingIntent piForward = PendingIntent.getBroadcast(this, 0, iForward, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(pendingIntent);
 
-                RemoteViews view_expanded = new RemoteViews(getPackageName(), R.layout.notification_expanded);
-                if (cover != null)
-                    view_expanded.setImageViewBitmap(R.id.cover, cover);
-                view_expanded.setTextViewText(R.id.songName, title);
-                view_expanded.setTextViewText(R.id.artist, artist);
-                view_expanded.setTextViewText(R.id.album, album);
-                view_expanded.setImageViewResource(R.id.play_pause, mMediaPlayer.isPlaying() ? R.drawable.ic_pause_w : R.drawable.ic_play_w);
-                view_expanded.setOnClickPendingIntent(R.id.backward, piBackward);
-                view_expanded.setOnClickPendingIntent(R.id.play_pause, piPlay);
-                view_expanded.setOnClickPendingIntent(R.id.forward, piForward);
-                view_expanded.setOnClickPendingIntent(R.id.content, pendingIntent);
+            PendingIntent piBackward = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_REMOTE_BACKWARD), PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent piPlay = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_REMOTE_PLAYPAUSE), PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent piForward = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_REMOTE_FORWARD), PendingIntent.FLAG_UPDATE_CURRENT);
 
-                notification = builder.build();
-                notification.contentView = view_expanded;
-                notification.bigContentView = view_expanded;
+            builder.addAction(R.drawable.ic_previous_w, getString(R.string.previous), piBackward);
+            if (mMediaPlayer.isPlaying())
+                builder.addAction(R.drawable.ic_pause_w, getString(R.string.pause), piPlay);
+            else
+                builder.addAction(R.drawable.ic_play_w, getString(R.string.play), piPlay);
+            builder.addAction(R.drawable.ic_next_w, getString(R.string.next), piForward);
+
+            if (AndroidDevices.showMediaStyle) {
+                builder.setStyle(new NotificationCompat.MediaStyle()
+                        .setMediaSession(mMediaSession.getSessionToken())
+                        .setShowActionsInCompactView(new int[] {0,1,2})
+                        .setShowCancelButton(true)
+                        .setCancelButtonIntent(piStop)
+                );
             }
-            else {
-                if (cover != null) {
-                    builder.setLargeIcon(cover);
-                }
-                builder.setContentTitle(title)
-                        .setContentText(artist)
-                        .setContentInfo(album)
-                        .setContentIntent(pendingIntent);
-                notification = builder.build();
-            }
+
+            notification = builder.build();
 
             startService(new Intent(this, PlaybackService.class));
             if (!AndroidUtil.isLolliPopOrLater() || mMediaPlayer.isPlaying())
@@ -1086,12 +1055,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                 stopForeground(false);
                 NotificationManagerCompat.from(this).notify(3, notification);
             }
-        }
-        catch (NoSuchMethodError e){
-            // Compat library is wrong on 3.2
-            // http://code.google.com/p/android/issues/detail?id=36359
-            // http://code.google.com/p/android/issues/detail?id=36502
-        }
+        } catch (IllegalArgumentException e){
+            // On somme crappy firmwares, shit can happen
+            Log.e(TAG, "Failed to display notification", e);
+        }*/
     }
 
     private void hideNotification() {
@@ -1105,7 +1072,8 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
      */
     private void hideNotification(boolean stopPlayback) {
         stopForeground(true);
-        if(stopPlayback){
+        //NotificationManagerCompat.from(this).cancel(3);
+        if(stopPlayback) {
             mServiceStarted = false;
             stopSelf();
         }
@@ -1113,10 +1081,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public void pause() {
-        mHandler.removeMessages(SHOW_PROGRESS);
-        // hideNotification(); <-- see event handler
-        mMediaPlayer.pause();
-        broadcastMetadata();
+        if (mPausable) {
+            savePosition();
+            mHandler.removeMessages(SHOW_PROGRESS);
+            // hideNotification(); <-- see event handler
+            mMediaPlayer.pause();
+            broadcastMetadata();
+        }
     }
 
     @MainThread
@@ -1124,18 +1095,20 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         if(hasCurrentMedia()) {
             mMediaPlayer.play();
             mHandler.sendEmptyMessage(SHOW_PROGRESS);
-            showNotification();
+            updateMetadata();
+            updateWidget();
             broadcastMetadata();
         }
     }
 
     @MainThread
-    public void stop() {
-
-        if (apiHelper != null) {
-            apiHelper.enableProgressReporting = false;
+    public void stopPlayback() {
+        if (mMediaSession != null) {
+            mMediaSession.setActive(false);
+            mMediaSession.release();
+            mMediaSession = null;
         }
-
+        removePopup();
         if (mMediaPlayer == null)
             return;
         savePosition();
@@ -1148,8 +1121,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
             media.release();
         }
         mMediaList.removeEventListener(mListEventListener);
-        destroyCurrentMediaInfo();
-        setRemoteControlClientPlaybackState(MediaPlayer.Event.Stopped);
         mCurrentIndex = -1;
         mPrevious.clear();
         mHandler.removeMessages(SHOW_PROGRESS);
@@ -1158,6 +1129,16 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         executeUpdate();
         executeUpdateProgress();
         changeAudioFocus(false);
+    }
+
+    @MainThread
+    public void stop() {
+        if (apiHelper != null) {
+            apiHelper.enableProgressReporting = false;
+        }
+
+        stopPlayback();
+        stopSelf();
     }
 
     private void determinePrevAndNextIndices() {
@@ -1180,24 +1161,34 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
             mShuffling &= size > 2;
 
             // Repeating once doesn't change the index
-            if (mRepeating == RepeatType.Once) {
+            if (mRepeating == REPEAT_ONE) {
                 mPrevIndex = mNextIndex = mCurrentIndex;
             } else {
 
                 if(mShuffling) {
-                    if(mPrevious.size() > 0)
+                    if(!mPrevious.isEmpty()){
                         mPrevIndex = mPrevious.peek();
+                        while (!isValidIndex(mPrevIndex)) {
+                            mPrevious.remove(mPrevious.size() - 1);
+                            if (mPrevious.isEmpty()) {
+                                mPrevIndex = -1;
+                                break;
+                            }
+                            mPrevIndex = mPrevious.peek();
+                        }
+                    }
                     // If we've played all songs already in shuffle, then either
                     // reshuffle or stop (depending on RepeatType).
                     if(mPrevious.size() + 1 == size) {
-                        if(mRepeating == RepeatType.None) {
+                        if(mRepeating == REPEAT_NONE) {
                             mNextIndex = -1;
                             return;
                         } else {
                             mPrevious.clear();
+                            mRandom = new Random(System.currentTimeMillis());
                         }
                     }
-                    if(mRandom == null) mRandom = new Random();
+                    if(mRandom == null) mRandom = new Random(System.currentTimeMillis());
                     // Find a new index not in mPrevious.
                     do
                     {
@@ -1212,7 +1203,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
                     if(mCurrentIndex + 1 < size)
                         mNextIndex = mCurrentIndex + 1;
                     else {
-                        if(mRepeating == RepeatType.None) {
+                        if(mRepeating == REPEAT_NONE) {
                             mNextIndex = -1;
                         } else {
                             mNextIndex = 0;
@@ -1223,61 +1214,117 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void updateRemoteControlClientMetadata() {
-        /*if (!AndroidUtil.isICSOrLater()) // NOP check
+    private boolean isValidIndex(int position) {
+        return position >= 0 && position < mMediaList.size();
+    }
+
+    private void initMediaSession() {
+        ComponentName mediaButtonEventReceiver = new ComponentName(this,
+                RemoteControlClientReceiver.class);
+        mSessionCallback = new MediaSessionCallback();
+        mMediaSession = new MediaSessionCompat(this, "VLC", mediaButtonEventReceiver, null);
+        mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mMediaSession.setCallback(mSessionCallback);
+        try {
+            mMediaSession.setActive(true);
+        } catch (NullPointerException e) {
+            // Some versions of KitKat do not support AudioManager.registerMediaButtonIntent
+            // with a PendingIntent. They will throw a NullPointerException, in which case
+            // they should be able to activate a MediaSessionCompat with only transport
+            // controls.
+            mMediaSession.setActive(false);
+            mMediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+            mMediaSession.setActive(true);
+        }
+    }
+
+    private final class MediaSessionCallback extends MediaSessionCompat.Callback {
+
+        @Override
+        public void onPlay() {
+            play();
+        }
+        @Override
+        public void onPause() {
+            pause();
+        }
+
+        @Override
+        public void onStop() {
+            stop();
+        }
+
+        @Override
+        public void onSkipToNext() {
+            next();
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            previous();
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            seek(pos);
+        }
+
+        @Override
+        public void onFastForward() {
+            next();
+        }
+
+        @Override
+        public void onRewind() {
+            previous();
+        }
+    }
+
+    protected void updateMetadata() {
+        /*MediaWrapper media = getCurrentMedia();
+        if (media == null)
             return;
+        if (mMediaSession == null)
+            initMediaSession();
+        String title = media.getNowPlaying();
+        if (title == null)
+            title = media.getTitle();
+        boolean coverOnLockscreen = mSettings.getBoolean("lockscreen_cover", true);
+        MediaMetadataCompat.Builder bob = new MediaMetadataCompat.Builder();
+        bob.putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                .putString(MediaMetadataCompat.METADATA_KEY_GENRE, MediaUtils.getMediaGenre(this, media))
+                .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, media.getTrackNumber())
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, MediaUtils.getMediaArtist(this, media))
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, MediaUtils.getMediaReferenceArtist(this, media))
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, MediaUtils.getMediaAlbum(this, media))
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, media.getLength());
+        if (coverOnLockscreen) {
+            Bitmap cover = AudioUtil.getCover(this, media, 512);
+            if (cover != null && cover.getConfig() != null) //In case of format not supported
+                bob.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, cover.copy(cover.getConfig(), false));
+        }
+        mMediaSession.setMetadata(bob.build());*/
+    }
 
-        BaseItemDto item = currentItem;
-
-        String album = item.getAlbum() == null ? "" : item.getAlbum();
-        String artist = item.getArtistItems() != null && item.getArtistItems().size() > 0 ? item.getArtistItems().get(0).getName() : "";
-        String genre = item.getGenres() != null && item.getGenres().size() > 0 ? item.getGenres().get(0) : "";
-        String albumArtist = item.getAlbumArtist() == null ? "" : item.getAlbumArtist();
-        String title = item.getName() == null ? "" : item.getName();
-        String itemId = item.getId();
-
-        if (mRemoteControlClient != null && item != null) {
-            final RemoteControlClient.MetadataEditor editor = mRemoteControlClient.editMetadata(true);
-            editor.putString(MediaMetadataRetriever.METADATA_KEY_ALBUM, album);
-            editor.putString(MediaMetadataRetriever.METADATA_KEY_ARTIST, artist);
-            editor.putString(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST, albumArtist);
-            editor.putString(MediaMetadataRetriever.METADATA_KEY_GENRE, genre);
-            editor.putString(MediaMetadataRetriever.METADATA_KEY_TITLE, title);
-
-            // TODO: Add duration
-            //editor.putLong(MediaMetadataRetriever.METADATA_KEY_DURATION, media.getLength());
-
-            if (posterUrl == null || posterUrl.length() == 0) {
-                editor.apply();
-                return;
-            }
-
-            GetHttpClient().getBitmap(posterUrl, new Response<Bitmap>() {
-
-                @Override
-                public void onResponse(Bitmap bitmap) {
-
-                    try {
-                        editor.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, bitmap);
-                        editor.apply();
-                    } catch (IllegalStateException ex) {
-
-                        // Occasionally seeing this exception: Caused by: java.lang.IllegalStateException: Can't parcel a recycled bitmap
-                        logger.ErrorException("Error applying bitmap to notification", ex);
-
-                        editor.putBitmap(RemoteControlClient.MetadataEditor.BITMAP_KEY_ARTWORK, null);
-                        editor.apply();
-                    }
-                }
-
-                @Override
-                public void onError(Exception ex) {
-
-                    editor.apply();
-                }
-            });
-        }*/
+    protected void publishState(int state) {
+        if (mMediaSession == null)
+            return;
+        PlaybackStateCompat.Builder bob = new PlaybackStateCompat.Builder();
+        bob.setActions(PLAYBACK_ACTIONS);
+        switch (state) {
+            case MediaPlayer.Event.Playing:
+                bob.setState(PlaybackStateCompat.STATE_PLAYING, -1, 1);
+                break;
+            case MediaPlayer.Event.Stopped:
+                bob.setState(PlaybackStateCompat.STATE_STOPPED, -1, 0);
+                break;
+            default:
+                bob.setState(PlaybackStateCompat.STATE_PAUSED, -1, 0);
+        }
+        PlaybackStateCompat pbState = bob.build();
+        mMediaSession.setPlaybackState(pbState);
+        mMediaSession.setActive(state != PlaybackStateCompat.STATE_STOPPED);
     }
 
     private VolleyHttpClient GetHttpClient() {
@@ -1296,9 +1343,9 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     private void notifyTrackChanged() {
         mHandler.sendEmptyMessage(SHOW_PROGRESS);
-        showNotification();
+        updateMetadata();
+        updateWidget();
         broadcastMetadata();
-        updateRemoteControlClientMetadata();
     }
 
     private void onMediaChanged() {
@@ -1310,43 +1357,47 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     private void onMediaListChanged() {
         saveMediaList();
-        executeUpdate();
         determinePrevAndNextIndices();
+        executeUpdate();
     }
 
     @MainThread
     public void next() {
+        int size = mMediaList.size();
+
         mPrevious.push(mCurrentIndex);
         mCurrentIndex = mNextIndex;
-
-        int size = mMediaList.size();
         if (size == 0 || mCurrentIndex < 0 || mCurrentIndex >= size) {
             if (mCurrentIndex < 0)
                 saveCurrentMedia();
-            logger.Warn("Warning: invalid next index, aborted !");
+            logger.Info("Warning: invalid next index, aborted !");
+            //Close video player if started
+            //LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(VideoPlayerActivity.EXIT_PLAYER));
             stop();
             return;
         }
-
+        mVideoBackground = !isVideoPlaying() && canSwitchToVideo();
         playIndex(mCurrentIndex, 0);
-        onMediaChanged();
+        saveCurrentMedia();
     }
 
     @MainThread
     public void previous() {
-        mCurrentIndex = mPrevIndex;
-        if (mPrevious.size() > 0)
-            mPrevious.pop();
-
-        int size = mMediaList.size();
-        if (size == 0 || mPrevIndex < 0 || mCurrentIndex >= size) {
-            logger.Warn("Warning: invalid previous index, aborted !");
-            stop();
-            return;
-        }
-
-        playIndex(mCurrentIndex, 0);
-        onMediaChanged();
+        if (hasPrevious() && mCurrentIndex > 0 &&
+                (!mMediaPlayer.isSeekable() || mMediaPlayer.getTime() < 2000l)) {
+            int size = mMediaList.size();
+            mCurrentIndex = mPrevIndex;
+            if (mPrevious.size() > 0)
+                mPrevious.pop();
+            if (size == 0 || mPrevIndex < 0 || mCurrentIndex >= size) {
+                logger.Info("Warning: invalid previous index, aborted !");
+                stop();
+                return;
+            }
+            playIndex(mCurrentIndex, 0);
+            saveCurrentMedia();
+        } else
+            setPosition(0f);
     }
 
     @MainThread
@@ -1354,19 +1405,67 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         if (mShuffling)
             mPrevious.clear();
         mShuffling = !mShuffling;
-        saveCurrentMedia();
+        savePosition();
         determinePrevAndNextIndices();
     }
 
     @MainThread
-    public void setRepeatType(RepeatType t) {
-        mRepeating = t;
-        saveCurrentMedia();
+    public void setRepeatType(int repeatType) {
+        mRepeating = repeatType;
+        savePosition();
         determinePrevAndNextIndices();
     }
 
+    private void updateWidget() {
+        updateWidgetState();
+        updateWidgetCover();
+    }
+
+    private void updateWidgetState() {
+        /*Intent i = new Intent(VLCAppWidgetProvider.ACTION_WIDGET_UPDATE);
+
+        if (hasCurrentMedia()) {
+            final MediaWrapper media = getCurrentMedia();
+            i.putExtra("title", media.getTitle());
+            i.putExtra("artist", media.isArtistUnknown() && media.getNowPlaying() != null ?
+                    media.getNowPlaying()
+                    : MediaUtils.getMediaArtist(this, media));
+        }
+        else {
+            i.putExtra("title", getString(R.string.widget_default_text));
+            i.putExtra("artist", "");
+        }
+        i.putExtra("isplaying", mMediaPlayer.isPlaying());
+
+        sendBroadcast(i);*/
+    }
+
+    private void updateWidgetCover() {
+        /*Intent i = new Intent(VLCAppWidgetProvider.ACTION_WIDGET_UPDATE_COVER);
+
+        Bitmap cover = hasCurrentMedia() ? AudioUtil.getCover(this, getCurrentMedia(), 64) : null;
+        i.putExtra("cover", cover);
+
+        sendBroadcast(i);*/
+    }
+
+    private void updateWidgetPosition(float pos) {
+        /*// no more than one widget update for each 1/50 of the song
+        long timestamp = Calendar.getInstance().getTimeInMillis();
+        if (!hasCurrentMedia()
+                || timestamp - mWidgetPositionTimestamp < getCurrentMedia().getLength() / 50)
+            return;
+
+        updateWidgetState();
+
+        mWidgetPositionTimestamp = timestamp;
+        Intent i = new Intent(VLCAppWidgetProvider.ACTION_WIDGET_UPDATE_POSITION);
+        i.putExtra("position", pos);
+        sendBroadcast(i);*/
+    }
+
     private void broadcastMetadata() {
-        /*MediaWrapper media = getCurrentMedia();
+        MediaWrapper media = getCurrentMedia();
         if (media == null || media.getType() != MediaWrapper.TYPE_AUDIO)
             return;
 
@@ -1378,20 +1477,93 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         broadcast.putExtra("album", media.getAlbum());
         broadcast.putExtra("duration", media.getLength());
         broadcast.putExtra("playing", playing);
+        broadcast.putExtra("package", "org.videolan.vlc");
 
-        sendBroadcast(broadcast);*/
+        sendBroadcast(broadcast);
+    }
+
+    public synchronized void loadLastPlaylist(int type) {
+        boolean audio = type == TYPE_AUDIO;
+        String currentMedia = mSettings.getString(audio ? "current_song" : "current_media", "");
+        if (currentMedia.equals(""))
+            return;
+        String[] locations = mSettings.getString(audio ? "audio_list" : "media_list", "").split(" ");
+        if (locations.length == 0)
+            return;
+
+        List<String> mediaPathList = new ArrayList<String>(locations.length);
+        for (int i = 0 ; i < locations.length ; ++i)
+            mediaPathList.add(Uri.decode(locations[i]));
+
+        mShuffling = mSettings.getBoolean(audio ? "audio_shuffling" : "media_shuffling", false);
+        mRepeating = mSettings.getInt(audio ? "audio_repeating" : "media_repeating", REPEAT_NONE);
+        int position = mSettings.getInt(audio ? "position_in_audio_list" : "position_in_media_list",
+                Math.max(0, mediaPathList.indexOf(currentMedia)));
+        long time = mSettings.getLong(audio ? "position_in_song" : "position_in_media", -1);
+        mSavedTime = time;
+        // load playlist
+        loadLocations(mediaPathList, position);
+        if (time > 0)
+            seek(time);
+        if (!audio) {
+            boolean paused = mSettings.getBoolean(PreferencesActivity.VIDEO_PAUSED, !isPlaying());
+            float rate = mSettings.getFloat(PreferencesActivity.VIDEO_SPEED, getRate());
+            if (paused)
+                pause();
+            if (rate != 1.0f)
+                setRate(rate, false);
+        }
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putInt(audio ? "position_in_audio_list" : "position_in_media_list", 0);
+        editor.putLong(audio ? "position_in_song" : "position_in_media", 0);
+        editor.apply();
     }
 
     private synchronized void saveCurrentMedia() {
-
+        boolean audio = true;
+        for (int i = 0; i < mMediaList.size(); i++) {
+            if (mMediaList.getMedia(i).getType() == MediaWrapper.TYPE_VIDEO)
+                audio = false;
+        }
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString(audio ? "current_song" : "current_media", mMediaList.getMRL(Math.max(mCurrentIndex, 0)));
+        editor.apply();
     }
 
     private synchronized void saveMediaList() {
-
+        if (getCurrentMedia() == null)
+            return;
+        StringBuilder locations = new StringBuilder();
+        boolean audio = true;
+        for (int i = 0; i < mMediaList.size(); i++) {
+            if (mMediaList.getMedia(i).getType() == MediaWrapper.TYPE_VIDEO)
+                audio = false;
+            locations.append(" ").append(Uri.encode(mMediaList.getMRL(i)));
+        }
+        //We save a concatenated String because putStringSet is APIv11.
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putString(audio ? "audio_list" : "media_list", locations.toString().trim());
+        editor.apply();
     }
 
     private synchronized void savePosition(){
-
+        if (getCurrentMedia() == null)
+            return;
+        SharedPreferences.Editor editor = mSettings.edit();
+        boolean audio = true;
+        for (int i = 0; i < mMediaList.size(); i++) {
+            if (mMediaList.getMedia(i).getType() == MediaWrapper.TYPE_VIDEO)
+                audio = false;
+        }
+        editor.putBoolean(audio ? "audio_shuffling" : "media_shuffling", mShuffling);
+        editor.putInt(audio ? "audio_repeating" : "media_repeating", mRepeating);
+        editor.putInt(audio ? "position_in_audio_list" : "position_in_media_list", mCurrentIndex);
+        editor.putLong(audio ? "position_in_song" : "position_in_media", mMediaPlayer.getTime());
+        if(!audio) {
+            editor.putBoolean(PreferencesActivity.VIDEO_PAUSED, !isPlaying());
+            editor.putFloat(PreferencesActivity.VIDEO_SPEED, getRate());
+        }
+        editor.apply();
     }
 
     private boolean validateLocation(String location)
@@ -1431,12 +1603,27 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
+    public boolean isSeekable() {
+        return mSeekable;
+    }
+
+    @MainThread
+    public boolean isPausable() {
+        return mPausable;
+    }
+
+    @MainThread
     public boolean isShuffling() {
         return mShuffling;
     }
 
     @MainThread
-    public RepeatType getRepeatType() {
+    public boolean canShuffle()  {
+        return getMediaListSize() > 2;
+    }
+
+    @MainThread
+    public int getRepeatType() {
         return mRepeating;
     }
 
@@ -1446,14 +1633,54 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
+    public boolean hasPlaylist()  {
+        return getMediaListSize() > 1;
+    }
+
+    @MainThread
     public boolean isVideoPlaying() {
         return mMediaPlayer.getVLCVout().areViewsAttached();
     }
 
     @MainThread
+    public String getAlbum() {
+        /*if (hasCurrentMedia())
+            return MediaUtils.getMediaAlbum(PlaybackService.this, getCurrentMedia());
+        else*/
+            return null;
+    }
+
+    @MainThread
+    public String getArtist() {
+        /*if (hasCurrentMedia()) {
+            final MediaWrapper media = getCurrentMedia();
+            return media.getNowPlaying() != null ?
+                    media.getTitle()
+                    : MediaUtils.getMediaArtist(PlaybackService.this, media);
+        } else*/
+            return null;
+    }
+
+    @MainThread
+    public String getArtistPrev() {
+        /*if (mPrevIndex != -1)
+            return MediaUtils.getMediaArtist(PlaybackService.this, mMediaList.getMedia(mPrevIndex));
+        else*/
+            return null;
+    }
+
+    @MainThread
+    public String getArtistNext() {
+        /*if (mNextIndex != -1)
+            return MediaUtils.getMediaArtist(PlaybackService.this, mMediaList.getMedia(mNextIndex));
+        else*/
+            return null;
+    }
+
+    @MainThread
     public String getTitle() {
         if (hasCurrentMedia())
-            return getCurrentMedia().getTitle();
+            return getCurrentMedia().getNowPlaying() != null ? getCurrentMedia().getNowPlaying() : getCurrentMedia().getTitle();
         else
             return null;
     }
@@ -1475,6 +1702,30 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
+    public Bitmap getCover() {
+        /*if (hasCurrentMedia()) {
+            return AudioUtil.getCover(PlaybackService.this, getCurrentMedia(), 512);
+        }*/
+        return null;
+    }
+
+    @MainThread
+    public Bitmap getCoverPrev() {
+        /*if (mPrevIndex != -1)
+            return AudioUtil.getCover(PlaybackService.this, mMediaList.getMedia(mPrevIndex), 64);
+        else*/
+            return null;
+    }
+
+    @MainThread
+    public Bitmap getCoverNext() {
+        /*if (mNextIndex != -1)
+            return AudioUtil.getCover(PlaybackService.this, mMediaList.getMedia(mNextIndex), 64);
+        else*/
+            return null;
+    }
+
+    @MainThread
     public synchronized void addCallback(Callback cb) {
         if (!mCallbacks.contains(cb)) {
             mCallbacks.add(cb);
@@ -1490,7 +1741,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public long getTime() {
-        return getTimeTicks() / 10000;
+        return mMediaPlayer.getTime();
     }
 
     @MainThread
@@ -1536,9 +1787,55 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         return length;
     }
 
+    /**
+     * Loads a selection of files (a non-user-supplied collection of media)
+     * into the primary or "currently playing" playlist.
+     *
+     * @param mediaPathList A list of locations to load
+     * @param position The position to start playing at
+     */
+    @MainThread
+    public void loadLocations(List<String> mediaPathList, int position) {
+        /*ArrayList<MediaWrapper> mediaList = new ArrayList<MediaWrapper>();
+        MediaDatabase db = MediaDatabase.getInstance();
+
+        for (int i = 0; i < mediaPathList.size(); i++) {
+            String location = mediaPathList.get(i);
+            MediaWrapper mediaWrapper = db.getMedia(Uri.parse(location));
+            if (mediaWrapper == null) {
+                if (!validateLocation(location)) {
+                    Log.w(TAG, "Invalid location " + location);
+                    showToast(getResources().getString(R.string.invalid_location, location), Toast.LENGTH_SHORT);
+                    continue;
+                }
+                Log.v(TAG, "Creating on-the-fly Media object for " + location);
+                mediaWrapper = new MediaWrapper(Uri.parse(location));
+            }
+            mediaList.add(mediaWrapper);
+        }
+        load(mediaList, position);*/
+    }
+
+    @MainThread
+    public void loadUri(Uri uri) {
+        String path = uri.toString();
+        if (TextUtils.equals(uri.getScheme(), "content")) {
+            path = "file://"+ FileUtils.getPathFromURI(getApplicationContext(), uri);
+        }
+        loadLocation(path);
+    }
+
+    @MainThread
+    public void loadLocation(String mediaPath) {
+        loadLocations(Collections.singletonList(mediaPath), 0);
+    }
+
     @MainThread
     public void load(List<MediaWrapper> mediaList, int position) {
-        logger.Debug("Loading position " + ((Integer) position).toString() + " in " + mediaList.toString());
+        logger.Info("Loading position " + ((Integer) position).toString() + " in " + mediaList.toString());
+
+        if (hasCurrentMedia())
+            savePosition();
 
         mMediaList.removeEventListener(mListEventListener);
         mMediaList.clear();
@@ -1551,13 +1848,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         }
 
         if (mMediaList.size() == 0) {
-            logger.Warn("Warning: empty media list, nothing to play !");
+            logger.Info("Warning: empty media list, nothing to play !");
             return;
         }
-        if (mMediaList.size() > position && position >= 0) {
+        if (isValidIndex(position)) {
             mCurrentIndex = position;
         } else {
-            logger.Warn("Warning: positon " + position + " out of bounds");
+            logger.Info("Warning: positon " + position + " out of bounds");
             mCurrentIndex = 0;
         }
 
@@ -1566,6 +1863,121 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         playIndex(mCurrentIndex, 0);
         saveMediaList();
+        onMediaChanged();
+    }
+
+    @MainThread
+    public void load(MediaWrapper media) {
+        ArrayList<MediaWrapper> arrayList = new ArrayList<MediaWrapper>();
+        arrayList.add(media);
+        load(arrayList, 0);
+    }
+
+    /**
+     * Play a media from the media list (playlist)
+     *
+     * @param index The index of the media
+     * @param flags LibVLC.MEDIA_* flags
+     */
+    public void playIndex(int index, int flags) {
+        if (mMediaList.size() == 0) {
+            logger.Info("Warning: empty media list, nothing to play !");
+            return;
+        }
+        if (isValidIndex(index)) {
+            mCurrentIndex = index;
+        } else {
+            logger.Info("Warning: index " + index + " out of bounds");
+            mCurrentIndex = 0;
+        }
+
+        String mrl = mMediaList.getMRL(index);
+        if (mrl == null)
+            return;
+        final MediaWrapper mw = mMediaList.getMedia(index);
+        if (mw == null)
+            return;
+
+        boolean isVideoPlaying = isVideoPlaying();
+        if (!mVideoBackground && mw.getType() == MediaWrapper.TYPE_VIDEO && isVideoPlaying)
+            mw.addFlags(MediaWrapper.MEDIA_VIDEO);
+
+        if (mVideoBackground)
+            mw.addFlags(MediaWrapper.MEDIA_FORCE_AUDIO);
+
+        /* Pausable and seekable are true by default */
+        mParsed = false;
+        mSwitchingToVideo = false;
+        mPausable = mSeekable = true;
+        final Media media = new Media(VLCInstance.get(getApplicationContext(), logger), mw.getUri());
+        VLCOptions.setMediaOptions(media, this, flags | mw.getFlags());
+
+        /*if (mw.getSlaves() != null) {
+            for (Media.Slave slave : mw.getSlaves())
+                media.addSlave(slave);
+            VLCApplication.runBackground(new Runnable() {
+                @Override
+                public void run() {
+                    MediaDatabase.getInstance().saveSlaves(mw);
+                }
+            });
+        }
+        VLCApplication.runBackground(new Runnable() {
+            @Override
+            public void run() {
+                final ArrayList<Media.Slave> list = MediaDatabase.getInstance().getSlaves(mw.getLocation());
+                for (Media.Slave slave : list)
+                    mMediaPlayer.addSlave(slave.type, Uri.parse(slave.uri), false);
+            }
+        });*/
+
+        media.setEventListener(mMediaListener);
+        mMediaPlayer.setMedia(media);
+        media.release();
+
+        if (mw .getType() != MediaWrapper.TYPE_VIDEO || mw.hasFlag(MediaWrapper.MEDIA_FORCE_AUDIO)
+                || isVideoPlaying) {
+            mMediaPlayer.setEqualizer(VLCOptions.getEqualizer(this));
+            mMediaPlayer.setVideoTitleDisplay(MediaPlayer.Position.Disable, 0);
+            changeAudioFocus(true);
+            mMediaPlayer.setEventListener(mMediaPlayerListener);
+            /*if (!isVideoPlaying && mMediaPlayer.getRate() == 1.0F && mSettings.getBoolean(PreferencesActivity.KEY_AUDIO_PLAYBACK_SPEED_PERSIST, true))
+                setRate(mSettings.getFloat(PreferencesActivity.KEY_AUDIO_PLAYBACK_RATE, 1.0F), true);*/
+            mMediaPlayer.play();
+
+            determinePrevAndNextIndices();
+            /*if (mSettings.getBoolean(PreferencesFragment.PLAYBACK_HISTORY, true))
+                VLCApplication.runBackground(new Runnable() {
+                    @Override
+                    public void run() {
+                        MediaDatabase.getInstance().addHistoryItem(mw);
+                    }
+                });*/
+        } else {//Start VideoPlayer for first video, it will trigger playIndex when ready.
+            VideoPlayerActivity.startOpened(getApplicationContext(),
+                    getCurrentMediaWrapper().getUri(), mCurrentIndex);
+        }
+    }
+
+    /**
+     * Use this function to play a media inside whatever MediaList LibVLC is following.
+     *
+     * Unlike load(), it does not import anything into the primary list.
+     */
+    @MainThread
+    public void playIndex(int index) {
+        playIndex(index, 0);
+    }
+
+    public void restartIndex(int index, int flags) {
+
+        final Media media = mMediaPlayer.getMedia();
+        if (media != null) {
+            media.setEventListener(null);
+            media.release();
+        }
+
+        playIndex(index, flags);
         onMediaChanged();
     }
 
@@ -1581,81 +1993,8 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
-    public void load(MediaWrapper media) {
-        ArrayList<MediaWrapper> arrayList = new ArrayList<MediaWrapper>();
-
-        arrayList.add(media);
-        load(arrayList, 0);
-    }
-
-    @MainThread
-    public void loadLastPlaylist() {
-
-    }
-
-    /**
-     * Play a media from the media list (playlist)
-     *
-     * @param index The index of the media
-     * @param flags LibVLC.MEDIA_* flags
-     */
-    public void playIndex(int index, int flags) {
-        if (mMediaList.size() == 0) {
-            logger.Warn("Warning: empty media list, nothing to play !");
-            return;
-        }
-        if (index >= 0 && index < mMediaList.size()) {
-            mCurrentIndex = index;
-        } else {
-            logger.Warn("Warning: index " + index + " out of bounds");
-            mCurrentIndex = 0;
-        }
-
-        String mrl = mMediaList.getMRL(index);
-        if (mrl == null)
-            return;
-        final MediaWrapper mw = mMediaList.getMedia(index);
-        if (mw == null)
-            return;
-
-        final Media media = new Media(VLCInstance.get(getApplicationContext(), logger), mw.getUri());
-        VLCOptions.setMediaOptions(media, this, flags | mw.getFlags());
-        media.setEventListener(mMediaListener);
-        mMediaPlayer.setMedia(media);
-        media.release();
-        mMediaPlayer.setEqualizer(VLCOptions.getEqualizer(this));
-        mMediaPlayer.setVideoTitleDisplay(MediaPlayer.Position.Disable, 0);
-        changeAudioFocus(true);
-        mMediaPlayer.setEventListener(mMediaPlayerListener);
-
-        logger.Debug("Calling mMediaPlayer.play");
-
-        mMediaPlayer.play();
-
-        notifyTrackChanged();
-        determinePrevAndNextIndices();
-    }
-
-    public void restartIndex(int index, int flags) {
-
-        final Media media = mMediaPlayer.getMedia();
-        if (media != null) {
-            media.setEventListener(null);
-            media.release();
-        }
-
-        playIndex(index, flags);
-        onMediaChanged();
-    }
-
-    /**
-     * Use this function to play a media inside whatever MediaList LibVLC is following.
-     *
-     * Unlike load(), it does not import anything into the primary list.
-     */
-    @MainThread
-    public void playIndex(int index) {
-        playIndex(index, 0);
+    public MediaPlayer getMediaPlayer() {
+        return  mMediaPlayer;
     }
 
     /**
@@ -1666,15 +2005,54 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
      */
     @MainThread
     public void showWithoutParse(int index) {
-        String URI = mMediaList.getMRL(index);
-        logger.Debug("Showing index " + index + " with playing URI " + URI);
-        // Show an URI without interrupting/losing the current stream
+        setVideoTrackEnabled(false);
+        MediaWrapper media = mMediaList.getMedia(index);
 
-        if(URI == null || !mMediaPlayer.isPlaying())
+        if(media == null || !mMediaPlayer.isPlaying())
             return;
+        // Show an URI without interrupting/losing the current stream
+        logger.Info("Showing index " + index + " with playing URI " + media.getUri());
         mCurrentIndex = index;
 
         notifyTrackChanged();
+        showNotification();
+    }
+
+    @MainThread
+    public void switchToPopup(int index) {
+        showWithoutParse(index);
+        showPopup();
+    }
+
+    @MainThread
+    public void removePopup() {
+        /*if (mPopupManager != null) {
+            mPopupManager.removePopup();
+        }
+        mPopupManager = null;*/
+    }
+
+    @MainThread
+    public boolean isPlayingPopup() {
+        return false;
+        //return mPopupManager != null;
+    }
+
+    @MainThread
+    public void showPopup() {
+        /*if (mPopupManager == null)
+            mPopupManager = new PopupManager(this);
+        mPopupManager.showPopup();*/
+    }
+
+    public void setVideoTrackEnabled(boolean enabled) {
+        if (!hasMedia() || !isPlaying())
+            return;
+        if (enabled)
+            getCurrentMedia().addFlags(MediaWrapper.MEDIA_VIDEO);
+        else
+            getCurrentMedia().removeFlags(MediaWrapper.MEDIA_VIDEO);
+        mMediaPlayer.setVideoTrackEnabled(enabled);
     }
 
     /**
@@ -1712,15 +2090,29 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
+    public void insertItem(int position, MediaWrapper mw) {
+        mMediaList.insert(position, mw);
+        saveMediaList();
+        determinePrevAndNextIndices();
+    }
+
+
+    @MainThread
     public void remove(int position) {
         mMediaList.remove(position);
-        onMediaListChanged();
+        saveMediaList();
+        determinePrevAndNextIndices();
     }
 
     @MainThread
     public void removeLocation(String location) {
         mMediaList.remove(location);
-        onMediaListChanged();
+        saveMediaList();
+        determinePrevAndNextIndices();
+    }
+
+    public int getMediaListSize() {
+        return mMediaList.size();
     }
 
     @MainThread
@@ -1758,7 +2150,8 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public void setTime(long time) {
-        mMediaPlayer.setTime(time);
+        if (mSeekable)
+            mMediaPlayer.setTime(time);
     }
 
     @MainThread
@@ -1782,8 +2175,10 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
-    public void setRate(float rate) {
+    public void setRate(float rate, boolean save) {
         mMediaPlayer.setRate(rate);
+        /*if (save && mSettings.getBoolean(PreferencesActivity.KEY_AUDIO_PLAYBACK_SPEED_PERSIST, true))
+            mSettings.edit().putFloat(PreferencesActivity.KEY_AUDIO_PLAYBACK_RATE, rate).apply();*/
     }
 
     @MainThread
@@ -1832,8 +2227,27 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
+    public void seek(long position) {
+        seek(position, getLength());
+    }
+
+    @MainThread
+    public void seek(long position, double length) {
+        if (length > 0.0D)
+            setPosition((float) (position/length));
+        else
+            setTime(position);
+    }
+
+    @MainThread
+    public void saveTimeToSeek(long time) {
+        mSavedTime = time;
+    }
+
+    @MainThread
     public void setPosition(float pos) {
-        mMediaPlayer.setPosition(pos);
+        if (mSeekable)
+            mMediaPlayer.setPosition(pos);
     }
 
     @MainThread
@@ -1857,18 +2271,28 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     }
 
     @MainThread
-    public MediaPlayer.TrackDescription[] getVideoTracks() {
-        return mMediaPlayer.getVideoTracks();
-    }
-
-    @MainThread
     public int getVideoTracksCount() {
         return mMediaPlayer.getVideoTracksCount();
     }
 
     @MainThread
+    public boolean addSubtitleTrack(String path, boolean select) {
+        return mMediaPlayer.addSlave(Media.Slave.Type.Subtitle, path, select);
+    }
+
+    @MainThread
+    public boolean addSubtitleTrack(Uri uri,boolean select) {
+        return mMediaPlayer.addSlave(Media.Slave.Type.Subtitle, uri, select);
+    }
+
+    @MainThread
     public boolean addSubtitleTrack(String path) {
-        return mMediaPlayer.setSubtitleFile(path);
+        return addSubtitleTrack(path, false);
+    }
+
+    @MainThread
+    public boolean addSubtitleTrack(Uri uri) {
+        return addSubtitleTrack(uri, false);
     }
 
     @MainThread
@@ -1884,16 +2308,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
     @MainThread
     public boolean setSpuTrack(int index) {
         return mMediaPlayer.setSpuTrack(index);
-    }
-
-    @MainThread
-    public boolean setVideoTrack(int index) {
-        return mMediaPlayer.setVideoTrack(index);
-    }
-
-    @MainThread
-    public void setVideoTrackEnabled(boolean enabled) {
-        mMediaPlayer.setVideoTrackEnabled(enabled);
     }
 
     @MainThread
@@ -1926,12 +2340,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         mMediaPlayer.setEqualizer(equalizer);
     }
 
-    @MainThread
-    public MediaPlayer getMediaPlayer() {
-        return  mMediaPlayer;
-    }
-
-
     /**
      * Expand the current media.
      * @return the index of the media was expanded, and -1 if no media was expanded
@@ -1947,7 +2355,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
         if (ml.getCount() > 0) {
             mMediaList.remove(mCurrentIndex);
-            for (int i = 0; i < ml.getCount(); ++i) {
+            for (int i = ml.getCount() - 1; i >= 0; --i) {
                 final Media child = ml.getMediaAt(i);
                 child.parse();
                 mMediaList.insert(mCurrentIndex, new MediaWrapper(child));
@@ -1959,6 +2367,13 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         }
         ml.release();
         return ret;
+    }
+
+    public void restartMediaPlayer() {
+        stop();
+        mMediaPlayer.release();
+        mMediaPlayer = newMediaPlayer();
+        /* TODO RESUME */
     }
 
     public static class Client {
@@ -1977,7 +2392,6 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
         private final ServiceConnection mServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder iBinder) {
-                Log.d(TAG, "Service Connected");
                 if (!mBound)
                     return;
 
@@ -1988,7 +2402,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                Log.d(TAG, "Service Disconnected");
+                mBound = false;
                 mCallback.onDisconnected();
             }
         };

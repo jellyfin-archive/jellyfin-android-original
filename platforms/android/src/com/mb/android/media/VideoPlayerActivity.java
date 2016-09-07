@@ -429,11 +429,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         mSurfaceView = (SurfaceView) findViewById(R.id.player_surface);
         mSubtitlesSurfaceView = (SurfaceView) findViewById(R.id.subtitles_surface);
 
-        if (HWDecoderUtil.HAS_SUBTITLES_SURFACE) {
-            mSubtitlesSurfaceView.setZOrderMediaOverlay(true);
-            mSubtitlesSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-        } else
-            mSubtitlesSurfaceView.setVisibility(View.GONE);
+        mSubtitlesSurfaceView.setZOrderMediaOverlay(true);
+        mSubtitlesSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
 
         mSurfaceFrame = (FrameLayout) findViewById(R.id.player_surface_frame);
 
@@ -461,7 +458,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         editor.putString(PreferencesActivity.VIDEO_SUBTITLE_FILES, null);
         // Paused flag - per session too, like the subs list.
         editor.remove(PreferencesActivity.VIDEO_PAUSED);
-        Util.commitPreferences(editor);
+        //Util.commitPreferences(editor);
 
         IntentFilter filter = new IntentFilter();
         if (mBattery != null)
@@ -631,7 +628,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         if (mAlertDialog != null && mAlertDialog.isShowing())
             mAlertDialog.dismiss();
         if (!isFinishing() && mSettings.getBoolean(PreferencesActivity.VIDEO_BACKGROUND, false)) {
-            Util.commitPreferences(mSettings.edit().putBoolean(PreferencesActivity.VIDEO_RESTORE, true));
+            //Util.commitPreferences(mSettings.edit().putBoolean(PreferencesActivity.VIDEO_RESTORE, true));
             switchToAudioMode(false);
         }
         stopPlayback();
@@ -756,7 +753,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         }
 
         // Set user playback speed
-        mService.setRate(mSettings.getFloat(PreferencesActivity.VIDEO_SPEED, 1));
+        mService.setRate(mSettings.getFloat(PreferencesActivity.VIDEO_SPEED, 1), false);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -798,7 +795,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         mService.stop();
 
-        mService.setRate(1.0f);
+        mService.setRate(1.0f, false);
 
         if (AndroidUtil.isHoneycombOrLater() && mOnLayoutChangeListener != null)
             mSurfaceFrame.removeOnLayoutChangeListener(mOnLayoutChangeListener);
@@ -829,6 +826,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     }
     public static void startOpened(Context context, int openedPosition) {
         start(context, null, null, false, openedPosition);
+    }
+    public static void startOpened(Context context, Uri uri, int openedPosition) {
+        startOpened(context, openedPosition);
     }
 
     private static void start(Context context, Uri uri, String title, boolean fromStart, int openedPosition) {
@@ -1453,7 +1453,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
     private void endReached() {
         if (mService == null)
             return;
-        if (mService.getRepeatType() == PlaybackService.RepeatType.Once){
+        if (mService.getRepeatType() == PlaybackService.REPEAT_ONE){
             seek(0);
             return;
         }
@@ -1891,8 +1891,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         float brightnesstemp = 0.6f;
         // Initialize the layoutParams screen brightness
         try {
-            if (AndroidUtil.isFroyoOrLater() &&
-                    Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
+            if (Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC) {
                 /*Settings.System.putInt(getContentResolver(),
                         Settings.System.SCREEN_BRIGHTNESS_MODE,
                         Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);*/
@@ -2919,11 +2918,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
             mSubtitlesSurfaceView = (SurfaceView) findViewById(R.id.remote_subtitles_surface);
             mSurfaceFrame = (FrameLayout) findViewById(R.id.remote_player_surface_frame);
 
-            if (HWDecoderUtil.HAS_SUBTITLES_SURFACE) {
-                mSubtitlesSurfaceView.setZOrderMediaOverlay(true);
-                mSubtitlesSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-            } else
-                mSubtitlesSurfaceView.setVisibility(View.GONE);
+            mSubtitlesSurfaceView.setZOrderMediaOverlay(true);
+            mSubtitlesSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
             VideoPlayerActivity activity = (VideoPlayerActivity)getOwnerActivity();
             if (activity == null) {
                 logger.Error("Failed to get the VideoPlayerActivity instance, secondary display won't work");
@@ -2970,7 +2966,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         mOverlayTips.setVisibility(View.GONE);
         Editor editor = mSettings.edit();
         editor.putBoolean(PREF_TIPS_SHOWN, true);
-        Util.commitPreferences(editor);
+        //Util.commitPreferences(editor);
     }
 
     private void updateNavStatus() {
@@ -3085,10 +3081,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     @Override
     public void onSurfacesDestroyed(IVLCVout vlcVout) {
-    }
-
-    @Override
-    public void onHardwareAccelerationError(IVLCVout vlcVout) {
     }
 
     private SubtitleTrackInfo timedTextObject;

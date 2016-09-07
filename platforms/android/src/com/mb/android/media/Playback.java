@@ -120,7 +120,7 @@ public class Playback implements IPlayback, AudioManager.OnAudioFocusChangeListe
     private org.videolan.libvlc.MediaPlayer newMediaPlayer(Context context) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         final org.videolan.libvlc.MediaPlayer mp = new org.videolan.libvlc.MediaPlayer(LibVLC(context, logger));
-        final String aout = VLCOptions.getAout(pref);
+        final String aout = VLCOptions.getAout(pref, logger);
         if (mp.setAudioOutput(aout) && aout.equals("android_audiotrack")) {
             mIsAudioTrack = true;
             if (mHasHdmiAudio)

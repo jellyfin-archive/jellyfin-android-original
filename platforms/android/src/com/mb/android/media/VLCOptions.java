@@ -14,7 +14,10 @@ import org.videolan.libvlc.util.VLCUtil;
 import org.videolan.libvlc.util.AndroidUtil;
 import org.videolan.libvlc.util.HWDecoderUtil;
 
+import java.io.File;
 import java.util.ArrayList;
+
+import mediabrowser.model.logging.ILogger;
 
 
 public class VLCOptions {
@@ -39,8 +42,8 @@ public class VLCOptions {
         final String subtitlesEncoding = pref.getString("subtitle_text_encoding", "");
         final boolean frameSkip = pref.getBoolean("enable_frame_skip", false);
         String chroma = pref.getString("chroma_format", null);
-        if (chroma != null)
-            chroma = chroma.equals("YV12") && !AndroidUtil.isGingerbreadOrLater() ? "" : chroma;
+        if (chroma != null && chroma.equals("YV12"))
+            chroma = "";
         final boolean verboseMode = pref.getBoolean("enable_verbose_mode", true);
 
         int deblocking = -1;
@@ -53,6 +56,10 @@ public class VLCOptions {
             networkCaching = 60000;
         else if (networkCaching < 0)
             networkCaching = 0;
+
+        final String freetypeRelFontsize = pref.getString("subtitles_size", "16");
+        final String freetypeColor = pref.getString("subtitles_color", "16777215");
+        final boolean freetypeBackground = pref.getBoolean("subtitles_background", false);
 
         /* CPU intensive plugin, setting for slow devices */
         options.add(timeStreching ? "--audio-time-stretch" : "--no-audio-time-stretch");
@@ -73,11 +80,28 @@ public class VLCOptions {
         options.add("--audio-resampler");
         options.add(getResampler());
 
+        options.add("--freetype-rel-fontsize=" + freetypeRelFontsize);
+        options.add("--freetype-color=" + freetypeColor);
+        if (freetypeBackground)
+            options.add("--freetype-background-opacity=128");
+        else
+            options.add("--freetype-background-opacity=0");
+
+        /* Configure keystore */
+        options.add("--keystore");
+        if (AndroidUtil.isMarshMallowOrLater())
+            options.add("file_crypt,none");
+        else
+            options.add("file_plaintext,none");
+        options.add("--keystore-file");
+        options.add(new File(context.getDir("keystore", Context.MODE_PRIVATE), "file").getAbsolutePath());
+
         options.add(verboseMode ? "-vvv" : "-vv");
+
         return options;
     }
 
-    public static String getAout(SharedPreferences pref) {
+    public static String getAout(SharedPreferences pref, ILogger logger) {
         int aout = -1;
         try {
             aout = Integer.parseInt(pref.getString("aout", "-1"));
@@ -86,7 +110,10 @@ public class VLCOptions {
         if (hwaout == HWDecoderUtil.AudioOutput.AUDIOTRACK || hwaout == HWDecoderUtil.AudioOutput.OPENSLES)
             aout = hwaout == HWDecoderUtil.AudioOutput.OPENSLES ? AOUT_OPENSLES : AOUT_AUDIOTRACK;
 
-        return aout == AOUT_OPENSLES ? "opensles_android" : "android_audiotrack";
+        String returnValue = aout == AOUT_OPENSLES ? "opensles_android" : "android_audiotrack";
+
+        logger.Info("getAout result: %s", returnValue);
+        return returnValue;
     }
 
     private static int getDeblocking(int deblocking) {
@@ -119,7 +146,7 @@ public class VLCOptions {
 
     private static String getResampler() {
         final VLCUtil.MachineSpecs m = VLCUtil.getMachineSpecs();
-        return m.processors > 2 ? "soxr" : "ugly";
+        return (m == null || m.processors > 2) ? "soxr" : "ugly";
     }
 
     public static void setMediaOptions(Media media, Context context, int flags) {
@@ -189,6 +216,6 @@ public class VLCOptions {
         } else {
             editor.putBoolean("equalizer_enabled", false);
         }
-        Util.commitPreferences(editor);
+        editor.apply();
     }
 }

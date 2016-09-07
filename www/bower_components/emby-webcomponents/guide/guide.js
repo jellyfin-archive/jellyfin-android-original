@@ -182,6 +182,8 @@
 
                     if (channelsResult.TotalRecordCount > channelLimit) {
 
+                        context.querySelector('.guideOptions').classList.remove('hide');
+
                         btnPreviousPage.classList.remove('hide');
                         btnNextPage.classList.remove('hide');
 
@@ -198,8 +200,7 @@
                         }
 
                     } else {
-                        btnPreviousPage.classList.add('hide');
-                        btnNextPage.classList.add('hide');
+                        context.querySelector('.guideOptions').classList.add('hide');
                     }
 
                     apiClient.getLiveTvPrograms({
@@ -373,13 +374,16 @@
                 html += '<div class="' + guideProgramNameClass + '">';
 
                 if (program.IsLive && options.showLiveIndicator) {
-                    html += '<span class="liveTvProgram">' + globalize.translate('sharedcomponents#AttributeLive') + '&nbsp;</span>';
+                    html += '<span class="liveTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Live') + '</span>';
                 }
                 else if (program.IsPremiere && options.showPremiereIndicator) {
-                    html += '<span class="premiereTvProgram">' + globalize.translate('sharedcomponents#AttributePremiere') + '&nbsp;</span>';
+                    html += '<span class="premiereTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Premiere') + '</span>';
                 }
                 else if (program.IsSeries && !program.IsRepeat && options.showNewIndicator) {
-                    html += '<span class="newTvProgram">' + globalize.translate('sharedcomponents#AttributeNew') + '&nbsp;</span>';
+                    html += '<span class="newTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#AttributeNew') + '</span>';
+                }
+                else if (program.IsSeries && program.IsRepeat && options.showRepeatIndicator) {
+                    html += '<span class="repeatTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Repeat') + '</span>';
                 }
 
                 html += program.Name;
@@ -424,13 +428,14 @@
             // Normally we'd want to just let responsive css handle this,
             // but since mobile browsers are often underpowered, 
             // it can help performance to get them out of the markup
-            var showIndicators = false;
+            var allowIndicators = dom.getWindowSize().innerWidth >= 600;
 
             var options = {
-                showHdIcon: showIndicators,
-                showLiveIndicator: showIndicators,
-                showPremiereIndicator: showIndicators,
-                showNewIndicator: userSettings.get('guide-indicator-new') == 'true'
+                showHdIcon: allowIndicators && userSettings.get('guide-indicator-hd') == 'true',
+                showLiveIndicator: allowIndicators && userSettings.get('guide-indicator-live') == 'true',
+                showPremiereIndicator: allowIndicators && userSettings.get('guide-indicator-premiere') == 'true',
+                showNewIndicator: allowIndicators && userSettings.get('guide-indicator-new') == 'true',
+                showRepeatIndicator: allowIndicators && userSettings.get('guide-indicator-repeat') == 'true'
             };
 
             for (var i = 0, length = channels.length; i < length; i++) {
@@ -623,27 +628,6 @@
             }
         }
 
-        function getFutureDateText(date) {
-
-            var weekday = [];
-            weekday[0] = globalize.translate('sharedcomponents#Sunday');
-            weekday[1] = globalize.translate('sharedcomponents#Monday');
-            weekday[2] = globalize.translate('sharedcomponents#Tuesday');
-            weekday[3] = globalize.translate('sharedcomponents#Wednesday');
-            weekday[4] = globalize.translate('sharedcomponents#Thursday');
-            weekday[5] = globalize.translate('sharedcomponents#Friday');
-            weekday[6] = globalize.translate('sharedcomponents#Saturday');
-
-            var day = weekday[date.getDay()];
-            date = datetime.toLocaleDateString(date);
-
-            if (date.toLowerCase().indexOf(day.toLowerCase()) == -1) {
-                return day + " " + date;
-            }
-
-            return date;
-        }
-
         function changeDate(page, date) {
 
             clearCurrentTimeUpdateInterval();
@@ -653,7 +637,14 @@
 
             reloadGuide(page, newStartDate);
 
-            page.querySelector('.dateText').innerHTML = getFutureDateText(date);
+            var dateText = datetime.getLocaleDateStringParts(date);
+
+            if (dateText.length == 1) {
+                dateText = dateText[0];
+            } else {
+                dateText = '<div>' + dateText[0] + '</div><div class="guideDateTextDate">' + dateText[1] + '</div>';
+            }
+            page.querySelector('.guideDateText').innerHTML = dateText;
         }
 
         var dateOptions = [];
@@ -680,7 +671,7 @@
             while (start <= end) {
 
                 dateOptions.push({
-                    name: getFutureDateText(start),
+                    name: datetime.getLocaleDateStringParts(start).join(' '),
                     id: start.getTime()
                 });
 
@@ -807,7 +798,7 @@
             // find guide cells by timer id, remove timer icon
             var cells = options.element.querySelectorAll('.programCell[data-timerid="' + id + '"]');
             for (var i = 0, length = cells.length; i < length; i++) {
-                var cells = cells[i];
+                var cell = cells[i];
                 var icon = cell.querySelector('.timerIcon');
                 if (icon) {
                     icon.parentNode.removeChild(icon);
@@ -821,7 +812,7 @@
             // find guide cells by timer id, remove timer icon
             var cells = options.element.querySelectorAll('.programCell[data-seriestimerid="' + id + '"]');
             for (var i = 0, length = cells.length; i < length; i++) {
-                var cells = cells[i];
+                var cell = cells[i];
                 var icon = cell.querySelector('.seriesTimerIcon');
                 if (icon) {
                     icon.parentNode.removeChild(icon);
@@ -833,6 +824,13 @@
         require(['text!./tvguide.template.html'], function (template) {
             var context = options.element;
             context.innerHTML = globalize.translateDocument(template, 'sharedcomponents');
+
+            if (layoutManager.desktop) {
+                var visibleGuideScrollers = context.querySelectorAll('.guideScroller');
+                for (var i = 0, length = visibleGuideScrollers.length; i < length; i++) {
+                    visibleGuideScrollers[i].classList.add('visibleGuideScroller');
+                }
+            }
 
             var programGrid = context.querySelector('.programGrid');
             var timeslotHeaders = context.querySelector('.timeslotHeaders');
@@ -873,7 +871,7 @@
                 reloadPage(context);
             });
 
-            context.querySelector('.btnViewSettings').addEventListener('click', function () {
+            context.querySelector('.btnGuideViewSettings').addEventListener('click', function () {
                 showViewSettings(self);
             });
 
