@@ -160,7 +160,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
     private MediaPlayer newMediaPlayer() {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final MediaPlayer mp = new MediaPlayer(LibVLC(getApplicationContext(), logger));
-        final String aout = VLCOptions.getAout(pref);
+        final String aout = VLCOptions.getAout(pref, logger);
         if (mp.setAudioOutput(aout) && aout.equals("android_audiotrack")) {
             mIsAudioTrack = true;
             if (mHasHdmiAudio)
@@ -176,8 +176,12 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
         All
     }
 
+    private static boolean isFroyoOrLater(){
+        return true;
+    }
+
     private static boolean readPhoneState() {
-        return !AndroidUtil.isFroyoOrLater();
+        return !isFroyoOrLater();
     }
 
     @Override
@@ -235,7 +239,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean stealRemoteControl = pref.getBoolean("enable_steal_remote_control", false);
 
-        if (!AndroidUtil.isFroyoOrLater() || stealRemoteControl) {
+        if (!isFroyoOrLater() || stealRemoteControl) {
             /* Backward compatibility for API 7 */
             filter = new IntentFilter();
             if (stealRemoteControl)
@@ -434,7 +438,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
         return mMediaPlayer.getVLCVout();
     }
 
-    private final OnAudioFocusChangeListener mAudioFocusListener = AndroidUtil.isFroyoOrLater() ?
+    private final OnAudioFocusChangeListener mAudioFocusListener = isFroyoOrLater() ?
             createOnAudioFocusChangeListener() : null;
 
     @TargetApi(Build.VERSION_CODES.FROYO)
@@ -545,7 +549,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
     }
 
     private void changeAudioFocus(boolean acquire) {
-        if (AndroidUtil.isFroyoOrLater())
+        if (isFroyoOrLater())
             changeAudioFocusFroyoOrLater(acquire);
     }
 
@@ -592,10 +596,6 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
     @Override
     public void onSurfacesDestroyed(IVLCVout vlcVout) {
         handleVout();
-    }
-
-    @Override
-    public void onHardwareAccelerationError(IVLCVout vlcVout) {
     }
 
     private final Media.EventListener mMediaListener = new Media.EventListener() {
@@ -1628,7 +1628,8 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public boolean addSubtitleTrack(String path) {
-        return mMediaPlayer.setSubtitleFile(path);
+        // TODO This is deprecated now?
+        return false;
     }
 
     @MainThread

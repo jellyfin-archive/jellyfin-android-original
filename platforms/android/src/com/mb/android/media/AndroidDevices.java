@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 public class AndroidDevices {
@@ -35,6 +37,9 @@ public class AndroidDevices {
     public final static String EXTERNAL_PUBLIC_DIRECTORY = Environment.getExternalStorageDirectory().getPath();
 
     final static boolean hasNavBar;
+    final static boolean hasTsp, isTv, showInternalStorage;
+
+    final static String[] noMediaStyleManufacturers = {"huawei", "symphony teleca"};
 
     static {
         HashSet<String> devicesWithoutNavBar = new HashSet<String>();
@@ -44,6 +49,9 @@ public class AndroidDevices {
         devicesWithoutNavBar.add("HTC One XL");
         hasNavBar = AndroidUtil.isICSOrLater()
                 && !devicesWithoutNavBar.contains(android.os.Build.MODEL);
+        hasTsp = true;
+        isTv = false;
+        showInternalStorage = false;
     }
 
     public static boolean hasExternalStorage() {
@@ -68,12 +76,16 @@ public class AndroidDevices {
         return manager.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
     }
 
-    public static boolean hasTsp(Context context) {
-        return context.getPackageManager().hasSystemFeature("android.hardware.touchscreen");
+    public static boolean hasTsp() {
+        return hasTsp;
     }
 
-    public static boolean isAndroidTv(Context context) {
-        return context.getPackageManager().hasSystemFeature("android.software.leanback");
+    public static boolean isAndroidTv() {
+        return isTv;
+    }
+
+    public static boolean showInternalStorage() {
+        return showInternalStorage;
     }
 
     public static ArrayList<String> getStorageDirectories() {
@@ -170,11 +182,43 @@ public class AndroidDevices {
         return networkEnabled;
     }
 
+    public static boolean hasConnection(Context context) {
+        boolean networkEnabled = false;
+        ConnectivityManager connectivity = (ConnectivityManager) (context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        if (connectivity != null) {
+            NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                networkEnabled = true;
+            }
+        }
+        return networkEnabled;
+    }
+
+    public static boolean hasMobileConnection(Context context) {
+        boolean networkEnabled = false;
+        ConnectivityManager connectivity = (ConnectivityManager) (context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        if (connectivity != null) {
+            NetworkInfo networkInfo = connectivity.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected() &&
+                    (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)) {
+                networkEnabled = true;
+            }
+        }
+        return networkEnabled;
+    }
+
     public static void setRemoteControlReceiverEnabled(Context context, boolean enabled) {
         context.getPackageManager().setComponentEnabledSetting(
                 new ComponentName(context, RemoteControlClientReceiver.class),
                 enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
+    }
+
+    private static boolean isManufacturerBannedForMediastyleNotifications(Context context) {
+        for (String manufacturer : noMediaStyleManufacturers)
+            if (Build.MANUFACTURER.toLowerCase(Locale.getDefault()).contains(manufacturer))
+                return true;
+        return false;
     }
 }
