@@ -1,21 +1,25 @@
 .formDialog {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .formDialogHeader {
-    padding: .8em .5em;
+    padding: 1em .5em;
     display: flex;
     align-items: center;
     flex-shrink: 0;
 }
 
 .formDialogHeader, .formDialogFooter {
-    background-color: #222326;
+    background-color: #1D1E21;
 }
 
 .formDialogHeaderTitle {
-    margin-left: .5em;
+    margin-left: .25em;
+    /* In case of h1, h2, h3 */
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .formDialogContent {
@@ -23,7 +27,11 @@
 }
 
 .dialogContentInner {
-    padding: .5em 1.5em 30vh 1.5em;
+    padding: .5em 1.5em 20em 1.5em;
+}
+
+.dialogContentInner-mini {
+    padding-bottom: 10em;
 }
 
 .dialog-content-centered {
