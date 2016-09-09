@@ -40,7 +40,7 @@
                 };
 
                 if (layoutManager.tv) {
-                    dialogOptions.size = 'medium';
+                    dialogOptions.size = 'fullscreen';
                 } else {
                     dialogOptions.size = 'small';
                 }
@@ -54,9 +54,6 @@
                 html += globalize.translateDocument(template, 'sharedcomponents');
 
                 dlg.innerHTML = html;
-                document.body.appendChild(dlg);
-
-                currentDialog = dlg;
 
                 dlg.addEventListener('change', function () {
 

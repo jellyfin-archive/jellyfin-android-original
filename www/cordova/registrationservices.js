@@ -135,7 +135,7 @@
 
             hasProduct = true;
             html += '<p>';
-            html += '<button is="emby-button" type="button" class="raised submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
+            html += '<button is="emby-button" type="button" class="raised button-submit block btnPurchase" data-email="true" data-feature="' + subscriptionOptions[i].feature + '"><iron-icon icon="check"></iron-icon><span>';
             html += subscriptionOptions[i].buttonText;
             html += '</span></button>';
             html += '</p>';
