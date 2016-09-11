@@ -33,6 +33,10 @@
     color: #fff;
 }
 
+.button-accent-flat {
+    color: #52B54B !important;
+}
+
 button.emby-button.raised.more {
     background: #3388cc;
     color: #fff;
@@ -88,7 +92,7 @@ div.dialogHeader {
 }
 
 .ui-body-a div.formDialogFooter {
-    background-color: #fff;
+    background-color: #f0f0f0;
     border-top: 1px solid #ddd;
     color: inherit;
 }
