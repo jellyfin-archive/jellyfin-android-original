@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="20000780" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.80" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="20000784" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.84" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Emby</name>
     <description>
     Emby Mobile
@@ -89,5 +89,6 @@
         <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
         <preference name="BackgroundColor" value="0xff222222" />
     </platform>
-    <preference name="xwalkUserAgent" value="android crosswalk/20 Chrome/50 Mobile Safari/537.36" />
+	<preference name="xwalkVersion" value="21+" />
+    <preference name="xwalkUserAgent" value="android crosswalk/21 Chrome/51 Mobile Safari/537.36" />
 </widget>
