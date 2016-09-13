@@ -2140,14 +2140,13 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
     private String normalizeLocation(String location, MediaSourceInfo mediaSourceInfo, PlayMethod playMethod, long startPositionTicks) {
 
+        logger.Info("normalizeLocation location %s, playMethod %s, startPositionTicks %s", location, playMethod.toString(), String.valueOf(startPositionTicks));
         if (playMethod == PlayMethod.Transcode) {
 
             mService.setEnableServerSeek(true);
             mService.setTranscodingOffsetPositionTicks(startPositionTicks);
 
-            // If transcoding with a known runtime, switch to .ts to work around the Vlc seek issue with HLS
             return location;
-            //return location.replace("master.m3u8", "stream.mkv") + "&StartTimeTicks=" + String.valueOf(startPositionTicks);
         }
 
         mService.setEnableServerSeek(false);

@@ -112,7 +112,7 @@ public class MainActivity extends CordovaActivity
         return AppLogger.getLogger(this);
     }
 
-    private int chromeVersion = 50;
+    private int chromeVersion = 51;
 
     public static MainActivity Current;
 

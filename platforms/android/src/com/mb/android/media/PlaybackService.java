@@ -1741,7 +1741,7 @@ public class PlaybackService extends Service implements IVLCVout.Callback {
 
     @MainThread
     public long getTime() {
-        return mMediaPlayer.getTime();
+        return getTimeTicks() / 10000;
     }
 
     @MainThread
