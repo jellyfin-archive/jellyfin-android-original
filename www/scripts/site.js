@@ -1250,7 +1250,8 @@ var AppInfo = {};
         define("peoplecardbuilder", [embyWebComponentsBowerPath + "/cardbuilder/peoplecardbuilder"], returnFirstDependency);
         define("chaptercardbuilder", [embyWebComponentsBowerPath + "/cardbuilder/chaptercardbuilder"], returnFirstDependency);
 
-        define("tvguide", [embyWebComponentsBowerPath + "/guide/guide", 'embyRouter'], returnFirstDependency);
+        define("tvguide", [embyWebComponentsBowerPath + "/guide/guide"], returnFirstDependency);
+        define("programStyles", ['css!' + embyWebComponentsBowerPath + "/guide/programs"], returnFirstDependency);
         define("guide-settings-dialog", [embyWebComponentsBowerPath + "/guide/guide-settings"], returnFirstDependency);
         define("syncDialog", [embyWebComponentsBowerPath + "/sync/sync"], returnFirstDependency);
         define("voiceDialog", [embyWebComponentsBowerPath + "/voice/voicedialog"], returnFirstDependency);
@@ -1315,8 +1316,6 @@ var AppInfo = {};
         define("cryptojs-sha1", [sha1Path]);
         define("cryptojs-md5", [md5Path]);
 
-        define("paper-checkbox", ["html!" + bowerPath + "/paper-checkbox/paper-checkbox.html"]);
-
         define("jstree", [bowerPath + "/jstree/dist/jstree", "css!thirdparty/jstree/themes/default/style.min.css"]);
 
         define("dashboardcss", ['css!css/dashboard']);
@@ -1356,10 +1355,10 @@ var AppInfo = {};
         define("formDialogStyle", ['css!' + embyWebComponentsBowerPath + "/formdialog"], returnFirstDependency);
         define("indicators", [embyWebComponentsBowerPath + "/indicators/indicators"], returnFirstDependency);
 
-        if ('registerElement' in document && 'content' in document.createElement('template')) {
-            define('webcomponentsjs', []);
+        if (!('registerElement' in document)) {
+            define("registerElement", [bowerPath + '/document-register-element/build/document-register-element']);
         } else {
-            define('webcomponentsjs', [bowerPath + '/webcomponentsjs/webcomponents-lite.min.js']);
+            define("registerElement", []);
         }
 
         if (Dashboard.isRunningInCordova()) {
@@ -1633,7 +1632,7 @@ var AppInfo = {};
             define("imageFetcher", [embyWebComponentsBowerPath + "/images/basicimagefetcher"], returnFirstDependency);
         }
 
-        var preferNativeAlerts = browser.mobile || browser.tv || browser.xboxOne;
+        var preferNativeAlerts = (browser.mobile) || browser.tv || browser.xboxOne || browser.ps4;
         // use native alerts if preferred and supported (not supported in opera tv)
         if (preferNativeAlerts && window.alert) {
             define("alert", [embyWebComponentsBowerPath + "/alert/nativealert"], returnFirstDependency);
@@ -2182,7 +2181,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/livetvtunerprovider-satip.html',
-            dependencies: ['emby-input', 'paper-checkbox'],
+            dependencies: ['emby-input'],
             autoFocus: false,
             roles: 'admin',
             controller: 'dashboard/livetvtunerprovider-satip'
