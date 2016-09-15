@@ -1,23 +1,87 @@
-﻿define(['dialogHelper', 'globalize', 'layoutManager', 'mediaInfo', 'apphost', 'connectionManager', 'require', 'loading', 'scrollHelper', 'scrollStyles', 'emby-button', 'emby-collapse', 'emby-input', 'paper-icon-button-light', 'css!./../formdialog', 'css!./recordingcreator', 'material-icons'], function (dialogHelper, globalize, layoutManager, mediaInfo, appHost, connectionManager, require, loading, scrollHelper) {
+﻿define(['dialogHelper', 'globalize', 'layoutManager', 'mediaInfo', 'apphost', 'connectionManager', 'require', 'loading', 'scrollHelper', 'imageLoader', 'scrollStyles', 'emby-button', 'emby-collapse', 'emby-input', 'paper-icon-button-light', 'css!./../formdialog', 'css!./recordingcreator', 'material-icons'], function (dialogHelper, globalize, layoutManager, mediaInfo, appHost, connectionManager, require, loading, scrollHelper, imageLoader) {
 
     var currentDialog;
     var recordingUpdated = false;
+    var recordingDeleted = false;
     var currentItemId;
     var currentServerId;
 
-    function renderTimer(context, item) {
+    function deleteTimer(apiClient, timerId) {
 
-        var programInfo = item.ProgramInfo || {};
+        return new Promise(function (resolve, reject) {
 
-        context.querySelector('.itemName').innerHTML = item.Name;
+            require(['confirm'], function (confirm) {
 
-        context.querySelector('.itemGenres').innerHTML = (programInfo.Genres || []).join(' / ');
-        context.querySelector('.itemOverview').innerHTML = programInfo.Overview || '';
+                confirm(globalize.translate('sharedcomponents#MessageConfirmRecordingCancellation'), globalize.translate('sharedcomponents#HeaderConfirmRecordingCancellation')).then(function () {
 
-        //var timerPageImageContainer = context.querySelector('.timerPageImageContainer');
+                    loading.show();
 
-        context.querySelector('.itemMiscInfoPrimary').innerHTML = mediaInfo.getPrimaryMediaInfoHtml(programInfo);
-        context.querySelector('.itemMiscInfoSecondary').innerHTML = mediaInfo.getSecondaryMediaInfoHtml(programInfo);
+                    apiClient.cancelLiveTvTimer(timerId).then(function () {
+
+                        require(['toast'], function (toast) {
+                            toast(globalize.translate('sharedcomponents#RecordingCancelled'));
+                        });
+
+                        loading.hide();
+                        resolve();
+                    });
+                });
+            });
+        });
+    }
+
+    function getImageUrl(item, apiClient, imageHeight) {
+
+        var imageTags = item.ImageTags || {};
+
+        if (item.PrimaryImageTag) {
+            imageTags.Primary = item.PrimaryImageTag;
+        }
+
+        if (imageTags.Primary) {
+
+            return apiClient.getScaledImageUrl(item.Id, {
+                type: "Primary",
+                maxHeight: imageHeight,
+                tag: item.ImageTags.Primary
+            });
+        }
+        else if (imageTags.Thumb) {
+
+            return apiClient.getScaledImageUrl(item.Id, {
+                type: "Thumb",
+                maxHeight: imageHeight,
+                tag: item.ImageTags.Thumb
+            });
+        }
+
+        return null;
+    }
+
+    function renderTimer(context, item, apiClient) {
+
+        var program = item.ProgramInfo || {};
+
+        var imgUrl = getImageUrl(program, apiClient, 200);
+        var imageContainer = context.querySelector('.recordingDialog-imageContainer');
+
+        if (imgUrl) {
+            imageContainer.innerHTML = '<img src="' + require.toUrl('.').split('?')[0] + '/empty.png" data-src="' + imgUrl + '" class="recordingDialog-img lazy" />';
+            imageContainer.classList.remove('hide');
+
+            imageLoader.lazyChildren(imageContainer);
+        } else {
+            imageContainer.innerHTML = '';
+            imageContainer.classList.add('hide');
+        }
+
+        context.querySelector('.recordingDialog-itemName').innerHTML = item.Name;
+
+        context.querySelector('.itemGenres').innerHTML = (program.Genres || []).join(' / ');
+        context.querySelector('.itemOverview').innerHTML = program.Overview || '';
+
+        context.querySelector('.itemMiscInfoPrimary').innerHTML = mediaInfo.getPrimaryMediaInfoHtml(program);
+        context.querySelector('.itemMiscInfoSecondary').innerHTML = mediaInfo.getSecondaryMediaInfoHtml(program);
 
         context.querySelector('#txtPrePaddingMinutes').value = item.PrePaddingSeconds / 60;
         context.querySelector('#txtPostPaddingMinutes').value = item.PostPaddingSeconds / 60;
@@ -34,9 +98,10 @@
         loading.hide();
     }
 
-    function closeDialog(isSubmitted) {
+    function closeDialog(isSubmitted, isDeleted) {
 
         recordingUpdated = isSubmitted;
+        recordingDeleted = isDeleted;
         dialogHelper.close(currentDialog);
     }
 
@@ -74,6 +139,14 @@
             closeDialog(false);
         });
 
+        context.querySelector('.btnCancelRecording').addEventListener('click', function () {
+
+            var apiClient = connectionManager.getApiClient(currentServerId);
+            deleteTimer(apiClient, currentItemId).then(function () {
+                closeDialog(true, true);
+            });
+        });
+
         context.querySelector('form').addEventListener('submit', onSubmit);
     }
 
@@ -85,7 +158,7 @@
         var apiClient = connectionManager.getApiClient(currentServerId);
         apiClient.getLiveTvTimer(id).then(function (result) {
 
-            renderTimer(context, result);
+            renderTimer(context, result, apiClient);
             loading.hide();
         });
     }
@@ -95,6 +168,7 @@
         return new Promise(function (resolve, reject) {
 
             recordingUpdated = false;
+            recordingDeleted = false;
             currentServerId = serverId;
             loading.show();
 
@@ -129,7 +203,7 @@
                     if (recordingUpdated) {
                         resolve({
                             updated: true,
-                            deleted: false
+                            deleted: recordingDeleted
                         });
                     } else {
                         reject();

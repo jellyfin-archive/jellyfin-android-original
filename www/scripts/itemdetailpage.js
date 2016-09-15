@@ -565,7 +565,8 @@
         var itemMiscInfo = page.querySelectorAll('.itemMiscInfo');
         for (i = 0, length = itemMiscInfo.length; i < length; i++) {
             mediaInfo.fillPrimaryMediaInfo(itemMiscInfo[i], item, {
-                interactive: true
+                interactive: true,
+                episodeTitle: false
             });
         }
         var itemGenres = page.querySelectorAll('.itemGenres');
@@ -1809,8 +1810,7 @@
 
         var html = cardBuilder.getCardsHtml({
             items: items,
-            shape: "backdrop",
-            preferThumb: true,
+            shape: "auto",
             showTitle: true,
             action: 'play',
             overlayText: true,
