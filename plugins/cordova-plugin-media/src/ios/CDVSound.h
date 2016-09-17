@@ -22,6 +22,7 @@
 #import <Cordova/CDVPlugin.h>
 
 enum CDVMediaError {
+    MEDIA_ERR_NONE_ACTIVE = 0,
     MEDIA_ERR_ABORTED = 1,
     MEDIA_ERR_NETWORK = 2,
     MEDIA_ERR_DECODE = 3,
@@ -97,6 +98,8 @@ typedef NSUInteger CDVMediaMsg;
 - (void)seekToAudio:(CDVInvokedUrlCommand*)command;
 - (void)release:(CDVInvokedUrlCommand*)command;
 - (void)getCurrentPositionAudio:(CDVInvokedUrlCommand*)command;
+- (void)resumeRecordingAudio:(CDVInvokedUrlCommand*)command;
+- (void)pauseRecordingAudio:(CDVInvokedUrlCommand*)command;
 
 - (BOOL)hasAudioSession;
 
@@ -105,6 +108,7 @@ typedef NSUInteger CDVMediaMsg;
 - (NSURL*)urlForPlaying:(NSString*)resourcePath;
 
 - (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord;
+- (CDVAudioFile*)audioFileForResource:(NSString*)resourcePath withId:(NSString*)mediaId doValidation:(BOOL)bValidate forRecording:(BOOL)bRecord suppressValidationErrors:(BOOL)bSuppress;
 - (BOOL)prepareToPlay:(CDVAudioFile*)audioFile withId:(NSString*)mediaId;
 - (NSString*)createMediaErrorWithCode:(CDVMediaError)code message:(NSString*)message;
 

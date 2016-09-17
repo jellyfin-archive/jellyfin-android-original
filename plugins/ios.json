@@ -320,9 +320,6 @@
         "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-statusbar": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -330,15 +327,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "fw-cordova-chromecast": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-file": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "cordova-plugin-media": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.rd11.remote-controls": {
@@ -357,6 +345,18 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-actionsheet": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-file-transfer": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-media": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

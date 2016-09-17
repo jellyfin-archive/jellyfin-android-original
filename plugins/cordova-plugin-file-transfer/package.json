@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-file-transfer",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Cordova File Transfer Plugin",
   "cordova": {
     "id": "cordova-plugin-file-transfer",
@@ -44,11 +44,15 @@
     "cordova-firefoxos",
     "cordova-browser"
   ],
-  "peerDependencies": {
-    "cordova-plugin-file": "^3.0.0"
-  },
   "author": "Apache Software Foundation",
   "license": "Apache-2.0",
+  "engines": {
+    "cordovaDependencies": {
+      "2.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
   "devDependencies": {
     "jscs": "^2.6.0",
     "jshint": "^2.8.0"
