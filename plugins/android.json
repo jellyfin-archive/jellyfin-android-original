@@ -153,9 +153,6 @@
         "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "nl.x-services.plugins.actionsheet": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "nl.x-services.plugins.backgroundaudio": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -204,6 +201,9 @@
             "PACKAGE_NAME": "com.mb.android"
         },
         "cordova-plugin-x-socialsharing": {
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-actionsheet": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },

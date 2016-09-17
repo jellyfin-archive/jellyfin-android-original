@@ -27,13 +27,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
-        "id": "nl.x-services.plugins.actionsheet.ActionSheet",
-        "clobbers": [
-            "window.plugins.actionsheet"
-        ]
-    },
-    {
         "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
         "id": "com.drifty.cordova.cameraroll.CameraRoll",
         "clobbers": [
@@ -285,6 +278,14 @@ module.exports = [
         "clobbers": [
             "window.plugins.socialsharing"
         ]
+    },
+    {
+        "id": "cordova-plugin-actionsheet.ActionSheet",
+        "file": "plugins/cordova-plugin-actionsheet/www/ActionSheet.js",
+        "pluginId": "cordova-plugin-actionsheet",
+        "clobbers": [
+            "window.plugins.actionsheet"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -296,7 +297,8 @@ module.exports.metadata =
     "cordova-plugin-media": "2.3.0",
     "cordova-plugin-crosswalk-webview": "2.0.0",
     "cordova-plugin-app-version": "0.1.9",
-    "cordova-plugin-x-socialsharing": "5.1.3"
+    "cordova-plugin-x-socialsharing": "5.1.3",
+    "cordova-plugin-actionsheet": "2.3.1"
 };
 // BOTTOM OF METADATA
 });

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-actionsheet"
+    version="2.3.1">
+
+  <name>ActionSheet</name>
+
+  <description>Show a sheet of options the user can choose from.</description>
+
+  <author>Eddy Verbruggen</author>
+
+  <license>MIT</license>
+
+  <keywords>ActionSheet, UIActionSheet, AlertDialog, Dialog, List, Picker, Popup</keywords>
+
+  <repo>https://github.com/EddyVerbruggen/cordova-plugin-actionsheet.git</repo>
+
+  <issue>https://github.com/EddyVerbruggen/cordova-plugin-actionsheet/issues</issue>
+
+  <engines>
+    <engine name="cordova" version=">=3.0.0"/>
+  </engines>
+
+  <js-module src="www/ActionSheet.js" name="ActionSheet">
+    <clobbers target="window.plugins.actionsheet"/>
+  </js-module>
+
+
+
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="ActionSheet">
+        <param name="ios-package" value="ActionSheet"/>
+      </feature>
+    </config-file>
+    <header-file src="src/ios/ActionSheet.h"/>
+    <source-file src="src/ios/ActionSheet.m"/>
+  </platform>
+
+  <!-- android -->
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="ActionSheet">
+        <param name="android-package" value="nl.xservices.plugins.actionsheet.ActionSheet"/>
+      </feature>
+    </config-file>
+    <source-file src="src/android/ActionSheet.java" target-dir="src/nl/xservices/plugins/actionsheet"/>
+  </platform>
+
+  <!-- wp8 -->
+  <platform name="wp8">
+    <config-file target="config.xml" parent="/*">
+      <feature name="ActionSheet">
+        <param name="wp-package" value="ActionSheet"/>
+      </feature>
+    </config-file>
+    <source-file src="src/wp8/ActionSheet.cs" />
+  </platform>
+
+  <!--windows-->
+  
+  <platform name="windows">
+    <js-module src="src/windows/ActionSheetProxy.js" name="ActionSheetProxy">
+      <merges target="" />
+    </js-module>
+  </platform>
+
+</plugin>
