@@ -317,9 +317,6 @@
         "org.apache.cordova.background-download": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "uk.co.whiteoctober.cordova.appversion": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -357,6 +354,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-crosswalk-webview": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-app-version": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

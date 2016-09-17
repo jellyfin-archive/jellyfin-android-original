@@ -1,3 +1,4 @@
+cordova.define("cordova-plugin-app-version.AppVersionPlugin", function(require, exports, module) {
 /*jslint indent: 2 */
 /*global window, jQuery, angular, cordova */
 "use strict";
@@ -8,17 +9,34 @@ var getPromisedCordovaExec = function (command, success, fail) {
   if (success === undefined) {
     if (window.jQuery) {
       deferred = jQuery.Deferred();
+      success = deferred.resolve;
+      fail = deferred.reject;
       toReturn = deferred;
     } else if (window.angular) {
       injector = angular.injector(["ng"]);
       $q = injector.get("$q");
       deferred = $q.defer();
+      success = deferred.resolve;
+      fail = deferred.reject;
       toReturn = deferred.promise;
+    } else if (window.when && window.when.promise) {
+      deferred = when.defer();
+      success = deferred.resolve;
+      fail = deferred.reject;
+      toReturn = deferred.promise;
+    } else if (window.Promise) {
+      toReturn = new Promise(function(c, e) {
+        success = c;
+        fail = e;
+      });
+    } else if (window.WinJS && window.WinJS.Promise) {
+      toReturn = new WinJS.Promise(function(c, e) {
+        success = c;
+        fail = e;
+      });
     } else {
-      return console.error('AppVersion either needs a success callback, or jQuery/AngularJS defined for using promises');
+      return console.error('AppVersion either needs a success callback, or jQuery/AngularJS/Promise/WinJS.Promise defined for using promises');
     }
-    success = deferred.resolve;
-    fail = deferred.reject;
   }
   // 5th param is NOT optional. must be at least empty array
   cordova.exec(success, fail, "AppVersion", command, []);
@@ -46,3 +64,5 @@ getAppVersion.getVersionCode = function (success, fail) {
 };
 
 module.exports = getAppVersion;
+
+});

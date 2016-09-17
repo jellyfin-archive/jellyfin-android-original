@@ -162,9 +162,6 @@
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "uk.co.whiteoctober.cordova.appversion": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -204,6 +201,9 @@
             "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
             "XWALK_MODE": "embedded",
             "XWALK_MULTIPLEAPK": "true",
+            "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-app-version": {
             "PACKAGE_NAME": "com.mb.android"
         }
     },
