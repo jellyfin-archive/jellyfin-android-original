@@ -9,14 +9,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/nl.x-services.plugins.actionsheet/www/ActionSheet.js",
-        "id": "nl.x-services.plugins.actionsheet.ActionSheet",
-        "pluginId": "nl.x-services.plugins.actionsheet",
-        "clobbers": [
-            "window.plugins.actionsheet"
-        ]
-    },
-    {
         "file": "plugins/com.drifty.cordova.cameraroll/www/CameraRoll.js",
         "id": "com.drifty.cordova.cameraroll.CameraRoll",
         "pluginId": "com.drifty.cordova.cameraroll",
@@ -361,6 +353,14 @@ module.exports = [
         "clobbers": [
             "window.plugins.socialsharing"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-actionsheet/www/ActionSheet.js",
+        "id": "cordova-plugin-actionsheet.ActionSheet",
+        "pluginId": "cordova-plugin-actionsheet",
+        "clobbers": [
+            "window.plugins.actionsheet"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -368,7 +368,6 @@ module.exports.metadata =
 {
     "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
-    "nl.x-services.plugins.actionsheet": "1.1.7",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",
     "com.drifty.cordova.cameraroll": "0.2.1",
@@ -389,7 +388,8 @@ module.exports.metadata =
     "cc.fovea.cordova.purchase": "6.0.0",
     "cordova-plugin-crosswalk-webview": "2.0.0",
     "cordova-plugin-app-version": "0.1.9",
-    "cordova-plugin-x-socialsharing": "5.1.3"
+    "cordova-plugin-x-socialsharing": "5.1.3",
+    "cordova-plugin-actionsheet": "2.3.1"
 }
 // BOTTOM OF METADATA
 });

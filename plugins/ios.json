@@ -302,9 +302,6 @@
         "com.hutchind.cordova.plugins.launcher": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "nl.x-services.plugins.actionsheet": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "nl.x-services.plugins.backgroundaudio": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -357,6 +354,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-x-socialsharing": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-actionsheet": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

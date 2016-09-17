@@ -1,4 +1,4 @@
-cordova.define("nl.x-services.plugins.actionsheet.ActionSheet", function(require, exports, module) {
+cordova.define("cordova-plugin-actionsheet.ActionSheet", function(require, exports, module) {
 function ActionSheet() {
 }
 

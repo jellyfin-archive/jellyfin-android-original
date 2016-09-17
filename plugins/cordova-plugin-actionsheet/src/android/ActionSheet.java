@@ -28,41 +28,49 @@ public class ActionSheet extends CordovaPlugin {
     super();
   }
 
+  private static final String ACTION_SHOW = "show";
+  private static final String ACTION_HIDE = "hide";
+
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
-    if ("show".equals(action)) {
+    if (ACTION_SHOW.equals(action)) {
       JSONObject options = args.optJSONObject(0);
 
       String title = options.optString("title");
+      String subtitle = options.optString("subtitle");
       int theme = options.optInt("androidTheme", 1);
       JSONArray buttons = options.optJSONArray("buttonLabels");
 
       boolean androidEnableCancelButton = options.optBoolean("androidEnableCancelButton", false);
+      boolean destructiveButtonLast = options.optBoolean("destructiveButtonLast", false);
 
       String addCancelButtonWithLabel = options.optString("addCancelButtonWithLabel");
       String addDestructiveButtonWithLabel = options.optString("addDestructiveButtonWithLabel");
 
-      this.show(title, buttons, addCancelButtonWithLabel,
-          androidEnableCancelButton, addDestructiveButtonWithLabel,
-          theme,
-          callbackContext);
+      this.show(title, subtitle, buttons, addCancelButtonWithLabel, androidEnableCancelButton,
+          addDestructiveButtonWithLabel, destructiveButtonLast,
+          theme, callbackContext);
       // need to return as this call is async.
       return true;
-    } else if ("hide".equals(action)) {
+
+    } else if (ACTION_HIDE.equals(action)) {
       if (dialog != null && dialog.isShowing()) {
         dialog.dismiss();
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, -1));
       }
       return true;
     }
+
     return false;
   }
 
   public synchronized void show(final String title,
+                                final String subtitle,
                                 final JSONArray buttonLabels,
                                 final String addCancelButtonWithLabel,
                                 final boolean androidEnableCancelButton,
                                 final String addDestructiveButtonWithLabel,
+                                final boolean destructiveButtonLast,
                                 final int theme,
                                 final CallbackContext callbackContext) {
 
@@ -121,6 +129,7 @@ public class ActionSheet extends CordovaPlugin {
 
         final String[] buttons = getStringArray(
             buttonLabels,
+            destructiveButtonLast,
             (TextUtils.isEmpty(addDestructiveButtonWithLabel) ? null
                 : addDestructiveButtonWithLabel));
 
@@ -154,24 +163,34 @@ public class ActionSheet extends CordovaPlugin {
     this.cordova.getActivity().runOnUiThread(runnable);
   }
 
-  private String[] getStringArray(JSONArray jsonArray, String... prepend) {
+  private String[] getStringArray(JSONArray jsonArray, boolean append, String... additionalButtons) {
 
-    List<String> btn = new ArrayList<String>();
+    List<String> btns = new ArrayList<String>();
 
-    // Add prefix items like destructive buttons.
-    for (String aPrepend : prepend) {
-      if (!TextUtils.isEmpty(aPrepend)) {
-        btn.add(aPrepend);
+    // Add prefix items
+    if (!append) {
+      for (String btn : additionalButtons) {
+        if (!TextUtils.isEmpty(btn)) {
+          btns.add(btn);
+        }
       }
     }
 
     // add the rest of the buttons from the list.
     if (jsonArray != null) {
       for (int i = 0; i < jsonArray.length(); i++) {
-        btn.add(jsonArray.optString(i));
+        btns.add(jsonArray.optString(i));
       }
-
     }
-    return btn.toArray(new String[btn.size()]);
+
+    // Add postfix items
+    if (append) {
+      for (String btn : additionalButtons) {
+        if (!TextUtils.isEmpty(btn)) {
+          btns.add(btn);
+        }
+      }
+    }
+    return btns.toArray(new String[btns.size()]);
   }
 }
