@@ -26,7 +26,9 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -36,6 +38,7 @@ public class SocialSharing extends CordovaPlugin {
 
   private static final String ACTION_AVAILABLE_EVENT = "available";
   private static final String ACTION_SHARE_EVENT = "share";
+  private static final String ACTION_SHARE_WITH_OPTIONS_EVENT = "shareWithOptions";
   private static final String ACTION_CAN_SHARE_VIA = "canShareVia";
   private static final String ACTION_CAN_SHARE_VIA_EMAIL = "canShareViaEmail";
   private static final String ACTION_SHARE_VIA = "shareVia";
@@ -47,9 +50,10 @@ public class SocialSharing extends CordovaPlugin {
   private static final String ACTION_SHARE_VIA_SMS_EVENT = "shareViaSMS";
   private static final String ACTION_SHARE_VIA_EMAIL_EVENT = "shareViaEmail";
 
-  private static final int ACTIVITY_CODE_SEND = 1;
-  private static final int ACTIVITY_CODE_SENDVIAEMAIL = 2;
-  private static final int ACTIVITY_CODE_SENDVIAWHATSAPP = 3;
+  private static final int ACTIVITY_CODE_SEND__BOOLRESULT = 1;
+  private static final int ACTIVITY_CODE_SEND__OBJECT = 2;
+  private static final int ACTIVITY_CODE_SENDVIAEMAIL = 3;
+  private static final int ACTIVITY_CODE_SENDVIAWHATSAPP = 4;
 
   private CallbackContext _callbackContext;
 
@@ -71,27 +75,29 @@ public class SocialSharing extends CordovaPlugin {
       callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
       return true;
     } else if (ACTION_SHARE_EVENT.equals(action)) {
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), null, false);
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), null, null, false, true);
+    } else if (ACTION_SHARE_WITH_OPTIONS_EVENT.equals(action)) {
+      return shareWithOptions(callbackContext, args.getJSONObject(0));
     } else if (ACTION_SHARE_VIA_TWITTER_EVENT.equals(action)) {
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "twitter", false);
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "twitter", null, false, true);
     } else if (ACTION_SHARE_VIA_FACEBOOK_EVENT.equals(action)) {
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", false);
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", null, false, true);
     } else if (ACTION_SHARE_VIA_FACEBOOK_WITH_PASTEMESSAGEHINT.equals(action)) {
       this.pasteMessage = args.getString(4);
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", false);
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "com.facebook.katana", null, false, true);
     } else if (ACTION_SHARE_VIA_WHATSAPP_EVENT.equals(action)) {
       if (notEmpty(args.getString(4))) {
         return shareViaWhatsAppDirectly(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4));
       } else {
-        return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "whatsapp", false);
+        return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "whatsapp", null, false, true);
       }
     } else if (ACTION_SHARE_VIA_INSTAGRAM_EVENT.equals(action)) {
       if (notEmpty(args.getString(0))) {
         copyHintToClipboard(args.getString(0), "Instagram paste message");
       }
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "instagram", false);
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), "instagram", null, false, true);
     } else if (ACTION_CAN_SHARE_VIA.equals(action)) {
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), true);
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), null, true, true);
     } else if (ACTION_CAN_SHARE_VIA_EMAIL.equals(action)) {
       if (isEmailAvailable()) {
         callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
@@ -101,7 +107,7 @@ public class SocialSharing extends CordovaPlugin {
         return false;
       }
     } else if (ACTION_SHARE_VIA.equals(action)) {
-      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), false);
+      return doSendIntent(callbackContext, args.getString(0), args.getString(1), args.getJSONArray(2), args.getString(3), args.getString(4), null, false, true);
     } else if (ACTION_SHARE_VIA_SMS_EVENT.equals(action)) {
       return invokeSMSIntent(callbackContext, args.getJSONObject(0), args.getString(1));
     } else if (ACTION_SHARE_VIA_EMAIL_EVENT.equals(action)) {
@@ -173,9 +179,9 @@ public class SocialSharing extends CordovaPlugin {
         // as an experiment for #300 we're explicitly running it on the ui thread here
         cordova.getActivity().runOnUiThread(new Runnable() {
           public void run() {
-        cordova.startActivityForResult(plugin, Intent.createChooser(draft, "Choose Email App"), ACTIVITY_CODE_SENDVIAEMAIL);
-      }
-    });
+            cordova.startActivityForResult(plugin, Intent.createChooser(draft, "Choose Email App"), ACTIVITY_CODE_SENDVIAEMAIL);
+          }
+        });
       }
     });
 
@@ -194,7 +200,30 @@ public class SocialSharing extends CordovaPlugin {
     }
   }
 
-  private boolean doSendIntent(final CallbackContext callbackContext, final String msg, final String subject, final JSONArray files, final String url, final String appPackageName, final boolean peek) {
+  private boolean shareWithOptions(CallbackContext callbackContext, JSONObject jsonObject) {
+    return doSendIntent(
+        callbackContext,
+        jsonObject.optString("message", null),
+        jsonObject.optString("subject", null),
+        jsonObject.optJSONArray("files") == null ? new JSONArray() : jsonObject.optJSONArray("files"),
+        jsonObject.optString("url", null),
+        null,
+        jsonObject.optString("chooserTitle", null),
+        false,
+        false
+    );
+  }
+
+  private boolean doSendIntent(
+      final CallbackContext callbackContext,
+      final String msg,
+      final String subject,
+      final JSONArray files,
+      final String url,
+      final String appPackageName,
+      final String chooserTitle,
+      final boolean peek,
+      final boolean boolResult) {
 
     final CordovaInterface mycordova = cordova;
     final CordovaPlugin plugin = this;
@@ -305,11 +334,11 @@ public class SocialSharing extends CordovaPlugin {
             // as an experiment for #300 we're explicitly running it on the ui thread here
             cordova.getActivity().runOnUiThread(new Runnable() {
               public void run() {
-                mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, null), ACTIVITY_CODE_SEND);
+                mycordova.startActivityForResult(plugin, Intent.createChooser(sendIntent, chooserTitle), boolResult ? ACTIVITY_CODE_SEND__BOOLRESULT : ACTIVITY_CODE_SEND__OBJECT);
               }
             });
+          }
         }
-      }
       }
     });
     return true;
@@ -338,7 +367,12 @@ public class SocialSharing extends CordovaPlugin {
   private Uri getFileUriAndSetType(Intent sendIntent, String dir, String image, String subject, int nthFile) throws IOException {
     // we're assuming an image, but this can be any filetype you like
     String localImage = image;
-    sendIntent.setType("image/*");
+    if (image.endsWith("mp4") || image.endsWith("mov") || image.endsWith("3gp")){
+      sendIntent.setType("video/*");
+    } else {
+      sendIntent.setType("image/*");
+    }
+
     if (image.startsWith("http") || image.startsWith("www/")) {
       String filename = getFileName(image);
       localImage = "file://" + dir + "/" + filename;
@@ -401,8 +435,94 @@ public class SocialSharing extends CordovaPlugin {
       localImage = "file://" + dir + "/" + fileName;
     } else if (!image.startsWith("file://")) {
       throw new IllegalArgumentException("URL_NOT_SUPPORTED");
+    } else {
+      //get file MIME type
+      String type = getMIMEType(image);
+      //set intent data and Type
+      sendIntent.setType(type);
     }
     return Uri.parse(localImage);
+  }
+
+  private String getMIMEType(String fileName) {
+    String type = "*/*";
+    int dotIndex = fileName.lastIndexOf(".");
+    if (dotIndex == -1) {
+      return type;
+    }
+    final String end = fileName.substring(dotIndex+1, fileName.length()).toLowerCase();
+    String fromMap = MIME_Map.get(end);
+    return fromMap == null ? type : fromMap;
+  }
+
+  private static final Map<String, String> MIME_Map = new HashMap<String, String>();
+  static {
+    MIME_Map.put("3gp",   "video/3gpp");
+    MIME_Map.put("apk",   "application/vnd.android.package-archive");
+    MIME_Map.put("asf",   "video/x-ms-asf");
+    MIME_Map.put("avi",   "video/x-msvideo");
+    MIME_Map.put("bin",   "application/octet-stream");
+    MIME_Map.put("bmp",   "image/bmp");
+    MIME_Map.put("c",     "text/plain");
+    MIME_Map.put("class", "application/octet-stream");
+    MIME_Map.put("conf",  "text/plain");
+    MIME_Map.put("cpp",   "text/plain");
+    MIME_Map.put("doc",   "application/msword");
+    MIME_Map.put("docx",  "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    MIME_Map.put("xls",   "application/vnd.ms-excel");
+    MIME_Map.put("xlsx",  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    MIME_Map.put("exe",   "application/octet-stream");
+    MIME_Map.put("gif",   "image/gif");
+    MIME_Map.put("gtar",  "application/x-gtar");
+    MIME_Map.put("gz",    "application/x-gzip");
+    MIME_Map.put("h",     "text/plain");
+    MIME_Map.put("htm",   "text/html");
+    MIME_Map.put("html",  "text/html");
+    MIME_Map.put("jar",   "application/java-archive");
+    MIME_Map.put("java",  "text/plain");
+    MIME_Map.put("jpeg",  "image/jpeg");
+    MIME_Map.put("jpg",   "image/*");
+    MIME_Map.put("js",    "application/x-javascript");
+    MIME_Map.put("log",   "text/plain");
+    MIME_Map.put("m3u",   "audio/x-mpegurl");
+    MIME_Map.put("m4a",   "audio/mp4a-latm");
+    MIME_Map.put("m4b",   "audio/mp4a-latm");
+    MIME_Map.put("m4p",   "audio/mp4a-latm");
+    MIME_Map.put("m4u",   "video/vnd.mpegurl");
+    MIME_Map.put("m4v",   "video/x-m4v");
+    MIME_Map.put("mov",   "video/quicktime");
+    MIME_Map.put("mp2",   "audio/x-mpeg");
+    MIME_Map.put("mp3",   "audio/x-mpeg");
+    MIME_Map.put("mp4",   "video/mp4");
+    MIME_Map.put("mpc",   "application/vnd.mpohun.certificate");
+    MIME_Map.put("mpe",   "video/mpeg");
+    MIME_Map.put("mpeg",  "video/mpeg");
+    MIME_Map.put("mpg",   "video/mpeg");
+    MIME_Map.put("mpg4",  "video/mp4");
+    MIME_Map.put("mpga",  "audio/mpeg");
+    MIME_Map.put("msg",   "application/vnd.ms-outlook");
+    MIME_Map.put("ogg",   "audio/ogg");
+    MIME_Map.put("pdf",   "application/pdf");
+    MIME_Map.put("png",   "image/png");
+    MIME_Map.put("pps",   "application/vnd.ms-powerpoint");
+    MIME_Map.put("ppt",   "application/vnd.ms-powerpoint");
+    MIME_Map.put("pptx",  "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+    MIME_Map.put("prop",  "text/plain");
+    MIME_Map.put("rc",    "text/plain");
+    MIME_Map.put("rmvb",  "audio/x-pn-realaudio");
+    MIME_Map.put("rtf",   "application/rtf");
+    MIME_Map.put("sh",    "text/plain");
+    MIME_Map.put("tar",   "application/x-tar");
+    MIME_Map.put("tgz",   "application/x-compressed");
+    MIME_Map.put("txt",   "text/plain");
+    MIME_Map.put("wav",   "audio/x-wav");
+    MIME_Map.put("wma",   "audio/x-ms-wma");
+    MIME_Map.put("wmv",   "audio/x-ms-wmv");
+    MIME_Map.put("wps",   "application/vnd.ms-works");
+    MIME_Map.put("xml",   "text/plain");
+    MIME_Map.put("z",     "application/x-compress");
+    MIME_Map.put("zip",   "application/x-zip-compressed");
+    MIME_Map.put("",       "*/*");
   }
 
   private boolean shareViaWhatsAppDirectly(final CallbackContext callbackContext, String message, final String subject, final JSONArray files, final String url, final String number) {
@@ -554,10 +674,26 @@ public class SocialSharing extends CordovaPlugin {
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     super.onActivityResult(requestCode, resultCode, intent);
     if (_callbackContext != null) {
-      if (ACTIVITY_CODE_SENDVIAEMAIL == requestCode) {
-        _callbackContext.success();
-      } else {
-        _callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, resultCode == Activity.RESULT_OK));
+      switch (requestCode) {
+        case ACTIVITY_CODE_SEND__BOOLRESULT:
+          _callbackContext.sendPluginResult(new PluginResult(
+              PluginResult.Status.OK,
+              resultCode == Activity.RESULT_OK));
+          break;
+        case ACTIVITY_CODE_SEND__OBJECT:
+          JSONObject json = new JSONObject();
+          try {
+            json.put("completed", resultCode == Activity.RESULT_OK);
+            json.put("app", ""); // we need a completely different approach if we want to support this on Android. Idea: https://clickclickclack.wordpress.com/2012/01/03/intercepting-androids-action_send-intents/
+            _callbackContext.sendPluginResult(new PluginResult(
+                PluginResult.Status.OK,
+                json));
+          } catch (JSONException e) {
+            _callbackContext.error(e.getMessage());
+          }
+          break;
+        default:
+          _callbackContext.success();
       }
     }
   }

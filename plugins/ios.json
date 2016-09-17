@@ -335,9 +335,6 @@
         "fw-cordova-chromecast": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-file": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -357,6 +354,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },

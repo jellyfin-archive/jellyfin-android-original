@@ -126,14 +126,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "pluginId": "cordova-plugin-x-socialsharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-file/www/DirectoryEntry.js",
         "id": "cordova-plugin-file.DirectoryEntry",
         "pluginId": "cordova-plugin-file",
@@ -361,6 +353,14 @@ module.exports = [
         "clobbers": [
             "cordova.getAppVersion"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
+        "pluginId": "cordova-plugin-x-socialsharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -381,7 +381,6 @@ module.exports.metadata =
     "fw-cordova-chromecast": "0.0.1",
     "cordova-plugin-device": "1.1.0",
     "cordova-plugin-network-information": "1.1.0",
-    "cordova-plugin-x-socialsharing": "5.0.12",
     "cordova-plugin-compat": "1.0.0",
     "cordova-plugin-file": "4.2.0",
     "cordova-plugin-file-transfer": "1.5.1",
@@ -389,7 +388,8 @@ module.exports.metadata =
     "com.rd11.remote-controls": "1.0.1",
     "cc.fovea.cordova.purchase": "6.0.0",
     "cordova-plugin-crosswalk-webview": "2.0.0",
-    "cordova-plugin-app-version": "0.1.9"
+    "cordova-plugin-app-version": "0.1.9",
+    "cordova-plugin-x-socialsharing": "5.1.3"
 }
 // BOTTOM OF METADATA
 });

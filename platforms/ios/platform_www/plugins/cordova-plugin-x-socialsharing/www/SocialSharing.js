@@ -1,6 +1,4 @@
-cordova.define("cordova-plugin-x-socialsharing.SocialSharing", function(require, exports, module) { var cordova = require('cordova');
-
-function SocialSharing() {
+cordova.define("cordova-plugin-x-socialsharing.SocialSharing", function(require, exports, module) { function SocialSharing() {
 }
 
 // Override this method (after deviceready) to set the location where you want the iPad popup arrow to appear.
@@ -23,6 +21,11 @@ SocialSharing.prototype.available = function (callback) {
   cordova.exec(function (avail) {
     callback(avail ? true : false);
   }, null, "SocialSharing", "available", []);
+};
+
+// this is the recommended way to share as it is the most feature-rich with respect to what you pass in and get back
+SocialSharing.prototype.shareWithOptions = function (options, successCallback, errorCallback) {
+  cordova.exec(successCallback, this._getErrorCallback(errorCallback, "shareWithOptions"), "SocialSharing", "shareWithOptions", [options]);
 };
 
 SocialSharing.prototype.share = function (message, subject, fileOrFileArray, url, successCallback, errorCallback) {
@@ -117,5 +120,4 @@ SocialSharing.install = function () {
 };
 
 cordova.addConstructor(SocialSharing.install);
-
 });

@@ -75,10 +75,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"SocialSharing\"><param name=\"ios-package\" value=\"SocialSharing\" /><param name=\"onload\" value=\"true\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"File\"><param name=\"ios-package\" value=\"CDVFile\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -100,6 +96,10 @@
                         },
                         {
                             "xml": "<feature name=\"AppVersion\"><param name=\"ios-package\" value=\"AppVersion\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SocialSharing\"><param name=\"ios-package\" value=\"SocialSharing\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -169,9 +169,6 @@
         "cordova-plugin-network-information": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
-        "cordova-plugin-x-socialsharing": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
         "cordova-plugin-compat": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
@@ -194,6 +191,9 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.emby.mobile"
         }
     },
@@ -322,14 +322,6 @@
             "pluginId": "cordova-plugin-network-information",
             "clobbers": [
                 "Connection"
-            ]
-        },
-        {
-            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-            "id": "cordova-plugin-x-socialsharing.SocialSharing",
-            "pluginId": "cordova-plugin-x-socialsharing",
-            "clobbers": [
-                "window.plugins.socialsharing"
             ]
         },
         {
@@ -560,6 +552,14 @@
             "clobbers": [
                 "cordova.getAppVersion"
             ]
+        },
+        {
+            "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+            "id": "cordova-plugin-x-socialsharing.SocialSharing",
+            "pluginId": "cordova-plugin-x-socialsharing",
+            "clobbers": [
+                "window.plugins.socialsharing"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -578,7 +578,6 @@
         "fw-cordova-chromecast": "0.0.1",
         "cordova-plugin-device": "1.1.0",
         "cordova-plugin-network-information": "1.1.0",
-        "cordova-plugin-x-socialsharing": "5.0.12",
         "cordova-plugin-compat": "1.0.0",
         "cordova-plugin-file": "4.2.0",
         "cordova-plugin-file-transfer": "1.5.1",
@@ -586,6 +585,7 @@
         "com.rd11.remote-controls": "1.0.1",
         "cc.fovea.cordova.purchase": "6.0.0",
         "cordova-plugin-crosswalk-webview": "2.0.0",
-        "cordova-plugin-app-version": "0.1.9"
+        "cordova-plugin-app-version": "0.1.9",
+        "cordova-plugin-x-socialsharing": "5.1.3"
     }
 }
