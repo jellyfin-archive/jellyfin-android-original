@@ -39,6 +39,8 @@ import android.net.Uri;
 import android.content.Context;
 import android.content.Intent;
 
+import java.nio.charset.Charset;
+
 public class LocalFilesystem extends Filesystem {
     private final Context context;
 
@@ -384,7 +386,7 @@ public class LocalFilesystem extends Filesystem {
         if (isBinary) {
             rawData = Base64.decode(data, Base64.DEFAULT);
         } else {
-            rawData = data.getBytes();
+            rawData = data.getBytes(Charset.defaultCharset());
         }
         ByteArrayInputStream in = new ByteArrayInputStream(rawData);
         try
@@ -408,6 +410,7 @@ public class LocalFilesystem extends Filesystem {
         {
             // This is a bug in the Android implementation of the Java Stack
             NoModificationAllowedException realException = new NoModificationAllowedException(inputURL.toString());
+            realException.initCause(e);
             throw realException;
         }
 

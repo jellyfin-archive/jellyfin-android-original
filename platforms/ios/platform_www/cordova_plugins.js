@@ -93,14 +93,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-device/www/device.js",
-        "id": "cordova-plugin-device.device",
-        "pluginId": "cordova-plugin-device",
-        "clobbers": [
-            "device"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-network-information/www/network.js",
         "id": "cordova-plugin-network-information.network",
         "pluginId": "cordova-plugin-network-information",
@@ -115,6 +107,54 @@ module.exports = [
         "pluginId": "cordova-plugin-network-information",
         "clobbers": [
             "Connection"
+        ]
+    },
+    {
+        "file": "plugins/com.rd11.remote-controls/www/RemoteControls.js",
+        "id": "com.rd11.remote-controls.RemoteControls",
+        "pluginId": "com.rd11.remote-controls",
+        "clobbers": [
+            "window.remoteControls"
+        ]
+    },
+    {
+        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
+        "id": "cc.fovea.cordova.purchase.InAppPurchase",
+        "pluginId": "cc.fovea.cordova.purchase",
+        "clobbers": [
+            "store"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
+        "id": "cordova-plugin-app-version.AppVersionPlugin",
+        "pluginId": "cordova-plugin-app-version",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
+        "id": "cordova-plugin-x-socialsharing.SocialSharing",
+        "pluginId": "cordova-plugin-x-socialsharing",
+        "clobbers": [
+            "window.plugins.socialsharing"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-actionsheet/www/ActionSheet.js",
+        "id": "cordova-plugin-actionsheet.ActionSheet",
+        "pluginId": "cordova-plugin-actionsheet",
+        "clobbers": [
+            "window.plugins.actionsheet"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-device/www/device.js",
+        "id": "cordova-plugin-device.device",
+        "pluginId": "cordova-plugin-device",
+        "clobbers": [
+            "device"
         ]
     },
     {
@@ -321,46 +361,6 @@ module.exports = [
         "clobbers": [
             "window.Media"
         ]
-    },
-    {
-        "file": "plugins/com.rd11.remote-controls/www/RemoteControls.js",
-        "id": "com.rd11.remote-controls.RemoteControls",
-        "pluginId": "com.rd11.remote-controls",
-        "clobbers": [
-            "window.remoteControls"
-        ]
-    },
-    {
-        "file": "plugins/cc.fovea.cordova.purchase/www/store-ios.js",
-        "id": "cc.fovea.cordova.purchase.InAppPurchase",
-        "pluginId": "cc.fovea.cordova.purchase",
-        "clobbers": [
-            "store"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
-        "id": "cordova-plugin-app-version.AppVersionPlugin",
-        "pluginId": "cordova-plugin-app-version",
-        "clobbers": [
-            "cordova.getAppVersion"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "pluginId": "cordova-plugin-x-socialsharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-actionsheet/www/ActionSheet.js",
-        "id": "cordova-plugin-actionsheet.ActionSheet",
-        "pluginId": "cordova-plugin-actionsheet",
-        "clobbers": [
-            "window.plugins.actionsheet"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -378,18 +378,18 @@ module.exports.metadata =
     "cordova-plugin-chrome-apps-sockets-udp": "1.2.2",
     "cordova-plugin-statusbar": "2.0.0",
     "fw-cordova-chromecast": "0.0.1",
-    "cordova-plugin-device": "1.1.0",
     "cordova-plugin-network-information": "1.1.0",
-    "cordova-plugin-compat": "1.0.0",
-    "cordova-plugin-file": "4.2.0",
-    "cordova-plugin-file-transfer": "1.5.1",
-    "cordova-plugin-media": "2.3.0",
     "com.rd11.remote-controls": "1.0.1",
     "cc.fovea.cordova.purchase": "6.0.0",
     "cordova-plugin-crosswalk-webview": "2.0.0",
     "cordova-plugin-app-version": "0.1.9",
     "cordova-plugin-x-socialsharing": "5.1.3",
-    "cordova-plugin-actionsheet": "2.3.1"
+    "cordova-plugin-actionsheet": "2.3.1",
+    "cordova-plugin-device": "1.1.3",
+    "cordova-plugin-compat": "1.0.0",
+    "cordova-plugin-file": "4.3.0",
+    "cordova-plugin-file-transfer": "1.6.0",
+    "cordova-plugin-media": "2.4.0"
 }
 // BOTTOM OF METADATA
 });
