@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="20000787" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.87" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="20000789" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.89" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Emby</name>
     <description>
     Emby Mobile
