@@ -47,10 +47,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"AppVersion\"><param name=\"ios-package\" value=\"AppVersion\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"WKWebViewPolyfill\"><param name=\"ios-package\" value=\"WKWebViewPolyfill\" /></feature>",
                             "count": 1
                         },
@@ -101,6 +97,10 @@
                         {
                             "xml": "<feature name=\"InAppPurchase\"><param name=\"ios-package\" value=\"InAppPurchase\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"AppVersion\"><param name=\"ios-package\" value=\"AppVersion\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -143,9 +143,6 @@
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "org.apache.cordova.background-download": {
-            "PACKAGE_NAME": "com.emby.mobile"
-        },
-        "uk.co.whiteoctober.cordova.appversion": {
             "PACKAGE_NAME": "com.emby.mobile"
         },
         "com.telerik.plugins.wkwebview": {
@@ -195,6 +192,9 @@
         },
         "cordova-plugin-crosswalk-webview": {
             "PACKAGE_NAME": "com.emby.mobile"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "com.emby.mobile"
         }
     },
     "dependent_plugins": {},
@@ -242,14 +242,6 @@
             "pluginId": "org.apache.cordova.background-download",
             "clobbers": [
                 "DownloadOperation"
-            ]
-        },
-        {
-            "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
-            "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
-            "pluginId": "uk.co.whiteoctober.cordova.appversion",
-            "clobbers": [
-                "cordova.getAppVersion"
             ]
         },
         {
@@ -560,6 +552,14 @@
             "clobbers": [
                 "store"
             ]
+        },
+        {
+            "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
+            "id": "cordova-plugin-app-version.AppVersionPlugin",
+            "pluginId": "cordova-plugin-app-version",
+            "clobbers": [
+                "cordova.getAppVersion"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -570,7 +570,6 @@
         "cordova-plugin-webserver": "1.0.3",
         "com.drifty.cordova.cameraroll": "0.2.1",
         "org.apache.cordova.background-download": "0.0.2",
-        "uk.co.whiteoctober.cordova.appversion": "0.1.7",
         "com.telerik.plugins.wkwebview": "0.6.3",
         "cordova-plugin-chrome-apps-common": "1.0.7",
         "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
@@ -586,6 +585,7 @@
         "cordova-plugin-media": "2.3.0",
         "com.rd11.remote-controls": "1.0.1",
         "cc.fovea.cordova.purchase": "6.0.0",
-        "cordova-plugin-crosswalk-webview": "2.0.0"
+        "cordova-plugin-crosswalk-webview": "2.0.0",
+        "cordova-plugin-app-version": "0.1.9"
     }
 }

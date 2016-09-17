@@ -46,14 +46,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
-        "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
-        "pluginId": "uk.co.whiteoctober.cordova.appversion",
-        "clobbers": [
-            "cordova.getAppVersion"
-        ]
-    },
-    {
         "file": "plugins/com.telerik.plugins.wkwebview/www/wkwebview.js",
         "id": "com.telerik.plugins.wkwebview.wkwebview",
         "pluginId": "com.telerik.plugins.wkwebview",
@@ -361,6 +353,14 @@ module.exports = [
         "clobbers": [
             "store"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
+        "id": "cordova-plugin-app-version.AppVersionPlugin",
+        "pluginId": "cordova-plugin-app-version",
+        "clobbers": [
+            "cordova.getAppVersion"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -373,7 +373,6 @@ module.exports.metadata =
     "cordova-plugin-webserver": "1.0.3",
     "com.drifty.cordova.cameraroll": "0.2.1",
     "org.apache.cordova.background-download": "0.0.2",
-    "uk.co.whiteoctober.cordova.appversion": "0.1.7",
     "com.telerik.plugins.wkwebview": "0.6.3",
     "cordova-plugin-chrome-apps-common": "1.0.7",
     "cordova-plugin-chrome-apps-iossocketscommon": "1.0.2",
@@ -389,7 +388,8 @@ module.exports.metadata =
     "cordova-plugin-media": "2.3.0",
     "com.rd11.remote-controls": "1.0.1",
     "cc.fovea.cordova.purchase": "6.0.0",
-    "cordova-plugin-crosswalk-webview": "2.0.0"
+    "cordova-plugin-crosswalk-webview": "2.0.0",
+    "cordova-plugin-app-version": "0.1.9"
 }
 // BOTTOM OF METADATA
 });

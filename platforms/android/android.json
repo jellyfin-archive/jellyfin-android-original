@@ -23,10 +23,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"AppVersion\"><param name=\"android-package\" value=\"uk.co.whiteoctober.cordova.AppVersion\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"InAppBillingPlugin\"><param name=\"android-package\" value=\"com.smartmobilesoftware.inappbilling.InAppBillingPlugin\" /></feature>",
                             "count": 1
                         },
@@ -88,6 +84,10 @@
                         },
                         {
                             "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"AppVersion\"><param name=\"android-package\" value=\"uk.co.whiteoctober.cordova.AppVersion\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -166,9 +166,6 @@
         "com.drifty.cordova.cameraroll": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "uk.co.whiteoctober.cordova.appversion": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "com.telerik.plugins.wkwebview": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -212,6 +209,9 @@
             "XWALK_MODE": "embedded",
             "XWALK_MULTIPLEAPK": "true",
             "PACKAGE_NAME": "com.mb.android"
+        },
+        "cordova-plugin-app-version": {
+            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {},
@@ -254,13 +254,6 @@
             "id": "com.drifty.cordova.cameraroll.CameraRoll",
             "clobbers": [
                 "CameraRoll"
-            ]
-        },
-        {
-            "file": "plugins/uk.co.whiteoctober.cordova.appversion/www/AppVersionPlugin.js",
-            "id": "uk.co.whiteoctober.cordova.appversion.AppVersionPlugin",
-            "clobbers": [
-                "cordova.getAppVersion"
             ]
         },
         {
@@ -499,6 +492,14 @@
             "clobbers": [
                 "window.Media"
             ]
+        },
+        {
+            "id": "cordova-plugin-app-version.AppVersionPlugin",
+            "file": "plugins/cordova-plugin-app-version/www/AppVersionPlugin.js",
+            "pluginId": "cordova-plugin-app-version",
+            "clobbers": [
+                "cordova.getAppVersion"
+            ]
         }
     ],
     "plugin_metadata": {
@@ -507,6 +508,7 @@
         "cordova-plugin-file": "4.2.0",
         "cordova-plugin-file-transfer": "1.5.1",
         "cordova-plugin-media": "2.3.0",
-        "cordova-plugin-crosswalk-webview": "2.0.0"
+        "cordova-plugin-crosswalk-webview": "2.0.0",
+        "cordova-plugin-app-version": "0.1.9"
     }
 }
