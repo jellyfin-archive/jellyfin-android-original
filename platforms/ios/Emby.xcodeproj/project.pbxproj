@@ -104,7 +104,6 @@
 		E0C10C6B3E8A47CBA2EBD253 /* RemoteControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 5016B0BD5FED4DF4B26546DD /* RemoteControls.m */; };
 		E6D56FF12D1741EAB97B6CD1 /* ChromeSocketsUdp.m in Sources */ = {isa = PBXBuildFile; fileRef = AB595525E9D34A8290EC4DCC /* ChromeSocketsUdp.m */; };
 		ED4C68483A2D4445A65B47F9 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78C9A2390BFF4C4D9050DB93 /* OpenGLES.framework */; };
-		EFA1E7345A1442C6860324F5 /* CDVBackgroundColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 293FBA41653A4475BD17BD45 /* CDVBackgroundColor.m */; };
 		F2108806943F41EA8774FDFC /* CDVStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 880C43A564BB4F8299A4E04F /* CDVStatusBar.m */; };
 		F8002EF797EA4200A619F27E /* BackgroundDownload.m in Sources */ = {isa = PBXBuildFile; fileRef = 3919BA32D920484AB566C454 /* BackgroundDownload.m */; };
 /* End PBXBuildFile section */
@@ -141,7 +140,6 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		289911663402421B8083F577 /* libc++.tbd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = unknown; path = "libc++.tbd"; sourceTree = "<group>"; };
 		292F0237A6F044E680CB4D67 /* ActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ActionSheet.h; path = "cordova-plugin-actionsheet/ActionSheet.h"; sourceTree = "<group>"; };
-		293FBA41653A4475BD17BD45 /* CDVBackgroundColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVBackgroundColor.m; path = "com.crewmeister.cordova-ios-backgroundcolor/CDVBackgroundColor.m"; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		300FA2ACCDF842CBABBC8245 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncUdpSocket.h; path = "cordova-plugin-chrome-apps-iossocketscommon/GCDAsyncUdpSocket.h"; sourceTree = "<group>"; };
 		301BF52D109A57CC0062928A /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
@@ -187,7 +185,6 @@
 		586738DE99B1459E99C9589F /* CDVLocalFilesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVLocalFilesystem.h; path = "cordova-plugin-file/CDVLocalFilesystem.h"; sourceTree = "<group>"; };
 		5B1594DC16A7569C00FEF299 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		605ADD74614449D6B701A998 /* CDVLocalFilesystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDVLocalFilesystem.m; path = "cordova-plugin-file/CDVLocalFilesystem.m"; sourceTree = "<group>"; };
-		6254F4E53A9645AB94A9C1B7 /* CDVBackgroundColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDVBackgroundColor.h; path = "com.crewmeister.cordova-ios-backgroundcolor/CDVBackgroundColor.h"; sourceTree = "<group>"; };
 		65CC08ADAE2F4CA894C2C936 /* IonicCameraRoll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IonicCameraRoll.h; path = com.drifty.cordova.cameraroll/IonicCameraRoll.h; sourceTree = "<group>"; };
 		6914D98F38D5474CAF37A79A /* AppVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppVersion.h; path = "cordova-plugin-app-version/AppVersion.h"; sourceTree = "<group>"; };
 		6AAFD15D090B49A9A0331AB7 /* BackgroundAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BackgroundAudio.h; path = "nl.x-services.plugins.backgroundaudio/BackgroundAudio.h"; sourceTree = "<group>"; };
@@ -434,8 +431,6 @@
 		307C750510C5A3420062BCA9 /* Plugins */ = {
 			isa = PBXGroup;
 			children = (
-				293FBA41653A4475BD17BD45 /* CDVBackgroundColor.m */,
-				6254F4E53A9645AB94A9C1B7 /* CDVBackgroundColor.h */,
 				A3C30B071CAEEF4300DB4916 /* DeviceTextChannel.h */,
 				A3C30B081CAEEF4300DB4916 /* DeviceTextChannel.m */,
 				E8B0D7710AD54D1A93E25CC9 /* Launcher.m */,
@@ -588,7 +583,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 510;
+				LastUpgradeCheck = 800;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = WGKJRMCSGJ;
@@ -707,7 +702,6 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
-				EFA1E7345A1442C6860324F5 /* CDVBackgroundColor.m in Sources */,
 				8CB79D171E4848D6A69CAFFA /* Launcher.m in Sources */,
 				2A1BEEAC35414DDE90D2914F /* BackgroundAudio.m in Sources */,
 				549F66737C8F4BDBABD4002E /* IonicCameraRoll.m in Sources */,
@@ -761,7 +755,7 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -777,17 +771,23 @@
 					"$(PROJECT_DIR)/Emby/Plugins/cordova-plugin-webserver",
 					"/Users/luke/MediaBrowser.Mobile/plugins/cordova-plugin-webserver/src/ios",
 					"Emby/Plugins/cordova-plugin-webserver",
-					"/Users/luke/Connect-SDK-iOS-1.4",
-					/Users/luke/MediaBrowser.Mobile/plugins/org.nypr.cordova.vlcplugin/VLCKit/build,
 					"\"EmbyPluginscordova-plugin-webserver\"",
 					"\"EmbyPlugins\fw-cordova-chromecast\"",
+					"/Users/luke/Connect-SDK-iOS-1.4",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Emby/Emby-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = (
+					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
+					"\"$(OBJROOT)/UninstalledProducts/include\"",
+					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include\"",
+				);
 				INFOPLIST_FILE = "Emby/Emby-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LIBRARY_SEARCH_PATHS = (
@@ -808,6 +808,7 @@
 					"-lz",
 					"$(inherited)",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.emby.mobile;
 				PRODUCT_NAME = Emby;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -817,7 +818,7 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -833,15 +834,21 @@
 					"$(PROJECT_DIR)/Emby/Plugins/cordova-plugin-webserver",
 					"/Users/luke/MediaBrowser.Mobile/plugins/cordova-plugin-webserver/src/ios",
 					"Emby/Plugins/cordova-plugin-webserver",
-					"/Users/luke/Connect-SDK-iOS-1.4",
-					/Users/luke/MediaBrowser.Mobile/plugins/org.nypr.cordova.vlcplugin/VLCKit/build,
 					"\"EmbyPluginscordova-plugin-webserver\"",
 					"\"EmbyPlugins\fw-cordova-chromecast\"",
+					"/Users/luke/Connect-SDK-iOS-1.4",
 				);
+				GCC_NO_COMMON_BLOCKS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Emby/Emby-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = (
+					"\"$(TARGET_BUILD_DIR)/usr/local/lib/include\"",
+					"\"$(OBJROOT)/UninstalledProducts/include\"",
+					"\"$(BUILT_PRODUCTS_DIR)\"",
+					"\"$(OBJROOT)/UninstalledProducts/$(PLATFORM_NAME)/include\"",
+				);
 				INFOPLIST_FILE = "Emby/Emby-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LIBRARY_SEARCH_PATHS = (
@@ -862,6 +869,7 @@
 					"-lz",
 					"$(inherited)",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.emby.mobile;
 				PRODUCT_NAME = Emby;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -871,17 +879,25 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_NO_COMMON_BLOCKS = NO;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
@@ -915,17 +931,24 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_STRICT_OBJC_MSGSEND = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_NO_COMMON_BLOCKS = NO;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;

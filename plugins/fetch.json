@@ -15,15 +15,6 @@
         "is_top_level": false,
         "variables": {}
     },
-    "com.crewmeister.cordova-ios-backgroundcolor": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/crewmeister/cordova.ios-backgroundcolor",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "org.apache.cordova.device": {
         "source": {
             "type": "registry",
