@@ -55,5 +55,9 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Emby would like to be able to discover other devices on your network for media control.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Emby would like to access the microphone for voice remote control.</string>
 </dict>
 </plist>
