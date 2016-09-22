@@ -482,13 +482,18 @@ var Dashboard = {
             icon: 'play_circle_filled',
             color: '#E5342E',
             href: "cinemamodeconfiguration.html",
-            pageIds: ['cinemaModeConfigurationPage', 'playbackConfigurationPage', 'streamingSettingsPage', 'encodingSettingsPage']
+            pageIds: ['cinemaModeConfigurationPage', 'playbackConfigurationPage', 'streamingSettingsPage']
         }, {
             name: Globalize.translate('TabSync'),
             icon: 'sync',
             href: "syncactivity.html",
             pageIds: ['syncActivityPage', 'syncJobPage', 'devicesUploadPage', 'syncSettingsPage'],
             color: '#009688'
+        }, {
+            name: Globalize.translate('TabTranscoding'),
+            icon: 'transform',
+            href: "encodingsettings.html",
+            pageIds: ['encodingSettingsPage']
         }, {
             divider: true,
             name: Globalize.translate('TabExtras')
@@ -670,7 +675,7 @@ var Dashboard = {
         });
     },
 
-    getDeviceProfile: function (maxHeight) {
+    getDeviceProfile: function (maxHeight, profileOptions) {
 
         return new Promise(function (resolve, reject) {
 
@@ -838,9 +843,9 @@ var Dashboard = {
                     supportsCustomSeeking = true;
                 }
 
-                var profile = profileBuilder({
+                var profile = profileBuilder(Object.assign(profileOptions || {}, {
                     supportsCustomSeeking: supportsCustomSeeking
-                });
+                }));
 
                 if (!(AppInfo.isNativeApp && browserInfo.android) && !browserInfo.edge && !browserInfo.msie) {
                     // libjass not working here
@@ -1234,6 +1239,9 @@ var AppInfo = {};
         define("playlistEditor", [embyWebComponentsBowerPath + "/playlisteditor/playlisteditor"], returnFirstDependency);
         define("recordingCreator", [embyWebComponentsBowerPath + "/recordingcreator/recordingcreator"], returnFirstDependency);
         define("recordingEditor", [embyWebComponentsBowerPath + "/recordingcreator/recordingeditor"], returnFirstDependency);
+        define("seriesRecordingEditor", [embyWebComponentsBowerPath + "/recordingcreator/seriesrecordingeditor"], returnFirstDependency);
+        define("recordingFields", [embyWebComponentsBowerPath + "/recordingcreator/recordingfields"], returnFirstDependency);
+        define("recordingHelper", [embyWebComponentsBowerPath + "/recordingcreator/recordinghelper"], returnFirstDependency);
         define("subtitleEditor", [embyWebComponentsBowerPath + "/subtitleeditor/subtitleeditor"], returnFirstDependency);
         define("itemIdentifier", [embyWebComponentsBowerPath + "/itemidentifier/itemidentifier"], returnFirstDependency);
         define("mediaInfo", [embyWebComponentsBowerPath + "/mediainfo/mediainfo"], returnFirstDependency);

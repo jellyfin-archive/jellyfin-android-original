@@ -215,7 +215,7 @@
             return connectUser;
         };
 
-        var minServerVersion = '3.0.5972';
+        var minServerVersion = '3.0.5980';
         self.minServerVersion = function (val) {
 
             if (val) {
@@ -448,12 +448,9 @@
             }
 
             if (options.enableWebSocket !== false) {
-                if (!apiClient.isWebSocketOpenOrConnecting() && apiClient.isWebSocketSupported()) {
+                console.log('calling apiClient.ensureWebSocket');
 
-                    console.log('calling apiClient.openWebSocket');
-
-                    apiClient.openWebSocket();
-                }
+                apiClient.ensureWebSocket();
             }
         }
 
