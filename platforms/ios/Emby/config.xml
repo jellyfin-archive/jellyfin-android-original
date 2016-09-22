@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="20000789" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.89" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="20000790" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.90" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -18,10 +18,6 @@
     </feature>
     <feature name="ChromeSocketsUdp">
         <param name="ios-package" value="ChromeSocketsUdp" />
-    </feature>
-    <feature name="BackgroundColor">
-        <param name="ios-package" value="CDVBackgroundColor" />
-        <param name="onload" value="true" />
     </feature>
     <feature name="Launcher">
         <param name="ios-package" value="Launcher" />

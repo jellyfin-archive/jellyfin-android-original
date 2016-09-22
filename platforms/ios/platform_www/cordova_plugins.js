@@ -366,7 +366,6 @@ module.exports = [
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "com.crewmeister.cordova-ios-backgroundcolor": "0.0.1",
     "com.hutchind.cordova.plugins.launcher": "0.2.2",
     "nl.x-services.plugins.backgroundaudio": "1.0.1",
     "cordova-plugin-webserver": "1.0.3",

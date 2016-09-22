@@ -327,6 +327,6 @@ module.exports.metadata =
     "cordova-plugin-file": "4.3.0",
     "cordova-plugin-file-transfer": "1.6.0",
     "cordova-plugin-media": "2.4.0"
-};
+}
 // BOTTOM OF METADATA
 });

@@ -141,9 +141,6 @@
         }
     },
     "installed_plugins": {
-        "com.crewmeister.cordova-ios-backgroundcolor": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-chrome-apps-common": {
             "PACKAGE_NAME": "com.mb.android"
         },
