@@ -4,10 +4,13 @@
     padding: 0;
     border: none;
     max-height: 84%;
+    border-radius: 1px !important;
+    box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14), 0 6px 30px 5px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.4);
 }
 
 .actionsheet-fullscreen {
     max-height: none;
+    border-radius: 0 !important;
 }
 
 .actionSheetContent-centered {
