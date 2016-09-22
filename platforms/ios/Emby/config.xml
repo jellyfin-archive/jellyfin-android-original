@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="20000762" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.62" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="20000789" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.7.89" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <preference name="AllowInlineMediaPlayback" value="false" />
     <preference name="BackupWebStorage" value="cloud" />
     <preference name="DisallowOverscroll" value="false" />
@@ -26,9 +26,6 @@
     <feature name="Launcher">
         <param name="ios-package" value="Launcher" />
     </feature>
-    <feature name="ActionSheet">
-        <param name="ios-package" value="ActionSheet" />
-    </feature>
     <feature name="BackgroundAudio">
         <param name="ios-package" value="BackgroundAudio" />
         <param name="onload" value="true" />
@@ -38,9 +35,6 @@
     </feature>
     <feature name="BackgroundDownload">
         <param name="ios-package" value="BackgroundDownload" />
-    </feature>
-    <feature name="AppVersion">
-        <param name="ios-package" value="AppVersion" />
     </feature>
     <feature name="WKWebViewPolyfill">
         <param name="ios-package" value="WKWebViewPolyfill" />
@@ -54,15 +48,27 @@
     <feature name="FWChromecast">
         <param name="ios-package" value="FWChromecast" />
     </feature>
-    <feature name="Device">
-        <param name="ios-package" value="CDVDevice" />
-    </feature>
     <feature name="NetworkStatus">
         <param name="ios-package" value="CDVConnection" />
+    </feature>
+    <feature name="RemoteControls">
+        <param name="ios-package" value="RemoteControls" />
+    </feature>
+    <feature name="InAppPurchase">
+        <param name="ios-package" value="InAppPurchase" />
+    </feature>
+    <feature name="AppVersion">
+        <param name="ios-package" value="AppVersion" />
     </feature>
     <feature name="SocialSharing">
         <param name="ios-package" value="SocialSharing" />
         <param name="onload" value="true" />
+    </feature>
+    <feature name="ActionSheet">
+        <param name="ios-package" value="ActionSheet" />
+    </feature>
+    <feature name="Device">
+        <param name="ios-package" value="CDVDevice" />
     </feature>
     <feature name="File">
         <param name="ios-package" value="CDVFile" />
@@ -73,12 +79,6 @@
     </feature>
     <feature name="Media">
         <param name="ios-package" value="CDVSound" />
-    </feature>
-    <feature name="RemoteControls">
-        <param name="ios-package" value="RemoteControls" />
-    </feature>
-    <feature name="InAppPurchase">
-        <param name="ios-package" value="InAppPurchase" />
     </feature>
     <icon height="180" src="res/ios/icon-60@3x.png" width="180" />
     <icon height="60" src="res/ios/icon-60.png" width="60" />
@@ -115,6 +115,7 @@
     <preference name="StatusBarStyle" value="blacktranslucent" />
     <preference name="SplashScreenBackgroundColor" value="#1c1c1c" />
     <preference name="BackgroundColor" value="0xff000000" />
+    <preference name="DisableLocalStorageSyncWithUIWebView" value="true" />
     <name>Emby</name>
     <description>
     Emby Mobile
@@ -141,5 +142,6 @@
     <preference name="windows-target-version" value="10.0" />
     <preference name="windows-phone-target-version" value="10.0" />
     <icon src="res/icon.png" />
-    <preference name="xwalkUserAgent" value="android crosswalk/20 Chrome/50 Mobile Safari/537.36" />
+    <preference name="xwalkVersion" value="21+" />
+    <preference name="xwalkUserAgent" value="android crosswalk/21 Chrome/51 Mobile Safari/537.36" />
 </widget>
