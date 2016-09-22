@@ -209,16 +209,20 @@
 
         if (isChecked) {
             if (!this.TimerId && !this.SeriesTimerId) {
+                loading.show();
                 recordingHelper.createRecording(apiClient, options.programId, false).then(function () {
                     events.trigger(self, 'recordingchanged');
                     fetchData(self);
+                    loading.hide();
                 });
             }
         } else {
             if (this.TimerId) {
+                loading.show();
                 recordingHelper.cancelTimer(apiClient, this.TimerId, true).then(function () {
                     events.trigger(self, 'recordingchanged');
                     fetchData(self);
+                    loading.hide();
                 });
             }
         }
