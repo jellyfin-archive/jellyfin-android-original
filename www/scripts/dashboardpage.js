@@ -1,4 +1,4 @@
-﻿define(['datetime', 'jQuery', 'dom', 'cardStyle'], function (datetime, $, dom) {
+﻿define(['datetime', 'jQuery', 'dom', 'cardStyle', 'listViewStyle'], function (datetime, $, dom) {
 
     function renderNoHealthAlertsMessage(page) {
 
@@ -31,7 +31,8 @@
             prompt({
                 label: Globalize.translate('LabelFriendlyServerName'),
                 description: Globalize.translate('LabelFriendlyServerNameHelp'),
-                value: page.querySelector('.serverNameHeader').innerHTML
+                value: page.querySelector('.serverNameHeader').innerHTML,
+                submitText: Globalize.translate('ButtonSave')
 
             }).then(function (value) {
 
@@ -985,7 +986,7 @@
 
                     html += '<p><strong>' + Globalize.translate('NewVersionOfSomethingAvailable').replace('{0}', update.name) + '</strong></p>';
 
-                    html += '<button type="button" data-icon="arrow-d" data-theme="b" onclick="DashboardPage.installPluginUpdate(this);" data-name="' + update.name + '" data-guid="' + update.guid + '" data-version="' + update.versionStr + '" data-classification="' + update.classification + '">' + Globalize.translate('ButtonUpdateNow') + '</button>';
+                    html += '<button type="button" is="emby-button" class="raised block" onclick="DashboardPage.installPluginUpdate(this);" data-name="' + update.name + '" data-guid="' + update.guid + '" data-version="' + update.versionStr + '" data-classification="' + update.classification + '">' + Globalize.translate('ButtonUpdateNow') + '</button>';
                 }
 
                 elem.html(html);
