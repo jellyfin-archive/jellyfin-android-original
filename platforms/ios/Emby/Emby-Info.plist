@@ -23,7 +23,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2.3</string>
+	<string>1.2.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
@@ -35,6 +35,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Emby would like to be able to discover other devices on your network for media control.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Emby would like to access the microphone for voice remote control.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -55,9 +59,5 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Emby would like to be able to discover other devices on your network for media control.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Emby would like to access the microphone for voice remote control.</string>
 </dict>
 </plist>
