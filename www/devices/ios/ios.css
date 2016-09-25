@@ -28,7 +28,7 @@ body:not(.dashboardDocument) .mainDrawerButton {
     height: 50px;
 }
 
-.viewMenuBar, .ui-body-b .libraryViewNav {
+/*.viewMenuBar, .ui-body-b .libraryViewNav {
     background: rgba(34,35,38,.90);
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
@@ -36,9 +36,7 @@ body:not(.dashboardDocument) .mainDrawerButton {
 
     .viewMenuBar.semiTransparent {
         background-color: rgba(15, 15, 15, .3);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
+    }*/
 
 .emby-tab-button {
     font-weight: 400;
@@ -68,7 +66,7 @@ h1, h1 a {
 }
 
 .cardImageContainer {
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 .noSecondaryNavPage .itemBackdrop {
@@ -81,10 +79,6 @@ h1, h1 a {
 
 .videoSubtitles {
     font-size: 200% !important;
-}
-
-.alphabetPicker {
-    right: 5px !important;
 }
 
 .txtSearch {
