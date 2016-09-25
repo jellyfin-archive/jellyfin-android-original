@@ -2263,7 +2263,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/mypreferenceshome.html',
-            dependencies: ['emby-checkbox', 'emby-button'],
+            dependencies: ['emby-checkbox', 'emby-button', 'emby-select'],
             autoFocus: false,
             transition: 'fade',
             controller: 'scripts/mypreferenceshome'
@@ -2271,7 +2271,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/mypreferenceslanguages.html',
-            dependencies: ['emby-button', 'emby-checkbox'],
+            dependencies: ['emby-button', 'emby-checkbox', 'emby-select'],
             autoFocus: false,
             transition: 'fade',
             controller: 'scripts/mypreferenceslanguages'
