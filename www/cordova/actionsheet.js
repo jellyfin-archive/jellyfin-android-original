@@ -1,4 +1,4 @@
-﻿define(['browser'], function (browser) {
+﻿define(['browser', 'dom'], function (browser, dom) {
 
     function getOffsets(elems) {
 
