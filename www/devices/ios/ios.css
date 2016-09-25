@@ -28,6 +28,18 @@ body:not(.dashboardDocument) .mainDrawerButton {
     height: 50px;
 }
 
+.viewMenuBar, .ui-body-b .libraryViewNav {
+    background: rgba(34,35,38,.90);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+    .viewMenuBar.semiTransparent {
+        background-color: rgba(15, 15, 15, .3);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
 .emby-tab-button {
     font-weight: 400;
     text-transform: none !important;
@@ -90,7 +102,7 @@ h1, h1 a {
 }
 
 .dialog.background-theme-b {
-    background: rgba(28,28,28,.92);
+    background: rgba(28,28,28,.88);
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
 }
