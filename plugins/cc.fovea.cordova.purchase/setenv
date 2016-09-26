@@ -1,4 +1,0 @@
-NODE_VERSION=v0.12.13
-nvm ls $NODE_VERSION || nvm install $NODE_VERSION
-nvm use $NODE_VERSION
-export PATH="$(pwd)/../node_modules/.bin:$PATH"
