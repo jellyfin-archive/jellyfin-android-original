@@ -99,13 +99,13 @@ define(['css!./indicators.css', 'material-icons'], function () {
     function getTimerIndicator(item) {
 
         if (item.SeriesTimerId) {
-            if (item.TimerId) {
+            if (item.TimerId || item.Type == 'Timer') {
                 return '<i class="md-icon timerIndicator indicatorIcon">&#xE062;</i>';
             } else {
                 return '<i class="md-icon timerIndicator timerIndicator-inactive indicatorIcon">&#xE062;</i>';
             }
         }
-        else if (item.TimerId) {
+        else if (item.TimerId || item.Type == 'Timer') {
             return '<i class="md-icon timerIndicator indicatorIcon">&#xE061;</i>';
         }
 

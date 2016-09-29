@@ -1,1 +1,37 @@
-<div id="metadataConfigurationPage" data-role="page" class="page type-interior metadataConfigurationPage withTabs" data-require="scripts/metadataconfigurationpage,emby-checkbox,emby-button,emby-select"><div data-role="content"><div class="content-primary"><form class="metadataConfigurationForm"><div class="checkboxContainer checkboxContainer-withDescription"><label> <input is="emby-checkbox" type="checkbox" id="chkEnableInternetProviders"> <span>${LabelDownloadInternetMetadata}</span> </label><div class="fieldDescription checkboxFieldDescription">${LabelDownloadInternetMetadataHelp}</div></div><div class="checkboxContainer checkboxContainer-withDescription"><label> <input is="emby-checkbox" type="checkbox" id="chkSaveLocal"> <span>${LabelSaveLocalMetadata}</span> </label><div class="fieldDescription checkboxFieldDescription">${LabelSaveLocalMetadataHelp}</div></div><div class="selectContainer"><select is="emby-select" id="selectLanguage" label="${LabelMetadataDownloadLanguage}" required></select></div><div class="selectContainer"><select is="emby-select" id="selectCountry" label="${LabelCountry}" required></select></div><br><div><button is="emby-button" type="submit" class="raised button-submit block"><span>${ButtonSave}</span></button></div></form></div></div></div>
+﻿<div id="metadataConfigurationPage" data-role="page" class="page type-interior metadataConfigurationPage withTabs" data-require="scripts/metadataconfigurationpage,emby-checkbox,emby-button,emby-select">
+
+    <div data-role="content">
+
+        <div class="content-primary">
+
+            <form class="metadataConfigurationForm">
+
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkEnableInternetProviders" />
+                        <span>${LabelDownloadInternetMetadata}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${LabelDownloadInternetMetadataHelp}</div>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label>
+                        <input is="emby-checkbox" type="checkbox" id="chkSaveLocal" />
+                        <span>${LabelSaveLocalMetadata}</span>
+                    </label>
+                    <div class="fieldDescription checkboxFieldDescription">${LabelSaveLocalMetadataHelp}</div>
+                </div>
+                <div class="selectContainer">
+                    <select is="emby-select" id="selectLanguage" label="${LabelMetadataDownloadLanguage}" required="required"></select>
+                </div>
+                <div class="selectContainer">
+                    <select is="emby-select" id="selectCountry" label="${LabelCountry}" required="required"></select>
+                </div>
+                <br />
+                <div>
+                    <button is="emby-button" type="submit" class="raised button-submit block"><span>${ButtonSave}</span></button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
