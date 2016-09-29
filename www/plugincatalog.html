@@ -1,1 +1,28 @@
-<div id="pluginCatalogPage" data-role="page" class="page type-interior pluginConfigurationPage withTabs fullWidthContent" data-helpurl="https://github.com/MediaBrowser/Wiki/wiki/Plugins" data-require="scripts/plugincatalogpage,emby-checkbox,emby-select"><div data-role="content"><div class="content-primary"><div style="display:flex;align-items:center;justify-content:flex-end"><div class="selectContainer" style="margin:0"><select is="emby-select" id="selectSystem" label="${LabelDisplayPluginsFor}"><option value="Server">${TabServer}</option><option value="MBClassic">${PluginTabAppClassic}</option></select></div><div style="margin-left:2em" class="optionAdultContainer"><label style="width:auto"> <input type="checkbox" is="emby-checkbox" id="chkAdult"> <span>${OptionDisplayAdultContent}</span> </label></div></div><br> <br><div id="noPlugins" class="hide"><div style="text-align:center;margin:10px">${MessageNoAvailablePlugins}</div></div><div id="pluginTiles" style="text-align:left"></div></div></div></div>
+﻿<div id="pluginCatalogPage" data-role="page" class="page type-interior pluginConfigurationPage withTabs fullWidthContent" data-helpurl="https://github.com/MediaBrowser/Wiki/wiki/Plugins" data-require="scripts/plugincatalogpage,emby-checkbox,emby-select">
+    <div data-role="content">
+        <div class="content-primary">
+            <div style="display: flex;align-items:center; justify-content: flex-end;">
+                <div class="selectContainer" style="margin:0;">
+                    <select is="emby-select" id="selectSystem" label="${LabelDisplayPluginsFor}">
+                        <option value="Server">${TabServer}</option>
+                        <option value="MBClassic">${PluginTabAppClassic}</option>
+                    </select>
+                </div>
+                <div style="margin-left:2em;" class="optionAdultContainer">
+                    <label style="width:auto;">
+                        <input type="checkbox" is="emby-checkbox" id="chkAdult" />
+                        <span>${OptionDisplayAdultContent}</span>
+                    </label>
+                </div>
+            </div>
+
+            <br />
+            <br />
+            <div id="noPlugins" class="hide">
+                <div style="text-align: center; margin: 10px;">${MessageNoAvailablePlugins}</div>
+            </div>
+            <div id="pluginTiles" style="text-align:left;"></div>
+
+        </div>
+    </div>
+</div>

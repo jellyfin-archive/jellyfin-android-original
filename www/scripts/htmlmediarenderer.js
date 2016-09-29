@@ -195,7 +195,7 @@
                 }
 
                 // For now don't do this in edge because we lose some native audio support
-                if (browser.edge) {
+                if (browser.edge && browser.mobile) {
                     return false;
                 }
 

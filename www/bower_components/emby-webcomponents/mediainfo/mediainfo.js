@@ -42,7 +42,7 @@ define(['datetime', 'globalize', 'embyRouter', 'itemHelper', 'material-icons', '
 
         if (options.timerIndicator !== false) {
             if (item.SeriesTimerId) {
-                if (item.TimerId) {
+                if (item.TimerId || item.Type == 'Timer') {
                     miscInfo.push({
                         html: '<i class="md-icon mediaInfoItem mediaInfoTimerIcon mediaInfoIconItem">&#xE062;</i>'
                     });
@@ -190,7 +190,7 @@ define(['datetime', 'globalize', 'embyRouter', 'itemHelper', 'material-icons', '
                 miscInfo.push(itemHelper.getDisplayName(item));
             }
 
-            else if (item.PremiereDate) {
+            else if (item.PremiereDate && options.originalAirDate !== false) {
 
                 try {
                     date = datetime.parseISO8601Date(item.PremiereDate);

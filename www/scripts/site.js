@@ -1160,10 +1160,10 @@ var AppInfo = {};
             playlisteditor: 'components/playlisteditor/playlisteditor',
             medialibrarycreator: 'components/medialibrarycreator/medialibrarycreator',
             medialibraryeditor: 'components/medialibraryeditor/medialibraryeditor',
-            howler: bowerPath + '/howler.js/howler.min',
+            howler: bowerPath + '/howlerjs/howler.min',
             sortable: bowerPath + '/Sortable/Sortable.min',
             isMobile: bowerPath + '/isMobile/isMobile.min',
-            headroom: bowerPath + '/headroom.js/dist/headroom',
+            headroom: bowerPath + '/headroomjs/dist/headroom',
             masonry: bowerPath + '/masonry/dist/masonry.pkgd.min',
             humanedate: 'components/humanedate',
             libraryBrowser: 'scripts/librarybrowser',
@@ -1189,7 +1189,7 @@ var AppInfo = {};
             webAnimations: bowerPath + '/web-animations-js/web-animations-next-lite.min'
         };
 
-        paths.hlsjs = bowerPath + "/hls.js/dist/hls.min";
+        paths.hlsjs = bowerPath + "/hlsjs/dist/hls.min";
 
         if ((window.chrome && window.chrome.sockets) || Dashboard.isRunningInCordova()) {
             paths.serverdiscovery = apiClientBowerPath + "/serverdiscovery-chrome";
@@ -1263,6 +1263,7 @@ var AppInfo = {};
         define("tvguide", [embyWebComponentsBowerPath + "/guide/guide"], returnFirstDependency);
         define("programStyles", ['css!' + embyWebComponentsBowerPath + "/guide/programs"], returnFirstDependency);
         define("guide-settings-dialog", [embyWebComponentsBowerPath + "/guide/guide-settings"], returnFirstDependency);
+        define("guide-categories-dialog", [embyWebComponentsBowerPath + "/guide/guide-categories"], returnFirstDependency);
         define("syncDialog", [embyWebComponentsBowerPath + "/sync/sync"], returnFirstDependency);
         define("voiceDialog", [embyWebComponentsBowerPath + "/voice/voicedialog"], returnFirstDependency);
         define("voiceReceiver", [embyWebComponentsBowerPath + "/voice/voicereceiver"], returnFirstDependency);
@@ -1688,7 +1689,7 @@ var AppInfo = {};
             define("videorenderer", ["cordova/android/vlcplayer"]);
         }
         else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
-            define("audiorenderer", ["cordova/audioplayer"]);
+            define("audiorenderer", ["cordova/ios/audioplayer"]);
             define("videorenderer", ["scripts/htmlmediarenderer"]);
         }
         else {
@@ -2694,12 +2695,9 @@ var AppInfo = {};
                     postInitDependencies.push('cordova/android/mediasession');
                     postInitDependencies.push('cordova/android/chromecast');
 
-                } else {
-                    postInitDependencies.push('cordova/volume');
-                }
+                } else if (browserInfo.safari) {
 
-                if (browserInfo.safari) {
-
+                    postInitDependencies.push('cordova/ios/volume');
                     postInitDependencies.push('cordova/ios/chromecast');
                     postInitDependencies.push('cordova/ios/orientation');
                     postInitDependencies.push('cordova/ios/remotecontrols');
@@ -2717,8 +2715,8 @@ var AppInfo = {};
 
             // Prefer custom font over Segoe if on desktop windows
             if (!browserInfo.mobile && navigator.userAgent.toLowerCase().indexOf('windows') != -1) {
-                //postInitDependencies.push('opensansFont');
-                postInitDependencies.push('robotoFont');
+                postInitDependencies.push('opensansFont');
+                //postInitDependencies.push('robotoFont');
             }
 
             postInitDependencies.push('bower_components/emby-webcomponents/input/api');

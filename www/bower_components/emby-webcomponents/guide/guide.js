@@ -9,12 +9,24 @@
         });
     }
 
+    function showCategoryOptions(instance) {
+
+        require(['guide-categories-dialog'], function (guideCategoriesDialog) {
+            guideCategoriesDialog.show(instance.categoryOptions).then(function (categoryOptions) {
+
+                instance.categoryOptions = categoryOptions;
+                instance.refresh();
+            });
+        });
+    }
+
     function Guide(options) {
 
         var self = this;
         var items = {};
 
         self.options = options;
+        self.categoryOptions = { categories: [] };
 
         // 30 mins
         var cellCurationMinutes = 30;
@@ -25,14 +37,6 @@
         var currentDate;
         var currentStartIndex = 0;
         var currentChannelLimit = 0;
-
-        var channelQuery = {
-
-            StartIndex: 0,
-            EnableFavoriteSorting: true
-        };
-
-        var channelsPromise;
 
         self.refresh = function () {
 
@@ -151,6 +155,12 @@
 
             var apiClient = connectionManager.currentApiClient();
 
+            var channelQuery = {
+
+                StartIndex: 0,
+                EnableFavoriteSorting: true
+            };
+
             channelQuery.UserId = apiClient.getCurrentUserId();
 
             getChannelLimit(context).then(function (channelLimit) {
@@ -165,7 +175,36 @@
                 channelQuery.EnableUserData = false;
                 channelQuery.EnableImageTypes = "Primary";
 
-                channelsPromise = channelsPromise || apiClient.getLiveTvChannels(channelQuery);
+                var categories = self.categoryOptions.categories || [];
+                var displayMovieContent = !categories.length || categories.indexOf('movies') != -1;
+                var displaySportsContent = !categories.length || categories.indexOf('sports') != -1;
+                var displayNewsContent = !categories.length || categories.indexOf('news') != -1;
+                var displayKidsContent = !categories.length || categories.indexOf('kids') != -1;
+                var displaySeriesContent = !categories.length || categories.indexOf('series') != -1;
+
+                if (displayMovieContent && displaySportsContent && displayNewsContent && displayKidsContent) {
+                    channelQuery.IsMovie = null;
+                    channelQuery.IsSports = null;
+                    channelQuery.IsKids = null;
+                    channelQuery.IsNews = null;
+                    channelQuery.IsSeries = null;
+                } else {
+                    if (displayNewsContent) {
+                        channelQuery.IsNews = true;
+                    }
+                    if (displaySportsContent) {
+                        channelQuery.IsSports = true;
+                    }
+                    if (displayKidsContent) {
+                        channelQuery.IsKids = true;
+                    }
+                    if (displayMovieContent) {
+                        channelQuery.IsMovie = true;
+                    }
+                    if (displaySeriesContent) {
+                        channelQuery.IsSeries = true;
+                    }
+                }
 
                 var date = newStartDate;
                 // Add one second to avoid getting programs that are just ending
@@ -175,7 +214,7 @@
                 var nextDay = new Date(date.getTime() + msPerDay - 2000);
 
                 console.log(nextDay);
-                channelsPromise.then(function (channelsResult) {
+                apiClient.getLiveTvChannels(channelQuery).then(function (channelsResult) {
 
                     var btnPreviousPage = context.querySelector('.btnPreviousPage');
                     var btnNextPage = context.querySelector('.btnNextPage');
@@ -316,6 +355,14 @@
 
             var clickAction = layoutManager.tv ? 'link' : 'programdialog';
 
+            var categories = self.categoryOptions.categories || [];
+            var displayMovieContent = !categories.length || categories.indexOf('movies') != -1;
+            var displaySportsContent = !categories.length || categories.indexOf('sports') != -1;
+            var displayNewsContent = !categories.length || categories.indexOf('news') != -1;
+            var displayKidsContent = !categories.length || categories.indexOf('kids') != -1;
+            var displaySeriesContent = !categories.length || categories.indexOf('series') != -1;
+            var enableColorCodedBackgrounds = userSettings.get('guide-colorcodedbackgrounds') == 'true';
+
             for (var i = 0, length = programs.length; i < length; i++) {
 
                 var program = programs[i];
@@ -346,20 +393,43 @@
                 endPercent *= 100;
 
                 var cssClass = "programCell clearButton itemAction";
-                var addAccent = true;
+                var accentCssClass = null;
+                var displayInnerContent = true;
 
                 if (program.IsKids) {
                     cssClass += " childProgramInfo";
+                    displayInnerContent = displayKidsContent;
+                    accentCssClass = 'childAccent';
                 } else if (program.IsSports) {
                     cssClass += " sportsProgramInfo";
+                    displayInnerContent = displaySportsContent;
+                    accentCssClass = 'sportsAccent';
                 } else if (program.IsNews) {
                     cssClass += " newsProgramInfo";
+                    displayInnerContent = displayNewsContent;
+                    accentCssClass = 'newsAccent';
                 } else if (program.IsMovie) {
                     cssClass += " movieProgramInfo";
+                    displayInnerContent = displayMovieContent;
+                    accentCssClass = 'movieAccent';
+                }
+                else if (program.IsSeries) {
+                    cssClass += " plainProgramInfo";
+                    displayInnerContent = displaySeriesContent;
                 }
                 else {
                     cssClass += " plainProgramInfo";
-                    addAccent = false;
+                    displayInnerContent = displayMovieContent && displayNewsContent && displaySportsContent && displayKidsContent && displaySeriesContent;
+                }
+
+                if (!displayInnerContent) {
+                    accentCssClass = null;
+                }
+
+                if (enableColorCodedBackgrounds && accentCssClass) {
+                    cssClass += ' ' + accentCssClass;
+
+                    accentCssClass = null;
                 }
 
                 var timerAttributes = '';
@@ -369,53 +439,47 @@
                 if (program.SeriesTimerId) {
                     timerAttributes += ' data-seriestimerid="' + program.SeriesTimerId + '"';
                 }
+
                 html += '<button data-action="' + clickAction + '"' + timerAttributes + ' data-isfolder="' + program.IsFolder + '" data-id="' + program.Id + '" data-serverid="' + program.ServerId + '" data-type="' + program.Type + '" class="' + cssClass + '" style="left:' + startPercent + '%;width:' + endPercent + '%;">';
 
-                var guideProgramNameClass = "guideProgramName";
+                if (displayInnerContent) {
+                    var guideProgramNameClass = "guideProgramName";
 
-                html += '<div class="' + guideProgramNameClass + '">';
+                    html += '<div class="' + guideProgramNameClass + '">';
 
-                if (program.IsLive && options.showLiveIndicator) {
-                    html += '<span class="liveTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Live') + '</span>';
-                }
-                else if (program.IsPremiere && options.showPremiereIndicator) {
-                    html += '<span class="premiereTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Premiere') + '</span>';
-                }
-                else if (program.IsSeries && !program.IsRepeat && options.showNewIndicator) {
-                    html += '<span class="newTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#AttributeNew') + '</span>';
-                }
-                else if (program.IsSeries && program.IsRepeat && options.showRepeatIndicator) {
-                    html += '<span class="repeatTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Repeat') + '</span>';
-                }
-
-                html += program.Name;
-                html += '</div>';
-
-                if (program.IsHD && options.showHdIcon) {
-                    html += '<i class="guideHdIcon md-icon programIcon">hd</i>';
-                }
-
-                if (program.SeriesTimerId) {
-                    if (program.TimerId) {
-                        html += '<i class="seriesTimerIcon md-icon programIcon">&#xE062;</i>';
-                    } else {
-                        html += '<i class="seriesTimerIcon seriesTimerIcon-inactive md-icon programIcon">&#xE062;</i>';
+                    if (program.IsLive && options.showLiveIndicator) {
+                        html += '<span class="liveTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Live') + '</span>';
                     }
-                }
-                else if (program.TimerId) {
-                    html += '<i class="timerIcon md-icon programIcon">&#xE061;</i>';
-                }
+                    else if (program.IsPremiere && options.showPremiereIndicator) {
+                        html += '<span class="premiereTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Premiere') + '</span>';
+                    }
+                    else if (program.IsSeries && !program.IsRepeat && options.showNewIndicator) {
+                        html += '<span class="newTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#AttributeNew') + '</span>';
+                    }
+                    else if (program.IsSeries && program.IsRepeat && options.showRepeatIndicator) {
+                        html += '<span class="repeatTvProgram guideProgramIndicator">' + globalize.translate('sharedcomponents#Repeat') + '</span>';
+                    }
 
-                if (addAccent) {
+                    html += program.Name;
+                    html += '</div>';
 
-                    if (program.IsKids) {
-                        html += '<div class="programAccent childAccent"></div>';
-                    } else if (program.IsSports) {
-                        html += '<div class="programAccent sportsAccent"></div>';
-                    } else if (program.IsNews) {
-                        html += '<div class="programAccent newsAccent"></div>';
-                    } else if (program.IsMovie) {
-                        html += '<div class="programAccent movieAccent"></div>';
+                    if (program.IsHD && options.showHdIcon) {
+                        html += '<i class="guideHdIcon md-icon programIcon">hd</i>';
+                    }
+
+                    if (program.SeriesTimerId) {
+                        if (program.TimerId) {
+                            html += '<i class="seriesTimerIcon md-icon programIcon">&#xE062;</i>';
+                        } else {
+                            html += '<i class="seriesTimerIcon seriesTimerIcon-inactive md-icon programIcon">&#xE062;</i>';
+                        }
+                    }
+                    else if (program.TimerId) {
+                        html += '<i class="timerIcon md-icon programIcon">&#xE061;</i>';
+                    }
+
+                    if (accentCssClass) {
+                        html += '<div class="programAccent ' + accentCssClass + '"></div>';
                     }
                 }
 
@@ -503,19 +567,6 @@
             imageLoader.lazyChildren(channelList);
         }
 
-        function parentWithClass(elem, className) {
-
-            while (!elem.classList || !elem.classList.contains(className)) {
-                elem = elem.parentNode;
-
-                if (!elem) {
-                    return null;
-                }
-            }
-
-            return elem;
-        }
-
         function renderGuide(context, date, channels, programs, apiClient) {
 
             //var list = [];
@@ -561,7 +612,7 @@
             var channelRowId = null;
 
             if (activeElement) {
-                channelRowId = parentWithClass(activeElement, 'channelPrograms');
+                channelRowId = dom.parentWithClass(activeElement, 'channelPrograms');
                 channelRowId = channelRowId && channelRowId.getAttribute ? channelRowId.getAttribute('data-channelid') : null;
             }
 
@@ -736,22 +787,9 @@
             }
         }
 
-        function parentWithClass(elem, className) {
-
-            while (!elem.classList || !elem.classList.contains(className)) {
-                elem = elem.parentNode;
-
-                if (!elem) {
-                    return null;
-                }
-            }
-
-            return elem;
-        }
-
         function onProgramGridFocus(e) {
 
-            var programCell = parentWithClass(e.target, 'programCell');
+            var programCell = dom.parentWithClass(e.target, 'programCell');
 
             if (!programCell) {
                 return;
@@ -856,24 +894,25 @@
 
             context.querySelector('.btnUnlockGuide').addEventListener('click', function () {
                 currentStartIndex = 0;
-                channelsPromise = null;
                 reloadPage(context);
             });
 
             context.querySelector('.btnNextPage').addEventListener('click', function () {
                 currentStartIndex += currentChannelLimit;
-                channelsPromise = null;
                 reloadPage(context);
             });
 
             context.querySelector('.btnPreviousPage').addEventListener('click', function () {
                 currentStartIndex = Math.max(currentStartIndex - currentChannelLimit, 0);
-                channelsPromise = null;
                 reloadPage(context);
             });
 
             context.querySelector('.btnGuideViewSettings').addEventListener('click', function () {
                 showViewSettings(self);
+            });
+
+            context.querySelector('.btnCategories').addEventListener('click', function () {
+                showCategoryOptions(self);
             });
 
             context.classList.add('tvguide');
