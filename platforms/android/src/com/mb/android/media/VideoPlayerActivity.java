@@ -2965,6 +2965,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         mOverlayTips.setVisibility(View.GONE);
         Editor editor = mSettings.edit();
         editor.putBoolean(PREF_TIPS_SHOWN, true);
+        editor.commit();
         //Util.commitPreferences(editor);
     }
 
