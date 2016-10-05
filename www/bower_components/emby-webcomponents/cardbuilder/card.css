@@ -1,3 +1,12 @@
+button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+button {
+    -webkit-border-fit: border !important;
+}
+
 .card {
     border: 0;
     font-size: inherit !important;
@@ -80,6 +89,10 @@
 
 .card-focusscale:focus > .cardBox-focustransform {
     transform: scale(1.16, 1.16);
+}
+
+.cardBox-mobile {
+    margin: 1px;
 }
 
 @media all and (min-width: 600px) {
@@ -179,6 +192,8 @@
     bottom: 0;
     /* Needed in case this is a button */
     display: block;
+    /* Needed in safari */
+    height: 100%;
 }
 
 .cardImage {
@@ -190,6 +205,23 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center bottom;
+}
+
+.cardImage-img {
+    max-height: 100%;
+    max-width: 100%;
+    /* This is simply for lazy image purposes, to ensure the image is visible sooner when scrolling */
+    min-height: 70%;
+    min-width: 70%;
+    align-self: flex-end;
+    position: static;
+}
+
+.coveredImage-img {
+    max-height: none;
+    max-width: none;
+    height: 100%;
+    width: 100%;
 }
 
 .coveredImage {
@@ -211,9 +243,8 @@
 }
 
 .visualCardBox-cardFooter {
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-bottom-left-radius: 1px;
+    border-bottom-right-radius: 1px;
 }
 
 .innerCardFooter {
@@ -242,6 +273,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     color: inherit;
+}
+
+.singleCardText {
+    padding: .5em;
 }
 
 .cardTextCentered {
@@ -372,7 +407,7 @@
 }
 
 .overflowBackdropCard-scalable {
-    width: 84%;
+    width: 80%;
     max-width: 400px;
 }
 

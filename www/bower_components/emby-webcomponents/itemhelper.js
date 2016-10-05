@@ -8,6 +8,10 @@ define(['apphost'], function (appHost) {
 
         options = options || {};
 
+        if (item.Type == 'Timer') {
+            item = item.ProgramInfo || item;
+        }
+
         var name = (item.Type == 'Program' && item.IsSeries ? item.EpisodeTitle : item.Name) || '';
 
         if (item.Type == "TvChannel") {
@@ -46,7 +50,7 @@ define(['apphost'], function (appHost) {
 
     function supportsAddingToCollection(item) {
 
-        if (item.Type == 'Timer') {
+        if (item.Type == 'Timer' || item.Type == 'SeriesTimer') {
             return false;
         }
 
@@ -60,6 +64,9 @@ define(['apphost'], function (appHost) {
             return false;
         }
         if (item.Type == 'Timer') {
+            return false;
+        }
+        if (item.Type == 'SeriesTimer') {
             return false;
         }
         return item.RunTimeTicks || item.IsFolder || item.Type == "Genre" || item.Type == "MusicGenre" || item.Type == "MusicArtist";
@@ -122,7 +129,7 @@ define(['apphost'], function (appHost) {
                 return false;
             }
 
-            return itemType != 'Timer' && canEdit(user, itemType);
+            return itemType != 'Timer' && itemType != 'SeriesTimer' && canEdit(user, itemType);
         },
 
         canSync: function (user, item) {
@@ -137,6 +144,9 @@ define(['apphost'], function (appHost) {
         canShare: function (user, item) {
 
             if (item.Type == 'Timer') {
+                return false;
+            }
+            if (item.Type == 'SeriesTimer') {
                 return false;
             }
             return user.Policy.EnablePublicSharing && appHost.supports('sharing');

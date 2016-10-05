@@ -346,6 +346,37 @@
             return null;
         }
 
+        function getTimerIndicator(item) {
+
+            var status;
+
+            if (item.Type == 'SeriesTimer') {
+                return '<i class="md-icon programIcon seriesTimerIcon">&#xE062;</i>';
+            }
+            else if (item.TimerId) {
+
+                status = item.TimerStatus;
+            }
+            else if (item.Type == 'Timer') {
+
+                status = item.Status;
+            }
+            else {
+                return '';
+            }
+
+            if (item.SeriesTimerId) {
+
+                if (status != 'Cancelled' && status != 'Aborted') {
+                    return '<i class="md-icon programIcon seriesTimerIcon">&#xE062;</i>';
+                }
+
+                return '<i class="md-icon programIcon seriesTimerIcon seriesTimerIcon-inactive">&#xE062;</i>';
+            }
+
+            return '<i class="md-icon programIcon">&#xE061;</i>';
+        }
+
         function getChannelProgramsHtml(context, date, channel, programs, options) {
 
             var html = '';
@@ -438,6 +469,8 @@
                     cssClass += ' ' + accentCssClass;
 
                     accentCssClass = null;
+                } else {
+                    accentCssClass = null;
                 }
 
                 var timerAttributes = '';
@@ -475,16 +508,7 @@
                         html += '<i class="guideHdIcon md-icon programIcon">hd</i>';
                     }
 
-                    if (program.SeriesTimerId) {
-                        if (program.TimerId) {
-                            html += '<i class="seriesTimerIcon md-icon programIcon">&#xE062;</i>';
-                        } else {
-                            html += '<i class="seriesTimerIcon seriesTimerIcon-inactive md-icon programIcon">&#xE062;</i>';
-                        }
-                    }
-                    else if (program.TimerId) {
-                        html += '<i class="timerIcon md-icon programIcon">&#xE061;</i>';
-                    }
+                    html += getTimerIndicator(program);
 
                     if (accentCssClass) {
                         html += '<div class="programAccent ' + accentCssClass + '"></div>';

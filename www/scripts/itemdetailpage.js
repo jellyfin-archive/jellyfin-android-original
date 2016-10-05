@@ -207,12 +207,6 @@
                 }
             });
 
-            if (user.Policy.IsAdministrator) {
-                page.querySelector('.chapterSettingsButton').classList.remove('hide');
-            } else {
-                page.querySelector('.chapterSettingsButton').classList.add('hide');
-            }
-
             var itemBirthday = page.querySelector('#itemBirthday');
             if (item.Type == "Person" && item.PremiereDate) {
 
@@ -1119,7 +1113,8 @@
                     showIndexNumber: true,
                     playFromHere: true,
                     action: 'playallfromhere',
-                    lazy: true
+                    image: false,
+                    artist: false
                 });
                 isList = true;
             }
@@ -2171,10 +2166,6 @@
             }
 
         }
-
-        view.querySelector('.chapterSettingsButton').addEventListener('click', function () {
-            Dashboard.navigate('librarysettings.html');
-        });
 
         view.addEventListener('viewbeforeshow', function () {
             var page = this;

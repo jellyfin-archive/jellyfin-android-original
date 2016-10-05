@@ -111,6 +111,12 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
 
         for (var i = 0, length = textlines.length; i < length; i++) {
 
+            var text = textlines[i];
+
+            if (!text) {
+                continue;
+            }
+
             if (i === 0) {
                 if (isLargeStyle) {
                     html += '<h2 class="listItemBodyText">';
@@ -143,7 +149,7 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
 
         var clickEntireItem = layoutManager.tv ? true : false;
         var outerTagName = clickEntireItem ? 'button' : 'div';
-        var enableSideMediaInfo = options.enableSideMediaInfo != null ? options.enableSideMediaInfo : clickEntireItem;
+        var enableSideMediaInfo = options.enableSideMediaInfo != null ? options.enableSideMediaInfo : true;
 
         var outerHtml = '';
 
@@ -178,10 +184,12 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                 }
             }
 
-            var cssClass = "listItem listItem-nosidepadding";
+            var cssClass = "listItem";
 
-            if (options.border !== false) {
-                cssClass += ' listItem-border';
+            if (options.highlight !== false) {
+                if (i % 2 == 1) {
+                    cssClass += ' listItem-odd';
+                }
             }
 
             if (clickEntireItem) {
@@ -242,21 +250,32 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                 html += '</div>';
             }
 
-            if (options.showProgramTimeColumn) {
-                html += '<div class="listItemBody listItemBody-nogrow listItemBody-rightborder"><div class="listItemBodyText">';
-                html += datetime.getDisplayTime(datetime.parseISO8601Date(item.StartDate));
-                html += '</div></div>';
+            var textlines = [];
+
+            if (options.showProgramDateTime) {
+                textlines.push(datetime.toLocaleString(datetime.parseISO8601Date(item.StartDate), {
+
+                    weekday: 'long',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
+                }));
             }
 
-            var textlines = [];
+            if (options.showProgramTime) {
+                textlines.push(datetime.getDisplayTime(datetime.parseISO8601Date(item.StartDate)));
+            }
+
+            var parentTitle;
 
             if (options.showParentTitle) {
                 if (item.Type == 'Episode') {
-                    textlines.push(item.SeriesName || '&nbsp;');
+                    parentTitle = item.SeriesName;
                 }
 
-                if (item.IsSeries) {
-                    textlines.push(item.Name || '&nbsp;');
+                else if (item.IsSeries) {
+                    parentTitle = item.Name;
                 }
             }
 
@@ -265,23 +284,38 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
             if (options.showIndexNumber && item.IndexNumber != null) {
                 displayName = item.IndexNumber + ". " + displayName;
             }
-            if (displayName) {
+
+            if (options.showParentTitle && options.parentTitleWithTitle) {
+
+                if (parentTitle && displayName) {
+                    parentTitle += ' - ' + displayName;
+                }
+
+                textlines.push(parentTitle || '');
+            }
+            else if (options.showParentTitle) {
+                textlines.push(parentTitle || '');
+            }
+
+            if (displayName && !options.parentTitleWithTitle) {
                 textlines.push(displayName);
             }
 
-            if (item.ArtistItems && item.Type != 'MusicAlbum') {
-                textlines.push(item.ArtistItems.map(function (a) {
-                    return a.Name;
+            if (options.artist !== false) {
+                if (item.ArtistItems && item.Type != 'MusicAlbum') {
+                    textlines.push(item.ArtistItems.map(function (a) {
+                        return a.Name;
 
-                }).join(', ') || '&nbsp;');
-            }
+                    }).join(', '));
+                }
 
-            if (item.AlbumArtist && item.Type == 'MusicAlbum') {
-                textlines.push(item.AlbumArtist || '&nbsp;');
+                if (item.AlbumArtist && item.Type == 'MusicAlbum') {
+                    textlines.push(item.AlbumArtist);
+                }
             }
 
             if (item.Type == 'Game') {
-                textlines.push(item.GameSystem || '&nbsp;');
+                textlines.push(item.GameSystem);
             }
 
             if (item.Type == 'TvChannel') {
@@ -291,9 +325,13 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                 }
             }
 
-            cssClass = 'listItemBody two-line';
+            cssClass = 'listItemBody';
             if (!clickEntireItem) {
                 cssClass += ' itemAction';
+            }
+
+            if (options.image === false) {
+                cssClass += ' itemAction listItemBody-noleftpadding';
             }
 
             html += '<div class="' + cssClass + '">';
@@ -302,14 +340,16 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
 
             html += getTextLinesHtml(textlines, isLargeStyle);
 
-            if (!enableSideMediaInfo) {
+            if (options.mediaInfo !== false) {
+                if (!enableSideMediaInfo) {
 
-                var mediaInfoClass = 'secondary listItemMediaInfo listItemBodyText';
+                    var mediaInfoClass = 'secondary listItemMediaInfo listItemBodyText';
 
-                html += '<div class="' + mediaInfoClass + '">' + mediaInfo.getPrimaryMediaInfoHtml(item, {
-                    episodeTitle: false,
-                    originalAirDate: false
-                }) + '</div>';
+                    html += '<div class="' + mediaInfoClass + '">' + mediaInfo.getPrimaryMediaInfoHtml(item, {
+                        episodeTitle: false,
+                        originalAirDate: false
+                    }) + '</div>';
+                }
             }
 
             if (enableOverview && item.Overview) {
@@ -320,18 +360,32 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
 
             html += '</div>';
 
-            if (enableSideMediaInfo) {
-                html += '<div class="secondary listItemMediaInfo">' + mediaInfo.getPrimaryMediaInfoHtml(item, {
+            if (options.mediaInfo !== false) {
+                if (enableSideMediaInfo) {
+                    html += '<div class="secondary listItemMediaInfo">' + mediaInfo.getPrimaryMediaInfoHtml(item, {
 
-                    year: false,
-                    container: false,
-                    episodeTitle: false
+                        year: false,
+                        container: false,
+                        episodeTitle: false
 
-                }) + '</div>';
+                    }) + '</div>';
+                }
+            }
+
+            if (!options.recordButton && (item.Type == 'Timer' || item.Type == 'Program')) {
+                html += indicators.getTimerIndicator(item).replace('indicatorIcon', 'indicatorIcon listItemAside');
             }
 
             if (!clickEntireItem) {
-                html += '<button is="paper-icon-button-light" class="listItemButton itemAction autoSize" data-action="menu"><i class="md-icon">' + moreIcon + '</i></button>';
+
+                if (options.moreButton !== false) {
+                    html += '<button is="paper-icon-button-light" class="listItemButton itemAction autoSize" data-action="menu"><i class="md-icon">' + moreIcon + '</i></button>';
+                }
+
+                if (options.recordButton) {
+
+                    html += '<button is="paper-icon-button-light" class="listItemButton itemAction autoSize" data-action="programdialog">' + indicators.getTimerIndicator(item) + '</button>';
+                }
 
                 if (options.enableUserDataButtons !== false) {
                     html += '<span class="listViewUserDataButtons">';
