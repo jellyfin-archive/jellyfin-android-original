@@ -1155,6 +1155,7 @@ var AppInfo = {};
 
         var paths = {
             velocity: bowerPath + "/velocity/velocity.min",
+            vibrant: bowerPath + "/vibrant/dist/vibrant.min",
             ironCardList: 'components/ironcardlist/ironcardlist',
             scrollThreshold: 'components/scrollthreshold',
             playlisteditor: 'components/playlisteditor/playlisteditor',
@@ -1448,6 +1449,10 @@ var AppInfo = {};
                     }
 
                     MediaController.play(options);
+                },
+                queue: function (options) {
+
+                    MediaController.queue(options);
                 },
                 currentPlaylistIndex: function (options) {
                     return MediaController.currentPlaylistIndex(options);
@@ -1846,7 +1851,8 @@ var AppInfo = {};
             path: '/addplugin.html',
             dependencies: [],
             autoFocus: false,
-            roles: 'admin'
+            roles: 'admin',
+            controller: 'scripts/addpluginpage'
         });
 
         defineRoute({
@@ -2196,7 +2202,7 @@ var AppInfo = {};
 
         defineRoute({
             path: '/login.html',
-            dependencies: ['emby-button', 'humanedate', 'emby-input'],
+            dependencies: ['emby-button', 'emby-input'],
             autoFocus: false,
             anonymous: true,
             startup: true,
@@ -2715,8 +2721,8 @@ var AppInfo = {};
 
             // Prefer custom font over Segoe if on desktop windows
             if (!browserInfo.mobile && navigator.userAgent.toLowerCase().indexOf('windows') != -1) {
-                postInitDependencies.push('opensansFont');
-                //postInitDependencies.push('robotoFont');
+                //postInitDependencies.push('opensansFont');
+                postInitDependencies.push('robotoFont');
             }
 
             postInitDependencies.push('bower_components/emby-webcomponents/input/api');
@@ -2794,7 +2800,6 @@ var AppInfo = {};
             initRequireWithBrowser(browser);
 
             window.browserInfo = browser;
-
             setAppInfo();
             setDocumentClasses(browser);
 
