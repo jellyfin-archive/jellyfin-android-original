@@ -53,7 +53,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             features.push('htmlvideoautoplay');
             features.push('externallinks');
 
-            features.push('imageanalysis');
+            //features.push('imageanalysis');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },

@@ -46,7 +46,7 @@
                     showParentTitle: true,
                     overlayText: false,
                     centerText: true,
-                    overlayPlayButton: AppInfo.enableAppLayouts,
+                    overlayPlayButton: true,
                     cardLayout: supportsImageAnalysis,
                     vibrant: supportsImageAnalysis,
                     cardFooterAside: 'none'
