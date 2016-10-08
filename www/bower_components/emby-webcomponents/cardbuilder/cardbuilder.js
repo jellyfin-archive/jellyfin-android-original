@@ -794,7 +794,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                         } else {
                             var parentTitle = item.SeriesName || item.Album || item.AlbumArtist || item.GameSystem || "";
 
-                            if (parentTitle || options.showParentTitle) {
+                            if (parentTitle || showTitle) {
                                 lines.push(parentTitle);
                             }
                         }
@@ -802,7 +802,12 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                 }
             }
 
-            if (((showTitle || forceName) && !titleAdded) || (options.showParentTitleOrTitle && !lines.length)) {
+            var showMediaTitle = (showTitle && !titleAdded) || (options.showParentTitleOrTitle && !lines.length);
+            if (!showMediaTitle && showTitle && forceName && !titleAdded) {
+                showMediaTitle = true;
+            }
+
+            if (showMediaTitle) {
 
                 var name = options.showTitle === 'auto' && !item.IsFolder && item.MediaType === 'Photo' ? '' : itemHelper.getDisplayName(item);
 
@@ -1267,13 +1272,13 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                 }
 
                 if (options.vibrant && imgUrl && !vibrantSwatch) {
-                    cardImageContainerOpen = imgUrl ? ('<div class="' + cardImageContainerClass + '">') : ('<div class="' + cardImageContainerClass + '">');
+                    cardImageContainerOpen = '<div class="' + cardImageContainerClass + '">';
 
                     var imgClass = 'cardImage cardImage-img lazy';
                     if (coveredImage) {
                         imgClass += ' coveredImage-img';
                     }
-                    cardImageContainerOpen += '<img class="' + imgClass + '" data-vibrant="' + cardFooterId + '" data-swatch="db" data-src="' + imgUrl + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />';
+                    cardImageContainerOpen += '<img crossOrigin="Anonymous" class="' + imgClass + '" data-vibrant="' + cardFooterId + '" data-swatch="db" data-src="' + imgUrl + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" />';
 
                 } else {
                     cardImageContainerOpen = imgUrl ? ('<div class="' + cardImageContainerClass + ' lazy" data-src="' + imgUrl + '">') : ('<div class="' + cardImageContainerClass + '">');
@@ -1318,7 +1323,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
             }
 
             if (!imgUrl) {
-                var defaultName = item.Type === 'Program' ? item.Name : itemHelper.getDisplayName(item);
+                var defaultName = item.Type === 'Program' || item.Type == 'Timer' || item.EpisodeTitle ? item.Name : itemHelper.getDisplayName(item);
                 cardImageContainerOpen += '<div class="cardText cardCenteredText">' + defaultName + '</div>';
             }
 
