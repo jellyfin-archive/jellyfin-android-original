@@ -7,9 +7,9 @@ define(['datetime', 'globalize', 'embyRouter', 'itemHelper', 'material-icons', '
         if (item.Type == 'SeriesTimer') {
             return '<i class="md-icon mediaInfoItem mediaInfoIconItem mediaInfoTimerIcon">&#xE062;</i>';
         }
-        else if (item.TimerId) {
+        else if (item.TimerId || item.SeriesTimerId) {
 
-            status = item.TimerStatus;
+            status = item.Status || 'Cancelled';
         }
         else if (item.Type == 'Timer') {
 
@@ -21,7 +21,7 @@ define(['datetime', 'globalize', 'embyRouter', 'itemHelper', 'material-icons', '
 
         if (item.SeriesTimerId) {
 
-            if (status != 'Cancelled' && status != 'Aborted') {
+            if (status != 'Cancelled') {
                 return '<i class="md-icon mediaInfoItem mediaInfoIconItem mediaInfoTimerIcon">&#xE062;</i>';
             }
 

@@ -353,9 +353,9 @@
             if (item.Type == 'SeriesTimer') {
                 return '<i class="md-icon programIcon seriesTimerIcon">&#xE062;</i>';
             }
-            else if (item.TimerId) {
+            else if (item.TimerId || item.SeriesTimerId) {
 
-                status = item.TimerStatus;
+                status = item.Status || 'Cancelled';
             }
             else if (item.Type == 'Timer') {
 
@@ -367,7 +367,7 @@
 
             if (item.SeriesTimerId) {
 
-                if (status != 'Cancelled' && status != 'Aborted') {
+                if (status != 'Cancelled') {
                     return '<i class="md-icon programIcon seriesTimerIcon">&#xE062;</i>';
                 }
 
