@@ -109,7 +109,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                     if (screenWidth >= 2500) {
                         return 6;
                     }
-                    if (screenWidth >= 2100) {
+                    if (screenWidth >= 1600) {
                         return 5;
                     }
                     if (screenWidth >= 1200) {
@@ -284,6 +284,10 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
 
             if (options.shape) {
                 className += ' ' + options.shape + 'Card';
+            }
+
+            if (options.cardCssClass) {
+                className += ' ' + options.cardCssClass;
             }
 
             var html = '';
@@ -543,7 +547,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                     tag: item.SeriesThumbImageTag
                 });
 
-            } else if (options.preferThumb && item.ParentThumbItemId && options.inheritThumb !== false) {
+            } else if (options.preferThumb && item.ParentThumbItemId && options.inheritThumb !== false && item.MediaType !== 'Photo') {
 
                 imgUrl = apiClient.getScaledImageUrl(item.ParentThumbItemId, {
                     type: "Thumb",
@@ -707,7 +711,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
             return 'defaultCardColor' + getDefaultColorIndex(str);
         }
 
-        function getCardTextLines(lines, cssClass, forceLines, isOuterFooter, cardLayout) {
+        function getCardTextLines(lines, cssClass, forceLines, isOuterFooter, cardLayout, addRightMargin) {
 
             var html = '';
 
@@ -723,7 +727,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                     currentCssClass += ' cardText-secondary';
                 }
 
-                if (isOuterFooter && cardLayout) {
+                if (addRightMargin) {
                     currentCssClass += ' cardText-rightmargin';
                 }
 
@@ -754,16 +758,13 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
 
             if (isOuterFooter && options.cardLayout && !layoutManager.tv) {
 
-                if (options.cardFooterAside === 'logo') {
-
-                }
-                else if (options.cardFooterAside !== 'none') {
+                if (options.cardFooterAside !== 'none') {
                     var moreIcon = appHost.moreIcon === 'dots-horiz' ? '&#xE5D3;' : '&#xE5D4;';
                     html += '<button is="paper-icon-button-light" class="itemAction btnCardOptions autoSize" data-action="menu"><i class="md-icon">' + moreIcon + '</i></button>';
                 }
             }
 
-            var cssClass = options.centerText && !options.cardLayout ? "cardText cardTextCentered" : "cardText";
+            var cssClass = options.centerText ? "cardText cardTextCentered" : "cardText";
 
             var lines = [];
             var parentTitleUnderneath = item.Type === 'MusicAlbum' || item.Type === 'Audio' || item.Type === 'MusicVideo';
@@ -803,7 +804,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
             }
 
             var showMediaTitle = (showTitle && !titleAdded) || (options.showParentTitleOrTitle && !lines.length);
-            if (!showMediaTitle && showTitle && forceName && !titleAdded) {
+            if (!showMediaTitle && !titleAdded && (showTitle || forceName)) {
                 showMediaTitle = true;
             }
 
@@ -980,13 +981,24 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                         lines.push(item.ChannelName || '');
                     }
                 }
+
+                if (options.showPersonRoleOrType) {
+                    if (item.Role) {
+                        lines.push('as ' + item.Role);
+                    }
+                    else if (item.Type) {
+                        lines.push(globalize.translate('core#' + item.Type));
+                    } else {
+                        lines.push('');
+                    }
+                }
             }
 
             if ((showTitle || !imgUrl) && forceName && overlayText && lines.length === 1) {
                 lines = [];
             }
 
-            html += getCardTextLines(lines, cssClass, !options.overlayText, isOuterFooter, options.cardLayout);
+            html += getCardTextLines(lines, cssClass, !options.overlayText, isOuterFooter, options.cardLayout, isOuterFooter && options.cardLayout && !options.centerText);
 
             if (progressHtml) {
                 html += progressHtml;
@@ -1148,7 +1160,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
             var imgInfo = getCardImageUrl(item, apiClient, options);
             var imgUrl = imgInfo.imgUrl;
 
-            var forceName = imgInfo.forceName || !imgUrl;
+            var forceName = imgInfo.forceName;
 
             var showTitle = options.showTitle === 'auto' ? true : (options.showTitle || item.Type === 'PhotoAlbum' || item.Type === 'Folder');
             var overlayText = options.overlayText;
@@ -1166,7 +1178,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
             if (coveredImage) {
                 cardImageContainerClass += ' coveredImage';
 
-                if (item.MediaType === 'Photo' || item.Type === 'PhotoAlbum' || item.Type === 'Folder' || item.ProgramInfo || item.Type === 'Program') {
+                if (item.MediaType === 'Photo' || item.Type === 'PhotoAlbum' || item.Type === 'Folder' || item.ProgramInfo || item.Type === 'Program' || item.Type === 'Recording') {
                     cardImageContainerClass += ' coveredImage-noScale';
                 }
             }
@@ -1324,7 +1336,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
 
             if (!imgUrl) {
                 var defaultName = item.Type === 'Program' || item.Type == 'Timer' || item.EpisodeTitle ? item.Name : itemHelper.getDisplayName(item);
-                cardImageContainerOpen += '<div class="cardText cardCenteredText">' + defaultName + '</div>';
+                cardImageContainerOpen += '<div class="cardText cardDefaultText">' + defaultName + '</div>';
             }
 
             var tagName = (layoutManager.tv || !scalable) && !overlayButtons ? 'button' : 'div';
@@ -1364,7 +1376,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
             var channelIdData = item.ChannelId ? (' data-channelid="' + item.ChannelId + '"') : '';
             var contextData = options.context ? (' data-context="' + options.context + '"') : '';
 
-            return '<' + tagName + ' data-index="' + index + '"' + timerAttributes + actionAttribute + ' data-isfolder="' + (item.IsFolder || false) + '" data-serverid="' + (item.ServerId) + '" data-id="' + (item.Id || item.ItemId) + '" data-type="' + item.Type + '"' + mediaTypeData + collectionTypeData + channelIdData + positionTicksData + collectionIdData + playlistIdData + contextData + ' data-prefix="' + prefix + '" class="' + className + '">' + cardImageContainerOpen + innerCardFooter + cardImageContainerClose + cardContentClose + overlayButtons + cardScalableClose + outerCardFooter + cardBoxClose + '</' + tagName + '>';
+            return '<' + tagName + ' data-index="' + index + '"' + timerAttributes + actionAttribute + ' data-isfolder="' + (item.IsFolder || false) + '" data-serverid="' + (item.ServerId || options.serverId) + '" data-id="' + (item.Id || item.ItemId) + '" data-type="' + item.Type + '"' + mediaTypeData + collectionTypeData + channelIdData + positionTicksData + collectionIdData + playlistIdData + contextData + ' data-prefix="' + prefix + '" class="' + className + '">' + cardImageContainerOpen + innerCardFooter + cardImageContainerClose + cardContentClose + overlayButtons + cardScalableClose + outerCardFooter + cardBoxClose + '</' + tagName + '>';
         }
 
         function buildCards(items, options) {

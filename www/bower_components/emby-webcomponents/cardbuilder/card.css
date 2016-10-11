@@ -292,8 +292,9 @@ button {
     margin-right: 2em;
 }
 
-.cardCenteredText {
+.cardDefaultText {
     white-space: normal;
+    text-align: center;
 }
 
 .textActionButton {
@@ -348,14 +349,20 @@ button {
 
 .cardOverlayButton {
     color: #fff !important;
-    background-color: rgba(0,0,0,.7) !important;
+    background-color: rgba(0,0,0,.8) !important;
     border-radius: 500px;
     position: absolute;
     bottom: 0;
     right: 0;
     margin: 0 .35em .5em 0;
     z-index: 1;
+    /*opacity: 0;
+    transition: opacity 0.5s ease-in; /* vendorless fallback */ */;
 }
+
+    /*.card:hover .cardOverlayButton {
+    opacity: 1;
+}*/
 
     .cardOverlayButton:hover {
         background-color: rgba(0,0,0,.9) !important;
@@ -560,12 +567,23 @@ button {
     .backdropCard-scalable {
         width: 20%;
     }
+
+    .squareCard-scalable {
+        width: 12.5%;
+    }
 }
 
 @media all and (min-width: 1800px) {
 
+    .smallBackdropCard-scalable {
+        width: 10%;
+    }
+}
+
+@media all and (min-width: 1920px) {
+
     .squareCard-scalable {
-        width: 12.5%;
+        width: 11.111111111111111111111111111111%;
     }
 
     .smallBackdropCard-scalable {
@@ -574,10 +592,6 @@ button {
 }
 
 @media all and (min-width: 2100px) {
-
-    .squareCard-scalable {
-        width: 11.111111111111111111111111111111%;
-    }
 
     .backdropCard-scalable {
         width: 20%;
@@ -616,10 +630,6 @@ button {
 
 .layout-tv .portraitCard-scalable {
     width: 16.66666666666666667%;
-}
-
-.layout-tv .personCard-scalable {
-    width: 14.285714285714285714285714285714%;
 }
 
 
