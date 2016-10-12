@@ -482,11 +482,6 @@
 
     window.RegistrationServices = {
 
-        renderPluginInfo: function (page, pkg, pluginSecurityInfo) {
-
-
-        },
-
         validateFeature: function (name) {
 
             if (name == 'playback') {
