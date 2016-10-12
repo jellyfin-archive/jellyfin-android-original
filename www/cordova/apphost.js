@@ -1,4 +1,4 @@
-define(['appStorage', 'browser'], function (appStorage, browser) {
+define(['appStorage'], function (appStorage) {
 
     console.log = function () { };
 
@@ -41,19 +41,17 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
             var features = [];
 
-            if (!browser.safari) {
-                features.push('filedownload');
-                features.push('sync');
-                features.push('customsyncpath');
-                features.push('cameraupload');
-            }
+            features.push('filedownload');
+            features.push('sync');
+            features.push('customsyncpath');
+            features.push('cameraupload');
             features.push('sharing');
             features.push('exit');
             features.push('htmlaudioautoplay');
             features.push('htmlvideoautoplay');
             features.push('externallinks');
 
-            //features.push('imageanalysis');
+            features.push('imageanalysis');
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
@@ -69,7 +67,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
                     cordova.getAppVersion.getVersionNumber(function (appVersion) {
 
-                        var name = browserInfo.android ? "Emby for Android Mobile" : (browserInfo.safari ? "Emby for iOS" : "Emby Mobile");
+                        var name = "Emby for Android Mobile";
 
                         // Remove special characters
                         var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
@@ -96,7 +94,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             });
         },
         capabilities: getCapabilities,
-
-        moreIcon: browser.safari || browser.edge ? 'dots-horiz' : 'dots-vert'
+        preferVisualCards: true,
+        moreIcon: 'dots-vert'
     };
 });
