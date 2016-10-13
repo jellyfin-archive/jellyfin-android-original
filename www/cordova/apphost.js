@@ -51,7 +51,9 @@ define(['appStorage'], function (appStorage) {
             features.push('htmlvideoautoplay');
             features.push('externallinks');
 
-            features.push('imageanalysis');
+            if (MainActivity.getChromeVersion() >= 53) {
+                features.push('imageanalysis');
+            }
 
             return features.indexOf(command.toLowerCase()) != -1;
         },

@@ -52,13 +52,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/googlex86/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/googlex86/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/googlex86/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testGooglex86/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testGooglex86/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testGooglex86/assets" type="java-test-resource" />
@@ -66,6 +59,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testGooglex86/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testGooglex86/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testGooglex86/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestGooglex86/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/release/assets" type="java-resource" />
