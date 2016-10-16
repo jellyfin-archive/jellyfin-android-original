@@ -138,7 +138,7 @@
                 return Promise.resolve();
             }
 
-            return testDeviceId(device.uuid);
+            return testDeviceId(MainActivity.getDeviceId());
         });
     }
 

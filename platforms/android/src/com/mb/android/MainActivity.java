@@ -385,6 +385,20 @@ public class MainActivity extends CordovaActivity
 
     @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
+    public String getDeviceModel() {
+        String model = android.os.Build.MODEL;
+        return model;
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public String getDeviceId() {
+        String uuid = Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+        return uuid;
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void purchasePremiereMonthly(final String email) {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getPremiereMonthly(), email);

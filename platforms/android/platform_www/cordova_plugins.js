@@ -63,14 +63,6 @@ module.exports = [
         "clobbers": [
             "window.plugins.actionsheet"
         ]
-    },
-    {
-        "id": "cordova-plugin-device.device",
-        "file": "plugins/cordova-plugin-device/www/device.js",
-        "pluginId": "cordova-plugin-device",
-        "clobbers": [
-            "device"
-        ]
     }
 ];
 module.exports.metadata = 
@@ -78,8 +70,7 @@ module.exports.metadata =
 {
     "cordova-plugin-crosswalk-webview": "2.0.0",
     "cordova-plugin-x-socialsharing": "5.1.3",
-    "cordova-plugin-actionsheet": "2.3.1",
-    "cordova-plugin-device": "1.1.3"
+    "cordova-plugin-actionsheet": "2.3.1"
 };
 // BOTTOM OF METADATA
 });

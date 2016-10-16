@@ -169,9 +169,6 @@
         },
         "cordova-plugin-actionsheet": {
             "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {}
