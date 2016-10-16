@@ -67,30 +67,26 @@ define(['appStorage'], function (appStorage) {
 
                 document.addEventListener("deviceready", function () {
 
-                    cordova.getAppVersion.getVersionNumber(function (appVersion) {
+                    var name = "Emby for Android Mobile";
 
-                        var name = "Emby for Android Mobile";
+                    // Remove special characters
+                    var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
 
-                        // Remove special characters
-                        var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
+                    var deviceId = null;
 
-                        var deviceId = null;
+                    if (window.MainActivity) {
 
-                        if (window.MainActivity) {
+                        deviceId = appStorage.getItem('legacyDeviceId');
+                    }
 
-                            deviceId = appStorage.getItem('legacyDeviceId');
-                        }
+                    appInfo = {
+                        deviceId: deviceId || device.uuid,
+                        deviceName: cleanDeviceName,
+                        appName: name,
+                        appVersion: MainActivity.getAppVersion()
+                    };
 
-                        appInfo = {
-                            deviceId: deviceId || device.uuid,
-                            deviceName: cleanDeviceName,
-                            appName: name,
-                            appVersion: appVersion
-                        };
-
-                        resolve(appInfo);
-
-                    });
+                    resolve(appInfo);
 
                 }, false);
             });

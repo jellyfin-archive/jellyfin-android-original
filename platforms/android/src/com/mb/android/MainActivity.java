@@ -372,6 +372,19 @@ public class MainActivity extends CordovaActivity
 
     @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
+    public String getAppVersion() {
+
+        PackageManager packageManager = getPackageManager();
+        try {
+            return packageManager.getPackageInfo(getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            getLogger().ErrorException("Error getting app version", e);
+            return null;
+        }
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
     public void purchasePremiereMonthly(final String email) {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getPremiereMonthly(), email);

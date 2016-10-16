@@ -164,9 +164,6 @@
             "XWALK_MULTIPLEAPK": "true",
             "PACKAGE_NAME": "com.mb.android"
         },
-        "cordova-plugin-app-version": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-x-socialsharing": {
             "PACKAGE_NAME": "com.mb.android"
         },
