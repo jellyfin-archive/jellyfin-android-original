@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.mb.android.MainActivity;
 import com.mb.android.webviews.IWebView;
-
-import org.apache.cordova.device.Device;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;

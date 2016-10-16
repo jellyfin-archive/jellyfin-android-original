@@ -70,7 +70,7 @@ define(['appStorage'], function (appStorage) {
                     var name = "Emby for Android Mobile";
 
                     // Remove special characters
-                    var cleanDeviceName = device.model.replace(/[^\w\s]/gi, '');
+                    var cleanDeviceName = MainActivity.getDeviceModel().replace(/[^\w\s]/gi, '');
 
                     var deviceId = null;
 
@@ -80,7 +80,7 @@ define(['appStorage'], function (appStorage) {
                     }
 
                     appInfo = {
-                        deviceId: deviceId || device.uuid,
+                        deviceId: deviceId || MainActivity.getDeviceId(),
                         deviceName: cleanDeviceName,
                         appName: name,
                         appVersion: MainActivity.getAppVersion()
