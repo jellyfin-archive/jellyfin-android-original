@@ -98,17 +98,15 @@
 
         }).then(function (result) {
 
-            renderItems(page, result.Items, 'activeProgramItems', 'play');
+            renderItems(page, result.Items, 'activeProgramItems', 'play', {
+                showAirDateTime: false,
+                showAirEndTime: true
+            });
             Dashboard.hideLoadingMsg();
         });
     }
 
-    var lastFullRender = 0;
-    function enableFullRender() {
-        return (new Date().getTime() - lastFullRender) > 300000;
-    }
-
-    function reload(page) {
+    function reload(page, enableFullRender) {
 
         renderActiveRecordings(page, ApiClient.getLiveTvRecordings({
             UserId: Dashboard.getCurrentUserId(),
@@ -118,7 +116,7 @@
             EnableImageTypes: "Primary,Thumb,Backdrop"
         }));
 
-        if (!enableFullRender()) {
+        if (!enableFullRender) {
             return;
         }
 
@@ -156,7 +154,10 @@
 
         }).then(function (result) {
 
-            renderItems(page, result.Items, 'upcomingTvMovieItems', null, getPortraitShape());
+            renderItems(page, result.Items, 'upcomingTvMovieItems', null, {
+                shape: getPortraitShape(),
+                preferThumb: null
+            });
         });
 
         ApiClient.getLiveTvRecommendedPrograms({
@@ -190,18 +191,19 @@
 
             renderItems(page, result.Items, 'upcomingKidsItems');
         });
-        lastFullRender = new Date().getTime();
     }
 
-    function renderItems(page, items, sectionClass, overlayButton, shape) {
+    function renderItems(page, items, sectionClass, overlayButton, cardOptions) {
 
         var supportsImageAnalysis = appHost.supports('imageanalysis');
 
-        var html = cardBuilder.getCardsHtml({
+        cardOptions = cardOptions || {};
+
+        var html = cardBuilder.getCardsHtml(Object.assign({
             items: items,
-            preferThumb: !shape,
+            preferThumb: true,
             inheritThumb: false,
-            shape: shape || (enableScrollX() ? 'overflowBackdrop' : 'backdrop'),
+            shape: (enableScrollX() ? 'overflowBackdrop' : 'backdrop'),
             showParentTitleOrTitle: true,
             showTitle: false,
             centerText: !supportsImageAnalysis,
@@ -216,7 +218,8 @@
             showChannelName: true,
             vibrant: true,
             cardLayout: supportsImageAnalysis
-        });
+
+        }, cardOptions));
 
         var elem = page.querySelector('.' + sectionClass);
 
@@ -227,6 +230,10 @@
     return function (view, params) {
 
         var self = this;
+        var lastFullRender = 0;
+        function enableFullRender() {
+            return (new Date().getTime() - lastFullRender) > 300000;
+        }
 
         self.initTab = function () {
 
@@ -247,7 +254,13 @@
 
         self.renderTab = function () {
             var tabContent = view.querySelector('.pageTabContent[data-index=\'' + 0 + '\']');
-            reload(tabContent);
+
+            if (enableFullRender()) {
+                reload(tabContent, true);
+                lastFullRender = new Date().getTime();
+            } else {
+                reload(tabContent);
+            }
         };
 
         var tabControllers = [];

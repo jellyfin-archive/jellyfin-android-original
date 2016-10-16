@@ -149,7 +149,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                     if (screenWidth >= 540) {
                         return 100 / 30;
                     }
-                    return 100 / 40;
+                    return 100 / 42;
                 case 'overflowSquare':
                     if (screenWidth >= 1000) {
                         return 100 / 22;
@@ -157,7 +157,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                     if (screenWidth >= 540) {
                         return 100 / 30;
                     }
-                    return 100 / 40;
+                    return 100 / 42;
                 case 'overflowBackdrop':
                     if (screenWidth >= 1000) {
                         return 100 / 40;
@@ -168,7 +168,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                     if (screenWidth >= 540) {
                         return 100 / 64;
                     }
-                    return 100 / 70;
+                    return 100 / 72;
                 default:
                     return 4;
             }
@@ -1457,9 +1457,11 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                 var value = listItemsMoreButton.getAttribute('data-indexvalue');
                 var parentid = listItemsMoreButton.getAttribute('data-parentid');
 
-                Emby.Page.showGenre({
-                    ParentId: parentid,
-                    Id: value
+                require(['embyRouter'], function (embyRouter) {
+                    embyRouter.showGenre({
+                        ParentId: parentid,
+                        Id: value
+                    });
                 });
             }
         }

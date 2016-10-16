@@ -9,7 +9,6 @@
     }
 
     function enableScrollX() {
-
         return browserInfo.mobile && AppInfo.enableAppLayouts;
     }
 
@@ -569,7 +568,7 @@
                     lazy: true,
                     overlayPlayButton: true,
                     context: 'home',
-                    centerText: true,
+                    centerText: !supportsImageAnalysis,
                     allowBottomPadding: !enableScrollX(),
                     cardLayout: supportsImageAnalysis,
                     vibrant: supportsImageAnalysis
