@@ -55,17 +55,41 @@ public class IapManager {
 
             @Override
             public void onResponse(final Boolean result) {
-                RespondToWebView(String.format("%s(\"%s\", %s)", callback, unlockSku, result));
+
+                RespondToWebView(String.format("%s(\"%s\", %s, \"%s\")", callback, unlockSku, result, getUnlockPrice()));
 
                 isPurchasedInternal(monthlySubSky, new Response<Boolean>() {
 
                     @Override
                     public void onResponse(final Boolean result) {
-                        RespondToWebView(String.format("%s(\"%s\", %s)", callback, monthlySubSky, result));
+
+                        RespondToWebView(String.format("%s(\"%s\", %s, \"%s\")", callback, monthlySubSky, result, getMonthlyPrice()));
                     }
                 });
             }
         });
+    }
+
+    private String getMonthlyPrice(){
+
+        try {
+            InAppProduct monthlyProduct = iabValidator.getPremiereMonthly();
+            return monthlyProduct == null ? "" : monthlyProduct.getPrice();
+        }
+        catch ( Exception ex){
+            return "";
+        }
+    }
+
+
+    private String getUnlockPrice(){
+        try {
+            InAppProduct unlockProduct = iabValidator.getUnlockProduct();
+            return unlockProduct == null ? "" : unlockProduct.getPrice();
+        }
+        catch ( Exception ex){
+            return "";
+        }
     }
 
     private void RespondToWebView(final String url) {
