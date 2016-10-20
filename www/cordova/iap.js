@@ -32,8 +32,10 @@
         var id;
         if (feature == 'embypremieremonthly') {
             id = NativeIapManager.getPremiereMonthlySku();
-        } else {
+        } else if (feature == 'playback' || feature == 'livetv') {
             id = NativeIapManager.getUnlockProductSku();
+        } else {
+            return null;
         }
 
         var products = updatedProducts.filter(function (r) {
@@ -94,31 +96,28 @@
 
     function getSubscriptionOptions() {
 
-        return new Promise(function (resolve, reject) {
+        var options = [];
 
-            var options = [];
-
-            options.push({
-                feature: 'embypremieremonthly',
-                title: 'EmbyPremiereMonthly'
-            });
-
-            options = options.filter(function (o) {
-
-                var storeProduct = getProduct(o.feature);
-                return storeProduct != null;
-
-            }).map(function (o) {
-
-                var storeProduct = getProduct(o.feature);
-                o.id = getStoreFeatureId(o.feature);
-                o.title = globalize.translate(o.title, storeProduct.price);
-                o.owned = storeProduct.owned;
-                return o;
-            });
-
-            resolve(options);
+        options.push({
+            feature: 'embypremieremonthly',
+            title: 'EmbyPremiereMonthlyWithPrice'
         });
+
+        options = options.filter(function (o) {
+
+            var storeProduct = getProduct(o.feature);
+            return storeProduct != null;
+
+        }).map(function (o) {
+
+            var storeProduct = getProduct(o.feature);
+            o.id = getStoreFeatureId(o.feature);
+            o.title = globalize.translate(o.title, storeProduct.price);
+            o.owned = storeProduct.owned;
+            return o;
+        });
+
+        return Promise.resolve(options);
     }
 
     function isUnlockedByDefault(feature) {
@@ -223,16 +222,18 @@
     }
 
     iapManager.getProductInfo = getProduct;
-    iapManager.updateProduct = getProduct;
     iapManager.beginPurchase = beginPurchase;
     iapManager.onPurchaseComplete = onPurchaseComplete;
     iapManager.getSubscriptionOptions = getSubscriptionOptions;
-    iapManager.onStoreReady = onStoreReady;
     iapManager.isUnlockedByDefault = isUnlockedByDefault;
     iapManager.restorePurchase = restorePurchase;
     iapManager.getAdminFeatureName = getAdminFeatureName;
     iapManager.getPeriodicMessageIntervalMs = getPeriodicMessageIntervalMs;
     iapManager.getRestoreButtonText = getRestoreButtonText;
+
+    // not part of the iap interface, but called by java
+    iapManager.onStoreReady = onStoreReady;
+    iapManager.updateProduct = updateProductInfo;
 
     // Called from android
     window.IapManager = iapManager;
