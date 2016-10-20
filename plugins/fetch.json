@@ -31,15 +31,6 @@
         "is_top_level": false,
         "variables": {}
     },
-    "com.hutchind.cordova.plugins.launcher": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/nchutchind/App-Launcher-Cordova-Plugin.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "org.apache.cordova.file": {
         "source": {
             "type": "registry",

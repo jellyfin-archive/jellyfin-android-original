@@ -20,13 +20,6 @@ module.exports = [
         "id": "cordova-plugin-chrome-apps-common.helpers"
     },
     {
-        "file": "plugins/com.hutchind.cordova.plugins.launcher/www/Launcher.js",
-        "id": "com.hutchind.cordova.plugins.launcher.Launcher",
-        "clobbers": [
-            "plugins.launcher"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-chrome-apps-sockets-udp/sockets.udp.js",
         "id": "cordova-plugin-chrome-apps-sockets-udp.sockets.udp",
         "clobbers": [
