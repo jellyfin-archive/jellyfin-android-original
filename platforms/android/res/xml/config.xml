@@ -3,9 +3,6 @@
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
     </feature>
-    <feature name="Launcher">
-        <param name="android-package" value="com.hutchind.cordova.plugins.launcher.Launcher" />
-    </feature>
     <feature name="Chromecast">
         <param name="android-package" value="acidhax.cordova.chromecast.Chromecast" />
     </feature>

@@ -2,9 +2,7 @@ define([], function () {
 
     return {
         openUrl: function (url) {
-            window.plugins.launcher.launch({
-                uri: url
-            });
+            MainActivity.launchIntent(url, null);
         },
         canExec: false,
         exec: function (options) {

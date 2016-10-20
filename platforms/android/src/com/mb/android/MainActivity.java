@@ -23,6 +23,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
@@ -32,6 +33,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.net.http.SslCertificate;
@@ -56,6 +58,8 @@ import com.mb.android.media.MediaService;
 import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
+
+import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaActivity;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
@@ -66,15 +70,21 @@ import com.mb.android.webviews.NativeWebView;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
@@ -94,6 +104,7 @@ import tv.emby.iap.PurchaseActivity;
 public class MainActivity extends CordovaActivity
 {
     private final int PURCHASE_REQUEST = 999;
+    private final int LAUNCH_REQUEST = 990;
     private final int REQUEST_DIRECTORY = 998;
     private final int REQUEST_DIRECTORY_SAF = 996;
     public static final int VIDEO_PLAYBACK = 997;
@@ -1117,5 +1128,26 @@ public class MainActivity extends CordovaActivity
     private static SharedPreferences getSharedPreferences(Context context) {
 
         return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public boolean launchIntent(String uri, String dataType){
+
+        Bundle extras = extras = new Bundle();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        if (dataType != null) {
+            intent.setDataAndType(Uri.parse(uri), dataType);
+        } else {
+            intent.setData(Uri.parse(uri));
+        }
+
+        try {
+            intent.putExtras(extras);
+            startActivityForResult(intent, LAUNCH_REQUEST);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            return false;
+        }
     }
 }

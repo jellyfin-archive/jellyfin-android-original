@@ -147,9 +147,6 @@
         "cordova-plugin-chrome-apps-iossocketscommon": {
             "PACKAGE_NAME": "com.mb.android"
         },
-        "com.hutchind.cordova.plugins.launcher": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "cordova-plugin-chrome-apps-sockets-udp": {
             "PACKAGE_NAME": "com.mb.android"
         },
