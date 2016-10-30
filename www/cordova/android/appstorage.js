@@ -1,24 +1,22 @@
 ﻿define([], function () {
+    'use strict';
 
-    function preferencesStore() {
+    var myStore = {};
 
-        var self = this;
+    myStore.setItem = function (name, value) {
+        localStorage.setItem(name, value);
+        AndroidSharedPreferences.set(name, value);
+    };
 
-        self.setItem = function (name, value) {
+    myStore.getItem = function (name) {
+        //return localStorage.getItem(name);
+        return AndroidSharedPreferences.get(name);
+    };
 
-            AndroidSharedPreferences.set(name, value);
-        };
+    myStore.removeItem = function (name) {
+        localStorage.removeItem(name);
+        AndroidSharedPreferences.remove(name);
+    };
 
-        self.getItem = function (name) {
-
-            return AndroidSharedPreferences.get(name);
-        };
-
-        self.removeItem = function (name) {
-
-            AndroidSharedPreferences.remove(name);
-        };
-    }
-
-    return new preferencesStore();
+    return myStore;
 });

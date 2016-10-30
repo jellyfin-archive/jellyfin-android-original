@@ -731,7 +731,7 @@ body:not(.dashboardDocument) .headerAppsButton {
     contain: style;
 }
 
-.pageWithAbsoluteTabs .pageTabContent, .libraryPage > .ui-content {
+.libraryPage > .ui-content {
     padding-top: 10px;
 }
 
@@ -775,12 +775,8 @@ body:not(.dashboardDocument) .headerAppsButton {
 }
 
 .homePageSection {
-    margin-top: 20px;
+    margin-top: 30px;
 }
-
-    .homePageSection + .homePageSection {
-        margin-top: 30px;
-    }
 
 .sectionHeaderButton {
     vertical-align: middle;
