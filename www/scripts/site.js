@@ -1,4 +1,5 @@
 ﻿function getWindowLocationSearch(win) {
+    'use strict';
 
     var search = (win || window).location.search;
 
@@ -14,6 +15,8 @@
 }
 
 function getParameterByName(name, url) {
+    'use strict';
+
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
     var regexS = "[\\?&]" + name + "=([^&#]*)";
     var regex = new RegExp(regexS, "i");
@@ -703,6 +706,14 @@ var Dashboard = {
                         Method: 'External'
                     });
                     profile.SubtitleProfiles.push({
+                        Format: 'ssa',
+                        Method: 'External'
+                    });
+                    profile.SubtitleProfiles.push({
+                        Format: 'ass',
+                        Method: 'External'
+                    });
+                    profile.SubtitleProfiles.push({
                         Format: 'srt',
                         Method: 'Embed'
                     });
@@ -713,9 +724,21 @@ var Dashboard = {
                     profile.SubtitleProfiles.push({
                         Format: 'ass',
                         Method: 'Embed'
-                    });
+                    }); 
                     profile.SubtitleProfiles.push({
                         Format: 'ssa',
+                        Method: 'Embed'
+                    });
+                    profile.SubtitleProfiles.push({
+                        Format: 'dvb_teletext',
+                        Method: 'Embed'
+                    });
+                    profile.SubtitleProfiles.push({
+                        Format: 'dvb_subtitle',
+                        Method: 'Embed'
+                    });
+                    profile.SubtitleProfiles.push({
+                        Format: 'dvbsub',
                         Method: 'Embed'
                     });
                     profile.SubtitleProfiles.push({
@@ -755,18 +778,6 @@ var Dashboard = {
                                 Condition: 'NotEqual',
                                 Property: 'CodecTag',
                                 Value: 'xvid'
-                            }
-                        ]
-                    });
-
-                    profile.CodecProfiles.push({
-                        Type: 'VideoAudio',
-                        Codec: 'aac,mp3',
-                        Conditions: [
-                            {
-                                Condition: 'LessThanEqual',
-                                Property: 'AudioChannels',
-                                Value: '6'
                             }
                         ]
                     });
@@ -883,6 +894,7 @@ var Dashboard = {
 var AppInfo = {};
 
 (function () {
+    'use strict';
 
     function setAppInfo() {
 
@@ -1023,7 +1035,7 @@ var AppInfo = {};
                         var capabilities = Dashboard.capabilities();
                         capabilities.DeviceProfile = deviceProfile;
 
-                        connectionManager = new MediaBrowser.ConnectionManager(credentialProviderInstance, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities, window.devicePixelRatio);
+                        var connectionManager = new MediaBrowser.ConnectionManager(credentialProviderInstance, appInfo.appName, appInfo.appVersion, appInfo.deviceName, appInfo.deviceId, capabilities, window.devicePixelRatio);
 
                         defineConnectionManager(connectionManager);
                         bindConnectionManagerEvents(connectionManager, events, userSettings);
@@ -1437,11 +1449,11 @@ var AppInfo = {};
                     if (options.fullscreen === false) {
                         // theme backdrops - not supported
                         if (!options.items || options.items[0].MediaType == 'Video') {
-                            return;
+                            return Promise.reject();
                         }
                     }
 
-                    MediaController.play(options);
+                    return MediaController.play(options);
                 },
                 queue: function (options) {
 
@@ -2802,6 +2814,7 @@ var AppInfo = {};
 })();
 
 function pageClassOn(eventName, className, fn) {
+    'use strict';
 
     document.addEventListener(eventName, function (e) {
 
@@ -2813,6 +2826,7 @@ function pageClassOn(eventName, className, fn) {
 }
 
 function pageIdOn(eventName, id, fn) {
+    'use strict';
 
     document.addEventListener(eventName, function (e) {
 
@@ -2824,6 +2838,7 @@ function pageIdOn(eventName, id, fn) {
 }
 
 pageClassOn('viewinit', "page", function () {
+    'use strict';
 
     var page = this;
 
@@ -2864,6 +2879,7 @@ pageClassOn('viewinit', "page", function () {
 });
 
 pageClassOn('viewshow', "page", function () {
+    'use strict';
 
     var page = this;
 

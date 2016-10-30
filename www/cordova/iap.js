@@ -131,11 +131,11 @@
 
     function isPlaybackUnlockedViaOldApp() {
 
-        return testDeviceId(connectionManager.deviceId()).then(function (isUnlocked) {
+        return testDeviceId(connectionManager.deviceId()).then(function () {
 
-            if (isUnlocked) {
-                return Promise.resolve();
-            }
+            return Promise.resolve();
+
+        }, function () {
 
             return testDeviceId(MainActivity.getDeviceId());
         });
