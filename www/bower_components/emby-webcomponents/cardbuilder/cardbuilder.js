@@ -689,7 +689,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
             return 'defaultCardColor' + getDefaultColorIndex(str);
         }
 
-        function getCardTextLines(lines, cssClass, forceLines, isOuterFooter, cardLayout, addRightMargin) {
+        function getCardTextLines(lines, cssClass, forceLines, isOuterFooter, cardLayout, addRightMargin, maxLines) {
 
             var html = '';
 
@@ -714,10 +714,17 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                     html += text;
                     html += "</div>";
                     valid++;
+
+                    if (maxLines && valid >= maxLines) {
+                        break;
+                    }
                 }
             }
 
             if (forceLines) {
+
+                length = Math.min(lines.length, maxLines || lines.length);
+
                 while (valid < length) {
                     html += "<div class='" + cssClass + "'>&nbsp;</div>";
                     valid++;
@@ -985,7 +992,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                 lines = [];
             }
 
-            html += getCardTextLines(lines, cssClass, !options.overlayText, isOuterFooter, options.cardLayout, isOuterFooter && options.cardLayout && !options.centerText);
+            html += getCardTextLines(lines, cssClass, !options.overlayText, isOuterFooter, options.cardLayout, isOuterFooter && options.cardLayout && !options.centerText, options.lines);
 
             if (progressHtml) {
                 html += progressHtml;
@@ -1236,7 +1243,7 @@ define(['datetime', 'imageLoader', 'connectionManager', 'itemHelper', 'mediaInfo
                 }
 
                 if (overlayPlayButton && !item.IsPlaceHolder && (item.LocationType !== 'Virtual' || !item.MediaType || item.Type === 'Program') && item.Type !== 'Person' && item.PlayAccess === 'Full') {
-                    overlayButtons += '<button is="paper-icon-button-light" class="cardOverlayButton itemAction autoSize" data-action="playmenu" onclick="return false;"><i class="md-icon">play_arrow</i></button>';
+                    overlayButtons += '<button is="paper-icon-button-light" class="cardOverlayButton itemAction autoSize" data-action="play" onclick="return false;"><i class="md-icon">play_arrow</i></button>';
                 }
                 if (options.overlayMoreButton) {
 

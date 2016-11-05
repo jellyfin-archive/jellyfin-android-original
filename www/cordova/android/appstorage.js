@@ -8,10 +8,17 @@
         AndroidSharedPreferences.set(name, value);
     };
 
-    myStore.getItem = function (name) {
-        //return localStorage.getItem(name);
-        return AndroidSharedPreferences.get(name);
-    };
+    var isCrosswalk = navigator.userAgent.toLowerCase().indexOf('crosswalk') !== -1;
+
+    if (isCrosswalk) {
+        myStore.getItem = function (name) {
+            return AndroidSharedPreferences.get(name);
+        };
+    } else {
+        myStore.getItem = function (name) {
+            return localStorage.getItem(name);
+        };
+    }
 
     myStore.removeItem = function (name) {
         localStorage.removeItem(name);

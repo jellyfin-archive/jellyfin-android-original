@@ -36,8 +36,20 @@
         var folderHtml = '';
 
         folderHtml += '<div class="checkboxList">';
+        var excludeViewTypes = ['playlists', 'livetv', 'boxsets', 'channels'];
+        var excludeItemTypes = ['Channel'];
+
         folderHtml += result.Items.map(function (i) {
 
+            if (excludeViewTypes.indexOf(i.CollectionType || []) !== -1) {
+                return '';
+            }
+
+            // not implemented yet
+            if (excludeItemTypes.indexOf(i.Type) !== -1) {
+                return '';
+            }
+            
             var currentHtml = '';
 
             var id = 'chkIncludeInLatest' + i.Id;
@@ -110,17 +122,14 @@
         page.querySelector('#selectHomeSection3').value = displayPreferences.CustomPrefs.home2 || '';
         page.querySelector('#selectHomeSection4').value = displayPreferences.CustomPrefs.home3 || '';
 
-        var promise1 = ApiClient.getItems(user.Id, {
-            sortBy: "SortName"
-        });
-        var promise2 = ApiClient.getUserViews({}, user.Id);
-        var promise3 = ApiClient.getJSON(ApiClient.getUrl("Users/" + user.Id + "/GroupingOptions"));
+        var promise1 = ApiClient.getUserViews({}, user.Id);
+        var promise2 = ApiClient.getJSON(ApiClient.getUrl("Users/" + user.Id + "/GroupingOptions"));
 
-        Promise.all([promise1, promise2, promise3]).then(function (responses) {
+        Promise.all([promise1, promise2]).then(function (responses) {
 
-            renderViews(page, user, responses[2]);
+            renderViews(page, user, responses[1]);
             renderLatestItems(page, user, responses[0]);
-            renderViewOrder(page, user, responses[1]);
+            renderViewOrder(page, user, responses[0]);
 
             Dashboard.hideLoadingMsg();
         });

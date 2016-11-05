@@ -170,7 +170,7 @@ define(['browser'], function (browser) {
                 supported = browser.tizen;
                 break;
             case 'mov':
-                supported = browser.chrome || browser.edgeUwp;
+                supported = browser.tizen || browser.chrome || browser.edgeUwp;
                 videoCodecs.push('h264');
                 break;
             case 'm2ts':
@@ -184,6 +184,10 @@ define(['browser'], function (browser) {
             case 'ts':
                 supported = testCanPlayTs();
                 videoCodecs.push('h264');
+                if (canPlayH265()) {
+                    videoCodecs.push('h265');
+                    videoCodecs.push('hevc');
+                }
                 profileContainer = 'ts,mpegts';
                 break;
             default:
@@ -205,7 +209,7 @@ define(['browser'], function (browser) {
     function getMaxBitrate() {
 
         if (browser.edgeUwp) {
-            return 30000000;
+            return 32000000;
         }
 
         // 10mbps
@@ -264,14 +268,12 @@ define(['browser'], function (browser) {
         // Otherwise with HLS and mp3 audio we're seeing some browsers
         // safari is lying
         if ((videoTestElement.canPlayType('audio/mp4; codecs="ac-3"').replace(/no/, '') && !browser.safari) || browser.edgeUwp || browser.tizen) {
-            if ((options.disableVideoAudioCodecs || []).indexOf('ac3') === -1) {
-                videoAudioCodecs.push('ac3');
+            videoAudioCodecs.push('ac3');
 
-                // This works in edge desktop, but not mobile
-                // TODO: Retest this on mobile
-                if (!browser.edge || !browser.touch) {
-                    hlsVideoAudioCodecs.push('ac3');
-                }
+            // This works in edge desktop, but not mobile
+            // TODO: Retest this on mobile
+            if (!browser.edge || !browser.touch) {
+                hlsVideoAudioCodecs.push('ac3');
             }
         }
 
@@ -302,6 +304,14 @@ define(['browser'], function (browser) {
             //videoAudioCodecs.push('truehd');
         }
 
+        videoAudioCodecs = videoAudioCodecs.filter(function (c) {
+            return (options.disableVideoAudioCodecs || []).indexOf(c) === -1;
+        });
+
+        hlsVideoAudioCodecs = hlsVideoAudioCodecs.filter(function (c) {
+            return (options.disableHlsVideoAudioCodecs || []).indexOf(c) === -1;
+        });
+
         var mp4VideoCodecs = [];
         if (canPlayH264()) {
             mp4VideoCodecs.push('h264');
@@ -319,7 +329,11 @@ define(['browser'], function (browser) {
                 AudioCodec: videoAudioCodecs.join(',')
             });
         }
-
+        
+        if (browser.tizen) {
+            mp4VideoCodecs.push('mpeg2video')
+        }
+        
         if (canPlayMkv && mp4VideoCodecs.length) {
             profile.DirectPlayProfiles.push({
                 Container: 'mkv',
