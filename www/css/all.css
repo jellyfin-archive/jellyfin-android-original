@@ -229,6 +229,7 @@ div[data-role='page'] {
     color: #111 !important;
     font-weight: 500 !important;
     vertical-align: middle;
+    font-size: 110%;
 }
 
     .sidebarLink:hover {
@@ -472,25 +473,20 @@ div[data-role='page'] {
 
 .libraryMenuButtonText {
     text-decoration: none;
-    font-weight: 400 !important;
     display: inline-flex;
     vertical-align: middle;
     padding-left: 0 !important;
     cursor: default;
-    position: relative;
-    top: 1px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     align-items: center;
-    margin-left: .75em;
-    font-size: 108%;
+    margin: 0 0 0 .5em;
     /* Avoid pushing right header off the screen */
     flex-shrink: 1;
 }
 
 .viewMenuBar {
-    font-weight: bold;
     position: fixed;
     right: 0;
     left: 0;
@@ -500,7 +496,6 @@ div[data-role='page'] {
     height: 50px;
     display: flex;
     flex-direction: column;
-    font-size: 13px;
 }
 
 .hiddenViewMenuBar .viewMenuBar {
@@ -637,14 +632,8 @@ body:not(.dashboardDocument) .btnNotifications {
         margin-left: 1.6em;
     }
 
-i.sidebarLinkIcon {
-    font-size: 114%;
-    height: auto;
-    width: auto;
-}
-
 .darkDrawer i.sidebarLinkIcon {
-    margin-left: 1.7em;
+    margin-left: 1.9em;
 }
 
 .darkDrawer .sidebarLinkText, .darkDrawer .sidebarLink {
@@ -735,6 +724,10 @@ body:not(.dashboardDocument) .headerAppsButton {
     padding-top: 10px;
 }
 
+.pageWithAbsoluteTabs .pageTabContent {
+    padding-top: 2.2em;
+}
+
 /*.pageWithAbsoluteTabs .pageTabContent {
     padding-left: .5em !important;
     padding-right: .5em !important;
@@ -775,7 +768,7 @@ body:not(.dashboardDocument) .headerAppsButton {
 }
 
 .homePageSection {
-    margin-top: 30px;
+    margin-bottom: 3.6em;
 }
 
 .sectionHeaderButton {
@@ -822,12 +815,12 @@ body:not(.dashboardDocument) .headerAppsButton {
 }
 
 .homePageSection h1 {
-    padding-left: 2vw;
+    padding-left: .55em;
 }
 
 .homePageSection .itemsContainer {
-    padding-left: 1vw;
-    padding-right: 1vw;
+    padding-left: .7em;
+    padding-right: .7em;
 }
 
 @media all and (min-width: 1200px) {
@@ -856,7 +849,6 @@ body:not(.dashboardDocument) .headerAppsButton {
 
 .listPaging {
     text-align: center;
-    margin: .5em 0 .5em;
 }
 
 .viewControls + .listTopPaging {
@@ -1736,7 +1728,7 @@ button.emby-button.raised.more {
 }
 
 button.emby-button.mini:not(.fab) {
-    padding: 0.4em 0.7em;
+    padding: 0.5em 0.7em;
 }
 
 .ui-body-b .paperListLabel, .ui-body-b .fieldDescription, .ui-body-b .selectLabelUnfocused, .ui-body-b .inputLabelUnfocused, .ui-body-b .textareaLabelUnfocused {

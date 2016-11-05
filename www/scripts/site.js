@@ -724,7 +724,7 @@ var Dashboard = {
                     profile.SubtitleProfiles.push({
                         Format: 'ass',
                         Method: 'Embed'
-                    }); 
+                    });
                     profile.SubtitleProfiles.push({
                         Format: 'ssa',
                         Method: 'Embed'
@@ -1627,7 +1627,11 @@ var AppInfo = {};
         var embyWebComponentsBowerPath = bowerPath + '/emby-webcomponents';
 
         if (Dashboard.isRunningInCordova()) {
-            define("actionsheet", ["cordova/actionsheet"], returnFirstDependency);
+            if (window.MainActivity && window.MainActivity.getAndroidBuildVersion() >= 24) {
+                define("actionsheet", ["webActionSheet"], returnFirstDependency);
+            } else {
+                define("actionsheet", ["cordova/actionsheet"], returnFirstDependency);
+            }
         } else {
             define("actionsheet", ["webActionSheet"], returnFirstDependency);
         }
@@ -1648,7 +1652,7 @@ var AppInfo = {};
             define("imageFetcher", [embyWebComponentsBowerPath + "/images/basicimagefetcher"], returnFirstDependency);
         }
 
-        var preferNativeAlerts = (browser.mobile && !browser.animate) || browser.tv || browser.xboxOne || browser.ps4;
+        var preferNativeAlerts = browser.tv || browser.xboxOne || browser.ps4;
         // use native alerts if preferred and supported (not supported in opera tv)
         if (preferNativeAlerts && window.alert) {
             define("alert", [embyWebComponentsBowerPath + "/alert/nativealert"], returnFirstDependency);
@@ -1694,14 +1698,9 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
 
-            if (MainActivity.getChromeVersion() >= 48) {
-                //define("audiorenderer", ["scripts/htmlmediarenderer"]);
-                window.VlcAudio = true;
-                define("audiorenderer", ["cordova/android/vlcplayer"]);
-            } else {
-                window.VlcAudio = true;
-                define("audiorenderer", ["cordova/android/vlcplayer"]);
-            }
+            //define("audiorenderer", ["scripts/htmlmediarenderer"]);
+            window.VlcAudio = true;
+            define("audiorenderer", ["cordova/android/vlcplayer"]);
             define("videorenderer", ["cordova/android/vlcplayer"]);
         }
         else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
