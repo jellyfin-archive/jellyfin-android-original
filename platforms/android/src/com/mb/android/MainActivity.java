@@ -181,6 +181,12 @@ public class MainActivity extends CordovaActivity
             return false;
         }
 
+        if (Build.VERSION.SDK_INT >= 24){
+
+            chromeVersion = 55;
+            return true;
+        }
+
         // Use system version if equal or higher.
         int systemWebViewVersion = GetSystemWebViewChromiumVersion();
         if (systemWebViewVersion < chromeVersion) {
@@ -373,6 +379,12 @@ public class MainActivity extends CordovaActivity
         }
 
         RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", path));
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public int getAndroidBuildVersion() {
+        return Build.VERSION.SDK_INT;
     }
 
     @android.webkit.JavascriptInterface
