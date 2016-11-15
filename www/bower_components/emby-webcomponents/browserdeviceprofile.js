@@ -159,7 +159,7 @@ define(['browser'], function (browser) {
                 break;
             case 'mpg':
             case 'mpeg':
-                supported = browser.edgeUwp;
+                supported = browser.edgeUwp || browser.tizen;
                 break;
             case '3gp':
             case 'flv':
@@ -394,14 +394,16 @@ define(['browser'], function (browser) {
                 Type: 'Audio',
                 AudioCodec: audioFormat,
                 Context: 'Streaming',
-                Protocol: 'http'
+                Protocol: 'http',
+                MaxAudioChannels: physicalAudioChannels.toString()
             });
             profile.TranscodingProfiles.push({
                 Container: audioFormat,
                 Type: 'Audio',
                 AudioCodec: audioFormat,
                 Context: 'Static',
-                Protocol: 'http'
+                Protocol: 'http',
+                MaxAudioChannels: physicalAudioChannels.toString()
             });
         });
 
@@ -489,14 +491,8 @@ define(['browser'], function (browser) {
         profile.ContainerProfiles = [];
 
         profile.CodecProfiles = [];
-        profile.CodecProfiles.push({
-            Type: 'Audio',
-            Conditions: [{
-                Condition: 'LessThanEqual',
-                Property: 'AudioChannels',
-                Value: '2'
-            }]
-        });
+
+        var supportsSecondaryAudio = browser.tizen;
 
         // Handle he-aac not supported
         if (!videoTestElement.canPlayType('video/mp4; codecs="avc1.640029, mp4a.40.5"').replace(/no/, '')) {
@@ -513,7 +509,24 @@ define(['browser'], function (browser) {
                         Condition: 'LessThanEqual',
                         Property: 'AudioBitrate',
                         Value: '128000'
-                    },
+                    }
+                ]
+            });
+
+            if (!supportsSecondaryAudio) {
+                profile.CodecProfiles[profile.CodecProfiles.length - 1].Conditions.push({
+                    Condition: 'Equals',
+                    Property: 'IsSecondaryAudio',
+                    Value: 'false',
+                    IsRequired: 'false'
+                });
+            }
+        }
+
+        if (!supportsSecondaryAudio) {
+            profile.CodecProfiles.push({
+                Type: 'VideoAudio',
+                Conditions: [
                     {
                         Condition: 'Equals',
                         Property: 'IsSecondaryAudio',
@@ -523,18 +536,6 @@ define(['browser'], function (browser) {
                 ]
             });
         }
-
-        profile.CodecProfiles.push({
-            Type: 'VideoAudio',
-            Conditions: [
-                {
-                    Condition: 'Equals',
-                    Property: 'IsSecondaryAudio',
-                    Value: 'false',
-                    IsRequired: 'false'
-                }
-            ]
-        });
 
         var maxLevel = '41';
 
@@ -572,18 +573,6 @@ define(['browser'], function (browser) {
                 IsRequired: false
             });
         }
-
-        profile.CodecProfiles.push({
-            Type: 'Video',
-            Codec: 'vpx',
-            Conditions: [
-            {
-                Condition: 'NotEquals',
-                Property: 'IsAnamorphic',
-                Value: 'true',
-                IsRequired: false
-            }]
-        });
 
         // Subtitle profiles
         // External vtt or burn in
