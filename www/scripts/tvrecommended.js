@@ -35,7 +35,6 @@
                 }
 
                 var container = view.querySelector('#nextUpItems');
-
                 var supportsImageAnalysis = appHost.supports('imageanalysis');
 
                 cardBuilder.buildCards(result.Items, {
@@ -99,6 +98,7 @@
 
                 var container = view.querySelector('#resumableItems');
 
+                var supportsImageAnalysis = appHost.supports('imageanalysis');
                 var cardLayout = appHost.preferVisualCards;
 
                 cardBuilder.buildCards(result.Items, {
@@ -112,7 +112,8 @@
                     centerText: !cardLayout,
                     overlayPlayButton: true,
                     allowBottomPadding: allowBottomPadding,
-                    cardLayout: cardLayout
+                    cardLayout: cardLayout,
+                    vibrant: supportsImageAnalysis
                 });
             });
         }
@@ -159,13 +160,13 @@
                     depends.push('scripts/tvshows');
                     break;
                 case 4:
-                    depends.push('scripts/episodes');
-                    break;
-                case 5:
                     depends.push('scripts/tvgenres');
                     break;
-                case 6:
+                case 5:
                     depends.push('scripts/tvstudios');
+                    break;
+                case 6:
+                    depends.push('scripts/episodes');
                     break;
                 default:
                     break;
