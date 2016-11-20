@@ -274,7 +274,12 @@
             var scrollX = enableScrollX();
 
             if (items.length) {
-                html += '<h1 class="listHeader">' + Globalize.translate('LatestFromLibrary', parent.Name) + '</h1>';
+
+                html += '<div>';
+                html += '<h1 style="display:inline-block; vertical-align:middle;" class="listHeader">' + Globalize.translate('LatestFromLibrary', parent.Name) + '</h1>';
+                html += '<a href="' + libraryBrowser.getHref(parent) + '" class="clearLink" style="margin-left:2em;"><button is="emby-button" type="button" class="raised more mini"><span>' + Globalize.translate('ButtonMore') + '</span></button></a>';
+                html += '</div>';
+
                 if (scrollX) {
                     html += '<div is="emby-itemscontainer" class="hiddenScrollX itemsContainer">';
                 } else {
@@ -290,7 +295,7 @@
                     getThumbShape();
 
                 var supportsImageAnalysis = appHost.supports('imageanalysis');
-                var cardLayout = supportsImageAnalysis && (viewType === 'music' || !viewType);
+                var cardLayout = supportsImageAnalysis && (viewType === 'music' || viewType === 'movies' || viewType === 'tvshows' || !viewType);
 
                 html += cardBuilder.getCardsHtml({
                     items: items,
@@ -299,14 +304,17 @@
                     showUnplayedIndicator: false,
                     showChildCountIndicator: true,
                     context: 'home',
-                    overlayText: !cardLayout,
+                    overlayText: false,
                     centerText: !cardLayout,
                     overlayPlayButton: viewType !== 'photos',
                     allowBottomPadding: !enableScrollX() && !cardLayout,
                     cardLayout: cardLayout,
-                    showTitle: viewType === 'music' || !viewType,
-                    showParentTitle: viewType === 'music' || !viewType,
-                    vibrant: supportsImageAnalysis && cardLayout
+                    showTitle: viewType === 'music' || !viewType || (cardLayout && (viewType === 'movies' || viewType === 'tvshows')),
+                    showYear: cardLayout && viewType === 'movies',
+                    showSeriesYear: cardLayout && viewType === 'tvshows',
+                    showParentTitle: viewType === 'music' || !viewType || (cardLayout && (viewType === 'tvshows')),
+                    vibrant: supportsImageAnalysis && cardLayout,
+                    lines: 2
                 });
                 html += '</div>';
             }
@@ -388,7 +396,7 @@
         });
     }
 
-    function loadLibraryTiles(elem, user, shape, index, autoHideOnMobile, showTitles) {
+    function loadLibraryTiles(elem, user, shape, index, autoHideOnMobile) {
 
         return getUserViews(user.Id).then(function (items) {
 
@@ -418,7 +426,7 @@
                 html += cardBuilder.getCardsHtml({
                     items: items,
                     shape: scrollX ? 'overflowBackdrop' : shape,
-                    showTitle: showTitles,
+                    showTitle: true,
                     centerText: true,
                     overlayText: false,
                     lazy: true,
@@ -448,9 +456,15 @@
 
         var screenWidth = dom.getWindowSize().innerWidth;
 
-        var limit = screenWidth >= 1920 ? 8 : (screenWidth >= 1600 ? 8 : (screenWidth >= 1200 ? 9 : 6));
+        var limit;
 
-        if (!enableScrollX()) {
+        if (enableScrollX()) {
+
+            limit = 12;
+
+        } else {
+
+            limit = screenWidth >= 1920 ? 8 : (screenWidth >= 1600 ? 8 : (screenWidth >= 1200 ? 9 : 6));
             limit = Math.min(limit, 5);
         }
 
@@ -481,6 +495,10 @@
                 } else {
                     html += '<div is="emby-itemscontainer" class="itemsContainer vertical-wrap">';
                 }
+
+                var supportsImageAnalysis = appHost.supports('imageanalysis');
+                var cardLayout = appHost.preferVisualCards;
+
                 html += cardBuilder.getCardsHtml({
                     items: result.Items,
                     preferThumb: true,
@@ -492,8 +510,12 @@
                     showDetailsMenu: true,
                     overlayPlayButton: true,
                     context: 'home',
-                    centerText: true,
-                    allowBottomPadding: false
+                    centerText: !cardLayout,
+                    allowBottomPadding: false,
+                    cardLayout: cardLayout,
+                    showYear: true,
+                    lines: 2,
+                    vibrant: cardLayout && supportsImageAnalysis
                 });
                 html += '</div>';
             }

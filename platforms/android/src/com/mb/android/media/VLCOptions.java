@@ -102,13 +102,10 @@ public class VLCOptions {
     }
 
     public static String getAout(SharedPreferences pref, ILogger logger) {
-        int aout = -1;
-        try {
-            aout = Integer.parseInt(pref.getString("aout", "-1"));
-        } catch (NumberFormatException ignored) {}
+
         final HWDecoderUtil.AudioOutput hwaout = HWDecoderUtil.getAudioOutputFromDevice();
-        if (hwaout == HWDecoderUtil.AudioOutput.AUDIOTRACK || hwaout == HWDecoderUtil.AudioOutput.OPENSLES)
-            aout = hwaout == HWDecoderUtil.AudioOutput.OPENSLES ? AOUT_OPENSLES : AOUT_AUDIOTRACK;
+
+        int aout = hwaout == HWDecoderUtil.AudioOutput.OPENSLES || hwaout == HWDecoderUtil.AudioOutput.ALL ? AOUT_OPENSLES : AOUT_AUDIOTRACK;
 
         String returnValue = aout == AOUT_OPENSLES ? "opensles_android" : "android_audiotrack";
 

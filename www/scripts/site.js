@@ -314,7 +314,7 @@ var Dashboard = {
 
     showUserFlyout: function () {
 
-        Dashboard.navigate('mypreferencesmenu.html?userId=' + ApiClient.getCurrentUserId());
+        Dashboard.navigate('mypreferencesmenu.html');
     },
 
     getPluginSecurityInfo: function () {
@@ -1222,6 +1222,11 @@ var AppInfo = {};
 
         define("libjass", [bowerPath + "/libjass/libjass.min", "css!" + bowerPath + "/libjass/libjass"], returnFirstDependency);
 
+        if (window.IntersectionObserver) {
+            define("lazyLoader", [embyWebComponentsBowerPath + "/lazyloader/lazyloader-intersectionobserver"], returnFirstDependency);
+        } else {
+            define("lazyLoader", [embyWebComponentsBowerPath + "/lazyloader/lazyloader-scroll"], returnFirstDependency);
+        }
         define("imageLoader", [embyWebComponentsBowerPath + "/images/imagehelper"], returnFirstDependency);
         define("syncJobList", ["components/syncjoblist/syncjoblist"], returnFirstDependency);
         define("appfooter", ["components/appfooter/appfooter"], returnFirstDependency);
@@ -1363,7 +1368,6 @@ var AppInfo = {};
         define('arraypolyfills', [embyWebComponentsBowerPath + '/polyfills/array']);
         define('objectassign', [embyWebComponentsBowerPath + '/polyfills/objectassign']);
 
-        define('native-promise-only', [bowerPath + '/native-promise-only/lib/npo.src']);
         define("clearButtonStyle", ['css!' + embyWebComponentsBowerPath + '/clearbutton']);
         define("userdataButtons", [embyWebComponentsBowerPath + "/userdatabuttons/userdatabuttons"], returnFirstDependency);
         define("listView", [embyWebComponentsBowerPath + "/listview/listview"], returnFirstDependency);
@@ -1542,7 +1546,7 @@ var AppInfo = {};
             };
 
             embyRouter.showSettings = function () {
-                Dashboard.navigate('mypreferencesmenu.html?userId=' + ApiClient.getCurrentUserId());
+                Dashboard.navigate('mypreferencesmenu.html');
             };
 
             embyRouter.showGuide = function () {
@@ -2787,29 +2791,24 @@ var AppInfo = {};
 
     initRequire();
 
-    function onWebComponentsReady() {
+    function onWebComponentsReady(browser) {
 
         var initialDependencies = [];
 
-        initialDependencies.push('browser');
-
-        if (!window.Promise) {
-            initialDependencies.push('native-promise-only');
+        if (!window.Promise || browser.web0s) {
+            initialDependencies.push('bower_components/emby-webcomponents/native-promise-only/lib/npo.src');
         }
 
-        require(initialDependencies, function (browser) {
+        initRequireWithBrowser(browser);
 
-            initRequireWithBrowser(browser);
+        window.browserInfo = browser;
+        setAppInfo();
+        setDocumentClasses(browser);
 
-            window.browserInfo = browser;
-            setAppInfo();
-            setDocumentClasses(browser);
-
-            init();
-        });
+        require(initialDependencies, init);
     }
 
-    onWebComponentsReady();
+    require(['browser'], onWebComponentsReady);
 })();
 
 function pageClassOn(eventName, className, fn) {

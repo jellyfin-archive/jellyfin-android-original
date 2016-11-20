@@ -1477,8 +1477,8 @@
   "LabelPlayMethodDirectPlay": "Direct Playing",
   "LabelAudioCodec": "Audio: {0}",
   "LabelVideoCodec": "Video: {0}",
-  "LabelLocalAccessUrl": "In-Home access: {0}",
-  "LabelRemoteAccessUrl": "Remote access: {0}",
+  "LabelLocalAccessUrl": "In-Home (LAN) access: {0}",
+  "LabelRemoteAccessUrl": "Remote (WAN) access: {0}",
   "LabelRunningOnPort": "Running on http port {0}.",
   "LabelRunningOnPorts": "Running on http port {0}, and https port {1}.",
   "HeaderLatestFromChannel": "Latest from {0}",
@@ -2021,5 +2021,7 @@
   "ButtonPlayExternalPlayer": "Play with external player",
   "NotScheduledToRecord": "Not scheduled to record",
   "SynologyUpdateInstructions": "Please login to DSM and go to Package Center to update.",
-  "LatestFromLibrary": "Latest {0}"
+  "LatestFromLibrary": "Latest {0}",
+  "LabelMoviePrefix": "Movie prefix:",
+  "LabelMoviePrefixHelp": "If a prefix is applied to movie titles, enter it here so that Emby can handle it properly."
 }

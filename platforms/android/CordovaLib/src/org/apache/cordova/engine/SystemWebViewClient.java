@@ -56,7 +56,6 @@ public class SystemWebViewClient extends WebViewClient {
 
     private static final String TAG = "SystemWebViewClient";
     protected final SystemWebViewEngine parentEngine;
-    private boolean doClearHistory = false;
     boolean isCurrentlyLoading;
 
     /** The authorization tokens. */
@@ -162,16 +161,6 @@ public class SystemWebViewClient extends WebViewClient {
         }
         isCurrentlyLoading = false;
 
-        /**
-         * Because of a timing issue we need to clear this history in onPageFinished as well as
-         * onPageStarted. However we only want to do this if the doClearHistory boolean is set to
-         * true. You see when you load a url with a # in it which is common in jQuery applications
-         * onPageStared is not called. Clearing the history at that point would break jQuery apps.
-         */
-        if (this.doClearHistory) {
-            view.clearHistory();
-            this.doClearHistory = false;
-        }
         parentEngine.client.onPageFinishedLoading(url);
 
     }
@@ -285,33 +274,8 @@ public class SystemWebViewClient extends WebViewClient {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-        try {
-            // Check the against the whitelist and lock out access to the WebView directory
-            // Changing this will cause problems for your application
-            if (!parentEngine.pluginManager.shouldAllowRequest(url)) {
-                /*LOG.w(TAG, "URL blocked by whitelist: " + url);
-                // Results in a 404.
-                return new WebResourceResponse("text/plain", "UTF-8", null);*/
-            }
-
-            CordovaResourceApi resourceApi = parentEngine.resourceApi;
-            Uri origUri = Uri.parse(url);
-            // Allow plugins to intercept WebView requests.
-            Uri remappedUri = resourceApi.remapUri(origUri);
-
-            if (!origUri.equals(remappedUri) || needsSpecialsInAssetUrlFix(origUri) || needsKitKatContentUrlFix(origUri)) {
-                CordovaResourceApi.OpenForReadResult result = resourceApi.openForRead(remappedUri, true);
-                return new WebResourceResponse(result.mimeType, "UTF-8", result.inputStream);
-            }
-            // If we don't need to special-case the request, let the browser load it.
-            return null;
-        } catch (IOException e) {
-            if (!(e instanceof FileNotFoundException)) {
-                LOG.e(TAG, "Error occurred while loading a file (returning a 404).", e);
-            }
-            // Results in a 404.
-            return new WebResourceResponse("text/plain", "UTF-8", null);
-        }
+        // If we don't need to special-case the request, let the browser load it.
+        return null;
     }
 
     private static boolean needsKitKatContentUrlFix(Uri uri) {
