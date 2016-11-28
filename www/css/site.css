@@ -36,7 +36,7 @@ html {
     padding: 0;
     height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", "Oxygen-Sans", "Ubuntu", "Cantarell", "Helvetica Neue", 'Open Sans', sans-serif;
-    font-size: 14px;
+    font-size: 88%;
 }
 
 h1 {
@@ -90,17 +90,17 @@ h1, h2, h3 {
     margin-top: 1em;
 }
 
-    h1, h1 a {
-        font-weight: 300 !important;
-        font-size: 24px;
-    }
+h1 {
+    font-weight: normal !important;
+    opacity: .7;
+}
 
 h2 {
-    font-weight: 400;
+    font-weight: normal;
 }
 
 h3 {
-    font-weight: 400;
+    font-weight: normal;
 }
 
 a, a:active, a:hover {
@@ -200,13 +200,6 @@ div[data-role='page'] {
     padding-left: 2px;
     font-weight: normal;
     white-space: normal !important;
-}
-
-.warningFieldDescription {
-    padding: 5px;
-    border: 1px solid #f4c63f;
-    background: #fff3a5;
-    border-radius: 5px;
 }
 
 .fieldDescription + .fieldDescription {

@@ -1,4 +1,4 @@
-﻿define(['layoutManager', 'cardBuilder', 'datetime', 'mediaInfo', 'backdrop', 'listView', 'itemContextMenu', 'itemHelper', 'userdataButtons', 'dom', 'indicators', 'apphost', 'scrollStyles', 'emby-itemscontainer', 'emby-checkbox'], function (layoutManager, cardBuilder, datetime, mediaInfo, backdrop, listView, itemContextMenu, itemHelper, userdataButtons, dom, indicators, appHost) {
+﻿define(['layoutManager', 'cardBuilder', 'datetime', 'mediaInfo', 'backdrop', 'listView', 'itemContextMenu', 'itemHelper', 'userdataButtons', 'dom', 'indicators', 'apphost', 'imageLoader', 'libraryMenu', 'scrollStyles', 'emby-itemscontainer', 'emby-checkbox'], function (layoutManager, cardBuilder, datetime, mediaInfo, backdrop, listView, itemContextMenu, itemHelper, userdataButtons, dom, indicators, appHost, imageLoader, libraryMenu) {
     'use strict';
 
     var currentItem;
@@ -104,7 +104,7 @@
 
         LibraryBrowser.renderName(item, page.querySelector('.itemName'), false, context);
         LibraryBrowser.renderParentName(item, page.querySelector('.parentName'), context);
-        LibraryMenu.setTitle('');
+        libraryMenu.setTitle('');
 
         Dashboard.getCurrentUser().then(function (user) {
 
@@ -125,13 +125,13 @@
                 backdrop.setBackdrops([item]);
             }
             else {
-                hasBackdrop = LibraryBrowser.renderDetailPageBackdrop(page, item);
+                hasBackdrop = LibraryBrowser.renderDetailPageBackdrop(page, item, imageLoader);
                 backdrop.clear();
             }
 
             var transparentHeader = hasBackdrop && page.classList.contains('noSecondaryNavPage');
 
-            LibraryMenu.setTransparentMenu(transparentHeader);
+            libraryMenu.setTransparentMenu(transparentHeader);
 
             var canPlay = false;
 
@@ -351,7 +351,7 @@
 
     function renderImage(page, item, user) {
 
-        LibraryBrowser.renderDetailImage(page.querySelector('.detailImageContainer'), item, user.Policy.IsAdministrator && item.MediaType != 'Photo');
+        LibraryBrowser.renderDetailImage(page.querySelector('.detailImageContainer'), item, user.Policy.IsAdministrator && item.MediaType != 'Photo', null, imageLoader, indicators);
     }
 
     function refreshDetailImageUserData(elem, item) {
@@ -411,7 +411,7 @@
             var itemsContainer = section.querySelector('.nextUpItems');
 
             itemsContainer.innerHTML = html;
-            ImageLoader.lazyChildren(itemsContainer);
+            imageLoader.lazyChildren(itemsContainer);
         });
     }
 
@@ -885,7 +885,7 @@
 
             var similarContent = page.querySelector('#moreFromItems');
             similarContent.innerHTML = html;
-            ImageLoader.lazyChildren(similarContent);
+            imageLoader.lazyChildren(similarContent);
         });
     }
 
@@ -960,7 +960,7 @@
 
             var similarContent = similarCollapsible.querySelector('.similarContent');
             similarContent.innerHTML = html;
-            ImageLoader.lazyChildren(similarContent);
+            imageLoader.lazyChildren(similarContent);
         });
     }
 
@@ -991,7 +991,11 @@
             if (isStatic) {
                 html += ' on ' + item.Studios[0].Name;
             } else {
-                html += ' on <a class="textlink" href="itemdetails.html?id=' + item.Studios[0].Id + '">' + item.Studios[0].Name + '</a>';
+
+                var context = inferContext(item);
+
+                var href = LibraryBrowser.getHref(item.Studios[0], context);
+                html += ' on <a class="textlink" href="' + href + '">' + item.Studios[0].Name + '</a>';
             }
         }
 
@@ -1190,7 +1194,7 @@
             }
 
             elem.innerHTML = html;
-            ImageLoader.lazyChildren(elem);
+            imageLoader.lazyChildren(elem);
 
             if (item.Type == "BoxSet") {
 
@@ -1295,7 +1299,30 @@
         });
     }
 
+    function inferContext(item) {
+
+        if (item.Type == 'Movie' || item.Type == 'BoxSet') {
+            return 'movies';
+        }
+        if (item.Type == 'Series' || item.Type == 'Season' || item.Type == 'Episode') {
+            return 'tvshows';
+        }
+        if (item.Type == 'Game' || item.Type == 'GameSystem') {
+            return 'games';
+        }
+        if (item.Type == 'Game' || item.Type == 'GameSystem') {
+            return 'games';
+        }
+        if (item.Type == 'MusicArtist' || item.Type == 'MusicAlbum') {
+            return 'music';
+        }
+
+        return null;
+    }
+
     function renderStudios(elem, item, isStatic) {
+
+        var context = inferContext(item);
 
         if (item.Studios && item.Studios.length && item.Type != "Series") {
 
@@ -1310,7 +1337,10 @@
                 if (isStatic) {
                     html += item.Studios[i].Name;
                 } else {
-                    html += '<a class="textlink" href="itemdetails.html?id=' + item.Studios[i].Id + '">' + item.Studios[i].Name + '</a>';
+
+                    item.Studios[i].Type = 'Studio';
+                    var href = LibraryBrowser.getHref(item.Studios[i], context);
+                    html += '<a class="textlink" href="' + href + '">' + item.Studios[i].Name + '</a>';
                 }
             }
 
@@ -1327,6 +1357,8 @@
     }
 
     function renderGenres(elem, item, limit, isStatic) {
+
+        var context = inferContext(item);
 
         var html = '';
 
@@ -1351,7 +1383,23 @@
             if (isStatic) {
                 html += genres[i];
             } else {
-                html += '<a class="textlink" href="itemdetails.html?' + param + '=' + ApiClient.encodeName(genres[i]) + '">' + genres[i] + '</a>';
+
+                var type;
+                switch (context) {
+                    case 'tvshows':
+                        type = 'Series';
+                        break;
+                    case 'games':
+                        type = 'Game';
+                        break;
+                    default:
+                        type = 'Movie';
+                        break;
+                }
+
+                var url = "secondaryitems.html?type=" + type + "&" + param + "=" + ApiClient.encodeName(genres[i]);
+
+                html += '<a class="textlink" href="' + url + '">' + genres[i] + '</a>';
             }
         }
 
@@ -1445,7 +1493,7 @@
 
         var collectionItems = page.querySelector('.collectionItems');
         collectionItems.insertAdjacentHTML('beforeend', html);
-        ImageLoader.lazyChildren(collectionItems);
+        imageLoader.lazyChildren(collectionItems);
 
         collectionItems.querySelector('.btnAddToCollection').addEventListener('click', function () {
             require(['alert'], function (alert) {
@@ -1613,7 +1661,7 @@
 
             var themeVideosContent = page.querySelector('#themeVideosContent');
             themeVideosContent.innerHTML = getVideosHtml(items, user);
-            ImageLoader.lazyChildren(themeVideosContent);
+            imageLoader.lazyChildren(themeVideosContent);
         } else {
             page.querySelector('#themeVideosCollapsible').classList.add('hide');
         }
@@ -1637,7 +1685,7 @@
 
                 var musicVideosContent = page.querySelector('.musicVideosContent');
                 musicVideosContent.innerHTML = getVideosHtml(result.Items, user);
-                ImageLoader.lazyChildren(musicVideosContent);
+                imageLoader.lazyChildren(musicVideosContent);
 
             } else {
                 page.querySelector('#musicVideosCollapsible').classList.add('hide');
@@ -1656,7 +1704,7 @@
 
                 var additionalPartsContent = page.querySelector('#additionalPartsContent');
                 additionalPartsContent.innerHTML = getVideosHtml(result.Items, user);
-                ImageLoader.lazyChildren(additionalPartsContent);
+                imageLoader.lazyChildren(additionalPartsContent);
 
             } else {
                 page.querySelector('#additionalPartsCollapsible').classList.add('hide');
@@ -1890,7 +1938,7 @@
 
             var specialsContent = page.querySelector('#specialsContent');
             specialsContent.innerHTML = getVideosHtml(specials, user, limit, "moreSpecials");
-            ImageLoader.lazyChildren(specialsContent);
+            imageLoader.lazyChildren(specialsContent);
 
         });
     }
@@ -2234,7 +2282,7 @@
             currentRecordingFields = null;
 
             Events.off(ApiClient, 'websocketmessage', onWebSocketMessage);
-            LibraryMenu.setTransparentMenu(false);
+            libraryMenu.setTransparentMenu(false);
         });
     };
 });
