@@ -51,7 +51,7 @@ define(['apphost', 'globalize', 'connectionManager', 'itemHelper', 'embyRouter',
                 });
             }
 
-            if (item.CanDelete) {
+            if (item.CanDelete && options.deleteItem !== false) {
 
                 if (item.Type === 'Playlist' || item.Type === 'BoxSet') {
                     commands.push({
@@ -174,7 +174,7 @@ define(['apphost', 'globalize', 'connectionManager', 'itemHelper', 'embyRouter',
                 }
             }
 
-            if (item.Type === 'Program') {
+            if (item.Type === 'Program' && options.record !== false) {
 
                 commands.push({
                     name: Globalize.translate('sharedcomponents#Record'),
@@ -184,7 +184,7 @@ define(['apphost', 'globalize', 'connectionManager', 'itemHelper', 'embyRouter',
 
             if (user.Policy.IsAdministrator) {
 
-                if (item.Type !== 'Timer' && item.Type !== 'SeriesTimer' && item.Type !== 'Program' && !(item.Type === 'Recording' && item.Status !== 'Completed')) {
+                if (item.Type !== 'Timer' && item.Type !== 'SeriesTimer' && item.Type !== 'Program' && item.Type !== 'TvChannel' && !(item.Type === 'Recording' && item.Status !== 'Completed')) {
                     commands.push({
                         name: globalize.translate('sharedcomponents#Refresh'),
                         id: 'refresh'

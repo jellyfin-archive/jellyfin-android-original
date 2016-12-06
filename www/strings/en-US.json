@@ -24,6 +24,7 @@
   "LabelAddConnectSupporterHelp": "To add a user who isn't listed, you'll need to first link their account to Emby Connect from their user profile page.",
   "LabelPinCode": "Pin code:",
   "OptionHideWatchedContentFromLatestMedia": "Hide watched content from latest media",
+  "DeleteMedia": "Delete media",
   "HeaderSync": "Sync",
   "ButtonOk": "Ok",
   "ButtonCancel": "Cancel",
@@ -129,6 +130,8 @@
   "ImageUploadAspectRatioHelp": "1:1 Aspect Ratio Recommended. JPG/PNG only.",
   "MessageNothingHere": "Nothing here.",
   "MessagePleaseEnsureInternetMetadata": "Please ensure downloading of internet metadata is enabled.",
+  "AlreadyPaidHelp1": "If you already paid to install an older version of Media Browser for Android, you don't need to pay again in order to activate this app. Click OK to send us an email at {0} and we'll get it activated for you.",
+  "AlreadyPaidHelp2": "Got Emby Premiere? Just cancel this dialog, setup Emby Premiere in your Emby Server Dashboard under Help -> Emby Premiere, and it will be unlocked automatically.",
   "TabSuggestions": "Suggestions",
   "TabLatest": "Latest",
   "TabUpcoming": "Upcoming",
@@ -168,6 +171,7 @@
   "OptionPlayCount": "Play Count",
   "OptionDatePlayed": "Date Played",
   "OptionDateAdded": "Date Added",
+  "DateAddedValue": "Date added: {0}",
   "OptionAlbumArtist": "Album Artist",
   "OptionArtist": "Artist",
   "OptionAlbum": "Album",
@@ -1204,7 +1208,7 @@
   "OptionPlayNextEpisodeAutomatically": "Play next episode automatically",
   "OptionDownloadImagesInAdvance": "Download images in advance",
   "SettingsSaved": "Settings saved.",
-  "OptionDownloadImagesInAdvanceHelp": "By default, most images are only downloaded when requested by an Emby app. Enable this option to download all images in advance, as new media is imported.",
+  "OptionDownloadImagesInAdvanceHelp": "By default, most images are only downloaded when requested by an Emby app. Enable this option to download all images in advance, as new media is imported. This may cause significantly longer library scans.",
   "Users": "Users",
   "Delete": "Delete",
   "Password": "Password",
@@ -1938,5 +1942,8 @@
   "HeaderRecordingPostProcessing": "Recording Post Processing",
   "LabelPostProcessorArguments": "Post-processor command line arguments:",
   "LabelPostProcessorArgumentsHelp": "Use {path} as the path to the recording file.",
-  "LabelPostProcessor": "Post-processing application:"
+  "LabelPostProcessor": "Post-processing application:",
+  "ErrorAddingXmlTvFile": "There was an error accessing the XmlTV file. Please ensure the file exists and try again.",
+  "OptionAutomaticallyGroupSeries": "Automatically merge series that are spread across multiple folders",
+  "OptionAutomaticallyGroupSeriesHelp": "If enabled, series that are spread across multiple folders within this library will be automatically merged into a single series."
 }
