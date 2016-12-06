@@ -300,7 +300,7 @@ define(['browser'], function (browser) {
             hlsVideoAudioCodecs.push('mp3');
         }
 
-        if (browser.tizen) {
+        if (browser.tizen || options.supportsDts) {
             videoAudioCodecs.push('dca');
             videoAudioCodecs.push('dts');
         }
@@ -336,8 +336,8 @@ define(['browser'], function (browser) {
         }
         
         if (browser.tizen) {
-            mp4VideoCodecs.push('mpeg2video')
-            mp4VideoCodecs.push('vc1')
+            mp4VideoCodecs.push('mpeg2video');
+            mp4VideoCodecs.push('vc1');
         }
         
         if (canPlayMkv && mp4VideoCodecs.length) {

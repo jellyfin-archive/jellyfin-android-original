@@ -100,7 +100,7 @@
 
         options.push({
             feature: 'embypremieremonthly',
-            title: 'EmbyPremiereMonthlyWithPrice'
+            title: 'sharedcomponents#EmbyPremiereMonthlyWithPrice'
         });
 
         options = options.filter(function (o) {
@@ -187,7 +187,7 @@
 
         require(['confirm'], function (confirm) {
 
-            confirm(msg, globalize.translate('AlreadyPaid')).then(launchEmail);
+            confirm(msg, globalize.translate('sharedcomponents#HeaderAlreadyPaid')).then(launchEmail);
 
         });
     }
@@ -218,7 +218,7 @@
     }
 
     function getRestoreButtonText() {
-        return globalize.translate('sharedcomponents#ButtonAlreadyPaid');
+        return globalize.translate('sharedcomponents#HeaderAlreadyPaid');
     }
 
     iapManager.getProductInfo = getProduct;
