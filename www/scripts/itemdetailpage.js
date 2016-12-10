@@ -1,8 +1,5 @@
-﻿define(['layoutManager', 'cardBuilder', 'datetime', 'mediaInfo', 'backdrop', 'listView', 'itemContextMenu', 'itemHelper', 'userdataButtons', 'dom', 'indicators', 'apphost', 'imageLoader', 'libraryMenu', 'shell', 'globalize', 'browser', 'scrollStyles', 'emby-itemscontainer', 'emby-checkbox'], function (layoutManager, cardBuilder, datetime, mediaInfo, backdrop, listView, itemContextMenu, itemHelper, userdataButtons, dom, indicators, appHost, imageLoader, libraryMenu, shell, globalize, browser) {
+﻿define(['layoutManager', 'cardBuilder', 'datetime', 'mediaInfo', 'backdrop', 'listView', 'itemContextMenu', 'itemHelper', 'userdataButtons', 'dom', 'indicators', 'apphost', 'imageLoader', 'libraryMenu', 'shell', 'globalize', 'browser', 'events', 'scrollStyles', 'emby-itemscontainer', 'emby-checkbox'], function (layoutManager, cardBuilder, datetime, mediaInfo, backdrop, listView, itemContextMenu, itemHelper, userdataButtons, dom, indicators, appHost, imageLoader, libraryMenu, shell, globalize, browser, events) {
     'use strict';
-
-    var currentItem;
-    var currentRecordingFields;
 
     function getPromise(params) {
 
@@ -39,6 +36,9 @@
             throw new Error('Invalid request');
         }
     }
+
+    var currentItem;
+    var currentRecordingFields;
 
     function reload(page, params) {
 
@@ -87,14 +87,25 @@
         return options;
     }
 
-    function updateSyncStatus(page, item) {
+    function renderSyncLocalContainer(page, params, user, item) {
 
-        var i, length;
-        var elems = page.querySelectorAll('.chkOffline');
-        for (i = 0, length = elems.length; i < length; i++) {
-
-            elems[i].checked = item.SyncPercent != null;
+        if (page.syncToggleInstance) {
+            page.syncToggleInstance.refresh(item);
+            return;
         }
+
+        require(['syncToggle'], function (syncToggle) {
+
+            page.syncToggleInstance = new syncToggle({
+                user: user,
+                item: item,
+                container: page.querySelector('.syncLocalContainer')
+            });
+
+            events.on(page.syncToggleInstance, 'sync', function () {
+                reload(page, params);
+            });
+        });
     }
 
     function reloadFromItem(page, params, item) {
@@ -119,7 +130,7 @@
 
             if (dom.getWindowSize().innerWidth >= 800) {
                 backdrop.setBackdrops([item], {
-                    blur: 27
+                    blur: 20
                 }, false);
             } else {
                 backdrop.clear();
@@ -166,19 +177,7 @@
                 hideAll(page, 'btnDeleteItem');
             }
 
-            if (itemHelper.canSync(user, item)) {
-                if (appHost.supports('sync')) {
-                    hideAll(page, 'syncLocalContainer', true);
-                    hideAll(page, 'btnSync');
-                } else {
-                    hideAll(page, 'syncLocalContainer');
-                    hideAll(page, 'btnSync', true);
-                }
-                updateSyncStatus(page, item);
-            } else {
-                hideAll(page, 'btnSync');
-                hideAll(page, 'syncLocalContainer');
-            }
+            renderSyncLocalContainer(page, params, user, item);
 
             if (hasAnyButton || item.Type !== 'Program') {
                 hideAll(page, 'mainDetailButtons', true);
@@ -362,7 +361,7 @@
 
         if (links.length) {
 
-            var html = links.join('&bull;');
+            var html = links.join('<span class="bulletSeparator">&bull;</span>');
 
             linksElem.innerHTML = html;
             linksElem.classList.remove('hide');
@@ -641,6 +640,12 @@
         }
 
         var overview = page.querySelector('.overview');
+        var externalLinksElem = page.querySelector('.itemExternalLinks');
+
+        if (item.Type === 'Season' || item.Type === 'MusicAlbum' || item.Type === 'MusicArtist') {
+            overview.classList.add('detailsHiddenOnMobile');
+            externalLinksElem.classList.add('detailsHiddenOnMobile');
+        }
 
         renderOverview([overview], item);
 
@@ -677,7 +682,7 @@
 
         renderStudios(page.querySelector('.itemStudios'), item, isStatic);
         renderUserDataIcons(page, item);
-        renderLinks(page.querySelector('.itemExternalLinks'), item);
+        renderLinks(externalLinksElem, item);
 
         page.querySelector('.criticRatingScore').innerHTML = (item.CriticRating || '0') + '%';
 
@@ -693,13 +698,10 @@
 
         renderSeriesAirTime(page, item, isStatic);
 
-        var dateAddedElement = page.querySelector('#dateAdded');
-
-        if (!item.IsFolder && item.MediaType && item.Type !== 'Program' && item.Type !== 'TvChannel' && item.Type !== 'Trailer') {
-            dateAddedElement.classList.remove('hide');
-            dateAddedElement.innerHTML = globalize.translate('DateAddedValue', datetime.toLocaleDateString(datetime.parseISO8601Date(item.DateCreated)));
+        if (renderDynamicMediaIcons(page, item)) {
+            page.querySelector('.mediaInfoIcons').classList.remove('hide');
         } else {
-            dateAddedElement.classList.add('hide');
+            page.querySelector('.mediaInfoIcons').classList.add('hide');
         }
 
         var artist = page.querySelectorAll('.artist');
@@ -724,6 +726,25 @@
         } else {
             page.querySelector('.photoInfo').classList.add('hide');
         }
+    }
+
+    function renderDynamicMediaIcons(view, item) {
+
+        var html = mediaInfo.getMediaInfoStats(item).map(function (mediaInfoItem) {
+
+            var text = mediaInfoItem.text;
+
+            if (mediaInfoItem.type === 'added') {
+                return '<div class="mediaInfoText">' + text + '</div>';
+            }
+
+            return '<div class="mediaInfoText mediaInfoText-upper">' + text + '</div>';
+
+        }).join('');
+
+        view.querySelector('.mediaInfoIcons').innerHTML = html;
+
+        return html;
     }
 
     function renderPhotoInfo(page, item) {
@@ -1162,7 +1183,8 @@
                     playFromHere: true,
                     action: 'playallfromhere',
                     image: false,
-                    artist: false
+                    artist: 'auto',
+                    containerAlbumArtist: item.AlbumArtist
                 });
                 isList = true;
             }
@@ -1261,7 +1283,7 @@
             page.querySelector('#childrenTitle').innerHTML = globalize.translate('HeaderEpisodes');
         }
         else if (item.Type == "Episode") {
-            page.querySelector('#childrenTitle').innerHTML = item.SeriesName + ' - ' + item.SeasonName;
+            page.querySelector('#childrenTitle').innerHTML = item.SeasonName;
         }
         else if (item.Type == "Series") {
             page.querySelector('#childrenTitle').innerHTML = globalize.translate('HeaderSeasons');
@@ -1421,7 +1443,7 @@
             }
 
             if (i > 0) {
-                html += '&bull;';
+                html += '<span class="bulletSeparator">&bull;</span>';
             }
 
             var param = item.Type == "Audio" || item.Type == "MusicArtist" || item.Type == "MusicAlbum" ? "musicgenre" : "genre";
@@ -2147,87 +2169,19 @@
 
     function onDeleteClick() {
 
-        var item = currentItem;
-        var itemId = item.Id;
-        var parentId = item.ParentId;
-        var serverId = item.ServerId;
+        require(['deleteHelper'], function (deleteHelper) {
 
-        var msg = globalize.translate('sharedcomponents#ConfirmDeleteItem');
-        var title = globalize.translate('sharedcomponents#HeaderDeleteItem');
-        var apiClient = ApiClient;
-
-        require(['confirm'], function (confirm) {
-
-            confirm({
-
-                title: title,
-                text: msg,
-                confirmText: globalize.translate('sharedcomponents#Delete'),
-                primary: 'cancel'
-
-            }).then(function () {
-
-                apiClient.deleteItem(itemId).then(function () {
-
-                    if (parentId) {
-                        Emby.Page.showItem(parentId, serverId);
-                    } else {
-                        Emby.Page.goHome();
-                    }
-                });
-
+            deleteHelper.deleteItem({
+                item: currentItem,
+                navigate: true
             });
-
         });
     }
 
     return function (view, params) {
 
-        function resetSyncStatus() {
-            updateSyncStatus(view, currentItem);
-        }
-
-        function onSyncLocalClick() {
-
-            if (this.checked) {
-                require(['syncDialog'], function (syncDialog) {
-                    syncDialog.showMenu({
-                        items: [currentItem],
-                        isLocalSync: true,
-                        serverId: ApiClient.serverId()
-
-                    }).then(function () {
-                        reload(view, params);
-                    }, resetSyncStatus);
-                });
-            } else {
-
-                require(['confirm'], function (confirm) {
-
-                    confirm(globalize.translate('ConfirmRemoveDownload')).then(function () {
-                        ApiClient.cancelSyncItems([currentItem.Id]);
-                    }, resetSyncStatus);
-                });
-            }
-        }
-
         function onPlayTrailerClick() {
             playTrailer(view);
-        }
-
-        function onRecordClick() {
-            var id = params.id;
-            Dashboard.showLoadingMsg();
-
-            require(['recordingCreator'], function (recordingCreator) {
-                recordingCreator.show(id, currentItem.ServerId).then(function () {
-                    reload(view, params);
-                });
-            });
-        }
-
-        function onCancelRecordingClick() {
-            deleteTimer(view, params, currentItem.TimerId);
         }
 
         function onMoreCommandsClick() {
@@ -2264,11 +2218,6 @@
 
             splitVersions(view, params);
         });
-
-        elems = view.querySelectorAll('.chkOffline');
-        for (i = 0, length = elems.length; i < length; i++) {
-            elems[i].addEventListener('change', onSyncLocalClick);
-        }
 
         elems = view.querySelectorAll('.btnMoreCommands');
         for (i = 0, length = elems.length; i < length; i++) {
@@ -2357,7 +2306,7 @@
             var page = this;
             reload(page, params);
 
-            Events.on(ApiClient, 'websocketmessage', onWebSocketMessage);
+            events.on(ApiClient, 'websocketmessage', onWebSocketMessage);
         });
 
         view.addEventListener('viewbeforehide', function () {
@@ -2365,8 +2314,16 @@
             currentItem = null;
             currentRecordingFields = null;
 
-            Events.off(ApiClient, 'websocketmessage', onWebSocketMessage);
+            events.off(ApiClient, 'websocketmessage', onWebSocketMessage);
             libraryMenu.setTransparentMenu(false);
+        });
+
+        view.addEventListener('viewdestroy', function () {
+
+            if (view.syncToggleInstance) {
+                view.syncToggleInstance.destroy();
+                view.syncToggleInstance = null;
+            }
         });
     };
 });
