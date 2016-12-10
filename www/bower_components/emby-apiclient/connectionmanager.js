@@ -216,7 +216,7 @@
             return connectUser;
         };
 
-        var minServerVersion = '3.0.7300';
+        var minServerVersion = '3.0.7200';
         self.minServerVersion = function (val) {
 
             if (val) {
@@ -447,6 +447,7 @@
             if (options.reportCapabilities !== false) {
                 apiClient.reportCapabilities(capabilities);
             }
+            apiClient.enableAutomaticBitrateDetection = options.enableAutomaticBitrateDetection;
 
             if (options.enableWebSocket !== false) {
                 console.log('calling apiClient.ensureWebSocket');
