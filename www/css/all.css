@@ -405,7 +405,7 @@ div[data-role='page'] {
     z-index: 1;
     margin: 0 !important;
     /* Page needs to supply padding */
-    top: 102px !important;
+    top: 98px !important;
     transition: transform 200ms ease-out;
 }
 
@@ -499,9 +499,6 @@ div[data-role='page'] {
     text-align: center;
     margin: 0 auto;
     align-items: center;
-}
-
-.emby-tabs {
     font-size: 13px;
 }
 
