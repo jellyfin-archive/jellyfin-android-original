@@ -36,6 +36,18 @@
             restartAutoRefresh();
         };
 
+        self.pause = function () {
+            stopAutoRefresh();
+        };
+
+        self.resume = function (refreshData) {
+            if (refreshData) {
+                self.refresh();
+            } else {
+                restartAutoRefresh();
+            }
+        };
+
         self.destroy = function () {
 
             stopAutoRefresh();
@@ -163,7 +175,7 @@
             });
         }
 
-        function reloadGuide(context, newStartDate) {
+        function reloadGuide(context, newStartDate, focusProgramOnRender) {
 
             var apiClient = connectionManager.currentApiClient();
 
@@ -278,7 +290,7 @@
 
                     }).then(function (programsResult) {
 
-                        renderGuide(context, date, channelsResult.Items, programsResult.Items, apiClient);
+                        renderGuide(context, date, channelsResult.Items, programsResult.Items, apiClient, focusProgramOnRender);
 
                         hideLoading();
 
@@ -493,7 +505,7 @@
                     timerAttributes += ' data-seriestimerid="' + program.SeriesTimerId + '"';
                 }
 
-                html += '<button data-action="' + clickAction + '"' + timerAttributes + ' data-id="' + program.Id + '" data-serverid="' + program.ServerId + '" data-type="' + program.Type + '" class="' + cssClass + '" style="left:' + startPercent + '%;width:' + endPercent + '%;">';
+                html += '<button data-action="' + clickAction + '"' + timerAttributes + ' data-channelid="' + program.ChannelId + '" data-id="' + program.Id + '" data-serverid="' + program.ServerId + '" data-type="' + program.Type + '" class="' + cssClass + '" style="left:' + startPercent + '%;width:' + endPercent + '%;">';
 
                 if (displayInnerContent) {
                     var guideProgramNameClass = "guideProgramName";
@@ -616,7 +628,7 @@
             imageLoader.lazyChildren(channelList);
         }
 
-        function renderGuide(context, date, channels, programs, apiClient) {
+        function renderGuide(context, date, channels, programs, apiClient, focusProgramOnRender) {
 
             //var list = [];
             //channels.forEach(function(i) {
@@ -674,7 +686,7 @@
             items = {};
             renderPrograms(context, date, channels, programs);
 
-            if (layoutManager.tv) {
+            if (focusProgramOnRender) {
 
                 var focusElem;
                 if (itemId) {
@@ -734,14 +746,14 @@
             }
         }
 
-        function changeDate(page, date) {
+        function changeDate(page, date, focusProgramOnRender) {
 
             clearCurrentTimeUpdateInterval();
 
             var newStartDate = normalizeDateToTimeslot(date);
             currentDate = newStartDate;
 
-            reloadGuide(page, newStartDate);
+            reloadGuide(page, newStartDate, focusProgramOnRender);
         }
 
         function getDateTabText(date, isActive, tabIndex) {
@@ -793,12 +805,13 @@
 
                 start.setDate(start.getDate() + 1);
                 start.setHours(0, 0, 0, 0);
+                tabIndex++;
             }
 
             page.querySelector('.emby-tabs-slider').innerHTML = dateTabsHtml;
             page.querySelector('.guideDateTabs').refresh();
 
-            changeDate(page, date);
+            changeDate(page, date, layoutManager.tv);
         }
 
         function reloadPage(page) {
@@ -959,12 +972,13 @@
                 restartAutoRefresh();
             });
 
-            context.querySelector('.guideDateTabsSlider').addEventListener('click', function (e) {
-                var tabButton = dom.parentWithClass(e.target, 'guide-date-tab-button');
+            context.querySelector('.guideDateTabs').addEventListener('tabchange', function (e) {
+
+                var tabButton = e.target.querySelectorAll('.guide-date-tab-button')[parseInt(e.detail.selectedTabIndex)];
                 if (tabButton) {
                     var date = new Date();
                     date.setTime(parseInt(tabButton.getAttribute('data-date')));
-                    changeDate(context, date);
+                    changeDate(context, date, false);
                 }
             });
 
