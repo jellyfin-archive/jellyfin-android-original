@@ -21,7 +21,8 @@ public class VLCCrashHandler implements UncaughtExceptionHandler {
     private UncaughtExceptionHandler defaultUEH;
     private ILogger logger;
 
-    public VLCCrashHandler() {
+    public VLCCrashHandler(ILogger logger) {
+        this.logger = logger;
         this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
     }
     @Override
