@@ -35,33 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Util {
     public final static String TAG = "VLC/Util";
-
-    public static String readAsset(Context context, String assetName, String defaultS) {
-        InputStream is = null;
-        BufferedReader r = null;
-        try {
-            is = context.getResources().getAssets().open(assetName);
-            r = new BufferedReader(new InputStreamReader(is, "UTF8"));
-            StringBuilder sb = new StringBuilder();
-            String line = r.readLine();
-            if(line != null) {
-                sb.append(line);
-                line = r.readLine();
-                while(line != null) {
-                    sb.append('\n');
-                    sb.append(line);
-                    line = r.readLine();
-                }
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            return defaultS;
-        } finally {
-            close(is);
-            close(r);
-        }
-    }
-
     public static boolean close(Closeable closeable) {
         if (closeable != null)
             try {
@@ -70,10 +43,22 @@ public class Util {
             } catch (IOException e) {}
         return false;
     }
-
-    public static boolean isCallable(Context context, Intent intent) {
-        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent,
-                PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size() > 0;
+    public static void removePositionInArray(Object[] array, int position, Object[] destArray) {
+        int offset = 0, count = destArray.length;
+        for (int i = 0; i<count; ++i) {
+            if (i == position)
+                ++offset;
+            destArray[i] = array[i+offset];
+        }
+    }
+    public static void addItemInArray(Object[] array, int position, Object item, Object[] destArray) {
+        int offset = 0, count = destArray.length;
+        for (int i = 0; i < count; ++i) {
+            if (i == position) {
+                ++offset;
+                destArray[i] = item;
+            } else
+                destArray[i] = array[i-offset];
+        }
     }
 }

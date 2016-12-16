@@ -4,42 +4,35 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MediaWrapperList {
     private static final String TAG = "VLC/MediaWrapperList";
-
     public interface EventListener {
         void onItemAdded(int index, String mrl);
         void onItemRemoved(int index, String mrl);
         void onItemMoved(int indexBefore, int indexAfter, String mrl);
     }
-
     private static final int EVENT_ADDED = 0;
     private static final int EVENT_REMOVED = 1;
     private static final int EVENT_MOVED = 2;
-
     /* TODO: add locking */
     private ArrayList<MediaWrapper> mInternalList;
     private ArrayList<EventListener> mEventListenerList;
-
     public MediaWrapperList() {
-        mEventListenerList = new ArrayList<EventListener>();
-        mInternalList = new ArrayList<MediaWrapper>();
+        mEventListenerList = new ArrayList<>();
+        mInternalList = new ArrayList<>();
     }
-
     public void add(MediaWrapper media) {
         mInternalList.add(media);
     }
-
     public synchronized void addEventListener(EventListener listener) {
         if (!mEventListenerList.contains(listener))
             mEventListenerList.add(listener);
     }
-
     public synchronized void removeEventListener(EventListener listener) {
         mEventListenerList.remove(listener);
     }
-
     private synchronized void signalEventListeners(int event, int arg1, int arg2, String mrl) {
         for (EventListener listener : mEventListenerList) {
             switch (event) {
@@ -55,7 +48,6 @@ public class MediaWrapperList {
             }
         }
     }
-
     /**
      * Clear the media list. (remove all media)
      */
@@ -65,11 +57,9 @@ public class MediaWrapperList {
             signalEventListeners(EVENT_REMOVED, i, -1, mInternalList.get(i).getLocation());
         mInternalList.clear();
     }
-
     private boolean isValid(int position) {
         return position >= 0 && position < mInternalList.size();
     }
-
     public void insert(int position, Uri uri) {
         insert(position, new MediaWrapper(uri));
     }
@@ -81,7 +71,6 @@ public class MediaWrapperList {
     public void set(int position, MediaWrapper media) {
         mInternalList.set(position, media);
     }
-
     /**
      * Move a media from one position to another
      *
@@ -93,7 +82,6 @@ public class MediaWrapperList {
         if (!(isValid(startPosition)
                 && endPosition >= 0 && endPosition <= mInternalList.size()))
             throw new IndexOutOfBoundsException("Indexes out of range");
-
         MediaWrapper toMove = mInternalList.get(startPosition);
         mInternalList.remove(startPosition);
         if (startPosition >= endPosition)
@@ -102,7 +90,6 @@ public class MediaWrapperList {
             mInternalList.add(endPosition - 1, toMove);
         signalEventListeners(EVENT_MOVED, startPosition, endPosition, toMove.getLocation());
     }
-
     public void remove(int position) {
         if (!isValid(position))
             return;
@@ -110,7 +97,6 @@ public class MediaWrapperList {
         mInternalList.remove(position);
         signalEventListeners(EVENT_REMOVED, position, -1, uri);
     }
-
     public void remove(String location) {
         for (int i = 0; i < mInternalList.size(); ++i) {
             String uri = mInternalList.get(i).getLocation();
@@ -121,18 +107,18 @@ public class MediaWrapperList {
             }
         }
     }
-
     public int size() {
         return mInternalList.size();
     }
-
     @Nullable
     public MediaWrapper getMedia(int position) {
         if (!isValid(position))
             return null;
         return mInternalList.get(position);
     }
-
+    public List<MediaWrapper> getAll() {
+        return mInternalList;
+    }
     /**
      * @param position The index of the media in the list
      * @return null if not found
@@ -142,7 +128,6 @@ public class MediaWrapperList {
             return null;
         return mInternalList.get(position).getLocation();
     }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
