@@ -22,45 +22,36 @@ import mediabrowser.model.logging.ILogger;
 
 public class VLCOptions {
     private static final String TAG = "VLCConfig";
-
     public static final int AOUT_AUDIOTRACK = 0;
     public static final int AOUT_OPENSLES = 1;
-
     @SuppressWarnings("unused")
     public static final int HW_ACCELERATION_AUTOMATIC = -1;
     public static final int HW_ACCELERATION_DISABLED = 0;
     public static final int HW_ACCELERATION_DECODING = 1;
     public static final int HW_ACCELERATION_FULL = 2;
-
-    public static ArrayList<String> getLibOptions(Context context) {
+    public static ArrayList<String> getLibOptions(final Context context) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-
         ArrayList<String> options = new ArrayList<String>(50);
-
-        final boolean timeStrechingDefault = context.getResources().getBoolean(R.bool.time_stretching_default);
+        final boolean timeStrechingDefault = true;
         final boolean timeStreching = pref.getBoolean("enable_time_stretching_audio", timeStrechingDefault);
         final String subtitlesEncoding = pref.getString("subtitle_text_encoding", "");
         final boolean frameSkip = pref.getBoolean("enable_frame_skip", false);
-        String chroma = pref.getString("chroma_format", null);
+        String chroma = pref.getString("chroma_format", "YV12");
         if (chroma != null && chroma.equals("YV12"))
             chroma = "";
         final boolean verboseMode = pref.getBoolean("enable_verbose_mode", true);
-
         int deblocking = -1;
         try {
             deblocking = getDeblocking(Integer.parseInt(pref.getString("deblocking", "-1")));
         } catch (NumberFormatException ignored) {}
-
         int networkCaching = pref.getInt("network_caching_value", 0);
         if (networkCaching > 60000)
             networkCaching = 60000;
         else if (networkCaching < 0)
             networkCaching = 0;
-
         final String freetypeRelFontsize = pref.getString("subtitles_size", "16");
         final String freetypeColor = pref.getString("subtitles_color", "16777215");
         final boolean freetypeBackground = pref.getBoolean("subtitles_background", false);
-
         /* CPU intensive plugin, setting for slow devices */
         options.add(timeStreching ? "--audio-time-stretch" : "--no-audio-time-stretch");
         options.add("--avcodec-skiploopfilter");
@@ -75,18 +66,16 @@ public class VLCOptions {
         /* XXX: why can't the default be fine ? #7792 */
         if (networkCaching > 0)
             options.add("--network-caching=" + networkCaching);
-        options.add("--androidwindow-chroma");
+        options.add("--android-display-chroma");
         options.add(chroma != null ? chroma : "RV32");
         options.add("--audio-resampler");
         options.add(getResampler());
-
         options.add("--freetype-rel-fontsize=" + freetypeRelFontsize);
         options.add("--freetype-color=" + freetypeColor);
         if (freetypeBackground)
             options.add("--freetype-background-opacity=128");
         else
             options.add("--freetype-background-opacity=0");
-
         /* Configure keystore */
         options.add("--keystore");
         if (AndroidUtil.isMarshMallowOrLater())
@@ -95,14 +84,10 @@ public class VLCOptions {
             options.add("file_plaintext,none");
         options.add("--keystore-file");
         options.add(new File(context.getDir("keystore", Context.MODE_PRIVATE), "file").getAbsolutePath());
-
-        options.add(verboseMode ? "-vvv" : "-vv");
-
+        options.add(verboseMode ? "-vv" : "-v");
         return options;
     }
-
     public static String getAout(SharedPreferences pref, ILogger logger) {
-
         final HWDecoderUtil.AudioOutput hwaout = HWDecoderUtil.getAudioOutputFromDevice();
 
         int aout = hwaout == HWDecoderUtil.AudioOutput.OPENSLES || hwaout == HWDecoderUtil.AudioOutput.ALL ? AOUT_OPENSLES : AOUT_AUDIOTRACK;
@@ -112,7 +97,6 @@ public class VLCOptions {
         logger.Info("getAout result: %s", returnValue);
         return returnValue;
     }
-
     private static int getDeblocking(int deblocking) {
         int ret = deblocking;
         if (deblocking < 0) {
@@ -140,18 +124,15 @@ public class VLCOptions {
         }
         return ret;
     }
-
     private static String getResampler() {
         final VLCUtil.MachineSpecs m = VLCUtil.getMachineSpecs();
         return (m == null || m.processors > 2) ? "soxr" : "ugly";
     }
-
     public static void setMediaOptions(Media media, Context context, int flags) {
         boolean noHardwareAcceleration = (flags & MediaWrapper.MEDIA_NO_HWACCEL) != 0;
         boolean noVideo = (flags & MediaWrapper.MEDIA_VIDEO) == 0;
         final boolean paused = (flags & MediaWrapper.MEDIA_PAUSED) != 0;
         int hardwareAcceleration = HW_ACCELERATION_DISABLED;
-
         if (!noHardwareAcceleration) {
             try {
                 final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -167,13 +148,9 @@ public class VLCOptions {
                 media.addOption(":no-omxil-dr");
             }
         } /* else automatic: use default options */
-
-        if (noVideo)
-            media.addOption(":no-video");
         if (paused)
             media.addOption(":start-paused");
     }
-
     @MainThread
     public static MediaPlayer.Equalizer getEqualizer(Context context) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -182,7 +159,6 @@ public class VLCOptions {
             final int bandCount = MediaPlayer.Equalizer.getBandCount();
             if (bands.length != bandCount + 1)
                 return null;
-
             final MediaPlayer.Equalizer eq = MediaPlayer.Equalizer.create();
             eq.setPreAmp(bands[0]);
             for (int i = 0; i < bandCount; ++i)
@@ -191,12 +167,10 @@ public class VLCOptions {
         } else
             return null;
     }
-
     public static int getEqualizerPreset(Context context) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         return pref.getInt("equalizer_preset", 0);
     }
-
     public static void setEqualizer(Context context, MediaPlayer.Equalizer eq, int preset) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = pref.edit();

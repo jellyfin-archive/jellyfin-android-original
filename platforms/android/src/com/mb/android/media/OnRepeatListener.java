@@ -6,18 +6,14 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class OnRepeatListener implements View.OnTouchListener {
-
     private static final int ACTION_ONCLICK = 0;
-
     //Default values in milliseconds
     private static final int DEFAULT_INITIAL_DELAY = 500;
     private static final int DEFAULT_NORMAL_DELAY = 150;
-
     private int mInitialInterval;
     private final int mNormalInterval;
     private final View.OnClickListener mClickListener;
     private View downView;
-
     /**
      *
      * @param initialInterval Initial interval in millis
@@ -30,12 +26,10 @@ public class OnRepeatListener implements View.OnTouchListener {
             throw new IllegalArgumentException("null runnable");
         if (initialInterval < 0 || normalInterval < 0)
             throw new IllegalArgumentException("negative interval");
-
         this.mInitialInterval = initialInterval;
         this.mNormalInterval = normalInterval;
         this.mClickListener = clickListener;
     }
-
     /**
      *
      * @param clickListener The OnClickListener to trigger
@@ -43,7 +37,6 @@ public class OnRepeatListener implements View.OnTouchListener {
     public OnRepeatListener(View.OnClickListener clickListener) {
         this(DEFAULT_INITIAL_DELAY, DEFAULT_NORMAL_DELAY, clickListener);
     }
-
     public boolean onTouch(View view, MotionEvent motionEvent) {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -60,15 +53,11 @@ public class OnRepeatListener implements View.OnTouchListener {
         }
         return false;
     }
-
     private Handler mHandler = new OnRepeatHandler(this);
-
     private static class OnRepeatHandler extends WeakHandler<OnRepeatListener> {
-
         public OnRepeatHandler(OnRepeatListener owner) {
             super(owner);
         }
-
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){

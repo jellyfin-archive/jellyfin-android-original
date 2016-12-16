@@ -175,7 +175,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 		log("initialize " + autoJoinPolicy + " " + appId + " " + this.lastAppId);
 		if (autoJoinPolicy.equals("origin_scoped") && appId.equals(this.lastAppId)) {
 			log("lastAppId " + lastAppId);
-			autoConnect = true;
+			//autoConnect = true;
 		} else if (autoJoinPolicy.equals("origin_scoped")) {
 			log("setting lastAppId " + lastAppId);
 			this.settings.edit().putString("lastAppId", appId).apply();

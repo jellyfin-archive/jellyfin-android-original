@@ -8,7 +8,6 @@ import org.json.JSONException;
 
 public class Preferences {
     public final static String TAG = "VLC/UiTools/Preferences";
-
     public static float[] getFloatArray(SharedPreferences pref, String key) {
         float[] array = null;
         String s = pref.getString(key, null);
@@ -24,7 +23,6 @@ public class Preferences {
         }
         return array;
     }
-
     public static void putFloatArray(Editor editor, String key, float[] array) {
         try {
             JSONArray json = new JSONArray();
@@ -35,5 +33,4 @@ public class Preferences {
             e.printStackTrace();
         }
     }
-
 }
