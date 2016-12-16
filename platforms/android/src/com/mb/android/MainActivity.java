@@ -31,6 +31,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -46,6 +47,7 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.webkit.WebView;
 
@@ -80,11 +82,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
@@ -108,6 +118,7 @@ public class MainActivity extends CordovaActivity
     private final int REQUEST_DIRECTORY = 998;
     private final int REQUEST_DIRECTORY_SAF = 996;
     public static final int VIDEO_PLAYBACK = 997;
+    public static final int SHARE_RESULT = 980;
     private final String embyAdminUrl = "http://mb3admin.com/test/admin/service/";
     private static IWebView webView;
     private IAsyncHttpClient httpClient;
@@ -1161,5 +1172,312 @@ public class MainActivity extends CordovaActivity
         } catch (ActivityNotFoundException e) {
             return false;
         }
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void share(
+            final String msg,
+            final String subject,
+            final String imageUrl,
+            final String url) {
+
+        String message = msg;
+        boolean hasMultipleAttachments = false;
+        final Intent sendIntent = new Intent(hasMultipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND);
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        sendIntent.setType("text/plain");
+
+        try {
+            if (imageUrl != null && imageUrl.length() > 0) {
+                final String dir = getDownloadDir();
+                if (dir != null) {
+                    ArrayList<Uri> fileUris = new ArrayList<Uri>();
+                    Uri fileUri = null;
+                    fileUri = getFileUriAndSetType(sendIntent, dir, imageUrl, subject, 0);
+                    if (fileUri != null) {
+                        fileUris.add(fileUri);
+                    }
+                    if (!fileUris.isEmpty()) {
+                        if (hasMultipleAttachments) {
+                            sendIntent.putExtra(Intent.EXTRA_STREAM, fileUris);
+                        } else {
+                            sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                        }
+                    }
+                } else {
+                    sendIntent.setType("text/plain");
+                }
+            } else {
+                sendIntent.setType("text/plain");
+            }
+        } catch (Exception e) {
+
+        }
+
+        if (notEmpty(subject)) {
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        }
+
+        // add the URL to the message, as there seems to be no separate field
+        if (notEmpty(url)) {
+            if (notEmpty(message)) {
+                message += " " + url;
+            } else {
+                message = url;
+            }
+        }
+        if (notEmpty(message)) {
+            sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+            // sometimes required when the user picks share via sms
+            if (Build.VERSION.SDK_INT < 21) { // LOLLIPOP
+                sendIntent.putExtra("sms_body", message);
+            }
+        }
+
+        // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
+        sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        startActivityForResult(Intent.createChooser(sendIntent, "Share"), SHARE_RESULT);
+    }
+
+    private String getDownloadDir() throws IOException {
+        // better check, otherwise it may crash the app
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            // we need to use external storage since we need to share to another app
+            final String dir = getApplicationContext().getExternalFilesDir(null) + "/socialsharing-downloads";
+            createOrCleanDir(dir);
+            return dir;
+        } else {
+            return null;
+        }
+    }
+
+    private void createOrCleanDir(final String downloadDir) throws IOException {
+        final File dir = new File(downloadDir);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                throw new IOException("CREATE_DIRS_FAILED");
+            }
+        } else {
+            cleanupOldFiles(dir);
+        }
+    }
+
+    /**
+     * As file.deleteOnExit does not work on Android, we need to delete files manually.
+     * Deleting them in onActivityResult is not a good idea, because for example a base64 encoded file
+     * will not be available for upload to Facebook (it's deleted before it's uploaded).
+     * So the best approach is deleting old files when saving (sharing) a new one.
+     */
+    private void cleanupOldFiles(File dir) {
+        for (File f : dir.listFiles()) {
+            //noinspection ResultOfMethodCallIgnored
+            f.delete();
+        }
+    }
+
+    private Uri getFileUriAndSetType(Intent sendIntent, String dir, String image, String subject, int nthFile) throws IOException {
+        // we're assuming an image, but this can be any filetype you like
+        String localImage = image;
+        if (image.endsWith("mp4") || image.endsWith("mov") || image.endsWith("3gp")){
+            sendIntent.setType("video/*");
+        } else {
+            sendIntent.setType("image/*");
+        }
+
+        if (image.startsWith("http") || image.startsWith("www/")) {
+            String filename = getFileName(image);
+            localImage = "file://" + dir + "/" + filename;
+            if (image.startsWith("http")) {
+                // filename optimisation taken from https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin/pull/56
+                URLConnection connection = new URL(image).openConnection();
+                String disposition = connection.getHeaderField("Content-Disposition");
+                if (disposition != null) {
+                    final Pattern dispositionPattern = Pattern.compile("filename=([^;]+)");
+                    Matcher matcher = dispositionPattern.matcher(disposition);
+                    if (matcher.find()) {
+                        filename = matcher.group(1).replaceAll("[^a-zA-Z0-9._-]", "");
+                        if (filename.length() == 0) {
+                            // in this case we can't determine a filetype so some targets (gmail) may not render it correctly
+                            filename = "file";
+                        }
+                        localImage = "file://" + dir + "/" + filename;
+                    }
+                }
+                saveFile(getBytes(connection.getInputStream()), dir, filename);
+            } else {
+                saveFile(getBytes(getApplicationContext().getAssets().open(image)), dir, filename);
+            }
+        } else if (image.startsWith("data:")) {
+            // safeguard for https://code.google.com/p/android/issues/detail?id=7901#c43
+            if (!image.contains(";base64,")) {
+                sendIntent.setType("text/plain");
+                return null;
+            }
+            // image looks like this: data:image/png;base64,R0lGODlhDAA...
+            final String encodedImg = image.substring(image.indexOf(";base64,") + 8);
+            // correct the intent type if anything else was passed, like a pdf: data:application/pdf;base64,..
+            if (!image.contains("data:image/")) {
+                sendIntent.setType(image.substring(image.indexOf("data:") + 5, image.indexOf(";base64")));
+            }
+            // the filename needs a valid extension, so it renders correctly in target apps
+            final String imgExtension = image.substring(image.indexOf("/") + 1, image.indexOf(";base64"));
+            String fileName;
+            // if a subject was passed, use it as the filename
+            // filenames must be unique when passing in multiple files [#158]
+            if (notEmpty(subject)) {
+                fileName = sanitizeFilename(subject) + (nthFile == 0 ? "" : "_" + nthFile) + "." + imgExtension;
+            } else {
+                fileName = "file" + (nthFile == 0 ? "" : "_" + nthFile) + "." + imgExtension;
+            }
+            saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, fileName);
+            localImage = "file://" + dir + "/" + fileName;
+        } else if (image.startsWith("df:")) {
+            // safeguard for https://code.google.com/p/android/issues/detail?id=7901#c43
+            if (!image.contains(";base64,")) {
+                sendIntent.setType("text/plain");
+                return null;
+            }
+            // format looks like this :  df:filename.txt;data:image/png;base64,R0lGODlhDAA...
+            final String fileName = image.substring(image.indexOf("df:") + 3, image.indexOf(";data:"));
+            final String fileType = image.substring(image.indexOf(";data:") + 6, image.indexOf(";base64,"));
+            final String encodedImg = image.substring(image.indexOf(";base64,") + 8);
+            sendIntent.setType(fileType);
+            saveFile(Base64.decode(encodedImg, Base64.DEFAULT), dir, sanitizeFilename(fileName));
+            localImage = "file://" + dir + "/" + fileName;
+        } else if (!image.startsWith("file://")) {
+            throw new IllegalArgumentException("URL_NOT_SUPPORTED");
+        } else {
+            //get file MIME type
+            String type = getMIMEType(image);
+            //set intent data and Type
+            sendIntent.setType(type);
+        }
+        return Uri.parse(localImage);
+    }
+
+    private static String getFileName(String url) {
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length()-1);
+        }
+        final String pattern = ".*/([^?#]+)?";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(url);
+        if (m.find()) {
+            return m.group(1);
+        } else {
+            return "file";
+        }
+    }
+
+    public static String sanitizeFilename(String name) {
+        return name.replaceAll("[:\\\\/*?|<> ]", "_");
+    }
+
+    private static boolean notEmpty(String what) {
+        return what != null &&
+                !"".equals(what) &&
+                !"null".equalsIgnoreCase(what);
+    }
+
+    private String getMIMEType(String fileName) {
+        String type = "*/*";
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex == -1) {
+            return type;
+        }
+        final String end = fileName.substring(dotIndex+1, fileName.length()).toLowerCase();
+        String fromMap = MIME_Map.get(end);
+        return fromMap == null ? type : fromMap;
+    }
+    private static final Map<String, String> MIME_Map = new HashMap<String, String>();
+    static {
+        MIME_Map.put("3gp",   "video/3gpp");
+        MIME_Map.put("apk",   "application/vnd.android.package-archive");
+        MIME_Map.put("asf",   "video/x-ms-asf");
+        MIME_Map.put("avi",   "video/x-msvideo");
+        MIME_Map.put("bin",   "application/octet-stream");
+        MIME_Map.put("bmp",   "image/bmp");
+        MIME_Map.put("c",     "text/plain");
+        MIME_Map.put("class", "application/octet-stream");
+        MIME_Map.put("conf",  "text/plain");
+        MIME_Map.put("cpp",   "text/plain");
+        MIME_Map.put("doc",   "application/msword");
+        MIME_Map.put("docx",  "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        MIME_Map.put("xls",   "application/vnd.ms-excel");
+        MIME_Map.put("xlsx",  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        MIME_Map.put("exe",   "application/octet-stream");
+        MIME_Map.put("gif",   "image/gif");
+        MIME_Map.put("gtar",  "application/x-gtar");
+        MIME_Map.put("gz",    "application/x-gzip");
+        MIME_Map.put("h",     "text/plain");
+        MIME_Map.put("htm",   "text/html");
+        MIME_Map.put("html",  "text/html");
+        MIME_Map.put("jar",   "application/java-archive");
+        MIME_Map.put("java",  "text/plain");
+        MIME_Map.put("jpeg",  "image/jpeg");
+        MIME_Map.put("jpg",   "image/*");
+        MIME_Map.put("js",    "application/x-javascript");
+        MIME_Map.put("log",   "text/plain");
+        MIME_Map.put("m3u",   "audio/x-mpegurl");
+        MIME_Map.put("m4a",   "audio/mp4a-latm");
+        MIME_Map.put("m4b",   "audio/mp4a-latm");
+        MIME_Map.put("m4p",   "audio/mp4a-latm");
+        MIME_Map.put("m4u",   "video/vnd.mpegurl");
+        MIME_Map.put("m4v",   "video/x-m4v");
+        MIME_Map.put("mov",   "video/quicktime");
+        MIME_Map.put("mp2",   "audio/x-mpeg");
+        MIME_Map.put("mp3",   "audio/x-mpeg");
+        MIME_Map.put("mp4",   "video/mp4");
+        MIME_Map.put("mpc",   "application/vnd.mpohun.certificate");
+        MIME_Map.put("mpe",   "video/mpeg");
+        MIME_Map.put("mpeg",  "video/mpeg");
+        MIME_Map.put("mpg",   "video/mpeg");
+        MIME_Map.put("mpg4",  "video/mp4");
+        MIME_Map.put("mpga",  "audio/mpeg");
+        MIME_Map.put("msg",   "application/vnd.ms-outlook");
+        MIME_Map.put("ogg",   "audio/ogg");
+        MIME_Map.put("pdf",   "application/pdf");
+        MIME_Map.put("png",   "image/png");
+        MIME_Map.put("pps",   "application/vnd.ms-powerpoint");
+        MIME_Map.put("ppt",   "application/vnd.ms-powerpoint");
+        MIME_Map.put("pptx",  "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        MIME_Map.put("prop",  "text/plain");
+        MIME_Map.put("rc",    "text/plain");
+        MIME_Map.put("rmvb",  "audio/x-pn-realaudio");
+        MIME_Map.put("rtf",   "application/rtf");
+        MIME_Map.put("sh",    "text/plain");
+        MIME_Map.put("tar",   "application/x-tar");
+        MIME_Map.put("tgz",   "application/x-compressed");
+        MIME_Map.put("txt",   "text/plain");
+        MIME_Map.put("wav",   "audio/x-wav");
+        MIME_Map.put("wma",   "audio/x-ms-wma");
+        MIME_Map.put("wmv",   "audio/x-ms-wmv");
+        MIME_Map.put("wps",   "application/vnd.ms-works");
+        MIME_Map.put("xml",   "text/plain");
+        MIME_Map.put("z",     "application/x-compress");
+        MIME_Map.put("zip",   "application/x-zip-compressed");
+        MIME_Map.put("",       "*/*");
+    }
+
+    private byte[] getBytes(InputStream is) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        return buffer.toByteArray();
+    }
+
+    private void saveFile(byte[] bytes, String dirName, String fileName) throws IOException {
+        final File dir = new File(dirName);
+        final FileOutputStream fos = new FileOutputStream(new File(dir, fileName));
+        fos.write(bytes);
+        fos.flush();
+        fos.close();
     }
 }
