@@ -42,14 +42,6 @@ module.exports = [
         "id": "acidhax.cordova.chromecast.tests"
     },
     {
-        "id": "cordova-plugin-x-socialsharing.SocialSharing",
-        "file": "plugins/cordova-plugin-x-socialsharing/www/SocialSharing.js",
-        "pluginId": "cordova-plugin-x-socialsharing",
-        "clobbers": [
-            "window.plugins.socialsharing"
-        ]
-    },
-    {
         "id": "cordova-plugin-actionsheet.ActionSheet",
         "file": "plugins/cordova-plugin-actionsheet/www/ActionSheet.js",
         "pluginId": "cordova-plugin-actionsheet",
@@ -62,7 +54,6 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "cordova-plugin-crosswalk-webview": "2.0.0",
-    "cordova-plugin-x-socialsharing": "5.1.3",
     "cordova-plugin-actionsheet": "2.3.1"
 };
 // BOTTOM OF METADATA

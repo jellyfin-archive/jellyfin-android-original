@@ -1,13 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-packageName="com.mb.android" android-versionCode="20000831" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.8.31" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-packageName="com.mb.android" android-versionCode="20000832" id="com.emby.mobile" ios-CFBundleIdentifier="com.emby.mobile" version="2.8.32" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <feature name="ChromeSocketsUdp">
         <param name="android-package" value="org.chromium.ChromeSocketsUdp" />
     </feature>
     <feature name="Chromecast">
         <param name="android-package" value="acidhax.cordova.chromecast.Chromecast" />
-    </feature>
-    <feature name="SocialSharing">
-        <param name="android-package" value="nl.xservices.plugins.SocialSharing" />
     </feature>
     <feature name="ActionSheet">
         <param name="android-package" value="nl.xservices.plugins.actionsheet.ActionSheet" />
