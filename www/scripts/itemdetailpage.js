@@ -1,4 +1,4 @@
-﻿define(['layoutManager', 'cardBuilder', 'datetime', 'mediaInfo', 'backdrop', 'listView', 'itemContextMenu', 'itemHelper', 'userdataButtons', 'dom', 'indicators', 'apphost', 'imageLoader', 'libraryMenu', 'shell', 'globalize', 'browser', 'events', 'scrollStyles', 'emby-itemscontainer', 'emby-checkbox'], function (layoutManager, cardBuilder, datetime, mediaInfo, backdrop, listView, itemContextMenu, itemHelper, userdataButtons, dom, indicators, appHost, imageLoader, libraryMenu, shell, globalize, browser, events) {
+﻿define(['layoutManager', 'cardBuilder', 'datetime', 'mediaInfo', 'backdrop', 'listView', 'itemContextMenu', 'itemHelper', 'userdataButtons', 'dom', 'indicators', 'apphost', 'imageLoader', 'libraryMenu', 'shell', 'globalize', 'browser', 'events', 'scrollHelper', 'scrollStyles', 'emby-itemscontainer', 'emby-checkbox'], function (layoutManager, cardBuilder, datetime, mediaInfo, backdrop, listView, itemContextMenu, itemHelper, userdataButtons, dom, indicators, appHost, imageLoader, libraryMenu, shell, globalize, browser, events, scrollHelper) {
     'use strict';
 
     function getPromise(params) {
@@ -7,6 +7,10 @@
 
         if (id) {
             return ApiClient.getItem(Dashboard.getCurrentUserId(), id);
+        }
+
+        if (params.seriesTimerId) {
+            return ApiClient.getLiveTvSeriesTimer(params.seriesTimerId);
         }
 
         var name = params.genre;
@@ -75,7 +79,6 @@
             positionTo: button,
             cancelTimer: false,
             record: false,
-            editImages: false,
             deleteItem: item.IsFolder === true
         };
 
@@ -108,6 +111,79 @@
         });
     }
 
+    function getProgramScheduleHtml(items, options) {
+
+        options = options || {};
+
+        var html = '';
+        html += '<div is="emby-itemscontainer" class="itemsContainer vertical-list" data-contextmenu="false">';
+        html += listView.getListViewHtml({
+            items: items,
+            enableUserDataButtons: false,
+            image: false,
+            showProgramDateTime: true,
+            mediaInfo: false,
+            action: 'none',
+            moreButton: false,
+            recordButton: false
+        });
+
+        html += '</div>';
+
+        return html;
+    }
+
+    function renderSeriesTimerSchedule(page, seriesTimerId) {
+
+        ApiClient.getLiveTvTimers({
+            UserId: ApiClient.getCurrentUserId(),
+            ImageTypeLimit: 1,
+            EnableImageTypes: "Primary,Backdrop,Thumb",
+            SortBy: "StartDate",
+            EnableTotalRecordCount: false,
+            EnableUserData: false,
+            SeriesTimerId: seriesTimerId,
+            Fields: "ChannelInfo"
+
+        }).then(function (result) {
+
+            if (result.Items.length && result.Items[0].SeriesTimerId != seriesTimerId) {
+                result.Items = [];
+            }
+
+            var html = getProgramScheduleHtml(result.Items);
+
+            var scheduleTab = page.querySelector('.seriesTimerSchedule');
+            scheduleTab.innerHTML = html;
+
+            imageLoader.lazyChildren(scheduleTab);
+        });
+    }
+
+    function renderSeriesTimerEditor(page, item, user) {
+
+        if (item.Type !== 'SeriesTimer') {
+            return;
+        }
+
+        if (!user.Policy.EnableLiveTvManagement) {
+            page.querySelector('.seriesTimerScheduleSection').classList.add('hide');
+            page.querySelector('.btnCancelSeriesTimer').classList.add('hide');
+            return;
+        }
+
+        require(['seriesRecordingEditor'], function (seriesRecordingEditor) {
+            seriesRecordingEditor.embed(item, ApiClient.serverId(), {
+                context: page.querySelector('.seriesRecordingEditor')
+            });
+        });
+
+        page.querySelector('.seriesTimerScheduleSection').classList.remove('hide');
+        page.querySelector('.btnCancelSeriesTimer').classList.remove('hide');
+
+        renderSeriesTimerSchedule(page, item.Id);
+    }
+
     function reloadFromItem(page, params, item) {
 
         currentItem = item;
@@ -121,6 +197,8 @@
         Dashboard.getCurrentUser().then(function (user) {
 
             window.scrollTo(0, 0);
+
+            renderSeriesTimerEditor(page, item, user);
 
             renderImage(page, item, user);
             renderLogo(page, item, ApiClient);
@@ -1276,13 +1354,20 @@
 
                 renderCollectionItems(page, item, collectionItemTypes, result.Items);
             }
+            else if (item.Type === 'Episode') {
+
+                var card = childrenItemsContainer.querySelector('.card[data-id="' + item.Id + '"]');
+                if (card) {
+                    scrollHelper.toStart(childrenItemsContainer, card.previousSibling || card, true);
+                }
+            }
         });
 
         if (item.Type == "Season") {
             page.querySelector('#childrenTitle').innerHTML = globalize.translate('HeaderEpisodes');
         }
         else if (item.Type == "Episode") {
-            page.querySelector('#childrenTitle').innerHTML = item.SeasonName;
+            page.querySelector('#childrenTitle').innerHTML = globalize.translate('MoreFromValue', item.SeasonName);
         }
         else if (item.Type == "Series") {
             page.querySelector('#childrenTitle').innerHTML = globalize.translate('HeaderSeasons');
@@ -1582,7 +1667,7 @@
 
         for (var i = 0, length = userDataIcons.length; i < length; i++) {
 
-            if (item.Type == 'Program') {
+            if (item.Type == 'Program' || item.Type == 'SeriesTimer') {
                 userDataIcons[i].classList.add('hide');
             } else {
                 userDataIcons[i].classList.remove('hide');
@@ -1698,6 +1783,10 @@
     }
 
     function renderThemeMedia(page, item) {
+
+        if (item.Type === 'SeriesTimer' || item.Type === 'Timer' || item.Type === 'Genre' || item.Type === 'MusicGenre' || item.Type === 'GameGenre' || item.Type === 'Studio' || item.Type === 'Person') {
+            return;
+        }
 
         ApiClient.getThemeMedia(Dashboard.getCurrentUserId(), item.Id, true).then(function (result) {
 
@@ -2177,6 +2266,16 @@
         });
     }
 
+    function onCancelSeriesTimerClick() {
+
+        require(['recordingHelper'], function (recordingHelper) {
+
+            recordingHelper.cancelSeriesTimerWithConfirmation(currentItem.Id, currentItem.ServerId).then(function () {
+                Dashboard.navigate('livetv.html');
+            });
+        });
+    }
+
     return function (view, params) {
 
         function onPlayTrailerClick() {
@@ -2206,6 +2305,11 @@
         elems = view.querySelectorAll('.btnPlayTrailer');
         for (i = 0, length = elems.length; i < length; i++) {
             elems[i].addEventListener('click', onPlayTrailerClick);
+        }
+
+        elems = view.querySelectorAll('.btnCancelSeriesTimer');
+        for (i = 0, length = elems.length; i < length; i++) {
+            elems[i].addEventListener('click', onCancelSeriesTimerClick);
         }
 
         elems = view.querySelectorAll('.btnDeleteItem');
