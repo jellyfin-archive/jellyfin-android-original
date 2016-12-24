@@ -7,10 +7,15 @@ define(['browser', 'dom', 'css!./viewcontainer-lite'], function (browser, dom) {
     var pageContainerCount = 3;
     var selectedPageIndex = -1;
 
+    var forceDisableAnimation = navigator.userAgent.toLowerCase().indexOf('embytheaterpi') !== -1;
+
     function enableAnimation() {
 
         // too slow
         if (browser.tv) {
+            return false;
+        }
+        if (forceDisableAnimation) {
             return false;
         }
 

@@ -458,15 +458,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         mDisplayRemainingTime = mSettings.getBoolean(KEY_REMAINING_TIME_DISPLAY, false);
         // Clear the resume time, since it is only used for resumes in external
         // videos.
-        //SharedPreferences.Editor editor = mSettings.edit();
-        //editor.putLong(PreferencesActivity.VIDEO_RESUME_TIME, -1);
+        SharedPreferences.Editor editor = mSettings.edit();
+        editor.putLong(PreferencesActivity.VIDEO_RESUME_TIME, -1);
         // Also clear the subs list, because it is supposed to be per session
         // only (like desktop VLC). We don't want the custom subtitle files
         // to persist forever with this video.
         //editor.putString(PreferencesActivity.VIDEO_SUBTITLE_FILES, null);
         // Paused flag - per session too, like the subs list.
         //editor.remove(PreferencesActivity.VIDEO_PAUSED);
-        //editor.apply();
+        editor.apply();
         IntentFilter filter = new IntentFilter();
         if (mBattery != null)
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
@@ -3055,14 +3055,15 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                     return;
                 } else {
                     long rTime = mSettings.getLong(PreferencesActivity.VIDEO_RESUME_TIME, -1);
+                    savedTime = rTime;
                     if (rTime > 0 && !fromStart) {
                         if (mAskResume) {
                             showConfirmResumeDialog();
                             return;
                         } else {
-                            /*Editor editor = mSettings.edit();
+                            Editor editor = mSettings.edit();
                             editor.putLong(PreferencesActivity.VIDEO_RESUME_TIME, -1);
-                            editor.apply();*/
+                            editor.apply();
                             savedTime = rTime;
                         }
                     }
