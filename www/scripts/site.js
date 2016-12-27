@@ -1234,7 +1234,6 @@ var AppInfo = {};
             define("lazyLoader", [embyWebComponentsBowerPath + "/lazyloader/lazyloader-scroll"], returnFirstDependency);
         }
         define("imageLoader", [embyWebComponentsBowerPath + "/images/imagehelper"], returnFirstDependency);
-        define("syncJobList", ["components/syncjoblist/syncjoblist"], returnFirstDependency);
         define("appfooter", ["components/appfooter/appfooter"], returnFirstDependency);
         define("dockedtabs", ["components/dockedtabs/dockedtabs"], returnFirstDependency);
         define("directorybrowser", ["components/directorybrowser/directorybrowser"], returnFirstDependency);
@@ -1251,6 +1250,8 @@ var AppInfo = {};
         define("multiSelect", [embyWebComponentsBowerPath + "/multiselect/multiselect"], returnFirstDependency);
         define("alphaPicker", [embyWebComponentsBowerPath + "/alphapicker/alphapicker"], returnFirstDependency);
         define("paper-icon-button-light", [embyWebComponentsBowerPath + "/emby-button/paper-icon-button-light"]);
+
+        define("connectHelper", [embyWebComponentsBowerPath + "/emby-connect/connecthelper"], returnFirstDependency);
 
         define("emby-input", [embyWebComponentsBowerPath + "/emby-input/emby-input"], returnFirstDependency);
         define("emby-select", [embyWebComponentsBowerPath + "/emby-select/emby-select"], returnFirstDependency);
@@ -1290,6 +1291,8 @@ var AppInfo = {};
         define("guide-settings-dialog", [embyWebComponentsBowerPath + "/guide/guide-settings"], returnFirstDependency);
         define("syncDialog", [embyWebComponentsBowerPath + "/sync/sync"], returnFirstDependency);
         define("syncToggle", [embyWebComponentsBowerPath + "/sync/synctoggle"], returnFirstDependency);
+        define("syncJobEditor", [embyWebComponentsBowerPath + "/sync/syncjobeditor"], returnFirstDependency);
+        define("syncJobList", [embyWebComponentsBowerPath + "/sync/syncjoblist"], returnFirstDependency);
         define("voiceDialog", [embyWebComponentsBowerPath + "/voice/voicedialog"], returnFirstDependency);
         define("voiceReceiver", [embyWebComponentsBowerPath + "/voice/voicereceiver"], returnFirstDependency);
         define("voiceProcessor", [embyWebComponentsBowerPath + "/voice/voiceprocessor"], returnFirstDependency);
@@ -1318,8 +1321,10 @@ var AppInfo = {};
         // hack for an android test before browserInfo is loaded
         if (Dashboard.isRunningInCordova() && window.MainActivity) {
             paths.appStorage = "cordova/android/appstorage";
+            paths.filesystem = 'cordova/filesystem';
         } else {
             paths.appStorage = getAppStorage(apiClientBowerPath);
+            paths.filesystem = embyWebComponentsBowerPath + '/filesystem';
         }
 
         var sha1Path = bowerPath + "/cryptojslib/components/sha1-min";
@@ -2488,14 +2493,6 @@ var AppInfo = {};
             dependencies: [],
             autoFocus: false,
             controller: 'scripts/syncactivity'
-        });
-
-        defineRoute({
-            path: '/syncjob.html',
-            dependencies: [],
-            autoFocus: false,
-            transition: 'fade',
-            controller: 'scripts/syncjob'
         });
 
         defineRoute({
