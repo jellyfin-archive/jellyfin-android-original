@@ -1169,7 +1169,7 @@ span.itemCommunityRating:not(:empty) + .userDataIcons {
 
 @media all and (min-width: 800px) {
 
-    .mainDetailButtons, .recordingFields button {
+    .mainDetailButtons, .itemDetailPage .recordingFields button {
         font-size: 110%;
     }
 }
