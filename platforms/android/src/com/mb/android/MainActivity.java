@@ -89,12 +89,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
+import mediabrowser.apiinteraction.android.FindServersRunnable;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.OnDemandSync;
+import mediabrowser.apiinteraction.discovery.ServerLocator;
 import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
+import mediabrowser.model.apiclient.ServerDiscoveryInfo;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.registration.AppstoreRegRequest;
@@ -128,6 +131,9 @@ public class MainActivity extends CordovaActivity
     private int chromeVersion = 51;
 
     public static MainActivity Current;
+
+    // transparency
+    // http://stackoverflow.com/questions/23842776/how-to-make-android-webview-background-transparent-at-kitkat4-4
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -1163,6 +1169,33 @@ public class MainActivity extends CordovaActivity
         } catch (ActivityNotFoundException e) {
             return false;
         }
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void findServers(final int timeoutMs){
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new ServerLocator(getLogger(), new GsonJsonSerializer()).FindServers(timeoutMs, new Response<ArrayList<ServerDiscoveryInfo>>(){
+
+                    @Override
+                    public void onResponse(ArrayList<ServerDiscoveryInfo> servers){
+
+                        String json = new GsonJsonSerializer().SerializeToString(servers);
+                        RespondToWebView("window.ServerDiscoveryCallback("+json+");");
+                    }
+
+                    @Override
+                    public void onError(Exception ex){
+                        onResponse(new ArrayList<ServerDiscoveryInfo>());
+                    }
+                });
+            }
+        });
+
+        thread.start();
     }
 
     @android.webkit.JavascriptInterface

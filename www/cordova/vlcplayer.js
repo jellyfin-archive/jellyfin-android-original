@@ -4,10 +4,10 @@
 
         var self = this;
 
-        self.enableProgressReporting = false;
         self.name = 'Vlc Player';
         self.type = 'mediaplayer';
         self.id = 'vlcplayer';
+        self.isLocalPlayer = true;
 
         window.VlcAudioPlayer = self;
         window.VlcVideoPlayer = self;

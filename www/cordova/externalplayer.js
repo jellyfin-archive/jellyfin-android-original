@@ -12,6 +12,7 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         // Prioritize first
         self.priority = -1;
         self.supportsProgress = false;
+        self.isLocalPlayer = true;
 
         var currentProcess;
 
@@ -19,12 +20,21 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
 
         self.canPlayMediaType = function (mediaType) {
 
-            return mediaType === 'Video' && appSettings.enableExternalPlayers();
+            if (mediaType === 'Video') {
+
+                return appSettings.enableExternalPlayers();
+            }
+
+            return false;
         };
 
         self.canPlayItem = function (item, playOptions) {
 
-            return !playOptions.fullscreen;
+            if (!playOptions.fullscreen) {
+                return false;
+            }
+
+            return true;
         };
 
         self.currentSrc = function () {
@@ -52,10 +62,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         }
 
         self.play = function (options) {
-
-            var player = getPlayer(options);
-
-            var path = player.path;
 
             return modifyStreamUrl(options).then(function (streamUrl) {
 
