@@ -40,21 +40,12 @@ module.exports = [
     {
         "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
         "id": "acidhax.cordova.chromecast.tests"
-    },
-    {
-        "id": "cordova-plugin-actionsheet.ActionSheet",
-        "file": "plugins/cordova-plugin-actionsheet/www/ActionSheet.js",
-        "pluginId": "cordova-plugin-actionsheet",
-        "clobbers": [
-            "window.plugins.actionsheet"
-        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "cordova-plugin-crosswalk-webview": "2.0.0",
-    "cordova-plugin-actionsheet": "2.3.1"
+    "cordova-plugin-crosswalk-webview": "2.0.0"
 };
 // BOTTOM OF METADATA
 });

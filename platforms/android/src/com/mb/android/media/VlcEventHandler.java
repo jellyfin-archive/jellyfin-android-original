@@ -97,7 +97,7 @@ public class VlcEventHandler implements MediaPlayer.EventListener {
 
         int volume = mLibVLC.getVolume();
 
-        String js = String.format("window.AudioRenderer.Current.report('%s', %s, %s, %s, %s)",
+        String js = String.format("window.VlcAudioPlayer.report('%s', %s, %s, %s, %s)",
                 eventName,
                 String.valueOf(length).toLowerCase(),
                 String.valueOf(time).toLowerCase(),

@@ -503,6 +503,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         getWindowManager().getDefaultDisplay().getMetrics(mScreen);
 
         subtitleText = (TextView) findViewById(R.id.offLine_subtitleText);
+        mLoading.setVisibility(View.INVISIBLE);
     }
 
     private void updateManualSubtitlePosition(int topMargin) {
@@ -587,8 +588,6 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                     uri = convertedUri;
             }
             mUri = uri;
-            updateSeekable(mService.isSeekable());
-            updatePausable(mService.isPausable());
             mTitle.setText(mService.getCurrentMediaWrapper().getTitle());
             /*if (mPlaylist.getVisibility() == View.VISIBLE) {
                 mPlaylistAdapter.setCurrentIndex(mService.getCurrentMediaPosition());
@@ -1554,7 +1553,9 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                     stopLoading();
                 else if (!mHandler.hasMessages(LOADING_ANIMATION) && !mIsLoading
                         && mTouchAction != TOUCH_SEEK && !mDragging)
-                    mHandler.sendEmptyMessageDelayed(LOADING_ANIMATION, LOADING_ANIMATION_DELAY);
+                {
+                    //mHandler.sendEmptyMessageDelayed(LOADING_ANIMATION, LOADING_ANIMATION_DELAY);
+                }
                 break;
         }
     }
@@ -1629,7 +1630,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         }
         if (mService.expand(false) == 0) {
             mHandler.removeMessages(LOADING_ANIMATION);
-            mHandler.sendEmptyMessageDelayed(LOADING_ANIMATION, LOADING_ANIMATION_DELAY);
+            //mHandler.sendEmptyMessageDelayed(LOADING_ANIMATION, LOADING_ANIMATION_DELAY);
             Log.d(TAG, "Found a video playlist, expanding it");
             mHandler.post(new Runnable() {
                 @Override
@@ -1887,6 +1888,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         lp.height = (int) Math.ceil(dh * mVideoHeight / mVideoVisibleHeight);
         surface.setLayoutParams(lp);
         subtitlesSurface.setLayoutParams(lp);
+
+        int subtitleMargin = (lp.height / 2) - 70;
+        updateManualSubtitlePosition(subtitleMargin);
+
         // set frame size (crop if necessary)
         lp = surfaceFrame.getLayoutParams();
         lp.width = (int) Math.floor(dw);
@@ -1932,9 +1937,12 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         }
         if (mFov != 0f && mScaleGestureDetector != null)
             mScaleGestureDetector.onTouchEvent(event);
-        if (mScaleGestureDetector != null && mScaleGestureDetector.isInProgress()){
+        if ((mScaleGestureDetector != null && mScaleGestureDetector.isInProgress()) ||
+                (mDetector != null && mDetector.onTouchEvent(event)))
+        {
             return true;
         }
+
         if ((mDetector != null && mDetector.onTouchEvent(event)))
             return true;
         if (mSurfaceYDisplayRange == 0)
@@ -3367,14 +3375,14 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         if (mIsLoading)
             return;
         mIsLoading = true;
-        AnimationSet anim = new AnimationSet(true);
+        /*AnimationSet anim = new AnimationSet(true);
         RotateAnimation rotate = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotate.setDuration(800);
         rotate.setInterpolator(new DecelerateInterpolator());
         rotate.setRepeatCount(RotateAnimation.INFINITE);
         anim.addAnimation(rotate);
         mLoading.setVisibility(View.VISIBLE);
-        mLoading.startAnimation(anim);
+        mLoading.startAnimation(anim);*/
     }
     /**
      * Stop the video loading animation.

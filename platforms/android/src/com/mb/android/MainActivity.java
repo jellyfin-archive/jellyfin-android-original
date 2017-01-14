@@ -31,10 +31,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.net.http.SslCertificate;
@@ -61,7 +59,6 @@ import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
 
-import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaActivity;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.CrosswalkWebView;
@@ -72,14 +69,9 @@ import com.mb.android.webviews.NativeWebView;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
 import org.crosswalk.engine.XWalkCordovaView;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -92,7 +84,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -252,7 +243,7 @@ public class MainActivity extends CordovaActivity
 
         if (enableSystemWebView()){
 
-            engine =  new SystemWebViewEngine(new MySystemWebView(this, logger), preferences);
+            engine =  new SystemWebViewEngine(new MySystemWebView(this, logger, this), preferences);
             WebView webkitView = (WebView)engine.getView();
             webkitView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
             webView = new NativeWebView(webkitView);
