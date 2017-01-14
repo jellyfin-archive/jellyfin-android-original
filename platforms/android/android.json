@@ -7,12 +7,7 @@
         "files": {
             "res/xml/config.xml": {
                 "parents": {
-                    "/widget": [
-                        {
-                            "xml": "<feature name=\"ChromeSocketsUdp\"><param name=\"android-package\" value=\"org.chromium.ChromeSocketsUdp\" /></feature>",
-                            "count": 1
-                        }
-                    ],
+                    "/widget": [],
                     "/*": [
                         {
                             "xml": "<feature name=\"Chromecast\"><param name=\"android-package\" value=\"acidhax.cordova.chromecast.Chromecast\" /></feature>",
@@ -84,15 +79,6 @@
         }
     },
     "installed_plugins": {
-        "cordova-plugin-chrome-apps-common": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-chrome-apps-iossocketscommon": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-chrome-apps-sockets-udp": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
         "acidhax.cordova.chromecast": {
             "PACKAGE_NAME": "com.mb.android"
         },
@@ -107,32 +93,6 @@
     },
     "dependent_plugins": {},
     "modules": [
-        {
-            "file": "plugins/cordova-plugin-chrome-apps-common/events.js",
-            "id": "cordova-plugin-chrome-apps-common.events",
-            "clobbers": [
-                "chrome.Event"
-            ]
-        },
-        {
-            "file": "plugins/cordova-plugin-chrome-apps-common/errors.js",
-            "id": "cordova-plugin-chrome-apps-common.errors"
-        },
-        {
-            "file": "plugins/cordova-plugin-chrome-apps-common/stubs.js",
-            "id": "cordova-plugin-chrome-apps-common.stubs"
-        },
-        {
-            "file": "plugins/cordova-plugin-chrome-apps-common/helpers.js",
-            "id": "cordova-plugin-chrome-apps-common.helpers"
-        },
-        {
-            "file": "plugins/cordova-plugin-chrome-apps-sockets-udp/sockets.udp.js",
-            "id": "cordova-plugin-chrome-apps-sockets-udp.sockets.udp",
-            "clobbers": [
-                "chrome.sockets.udp"
-            ]
-        },
         {
             "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
             "id": "acidhax.cordova.chromecast.ChromecastApi",
