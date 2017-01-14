@@ -732,6 +732,8 @@ var AppInfo = {};
         } else {
             AppInfo.moreIcon = 'more-vert';
         }
+
+        AppInfo.supportsUserDisplayLanguageSetting = Dashboard.isConnectMode();
     }
 
     function initializeApiClient(apiClient) {
@@ -1361,7 +1363,7 @@ var AppInfo = {};
                 appSettings.set('externalplayers', val.toString());
             }
 
-            return appSettings.get('externalplayers') == 'true';
+            return appSettings.get('externalplayers') === 'true';
         };
 
         return appSettings;
