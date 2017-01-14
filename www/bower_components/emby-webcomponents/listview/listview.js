@@ -234,8 +234,12 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
 
                 var imageClass = isLargeStyle ? 'listItemImage listItemImage-large' : 'listItemImage';
 
+                if (!clickEntireItem) {
+                    imageClass += ' itemAction';
+                }
+
                 if (imgUrl) {
-                    html += '<div class="' + imageClass + ' lazy" data-src="' + imgUrl + '" item-icon>';
+                    html += '<div data-action="link" class="' + imageClass + ' lazy" data-src="' + imgUrl + '" item-icon>';
                 } else {
                     html += '<div class="' + imageClass + '">';
                 }
@@ -312,17 +316,21 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                 textlines.push(displayName);
             }
 
-            if (options.artist !== false && (options.artist === true || item.AlbumArtist !== options.containerAlbumArtist)) {
+            if (item.IsFolder) {
+                if (options.artist !== false) {
 
-                if (item.ArtistItems && item.Type !== 'MusicAlbum') {
-                    textlines.push(item.ArtistItems.map(function (a) {
-                        return a.Name;
-
-                    }).join(', '));
+                    if (item.AlbumArtist && item.Type === 'MusicAlbum') {
+                        textlines.push(item.AlbumArtist);
+                    }
                 }
+            } else {
+                if (options.artist !== false && (options.artist === true || (item.Artists || [])[0] !== options.containerAlbumArtist)) {
 
-                else if (item.AlbumArtist && item.Type === 'MusicAlbum') {
-                    textlines.push(item.AlbumArtist);
+                    if (item.ArtistItems && item.Type !== 'MusicAlbum') {
+                        textlines.push(item.ArtistItems.map(function (a) {
+                            return a.Name;
+                        }).join(', '));
+                    }
                 }
             }
 
@@ -389,6 +397,10 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
             }
 
             if (!clickEntireItem) {
+
+                if (options.addToListButton) {
+                    html += '<button is="paper-icon-button-light" class="listItemButton itemAction autoSize" data-action="addtoplaylist"><i class="md-icon">&#xE03B;</i></button>';
+                }
 
                 if (options.moreButton !== false) {
                     html += '<button is="paper-icon-button-light" class="listItemButton itemAction autoSize" data-action="menu"><i class="md-icon">' + moreIcon + '</i></button>';

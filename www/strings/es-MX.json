@@ -588,6 +588,17 @@
     "ButtonHome": "Inicio",
     "ButtonSearch": "B\u00fasqueda",
     "ButtonSettings": "Configuraci\u00f3n",
+    "Settings": "Configuraci\u00f3n",
+    "Mute": "Silenciar",
+    "Unmute": "Activar Sonido",
+    "Subtitles": "Subtitulos",
+    "Audio": "Audio",
+    "Rewind": "Regresar",
+    "Fullscreen": "Pantalla Completa",
+    "ExitFullscreen": "Salir de Pantalla Completa",
+    "PictureInPicture": "Pantalla en pantalla.",
+    "PlayOnAnotherDevice": "Reproducir en otro dispositivo",
+    "FastForward": "Avance R\u00e1pido",
     "ButtonTakeScreenshot": "Capturar Pantalla",
     "LetterButtonAbbreviation": "A",
     "TabNowPlaying": "Reproduci\u00e9ndo Ahora",
@@ -1946,5 +1957,5 @@
     "ErrorAddingXmlTvFile": "Hubo un error accediendo al archivo XmlTV. Por favor aseg\u00farese de que el archivo existe e intente de nuevo.",
     "OptionAutomaticallyGroupSeries": "Fusionar autom\u00e1ticamente series esparcidas a trav\u00e9s de m\u00faltiples carpetas.",
     "OptionAutomaticallyGroupSeriesHelp": "Si se habilita, las series que se reparten a trav\u00e9s de m\u00faltiples carpetas dentro de esta biblioteca ser\u00e1n fusionadas en una sola serie.",
-    "ErrorReachingEmbyConnect": "There was an error reaching the Emby Connect server. Please ensure you have an active internet connection and try again."
+    "ErrorReachingEmbyConnect": "Hubo un error al tratar de contactar el servidor de Emby Connect. Por favor aseg\u00farese de que tiene una conexi\u00f3n activa de internet e intente de nuevo."
 }

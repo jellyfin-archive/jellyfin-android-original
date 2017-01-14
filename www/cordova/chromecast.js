@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(['pluginManager'], function (pluginManager) {
 
     var PlayerName = 'Chromecast';
 
@@ -36,16 +36,22 @@
     }
 
     function onChromecastLoaded(e) {
-        var player = e.detail.player;
 
-        player.getTargets = getTargets;
-        player.tryPair = tryPair;
+        var plugin = pluginManager.plugins().filter(function (p) {
+            return p.id === 'chromecast';
+        })[0];
+
+        if (plugin) {
+            plugin.tryPair = tryPair;
+            plugin.getTargets = getTargets;
+        }
     }
 
     if (MainActivity.supportsPlayStore()) {
         // Use native chromecast support
         document.addEventListener('chromecastloaded', onChromecastLoaded);
-        require(['scripts/chromecast']);
     }
 
-})();
+    onChromecastLoaded();
+
+});

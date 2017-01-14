@@ -209,6 +209,12 @@ define(['playbackManager', 'inputManager', 'connectionManager', 'embyRouter', 'g
         });
     }
 
+    function sendToast(text) {
+        require(['toast'], function (toast) {
+            toast(text);
+        });
+    }
+
     function executeAction(card, target, action) {
 
         target = target || card;
@@ -240,7 +246,10 @@ define(['playbackManager', 'inputManager', 'connectionManager', 'embyRouter', 'g
         }
 
         else if (action === 'instantmix') {
-            playbackManager.instantMix(playableItemId, serverId);
+            playbackManager.instantMix({
+                Id: playableItemId,
+                ServerId: serverId
+            });
         }
 
         else if (action === 'play') {
@@ -252,6 +261,22 @@ define(['playbackManager', 'inputManager', 'connectionManager', 'embyRouter', 'g
                 startPositionTicks: startPositionTicks,
                 serverId: serverId
             });
+        }
+
+        else if (action === 'queue') {
+
+            if (playbackManager.isPlaying()) {
+                playbackManager.queue({
+                    ids: [playableItemId],
+                    serverId: serverId
+                });
+                sendToast(globalize.translate('sharedcomponents#MediaQueued'));
+            } else {
+                playbackManager.queue({
+                    ids: [playableItemId],
+                    serverId: serverId
+                });
+            }
         }
 
         else if (action === 'playallfromhere') {
@@ -301,6 +326,21 @@ define(['playbackManager', 'inputManager', 'connectionManager', 'embyRouter', 'g
         else if (action === 'playtrailer') {
             getItem(target).then(playTrailer);
         }
+
+        else if (action === 'addtoplaylist') {
+            getItem(target).then(addToPlaylist);
+        }
+    }
+
+    function addToPlaylist(item) {
+        require(['playlistEditor'], function (playlistEditor) {
+
+            new playlistEditor().show({
+                items: [item.Id],
+                serverId: item.ServerId
+
+            });
+        });
     }
 
     function playTrailer(item) {

@@ -167,7 +167,7 @@ var Dashboard = {
                 url = '/' + url;
             }
         }
-        Emby.Page.show(url);
+        return Emby.Page.show(url);
     },
 
     showLoadingMsg: function () {
@@ -584,11 +584,6 @@ var Dashboard = {
 
     },
 
-    isServerlessPage: function () {
-        var url = window.location.href.toLowerCase();
-        return url.indexOf('connectlogin.html') != -1 || url.indexOf('selectserver.html') != -1 || url.indexOf('login.html') != -1 || url.indexOf('forgotpassword.html') != -1 || url.indexOf('forgotpasswordpin.html') != -1;
-    },
-
     capabilities: function () {
 
         var caps = {
@@ -604,7 +599,6 @@ var Dashboard = {
         };
 
         if (Dashboard.isRunningInCordova() && !browserInfo.safari) {
-            caps.SupportsOfflineAccess = true;
             caps.SupportsSync = true;
             caps.SupportsContentUploading = true;
         }
@@ -656,208 +650,13 @@ var Dashboard = {
         }
     },
 
-    loadExternalPlayer: function () {
-
-        return new Promise(function (resolve, reject) {
-
-            require(['scripts/externalplayer.js'], function () {
-
-                if (Dashboard.isRunningInCordova()) {
-                    require(['cordova/externalplayer.js'], resolve);
-                } else {
-                    resolve();
-                }
-            });
-        });
-    },
-
     getDeviceProfile: function (maxHeight, profileOptions) {
 
         return new Promise(function (resolve, reject) {
 
-            function updateDeviceProfileForAndroid(profile) {
-
-                // Just here as an easy escape out, if ever needed
-                var enableVlcVideo = true;
-                var enableVlcAudio = window.VlcAudio;
-
-                if (enableVlcVideo) {
-
-                    profile.DirectPlayProfiles.push({
-                        Container: "m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv",
-                        Type: 'Video',
-                        AudioCodec: 'aac,aac_latm,mp2,mp3,ac3,wma,dca,dts,pcm,PCM_S16LE,PCM_S24LE,opus,flac'
-                    });
-
-                    profile.CodecProfiles = profile.CodecProfiles.filter(function (i) {
-                        return i.Type == 'Audio';
-                    });
-
-                    profile.SubtitleProfiles = [];
-                    profile.SubtitleProfiles.push({
-                        Format: 'srt',
-                        Method: 'External'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ssa',
-                        Method: 'External'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ass',
-                        Method: 'External'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'srt',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'subrip',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ass',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ssa',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvb_teletext',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvb_subtitle',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvbsub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'pgs',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'pgssub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvdsub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'vtt',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'sub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'idx',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'smi',
-                        Method: 'Embed'
-                    });
-
-                    profile.CodecProfiles.push({
-                        Type: 'Video',
-                        Container: 'avi',
-                        Conditions: [
-                            {
-                                Condition: 'NotEqual',
-                                Property: 'CodecTag',
-                                Value: 'xvid'
-                            }
-                        ]
-                    });
-
-                    profile.CodecProfiles.push({
-                        Type: 'Video',
-                        Codec: 'h264',
-                        Conditions: [
-                        {
-                            Condition: 'EqualsAny',
-                            Property: 'VideoProfile',
-                            Value: 'high|main|baseline|constrained baseline'
-                        },
-                        {
-                            Condition: 'LessThanEqual',
-                            Property: 'VideoLevel',
-                            Value: '41'
-                        }]
-                    });
-
-                    //profile.TranscodingProfiles.filter(function (p) {
-
-                    //    return p.Type == 'Video' && p.Container == 'mkv';
-
-                    //}).forEach(function (p) {
-
-                    //    p.Container = 'ts';
-                    //});
-
-                    profile.TranscodingProfiles.filter(function (p) {
-
-                        return p.Type == 'Video' && p.CopyTimestamps == true;
-
-                    }).forEach(function (p) {
-
-                        // Vlc doesn't seem to handle this well
-                        p.CopyTimestamps = false;
-                    });
-
-                    profile.TranscodingProfiles.filter(function (p) {
-
-                        return p.Type == 'Video' && p.VideoCodec == 'h264';
-
-                    }).forEach(function (p) {
-
-                        p.AudioCodec += ',ac3';
-                    });
-                }
-
-                if (enableVlcAudio) {
-
-                    profile.DirectPlayProfiles.push({
-                        Container: "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac,m4a",
-                        Type: 'Audio'
-                    });
-
-                    profile.CodecProfiles = profile.CodecProfiles.filter(function (i) {
-                        return i.Type != 'Audio';
-                    });
-
-                    profile.CodecProfiles.push({
-                        Type: 'Audio',
-                        Conditions: [{
-                            Condition: 'LessThanEqual',
-                            Property: 'AudioChannels',
-                            Value: '2'
-                        }]
-                    });
-                }
-            }
-
             require(['browserdeviceprofile', 'qualityoptions', 'appSettings'], function (profileBuilder, qualityoptions, appSettings) {
 
-                var supportsCustomSeeking = false;
-                if (!browserInfo.mobile) {
-                    supportsCustomSeeking = true;
-                } else if (AppInfo.isNativeApp && browserInfo.safari) {
-                    if (navigator.userAgent.toLowerCase().indexOf('ipad') == -1) {
-                        // Need to disable it in order to support picture in picture
-                        supportsCustomSeeking = true;
-                    }
-                } else if (AppInfo.isNativeApp) {
-                    supportsCustomSeeking = true;
-                }
-
                 var profile = profileBuilder(Object.assign(profileOptions || {}, {
-                    supportsCustomSeeking: supportsCustomSeeking
                 }));
 
                 if (!(AppInfo.isNativeApp && browserInfo.android) && !browserInfo.edge && !browserInfo.msie) {
@@ -878,10 +677,6 @@ var Dashboard = {
                     maxHeight = qualityoptions.getVideoQualityOptions(bitrateSetting).filter(function (q) {
                         return q.selected;
                     })[0].maxHeight;
-                }
-
-                if (AppInfo.isNativeApp && browserInfo.android) {
-                    updateDeviceProfileForAndroid(profile);
                 }
 
                 profile.MaxStreamingBitrate = bitrateSetting;
@@ -916,16 +711,13 @@ var AppInfo = {};
             AppInfo.hasLowImageBandwidth = true;
         }
 
-        AppInfo.supportsExternalPlayers = true;
-
         if (isCordova) {
             AppInfo.enableAppLayouts = true;
-            AppInfo.supportsExternalPlayerMenu = true;
             AppInfo.isNativeApp = true;
             AppInfo.enableHomeTabs = false;
 
-            if (isIOS) {
-                AppInfo.supportsExternalPlayers = false;
+            if (isAndroid) {
+                AppInfo.supportsExternalPlayers = true;
             }
         }
         else {
@@ -934,8 +726,6 @@ var AppInfo = {};
 
         // This currently isn't working on android, unfortunately
         AppInfo.supportsFileInput = !(AppInfo.isNativeApp && isAndroid);
-
-        AppInfo.hasPhysicalVolumeButtons = isCordova || browserInfo.mobile;
 
         if (isCordova && isIOS) {
             AppInfo.moreIcon = 'more-horiz';
@@ -1204,27 +994,25 @@ var AppInfo = {};
             itemHelper: embyWebComponentsBowerPath + '/itemhelper',
             itemShortcuts: embyWebComponentsBowerPath + "/shortcuts",
             serverNotifications: embyWebComponentsBowerPath + '/servernotifications',
+            playbackManager: embyWebComponentsBowerPath + '/playback/playbackmanager',
+            nowPlayingHelper: embyWebComponentsBowerPath + '/playback/nowplayinghelper',
+            pluginManager: embyWebComponentsBowerPath + '/pluginmanager',
+            packageManager: embyWebComponentsBowerPath + '/packagemanager',
             webAnimations: bowerPath + '/web-animations-js/web-animations-next-lite.min'
         };
 
         paths.hlsjs = bowerPath + "/hlsjs/dist/hls.min";
 
-        if ((window.chrome && window.chrome.sockets) || Dashboard.isRunningInCordova()) {
-            paths.serverdiscovery = apiClientBowerPath + "/serverdiscovery-chrome";
-        } else {
-            paths.serverdiscovery = apiClientBowerPath + "/serverdiscovery";
-        }
-
         define("webActionSheet", [embyWebComponentsBowerPath + "/actionsheet/actionsheet"], returnFirstDependency);
 
         if (Dashboard.isRunningInCordova()) {
             paths.sharingMenu = "cordova/sharingwidget";
-            paths.wakeonlan = "cordova/wakeonlan";
         } else {
-            paths.wakeonlan = apiClientBowerPath + "/wakeonlan";
 
             define("sharingMenu", [embyWebComponentsBowerPath + "/sharing/sharingmenu"], returnFirstDependency);
         }
+
+        paths.wakeonlan = apiClientBowerPath + "/wakeonlan";
 
         define("libjass", [bowerPath + "/libjass/libjass.min", "css!" + bowerPath + "/libjass/libjass"], returnFirstDependency);
 
@@ -1239,6 +1027,7 @@ var AppInfo = {};
         define("directorybrowser", ["components/directorybrowser/directorybrowser"], returnFirstDependency);
         define("metadataEditor", [embyWebComponentsBowerPath + "/metadataeditor/metadataeditor"], returnFirstDependency);
         define("personEditor", [embyWebComponentsBowerPath + "/metadataeditor/personeditor"], returnFirstDependency);
+        define("playerSelectionMenu", ["components/playerselection"], returnFirstDependency);
 
         define("libraryMenu", ["scripts/librarymenu"], returnFirstDependency);
 
@@ -1273,6 +1062,10 @@ var AppInfo = {};
         define("itemContextMenu", [embyWebComponentsBowerPath + "/itemcontextmenu"], returnFirstDependency);
         define("imageEditor", [embyWebComponentsBowerPath + "/imageeditor/imageeditor"], returnFirstDependency);
         define("dom", [embyWebComponentsBowerPath + "/dom"], returnFirstDependency);
+
+        define("fullscreen-doubleclick", [embyWebComponentsBowerPath + "/fullscreen/fullscreen-doubleclick"], returnFirstDependency);
+        define("fullscreenManager", [embyWebComponentsBowerPath + "/fullscreen/fullscreenmanager", 'events'], returnFirstDependency);
+
         define("layoutManager", [embyWebComponentsBowerPath + "/layoutmanager"], getLayoutManager);
         define("playMenu", [embyWebComponentsBowerPath + "/playmenu"], returnFirstDependency);
         define("refreshDialog", [embyWebComponentsBowerPath + "/refreshdialog/refreshdialog"], returnFirstDependency);
@@ -1284,6 +1077,8 @@ var AppInfo = {};
         define("cardBuilder", [embyWebComponentsBowerPath + "/cardbuilder/cardbuilder"], returnFirstDependency);
         define("peoplecardbuilder", [embyWebComponentsBowerPath + "/cardbuilder/peoplecardbuilder"], returnFirstDependency);
         define("chaptercardbuilder", [embyWebComponentsBowerPath + "/cardbuilder/chaptercardbuilder"], returnFirstDependency);
+
+        define("mouseManager", [embyWebComponentsBowerPath + "/input/mouse"], returnFirstDependency);
 
         define("deleteHelper", [embyWebComponentsBowerPath + "/deletehelper"], returnFirstDependency);
         define("tvguide", [embyWebComponentsBowerPath + "/guide/guide"], returnFirstDependency);
@@ -1305,7 +1100,7 @@ var AppInfo = {};
 
         // hack for an android test before browserInfo is loaded
         if (Dashboard.isRunningInCordova() && window.MainActivity) {
-            define("shell", ["cordova/android/shell"], returnFirstDependency);
+            define("shell", ["cordova/shell"], returnFirstDependency);
         } else {
             define("shell", [embyWebComponentsBowerPath + "/shell"], returnFirstDependency);
         }
@@ -1320,7 +1115,7 @@ var AppInfo = {};
 
         // hack for an android test before browserInfo is loaded
         if (Dashboard.isRunningInCordova() && window.MainActivity) {
-            paths.appStorage = "cordova/android/appstorage";
+            paths.appStorage = "cordova/appstorage";
             paths.filesystem = 'cordova/filesystem';
         } else {
             paths.appStorage = getAppStorage(apiClientBowerPath);
@@ -1393,15 +1188,14 @@ var AppInfo = {};
 
         if (Dashboard.isRunningInCordova()) {
             define("iapManager", ["cordova/iap"], returnFirstDependency);
-            define("localassetmanager", ["cordova/localassetmanager"], returnFirstDependency);
             define("fileupload", ["cordova/fileupload"], returnFirstDependency);
         } else {
             define("iapManager", ["components/iap"], returnFirstDependency);
-            define("localassetmanager", [apiClientBowerPath + "/localassetmanager"], returnFirstDependency);
             define("fileupload", [apiClientBowerPath + "/fileupload"], returnFirstDependency);
         }
         define("connectionmanager", [apiClientBowerPath + "/connectionmanager"]);
 
+        define("cameraRoll", [apiClientBowerPath + "/cameraroll"], returnFirstDependency);
         define("contentuploader", [apiClientBowerPath + "/sync/contentuploader"]);
         define("serversync", [apiClientBowerPath + "/sync/serversync"]);
         define("multiserversync", [apiClientBowerPath + "/sync/multiserversync"]);
@@ -1446,66 +1240,14 @@ var AppInfo = {};
             return dialoghelper;
         });
 
+        define("inputmanager", ['inputManager'], returnFirstDependency);
+
         // alias
         define("historyManager", ['embyRouter'], returnFirstDependency);
 
         define("headroom-window", ['headroom'], createWindowHeadroom);
         define("hammer-main", ['hammer'], createMainContentHammer);
         define("appfooter-shared", ['appfooter'], createSharedAppFooter);
-
-        // mock this for now. not used in this app
-        define("playbackManager", [], function () {
-            return {
-                isPlaying: function () {
-                    return MediaPlayer.currentItem != null;
-                },
-                isPlayingVideo: function () {
-                    return MediaPlayer.currentItem != null;
-                },
-                play: function (options) {
-
-                    if (options.fullscreen === false) {
-                        // theme backdrops - not supported
-                        if (!options.items || options.items[0].MediaType == 'Video') {
-                            return Promise.reject();
-                        }
-                    }
-
-                    return MediaController.play(options);
-                },
-                queue: function (options) {
-
-                    MediaController.queue(options);
-                },
-                currentPlaylistIndex: function (options) {
-                    return MediaController.currentPlaylistIndex(options);
-                },
-                canQueueMediaType: function (mediaType) {
-                    return MediaController.canQueueMediaType(mediaType);
-                },
-                canPlay: function (item) {
-                    return MediaController.canPlay(item);
-                },
-                canQueue: function (item) {
-                    return MediaController.canQueueMediaType(item.MediaType, item.Type);
-                },
-                instantMix: function (item) {
-                    return MediaController.instantMix(item);
-                },
-                shuffle: function (item) {
-                    return MediaController.shuffle(item);
-                },
-                pause: function () {
-                    return MediaController.pause();
-                },
-                stop: function () {
-                    return MediaController.stop();
-                },
-                seek: function (ticks) {
-                    return MediaController.seek(ticks);
-                }
-            };
-        });
 
         // mock this for now. not used in this app
         define("skinManager", [], function () {
@@ -1515,18 +1257,6 @@ var AppInfo = {};
 
                     Emby.Page.show('/home.html');
                 }
-            };
-        });
-
-        // mock this for now. not used in this app
-        define("playbackManager", [], function () {
-            return {
-            };
-        });
-
-        // mock this for now. not used in this app
-        define("pluginManager", [], function () {
-            return {
             };
         });
 
@@ -1544,6 +1274,10 @@ var AppInfo = {};
 
             embyRouter.showLocalLogin = function (apiClient, serverId, manualLogin) {
                 Dashboard.navigate('login.html?serverid=' + serverId);
+            };
+
+            embyRouter.showVideoOsd = function () {
+                return Dashboard.navigate('videoosd.html');
             };
 
             embyRouter.showSelectServer = function () {
@@ -1589,6 +1323,9 @@ var AppInfo = {};
 
             embyRouter.showSettings = function () {
                 Dashboard.navigate('mypreferencesmenu.html');
+            };
+
+            embyRouter.setTitle = function () {
             };
 
             function showItem(item, serverId, options) {
@@ -1641,15 +1378,11 @@ var AppInfo = {};
     function initRequireWithBrowser(browser) {
 
         var bowerPath = getBowerPath();
-
+        var apiClientBowerPath = bowerPath + "/emby-apiclient";
         var embyWebComponentsBowerPath = bowerPath + '/emby-webcomponents';
 
-        if (Dashboard.isRunningInCordova()) {
-            if (window.MainActivity && window.MainActivity.getAndroidBuildVersion() >= 24) {
-                define("actionsheet", ["webActionSheet"], returnFirstDependency);
-            } else {
-                define("actionsheet", ["cordova/actionsheet"], returnFirstDependency);
-            }
+        if (Dashboard.isRunningInCordova() && browser.safari) {
+            define("actionsheet", ["cordova/actionsheet"], returnFirstDependency);
         } else {
             define("actionsheet", ["webActionSheet"], returnFirstDependency);
         }
@@ -1664,8 +1397,18 @@ var AppInfo = {};
             define("registerElement", []);
         }
 
+        if ((window.chrome && window.chrome.sockets)) {
+            define("serverdiscovery", [apiClientBowerPath + "/serverdiscovery-chrome"], returnFirstDependency);
+        } else if (Dashboard.isRunningInCordova() && browser.android) {
+            define("serverdiscovery", ["cordova/serverdiscovery"], returnFirstDependency);
+        } else if (Dashboard.isRunningInCordova() && browser.safari) {
+            define("serverdiscovery", [apiClientBowerPath + "/serverdiscovery-chrome"], returnFirstDependency);
+        } else {
+            define("serverdiscovery", [apiClientBowerPath + "/serverdiscovery"], returnFirstDependency);
+        }
+
         if (Dashboard.isRunningInCordova() && browser.safari) {
-            define("imageFetcher", ['cordova/ios/imagestore'], returnFirstDependency);
+            define("imageFetcher", ['cordova/imagestore'], returnFirstDependency);
         } else {
             define("imageFetcher", [embyWebComponentsBowerPath + "/images/basicimagefetcher"], returnFirstDependency);
         }
@@ -1686,7 +1429,7 @@ var AppInfo = {};
             define("confirm", [embyWebComponentsBowerPath + "/confirm/confirm"], returnFirstDependency);
         }
 
-        var preferNativePrompt = preferNativeAlerts || browser.xboxOne || browser.ps4;
+        var preferNativePrompt = preferNativeAlerts || browser.xboxOne;
         if (preferNativePrompt && window.confirm) {
             define("prompt", [embyWebComponentsBowerPath + "/prompt/nativeprompt"], returnFirstDependency);
         } else {
@@ -1703,9 +1446,11 @@ var AppInfo = {};
         define("multi-download", [embyWebComponentsBowerPath + '/multidownload'], returnFirstDependency);
 
         if (Dashboard.isRunningInCordova() && browser.android) {
-            define("fileDownloader", ['cordova/android/filedownloader'], returnFirstDependency);
+            define("fileDownloader", ['cordova/filedownloader'], returnFirstDependency);
+            define("localassetmanager", ["cordova/localassetmanager"], returnFirstDependency);
         } else {
             define("fileDownloader", [embyWebComponentsBowerPath + '/filedownloader'], returnFirstDependency);
+            define("localassetmanager", [apiClientBowerPath + "/localassetmanager"], returnFirstDependency);
         }
     }
 
@@ -1716,23 +1461,7 @@ var AppInfo = {};
         }
 
         if (Dashboard.isRunningInCordova() && browserInfo.android) {
-
-            //define("audiorenderer", ["scripts/htmlmediarenderer"]);
-            window.VlcAudio = true;
-            define("audiorenderer", ["cordova/android/vlcplayer"]);
-            define("videorenderer", ["cordova/android/vlcplayer"]);
-        }
-        else if (Dashboard.isRunningInCordova() && browserInfo.safari) {
-            define("audiorenderer", ["cordova/ios/audioplayer"]);
-            define("videorenderer", ["scripts/htmlmediarenderer"]);
-        }
-        else {
-            define("audiorenderer", ["scripts/htmlmediarenderer"]);
-            define("videorenderer", ["scripts/htmlmediarenderer"]);
-        }
-
-        if (Dashboard.isRunningInCordova() && browserInfo.android) {
-            define("localsync", ["cordova/android/localsync"], returnFirstDependency);
+            define("localsync", ["cordova/localsync"], returnFirstDependency);
         }
         else {
             define("localsync", ["scripts/localsync"], returnFirstDependency);
@@ -1744,14 +1473,7 @@ var AppInfo = {};
 
         define("buttonenabled", ["legacy/buttonenabled"]);
 
-        var deps = [];
-
-        deps.push('scripts/mediacontroller');
-
-        require(deps, function () {
-
-            initAfterDependencies();
-        });
+        initAfterDependencies();
     }
 
     function getRequirePromise(deps) {
@@ -1791,7 +1513,6 @@ var AppInfo = {};
             createConnectionManager().then(function () {
 
                 console.log('initAfterDependencies promises resolved');
-                MediaController.init();
 
                 require(['globalize'], function (globalize) {
 
@@ -1847,7 +1568,7 @@ var AppInfo = {};
 
         document.title = Globalize.translateDocument(document.title, 'core');
 
-        onAppReady();
+        loadPlugins([], browserInfo).then(onAppReady);
     }
 
     function defineRoute(newRoute, dictionary) {
@@ -2617,6 +2338,16 @@ var AppInfo = {};
         });
 
         defineRoute({
+            path: '/videoosd.html',
+            dependencies: [],
+            transition: 'fade',
+            controller: 'scripts/videoosd',
+            autoFocus: false,
+            type: 'video-osd',
+            supportsThemeMedia: true
+        });
+
+        defineRoute({
             path: '/configurationpage',
             dependencies: ['jQuery'],
             autoFocus: false,
@@ -2633,12 +2364,122 @@ var AppInfo = {};
         });
     }
 
-    function onAppReady() {
+    function loadPlugins(externalPlugins, browser, shell) {
 
-        require(['scripts/mediaplayer'], function () {
+        console.log('Loading installed plugins');
 
-            MediaPlayer.init();
+        // Load installed plugins
+
+        var list = [
+        //'plugins/defaultskin/plugin',
+        //'plugins/logoscreensaver/plugin',
+        //'plugins/backdropscreensaver/plugin',
+        //'plugins/defaultsoundeffects/plugin',
+        'bower_components/emby-webcomponents/playback/playbackvalidation'
+        ];
+
+        if (Dashboard.isRunningInCordova() && browser.android) {
+
+            // use the html audio player if flac is supported
+            if (document.createElement('audio').canPlayType('audio/flac').replace(/no/, '') &&
+                document.createElement('audio').canPlayType('audio/ogg; codecs="opus"').replace(/no/, '')) {
+
+                list.push('bower_components/emby-webcomponents/htmlaudioplayer/plugin');
+
+            } else {
+                window.VlcAudio = true;
+            }
+
+            // Needed for video
+            list.push('cordova/vlcplayer');
+
+        } else if (Dashboard.isRunningInCordova() && browser.safari) {
+            list.push('cordova/audioplayer');
+        } else {
+            list.push('bower_components/emby-webcomponents/htmlaudioplayer/plugin');
+        }
+
+        if (Dashboard.isRunningInCordova() && browser.safari) {
+            list.push('cordova/chromecast');
+        }
+
+        if (Dashboard.isRunningInCordova() && browser.android) {
+            // intent player
+            list.push('cordova/externalplayer');
+        }
+
+        list.push('bower_components/emby-webcomponents/htmlvideoplayer/plugin');
+        list.push('bower_components/emby-webcomponents/sessionplayer');
+
+        if (browser.chrome) {
+            list.push('bower_components/emby-webcomponents/chromecastplayer');
+        }
+
+        list.push('bower_components/emby-webcomponents/youtubeplayer/plugin');
+
+        //if (globalScope.webapis && webapis.avplay) {
+        //    list.push('plugins/tizenavplayer/plugin');
+        //} else {
+        //    list.push('plugins/htmlvideoplayer/plugin');
+        //}
+
+        //if (!browser.tv) {
+        //    list.push('plugins/confirmstillplaying/plugin');
+        //}
+
+        //if (!browser.keyboard) {
+        //    list.push('plugins/keyboard/plugin');
+        //}
+
+        for (var i = 0, length = externalPlugins.length; i < length; i++) {
+            list.push(externalPlugins[i]);
+        }
+
+        //if (shell.canExec) {
+        //    list.push('plugins/externalplayer/plugin');
+        //}
+
+        return new Promise(function (resolve, reject) {
+
+            Promise.all(list.map(loadPlugin)).then(function () {
+
+                require(['packageManager'], function (packageManager) {
+                    packageManager.init().then(resolve, reject);
+                });
+
+            }, reject);
         });
+    }
+
+    function loadPlugin(url) {
+
+        return new Promise(function (resolve, reject) {
+
+            require(['pluginManager'], function (pluginManager) {
+                pluginManager.loadPlugin(url).then(resolve, reject);
+            });
+        });
+    }
+
+    function enableNativeGamepadKeyMapping() {
+
+        // On Windows UWP, this will tell the platform to make the gamepad emit normal keyboard events
+        if (window.navigator && typeof window.navigator.gamepadInputEmulation === "string") {
+            // We want the gamepad to provide gamepad VK keyboard events rather than moving a
+            // mouse like cursor. Set to "keyboard", the gamepad will provide such keyboard events
+            // and provide input to the DOM navigator.getGamepads API.
+            window.navigator.gamepadInputEmulation = "keyboard";
+            return true;
+        }
+
+        return false;
+    }
+
+    function isGamepadSupported() {
+        return 'ongamepadconnected' in window || navigator.getGamepads || navigator.webkitGetGamepads;
+    }
+
+    function onAppReady() {
 
         console.log('Begin onAppReady');
 
@@ -2663,7 +2504,7 @@ var AppInfo = {};
             deps.push('registrationServices');
 
             if (browserInfo.android) {
-                deps.push('cordova/android/androidcredentials');
+                deps.push('cordova/androidcredentials');
             }
         }
 
@@ -2685,34 +2526,34 @@ var AppInfo = {};
 
             var postInitDependencies = [];
 
+            if (!enableNativeGamepadKeyMapping() && isGamepadSupported()) {
+                postInitDependencies.push('bower_components/emby-webcomponents/input/gamepadtokey');
+            }
+
             postInitDependencies.push('bower_components/emby-webcomponents/thememediaplayer');
-            postInitDependencies.push('scripts/remotecontrol');
             postInitDependencies.push('css!css/chromecast.css');
             postInitDependencies.push('scripts/autobackdrops');
 
             if (Dashboard.isRunningInCordova()) {
 
                 if (browserInfo.android) {
-                    postInitDependencies.push('cordova/android/mediasession');
-                    postInitDependencies.push('cordova/android/chromecast');
+                    postInitDependencies.push('cordova/mediasession');
+                    postInitDependencies.push('cordova/chromecast');
 
                 } else if (browserInfo.safari) {
 
-                    postInitDependencies.push('cordova/ios/volume');
-                    postInitDependencies.push('cordova/ios/chromecast');
-                    postInitDependencies.push('cordova/ios/orientation');
-                    postInitDependencies.push('cordova/ios/remotecontrols');
+                    postInitDependencies.push('cordova/volume');
+                    postInitDependencies.push('cordova/statusbar');
+                    postInitDependencies.push('cordova/orientation');
+                    postInitDependencies.push('cordova/remotecontrols');
 
-                    //postInitDependencies.push('cordova/ios/backgroundfetch');
+                    //postInitDependencies.push('cordova/backgroundfetch');
                 }
-
-            } else if (browserInfo.chrome) {
-                postInitDependencies.push('scripts/chromecast');
             }
 
             postInitDependencies.push('scripts/nowplayingbar');
 
-            postInitDependencies.push('components/remotecontrolautoplay');
+            postInitDependencies.push('bower_components/emby-webcomponents/playback/remotecontrolautoplay');
 
             // Prefer custom font over Segoe if on desktop windows
             if (!browserInfo.mobile && navigator.userAgent.toLowerCase().indexOf('windows') != -1) {
@@ -2721,6 +2562,7 @@ var AppInfo = {};
             }
 
             postInitDependencies.push('bower_components/emby-webcomponents/input/api');
+            postInitDependencies.push('mouseManager');
 
             if (!browserInfo.tv) {
 
@@ -2729,6 +2571,12 @@ var AppInfo = {};
                     postInitDependencies.push('bower_components/emby-webcomponents/notifications/notifications');
                 }
             }
+
+            postInitDependencies.push('playerSelectionMenu');
+
+            //if (appHost.supports('fullscreenchange')) {
+            require(['fullscreen-doubleclick']);
+            //}
 
             require(postInitDependencies);
             upgradeLayouts();

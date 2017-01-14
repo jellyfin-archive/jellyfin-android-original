@@ -1,4 +1,4 @@
-define(['appStorage'], function (appStorage) {
+define(['appStorage', 'browser'], function (appStorage, browser) {
 
     console.log = function () { };
 
@@ -18,6 +18,20 @@ define(['appStorage'], function (appStorage) {
         };
 
         return caps;
+    }
+
+    function supportsFullscreen() {
+
+        if (browser.tv) {
+            return false;
+        };
+
+        var element = document.documentElement;
+
+        return element.requestFullscreen ||
+            element.mozRequestFullScreen ||
+            element.webkitRequestFullscreen ||
+            element.msRequestFullscreen;
     }
 
     var appInfo;
@@ -50,9 +64,22 @@ define(['appStorage'], function (appStorage) {
             features.push('htmlaudioautoplay');
             features.push('htmlvideoautoplay');
             features.push('externallinks');
+            features.push('multiserver');
 
             if (MainActivity.getChromeVersion() >= 53) {
                 features.push('imageanalysis');
+            }
+
+            if (supportsFullscreen()) {
+                features.push('fullscreenchange');
+            }
+
+            if (browser.tv || browser.xboxOne || browser.ps4 || browser.mobile) {
+                features.push('physicalvolumecontrol');
+            }
+
+            if (!browser.tv && !browser.xboxOne && !browser.ps4) {
+                features.push('remotecontrol');
             }
 
             return features.indexOf(command.toLowerCase()) != -1;

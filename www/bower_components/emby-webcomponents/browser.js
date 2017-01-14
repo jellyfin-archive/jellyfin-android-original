@@ -248,6 +248,11 @@
         browser.tv = true;
     }
 
+    if (userAgent.toLowerCase().indexOf("embytheaterpi") !== -1) {
+        browser.slow = true;
+        browser.noAnimation = true;
+    }
+
     if (isMobile(userAgent)) {
         browser.mobile = true;
     }

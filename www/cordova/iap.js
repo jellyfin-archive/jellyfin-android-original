@@ -213,7 +213,11 @@
         return feature;
     }
 
-    function getPeriodicMessageIntervalMs() {
+    function getPeriodicMessageIntervalMs(feature) {
+        if (feature === 'playback') {
+            return 432000000;
+        }
+
         return 0;
     }
 
