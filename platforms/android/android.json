@@ -45,10 +45,6 @@
                         {
                             "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"ActionSheet\"><param name=\"android-package\" value=\"nl.xservices.plugins.actionsheet.ActionSheet\" /></feature>",
-                            "count": 1
                         }
                     ]
                 }
@@ -107,9 +103,6 @@
             "XWALK_MODE": "embedded",
             "XWALK_MULTIPLEAPK": "true",
             "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-actionsheet": {
-            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {},
@@ -154,18 +147,9 @@
         {
             "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
             "id": "acidhax.cordova.chromecast.tests"
-        },
-        {
-            "id": "cordova-plugin-actionsheet.ActionSheet",
-            "file": "plugins/cordova-plugin-actionsheet/www/ActionSheet.js",
-            "pluginId": "cordova-plugin-actionsheet",
-            "clobbers": [
-                "window.plugins.actionsheet"
-            ]
         }
     ],
     "plugin_metadata": {
-        "cordova-plugin-crosswalk-webview": "2.0.0",
-        "cordova-plugin-actionsheet": "2.3.1"
+        "cordova-plugin-crosswalk-webview": "2.0.0"
     }
 }

@@ -849,7 +849,7 @@ public class PlaybackService extends MediaBrowserServiceCompat implements IVLCVo
 
         logger.Info("Playback stopped at %s ms", positionMs);
 
-        MainActivity.RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s);", !completed, error, positionMs));
+        MainActivity.RespondToWebView(String.format("VlcVideoPlayer.onActivityClosed(%s, %s, %s);", !completed, error, positionMs));
     }
     private void executeUpdate() {
         executeUpdate(true);
