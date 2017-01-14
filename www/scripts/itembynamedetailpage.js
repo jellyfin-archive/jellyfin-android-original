@@ -274,7 +274,8 @@
                     playFromHere: true,
                     action: 'playallfromhere',
                     smallIcon: true,
-                    artist: true
+                    artist: true,
+                    addToListButton: true
                 });
                 break;
 
