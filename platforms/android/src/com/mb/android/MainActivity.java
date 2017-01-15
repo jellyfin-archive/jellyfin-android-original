@@ -589,6 +589,9 @@ public class MainActivity extends CordovaActivity
 
     private final int ExternalStoragePermissionRequestCode = 3;
     private final int AuthorizeStoragePermissionRequestCode = 4;
+    private final int DownloadFileRequestCode = 5;
+    private String downloadFilePath;
+    private String downloadFileUrl;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -600,6 +603,21 @@ public class MainActivity extends CordovaActivity
                     // permission was granted, yay! Do the
                     // related task you need to do.
                     chooseDirectory();
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case DownloadFileRequestCode: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // related task you need to do.
+                    downloadFile(downloadFileUrl, downloadFilePath);
 
                 } else {
 
@@ -1065,6 +1083,13 @@ public class MainActivity extends CordovaActivity
     @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
     public void downloadFile(String url, String path) {
+
+        downloadFileUrl = url;
+        downloadFilePath = path;
+
+        if (!authorizeStorage(DownloadFileRequestCode)) {
+            return;
+        }
 
         getLogger().Info("Downloading file %s", url);
         String filename = "download";

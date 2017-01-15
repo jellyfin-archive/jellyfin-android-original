@@ -1,5 +1,6 @@
 package com.mb.android.webviews;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -17,19 +18,23 @@ public class MySystemWebView extends SystemWebView {
 
     private ILogger logger;
 
-    public MySystemWebView(Context context, ILogger logger) {
+    private final Activity activity;
+
+    public MySystemWebView(Context context, ILogger logger, Activity activity) {
         super(context);
         this.logger = logger;
+        this.activity = activity;
     }
 
-    public MySystemWebView(Context context, AttributeSet attrs, ILogger logger) {
+    public MySystemWebView(Context context, AttributeSet attrs, ILogger logger, Activity activity) {
         super(context, attrs);
         this.logger = logger;
+        this.activity = activity;
     }
 
     @Override
     public SystemWebChromeClient CreateChromeClient(SystemWebViewEngine parentEngine){
-        return new MySystemWebChromeClient(parentEngine, logger);
+        return new MySystemWebChromeClient(parentEngine, logger, activity);
     }
 
     @Override
