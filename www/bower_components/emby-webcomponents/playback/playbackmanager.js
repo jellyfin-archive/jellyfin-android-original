@@ -960,15 +960,10 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
             // Go back 15 seconds
             ticks += userSettings.skipForwardLength() * 10000;
 
-            var data = getPlayerData(player).streamInfo;
-            var mediaSource = data.mediaSource;
+            var runTimeTicks = self.duration(player) || 0;
 
-            if (mediaSource) {
-                var runTimeTicks = mediaSource.RunTimeTicks || 0;
-
-                if (ticks < runTimeTicks) {
-                    self.seek(ticks);
-                }
+            if (ticks < runTimeTicks) {
+                self.seek(ticks);
             }
         };
 

@@ -346,77 +346,78 @@
 
         self.play = function (options) {
 
-            if (!options) {
-                self.destroy();
-                return;
-            }
+            return new Promise(function (resolve, reject) {
 
-            var item = options.item;
-            var mediaSource = options.mediaSource;
+                var item = options.item;
+                var mediaSource = options.mediaSource;
 
-            var val = options.url;
-            var tIndex = val.indexOf('#t=');
-            var startPosMs = (options.startPositionInSeekParam || 0) * 1000;
+                var val = options.url;
+                var tIndex = val.indexOf('#t=');
+                var startPosMs = (options.startPositionInSeekParam || 0) * 1000;
 
-            if (tIndex != -1) {
-                val = val.split('#')[0];
-            }
+                if (tIndex != -1) {
+                    val = val.split('#')[0];
+                }
 
-            var apiClient = connectionManager.getApiClient(item.ServerId);
+                var apiClient = connectionManager.getApiClient(item.ServerId);
 
-            if (options.type == 'audio') {
+                if (options.type == 'audio') {
 
-                AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
-            } else {
+                    AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
+                    resolve();
 
-                var playbackStartInfo = getPlaybackStartInfoForVideoActivity(options, mediaSource, item);
+                } else {
 
-                var serverUrl = apiClient.serverAddress();
+                    var playbackStartInfo = getPlaybackStartInfoForVideoActivity(options, mediaSource, item);
 
-                var videoStream = mediaSource.MediaStreams.filter(function (stream) {
-                    return stream.Type == "Video";
-                })[0];
-                var videoWidth = videoStream ? videoStream.Width : null;
-                var videoHeight = videoStream ? videoStream.Height : null;
+                    var serverUrl = apiClient.serverAddress();
 
-                require(['qualityoptions'], function (qualityoptions) {
+                    var videoStream = mediaSource.MediaStreams.filter(function (stream) {
+                        return stream.Type == "Video";
+                    })[0];
+                    var videoWidth = videoStream ? videoStream.Width : null;
+                    var videoHeight = videoStream ? videoStream.Height : null;
 
-                    var bitrateSetting = appSettings.maxStreamingBitrate();
+                    require(['qualityoptions'], function (qualityoptions) {
 
-                    var videoQualityOptions = qualityoptions.getVideoQualityOptions(bitrateSetting, videoWidth).map(function (o) {
-                        return {
-                            Name: o.name,
-                            Value: o.bitrate + "-" + o.maxHeight
-                        };
+                        var bitrateSetting = appSettings.maxStreamingBitrate();
+
+                        var videoQualityOptions = qualityoptions.getVideoQualityOptions(bitrateSetting, videoWidth).map(function (o) {
+                            return {
+                                Name: o.name,
+                                Value: o.bitrate + "-" + o.maxHeight
+                            };
+                        });
+
+                        var userStartPos = playbackStartInfo.PlayMethod == 'Transcode' ? ((options.startTimeTicksOffset || 0) / 10000) : startPosMs;
+
+                        Dashboard.getDeviceProfile().then(function (deviceProfile) {
+
+                            AndroidVlcPlayer.playVideoVlc(val,
+                                userStartPos,
+                                item.Name,
+                                JSON.stringify(item),
+                                JSON.stringify(mediaSource),
+                                JSON.stringify(playbackStartInfo),
+                                apiClient.serverInfo().Id,
+                                serverUrl,
+                                apiClient.appName(),
+                                apiClient.appVersion(),
+                                apiClient.deviceId(),
+                                apiClient.deviceName(),
+                                apiClient.getCurrentUserId(),
+                                apiClient.accessToken(),
+                                JSON.stringify(deviceProfile),
+                                JSON.stringify(videoQualityOptions),
+                                0);
+
+                            playerState.currentSrc = val;
+                            resolve();
+                            self.report('playing', null, startPosMs, false, 100);
+                        });
                     });
-
-                    var userStartPos = playbackStartInfo.PlayMethod == 'Transcode' ? ((options.startTimeTicksOffset || 0) / 10000) : startPosMs;
-
-                    Dashboard.getDeviceProfile().then(function (deviceProfile) {
-
-                        AndroidVlcPlayer.playVideoVlc(val,
-                            userStartPos,
-                            item.Name,
-                            JSON.stringify(item),
-                            JSON.stringify(mediaSource),
-                            JSON.stringify(playbackStartInfo),
-                            apiClient.serverInfo().Id,
-                            serverUrl,
-                            apiClient.appName(),
-                            apiClient.appVersion(),
-                            apiClient.deviceId(),
-                            apiClient.deviceName(),
-                            apiClient.getCurrentUserId(),
-                            apiClient.accessToken(),
-                            JSON.stringify(deviceProfile),
-                            JSON.stringify(videoQualityOptions),
-                            0);
-
-                        playerState.currentSrc = val;
-                        self.report('playing', null, startPosMs, false, 100);
-                    });
-                });
-            }
+                }
+            });
         };
 
         self.currentSrc = function () {
