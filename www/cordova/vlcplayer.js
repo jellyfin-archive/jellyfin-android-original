@@ -64,6 +64,15 @@
             return false;
         };
 
+        self.canPlayItem = function (item, options) {
+
+            if (!options.fullscreen) {
+                return false;
+            }
+
+            return true;
+        };
+
         self.getDeviceProfile = function () {
 
             return new Promise(function (resolve, reject) {
