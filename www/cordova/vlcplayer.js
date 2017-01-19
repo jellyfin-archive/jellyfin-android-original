@@ -28,10 +28,6 @@
             events.trigger(self, 'playing');
         }
 
-        function onPlay() {
-            events.trigger(self, 'play');
-        }
-
         function onPause() {
             events.trigger(self, 'pause');
         }
@@ -444,11 +440,9 @@
             return false;
         };
 
-        self.cleanup = function (destroyRenderer) {
+        self.destroy = function () {
 
-            if (destroyRenderer !== false) {
-                AndroidVlcPlayer.destroyVlc();
-            }
+            AndroidVlcPlayer.destroyVlc();
 
             playerState = {};
         };
