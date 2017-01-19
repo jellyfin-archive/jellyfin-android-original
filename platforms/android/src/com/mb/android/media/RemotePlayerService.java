@@ -194,9 +194,9 @@ public class RemotePlayerService extends Service {
             }
 
             builder.addAction(generateAction(android.R.drawable.ic_media_previous, "Previous", Constants.ACTION_PREVIOUS));
-            //builder.addAction( generateAction( android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND ) );
+            builder.addAction( generateAction( android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND ) );
             builder.addAction(action);
-            //builder.addAction( generateAction( android.R.drawable.ic_media_ff, "Fast Foward", Constants.ACTION_FAST_FORWARD ) );
+            builder.addAction( generateAction( android.R.drawable.ic_media_ff, "Fast Foward", Constants.ACTION_FAST_FORWARD ) );
             builder.addAction(generateAction(android.R.drawable.ic_media_next, "Next", Constants.ACTION_NEXT));
 
             //final TransportControls controls = m_objMediaSession.getController().getTransportControls();
@@ -336,7 +336,7 @@ public class RemotePlayerService extends Service {
                     super.onPlay();
                     Log.e(Constants.LOG_TAG, "onPlay");
                     //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
-                    responseToWebView("MediaController.unpause();");
+                    MainActivity.sendCommand("playpause");
                 }
 
                 @Override
@@ -344,7 +344,7 @@ public class RemotePlayerService extends Service {
                     super.onPause();
                     Log.e(Constants.LOG_TAG, "onPause");
                     //buildNotification(generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY));
-                    responseToWebView("MediaController.pause();");
+                    MainActivity.sendCommand("playpause");
                 }
 
                 @Override
@@ -352,7 +352,7 @@ public class RemotePlayerService extends Service {
                     super.onSkipToNext();
                     Log.e(Constants.LOG_TAG, "onSkipToNext");
                     //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
-                    responseToWebView("MediaController.nextTrack();");
+                    MainActivity.sendCommand("next");
                 }
 
                 @Override
@@ -360,29 +360,31 @@ public class RemotePlayerService extends Service {
                     super.onSkipToPrevious();
                     Log.e(Constants.LOG_TAG, "onSkipToPrevious");
                     //buildNotification( generateAction( android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE ) );
-                    responseToWebView("MediaController.previousTrack();");
+                    MainActivity.sendCommand("previous");
                 }
 
                 @Override
                 public void onFastForward() {
                     super.onFastForward();
-                    Log.e(Constants.LOG_TAG, "onFastForward");
+                    MainActivity.sendCommand("fastforward");
                 }
 
                 @Override
                 public void onRewind() {
                     super.onRewind();
-                    Log.e(Constants.LOG_TAG, "onRewind");
+                    MainActivity.sendCommand("rewind");
                 }
 
                 @Override
                 public void onStop() {
                     super.onStop();
+                    MainActivity.sendCommand("stop");
                     onStopped();
                 }
 
                 @Override
                 public void onSeekTo(long pos) {
+
                     super.onSeekTo(pos);
                 }
 

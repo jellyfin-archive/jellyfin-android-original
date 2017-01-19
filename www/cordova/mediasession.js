@@ -98,8 +98,8 @@
 
         var parts = nowPlayingHelper.getNowPlayingNames(state.NowPlayingItem);
 
-        var artist = parts.length == 1 ? '' : parts[0];
-        var title = parts[parts.length - 1];
+        var artist = parts.length == 1 ? '' : parts[0].text;
+        var title = parts[parts.length - 1].text;
 
         // Switch these two around for video
         if (isVideo && parts.length > 1) {
@@ -140,15 +140,19 @@
         lastUpdateTime = now;
     }
 
+    function onGeneralEvent(e, state) {
+
+        var player = this;
+        playbackManager.getPlayerState(player).then(function (state) {
+
+            updatePlayerState(player, state, e.type);
+        });
+    }
+
     function onStateChanged(e, state) {
 
         var player = this;
-        if (player) {
-            playbackManager.getPlayerState(player).then(function (state) {
-
-                updatePlayerState(player, state, 'timeupdate');
-            });
-        }
+        updatePlayerState(player, state, 'statechange');
     }
 
     function onPlaybackStart(e, state) {
@@ -174,10 +178,10 @@
 
             events.off(currentPlayer, 'playbackstart', onPlaybackStart);
             events.off(currentPlayer, 'playbackstop', onPlaybackStopped);
-            events.off(currentPlayer, 'play', onStateChanged);
-            events.off(currentPlayer, 'pause', onStateChanged);
+            events.off(currentPlayer, 'play', onGeneralEvent);
+            events.off(currentPlayer, 'pause', onGeneralEvent);
             events.off(currentPlayer, 'statechange', onStateChanged);
-            events.off(currentPlayer, 'timeupdate', onStateChanged);
+            events.off(currentPlayer, 'timeupdate', onGeneralEvent);
 
             currentPlayer = null;
 
@@ -213,10 +217,10 @@
 
         events.on(currentPlayer, 'playbackstart', onPlaybackStart);
         events.on(currentPlayer, 'playbackstop', onPlaybackStopped);
-        events.on(currentPlayer, 'play', onStateChanged);
-        events.on(currentPlayer, 'pause', onStateChanged);
+        events.on(currentPlayer, 'play', onGeneralEvent);
+        events.on(currentPlayer, 'pause', onGeneralEvent);
         events.on(currentPlayer, 'statechange', onStateChanged);
-        events.on(currentPlayer, 'timeupdate', onStateChanged);
+        events.on(currentPlayer, 'timeupdate', onGeneralEvent);
     }
 
     console.log('binding remotecontrols to playbackManager');

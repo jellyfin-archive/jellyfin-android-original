@@ -63,12 +63,12 @@ public class MediaService extends BaseMediaBrowserService implements IPlaybackCa
     @Override
     protected void handleNextTrackRequest() {
 
-        MainActivity.RespondToWebView("MediaController.nextTrack();");
+        MainActivity.sendCommand("next");
     }
 
     @Override
     protected void handlePreviousTrackRequest() {
 
-        MainActivity.RespondToWebView("MediaController.previousTrack();");
+        MainActivity.sendCommand("previous");
     }
 }

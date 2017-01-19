@@ -451,7 +451,7 @@
 
         function getPlaylistItems(player) {
 
-            return Promise.resolve(playbackManager.playlist(player));
+            return playbackManager.getPlaylist(player);
 
             return ApiClient.getItems(Dashboard.getCurrentUserId(), {
 
@@ -487,7 +487,8 @@
                         icon: '&#xE15D;',
                         title: globalize.translate('ButtonRemove'),
                         id: 'remove'
-                    }]
+                    }],
+                    dragHandle: true
                 });
 
                 playlistNeedsRefresh = false;
@@ -496,13 +497,12 @@
 
                 itemsContainer.innerHTML = html;
 
-                var index = playbackManager.getCurrentPlaylistIndex(player);
+                var playlistItemId = playbackManager.getCurrentPlaylistItemId(player);
 
-                if (index != -1) {
+                if (playlistItemId) {
 
-                    var item = itemsContainer.querySelectorAll('.listItem')[index];
-                    if (item) {
-                        var img = item.querySelector('.listItemImage');
+                    var img = itemsContainer.querySelector('.listItem[data-playlistItemId="' + playlistItemId + '"] .listItemImage');
+                    if (img) {
 
                         img.classList.remove('lazy');
                         img.classList.add('playlistIndexIndicatorImage');
@@ -531,13 +531,29 @@
         }
 
         function onPlaylistUpdate(e) {
-            
+
             var player = this;
 
             playbackManager.getPlayerState(player).then(function (state) {
 
                 onStateChanged.call(player, { type: 'init' }, state);
             });
+        }
+
+        function onPlaylistItemRemoved(e, info) {
+
+            var context = dlg;
+
+            var playlistItemIds = info.playlistItemIds;
+
+            for (var i = 0, length = playlistItemIds.length; i < length; i++) {
+
+                var listItem = context.querySelector('.listItem[data-playlistItemId="' + playlistItemIds[i] + '"]');
+
+                if (listItem) {
+                    listItem.parentNode.removeChild(listItem);
+                }
+            }
         }
 
         function onPlaybackStopped(e, stopInfo) {
@@ -598,6 +614,7 @@
                 events.off(player, 'statechange', onPlaybackStart);
                 events.off(player, 'repeatmodechange', onRepeatModeChange);
                 events.off(player, 'playlistitemremove', onPlaylistUpdate);
+                events.off(player, 'playlistitemmove', onPlaylistUpdate);
                 events.off(player, 'playbackstop', onPlaybackStopped);
                 events.off(player, 'volumechange', onVolumeChanged);
                 events.off(player, 'pause', onPlayPauseStateChanged);
@@ -626,7 +643,8 @@
             events.on(player, 'playbackstart', onPlaybackStart);
             events.on(player, 'statechange', onPlaybackStart);
             events.on(player, 'repeatmodechange', onRepeatModeChange);
-            events.on(player, 'playlistitemremove', onPlaylistUpdate);
+            events.on(player, 'playlistitemremove', onPlaylistItemRemoved);
+            events.on(player, 'playlistitemmove', onPlaylistUpdate);
             events.on(player, 'playbackstop', onPlaybackStopped);
             events.on(player, 'volumechange', onVolumeChanged);
             events.on(player, 'pause', onPlayPauseStateChanged);
@@ -644,7 +662,7 @@
         function updateCastIcon(context) {
 
             var info = playbackManager.getPlayerInfo();
-            var btnCast = context.querySelector('.nowPlayingCastIcon');
+            var btnCast = context.querySelector('.btnCast');
 
             if (info && !info.isLocalPlayer) {
 
@@ -768,10 +786,22 @@
 
                 playbackManager.toggleMute(currentPlayer);
             });
-            context.querySelector('.playlist').addEventListener('action-remove', function (e) {
 
-                playbackManager.removeFromPlaylist(e.detail.index, currentPlayer);
+            var playlistContainer = context.querySelector('.playlist');
+
+            playlistContainer.addEventListener('action-remove', function (e) {
+
+                playbackManager.removeFromPlaylist([e.detail.playlistItemId], currentPlayer);
             });
+            playlistContainer.addEventListener('itemdrop', function (e) {
+
+                var newIndex = e.detail.newIndex;
+                var playlistItemId = e.detail.playlistItemId;
+
+                playbackManager.movePlaylistItem(playlistItemId, newIndex, currentPlayer);
+            });
+
+            playlistContainer.enableDragReordering(true);
         }
 
         function onPlayerChange() {
@@ -836,7 +866,7 @@
             context.querySelector('.sendMessageForm').addEventListener('submit', onMessageSubmit);
             context.querySelector('.typeTextForm').addEventListener('submit', onSendStringSubmit);
 
-            context.querySelector('.nowPlayingCastIcon').addEventListener('click', function () {
+            context.querySelector('.btnCast').addEventListener('click', function () {
                 var btn = this;
                 require(['playerSelectionMenu'], function (playerSelectionMenu) {
                     playerSelectionMenu.show(btn);
@@ -852,6 +882,10 @@
             //});
 
             events.on(playbackManager, 'playerchange', onPlayerChange);
+
+            if (appHost.supports('remotecontrol')) {
+                context.querySelector('.btnCast').classList.remove('hide');
+            }
         }
 
         function onDialogClosed(e) {

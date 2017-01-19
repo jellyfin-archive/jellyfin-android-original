@@ -528,6 +528,11 @@ public class MainActivity extends CordovaActivity
         }
     }
 
+    public static void sendCommand(String cmd){
+        String script = "require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + cmd + "');});";
+        RespondToWebView(script);
+    }
+
     @android.webkit.JavascriptInterface
     @org.xwalk.core.JavascriptInterface
     public void hideMediaSession() {
