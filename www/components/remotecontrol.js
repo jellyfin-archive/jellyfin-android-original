@@ -1,4 +1,4 @@
-﻿define(['browser', 'datetime', 'backdrop', 'libraryBrowser', 'listView', 'userdataButtons', 'imageLoader', 'playbackManager', 'nowPlayingHelper', 'events', 'connectionManager', 'apphost', 'globalize', 'cardStyle'], function (browser, datetime, backdrop, libraryBrowser, listView, userdataButtons, imageLoader, playbackManager, nowPlayingHelper, events, connectionManager, appHost, globalize) {
+﻿define(['browser', 'datetime', 'backdrop', 'libraryBrowser', 'listView', 'userdataButtons', 'imageLoader', 'playbackManager', 'nowPlayingHelper', 'events', 'connectionManager', 'apphost', 'globalize', 'cardStyle', 'emby-itemscontainer', 'css!css/nowplaying.css'], function (browser, datetime, backdrop, libraryBrowser, listView, userdataButtons, imageLoader, playbackManager, nowPlayingHelper, events, connectionManager, appHost, globalize) {
     'use strict';
 
     function showSlideshowMenu(context) {
@@ -261,7 +261,6 @@
         var currentRuntimeTicks = 0;
 
         var self = this;
-        var playlistNeedsRefresh = true;
 
         function toggleRepeat(player) {
 
@@ -491,8 +490,6 @@
                     dragHandle: true
                 });
 
-                playlistNeedsRefresh = false;
-
                 var itemsContainer = context.querySelector('.playlist');
 
                 itemsContainer.innerHTML = html;
@@ -519,8 +516,6 @@
 
             var player = this;
             onStateChanged.call(player, e, state);
-
-            loadPlaylist(dlg, player);
         }
 
         function onRepeatModeChange(e) {
@@ -534,10 +529,7 @@
 
             var player = this;
 
-            playbackManager.getPlayerState(player).then(function (state) {
-
-                onStateChanged.call(player, { type: 'init' }, state);
-            });
+            loadPlaylist(dlg, player);
         }
 
         function onPlaylistItemRemoved(e, info) {
@@ -611,7 +603,7 @@
             if (player) {
 
                 events.off(player, 'playbackstart', onPlaybackStart);
-                events.off(player, 'statechange', onPlaybackStart);
+                events.off(player, 'statechange', onStateChanged);
                 events.off(player, 'repeatmodechange', onRepeatModeChange);
                 events.off(player, 'playlistitemremove', onPlaylistUpdate);
                 events.off(player, 'playlistitemmove', onPlaylistUpdate);
@@ -641,7 +633,7 @@
             });
 
             events.on(player, 'playbackstart', onPlaybackStart);
-            events.on(player, 'statechange', onPlaybackStart);
+            events.on(player, 'statechange', onStateChanged);
             events.on(player, 'repeatmodechange', onRepeatModeChange);
             events.on(player, 'playlistitemremove', onPlaylistItemRemoved);
             events.on(player, 'playlistitemmove', onPlaylistUpdate);
@@ -800,8 +792,6 @@
 
                 playbackManager.movePlaylistItem(playlistItemId, newIndex, currentPlayer);
             });
-
-            playlistContainer.enableDragReordering(true);
         }
 
         function onPlayerChange() {
@@ -860,7 +850,6 @@
 
         function init(ownerView, context) {
 
-            require(['css!css/nowplaying.css']);
             bindEvents(context);
 
             context.querySelector('.sendMessageForm').addEventListener('submit', onMessageSubmit);
