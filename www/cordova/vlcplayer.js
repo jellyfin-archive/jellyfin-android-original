@@ -1,4 +1,4 @@
-﻿define(['appSettings', 'events', 'playbackManager', 'connectionManager'], function (appSettings, events, playbackManager, connectionManager) {
+﻿define(['appSettings', 'events', 'playbackManager', 'connectionManager', 'apphost'], function (appSettings, events, playbackManager, connectionManager, appHost) {
 
     return function () {
 
@@ -70,171 +70,7 @@
         };
 
         self.getDeviceProfile = function () {
-
-            return new Promise(function (resolve, reject) {
-
-                require(['browserdeviceprofile'], function (profileBuilder) {
-
-                    var profile = profileBuilder({
-                    });
-
-                    profile.DirectPlayProfiles.push({
-                        Container: "m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv",
-                        Type: 'Video',
-                        AudioCodec: 'aac,aac_latm,mp2,mp3,ac3,wma,dca,dts,pcm,PCM_S16LE,PCM_S24LE,opus,flac'
-                    });
-
-                    profile.CodecProfiles = profile.CodecProfiles.filter(function (i) {
-                        return i.Type == 'Audio';
-                    });
-
-                    profile.SubtitleProfiles = [];
-                    profile.SubtitleProfiles.push({
-                        Format: 'srt',
-                        Method: 'External'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ssa',
-                        Method: 'External'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ass',
-                        Method: 'External'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'srt',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'subrip',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ass',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ssa',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvb_teletext',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvb_subtitle',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvbsub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'pgs',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'pgssub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvdsub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'vtt',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'sub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'idx',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'smi',
-                        Method: 'Embed'
-                    });
-
-                    profile.CodecProfiles.push({
-                        Type: 'Video',
-                        Container: 'avi',
-                        Conditions: [
-                            {
-                                Condition: 'NotEqual',
-                                Property: 'CodecTag',
-                                Value: 'xvid'
-                            }
-                        ]
-                    });
-
-                    profile.CodecProfiles.push({
-                        Type: 'Video',
-                        Codec: 'h264',
-                        Conditions: [
-                        {
-                            Condition: 'EqualsAny',
-                            Property: 'VideoProfile',
-                            Value: 'high|main|baseline|constrained baseline'
-                        },
-                        {
-                            Condition: 'LessThanEqual',
-                            Property: 'VideoLevel',
-                            Value: '41'
-                        }]
-                    });
-
-                    //profile.TranscodingProfiles.filter(function (p) {
-
-                    //    return p.Type == 'Video' && p.Container == 'mkv';
-
-                    //}).forEach(function (p) {
-
-                    //    p.Container = 'ts';
-                    //});
-
-                    profile.TranscodingProfiles.filter(function (p) {
-
-                        return p.Type == 'Video' && p.CopyTimestamps == true;
-
-                    }).forEach(function (p) {
-
-                        // Vlc doesn't seem to handle this well
-                        p.CopyTimestamps = false;
-                    });
-
-                    profile.TranscodingProfiles.filter(function (p) {
-
-                        return p.Type == 'Video' && p.VideoCodec == 'h264';
-
-                    }).forEach(function (p) {
-
-                        p.AudioCodec += ',ac3';
-                    });
-
-                    profile.DirectPlayProfiles.push({
-                        Container: "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac,m4a",
-                        Type: 'Audio'
-                    });
-
-                    profile.CodecProfiles = profile.CodecProfiles.filter(function (i) {
-                        return i.Type != 'Audio';
-                    });
-
-                    profile.CodecProfiles.push({
-                        Type: 'Audio',
-                        Conditions: [{
-                            Condition: 'LessThanEqual',
-                            Property: 'AudioChannels',
-                            Value: '2'
-                        }]
-                    });
-
-                    resolve(profile);
-                });
-            });
+            return appHost.getSyncProfile();
         };
 
         self.currentTime = function (val) {
@@ -358,7 +194,7 @@
 
                 var val = options.url;
                 var tIndex = val.indexOf('#t=');
-                var startPosMs = (options.startPositionInSeekParam || 0) * 1000;
+                var startPosMs = (options.playerStartPositionTicks || 0) / 10000;
 
                 if (tIndex != -1) {
                     val = val.split('#')[0];
@@ -366,7 +202,7 @@
 
                 var apiClient = connectionManager.getApiClient(item.ServerId);
 
-                if (options.type == 'audio') {
+                if (options.mediaType == 'audio') {
 
                     AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
                     resolve();
@@ -394,9 +230,9 @@
                             };
                         });
 
-                        var userStartPos = playbackStartInfo.PlayMethod == 'Transcode' ? ((options.startTimeTicksOffset || 0) / 10000) : startPosMs;
+                        var userStartPos = playbackStartInfo.PlayMethod == 'Transcode' ? ((options.transcodingOffsetTicks || 0) / 10000) : startPosMs;
 
-                        Dashboard.getDeviceProfile().then(function (deviceProfile) {
+                        self.getDeviceProfile().then(function (deviceProfile) {
 
                             AndroidVlcPlayer.playVideoVlc(val,
                                 userStartPos,

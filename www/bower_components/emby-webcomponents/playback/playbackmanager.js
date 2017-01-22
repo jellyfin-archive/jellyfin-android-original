@@ -1554,7 +1554,7 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
             }
         }
 
-        function playInternal(item, playOptions, callback) {
+        function playInternal(item, playOptions, onPlaybackStartedFn) {
 
             if (item.IsPlaceHolder) {
                 loading.hide();
@@ -1578,16 +1578,16 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
 
                         appSettings.maxStreamingBitrate(bitrate);
 
-                        return playAfterBitrateDetect(connectionManager, bitrate, item, playOptions).then(callback);
+                        return playAfterBitrateDetect(connectionManager, bitrate, item, playOptions, onPlaybackStartedFn);
 
                     }, function () {
 
-                        return playAfterBitrateDetect(connectionManager, appSettings.maxStreamingBitrate(), item, playOptions).then(callback);
+                        return playAfterBitrateDetect(connectionManager, appSettings.maxStreamingBitrate(), item, playOptions, onPlaybackStartedFn);
                     });
 
                 } else {
 
-                    return playAfterBitrateDetect(connectionManager, appSettings.maxStreamingBitrate(), item, playOptions).then(callback);
+                    return playAfterBitrateDetect(connectionManager, appSettings.maxStreamingBitrate(), item, playOptions, onPlaybackStartedFn);
                 }
 
             }, function () {
@@ -1647,7 +1647,7 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
             }, reject);
         }
 
-        function playAfterBitrateDetect(connectionManager, maxBitrate, item, playOptions) {
+        function playAfterBitrateDetect(connectionManager, maxBitrate, item, playOptions, onPlaybackStartedFn) {
 
             var startPosition = playOptions.startPositionTicks;
 
@@ -1671,8 +1671,9 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
                     streamInfo.fullscreen = playOptions.fullscreen;
                     getPlayerData(player).isChangingStream = false;
                     return player.play(streamInfo).then(function () {
-                        onPlaybackStarted(player, streamInfo);
                         loading.hide();
+                        onPlaybackStartedFn();
+                        onPlaybackStarted(player, streamInfo);
                         return Promise.resolve();
                     });
                 });
@@ -1693,8 +1694,9 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
                         getPlayerData(player).maxStreamingBitrate = maxBitrate;
 
                         return player.play(streamInfo).then(function () {
-                            onPlaybackStarted(player, streamInfo, mediaSource);
                             loading.hide();
+                            onPlaybackStartedFn();
+                            onPlaybackStarted(player, streamInfo, mediaSource);
                             return Promise.resolve();
                         });
                     });
@@ -1780,7 +1782,7 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
             var contentType;
             var transcodingOffsetTicks = 0;
             var playerStartPositionTicks = startPosition;
-            var liveStreamId;
+            var liveStreamId = mediaSource.LiveStreamId;
 
             var playMethod = 'Transcode';
 
@@ -1813,7 +1815,6 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
 
                         if (mediaSource.LiveStreamId) {
                             directOptions.LiveStreamId = mediaSource.LiveStreamId;
-                            liveStreamId = mediaSource.LiveStreamId;
                         }
 
                         mediaUrl = apiClient.getUrl('Videos/' + item.Id + '/stream.' + mediaSourceContainer, directOptions);
@@ -1868,7 +1869,6 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
 
                         if (mediaSource.LiveStreamId) {
                             directOptions.LiveStreamId = mediaSource.LiveStreamId;
-                            liveStreamId = mediaSource.LiveStreamId;
                         }
 
                         mediaUrl = apiClient.getUrl('Audio/' + item.Id + '/stream.' + mediaSourceContainer, directOptions);
@@ -2117,6 +2117,23 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
             });
         }
 
+        function isHostReachable(mediaSource, apiClient) {
+
+            var url = mediaSource.Path;
+
+            var isServerAddress = url.toLowerCase().replace('https:', 'http').indexOf(apiClient.serverAddress().toLowerCase().replace('https:', 'http').substring(0, 14)) === 0;
+
+            if (isServerAddress) {
+                return Promise.resolve();
+            }
+
+            if (mediaSource.IsRemote) {
+                return Promise.resolve();
+            }
+
+            return Promise.reject();
+        }
+
         function supportsDirectPlay(apiClient, mediaSource) {
 
             return new Promise(function (resolve, reject) {
@@ -2130,12 +2147,15 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
                             resolve(true);
                         }
                         else {
-                            var val = mediaSource.Path.toLowerCase().replace('https:', 'http').indexOf(apiClient.serverAddress().toLowerCase().replace('https:', 'http').substring(0, 14)) === 0;
-                            resolve(val);
+                            isHostReachable(mediaSource, apiClient).then(function () {
+                                resolve(true);
+                            }, function () {
+                                resolve(false);
+                            });
                         }
                     }
 
-                    if (mediaSource.Protocol === 'File') {
+                    else if (mediaSource.Protocol === 'File') {
 
                         // Determine if the file can be accessed directly
                         require(['filesystem'], function (filesystem) {
@@ -2241,7 +2261,7 @@ define(['events', 'datetime', 'appSettings', 'pluginManager', 'userSettings', 'g
         }
 
         function findPlaylistIndex(playlistItemId, list) {
-            
+
             for (var i = 0, length = playlist.length; i < length; i++) {
                 if (list[i].PlaylistItemId === playlistItemId) {
                     return i;
