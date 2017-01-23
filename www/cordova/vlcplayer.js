@@ -100,9 +100,18 @@
             return null;
         };
 
-        self.stop = function () {
-            AndroidVlcPlayer.sendVlcCommand("stop", null);
-            return Promise.resolve();
+        self.stop = function (destroyPlayer) {
+
+            AndroidVlcPlayer.sendVlcCommand("stop", "true");
+
+            return new Promise(function (resolve, reject) {
+                onEnded();
+                setTimeout(resolve, 500);
+            });
+        };
+
+        self.playPause = function () {
+            AndroidVlcPlayer.sendVlcCommand("playpause", null);
         };
 
         self.pause = function () {
@@ -202,7 +211,7 @@
 
                 var apiClient = connectionManager.getApiClient(item.ServerId);
 
-                if (options.mediaType == 'audio') {
+                if (options.mediaType == 'Audio') {
 
                     AndroidVlcPlayer.playAudioVlc(val, JSON.stringify(item), JSON.stringify(mediaSource), options.poster);
                     resolve();
@@ -310,11 +319,6 @@
             } else if (eventName == 'playing') {
                 onPlaying();
             }
-        };
-
-        self.init = function () {
-
-            return Promise.resolve();
         };
 
         self.onActivityClosed = function (wasStopped, hasError, endPositionMs) {

@@ -8,9 +8,9 @@
     function allowLocalPlayer(playerId, isVideo) {
 
         // It has the notifications built-in
-        if (playerId === 'vlcplayer') {
-            return false;
-        }
+        //if (playerId === 'vlcplayer') {
+        //    return false;
+        //}
 
         return !isVideo;
     }

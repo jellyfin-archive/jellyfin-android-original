@@ -300,7 +300,7 @@ define(['itemHelper', 'mediaInfo', 'indicators', 'connectionManager', 'layoutMan
                     parentTitle = item.SeriesName;
                 }
 
-                else if (item.IsSeries) {
+                else if (item.IsSeries || (item.EpisodeTitle && item.Name)) {
                     parentTitle = item.Name;
                 }
             }
