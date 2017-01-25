@@ -205,7 +205,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
             var features = [];
 
-            features.push('filedownload');
+            //features.push('filedownload');
             features.push('sync');
             features.push('customsyncpath');
             features.push('cameraupload');
@@ -221,7 +221,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             }
 
             if (supportsFullscreen()) {
-                features.push('fullscreenchange');
+                //features.push('fullscreenchange');
             }
 
             if (browser.tv || browser.xboxOne || browser.ps4 || browser.mobile) {
