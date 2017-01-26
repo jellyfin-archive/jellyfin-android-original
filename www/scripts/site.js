@@ -162,11 +162,6 @@ var Dashboard = {
             url += queryString;
         }
 
-        if (url.indexOf('/') != 0) {
-            if (url.indexOf('://') == -1) {
-                url = '/' + url;
-            }
-        }
         return Emby.Page.show(url);
     },
 
@@ -656,7 +651,6 @@ var AppInfo = {};
 
         AppInfo.enableHomeTabs = true;
         AppInfo.enableAutoSave = browserInfo.touch;
-        AppInfo.enableHashBang = Dashboard.isRunningInCordova();
 
         AppInfo.enableAppStorePolicy = isCordova;
 
@@ -669,7 +663,6 @@ var AppInfo = {};
         }
 
         if (isCordova) {
-            AppInfo.enableAppLayouts = true;
             AppInfo.isNativeApp = true;
             AppInfo.enableHomeTabs = false;
 
@@ -985,10 +978,6 @@ var AppInfo = {};
         define("personEditor", [embyWebComponentsBowerPath + "/metadataeditor/personeditor"], returnFirstDependency);
         define("playerSelectionMenu", [embyWebComponentsBowerPath + "/playback/playerselection"], returnFirstDependency);
         define("playerSettingsMenu", [embyWebComponentsBowerPath + "/playback/playersettingsmenu"], returnFirstDependency);
-        define("resourceLockManager", [embyWebComponentsBowerPath + "/resourcelocks/resourcelockmanager"], returnFirstDependency);
-        define("wakeLock", [embyWebComponentsBowerPath + "/resourcelocks/nullresourcelock"], returnFirstDependency);
-        define("screenLock", [embyWebComponentsBowerPath + "/resourcelocks/nullresourcelock"], returnFirstDependency);
-        define("networkLock", [embyWebComponentsBowerPath + "/resourcelocks/nullresourcelock"], returnFirstDependency);
 
         define("libraryMenu", ["scripts/librarymenu"], returnFirstDependency);
 
@@ -1411,6 +1400,26 @@ var AppInfo = {};
             define("fileDownloader", [embyWebComponentsBowerPath + '/filedownloader'], returnFirstDependency);
             define("localassetmanager", [apiClientBowerPath + "/localassetmanager"], returnFirstDependency);
         }
+
+        define("screenLock", [embyWebComponentsBowerPath + "/resourcelocks/nullresourcelock"], returnFirstDependency);
+
+        if (Dashboard.isRunningInCordova() && browser.android) {
+            define("resourceLockManager", [embyWebComponentsBowerPath + "/resourcelocks/resourcelockmanager"], returnFirstDependency);
+            define("wakeLock", ["cordova/wakelock"], returnFirstDependency);
+            define("networkLock", ["cordova/networklock"], returnFirstDependency);
+        } else {
+            define("resourceLockManager", [embyWebComponentsBowerPath + "/resourcelocks/resourcelockmanager"], returnFirstDependency);
+            define("wakeLock", [embyWebComponentsBowerPath + "/resourcelocks/nullresourcelock"], returnFirstDependency);
+            define("networkLock", [embyWebComponentsBowerPath + "/resourcelocks/nullresourcelock"], returnFirstDependency);
+        }
+    }
+
+    function getDummyResourceLockManager() {
+        return {
+            request: function (resourceType) {
+                return Promise.reject();
+            }
+        };
     }
 
     function init() {
@@ -2050,7 +2059,8 @@ var AppInfo = {};
             controller: 'scripts/nowplayingpage',
             autoFocus: false,
             transition: 'fade',
-            fullscreen: true
+            fullscreen: true,
+            supportsThemeMedia: true
         });
 
         defineRoute({
@@ -2342,8 +2352,6 @@ var AppInfo = {};
             if (document.createElement('audio').canPlayType('audio/flac').replace(/no/, '') &&
                 document.createElement('audio').canPlayType('audio/ogg; codecs="opus"').replace(/no/, '')) {
 
-                list.push('bower_components/emby-webcomponents/htmlaudioplayer/plugin');
-
             } else {
                 window.VlcAudio = true;
             }
@@ -2353,9 +2361,9 @@ var AppInfo = {};
 
         } else if (Dashboard.isRunningInCordova() && browser.safari) {
             list.push('cordova/audioplayer');
-        } else {
-            list.push('bower_components/emby-webcomponents/htmlaudioplayer/plugin');
         }
+
+        list.push('bower_components/emby-webcomponents/htmlaudioplayer/plugin');
 
         if (Dashboard.isRunningInCordova() && browser.safari) {
             list.push('cordova/chromecast');
@@ -2446,6 +2454,7 @@ var AppInfo = {};
 
         var deps = [];
 
+        deps.push('apphost');
         deps.push('embyRouter');
 
         if (!(AppInfo.isNativeApp && browserInfo.android)) {
@@ -2473,7 +2482,7 @@ var AppInfo = {};
 
         console.log('onAppReady - loading dependencies');
 
-        require(deps, function (pageObjects) {
+        require(deps, function (appHost, pageObjects) {
 
             console.log('Loaded dependencies in onAppReady');
 
@@ -2482,7 +2491,7 @@ var AppInfo = {};
             defineCoreRoutes();
             Emby.Page.start({
                 click: true,
-                hashbang: AppInfo.enableHashBang
+                hashbang: Dashboard.isRunningInCordova()
             });
 
             var postInitDependencies = [];
@@ -2535,12 +2544,11 @@ var AppInfo = {};
 
             postInitDependencies.push('playerSelectionMenu');
 
-            //if (appHost.supports('fullscreenchange')) {
-            require(['fullscreen-doubleclick']);
-            //}
+            if (appHost.supports('fullscreenchange')) {
+                require(['fullscreen-doubleclick']);
+            }
 
             require(postInitDependencies);
-            upgradeLayouts();
             initAutoSync();
         });
     }
@@ -2564,16 +2572,6 @@ var AppInfo = {};
             } catch (err) {
                 console.log('Error registering serviceWorker: ' + err);
             }
-        }
-    }
-
-    function upgradeLayouts() {
-        if (!AppInfo.enableAppLayouts) {
-            Dashboard.getPluginSecurityInfo().then(function (info) {
-                if (info.IsMBSupporter) {
-                    AppInfo.enableAppLayouts = true;
-                }
-            });
         }
     }
 

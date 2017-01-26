@@ -201,7 +201,13 @@ public class RemotePlayerService extends Service {
 
             //final TransportControls controls = m_objMediaSession.getController().getTransportControls();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1, builder.build());
+
+             try {
+                 notificationManager.notify(1, builder.build());
+             }
+             catch (Exception ex){
+                // this will throw if the bitmap fails to load
+             }
         }
     }
 

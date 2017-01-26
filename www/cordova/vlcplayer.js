@@ -8,6 +8,7 @@
         self.type = 'mediaplayer';
         self.id = 'vlcplayer';
         self.isLocalPlayer = true;
+        self.hasResourceLocks = true;
 
         window.VlcAudioPlayer = self;
         window.VlcVideoPlayer = self;
@@ -242,6 +243,8 @@
                         var userStartPos = playbackStartInfo.PlayMethod == 'Transcode' ? ((options.transcodingOffsetTicks || 0) / 10000) : startPosMs;
 
                         self.getDeviceProfile().then(function (deviceProfile) {
+
+                            deviceProfile.MaxStreamingBitrate = bitrateSetting;
 
                             AndroidVlcPlayer.playVideoVlc(val,
                                 userStartPos,
