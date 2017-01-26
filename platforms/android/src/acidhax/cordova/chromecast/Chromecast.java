@@ -175,7 +175,7 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 		log("initialize " + autoJoinPolicy + " " + appId + " " + this.lastAppId);
 		if (autoJoinPolicy.equals("origin_scoped") && appId.equals(this.lastAppId)) {
 			log("lastAppId " + lastAppId);
-			//autoConnect = true;
+			autoConnect = true;
 		} else if (autoJoinPolicy.equals("origin_scoped")) {
 			log("setting lastAppId " + lastAppId);
 			this.settings.edit().putString("lastAppId", appId).apply();
@@ -351,12 +351,15 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 		});
 	}
 
-	private void joinSession(RouteInfo routeInfo) {
+	private String lastRouteId;
+	private void joinSession(final RouteInfo routeInfo) {
 
         getLogger().Info("Chromecast.joinSession route %s, id: %s", routeInfo.getName(), routeInfo.getId());
 
+		final String routeId = routeInfo.getId();
+
         synchronized (_joinedDevices){
-            _joinedDevices.add(routeInfo.getId());
+            _joinedDevices.add(routeId);
         }
 
         ChromecastSession sessionJoinAttempt = new ChromecastSession(routeInfo, this.cordova, this, this);
@@ -373,6 +376,8 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 						logException("joinSession", e);
 					}
 				}
+
+				lastRouteId = routeId;
 			}
 
 			@Override
@@ -609,7 +614,20 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 			callbackContext.success();
 		}
 
+		removeJoinedDevice();
+
 		return true;
+	}
+
+	private void removeJoinedDevice(){
+		synchronized (_joinedDevices){
+			String id = lastRouteId;
+			if (id != null){
+
+				_joinedDevices.remove(id);
+				lastRouteId = null;
+			}
+		}
 	}
 
 	/**
@@ -625,6 +643,8 @@ public class Chromecast extends CordovaPlugin implements ChromecastOnMediaUpdate
 		} else {
 			callbackContext.success();
 		}
+
+		removeJoinedDevice();
 
 		return true;
 	}

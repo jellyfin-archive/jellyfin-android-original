@@ -2991,7 +2991,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
         String playbackStartInfoJson = getIntent().getExtras().getString("playbackStartInfoJson");
         PlaybackProgressInfo playbackStartInfo = (PlaybackProgressInfo)jsonSerializer.DeserializeFromString(playbackStartInfoJson, PlaybackProgressInfo.class);
 
-        long intentPosition = -1; // position passed in by intent (ms)
+        long intentPosition = 0; // position passed in by intent (ms)
         long timeLimitMs = 0;
 
         intentPosition = getIntent().getExtras().getLong("position", 0);
@@ -2999,6 +2999,11 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
 
         String location = getIntent().getExtras().getString(PLAY_EXTRA_ITEM_LOCATION);
         location = normalizeLocation(location, mediaSourceInfo, playbackStartInfo.getPlayMethod(), intentPosition * 10000);
+
+        if (playbackStartInfo.getPlayMethod() != PlayMethod.Transcode){
+            savedTime = intentPosition;
+        }
+
         mUri = createUri(location);
         logger.Debug("Parsed uri: %s", mUri.toString());
 
@@ -3063,7 +3068,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements IVLCVout.C
                     return;
                 } else {
                     long rTime = mSettings.getLong(PreferencesActivity.VIDEO_RESUME_TIME, -1);
-                    savedTime = rTime;
+
                     if (rTime > 0 && !fromStart) {
                         if (mAskResume) {
                             showConfirmResumeDialog();

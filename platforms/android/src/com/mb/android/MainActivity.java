@@ -37,9 +37,11 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -574,24 +576,6 @@ public class MainActivity extends CordovaActivity
         }
     }
 
-    private void bluetoothNotifyChange(String action, String title, String artist, String album, long duration, long position, String imageUrl, boolean canSeek, boolean isPaused) {
-
-        String intentName = action.equalsIgnoreCase("playbackstart") ?
-                "com.android.music.metachanged" :
-                "com.android.music.playstatechanged";
-
-        Intent i = new Intent(intentName);
-        i.putExtra("id", 1L);
-        i.putExtra("artist", artist);
-        i.putExtra("album",album);
-        i.putExtra("track", title);
-        i.putExtra("playing", !isPaused);
-        i.putExtra("duration", duration);
-        i.putExtra("position", position);
-        //i.putExtra("ListSize", getQueue());
-        sendBroadcast(i);
-    }
-
     private final int ExternalStoragePermissionRequestCode = 3;
     private final int AuthorizeStoragePermissionRequestCode = 4;
     private final int DownloadFileRequestCode = 5;
@@ -849,6 +833,10 @@ public class MainActivity extends CordovaActivity
             }
             else if (name.equalsIgnoreCase("unpause")){
                 intent.setAction( Constants.ACTION_UNPAUSE );
+                startService( intent );
+            }
+            else if (name.equalsIgnoreCase("playpause")){
+                intent.setAction( Constants.ACTION_PLAYPAUSE );
                 startService( intent );
             }
             else if (name.equalsIgnoreCase("stop")){
@@ -1294,6 +1282,65 @@ public class MainActivity extends CordovaActivity
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         startActivityForResult(Intent.createChooser(sendIntent, "Share"), SHARE_RESULT);
+    }
+
+    private PowerManager.WakeLock mWakeLock;
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public boolean isWakeLockHeld(){
+        if (mWakeLock == null){
+            return false;
+        }
+
+        return mWakeLock.isHeld();
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void acquireWakeLock(){
+        if (mWakeLock == null){
+            PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+            mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+        }
+        mWakeLock.acquire();
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void releaseWakeLock(){
+        if (mWakeLock != null){
+            mWakeLock.release();
+        }
+    }
+
+    private WifiManager.WifiLock mNetworkLock;
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public boolean isNetworkLockHeld(){
+        if (mNetworkLock == null){
+            return false;
+        }
+
+        return mNetworkLock.isHeld();
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void acquireNetworkLock(){
+        if (mNetworkLock == null){
+            mNetworkLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE)) .createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+        }
+        mNetworkLock.acquire();
+    }
+
+    @android.webkit.JavascriptInterface
+    @org.xwalk.core.JavascriptInterface
+    public void releaseNetworkLock(){
+        if (mNetworkLock != null){
+            mNetworkLock.release();
+        }
     }
 
     private String getDownloadDir() throws IOException {

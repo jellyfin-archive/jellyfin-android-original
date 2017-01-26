@@ -161,23 +161,12 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
                     p.AudioCodec += ',ac3';
                 });
 
-                profile.DirectPlayProfiles.push({
-                    Container: "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac,m4a",
-                    Type: 'Audio'
-                });
-
-                profile.CodecProfiles = profile.CodecProfiles.filter(function (i) {
-                    return i.Type != 'Audio';
-                });
-
-                profile.CodecProfiles.push({
-                    Type: 'Audio',
-                    Conditions: [{
-                        Condition: 'LessThanEqual',
-                        Property: 'AudioChannels',
-                        Value: '2'
-                    }]
-                });
+                if (self.VlcAudio) {
+                    profile.DirectPlayProfiles.push({
+                        Container: "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac,m4a",
+                        Type: 'Audio'
+                    });
+                }
 
                 resolve(profile);
             });
