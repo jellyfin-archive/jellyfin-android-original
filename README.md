@@ -25,6 +25,9 @@ A Cordova-based mobile app for [Jellyfin](https://github.com/jellyfin/jellyfin/)
 #### Prerequisites
 
 * [Android Studio](https://developer.android.com/studio/install)
+* Android SDK Build-Tools 23.0.2
+* Android SDK Tools 25.2.3
+  > Additional information on installing old versions of the SDK Tools can be found [here](https://stackoverflow.com/a/26365848)
 * 32-bit versions of the following libraries
   * libgcc
   * libstdc++
