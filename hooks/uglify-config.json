@@ -9,12 +9,10 @@
     "uglifyJsOptions": {
         "compress": {
             "drop_console": true
-        },
-        "fromString": true
+        }
     },
     "cleanCssOptions": {
-        "noAdvanced": true,
-        "keepSpecialComments": 0
+        "specialComments": 0
     },
     "imageminOptions": {
         "jpeg": {
