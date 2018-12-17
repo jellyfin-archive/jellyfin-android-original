@@ -2,7 +2,7 @@
 
 A Cordova-based mobile app for [Jellyfin](https://github.com/jellyfin/jellyfin/).
 
-> This project currently uses a customized version of the Android platform for Cordova that includes native Android code that will need to be migrated to a plugin or otherwise removed. (See the `com.mb.android` package in `platforms/android/src`.) This currently blocks supporting iOS and updating Cordova, the Android platform for Cordova.
+> This project currently uses a customized version of the Android platform for Cordova that includes native Android code that will need to be migrated to a plugin or otherwise removed. (See the `com.mb.android` package in `platforms/android/src`.) This currently blocks supporting iOS and updating Cordova and the Android platform for Cordova.
 
 ## Building Jellyfin.Mobile from source
 
