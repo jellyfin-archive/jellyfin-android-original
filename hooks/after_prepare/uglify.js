@@ -125,6 +125,9 @@ function compress(file) {
 
             res = ngAnnotate(String(fs.readFileSync(file)), { add: true });
             result = UglifyJS.minify(res.src, hookConfig.uglifyJsOptions);
+            if (result.error) {
+                throw new Error(result.error)
+            }
             fs.writeFileSync(file, result.code, 'utf8'); // overwrite the original unminified file
             break;
 
@@ -133,7 +136,10 @@ function compress(file) {
 
             source = fs.readFileSync(file, 'utf8');
             result = cssMinifier.minify(source);
-            fs.writeFileSync(file, result, 'utf8'); // overwrite the original unminified file
+            if (result.errors && result.errors.length > 0) {
+                throw new Error(result.errors)
+            }
+            fs.writeFileSync(file, result.styles, 'utf8'); // overwrite the original unminified file
             break;
 
         default:
