@@ -10,6 +10,9 @@ platforms/android/assets/www
 platforms/android/CordovaLib/build
 platforms/ios/www
 
+# Android Studio files
+.idea
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
