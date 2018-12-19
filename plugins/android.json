@@ -61,26 +61,6 @@
                         {
                             "xml": "<feature name=\"InAppBillingPlugin\"><param name=\"android-package\" value=\"com.smartmobilesoftware.inappbilling.InAppBillingPlugin\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"webView\" value=\"org.crosswalk.engine.XWalkWebViewEngine\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"15+\" name=\"xwalkVersion\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"--disable-pull-to-refresh-effect\" name=\"xwalkCommandLine\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"embedded\" name=\"xwalkMode\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference default=\"true\" name=\"xwalkMultipleApk\" />",
-                            "count": 1
                         }
                     ]
                 }
@@ -142,14 +122,6 @@
     },
     "installed_plugins": {
         "acidhax.cordova.chromecast": {
-            "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-crosswalk-webview": {
-            "XWALK_VERSION": "20+",
-            "XWALK_LITEVERSION": "xwalk_core_library_canary:17+",
-            "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
-            "XWALK_MODE": "embedded",
-            "XWALK_MULTIPLEAPK": "true",
             "PACKAGE_NAME": "com.mb.android"
         }
     },

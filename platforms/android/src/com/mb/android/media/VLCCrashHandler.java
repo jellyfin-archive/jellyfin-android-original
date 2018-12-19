@@ -1,18 +1,9 @@
 package com.mb.android.media;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
-
-import android.os.Environment;
-import android.text.format.DateFormat;
-import android.util.Log;
 
 import mediabrowser.model.logging.ILogger;
 

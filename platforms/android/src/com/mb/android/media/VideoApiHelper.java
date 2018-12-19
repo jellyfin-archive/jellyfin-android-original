@@ -1,29 +1,15 @@
 package com.mb.android.media;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Environment;
-
 import com.mb.android.preferences.PreferencesProvider;
 
-import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.MediaPlayer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 import mediabrowser.apiinteraction.ApiClient;
 import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
-import mediabrowser.apiinteraction.playback.PlaybackManager;
 import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.model.dlna.CodecProfile;
 import mediabrowser.model.dlna.CodecType;
@@ -31,9 +17,7 @@ import mediabrowser.model.dlna.DeviceProfile;
 import mediabrowser.model.dlna.ProfileCondition;
 import mediabrowser.model.dlna.ProfileConditionType;
 import mediabrowser.model.dlna.ProfileConditionValue;
-import mediabrowser.model.dlna.StreamInfo;
 import mediabrowser.model.dlna.SubtitleDeliveryMethod;
-import mediabrowser.model.dlna.VideoOptions;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.entities.MediaStream;
 import mediabrowser.model.entities.MediaStreamType;

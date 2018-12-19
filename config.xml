@@ -3,10 +3,10 @@
     <name>Emby</name>
     <description>
     Emby Mobile
-  </description>
+    </description>
     <author email="apps@emby.media" href="http://emby.media">
     Emby
-  </author>
+    </author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="*" />
@@ -89,6 +89,4 @@
         <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
         <preference name="BackgroundColor" value="0xff222222" />
     </platform>
-	<preference name="xwalkVersion" value="21+" />
-    <preference name="xwalkUserAgent" value="android crosswalk/21 Chrome/51 Mobile Safari/537.36" />
 </widget>

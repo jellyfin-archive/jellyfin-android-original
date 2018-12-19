@@ -12,7 +12,7 @@ platforms/ios/www
 
 # Android Studio files
 .idea
-.iml
+*.iml
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
