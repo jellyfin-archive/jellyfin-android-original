@@ -1,11 +1,6 @@
 package com.mb.android.logging;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 
 import com.mb.android.api.SyncLoggerFactory;
 
@@ -19,19 +14,16 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.android.LogcatAppender;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
 import mediabrowser.model.logging.NullLogger;
-
 
 public class AppLogger {
 
     public static ILogger Current;
 
     public static ILogger getLogger(Context context){
-
         if (Current == null){
             Current = createLogger(context);
         }

@@ -1,17 +1,7 @@
 package com.mb.android.media;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-
 import com.mb.android.MainActivity;
-import com.mb.android.webviews.IWebView;
-import org.videolan.libvlc.LibVLC;
-import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
-
-import java.util.Date;
 
 import mediabrowser.model.logging.ILogger;
 

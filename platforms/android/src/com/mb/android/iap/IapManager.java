@@ -1,21 +1,12 @@
 package com.mb.android.iap;
 
 import android.content.Context;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.mb.android.MainActivity;
 import com.mb.android.webviews.IWebView;
 
-import org.xwalk.core.JavascriptInterface;
-
-import java.util.List;
-
-import mediabrowser.apiinteraction.EmptyResponse;
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.model.logging.ILogger;
-import mediabrowser.model.serialization.IJsonSerializer;
 import tv.emby.iap.ErrorSeverity;
 import tv.emby.iap.ErrorType;
 import tv.emby.iap.IResultHandler;
@@ -43,7 +34,6 @@ public class IapManager {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void getPurchaseInfos(final String callback) {
 
         logger.Info("getPurchaseInfos");
@@ -71,7 +61,6 @@ public class IapManager {
     }
 
     private String getMonthlyPrice(){
-
         try {
             InAppProduct monthlyProduct = iabValidator.getPremiereMonthly();
             return monthlyProduct == null ? "" : monthlyProduct.getPrice();
@@ -93,13 +82,11 @@ public class IapManager {
     }
 
     private void RespondToWebView(final String url) {
-
         logger.Info("Sending url to webView: %s", url);
         webView.sendJavaScript(url);
     }
 
     private void isPurchasedInternal(final String id, final Response<Boolean> response) {
-
         logger.Info("Checking purchase status of %s", id);
         iabValidator.checkInAppPurchase(id, new IResultHandler<ResultType>() {
             @Override
@@ -118,11 +105,9 @@ public class IapManager {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getUnlockProductSku() { return InAppProduct.getCurrentUnlockSku(MainActivity.AppPackageName); }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getPremiereMonthlySku() { return InAppProduct.getCurrentMonthlySku(MainActivity.AppPackageName); }
 
     public InAppProduct getPremiereMonthly() { return iabValidator.getPremiereMonthly(); }
@@ -130,7 +115,6 @@ public class IapManager {
     public InAppProduct getUnlockProduct() { return iabValidator.getUnlockProduct(); }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void initStore() {
 
         logger.Info("initStore called");

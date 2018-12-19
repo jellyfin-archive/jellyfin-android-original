@@ -1,17 +1,10 @@
 package com.mb.android.preferences;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 
-import org.xwalk.core.JavascriptInterface;
-
-import java.io.File;
-
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
-import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 
 /**
@@ -30,20 +23,16 @@ public class PreferencesProvider {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String get(String key) {
         return getSharedPreferences(context).getString(key, null);
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void remove(String key) {
-
         set(key, null);
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void set(String key, String value){
 
         SharedPreferences settings = getSharedPreferences(context);
@@ -79,7 +68,6 @@ public class PreferencesProvider {
     }
 
     private static SharedPreferences getSharedPreferences(Context context) {
-
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 }
