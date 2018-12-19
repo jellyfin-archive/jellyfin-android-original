@@ -39,14 +39,5 @@
         },
         "is_top_level": false,
         "variables": {}
-    },
-    "cordova-plugin-crosswalk-webview": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/crosswalk-project/cordova-plugin-crosswalk-webview",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
     }
 }

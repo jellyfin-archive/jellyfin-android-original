@@ -6,8 +6,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.MainThread;
 import android.util.Log;
 
-import com.mb.android.R;
-
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.util.VLCUtil;
@@ -19,12 +17,10 @@ import java.util.ArrayList;
 
 import mediabrowser.model.logging.ILogger;
 
-
 public class VLCOptions {
     private static final String TAG = "VLCConfig";
     public static final int AOUT_AUDIOTRACK = 0;
     public static final int AOUT_OPENSLES = 1;
-    @SuppressWarnings("unused")
     public static final int HW_ACCELERATION_AUTOMATIC = -1;
     public static final int HW_ACCELERATION_DISABLED = 0;
     public static final int HW_ACCELERATION_DECODING = 1;

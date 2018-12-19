@@ -14,30 +14,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<preference name=\"webView\" value=\"org.crosswalk.engine.XWalkWebViewEngine\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"xwalkVersion\" value=\"20+\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"xwalkLiteVersion\" value=\"xwalk_core_library_canary:17+\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"xwalkCommandLine\" value=\"--disable-pull-to-refresh-effect\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"xwalkMode\" value=\"embedded\" />",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"xwalkMultipleApk\" value=\"true\" />",
-                            "count": 1
-                        },
-                        {
                             "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
                             "count": 1
                         }
@@ -81,14 +57,6 @@
     "installed_plugins": {
         "acidhax.cordova.chromecast": {
             "PACKAGE_NAME": "com.mb.android"
-        },
-        "cordova-plugin-crosswalk-webview": {
-            "XWALK_VERSION": "20+",
-            "XWALK_LITEVERSION": "xwalk_core_library_canary:17+",
-            "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
-            "XWALK_MODE": "embedded",
-            "XWALK_MULTIPLEAPK": "true",
-            "PACKAGE_NAME": "com.mb.android"
         }
     },
     "dependent_plugins": {},
@@ -109,7 +77,5 @@
             "id": "acidhax.cordova.chromecast.tests"
         }
     ],
-    "plugin_metadata": {
-        "cordova-plugin-crosswalk-webview": "2.0.0"
-    }
+    "plugin_metadata": {}
 }

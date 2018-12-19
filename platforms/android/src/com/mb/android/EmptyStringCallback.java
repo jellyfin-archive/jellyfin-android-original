@@ -6,6 +6,5 @@ package com.mb.android;
 public class EmptyStringCallback implements android.webkit.ValueCallback<String> {
     @Override
     public void onReceiveValue(String value) {
-
     }
 }
