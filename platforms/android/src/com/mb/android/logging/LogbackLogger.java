@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import java.util.Iterator;
-
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.logging.LogSeverity;
 

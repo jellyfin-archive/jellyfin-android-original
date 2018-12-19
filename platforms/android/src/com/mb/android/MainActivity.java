@@ -31,7 +31,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -63,17 +62,14 @@ import com.mb.android.media.RemotePlayerService;
 
 import org.apache.cordova.CordovaActivity;
 import com.mb.android.preferences.PreferencesProvider;
-import com.mb.android.webviews.CrosswalkWebView;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.MySystemWebView;
-import com.mb.android.webviews.MyXWalkWebViewEngine;
 import com.mb.android.webviews.NativeWebView;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
-import org.crosswalk.engine.XWalkCordovaView;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -107,8 +103,7 @@ import mediabrowser.model.serialization.IJsonSerializer;
 import tv.emby.iap.InAppProduct;
 import tv.emby.iap.PurchaseActivity;
 
-public class MainActivity extends CordovaActivity
-{
+public class MainActivity extends CordovaActivity {
     private final int PURCHASE_REQUEST = 999;
     private final int LAUNCH_REQUEST = 990;
     private final int REQUEST_DIRECTORY = 998;
@@ -138,8 +133,7 @@ public class MainActivity extends CordovaActivity
     // http://stackoverflow.com/questions/23842776/how-to-make-android-webview-background-transparent-at-kitkat4-4
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Current = this;
@@ -167,100 +161,20 @@ public class MainActivity extends CordovaActivity
         filter.addAction(Constants.ACTION_SHOW_PLAYER);
         registerReceiver(messageReceiver, filter);
 
-        if (enableSystemWebView()){
-
-            /*try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    // This is causing a crash on some devices
-                    WebView.setWebContentsDebuggingEnabled(true);
-                }
-            }
-            catch (Exception ex) {
-                // This is causing a crash on some devices
-                getLogger().ErrorException("Error enabling webview debugging", ex);
-            }*/
-            addJavascriptInterfaces();
-        }
+        addJavascriptInterfaces();
     }
-
-    private boolean enableSystemWebView(){
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
-
-            getLogger().Info("Enabling Crosswalk due to older android version");
-            return false;
-        }
-
-        if (Build.VERSION.SDK_INT >= 24){
-
-            chromeVersion = 55;
-            return true;
-        }
-
-        // Use system version if equal or higher.
-        int systemWebViewVersion = GetSystemWebViewChromiumVersion();
-        if (systemWebViewVersion < chromeVersion) {
-            getLogger().Info("Enabling Crosswalk due to older chromium version");
-            return false;
-        }
-
-        chromeVersion = systemWebViewVersion;
-        return true;
-    }
-
-    private int GetSystemWebViewChromiumVersion() {
-
-        try {
-
-            getLogger().Info("Searching for com.google.android.webview");
-
-            PackageManager pm = getPackageManager();
-
-            PackageInfo pi = pm.getPackageInfo("com.google.android.webview", 0);
-
-            getLogger().Info("com.google.android.webview version name: " + pi.versionName);
-            getLogger().Info("com.google.android.webview version code: " + pi.versionCode);
-
-            String parseString = pi.versionName.split(Pattern.quote("."))[0];
-
-            getLogger().Info("Parsing %s to determine chromium version", parseString);
-
-            int version = Integer.parseInt(parseString);
-
-            getLogger().Info("Chromium version: " + version);
-
-            return version;
-
-        } catch (PackageManager.NameNotFoundException e) {
-            getLogger().ErrorException("Android System WebView is not found", e);
-            return 0;
-        }catch (Exception e) {
-            getLogger().ErrorException("Android System WebView is not found", e);
-            return 0;
-        }
-    }
-
 
     @Override
     protected CordovaWebViewEngine makeWebViewEngine() {
-
         Context context = getApplicationContext();
         CordovaWebViewEngine engine;
 
         final ILogger logger = getLogger();
 
-        if (enableSystemWebView()){
-
-            engine =  new SystemWebViewEngine(new MySystemWebView(this, logger, this), preferences);
-            WebView webkitView = (WebView)engine.getView();
-            webkitView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-            webView = new NativeWebView(webkitView);
-
-        } else {
-            engine =  new MyXWalkWebViewEngine(this, preferences, this);
-            XWalkCordovaView xView = (XWalkCordovaView)engine.getView();
-            webView = new CrosswalkWebView(xView);
-        }
+        engine =  new SystemWebViewEngine(new MySystemWebView(this, logger, this), preferences);
+        WebView webkitView = (WebView)engine.getView();
+        webkitView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webView = new NativeWebView(webkitView);
 
         jsonSerializer = new GsonJsonSerializer();
 
@@ -272,7 +186,6 @@ public class MainActivity extends CordovaActivity
     }
 
     public void addJavascriptInterfaces(){
-
         Context context = getApplicationContext();
         final ILogger logger = getLogger();
 
@@ -392,19 +305,16 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public int getAndroidBuildVersion() {
         return Build.VERSION.SDK_INT;
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public int getChromeVersion() {
         return chromeVersion;
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getAppVersion() {
 
         PackageManager packageManager = getPackageManager();
@@ -417,21 +327,18 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getDeviceModel() {
         String model = android.os.Build.MODEL;
         return model;
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getDeviceId() {
         String uuid = Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
         return uuid;
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void purchasePremiereMonthly(final String email) {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getPremiereMonthly(), email);
@@ -441,7 +348,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void purchasePremiereWeekly(final String email) {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getPremiereWeekly(), email);
@@ -451,7 +357,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void purchaseUnlock() {
         if (iapManager.isStoreAvailable()) {
             beginPurchase(iapManager.getUnlockProduct(), null);
@@ -519,11 +424,9 @@ public class MainActivity extends CordovaActivity
             getLogger().ErrorException("Error launching activity", ex);
             RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
         }
-
     }
 
     public static void RespondToWebView(final String js) {
-
         //logger.Info("Sending url to webView: %s", js);
         if (webView != null){
             webView.sendJavaScript(js);
@@ -536,9 +439,7 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void hideMediaSession() {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Intent intent = new Intent( this, RemotePlayerService.class );
             intent.setAction( Constants.ACTION_REPORT );
@@ -550,9 +451,7 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void updateMediaSession(String action, boolean isLocalPlayer, String itemId, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             getLogger().Info("updateMediaSession isPaused: %s", isPaused);
@@ -619,14 +518,12 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public boolean authorizeStorage(){
-
         getLogger().Info("begin authorizeStorage");
         return authorizeStorage(AuthorizeStoragePermissionRequestCode);
     }
 
-    private boolean authorizeStorage(final int requestCode){
+    private boolean authorizeStorage(final int requestCode) {
 
         final Activity activity = this;
 
@@ -665,7 +562,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void chooseDirectory() {
 
         getLogger().Info("begin chooseDirectory");
@@ -706,7 +602,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void playAudioVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
 
         Intent intent = null;
@@ -731,7 +626,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void playVideoVlc(String path,
                              long startPositionMs,
                              String itemName,
@@ -782,7 +676,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void destroyVlc() {
 
         Intent intent = null;
@@ -810,7 +703,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
 
         getLogger().Debug("Vlc received command: %s", name);
@@ -901,13 +793,11 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getSyncStatus() {
         return MediaSyncAdapter.isSyncActive() ? "Active" : MediaSyncAdapter.isSyncPending() ? "Pending" : "Idle";
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void startSync() {
         new OnDemandSync(getApplicationContext()).Run();
     }
@@ -954,7 +844,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getLegacyDeviceId() {
 
         Context context = getApplicationContext();
@@ -986,7 +875,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public boolean supportsPlayStore(){
 
         // This determines how Chromecast will be supported
@@ -996,14 +884,12 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getAndroidDeviceId() {
 
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void sendEmail(String to, String subject, String body) {
 
         Intent draft     = getDraftWithProperties(to, subject, body);
@@ -1074,7 +960,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void downloadFile(String url, String path) {
 
         downloadFileUrl = url;
@@ -1169,7 +1054,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public boolean launchIntent(String uri, String dataType){
 
         Bundle extras = extras = new Bundle();
@@ -1190,7 +1074,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void findServers(final int timeoutMs){
 
         Thread thread = new Thread(new Runnable() {
@@ -1217,7 +1100,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void share(
             final String msg,
             final String subject,
@@ -1287,7 +1169,6 @@ public class MainActivity extends CordovaActivity
     private PowerManager.WakeLock mWakeLock;
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public boolean isWakeLockHeld(){
         if (mWakeLock == null){
             return false;
@@ -1297,7 +1178,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void acquireWakeLock(){
         if (mWakeLock == null){
             PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
@@ -1307,7 +1187,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void releaseWakeLock(){
         if (mWakeLock != null){
             mWakeLock.release();
@@ -1317,7 +1196,6 @@ public class MainActivity extends CordovaActivity
     private WifiManager.WifiLock mNetworkLock;
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public boolean isNetworkLockHeld(){
         if (mNetworkLock == null){
             return false;
@@ -1327,7 +1205,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void acquireNetworkLock(){
         if (mNetworkLock == null){
             mNetworkLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE)) .createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
@@ -1336,7 +1213,6 @@ public class MainActivity extends CordovaActivity
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void releaseNetworkLock(){
         if (mNetworkLock != null){
             mNetworkLock.release();

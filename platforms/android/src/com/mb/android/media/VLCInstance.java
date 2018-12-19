@@ -1,19 +1,10 @@
 package com.mb.android.media;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.AssetManager;
-import android.os.Build;
 import android.util.Log;
 
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.util.VLCUtil;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import mediabrowser.model.logging.ILogger;
 
@@ -26,6 +17,7 @@ public class VLCInstance {
 
         }
     };
+
     /** A set of utility functions for the VLC application */
     public synchronized static LibVLC get(final Context context, final ILogger logger) throws IllegalStateException {
         if (sLibVLC == null) {

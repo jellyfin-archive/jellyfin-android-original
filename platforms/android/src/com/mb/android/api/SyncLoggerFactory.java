@@ -1,9 +1,5 @@
 package com.mb.android.api;
 
-import android.content.Context;
-
-import com.mb.android.logging.AppLogger;
-
 import mediabrowser.apiinteraction.android.sync.ISyncLoggerFactory;
 import mediabrowser.model.logging.ILogger;
 
@@ -22,5 +18,4 @@ public class SyncLoggerFactory implements ISyncLoggerFactory {
     public ILogger getNewLogger() {
         return syncLogger;
     }
-
 }

@@ -4,14 +4,8 @@ import android.content.Context;
 
 import com.mb.android.webviews.IWebView;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import mediabrowser.apiinteraction.ApiEventListener;
 import mediabrowser.apiinteraction.IConnectionManager;
-import mediabrowser.apiinteraction.QueryStringDictionary;
 import mediabrowser.apiinteraction.android.AndroidConnectionManager;
 import mediabrowser.apiinteraction.android.AndroidCredentialProvider;
 import mediabrowser.apiinteraction.android.AndroidDevice;
@@ -19,7 +13,6 @@ import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.PeriodicSync;
 import mediabrowser.apiinteraction.android.sync.data.AndroidAssetManager;
-import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.model.dto.MediaSourceInfo;
 import mediabrowser.model.logging.ILogger;
@@ -57,9 +50,7 @@ public class ApiClientBridge {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void updateCredentials(String credentialsJson) {
-
         logger.Info("Received instruction to updateCredentials");
 
         // Save this prior to creating ConnectionManager, to fill in the client-side credentials
@@ -67,9 +58,7 @@ public class ApiClientBridge {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public void init(String appName, String appVersion, String deviceId, String deviceName, String capabilitiesJson) {
-
         logger.Info("AppVersion: %s", appVersion);
         logger.Info("DeviceId: %s", deviceId);
         logger.Info("DeviceName: %s", deviceName);
@@ -94,9 +83,7 @@ public class ApiClientBridge {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String getLocalMediaSource(String serverId, String itemId) {
-
         LocalItem item = localAssetManager.getLocalItem(serverId, itemId);
 
         if (item == null){
@@ -116,7 +103,6 @@ public class ApiClientBridge {
             }
 
         }
-
         return null;
     }
 }

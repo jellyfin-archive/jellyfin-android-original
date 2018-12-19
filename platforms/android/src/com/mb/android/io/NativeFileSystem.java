@@ -1,23 +1,12 @@
 package com.mb.android.io;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.provider.DocumentFile;
 
-import com.mb.android.media.MediaService;
-
-import org.apache.cordova.Config;
-import org.xwalk.core.JavascriptInterface;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 
-import mediabrowser.apiinteraction.sync.data.ILocalAssetManager;
 import mediabrowser.model.logging.ILogger;
 
 /**
@@ -34,7 +23,6 @@ public class NativeFileSystem {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public boolean fileExists(String path) {
 
         logger.Info("Checking file exists: %s", path);
@@ -58,7 +46,6 @@ public class NativeFileSystem {
     }
 
     @android.webkit.JavascriptInterface
-    @org.xwalk.core.JavascriptInterface
     public String translateFilePath(String path){
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
