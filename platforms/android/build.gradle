@@ -17,8 +17,6 @@
        under the License.
 */
 
-// GENERATED FILE! DO NOT EDIT!
-
 apply plugin: 'android'
 apply plugin: 'com.android.application'
 
@@ -31,16 +29,11 @@ buildscript {
 		jcenter()
     }
 
-    // Switch the Android Gradle plugin version requirement depending on the
-    // installed version of Gradle. This dependency is documented at
-    // http://tools.android.com/tech-docs/new-build-system/version-compatibility
-    // and https://issues.apache.org/jira/browse/CB-8143
     dependencies {
-            classpath 'com.android.tools.build:gradle:1.5.0'
-        }
+        classpath 'com.android.tools.build:gradle:1.5.0'
+    }
 }
 
-// Allow plugins to declare Maven dependencies via build-extras.gradle.
 repositories {
     mavenCentral()
 	maven { url 'http://guardian.github.com/maven/repo-releases' }
@@ -143,7 +136,7 @@ afterEvaluate {
     }
 }
 
-// Make cdvBuild a task that depends on the debug/arch-sepecific task.
+// Make cdvBuild a task that depends on the debug/arch-specific task.
 task cdvBuildDebug
 cdvBuildDebug.dependsOn {
     return computeBuildTargetName(true)
@@ -187,7 +180,7 @@ android {
     }
 
     defaultConfig {
-        versionCode cdvVersionCode ?: Integer.parseInt("" + privateHelpers.extractIntFromManifest("versionCode") + "0")
+        versionCode cdvVersionCode ?: Integer.parseInt(privateHelpers.extractIntFromManifest("versionCode") + "0")
         if (cdvMinSdkVersion != null) {
             minSdkVersion cdvMinSdkVersion
         }
@@ -205,30 +198,19 @@ android {
             googlearmv7 {
                 versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
                 ndk {
-                    abiFilters "armeabi-v7a", ""
+                    abiFilters 'armeabi-v7a'
+                }
+            }
+            googlearmv8 {
+                versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
+                ndk {
+                    abiFilters 'arm64-v8a'
                 }
             }
             googlex86 {
                 versionCode cdvVersionCode ?: defaultConfig.versionCode + 4
                 ndk {
-                    abiFilters "x86", ""
-                }
-            }
-            amazonarmv7 {
-                versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
-                ndk {
-                    abiFilters "armeabi-v7a", ""
-                }
-            }
-            amazonx86 {
-                versionCode cdvVersionCode ?: defaultConfig.versionCode + 4
-                ndk {
-                    abiFilters "x86", ""
-                }
-            }
-            all {
-                ndk {
-                    abiFilters "all", ""
+                    abiFilters 'x86'
                 }
             }
         }
@@ -252,20 +234,19 @@ android {
     }
 
     signingConfigs {
-            release {
-                // These must be set or Gradle will complain (even if they are overridden).
-                keyAlias = "mb3android"
-                storeFile = file("../../../keystores/mb3android.jks")
-            }
+        release {
+            // These must be set or Gradle will complain (even if they are overridden).
+            keyAlias = "mb3android"
+            storeFile = file("../../../keystores/mb3android.jks")
         }
-
+    }
         
-        buildTypes {
-            release {
-                signingConfig signingConfigs.release
-				zipAlignEnabled true
-            }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+	        zipAlignEnabled true
         }
+    }
 		
 	def Properties props = new Properties()
     def propFile = file('../../../keystores/androidmobile.properties')
@@ -305,17 +286,12 @@ dependencies {
     // SUB-PROJECT DEPENDENCIES END
     compile files('libs/apiclient.jar')
     // FLAVOR-SPECIFIC DEPENDENCIES
-    googlex86Compile(name: 'emby.googleiap', ext: 'aar')
     googlearmv7Compile(name: 'emby.googleiap', ext: 'aar')
-    amazonx86Compile(name: 'emby.amazoniap', ext: 'aar')
-    amazonarmv7Compile(name: 'emby.amazoniap', ext: 'aar')
-    amazonx86Compile files('libs/in-app-purchasing-2.0.61.jar')
-    amazonarmv7Compile files('libs/in-app-purchasing-2.0.61.jar')
-    googlex86Compile files('libs/libvlc_x86.jar')
+    googlearmv8Compile(name: 'emby.googleiap', ext: 'aar')
+    googlex86Compile(name: 'emby.googleiap', ext: 'aar')
     googlearmv7Compile files('libs/libvlc_arm.jar')
-    amazonx86Compile files('libs/libvlc_x86.jar')
-    amazonarmv7Compile files('libs/libvlc_arm.jar')
-    // FLAVOR-SPECIFIC DEPENDENCIES END
+    googlearmv8Compile files('libs/libvlc_arm.jar')
+    googlex86Compile files('libs/libvlc_x86.jar')
 }
 
 def promptForReleaseKeyPassword() {
