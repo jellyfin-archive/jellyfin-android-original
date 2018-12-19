@@ -1,81 +1,81 @@
 {
-    "prepare_queue": {
-        "installed": [],
-        "uninstalled": []
-    },
-    "config_munge": {
-        "files": {
-            "res/xml/config.xml": {
-                "parents": {
-                    "/widget": [],
-                    "/*": [
-                        {
-                            "xml": "<feature name=\"Chromecast\"><param name=\"android-package\" value=\"acidhax.cordova.chromecast.Chromecast\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
-                            "count": 1
-                        }
-                    ]
-                }
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {
+      "res/xml/config.xml": {
+        "parents": {
+          "/widget": [],
+          "/*": [
+            {
+              "xml": "<feature name=\"Chromecast\"><param name=\"android-package\" value=\"acidhax.cordova.chromecast.Chromecast\" /></feature>",
+              "count": 1
             },
-            "AndroidManifest.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
-                            "count": 1
-                        }
-                    ],
-                    "/manifest/application": [
-                        {
-                            "xml": "<meta-data android:name=\"com.google.android.gms.version\" android:value=\"@integer/google_play_services_version\" />",
-                            "count": 1
-                        }
-                    ],
-                    "/manifest": []
-                }
-            },
-            "config.xml": {
-                "parents": {
-                    "/*": []
-                }
-            },
-            "res/values/billing_key_param.xml": {
-                "parents": {
-                    "/*": [
-                        {
-                            "xml": "<string name=\"billing_key_param\">DF</string>",
-                            "count": 1
-                        }
-                    ]
-                }
+            {
+              "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
+              "count": 1
             }
+          ]
         }
+      },
+      "AndroidManifest.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
+              "count": 1
+            }
+          ],
+          "/manifest/application": [
+            {
+              "xml": "<meta-data android:name=\"com.google.android.gms.version\" android:value=\"@integer/google_play_services_version\" />",
+              "count": 1
+            }
+          ],
+          "/manifest": []
+        }
+      },
+      "config.xml": {
+        "parents": {
+          "/*": []
+        }
+      },
+      "res/values/billing_key_param.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<string name=\"billing_key_param\">DF</string>",
+              "count": 1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "installed_plugins": {
+    "acidhax.cordova.chromecast": {
+      "PACKAGE_NAME": "com.mb.android"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [
+    {
+      "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
+      "id": "acidhax.cordova.chromecast.ChromecastApi",
+      "clobbers": [
+        "chrome.cast"
+      ]
     },
-    "installed_plugins": {
-        "acidhax.cordova.chromecast": {
-            "PACKAGE_NAME": "com.mb.android"
-        }
+    {
+      "file": "plugins/acidhax.cordova.chromecast/EventEmitter.js",
+      "id": "acidhax.cordova.chromecast.EventEmitter"
     },
-    "dependent_plugins": {},
-    "modules": [
-        {
-            "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
-            "id": "acidhax.cordova.chromecast.ChromecastApi",
-            "clobbers": [
-                "chrome.cast"
-            ]
-        },
-        {
-            "file": "plugins/acidhax.cordova.chromecast/EventEmitter.js",
-            "id": "acidhax.cordova.chromecast.EventEmitter"
-        },
-        {
-            "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
-            "id": "acidhax.cordova.chromecast.tests"
-        }
-    ],
-    "plugin_metadata": {}
+    {
+      "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
+      "id": "acidhax.cordova.chromecast.tests"
+    }
+  ],
+  "plugin_metadata": {}
 }
