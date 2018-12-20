@@ -104,7 +104,7 @@
                     centerFocus(dlg.querySelector('.formDialogContent'), false, true);
                 }
 
-                // Has to be assigned a z-index after the call to .open() 
+                // Has to be assigned a z-index after the call to .open()
                 dlg.addEventListener('close', function (e) {
 
                     clearInterval(timeTextInterval);
@@ -183,7 +183,7 @@
     }
 
     function validateFeature(feature, options) {
-
+        Promise.resolve();
         options = options || {};
 
         console.log('validateFeature: ' + feature);
@@ -647,7 +647,7 @@
     }
 
     function showPremiereInfo() {
-
+        Promise.resolve();
         if (appHost.supports('externalpremium')) {
             showExternalPremiereInfo();
             return Promise.resolve();
