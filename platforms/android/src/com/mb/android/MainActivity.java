@@ -51,7 +51,6 @@ import android.view.KeyEvent;
 import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
-import com.mb.android.iap.IapLogger;
 import com.mb.android.iap.IapManager;
 import com.mb.android.io.NativeFileSystem;
 import com.mb.android.logging.AppLogger;
@@ -66,7 +65,6 @@ import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.MySystemWebView;
 import com.mb.android.webviews.NativeWebView;
 import com.nononsenseapps.filepicker.FilePickerActivity;
-
 
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
@@ -87,21 +85,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
-import mediabrowser.apiinteraction.android.FindServersRunnable;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.OnDemandSync;
 import mediabrowser.apiinteraction.discovery.ServerLocator;
-import mediabrowser.apiinteraction.http.HttpRequest;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.model.apiclient.ServerDiscoveryInfo;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
-import mediabrowser.model.registration.AppstoreRegRequest;
 import mediabrowser.model.serialization.IJsonSerializer;
-import tv.emby.iap.InAppProduct;
-import tv.emby.iap.PurchaseActivity;
 
 public class MainActivity extends CordovaActivity {
     private final int PURCHASE_REQUEST = 999;
@@ -110,18 +103,12 @@ public class MainActivity extends CordovaActivity {
     private final int REQUEST_DIRECTORY_SAF = 996;
     public static final int VIDEO_PLAYBACK = 997;
     public static final int SHARE_RESULT = 980;
-    private final String embyAdminUrl = "http://mb3admin.com/test/admin/service/";
     private static IWebView webView;
     private IAsyncHttpClient httpClient;
     private IJsonSerializer jsonSerializer;
     private IapManager iapManager;
 
-    private String purchaseEmail;
-    private InAppProduct currentProduct;
-
-    public static String AppPackageName = "com.mb.android";
-
-    private ILogger getLogger(){
+    private ILogger getLogger() {
         return AppLogger.getLogger(this);
     }
 
@@ -129,34 +116,12 @@ public class MainActivity extends CordovaActivity {
 
     public static MainActivity Current;
 
-    // transparency
-    // http://stackoverflow.com/questions/23842776/how-to-make-android-webview-background-transparent-at-kitkat4-4
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Current = this;
-
-        /*new Runnable() {
-            @Override
-            public void run() {
-                readLogcatInBackground();
-            }
-        }.run();*/
-
-        /*try {
-            // This is throwing an exception we can't catch and is crashing the app
-             URL.setURLStreamHandlerFactory(new OkUrlFactory(okHttpClient));
-        }
-        catch (Exception ex){
-            // Occasionally seeing factory already set error
-        }*/
-
-        // Set by <content src="index.html" /> in config.xml
         loadUrl(launchUrl);
-
-        /* Prepare the progressBar */
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION_SHOW_PLAYER);
         registerReceiver(messageReceiver, filter);
@@ -204,34 +169,7 @@ public class MainActivity extends CordovaActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == PURCHASE_REQUEST) {
-            if (resultCode == RESULT_OK) {
-
-                if (currentProduct.getEmbyFeatureCode() != null) {
-
-                    AppstoreRegRequest request = new AppstoreRegRequest();
-                    request.setStore(intent.getStringExtra("store"));
-                    request.setApplication(AppPackageName);
-                    request.setProduct(currentProduct.getSku());
-                    request.setFeature(currentProduct.getEmbyFeatureCode());
-                    request.setType(currentProduct.getProductType().toString());
-                    if (intent.getStringExtra("storeId") != null) request.setStoreId(intent.getStringExtra("storeId"));
-                    request.setStoreToken(intent.getStringExtra("storeToken"));
-                    request.setEmail(purchaseEmail);
-                    request.setAmt(currentProduct.getPrice());
-
-                    RespondToWebView(String.format("window.IapManager.onPurchaseComplete("+jsonSerializer.SerializeToString(request)+");"));
-                } else {
-                    // no emby feature - just report success
-                    RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
-                }
-            } else {
-                RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
-            }
-        }
-
-        else if (requestCode == REQUEST_DIRECTORY_SAF && resultCode == Activity.RESULT_OK) {
-
+        if (requestCode == REQUEST_DIRECTORY_SAF && resultCode == Activity.RESULT_OK) {
             Uri uri = intent.getData();
             final int takeFlags = intent.getFlags()
                     & (Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -240,44 +178,36 @@ public class MainActivity extends CordovaActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 getContentResolver().takePersistableUriPermission(uri, takeFlags);
             }
-            RespondToWebviewWithSelectedPath(uri);
-        }
-        else if (requestCode == REQUEST_DIRECTORY && resultCode == RESULT_OK) {
-
+            RespondToWebViewWithSelectedPath(uri);
+        } else if (requestCode == REQUEST_DIRECTORY && resultCode == RESULT_OK) {
             if (intent.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
-                // For JellyBean and above
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    // For JellyBean and above
                     ClipData clip = intent.getClipData();
-
                     if (clip != null) {
                         for (int i = 0; i < clip.getItemCount(); i++) {
                             Uri uri = clip.getItemAt(i).getUri();
-                            RespondToWebviewWithSelectedPath(uri);
+                            RespondToWebViewWithSelectedPath(uri);
                         }
                     }
-                    // For Ice Cream Sandwich
                 } else {
+                    // For Ice Cream Sandwich
                     ArrayList<String> paths = intent.getStringArrayListExtra (FilePickerActivity.EXTRA_PATHS);
-
                     if (paths != null) {
                         for (String path: paths) {
                             Uri uri = Uri.parse(path);
-                            RespondToWebviewWithSelectedPath(uri);
+                            RespondToWebViewWithSelectedPath(uri);
                         }
                     }
                 }
-
             } else {
                 Uri uri = intent.getData();
                 // Do something with the URI
                 if (uri != null){
-                    RespondToWebviewWithSelectedPath(uri);
+                    RespondToWebViewWithSelectedPath(uri);
                 }
             }
-        }
-
-        else if (requestCode == VIDEO_PLAYBACK) {
-
+        } else if (requestCode == VIDEO_PLAYBACK) {
             /*boolean completed = resultCode == RESULT_OK;
             boolean error = resultCode == RESULT_OK ? false : (intent == null ? true : intent.getBooleanExtra("error", false));
 
@@ -292,15 +222,12 @@ public class MainActivity extends CordovaActivity {
         }
     }
 
-    private void RespondToWebviewWithSelectedPath(Uri uri){
-
+    private void RespondToWebViewWithSelectedPath(Uri uri) {
         String path = uri.toString();
         String srch = "file://";
-
-        if (StringHelper.IndexOfIgnoreCase(path, srch) == 0){
+        if (StringHelper.IndexOfIgnoreCase(path, srch) == 0) {
                 path = path.substring(srch.length());
         }
-
         RespondToWebView(String.format("window.NativeDirectoryChooser.onChosen('%s');", path));
     }
 
@@ -316,7 +243,6 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public String getAppVersion() {
-
         PackageManager packageManager = getPackageManager();
         try {
             return packageManager.getPackageInfo(getPackageName(), 0).versionName;
@@ -328,112 +254,41 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public String getDeviceModel() {
-        String model = android.os.Build.MODEL;
-        return model;
+        return android.os.Build.MODEL;
     }
 
     @android.webkit.JavascriptInterface
     public String getDeviceId() {
-        String uuid = Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-        return uuid;
+        //return Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+        return "ID";
     }
 
     @android.webkit.JavascriptInterface
     public void purchasePremiereMonthly(final String email) {
-        if (iapManager.isStoreAvailable()) {
-            beginPurchase(iapManager.getPremiereMonthly(), email);
-        } else{
-            getLogger().Error("Cannot proceed with purchasePremiereMonthly because store is not available");
-        }
+        beginPurchase();
     }
 
     @android.webkit.JavascriptInterface
     public void purchasePremiereWeekly(final String email) {
-        if (iapManager.isStoreAvailable()) {
-            beginPurchase(iapManager.getPremiereWeekly(), email);
-        } else{
-            getLogger().Error("Cannot proceed with purchasePremiereWeekly because store is not available");
-        }
+        beginPurchase();
     }
 
     @android.webkit.JavascriptInterface
     public void purchaseUnlock() {
-        if (iapManager.isStoreAvailable()) {
-            beginPurchase(iapManager.getUnlockProduct(), null);
-        } else{
-            getLogger().Error("Cannot proceed with purchaseUnlock because store is not available");
-        }
+        beginPurchase();
     }
 
-    public void beginPurchase(final InAppProduct product, final String purchaseEmail) {
-
-        this.purchaseEmail = purchaseEmail;
-
-            if (product.requiresEmail() && (purchaseEmail == null || purchaseEmail.length() == 0)) {
-                //Todo Obtain the email address for purchase - then re-call this method
-                getLogger().Error("Aborting beginPurchase because purchaseEmail is required.");
-                return;
-            }
-
-            if (product.getEmbyFeatureCode() != null) {
-
-                //Test connectivity to our back-end before purchase because we need this to complete it
-                getLogger().Debug("Testing back-end connectivity.");
-
-                HttpRequest request = new HttpRequest();
-                request.setUrl(embyAdminUrl+"appstore/check");
-                httpClient.Send(request, new Response<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        getLogger().Debug("Back-end connectivity test succeeded");
-
-                        //ok, continue with purchase
-                        purchaseInternal(product);
-                    }
-
-                    @Override
-                    public void onError(Exception exception) {
-
-                        getLogger().Error("Back-end connectivity test failed.");
-                        //Unable to connect - display appropriate message
-                    }
-                });
-            } else {
-                //Just initiate the purchase
-                purchaseInternal(product);
-            }
-    }
-
-    private void purchaseInternal(InAppProduct product) {
-
-        try {
-
-            getLogger().Debug("purchaseInternal sku: %s", product.getSku());
-
-            currentProduct = product;
-
-            PurchaseActivity.Logger = new IapLogger(getLogger());
-
-            Intent purchaseIntent = new Intent(this, PurchaseActivity.class);
-            purchaseIntent.putExtra("googleKey", IapManager.GOOGLE_KEY);
-            purchaseIntent.putExtra("sku", product.getSku());
-            startActivityForResult(purchaseIntent, PURCHASE_REQUEST);
-        }
-        catch (Exception ex) {
-            getLogger().ErrorException("Error launching activity", ex);
-            RespondToWebView(String.format("window.IapManager.onPurchaseComplete(false);"));
-        }
+    public void beginPurchase() {
+        RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
     }
 
     public static void RespondToWebView(final String js) {
-        //logger.Info("Sending url to webView: %s", js);
         if (webView != null){
             webView.sendJavaScript(js);
         }
     }
 
-    public static void sendCommand(String cmd){
+    public static void sendCommand(String cmd) {
         String script = "require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + cmd + "');});";
         RespondToWebView(script);
     }
@@ -441,24 +296,20 @@ public class MainActivity extends CordovaActivity {
     @android.webkit.JavascriptInterface
     public void hideMediaSession() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent( this, RemotePlayerService.class );
-            intent.setAction( Constants.ACTION_REPORT );
-
+            Intent intent = new Intent(this, RemotePlayerService.class);
+            intent.setAction(Constants.ACTION_REPORT);
             intent.putExtra("playerAction", "playbackstop");
-
-            startService( intent );
+            startService(intent);
         }
     }
 
     @android.webkit.JavascriptInterface
     public void updateMediaSession(String action, boolean isLocalPlayer, String itemId, String title, String artist, String album, int duration, int position, String imageUrl, boolean canSeek, boolean isPaused) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
             getLogger().Info("updateMediaSession isPaused: %s", isPaused);
 
-            Intent intent = new Intent( this, RemotePlayerService.class );
-            intent.setAction( Constants.ACTION_REPORT );
-
+            Intent intent = new Intent(this, RemotePlayerService.class);
+            intent.setAction(Constants.ACTION_REPORT);
             intent.putExtra("playerAction", action);
             intent.putExtra("title", title);
             intent.putExtra("artist", artist);
@@ -470,8 +321,7 @@ public class MainActivity extends CordovaActivity {
             intent.putExtra("isPaused", isPaused);
             intent.putExtra("itemId", itemId);
             intent.putExtra("isLocalPlayer", isLocalPlayer);
-
-            startService( intent );
+            startService(intent);
         }
     }
 
@@ -485,34 +335,17 @@ public class MainActivity extends CordovaActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case ExternalStoragePermissionRequestCode: {
-                // If request is cancelled, the result arrays are empty.
+                // if request is cancelled the result arrays are empty
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // related task you need to do.
                     chooseDirectory();
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
                 return;
             }
             case DownloadFileRequestCode: {
-                // If request is cancelled, the result arrays are empty.
+                // if request is cancelled the result arrays are empty
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // related task you need to do.
                     downloadFile(downloadFileUrl, downloadFilePath);
-
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
-                return;
             }
         }
     }
@@ -524,13 +357,10 @@ public class MainActivity extends CordovaActivity {
     }
 
     private boolean authorizeStorage(final int requestCode) {
-
         final Activity activity = this;
-
         getLogger().Info("authorizeStorage with requestCode %s", requestCode);
 
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-
             // Should we show an explanation?
             getLogger().Info("Permission for WRITE_EXTERNAL_STORAGE is not granted");
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -563,23 +393,18 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public void chooseDirectory() {
-
         getLogger().Info("begin chooseDirectory");
-
         if (!authorizeStorage(ExternalStoragePermissionRequestCode)){
             return;
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             startActivityForResult(intent, REQUEST_DIRECTORY_SAF);
-        }
-        else {
-
+        } else {
             getLogger().Info("creating intent for FilePickerActivity");
             Intent intent = new Intent(this, FilePickerActivity.class);
             // This works if you defined the intent filter
@@ -603,26 +428,21 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public void playAudioVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
-
         Intent intent = null;
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-            intent = new Intent( this, MediaService.class );
-        }
-        else {
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent(this, MediaService.class);
+        } else {
+            intent = new Intent(this, KitKatMediaService.class);
         }
 
-        intent.setAction( Constants.ACTION_PLAY );
+        intent.setAction(Constants.ACTION_PLAY);
         intent.putExtra("path", path);
         intent.putExtra("item", itemJson);
         intent.putExtra("mediaSource", mediaSourceJson);
         intent.putExtra("posterUrl", posterUrl);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-        startService( intent );
+        startService(intent);
     }
 
     @android.webkit.JavascriptInterface
@@ -643,7 +463,6 @@ public class MainActivity extends CordovaActivity {
                              String deviceProfileJson,
                              String videoQualityOptionsJson,
                              long timeLimitMs) {
-
         getLogger().Debug("Video path: %s", path);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
         intent.setAction(VideoPlayerActivity.PLAY_FROM_VIDEOGRID);
@@ -677,19 +496,15 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public void destroyVlc() {
-
         Intent intent = null;
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
-            intent = new Intent( this, MediaService.class );
-        }
-        else {
-            intent = new Intent( this, KitKatMediaService.class );
+            intent = new Intent(this, MediaService.class);
+        } else {
+            intent = new Intent(this, KitKatMediaService.class);
         }
 
-        intent.setAction( Constants.ACTION_STOP );
-        startService( intent );
+        intent.setAction(Constants.ACTION_STOP);
+        startService(intent);
     }
 
     @Override
@@ -704,22 +519,16 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
-
         getLogger().Debug("Vlc received command: %s", name);
-
         Intent intent = null;
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
             intent = new Intent( this, MediaService.class );
-        }
-        else {
+        } else {
             intent = new Intent( this, KitKatMediaService.class );
         }
 
         try {
             if (name.equalsIgnoreCase("pause")){
-
                 intent.setAction( Constants.ACTION_PAUSE );
                 startService( intent );
             }
@@ -732,26 +541,20 @@ public class MainActivity extends CordovaActivity {
                 startService( intent );
             }
             else if (name.equalsIgnoreCase("stop")){
-
                 intent.setAction( Constants.ACTION_STOP );
                 boolean stopService = StringHelper.EqualsIgnoreCase(arg1, "true");
                 intent.putExtra("stopService", stopService);
                 startService( intent );
             }
             else if (name.equalsIgnoreCase("setvolume")){
-
                 // incoming value is 0-100
-
                 float val = Float.parseFloat(arg1);
                 val = Math.min(val, 100);
                 val = Math.max(val, 0);
-
                 //mLibVLC.setVolume(Math.round(val));
             }
             else if (name.equalsIgnoreCase("setposition")){
-
                 // incoming value is ms
-
                 intent.setAction( Constants.ACTION_SEEK );
                 getLogger().Debug("Sending seek command to Vlc Service. Position: %s", arg1);
                 try {
@@ -775,9 +578,8 @@ public class MainActivity extends CordovaActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
             if (action.equalsIgnoreCase(Constants.ACTION_SHOW_PLAYER)) {
-//                showAudioPlayer();
+                //showAudioPlayer();
             }
         }
     };
@@ -805,10 +607,11 @@ public class MainActivity extends CordovaActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         try {
             unregisterReceiver(messageReceiver);
-        } catch (IllegalArgumentException e) {}
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     static final int BUFFER_SIZE = 2 * 4096;
@@ -875,103 +678,59 @@ public class MainActivity extends CordovaActivity {
     }
 
     @android.webkit.JavascriptInterface
-    public boolean supportsPlayStore(){
-
-        // This determines how Chromecast will be supported
-        // If play store services are available, we use the Google Cast SDK, which is the preferred method
-        // If not, we use the LG Connect SDK
-        return BuildConfig.FLAVOR.toLowerCase().indexOf("google") != -1;
+    public boolean supportsPlayStore() {
+        // check for native chromecast support
+        return false;
     }
 
     @android.webkit.JavascriptInterface
     public String getAndroidDeviceId() {
-
-        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        //return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID)
+        return "ID";
     }
 
     @android.webkit.JavascriptInterface
     public void sendEmail(String to, String subject, String body) {
-
-        Intent draft     = getDraftWithProperties(to, subject, body);
-        String header    = "Open with";
-
+        Intent draft = getDraftWithProperties(to, subject, body);
+        String header = "Open with";
         final Intent chooser = Intent.createChooser(draft, header);
-
         startActivityForResult(chooser, 0);
     }
 
-    public Intent getDraftWithProperties (String to, String subject, String body) {
-
+    public Intent getDraftWithProperties(String to, String subject, String body) {
         Intent mail = new Intent(Intent.ACTION_SEND_MULTIPLE);
-
         setSubject(subject, mail);
-        setBody(body, false, mail);
+        setBody(body, mail);
         setRecipients(to, mail);
-
         mail.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         return mail;
     }
 
-    /**
-     * Setter for the subject.
-     *
-     * @param subject
-     * The subject of the email.
-     * @param draft
-     * The intent to send.
-     */
-    private void setSubject (String subject, Intent draft) {
+    private void setSubject(String subject, Intent draft) {
         draft.putExtra(Intent.EXTRA_SUBJECT, subject);
     }
 
-    /**
-     * Setter for the body.
-     *
-     * @param body
-     * The body of the email.
-     * @param isHTML
-     * Indicates the encoding (HTML or plain text).
-     * @param draft
-     * The intent to send.
-     */
-    private void setBody (String body, Boolean isHTML, Intent draft) {
-
-        if (isHTML) {
-            /*draft.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(body));
-            draft.setType("text/html");
-
-            if (Build.VERSION.SDK_INT > 15) {
-                draft.putExtra(Intent.EXTRA_HTML_TEXT, body);
-            }*/
-        } else {
-            draft.putExtra(Intent.EXTRA_TEXT, body);
-            draft.setType("text/plain");
-        }
+    private void setBody(String body, Intent draft) {
+        draft.putExtra(Intent.EXTRA_TEXT, body);
+        draft.setType("text/plain");
     }
 
-    private void setRecipients (String to, Intent draft) {
-
+    private void setRecipients(String to, Intent draft) {
         String[] receivers = new String[1];
-
         receivers[0] = to;
-
         draft.putExtra(Intent.EXTRA_EMAIL, receivers);
     }
 
     @android.webkit.JavascriptInterface
     public void downloadFile(String url, String path) {
-
         downloadFileUrl = url;
         downloadFilePath = path;
-
         if (!authorizeStorage(DownloadFileRequestCode)) {
             return;
         }
 
         getLogger().Info("Downloading file %s", url);
         String filename = "download";
-
         if (path != null && path.length() > 0){
             filename = new File(path).getName();
 
@@ -995,13 +754,12 @@ public class MainActivity extends CordovaActivity {
         // (Seems to be available since Honeycomb only)
         r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
-        // Start download
+        // start download
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         dm.enqueue(r);
     }
 
     public void handleSslError(SslError error, final Response<Boolean> response){
-
         final Context context = this;
         SslCertificate cert = error.getCertificate();
 
@@ -1049,13 +807,11 @@ public class MainActivity extends CordovaActivity {
     }
 
     private static SharedPreferences getSharedPreferences(Context context) {
-
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @android.webkit.JavascriptInterface
     public boolean launchIntent(String uri, String dataType){
-
         Bundle extras = extras = new Bundle();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         if (dataType != null) {
@@ -1075,12 +831,10 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public void findServers(final int timeoutMs){
-
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 new ServerLocator(getLogger(), new GsonJsonSerializer()).FindServers(timeoutMs, new Response<ArrayList<ServerDiscoveryInfo>>(){
-
                     @Override
                     public void onResponse(ArrayList<ServerDiscoveryInfo> servers){
 
@@ -1095,24 +849,16 @@ public class MainActivity extends CordovaActivity {
                 });
             }
         });
-
         thread.start();
     }
 
     @android.webkit.JavascriptInterface
-    public void share(
-            final String msg,
-            final String subject,
-            final String imageUrl,
-            final String url) {
-
+    public void share(final String msg, final String subject, final String imageUrl, final String url) {
         String message = msg;
         boolean hasMultipleAttachments = false;
         final Intent sendIntent = new Intent(hasMultipleAttachments ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND);
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-
         sendIntent.setType("text/plain");
-
         try {
             if (imageUrl != null && imageUrl.length() > 0) {
                 final String dir = getDownloadDir();
@@ -1137,7 +883,7 @@ public class MainActivity extends CordovaActivity {
                 sendIntent.setType("text/plain");
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         if (notEmpty(subject)) {
@@ -1162,7 +908,6 @@ public class MainActivity extends CordovaActivity {
 
         // this was added to start the intent in a new window as suggested in #300 to prevent crashes upon return
         sendIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         startActivityForResult(Intent.createChooser(sendIntent, "Share"), SHARE_RESULT);
     }
 
@@ -1200,7 +945,6 @@ public class MainActivity extends CordovaActivity {
         if (mNetworkLock == null){
             return false;
         }
-
         return mNetworkLock.isHeld();
     }
 
@@ -1369,6 +1113,7 @@ public class MainActivity extends CordovaActivity {
         String fromMap = MIME_Map.get(end);
         return fromMap == null ? type : fromMap;
     }
+
     private static final Map<String, String> MIME_Map = new HashMap<String, String>();
     static {
         MIME_Map.put("3gp",   "video/3gpp");
