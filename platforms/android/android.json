@@ -7,14 +7,9 @@
     "files": {
       "res/xml/config.xml": {
         "parents": {
-          "/widget": [],
           "/*": [
             {
               "xml": "<feature name=\"Chromecast\"><param name=\"android-package\" value=\"acidhax.cordova.chromecast.Chromecast\" /></feature>",
-              "count": 1
-            },
-            {
-              "xml": "<preference name=\"android-minSdkVersion\" value=\"16\" />",
               "count": 1
             }
           ]
@@ -24,6 +19,14 @@
         "parents": {
           "/*": [
             {
+              "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
+              "count": 1
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+              "count": 1
+            },
+            {
               "xml": "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />",
               "count": 1
             }
@@ -31,22 +34,6 @@
           "/manifest/application": [
             {
               "xml": "<meta-data android:name=\"com.google.android.gms.version\" android:value=\"@integer/google_play_services_version\" />",
-              "count": 1
-            }
-          ],
-          "/manifest": []
-        }
-      },
-      "config.xml": {
-        "parents": {
-          "/*": []
-        }
-      },
-      "res/values/billing_key_param.xml": {
-        "parents": {
-          "/*": [
-            {
-              "xml": "<string name=\"billing_key_param\">DF</string>",
               "count": 1
             }
           ]
@@ -64,18 +51,23 @@
     {
       "file": "plugins/acidhax.cordova.chromecast/chrome.cast.js",
       "id": "acidhax.cordova.chromecast.ChromecastApi",
+      "pluginId": "acidhax.cordova.chromecast",
       "clobbers": [
         "chrome.cast"
       ]
     },
     {
       "file": "plugins/acidhax.cordova.chromecast/EventEmitter.js",
-      "id": "acidhax.cordova.chromecast.EventEmitter"
+      "id": "acidhax.cordova.chromecast.EventEmitter",
+      "pluginId": "acidhax.cordova.chromecast"
     },
     {
       "file": "plugins/acidhax.cordova.chromecast/tests/tests.js",
-      "id": "acidhax.cordova.chromecast.tests"
+      "id": "acidhax.cordova.chromecast.tests",
+      "pluginId": "acidhax.cordova.chromecast"
     }
   ],
-  "plugin_metadata": {}
+  "plugin_metadata": {
+    "acidhax.cordova.chromecast": "0.0.1-alpha"
+  }
 }
