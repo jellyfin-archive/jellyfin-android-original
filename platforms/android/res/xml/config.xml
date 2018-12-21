@@ -3,12 +3,12 @@
     <feature name="Chromecast">
         <param name="android-package" value="acidhax.cordova.chromecast.Chromecast" />
     </feature>
-    <name>Emby</name>
+    <name>Jellyfin</name>
     <description>
-    Emby Mobile
+    Jellyfin Mobile
     </description>
-    <author email="apps@emby.media" href="http://emby.media">
-    Emby
+    <author email="apps@jellyfin.org" href="http://jellyfin.media">
+    Jellyfin
     </author>
     <content src="index.html" />
     <access origin="*" />
