@@ -13,12 +13,10 @@ public class IapManager {
 
     private IWebView webView;
     private ILogger logger;
-    private Context context;
 
     public IapManager(Context context, IWebView webView, ILogger logger) {
         this.webView = webView;
         this.logger = logger;
-        this.context = context;
     }
 
     private void RespondToWebView(final String url) {
