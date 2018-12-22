@@ -205,9 +205,9 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             features.push('externallinks');
             features.push('multiserver');
 
-            if (MainActivity.getChromeVersion() >= 53) {
-                features.push('imageanalysis');
-            }
+            //if (MainActivity.getChromeVersion() >= 53) {
+            //    features.push('imageanalysis');
+            //}
 
             if (supportsFullscreen()) {
                 //features.push('fullscreenchange');
@@ -234,24 +234,18 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             return new Promise(function (resolve, reject) {
 
                 document.addEventListener("deviceready", function () {
+                    // remove special characters
+                    var deviceName = MainActivity.getDeviceModel().replace(/[^\w\s]/gi, '');
+                    var deviceId = MainActivity.getDeviceId();
 
-                    var name = "Emby for Android Mobile";
-
-                    // Remove special characters
-                    var cleanDeviceName = MainActivity.getDeviceModel().replace(/[^\w\s]/gi, '');
-
-                    var deviceId = null;
-
-                    if (window.MainActivity) {
-
-                        deviceId = appStorage.getItem('legacyDeviceId');
-                    }
+                    var appName = "Jellyfin Mobile";
+                    var appVersion = MainActivity.getAppVersion();
 
                     appInfo = {
-                        deviceId: deviceId || MainActivity.getDeviceId(),
-                        deviceName: cleanDeviceName,
-                        appName: name,
-                        appVersion: MainActivity.getAppVersion()
+                        deviceId: deviceId,
+                        deviceName: deviceName,
+                        appName: appName,
+                        appVersion: appVersion
                     };
 
                     resolve(appInfo);

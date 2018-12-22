@@ -130,53 +130,7 @@
     }
 
     function isPlaybackUnlockedViaOldApp() {
-
-        return testDeviceId(connectionManager.deviceId()).then(function () {
-
-            return Promise.resolve();
-
-        }, function () {
-
-            return testDeviceId(MainActivity.getDeviceId());
-        });
-    }
-
-    function testDeviceId(deviceId, alias) {
-
-        var cacheKey = 'oldapp5-' + deviceId;
-        var cacheValue = appStorage.getItem(cacheKey);
-        if (cacheValue == 'true') {
-            return Promise.resolve();
-        }
-
-        console.log('testing play access for device id: ' + deviceId);
-
-        var fetchUrl = 'http://mb3admin.com/admin/service/statistics/appAccess?application=AndroidV1&deviceId=' + deviceId;
-        if (alias) {
-            fetchUrl += '&alias=' + alias;
-        }
-
-        return fetch(fetchUrl, {
-
-            method: 'GET'
-
-        }).then(function (response) {
-
-            console.log('Play access test for device id: ' + deviceId + '. Response: ' + response.status);
-
-            if (response.status < 400) {
-                appStorage.setItem(cacheKey, 'true');
-                return Promise.resolve();
-            }
-
-            return Promise.reject();
-
-        }, function (e) {
-
-            console.log('Play access test for device id: ' + deviceId + ' failed.');
-
-            return Promise.reject();
-        });
+        return Promise.resolve();
     }
 
     function restorePurchase() {
@@ -193,15 +147,8 @@
     }
 
     function launchEmail() {
-
-        var serverInfo = connectionManager.currentApiClient().serverInfo() || {};
-        var serverId = serverInfo.Id || 'Unknown';
-
-        var body = 'Order number: ';
-        body += '\n\nPlease enter order number above or attach screenshot of order information.';
-        body += '\n\n' + serverId + '|' + connectionManager.deviceId();
-
-        MainActivity.sendEmail('apps@emby.media', 'Android Activation', body);
+        // used to launch email intent in app
+        //MainActivity.sendEmail('apps@emby.media', 'Android Activation', body);
     }
 
     function getAdminFeatureName(feature) {

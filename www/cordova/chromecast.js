@@ -47,9 +47,10 @@
         }
     }
 
-    if (MainActivity.supportsPlayStore()) {
-        // Use native chromecast support
-        document.addEventListener('chromecastloaded', onChromecastLoaded);
+    //if (MainActivity.supportsPlayStore()) {
+    if (true) {
+        // use native chromecast support
+        //document.addEventListener('chromecastloaded', onChromecastLoaded);
     }
 
     onChromecastLoaded();
