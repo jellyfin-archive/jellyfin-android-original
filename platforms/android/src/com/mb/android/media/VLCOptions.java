@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.MainThread;
 import android.util.Log;
 
+import com.mb.android.preferences.Preferences;
+
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.util.VLCUtil;

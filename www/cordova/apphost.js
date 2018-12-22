@@ -205,10 +205,6 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             features.push('externallinks');
             features.push('multiserver');
 
-            //if (MainActivity.getChromeVersion() >= 53) {
-            //    features.push('imageanalysis');
-            //}
-
             if (supportsFullscreen()) {
                 //features.push('fullscreenchange');
             }
