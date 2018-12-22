@@ -126,8 +126,7 @@
     }
 
     function launchEmail() {
-        // used to launch email intent in app
-        //MainActivity.sendEmail('apps@emby.media', 'Android Activation', body);
+        // TODO remove
     }
 
     function getAdminFeatureName(feature) {

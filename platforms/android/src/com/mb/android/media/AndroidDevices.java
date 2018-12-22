@@ -118,10 +118,10 @@ public class AndroidDevices {
                     list.add(mountpoint);
                 }
             }
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
-            Util.close(bufReader);
+            FileUtils.close(bufReader);
         }
         return list;
     }

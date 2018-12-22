@@ -88,9 +88,11 @@ import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.apiinteraction.android.sync.OnDemandSync;
 import mediabrowser.apiinteraction.discovery.ServerLocator;
+import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.model.apiclient.ServerDiscoveryInfo;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
+import mediabrowser.model.serialization.IJsonSerializer;
 
 public class MainActivity extends CordovaActivity {
     private final int LAUNCH_REQUEST = 990;
@@ -99,6 +101,8 @@ public class MainActivity extends CordovaActivity {
     public static final int VIDEO_PLAYBACK = 997;
     public static final int SHARE_RESULT = 980;
     private static IWebView webView;
+    private IAsyncHttpClient httpClient;
+    private IJsonSerializer jsonSerializer;
     private IapManager iapManager;
 
     private ILogger getLogger() {
@@ -131,7 +135,12 @@ public class MainActivity extends CordovaActivity {
         WebView webkitView = (WebView)engine.getView();
         webkitView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView = new NativeWebView(webkitView);
+
+        jsonSerializer = new GsonJsonSerializer();
+
         iapManager = new IapManager(context, webView, logger);
+        ApiClientBridge apiClientBridge = new ApiClientBridge(context, logger, webView, jsonSerializer);
+        httpClient = apiClientBridge.httpClient;
 
         return engine;
     }
@@ -182,12 +191,13 @@ public class MainActivity extends CordovaActivity {
                 }
             }
         } else if (requestCode == VIDEO_PLAYBACK) {
-            boolean completed = resultCode == RESULT_OK;
+            // TODO move this to onDestroy() in the video player
+            // it was moved into the javascript section for iap
+            /*boolean completed = resultCode == RESULT_OK;
             boolean error = resultCode == RESULT_OK ? false : (intent == null ? true : intent.getBooleanExtra("error", false));
             long positionMs = intent == null || completed ? 0 : intent.getLongExtra("position", 0);
             String currentSrc = intent == null ? "" : intent.getStringExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION);
-            // add this once we find the right method to call
-            //RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));
+            RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));*/
         }
     }
 
@@ -768,7 +778,8 @@ public class MainActivity extends CordovaActivity {
     @android.webkit.JavascriptInterface
     public void acquireNetworkLock(){
         if (mNetworkLock == null){
-            mNetworkLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE)) .createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            mNetworkLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
         }
         mNetworkLock.acquire();
     }

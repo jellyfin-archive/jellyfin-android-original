@@ -27,7 +27,6 @@
     }
 
     function getTargets() {
-
         return Promise.resolve(chrome.cast.getRouteList().map(convertRouteToTarget));
     }
 
@@ -36,7 +35,6 @@
     }
 
     function onChromecastLoaded(e) {
-
         var plugin = pluginManager.plugins().filter(function (p) {
             return p.id === 'chromecast';
         })[0];
@@ -47,12 +45,5 @@
         }
     }
 
-    //if (MainActivity.supportsPlayStore()) {
-    if (true) {
-        // use native chromecast support
-        //document.addEventListener('chromecastloaded', onChromecastLoaded);
-    }
-
     onChromecastLoaded();
-
 });
