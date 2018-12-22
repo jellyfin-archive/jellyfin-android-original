@@ -4,7 +4,6 @@
     var iapManager = {};
 
     function updateProductInfo(id, owned, price) {
-
         var currentProduct = updatedProducts.filter(function (r) {
             return r.id == id;
         })[0];
@@ -15,7 +14,6 @@
                 owned: owned,
                 price: price
             };
-
             updatedProducts.push(currentProduct);
         }
 
@@ -50,23 +48,18 @@
     }
 
     function beginPurchase(feature, email) {
-
         if (feature == 'embypremieremonthly') {
-            return MainActivity.purchasePremiereMonthly(email);
+            return NativeIapManager.purchasePremiereMonthly(email);
         }
-        return MainActivity.purchaseUnlock();
+        return NativeIapManager.purchaseUnlock();
     }
 
     function onPurchaseComplete(result) {
-
         if (result === true) {
-
             refreshPurchases();
         }
         else if (result) {
-
             var apiClient = connectionManager.currentApiClient();
-
             apiClient.ajax({
                 type: "POST",
                 url: apiClient.getUrl("Appstore/Register"),
@@ -74,11 +67,8 @@
                     Parameters: JSON.stringify(result)
                 }
             }).then(function () {
-
                 refreshPurchases();
-
             }, function (e) {
-
                 refreshPurchases();
             });
         }
@@ -89,27 +79,21 @@
     }
 
     function getStoreFeatureId(feature) {
-
         // the mapping is handled internally in java
         return feature;
     }
 
     function getSubscriptionOptions() {
-
         var options = [];
-
         options.push({
             feature: 'embypremieremonthly',
             title: 'sharedcomponents#EmbyPremiereMonthlyWithPrice'
         });
 
         options = options.filter(function (o) {
-
             var storeProduct = getProduct(o.feature);
             return storeProduct != null;
-
         }).map(function (o) {
-
             var storeProduct = getProduct(o.feature);
             o.id = getStoreFeatureId(o.feature);
             o.title = globalize.translate(o.title, storeProduct.price);
@@ -121,7 +105,6 @@
     }
 
     function isUnlockedByDefault(feature) {
-
         if (feature == 'playback' || feature == 'livetv') {
             return isPlaybackUnlockedViaOldApp();
         } else {
@@ -134,15 +117,11 @@
     }
 
     function restorePurchase() {
-
         var msg = globalize.translate('AlreadyPaidHelp1', 'apps@emby.media');
-
         msg += '<br/><br/>' + globalize.translate('AlreadyPaidHelp2');
 
         require(['confirm'], function (confirm) {
-
             confirm(msg, globalize.translate('sharedcomponents#HeaderAlreadyPaid')).then(launchEmail);
-
         });
     }
 
@@ -152,11 +131,9 @@
     }
 
     function getAdminFeatureName(feature) {
-
         if (feature == 'playback') {
             return 'androidappunlock';
         }
-
         return feature;
     }
 
