@@ -24,6 +24,10 @@ public class IapManager {
         webView.sendJavaScript(url);
     }
 
+    private void beginPurchase() {
+        RespondToWebView("window.IapManager.onPurchaseComplete(true);");
+    }
+
     @android.webkit.JavascriptInterface
     public void getPurchaseInfos(final String callback) {
         logger.Info("getPurchaseInfos");
@@ -39,6 +43,16 @@ public class IapManager {
     @android.webkit.JavascriptInterface
     public String getPremiereMonthlySku() {
         return "MONTHLY SKU";
+    }
+
+    @android.webkit.JavascriptInterface
+    public void purchasePremiereMonthly(final String email) {
+        beginPurchase();
+    }
+
+    @android.webkit.JavascriptInterface
+    public void purchaseUnlock() {
+        beginPurchase();
     }
 
     @android.webkit.JavascriptInterface
