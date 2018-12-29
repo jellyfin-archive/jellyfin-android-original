@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var cleanCSS = require('gulp-clean-css');
 var del = require('del');
-var dom = require('gulp-dom');
 var uglify = require('gulp-uglify');
 
 var paths = {
