@@ -1,7 +1,18 @@
 var gulp = require('gulp');
+var gulpif = require('gulp-if');
 var cleanCSS = require('gulp-clean-css');
 var del = require('del');
 var uglify = require('gulp-uglify');
+
+// Check the NODE_ENV environment variable
+var isDev = process.env.NODE_ENV === 'development';
+
+// Skip minification for development builds or minified files
+var compress = !isDev && [
+    '**/*',
+    '!**/*min.*',
+    '!**/*hls.js'
+];
 
 var paths = {
     assets: {
@@ -27,43 +38,53 @@ var paths = {
     }
 };
 
+// Clean the www directory
 function clean() {
     return del([ 'www' ]);
 }
 
+// Copy unmodified assets
 function copy() {
     return gulp.src(paths.assets.src)
-        .pipe(gulp.dest(paths.assets.dest))
+        .pipe(gulp.dest(paths.assets.dest));
 }
 
+// Uglify cordova scripts
 function cordovaScripts() {
     return gulp.src(paths.scripts.cordova.src)
-        .pipe(uglify())
+        .pipe(gulpif(compress, uglify()))
         .pipe(gulp.dest(paths.scripts.cordova.dest));
 }
+cordovaScripts.displayName = 'scripts:cordova';
 
+// Uglify dashboard-ui scripts
 function dashboardScripts() {
     return gulp.src(paths.scripts.dashboard.src)
-        .pipe(uglify())
+        .pipe(gulpif(compress, uglify()))
         .pipe(gulp.dest(paths.scripts.dashboard.dest));
 }
+dashboardScripts.displayName = 'scripts:dashboard';
 
+// Uglify scripts
 var scripts = gulp.parallel(cordovaScripts, dashboardScripts);
 
+// Uglify stylesheets
 function styles() {
     return gulp.src(paths.styles.src)
-        .pipe(cleanCSS())
+        .pipe(gulpif(compress, cleanCSS()))
         .pipe(gulp.dest(paths.styles.dest));
 }
 
+// Default build task
 var build = gulp.series(
     clean,
     gulp.parallel(copy, scripts, styles)
 );
 
+// Export tasks so they can be run individually
 exports.clean = clean;
 exports.copy = copy;
 exports.scripts = scripts;
 exports.styles = styles;
-
+// Export default task
 exports.default = build;
