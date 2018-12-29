@@ -13,20 +13,5 @@
     },
     "cleanCssOptions": {
         "specialComments": 0
-    },
-    "imageminOptions": {
-        "jpeg": {
-            "progressive": true,
-            "arithmetic": false
-        },
-        "png": {
-            "optimizationLevel": 2
-        },
-        "gif": {
-            "interlaced": false
-        },
-        "svg": {
-            "pretty": false
-        }
     }
 }
