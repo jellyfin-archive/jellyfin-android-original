@@ -52,7 +52,11 @@ function copy() {
 // Uglify cordova scripts
 function cordovaScripts() {
     return gulp.src(paths.scripts.cordova.src)
-        .pipe(gulpif(compress, uglify()))
+        .pipe(gulpif(compress, uglify({
+            compress: {
+                drop_console: true
+            }
+        })))
         .pipe(gulp.dest(paths.scripts.cordova.dest));
 }
 cordovaScripts.displayName = 'scripts:cordova';
