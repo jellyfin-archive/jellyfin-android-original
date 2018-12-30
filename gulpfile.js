@@ -40,7 +40,10 @@ var paths = {
 
 // Clean the www directory
 function clean() {
-    return del([ 'www' ]);
+    return del([
+        'www',
+        'platforms/android/assets/www'
+    ]);
 }
 
 // Copy unmodified assets
