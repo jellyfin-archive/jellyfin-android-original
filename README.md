@@ -33,6 +33,16 @@ A Cordova-based mobile app for [Jellyfin](https://github.com/jellyfin/jellyfin/)
   * libstdc++
   * zlib
 
+### Build `www/` Directory
+
+If any changes are made to `src/`, the `www/` directory will need to be rebuilt using the following command.
+
+```
+npx gulp
+```
+
+> If `NODE_ENV=development` is set in the environment, then the source files will be copied without being minified.
+
 #### Build APKs
 
 ```sh
