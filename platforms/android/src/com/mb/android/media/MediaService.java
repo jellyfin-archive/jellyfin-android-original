@@ -1,9 +1,6 @@
 package com.mb.android.media;
 
 import android.annotation.TargetApi;
-import android.media.session.MediaSession;
-import android.media.session.PlaybackState;
-import android.os.SystemClock;
 
 import com.mb.android.MainActivity;
 import com.mb.android.api.ApiClientBridge;
@@ -13,7 +10,6 @@ import mediabrowser.apiinteraction.android.mediabrowser.BaseMediaBrowserService;
 import mediabrowser.apiinteraction.android.mediabrowser.IMediaRes;
 import mediabrowser.apiinteraction.android.mediabrowser.IPlayback;
 import mediabrowser.apiinteraction.android.mediabrowser.IPlaybackCallback;
-import mediabrowser.apiinteraction.android.mediabrowser.utils.QueueHelper;
 import mediabrowser.logging.ConsoleLogger;
 import mediabrowser.model.logging.ILogger;
 
@@ -62,13 +58,11 @@ public class MediaService extends BaseMediaBrowserService implements IPlaybackCa
 
     @Override
     protected void handleNextTrackRequest() {
-
         MainActivity.sendCommand("next");
     }
 
     @Override
     protected void handlePreviousTrackRequest() {
-
         MainActivity.sendCommand("previous");
     }
 }

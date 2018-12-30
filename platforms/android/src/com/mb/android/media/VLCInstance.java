@@ -11,12 +11,6 @@ import mediabrowser.model.logging.ILogger;
 public class VLCInstance {
     public final static String TAG = "VLC/UiTools/VLCInstance";
     private static LibVLC sLibVLC = null;
-    private static Runnable sCopyLua = new Runnable() {
-        @Override
-        public void run() {
-
-        }
-    };
 
     /** A set of utility functions for the VLC application */
     public synchronized static LibVLC get(final Context context, final ILogger logger) throws IllegalStateException {

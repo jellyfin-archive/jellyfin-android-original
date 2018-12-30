@@ -45,7 +45,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.webkit.WebView;
@@ -59,6 +58,7 @@ import com.mb.android.media.VideoPlayerActivity;
 import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
 
+import org.apache.cordova.BuildConfig;
 import org.apache.cordova.CordovaActivity;
 import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.IWebView;
@@ -69,13 +69,11 @@ import com.nononsenseapps.filepicker.FilePickerActivity;
 import org.apache.cordova.CordovaWebViewEngine;
 import org.apache.cordova.engine.SystemWebViewEngine;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -97,7 +95,6 @@ import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
 
 public class MainActivity extends CordovaActivity {
-    private final int PURCHASE_REQUEST = 999;
     private final int LAUNCH_REQUEST = 990;
     private final int REQUEST_DIRECTORY = 998;
     private final int REQUEST_DIRECTORY_SAF = 996;
@@ -111,8 +108,6 @@ public class MainActivity extends CordovaActivity {
     private ILogger getLogger() {
         return AppLogger.getLogger(this);
     }
-
-    private int chromeVersion = 51;
 
     public static MainActivity Current;
 
@@ -181,23 +176,11 @@ public class MainActivity extends CordovaActivity {
             RespondToWebViewWithSelectedPath(uri);
         } else if (requestCode == REQUEST_DIRECTORY && resultCode == RESULT_OK) {
             if (intent.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    // For JellyBean and above
-                    ClipData clip = intent.getClipData();
-                    if (clip != null) {
-                        for (int i = 0; i < clip.getItemCount(); i++) {
-                            Uri uri = clip.getItemAt(i).getUri();
-                            RespondToWebViewWithSelectedPath(uri);
-                        }
-                    }
-                } else {
-                    // For Ice Cream Sandwich
-                    ArrayList<String> paths = intent.getStringArrayListExtra (FilePickerActivity.EXTRA_PATHS);
-                    if (paths != null) {
-                        for (String path: paths) {
-                            Uri uri = Uri.parse(path);
-                            RespondToWebViewWithSelectedPath(uri);
-                        }
+                ClipData clip = intent.getClipData();
+                if (clip != null) {
+                    for (int i = 0; i < clip.getItemCount(); i++) {
+                        Uri uri = clip.getItemAt(i).getUri();
+                        RespondToWebViewWithSelectedPath(uri);
                     }
                 }
             } else {
@@ -208,16 +191,12 @@ public class MainActivity extends CordovaActivity {
                 }
             }
         } else if (requestCode == VIDEO_PLAYBACK) {
+            // TODO move this to onDestroy() in the video player
+            // it was moved into the javascript section for iap
             /*boolean completed = resultCode == RESULT_OK;
             boolean error = resultCode == RESULT_OK ? false : (intent == null ? true : intent.getBooleanExtra("error", false));
-
             long positionMs = intent == null || completed ? 0 : intent.getLongExtra("position", 0);
-            String currentSrc = intent == null ? null : intent.getStringExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION);
-
-            if (currentSrc == null) {
-                currentSrc = "";
-            }
-
+            String currentSrc = intent == null ? "" : intent.getStringExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION);
             RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));*/
         }
     }
@@ -232,24 +211,8 @@ public class MainActivity extends CordovaActivity {
     }
 
     @android.webkit.JavascriptInterface
-    public int getAndroidBuildVersion() {
-        return Build.VERSION.SDK_INT;
-    }
-
-    @android.webkit.JavascriptInterface
-    public int getChromeVersion() {
-        return chromeVersion;
-    }
-
-    @android.webkit.JavascriptInterface
     public String getAppVersion() {
-        PackageManager packageManager = getPackageManager();
-        try {
-            return packageManager.getPackageInfo(getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            getLogger().ErrorException("Error getting app version", e);
-            return null;
-        }
+        return Integer.toString(BuildConfig.VERSION_CODE);
     }
 
     @android.webkit.JavascriptInterface
@@ -259,27 +222,8 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public String getDeviceId() {
-        //return Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-        return "ID";
-    }
-
-    @android.webkit.JavascriptInterface
-    public void purchasePremiereMonthly(final String email) {
-        beginPurchase();
-    }
-
-    @android.webkit.JavascriptInterface
-    public void purchasePremiereWeekly(final String email) {
-        beginPurchase();
-    }
-
-    @android.webkit.JavascriptInterface
-    public void purchaseUnlock() {
-        beginPurchase();
-    }
-
-    public void beginPurchase() {
-        RespondToWebView(String.format("window.IapManager.onPurchaseComplete(true);"));
+        // replace this later with a randomly generated persistent string stored in local settings
+        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     public static void RespondToWebView(final String js) {
@@ -507,16 +451,6 @@ public class MainActivity extends CordovaActivity {
         startService(intent);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
     @android.webkit.JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
         getLogger().Debug("Vlc received command: %s", name);
@@ -612,113 +546,6 @@ public class MainActivity extends CordovaActivity {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-    }
-
-    static final int BUFFER_SIZE = 2 * 4096;
-
-    volatile boolean logcatReaderRunning = true;
-
-    protected void readLogcatInBackground() {
-
-        logcatReaderRunning = true;
-        Process process = null;
-
-        try {
-            process = Runtime.getRuntime().exec("logcat");
-        } catch (IOException e) {
-            logcatReaderRunning = false;
-            return;
-        }
-
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(process.getInputStream()), BUFFER_SIZE);
-        } catch (IllegalArgumentException e) {
-            logcatReaderRunning = false;
-        }
-        try {
-            while (logcatReaderRunning) {
-
-                getLogger().Debug(reader.readLine());
-            }
-        } catch (IOException e) {
-            logcatReaderRunning = false;
-        }
-    }
-
-    @android.webkit.JavascriptInterface
-    public String getLegacyDeviceId() {
-
-        Context context = getApplicationContext();
-        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-
-        String uuid;
-        String androidID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        String deviceID = tm.getDeviceId();
-        String simID = tm.getSimSerialNumber();
-
-        if ("9774d56d682e549c".equals(androidID) || androidID == null) {
-            androidID = "";
-        }
-
-        if (deviceID == null) {
-            deviceID = "";
-        }
-
-        if (simID == null) {
-            simID = "";
-        }
-
-        uuid = androidID + deviceID + simID;
-        uuid = String.format("%32s", uuid).replace(' ', '0');
-        uuid = uuid.substring(0,32);
-        uuid = uuid.replaceAll("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5");
-
-        return uuid;
-    }
-
-    @android.webkit.JavascriptInterface
-    public boolean supportsPlayStore() {
-        // check for native chromecast support
-        return false;
-    }
-
-    @android.webkit.JavascriptInterface
-    public String getAndroidDeviceId() {
-        //return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID)
-        return "ID";
-    }
-
-    @android.webkit.JavascriptInterface
-    public void sendEmail(String to, String subject, String body) {
-        Intent draft = getDraftWithProperties(to, subject, body);
-        String header = "Open with";
-        final Intent chooser = Intent.createChooser(draft, header);
-        startActivityForResult(chooser, 0);
-    }
-
-    public Intent getDraftWithProperties(String to, String subject, String body) {
-        Intent mail = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        setSubject(subject, mail);
-        setBody(body, mail);
-        setRecipients(to, mail);
-        mail.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return mail;
-    }
-
-    private void setSubject(String subject, Intent draft) {
-        draft.putExtra(Intent.EXTRA_SUBJECT, subject);
-    }
-
-    private void setBody(String body, Intent draft) {
-        draft.putExtra(Intent.EXTRA_TEXT, body);
-        draft.setType("text/plain");
-    }
-
-    private void setRecipients(String to, Intent draft) {
-        String[] receivers = new String[1];
-        receivers[0] = to;
-        draft.putExtra(Intent.EXTRA_EMAIL, receivers);
     }
 
     @android.webkit.JavascriptInterface
@@ -951,7 +778,8 @@ public class MainActivity extends CordovaActivity {
     @android.webkit.JavascriptInterface
     public void acquireNetworkLock(){
         if (mNetworkLock == null){
-            mNetworkLock = ((WifiManager) getSystemService(Context.WIFI_SERVICE)) .createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            mNetworkLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, TAG);
         }
         mNetworkLock.acquire();
     }

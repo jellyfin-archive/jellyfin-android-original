@@ -14,6 +14,7 @@ import org.videolan.libvlc.util.AndroidUtil;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -61,9 +62,7 @@ public class FileUtils {
         return parentPath;
     }
 
-    /*
-     * Convert file:// uri from real path to emulated FS path.
-     */
+    // convert file:// uri from real path to emulated filesystem path
     public static Uri convertLocalUri(Uri uri) {
         if (!TextUtils.equals(uri.getScheme(), "file") || !uri.getPath().startsWith("/sdcard"))
             return uri;
@@ -80,7 +79,7 @@ public class FileUtils {
             cursor.moveToFirst();
             return cursor.getString(column_index);
         } finally {
-            Util.close(cursor);
+            close(cursor);
         }
     }
 
@@ -107,8 +106,7 @@ public class FileUtils {
         }
     }
 
-    private static boolean copyAsset(AssetManager assetManager,
-                                     String fromAssetPath, String toPath) {
+    private static boolean copyAsset(AssetManager assetManager, String fromAssetPath, String toPath) {
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -122,8 +120,8 @@ public class FileUtils {
             e.printStackTrace();
             return false;
         } finally {
-            Util.close(in);
-            Util.close(out);
+            close(in);
+            close(out);
         }
     }
 
@@ -156,11 +154,11 @@ public class FileUtils {
                     out.write(buf, 0, len);
                 }
                 return true;
-            } catch (FileNotFoundException e) {
-            } catch (IOException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
             } finally {
-                Util.close(in);
-                Util.close(out);
+                close(in);
+                close(out);
             }
             return false;
         }
@@ -236,9 +234,21 @@ public class FileUtils {
             e.printStackTrace();
             return null;
         }finally {
-            Util.close(fileChannel);
-            Util.close(fis);
+            close(fileChannel);
+            close(fis);
         }
+    }
+
+    public static boolean close(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     private static long computeHashForChunk(ByteBuffer buffer) {

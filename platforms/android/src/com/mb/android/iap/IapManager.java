@@ -13,17 +13,19 @@ public class IapManager {
 
     private IWebView webView;
     private ILogger logger;
-    private Context context;
 
     public IapManager(Context context, IWebView webView, ILogger logger) {
         this.webView = webView;
         this.logger = logger;
-        this.context = context;
     }
 
     private void RespondToWebView(final String url) {
         logger.Info("Sending url to webView: %s", url);
         webView.sendJavaScript(url);
+    }
+
+    private void beginPurchase() {
+        RespondToWebView("window.IapManager.onPurchaseComplete(true);");
     }
 
     @android.webkit.JavascriptInterface
@@ -41,6 +43,16 @@ public class IapManager {
     @android.webkit.JavascriptInterface
     public String getPremiereMonthlySku() {
         return "MONTHLY SKU";
+    }
+
+    @android.webkit.JavascriptInterface
+    public void purchasePremiereMonthly(final String email) {
+        beginPurchase();
+    }
+
+    @android.webkit.JavascriptInterface
+    public void purchaseUnlock() {
+        beginPurchase();
     }
 
     @android.webkit.JavascriptInterface
