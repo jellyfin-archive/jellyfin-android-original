@@ -1,4 +1,4 @@
-package com.mb.android.media;
+package com.mb.android.preferences;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
