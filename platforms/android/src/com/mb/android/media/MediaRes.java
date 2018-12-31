@@ -1,6 +1,6 @@
 package com.mb.android.media;
 
-import com.mb.android.R;
+import org.jellyfin.mobile.R;
 
 import mediabrowser.apiinteraction.android.mediabrowser.IMediaRes;
 
