@@ -2,9 +2,11 @@ package com.mb.android.media;
 
 import android.annotation.TargetApi;
 
-import com.mb.android.MainActivity;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
+
+import org.jellyfin.mobile.MainActivity;
+
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
 import mediabrowser.apiinteraction.android.mediabrowser.BaseMediaBrowserService;
 import mediabrowser.apiinteraction.android.mediabrowser.IMediaRes;

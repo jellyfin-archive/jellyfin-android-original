@@ -20,10 +20,11 @@ import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
-import com.mb.android.MainActivity;
-import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
+
+import org.jellyfin.mobile.MainActivity;
+import org.jellyfin.mobile.R;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;

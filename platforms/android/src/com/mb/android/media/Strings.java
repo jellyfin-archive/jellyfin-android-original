@@ -1,6 +1,6 @@
 package com.mb.android.media;
 
-import com.mb.android.BuildConfig;
+import org.jellyfin.mobile.BuildConfig;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

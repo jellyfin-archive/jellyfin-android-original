@@ -1,6 +1,6 @@
 package com.mb.android.media;
 
-import com.mb.android.MainActivity;
+import org.jellyfin.mobile.MainActivity;
 import org.videolan.libvlc.MediaPlayer;
 
 import mediabrowser.model.logging.ILogger;

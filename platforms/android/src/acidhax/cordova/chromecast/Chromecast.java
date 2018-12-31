@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
-import com.mb.android.MainActivity;
 import com.mb.android.logging.AppLogger;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
+import org.jellyfin.mobile.MainActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
