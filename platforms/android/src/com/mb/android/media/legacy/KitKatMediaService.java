@@ -34,9 +34,6 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.mb.android.BuildConfig;
-import com.mb.android.MainActivity;
-import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
 import com.mb.android.media.MediaWrapper;
@@ -47,6 +44,9 @@ import com.mb.android.media.VLCOptions;
 import com.mb.android.media.VlcEventHandler;
 import com.mb.android.media.WeakHandler;
 
+import org.jellyfin.mobile.BuildConfig;
+import org.jellyfin.mobile.MainActivity;
+import org.jellyfin.mobile.R;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;

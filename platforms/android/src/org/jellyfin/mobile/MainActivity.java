@@ -17,7 +17,7 @@
        under the License.
  */
 
-package com.mb.android;
+package org.jellyfin.mobile;
 
 import android.Manifest;
 import android.app.Activity;

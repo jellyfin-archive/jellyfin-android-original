@@ -65,12 +65,12 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mb.android.BuildConfig;
-import com.mb.android.R;
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
 import com.mb.android.preferences.PreferencesActivity;
 
+import org.jellyfin.mobile.BuildConfig;
+import org.jellyfin.mobile.R;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;

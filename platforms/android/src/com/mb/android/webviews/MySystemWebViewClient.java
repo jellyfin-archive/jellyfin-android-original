@@ -5,10 +5,9 @@ import android.net.http.SslError;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 
-import com.mb.android.MainActivity;
-
 import org.apache.cordova.engine.SystemWebViewClient;
 import org.apache.cordova.engine.SystemWebViewEngine;
+import org.jellyfin.mobile.MainActivity;
 
 import mediabrowser.apiinteraction.Response;
 
