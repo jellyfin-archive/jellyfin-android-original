@@ -2,12 +2,16 @@
   "name": "jellyfin-android",
   "version": "2.8.54",
   "description": "A Cordova-based mobile app for Jellyfin",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "gulp"
+  },
   "license": "GPL-2.0-only",
   "dependencies": {
-    "clean-css": "^4.2.1",
     "cordova": "^7.1.0",
-    "ng-annotate": "^1.2.2",
-    "uglify-js": "^3.4.9"
+    "del": "^3.0.0",
+    "gulp": "^4.0.0",
+    "gulp-clean-css": "^4.0.0",
+    "gulp-if": "^2.0.2",
+    "gulp-uglify": "^3.0.1"
   }
 }
