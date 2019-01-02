@@ -14,6 +14,12 @@ var compress = !isDev && [
     '!**/*hls.js'
 ];
 
+var uglifyOptions = {
+    compress: {
+        drop_console: true
+    }
+};
+
 var paths = {
     assets: {
         src: [
@@ -55,11 +61,7 @@ function copy() {
 // Uglify cordova scripts
 function cordovaScripts() {
     return gulp.src(paths.scripts.cordova.src)
-        .pipe(gulpif(compress, uglify({
-            compress: {
-                drop_console: true
-            }
-        })))
+        .pipe(gulpif(compress, uglify(uglifyOptions)))
         .pipe(gulp.dest(paths.scripts.cordova.dest));
 }
 cordovaScripts.displayName = 'scripts:cordova';
@@ -67,7 +69,7 @@ cordovaScripts.displayName = 'scripts:cordova';
 // Uglify dashboard-ui scripts
 function dashboardScripts() {
     return gulp.src(paths.scripts.dashboard.src)
-        .pipe(gulpif(compress, uglify()))
+        .pipe(gulpif(compress, uglify(uglifyOptions)))
         .pipe(gulp.dest(paths.scripts.dashboard.dest));
 }
 dashboardScripts.displayName = 'scripts:dashboard';
