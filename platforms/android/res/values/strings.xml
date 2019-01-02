@@ -3,8 +3,8 @@
     <string name="app_name">Jellyfin</string>
     <string name="launcher_name">@string/app_name</string>
     <string name="activity_name">@string/launcher_name</string>
-    <string name="notification_error_ssl_cert_invalid">Click OK to accept the SSL certificate for this Emby Server:\n\nIssued to {0}, by {1} on {2}.\n\nCancelling will prevent access to this server. If the original request times out while reading this dialog, try to connect again after clicking OK.</string>
-    <string name="miniplayer_widget_name" translatable="false">Emby</string>
+    <string name="notification_error_ssl_cert_invalid">Click OK to accept the SSL certificate for this Jellyfin Server:\n\nIssued to {0}, by {1} on {2}.\n\nCancelling will prevent access to this server. If the original request times out while reading this dialog, try to connect again after clicking OK.</string>
+    <string name="miniplayer_widget_name" translatable="false">Jellyfin</string>
     <string name="title" translatable="false" />
     <string name="artist" translatable="false" />
     <string name="album" translatable="false" />
