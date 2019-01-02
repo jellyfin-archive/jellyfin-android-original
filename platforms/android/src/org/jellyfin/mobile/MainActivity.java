@@ -605,8 +605,8 @@ public class MainActivity extends CordovaActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         String message = getResources().getString(R.string.notification_error_ssl_cert_invalid)
-                .replace("{0}", issuedTo.replace("localhost", "Emby Server"))
-                .replace("{1}", issuedBy.replace("localhost", "Emby Server"))
+                .replace("{0}", issuedTo.replace("localhost", "Jellyfin Server"))
+                .replace("{1}", issuedBy.replace("localhost", "Jellyfin Server"))
                 .replace("{2}", issuedOn);
 
         builder.setMessage(message);
