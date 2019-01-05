@@ -1,9 +1,11 @@
 define(['appStorage', 'browser'], function (appStorage, browser) {
-
     console.log = function () { };
 
-    function supportsFullscreen() {
+    var deviceId;
+    var deviceName;
+    var appVersion = window.dashboardVersion || "3.0";
 
+    function supportsFullscreen() {
         if (browser.tv) {
             return false;
         };
@@ -147,7 +149,6 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
                     return p.Type == 'Video' && p.CopyTimestamps == true;
 
                 }).forEach(function (p) {
-
                     // Vlc doesn't seem to handle this well
                     p.CopyTimestamps = false;
                 });
@@ -173,8 +174,6 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
         });
     };
 
-    var appInfo;
-
     return {
         getWindowState: function () {
             return document.windowState || 'Normal';
@@ -183,7 +182,6 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             alert('setWindowState is not supported and should not be called');
         },
         exit: function () {
-
             if (navigator.app && navigator.app.exitApp) {
                 navigator.app.exitApp();
             } else {
@@ -221,36 +219,61 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
             return features.indexOf(command.toLowerCase()) != -1;
         },
-        appInfo: function () {
-
-            if (appInfo) {
-                return Promise.resolve(appInfo);
-            }
-
-            return new Promise(function (resolve, reject) {
-
+        preferVisualCards: true,
+        moreIcon: 'dots-vert',
+        getSyncProfile: getDeviceProfile,
+        getDefaultLayout: function() {
+            // FIXME: Needs Implementation!
+        },
+        getDeviceProfile: function() {
+            // FIXME: Needs Implementation!
+        },
+        init: function() {
+            return new Promise(function(resolve) {
                 document.addEventListener("deviceready", function () {
                     // remove special characters
-                    var deviceName = MainActivity.getDeviceModel().replace(/[^\w\s]/gi, '');
-                    var deviceId = MainActivity.getDeviceId();
-
-                    var appName = "Jellyfin Mobile";
-                    var appVersion = MainActivity.getAppVersion();
+                    deviceName = MainActivity.getDeviceModel().replace(/[^\w\s]/gi, '');
+                    deviceId = MainActivity.getDeviceId();
+                    appVersion = MainActivity.getAppVersion();
 
                     appInfo = {
                         deviceId: deviceId,
                         deviceName: deviceName,
-                        appName: appName,
                         appVersion: appVersion
                     };
 
                     resolve(appInfo);
-
                 }, false);
-            });
+            });            
         },
-        preferVisualCards: true,
-        moreIcon: 'dots-vert',
-        getSyncProfile: getDeviceProfile
+        deviceName: function() {
+            return deviceName;
+        },
+        deviceId: function() {
+            return deviceId;
+        },
+        appName: function() {
+            return "Jellyfin Mobile";
+        },
+        appVersion: function() {
+            return appVersion;
+        },
+        getPushTokenInfo: function() {
+            return {};
+        },
+        setThemeColor: function(color) {
+            var metaThemeColor = document.querySelector("meta[name=theme-color]");
+            metaThemeColor && metaThemeColor.setAttribute("content", color);
+        },
+        setUserScalable: function(scalable) {
+            if (!browser.tv) {
+                var att = scalable ? "width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes" : "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
+                document.querySelector("meta[name=viewport]").setAttribute("content", att);
+            }
+        },
+        deviceIconUrl: function() {
+            // TODO: Need static hosted icons for devices?
+            return '';
+        }
     };
 });
