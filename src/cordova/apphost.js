@@ -265,7 +265,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
         },
         setThemeColor: function(color) {
             var metaThemeColor = document.querySelector("meta[name=theme-color]");
-            metaThemeColor && metaThemeColor.setAttribute("content", color);
+            if (metaThemeColor) metaThemeColor.setAttribute("content", color);
         },
         setUserScalable: function(scalable) {
             if (!browser.tv) {
