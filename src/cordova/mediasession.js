@@ -141,12 +141,8 @@
     }
 
     function onGeneralEvent(e, state) {
-
         var player = this;
-        playbackManager.getPlayerState(player).then(function (state) {
-
-            updatePlayerState(player, state, e.type);
-        });
+        updatePlayerState(player, playbackManager.getPlayerState(player), e.type);
     }
 
     function onStateChanged(e, state) {
@@ -210,10 +206,7 @@
 
         console.log('binding remotecontrols to ' + player.name);
 
-        playbackManager.getPlayerState(player).then(function (state) {
-
-            updatePlayerState(player, state, 'init');
-        });
+        updatePlayerState(player, playbackManager.getPlayerState(player), 'init');
 
         events.on(currentPlayer, 'playbackstart', onPlaybackStart);
         events.on(currentPlayer, 'playbackstop', onPlaybackStopped);
