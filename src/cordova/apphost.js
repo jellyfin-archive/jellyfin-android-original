@@ -269,7 +269,8 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
         },
         setUserScalable: function(scalable) {
             if (!browser.tv) {
-                var att = scalable ? "width=device-width, initial-scale=1, minimum-scale=1, user-scalable=yes" : "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
+                var att = "width=device-width, initial-scale=1, minimum-scale=1";
+                att += scalable ? ", user-scalable=yes" : ", maximum-scale=1, user-scalable=no";
                 document.querySelector("meta[name=viewport]").setAttribute("content", att);
             }
         },
