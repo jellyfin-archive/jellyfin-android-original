@@ -3,7 +3,8 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
     var deviceId;
     var deviceName;
-    var appVersion = window.dashboardVersion || "3.0";
+    var appName;
+    var appVersion;
 
     function supportsFullscreen() {
         if (browser.tv) {
@@ -234,6 +235,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
                     // remove special characters
                     deviceName = MainActivity.getDeviceModel().replace(/[^\w\s]/gi, '');
                     deviceId = MainActivity.getDeviceId();
+                    appName = "Jellyfin Mobile";
                     appVersion = MainActivity.getAppVersion();
 
                     appInfo = {
@@ -244,7 +246,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
                     resolve(appInfo);
                 }, false);
-            });            
+            });
         },
         deviceName: function() {
             return deviceName;
@@ -253,7 +255,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             return deviceId;
         },
         appName: function() {
-            return "Jellyfin Mobile";
+            return appName;
         },
         appVersion: function() {
             return appVersion;
