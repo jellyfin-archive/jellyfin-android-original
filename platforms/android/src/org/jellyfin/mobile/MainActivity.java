@@ -370,6 +370,14 @@ public class MainActivity extends CordovaActivity {
         }
     }
 
+    /**
+     * Flag to enable VLC audio player
+     */
+    @android.webkit.JavascriptInterface
+    public boolean enableVlcPlayer() {
+        return true;
+    }
+
     @android.webkit.JavascriptInterface
     public void playAudioVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
         Intent intent = null;
