@@ -23,8 +23,8 @@ var uglifyOptions = {
 var paths = {
     assets: {
         src: [
-            'src/dashboard-ui/**/*',
-            '!src/dashboard-ui/**/*.{js,css}'
+            'src/jellyfin-web/src/**/*',
+            '!src/jellyfin-web/src/**/*.{js,css}'
         ],
         dest: 'www/'
     },
@@ -34,12 +34,12 @@ var paths = {
             dest: 'www/cordova/'
         },
         dashboard: {
-            src: 'src/dashboard-ui/**/*.js',
+            src: 'src/jellyfin-web/src/**/*.js',
             dest: 'www/'
         }
     },
     styles: {
-        src: 'src/dashboard-ui/**/*.css',
+        src: 'src/jellyfin-web/src/**/*.css',
         dest: 'www/'
     }
 };
