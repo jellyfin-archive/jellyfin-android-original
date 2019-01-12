@@ -15,9 +15,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:configChanges="orientation|screenSize" android:name=".media.VideoPlayerActivity" android:theme="@style/Theme.VLC.Player">
+        <activity android:configChanges="orientation|screenSize" android:name="com.mb.android.media.VideoPlayerActivity" android:theme="@style/Theme.VLC.Player">
         </activity>
-        <activity android:configChanges="orientation|screenSize" android:name=".media.PlaybackServiceActivity" android:theme="@style/Theme.VLC.Player">
+        <activity android:configChanges="orientation|screenSize" android:name="com.mb.android.media.PlaybackServiceActivity" android:theme="@style/Theme.VLC.Player">
         </activity>
         <activity android:label="@string/app_name" android:name="com.nononsenseapps.filepicker.FilePickerActivity" android:theme="@style/NNF_BaseTheme">
             <intent-filter>
@@ -25,25 +25,18 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="tv.emby.iap.PurchaseActivity" />
         <provider android:authorities="emby.media" android:exported="false" android:name="mediabrowser.apiinteraction.android.sync.MediaContentProvider" android:syncable="true" />
-        <service android:exported="true" android:name="com.mb.android.MediaSyncService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/syncadapter" />
-        </service>
         <service android:name="mediabrowser.apiinteraction.android.sync.AuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
             <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/authenticator" />
         </service>
-        <service android:name=".media.RemotePlayerService" />
-        <service android:name=".media.legacy.KitKatMediaService" />
-        <service android:name=".media.PlaybackService" />
-        <service android:name=".media.MediaService" />
-        <receiver android:name=".media.legacy.RemoteControlClientReceiver">
+        <service android:name="com.mb.android.media.RemotePlayerService" />
+        <service android:name="com.mb.android.media.legacy.KitKatMediaService" />
+        <service android:name="com.mb.android.media.PlaybackService" />
+        <service android:name="com.mb.android.media.MediaService" />
+        <receiver android:name="com.mb.android.media.legacy.RemoteControlClientReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
