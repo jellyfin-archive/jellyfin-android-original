@@ -881,7 +881,7 @@ public class KitKatMediaService extends Service implements IVLCVout.Callback {
 
             // add notification to status bar
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.icon)
+                    .setSmallIcon(R.drawable.ic_notification)
                     .setTicker(title + " - " + artist)
                     .setAutoCancel(false)
                     .setOngoing(true);

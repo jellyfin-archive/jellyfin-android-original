@@ -147,7 +147,6 @@ public class RemotePlayerService extends Service {
         int duration = handledIntent.getIntExtra("duration", 0);
 
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
             Notification.Action action = isPaused ?
                          generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY) :
                          generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE);
@@ -188,26 +187,26 @@ public class RemotePlayerService extends Service {
 
             if (largeIcon != null) {
                 builder.setLargeIcon(largeIcon);
-                builder.setSmallIcon(R.drawable.icon);
+                builder.setSmallIcon(R.drawable.ic_notification);
             } else {
-                builder.setSmallIcon(R.drawable.icon);
+                builder.setSmallIcon(R.drawable.ic_notification);
             }
 
             builder.addAction(generateAction(android.R.drawable.ic_media_previous, "Previous", Constants.ACTION_PREVIOUS));
-            builder.addAction( generateAction( android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND ) );
+            builder.addAction(generateAction( android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND));
             builder.addAction(action);
-            builder.addAction( generateAction( android.R.drawable.ic_media_ff, "Fast Foward", Constants.ACTION_FAST_FORWARD ) );
+            builder.addAction(generateAction( android.R.drawable.ic_media_ff, "Fast Forward", Constants.ACTION_FAST_FORWARD));
             builder.addAction(generateAction(android.R.drawable.ic_media_next, "Next", Constants.ACTION_NEXT));
 
             //final TransportControls controls = m_objMediaSession.getController().getTransportControls();
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-             try {
-                 notificationManager.notify(1, builder.build());
-             }
-             catch (Exception ex){
+            try {
+                notificationManager.notify(1, builder.build());
+            } catch (Exception e) {
+                e.printStackTrace();
                 // this will throw if the bitmap fails to load
-             }
+            }
         }
     }
 
