@@ -1,2 +1,0 @@
-sed -ri "s:<head>:<head>\n    <meta http-equiv=\"Content-Security-Policy\" content=\"default-src * \'self\' \'unsafe-inline\' \'unsafe-eval\' data\: gap\: file\: filesystem\: ws\: wss\:;\">:" src/jellyfin-web/src/index.html
-sed -ri "s:</body>:    <script>window.appMode=\'android\';</script>\n    <script src=\"cordova.js\" defer></script>\n    <script src=\"scripts/apploader.js\" defer></script>\n</body>:" src/jellyfin-web/src/index.html
