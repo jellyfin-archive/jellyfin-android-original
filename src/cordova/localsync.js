@@ -3,11 +3,11 @@
     return {
 
         sync: function () {
-            AndroidSync.startSync();
+            // TODO implement or remove
         },
 
         getSyncStatus: function () {
-            return AndroidSync.getSyncStatus();
+            // TODO implement or remove
         }
     };
 
