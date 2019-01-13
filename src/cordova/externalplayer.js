@@ -19,12 +19,9 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         var currentSrc;
 
         self.canPlayMediaType = function (mediaType) {
-
             if (mediaType === 'Video') {
-
-                return appSettings.enableExternalPlayers();
+                return appSettings.enableSystemExternalPlayers();
             }
-
             return false;
         };
 

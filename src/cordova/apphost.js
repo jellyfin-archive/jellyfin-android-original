@@ -227,7 +227,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             // FIXME: Needs Implementation!
         },
         getDeviceProfile: function() {
-            // FIXME: Needs Implementation!
+            return getDeviceProfile();
         },
         init: function() {
             return new Promise(function(resolve) {
