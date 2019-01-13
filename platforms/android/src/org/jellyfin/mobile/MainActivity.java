@@ -50,8 +50,6 @@ import android.view.KeyEvent;
 import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
-import com.mb.android.iap.IapManager;
-import com.mb.android.io.NativeFileSystem;
 import com.mb.android.logging.AppLogger;
 import com.mb.android.media.MediaService;
 import com.mb.android.media.VideoPlayerActivity;
@@ -103,7 +101,6 @@ public class MainActivity extends CordovaActivity {
     private static IWebView webView;
     private IAsyncHttpClient httpClient;
     private IJsonSerializer jsonSerializer;
-    private IapManager iapManager;
 
     private ILogger getLogger() {
         return AppLogger.getLogger(this);
@@ -138,7 +135,6 @@ public class MainActivity extends CordovaActivity {
 
         jsonSerializer = new GsonJsonSerializer();
 
-        iapManager = new IapManager(context, webView, logger);
         ApiClientBridge apiClientBridge = new ApiClientBridge(context, logger, webView, jsonSerializer);
         httpClient = apiClientBridge.httpClient;
 
@@ -149,13 +145,10 @@ public class MainActivity extends CordovaActivity {
         Context context = getApplicationContext();
         final ILogger logger = getLogger();
 
-        webView.addJavascriptInterface(iapManager, "NativeIapManager");
         webView.addJavascriptInterface(ApiClientBridge.Current, "ApiClientBridge");
-        webView.addJavascriptInterface(new NativeFileSystem(logger, context), "NativeFileSystem");
         webView.addJavascriptInterface(this, "MainActivity");
         webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
         webView.addJavascriptInterface(this, "AndroidVlcPlayer");
-        webView.addJavascriptInterface(this, "AndroidSync");
 
         PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
 
@@ -536,14 +529,12 @@ public class MainActivity extends CordovaActivity {
         }
     }
 
-    @android.webkit.JavascriptInterface
-    public String getSyncStatus() {
-        return MediaSyncAdapter.isSyncActive() ? "Active" : MediaSyncAdapter.isSyncPending() ? "Pending" : "Idle";
+    public void getSyncStatus() {
+        // TODO implement or remove
     }
 
-    @android.webkit.JavascriptInterface
     public void startSync() {
-        new OnDemandSync(getApplicationContext()).Run();
+        // TODO implement or remove
     }
 
     @Override
