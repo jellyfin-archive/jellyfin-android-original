@@ -44,8 +44,9 @@
         var playerState = {};
 
         self.canPlayMediaType = function (mediaType) {
-
             mediaType = (mediaType || '').toLowerCase();
+            // TODO remove this and reimplement or remove vlcplayer
+            return false;
 
             if (mediaType === 'audio') {
                 if (window.VlcAudio) {
@@ -62,7 +63,6 @@
         };
 
         self.canPlayItem = function (item, options) {
-
             if (!options.fullscreen) {
                 return false;
             }
@@ -75,7 +75,6 @@
         };
 
         self.currentTime = function (val) {
-
             if (val != null) {
                 return self.seek(val);
             }
@@ -88,12 +87,10 @@
         };
 
         self.seek = function (val) {
-
             AndroidVlcPlayer.sendVlcCommand("setposition", val.toString());
         };
 
         self.duration = function (val) {
-
             if (playerState) {
                 return playerState.duration;
             }
@@ -102,7 +99,6 @@
         };
 
         self.stop = function (destroyPlayer) {
-
             AndroidVlcPlayer.sendVlcCommand("stop", "true");
 
             return new Promise(function (resolve, reject) {
@@ -152,7 +148,7 @@
         };
 
         self.setMute = function (mute) {
-
+            // TODO implement
         };
 
         self.isMuted = function () {
@@ -325,7 +321,6 @@
         };
 
         self.onActivityClosed = function (wasStopped, hasError, endPositionMs) {
-
             playerState.currentTime = endPositionMs;
 
             if (wasStopped) {
