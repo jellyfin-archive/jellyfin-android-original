@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var gulpif = require('gulp-if');
 var cleanCSS = require('gulp-clean-css');
 var del = require('del');
+var dom = require('gulp-dom');
 var uglify = require('gulp-uglify');
 
 // Check the NODE_ENV environment variable
@@ -24,8 +25,13 @@ var paths = {
     assets: {
         src: [
             'src/jellyfin-web/src/**/*',
-            '!src/jellyfin-web/src/**/*.{js,css}'
+            '!src/jellyfin-web/src/**/*.{js,css}',
+            '!src/jellyfin-web/src/index.html'
         ],
+        dest: 'www/'
+    },
+    index: {
+        src: 'src/jellyfin-web/src/index.html',
         dest: 'www/'
     },
     scripts: {
@@ -58,6 +64,38 @@ function copy() {
         .pipe(gulp.dest(paths.assets.dest));
 }
 
+// Add required tags to index.html
+function modifyIndex() {
+    return gulp.src(paths.index.src)
+        .pipe(dom(function() {
+            // inject CSP meta tag
+            var meta = this.createElement('meta');
+            meta.setAttribute('http-equiv', 'Content-Security-Policy');
+            meta.setAttribute('content', 'default-src * \'self\' \'unsafe-inline\' \'unsafe-eval\' data: gap: file: filesystem: ws: wss:;');
+            this.head.appendChild(meta);
+
+            // inject appMode script
+            var appMode = this.createElement('script');
+            appMode.text = 'window.appMode=\'android\';';
+            this.body.appendChild(appMode);
+
+            // inject cordova.js
+            var cordova = this.createElement('script');
+            cordova.setAttribute('src', 'cordova.js');
+            cordova.setAttribute('defer', '');
+            this.body.appendChild(cordova);
+
+            // inject apploader.js
+            var apploader = this.createElement('script');
+            apploader.setAttribute('src', 'scripts/apploader.js');
+            apploader.setAttribute('defer', '');
+            this.body.appendChild(apploader);
+
+            return this;
+        }))
+        .pipe(gulp.dest(paths.index.dest))
+}
+
 // Uglify cordova scripts
 function cordovaScripts() {
     return gulp.src(paths.scripts.cordova.src)
@@ -87,12 +125,13 @@ function styles() {
 // Default build task
 var build = gulp.series(
     clean,
-    gulp.parallel(copy, scripts, styles)
+    gulp.parallel(copy, modifyIndex, scripts, styles)
 );
 
 // Export tasks so they can be run individually
 exports.clean = clean;
 exports.copy = copy;
+exports.modifyIndex = modifyIndex;
 exports.scripts = scripts;
 exports.styles = styles;
 // Export default task
