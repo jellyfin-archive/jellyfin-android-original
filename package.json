@@ -15,6 +15,7 @@
     "del": "^3.0.0",
     "gulp": "^4.0.0",
     "gulp-clean-css": "^4.0.0",
+    "gulp-dom": "^1.0.0",
     "gulp-if": "^2.0.2",
     "gulp-uglify": "^3.0.1"
   }
