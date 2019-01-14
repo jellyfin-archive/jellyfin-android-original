@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin xmlns="http://phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.jellyfin.plugin"
+    version="0.0.1">
+  <engines>
+    <engine name="cordova" version=">=3.4.0" />
+  </engines>
+  <name>Jellyfin</name>
+  <js-module src="plugin.js" name="Plugin">
+    <clobbers target="plugin" />
+  </js-module>
+  <platform name="android">
+    <source-file src="src/android/Plugin.java" target-dir="src/org/jellyfin/plugin" />
+    <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+  </platform>
+</plugin>
