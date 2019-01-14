@@ -21,13 +21,9 @@ RUN echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> "${ANDROID_HOME}/lic
 WORKDIR ${SOURCEDIR}
 COPY . .
 
-RUN mkdir -p /dist/apk
-
 WORKDIR /
 
 VOLUME /dist
-
-COPY docker-build-entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
