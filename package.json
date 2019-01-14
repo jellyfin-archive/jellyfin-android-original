@@ -11,6 +11,7 @@
   },
   "license": "GPL-2.0-only",
   "dependencies": {
+    "acorn": "^6.0.5",
     "cordova": "^7.1.0",
     "del": "^3.0.0",
     "gulp": "^4.0.0",
