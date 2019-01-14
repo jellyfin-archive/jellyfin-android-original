@@ -1,5 +1,6 @@
 .git
 .dockerignore
 Dockerfile
+docker-build.sh
 CONTRIBUTORS.md
 README.md
