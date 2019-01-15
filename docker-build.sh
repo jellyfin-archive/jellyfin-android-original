@@ -23,10 +23,12 @@ git submodule update --init
 if [[ ${1} == '--dev' || ${1} == '-d' ]]; then
     pushd src/jellyfin-web
     git checkout dev
+    git pull --rebase
     popd
 else
     pushd src/jellyfin-web
     git checkout master
+    git pull --rebase
     popd
 fi
 
