@@ -1,6 +1,10 @@
 FROM debian:9
-ARG SOURCEDIR=/repo
-ENV ANDROID_HOME=/usr/lib/android-sdk
+ARG SOURCE_DIR=/repo
+ARG ARTIFACT_DIR=/dist
+ARG ANDROID_DIR=/usr/lib/android-sdk
+ENV SOURCE_DIR=/repo
+ENV ARTIFACT_DIR=/dist
+ENV ANDROID_DIR=/usr/lib/android-sdk
 
 RUN dpkg --add-architecture i386 \
  && echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list.d/backports.list \
@@ -8,23 +12,20 @@ RUN dpkg --add-architecture i386 \
  && apt-get install -y mmv wget unzip android-sdk libgcc1:i386 libstdc++6:i386 lib32z1 \
  && apt-get install -t stretch-backports -y npm
 
-RUN rm -rf ${ANDROID_HOME}/tools \
+RUN rm -rf ${ANDROID_DIR}/tools \
  && wget http://dl-ssl.google.com/android/repository/tools_r25.2.3-linux.zip -O tools.zip \
- && unzip tools.zip -d ${ANDROID_HOME}/ \
+ && unzip tools.zip -d ${ANDROID_DIR}/ \
  && rm -f tools.zip
 
 # Required to accept licenses:
 # https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences#comment80496274_38381577
-RUN echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> "${ANDROID_HOME}/licenses/android-sdk-license" \
- && ${ANDROID_HOME}/tools/bin/sdkmanager "platform-tools" "platforms;android-23" "build-tools;23.0.2" "extras;android;m2repository" "extras;google;m2repository"
+RUN echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> "${ANDROID_DIR}/licenses/android-sdk-license" \
+ && ${ANDROID_DIR}/tools/bin/sdkmanager "platform-tools" "platforms;android-23" "build-tools;23.0.2" "extras;android;m2repository" "extras;google;m2repository"
 
-WORKDIR ${SOURCEDIR}
-COPY . .
+COPY . ${SOURCE_DIR}/
 
-WORKDIR /
+RUN ln -s ${SOURCE_DIR}/build.sh /build.sh
 
-VOLUME /dist
+VOLUME ${ARTIFACT_DIR}/
 
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/build.sh"]
