@@ -20,37 +20,14 @@
     <icon density="xhdpi" src="res/android/xhdpi/icon.png" />
     <icon density="xxhdpi" src="res/android/xxhdpi/icon.png" />
     <icon density="xxxhdpi" src="res/android/xxxhdpi/icon.png" />
-    <splash density="land-hdpi" src="res/android/ldpi/splash-land.png" />
-    <splash density="land-ldpi" src="res/android/mdpi/splash-land.png" />
-    <splash density="land-mdpi" src="res/android/hdpi/splash-land.png" />
-    <splash density="land-xhdpi" src="res/android/xhdpi/splash-land.png" />
-    <splash density="land-xxhdpi" src="res/android/xxhdpi/splash-land.png" />
-    <splash density="land-xxxhdpi" src="res/android/xxxhdpi/splash-land.png" />
-    <splash density="port-hdpi" src="res/android/ldpi/splash-port.png" />
-    <splash density="port-ldpi" src="res/android/mdpi/splash-port.png" />
-    <splash density="port-mdpi" src="res/android/hdpi/splash-port.png" />
-    <splash density="port-xhdpi" src="res/android/xhdpi/splash-port.png" />
-    <splash density="port-xxhdpi" src="res/android/xxhdpi/splash-port.png" />
-    <splash density="port-xxxhdpi" src="res/android/xxxhdpi/splash-port.png" />
     <preference name="loglevel" value="DEBUG" />
     <preference name="AllowInlineMediaPlayback" value="true" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
-    <preference name="webviewbounce" value="false" />
     <preference name="BackupWebStorage" value="local" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="SplashScreen" value="res/icon.png" />
-    <preference name="SplashScreenDelay" value="7000" />
-    <preference name="ShowSplashScreen" value="true" />
-    <preference name="SplashScreenWidth" value="600" />
-    <preference name="SplashScreenHeight" value="300" />
-    <preference name="SplashMaintainAspectRatio" value="true" />
-    <preference name="windows-target-version" value="10.0" />
-    <preference name="windows-phone-target-version" value="10.0" />
     <preference name="android-minSdkVersion" value="16" />
     <preference name="android-targetSdkVersion" value="23" />
-    <preference name="StatusBarOverlaysWebView" value="false" />
-    <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
-    <preference name="BackgroundColor" value="0xff222222" />
+    <preference name="BackgroundColor" value="0x00000000" />
 </widget>

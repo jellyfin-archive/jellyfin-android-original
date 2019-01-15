@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="20000854" id="org.jellyfin.mobile" version="2.8.54" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget xmlns="http://www.w3.org/ns/widgets"
+    xmlns:cdv="http://cordova.apache.org/ns/1.0"
+    id="org.jellyfin.mobile"
+    version="2.8.54"
+    android-versionCode="20000854">
     <name>Jellyfin</name>
     <description>
     Jellyfin Mobile
@@ -14,29 +18,18 @@
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
-    <preference name="webviewbounce" value="false" />
     <preference name="BackupWebStorage" value="local" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="SplashScreen" value="res/icon.png" />
-    <preference name="SplashScreenDelay" value="7000" />
-    <preference name="ShowSplashScreen" value="true" />
-    <preference name="SplashScreenWidth" value="600" />
-    <preference name="SplashScreenHeight" value="300" />
-    <preference name="SplashMaintainAspectRatio" value="true" />
-    <preference name="windows-target-version" value="10.0" />
-    <preference name="windows-phone-target-version" value="10.0" />
     <icon src="res/icon.png" />
     <platform name="android">
         <preference name="android-minSdkVersion" value="16" />
         <preference name="android-targetSdkVersion" value="23" />
-        <preference name="StatusBarOverlaysWebView" value="false" />
+        <preference name="BackgroundColor" value="0x00000000" />
         <icon density="ldpi" src="res/android/ldpi/icon.png" />
         <icon density="mdpi" src="res/android/mdpi/icon.png" />
         <icon density="hdpi" src="res/android/hdpi/icon.png" />
         <icon density="xhdpi" src="res/android/xhdpi/icon.png" />
         <icon density="xxhdpi" src="res/android/xxhdpi/icon.png" />
         <icon density="xxxhdpi" src="res/android/xxxhdpi/icon.png" />
-        <preference name="SplashScreenBackgroundColor" value="#1f1f1f" />
-        <preference name="BackgroundColor" value="0xff222222" />
     </platform>
 </widget>
