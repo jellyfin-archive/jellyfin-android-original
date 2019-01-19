@@ -47,6 +47,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Base64;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
@@ -91,6 +92,12 @@ import mediabrowser.model.apiclient.ServerDiscoveryInfo;
 import mediabrowser.model.extensions.StringHelper;
 import mediabrowser.model.logging.ILogger;
 import mediabrowser.model.serialization.IJsonSerializer;
+
+import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
+import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE;
+import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+import static android.view.View.SYSTEM_UI_FLAG_VISIBLE;
 
 public class MainActivity extends CordovaActivity {
     private final int LAUNCH_REQUEST = 990;
@@ -217,6 +224,33 @@ public class MainActivity extends CordovaActivity {
     public String getDeviceId() {
         // replace this later with a randomly generated persistent string stored in local settings
         return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    @android.webkit.JavascriptInterface
+    public void enableFullscreen() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int visibility = SYSTEM_UI_FLAG_FULLSCREEN
+                        | SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                getWindow().getDecorView().setSystemUiVisibility(visibility);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            }
+        });
+    }
+
+    @android.webkit.JavascriptInterface
+    public void disableFullscreen() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getWindow().getDecorView().setSystemUiVisibility(SYSTEM_UI_FLAG_VISIBLE);
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
+        });
     }
 
     public static void RespondToWebView(final String js) {

@@ -9,6 +9,12 @@ define([], function () {
             // options.path
             // options.arguments
             return Promise.reject();
+        },
+        enableFullscreen: function () {
+            MainActivity.enableFullscreen();
+        },
+        disableFullscreen: function () {
+            MainActivity.disableFullscreen();
         }
     };
 });
