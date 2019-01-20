@@ -12,7 +12,9 @@ var isDev = process.env.NODE_ENV === 'development';
 var compress = !isDev && [
     '**/*',
     '!**/*min.*',
-    '!**/*hls.js'
+    '!**/*hls.js',
+    // Temporarily exclude apiclient until updated
+    '!bower_components/emby-apiclient/**/*.js'
 ];
 
 var uglifyOptions = {
