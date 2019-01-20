@@ -21,6 +21,10 @@ var uglifyOptions = {
     }
 };
 
+var cleanOptions = {
+    rebase: false
+};
+
 var paths = {
     assets: {
         src: [
@@ -118,7 +122,7 @@ var scripts = gulp.parallel(cordovaScripts, dashboardScripts);
 // Uglify stylesheets
 function styles() {
     return gulp.src(paths.styles.src)
-        .pipe(gulpif(compress, cleanCSS()))
+        .pipe(gulpif(compress, cleanCSS(cleanOptions)))
         .pipe(gulp.dest(paths.styles.dest));
 }
 
