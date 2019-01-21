@@ -12,13 +12,21 @@ var isDev = process.env.NODE_ENV === 'development';
 var compress = !isDev && [
     '**/*',
     '!**/*min.*',
-    '!**/*hls.js'
+    '!**/*hls.js',
+    // Temporarily exclude apiclient until updated
+    '!bower_components/emby-apiclient/**/*.js'
 ];
 
 var uglifyOptions = {
     compress: {
         drop_console: true
     }
+};
+
+var cleanOptions = {
+    // Do not rebase relative urls
+    // Otherwise asset urls are rewritten to be relative to the current src
+    rebase: true
 };
 
 var paths = {
@@ -118,7 +126,7 @@ var scripts = gulp.parallel(cordovaScripts, dashboardScripts);
 // Uglify stylesheets
 function styles() {
     return gulp.src(paths.styles.src)
-        .pipe(gulpif(compress, cleanCSS()))
+        .pipe(gulpif(compress, cleanCSS(cleanOptions)))
         .pipe(gulp.dest(paths.styles.dest));
 }
 
