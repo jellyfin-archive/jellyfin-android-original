@@ -197,6 +197,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             //features.push('filedownload');
             features.push('sync');
             features.push('customsyncpath');
+            features.push('displaylanguage');
             features.push('cameraupload');
             features.push('sharing');
             features.push('exit');
