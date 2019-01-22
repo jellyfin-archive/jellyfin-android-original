@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
@@ -52,9 +51,6 @@ import android.webkit.WebView;
 
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
-import com.mb.android.media.MediaService;
-import com.mb.android.media.VideoPlayerActivity;
-import com.mb.android.media.legacy.KitKatMediaService;
 import com.mb.android.media.RemotePlayerService;
 
 import org.apache.cordova.BuildConfig;
@@ -84,8 +80,6 @@ import java.util.regex.Pattern;
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
-import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
-import mediabrowser.apiinteraction.android.sync.OnDemandSync;
 import mediabrowser.apiinteraction.discovery.ServerLocator;
 import mediabrowser.apiinteraction.http.IAsyncHttpClient;
 import mediabrowser.model.apiclient.ServerDiscoveryInfo;
@@ -95,7 +89,6 @@ import mediabrowser.model.serialization.IJsonSerializer;
 
 import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
 import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE;
 import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 import static android.view.View.SYSTEM_UI_FLAG_VISIBLE;
 
@@ -407,21 +400,7 @@ public class MainActivity extends CordovaActivity {
 
     @android.webkit.JavascriptInterface
     public void playAudioVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
-        Intent intent = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            intent = new Intent(this, MediaService.class);
-        } else {
-            intent = new Intent(this, KitKatMediaService.class);
-        }
-
-        intent.setAction(Constants.ACTION_PLAY);
-        intent.putExtra("path", path);
-        intent.putExtra("item", itemJson);
-        intent.putExtra("mediaSource", mediaSourceJson);
-        intent.putExtra("posterUrl", posterUrl);
-
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        startService(intent);
+        // TODO REMOVE
     }
 
     @android.webkit.JavascriptInterface
@@ -442,105 +421,17 @@ public class MainActivity extends CordovaActivity {
                              String deviceProfileJson,
                              String videoQualityOptionsJson,
                              long timeLimitMs) {
-        getLogger().Debug("Video path: %s", path);
-        Intent intent = new Intent(this, VideoPlayerActivity.class);
-        intent.setAction(VideoPlayerActivity.PLAY_FROM_VIDEOGRID);
-        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION, path);
-        intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_TITLE, itemName);
-        //intent.putExtra(VideoPlayerActivity.PLAY_EXTRA_OPENED_POSITION, 0);
-        //intent.putExtra("item", itemJson);
-        intent.putExtra("mediaSourceJson", mediaSourceJson);
-        intent.putExtra("playbackStartInfoJson", playbackStartInfoJson);
-        intent.putExtra("serverId", serverId);
-        intent.putExtra("serverUrl", serverUrl);
-        intent.putExtra("appName", appName);
-        intent.putExtra("appVersion", appVersion);
-        intent.putExtra("deviceId", deviceId);
-        intent.putExtra("deviceName", deviceName);
-        intent.putExtra("userId", userId);
-        intent.putExtra("accessToken", accessToken);
-        intent.putExtra("deviceProfileJson", deviceProfileJson);
-        intent.putExtra("videoQualityOptionsJson", videoQualityOptionsJson);
-
-        if (startPositionMs > 0){
-            intent.putExtra("position", startPositionMs);
-        }
-
-        if (timeLimitMs > 0){
-            intent.putExtra("timeLimitMs", timeLimitMs);
-        }
-
-        startActivityForResult(intent, VIDEO_PLAYBACK);
+        // TODO REMOVE
     }
 
     @android.webkit.JavascriptInterface
     public void destroyVlc() {
-        Intent intent = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            intent = new Intent(this, MediaService.class);
-        } else {
-            intent = new Intent(this, KitKatMediaService.class);
-        }
-
-        intent.setAction(Constants.ACTION_STOP);
-        startService(intent);
+        // TODO REMOVE
     }
 
     @android.webkit.JavascriptInterface
     public void sendVlcCommand(String name, String arg1) {
-        getLogger().Debug("Vlc received command: %s", name);
-        Intent intent = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            intent = new Intent( this, MediaService.class );
-        } else {
-            intent = new Intent( this, KitKatMediaService.class );
-        }
-
-        try {
-            if (name.equalsIgnoreCase("pause")){
-                intent.setAction( Constants.ACTION_PAUSE );
-                startService( intent );
-            }
-            else if (name.equalsIgnoreCase("unpause")){
-                intent.setAction( Constants.ACTION_UNPAUSE );
-                startService( intent );
-            }
-            else if (name.equalsIgnoreCase("playpause")){
-                intent.setAction( Constants.ACTION_PLAYPAUSE );
-                startService( intent );
-            }
-            else if (name.equalsIgnoreCase("stop")){
-                intent.setAction( Constants.ACTION_STOP );
-                boolean stopService = StringHelper.EqualsIgnoreCase(arg1, "true");
-                intent.putExtra("stopService", stopService);
-                startService( intent );
-            }
-            else if (name.equalsIgnoreCase("setvolume")){
-                // incoming value is 0-100
-                float val = Float.parseFloat(arg1);
-                val = Math.min(val, 100);
-                val = Math.max(val, 0);
-                //mLibVLC.setVolume(Math.round(val));
-            }
-            else if (name.equalsIgnoreCase("setposition")){
-                // incoming value is ms
-                intent.setAction( Constants.ACTION_SEEK );
-                getLogger().Debug("Sending seek command to Vlc Service. Position: %s", arg1);
-                try {
-                    float newPosition = Float.parseFloat(arg1);
-                    long roundedPosition = Math.round(newPosition);
-
-                    intent.putExtra("position", roundedPosition);
-                    startService( intent );
-                }
-                catch (NumberFormatException ex){
-                    getLogger().ErrorException("Error parsing seek value", ex);
-                }
-            }
-        }
-        catch (Exception ex){
-            getLogger().ErrorException("Error sending command %s to Vlc", ex, name);
-        }
+        // TODO REMOVE
     }
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
