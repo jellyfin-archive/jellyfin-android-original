@@ -38,6 +38,9 @@ repositories {
     mavenCentral()
 	maven { url 'http://guardian.github.com/maven/repo-releases' }
 	jcenter()
+    maven {
+        url 'https://maven.google.com'
+    }
     flatDir {
         dirs 'libs/aars'
     }
