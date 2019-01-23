@@ -9,6 +9,7 @@ cd ${SOURCE_DIR}
 export NODE_ENV=production
 #export NODE_ENV=development
 
+npm i npm@latest -g
 npm cache verify
 npm install
 npx gulp
