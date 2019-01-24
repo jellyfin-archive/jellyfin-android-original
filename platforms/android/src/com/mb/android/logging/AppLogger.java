@@ -2,10 +2,6 @@ package com.mb.android.logging;
 
 import android.content.Context;
 
-import com.mb.android.api.SyncLoggerFactory;
-
-import ch.qos.logback.classic.Level;
-import mediabrowser.apiinteraction.android.sync.MediaSyncAdapter;
 import mediabrowser.model.logging.ILogger;
 
 import java.io.File;
@@ -35,33 +31,28 @@ public class AppLogger {
     }
 
     public static ILogger createLogger(Context context) {
-
         if (!enableLogging()) {
             return new NullLogger();
         }
-
         org.slf4j.Logger internalLogger = configureLogbackDirectly(context);
-
-        MediaSyncAdapter.LoggerFactory = new SyncLoggerFactory(new LogbackLogger(internalLogger, "SyncService"));
-
         return new LogbackLogger(internalLogger, "App");
     }
 
     private static org.slf4j.Logger configureLogbackDirectly(Context context) {
 
-        // reset the default context (which may already have been initialized)
-        // since we want to reconfigure it
-        LoggerContext lc = (LoggerContext)LoggerFactory.getILoggerFactory();
-        lc.reset();
+        // reset the default context which may already have been initialized
+        // we want to reconfigure it
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        loggerContext.reset();
 
         // setup FileAppender
         PatternLayoutEncoder encoder1 = new PatternLayoutEncoder();
-        encoder1.setContext(lc);
+        encoder1.setContext(loggerContext);
         encoder1.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
         encoder1.start();
 
         FileAppender<ILoggingEvent> fileAppender = new FileAppender<ILoggingEvent>();
-        fileAppender.setContext(lc);
+        fileAppender.setContext(loggerContext);
         fileAppender.setEncoder(encoder1);
         fileAppender.setName("fileAppender");
         fileAppender.setFile(getLogFilePath(context, ""));
@@ -94,17 +85,5 @@ public class AppLogger {
         }
 
         return context.getFileStreamPath(filename).getAbsolutePath();
-    }
-
-    public static void setDebugLoggingEnabled(boolean enabled){
-
-        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
-        if (enabled){
-            root.setLevel(Level.DEBUG);
-        }
-        else{
-            root.setLevel(Level.INFO);
-        }
     }
 }
