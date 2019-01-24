@@ -55,7 +55,6 @@ import com.mb.android.media.RemotePlayerService;
 
 import org.apache.cordova.BuildConfig;
 import org.apache.cordova.CordovaActivity;
-import com.mb.android.preferences.PreferencesProvider;
 import com.mb.android.webviews.IWebView;
 import com.mb.android.webviews.MySystemWebView;
 import com.mb.android.webviews.NativeWebView;
@@ -116,7 +115,6 @@ public class MainActivity extends CordovaActivity {
         loadUrl(launchUrl);
         IntentFilter filter = new IntentFilter();
         filter.addAction(Constants.ACTION_SHOW_PLAYER);
-        registerReceiver(messageReceiver, filter);
 
         addJavascriptInterfaces();
     }
@@ -147,51 +145,6 @@ public class MainActivity extends CordovaActivity {
 
         webView.addJavascriptInterface(ApiClientBridge.Current, "ApiClientBridge");
         webView.addJavascriptInterface(this, "MainActivity");
-        webView.addJavascriptInterface(this, "AndroidDirectoryChooser");
-        webView.addJavascriptInterface(this, "AndroidVlcPlayer");
-
-        PreferencesProvider preferencesProvider = new PreferencesProvider(context, logger);
-
-        webView.addJavascriptInterface(preferencesProvider, "AndroidSharedPreferences");
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == REQUEST_DIRECTORY_SAF && resultCode == Activity.RESULT_OK) {
-            Uri uri = intent.getData();
-            final int takeFlags = intent.getFlags()
-                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            // Check for the freshest data.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getContentResolver().takePersistableUriPermission(uri, takeFlags);
-            }
-            RespondToWebViewWithSelectedPath(uri);
-        } else if (requestCode == REQUEST_DIRECTORY && resultCode == RESULT_OK) {
-            if (intent.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
-                ClipData clip = intent.getClipData();
-                if (clip != null) {
-                    for (int i = 0; i < clip.getItemCount(); i++) {
-                        Uri uri = clip.getItemAt(i).getUri();
-                        RespondToWebViewWithSelectedPath(uri);
-                    }
-                }
-            } else {
-                Uri uri = intent.getData();
-                // Do something with the URI
-                if (uri != null){
-                    RespondToWebViewWithSelectedPath(uri);
-                }
-            }
-        } else if (requestCode == VIDEO_PLAYBACK) {
-            // TODO move this to onDestroy() in the video player
-            // it was moved into the javascript section for iap
-            /*boolean completed = resultCode == RESULT_OK;
-            boolean error = resultCode == RESULT_OK ? false : (intent == null ? true : intent.getBooleanExtra("error", false));
-            long positionMs = intent == null || completed ? 0 : intent.getLongExtra("position", 0);
-            String currentSrc = intent == null ? "" : intent.getStringExtra(VideoPlayerActivity.PLAY_EXTRA_ITEM_LOCATION);
-            RespondToWebView(String.format("VideoRenderer.Current.onActivityClosed(%s, %s, %s, '%s');", !completed, error, positionMs, currentSrc));*/
-        }
     }
 
     private void RespondToWebViewWithSelectedPath(Uri uri) {
@@ -390,86 +343,9 @@ public class MainActivity extends CordovaActivity {
         }
     }
 
-    /**
-     * Flag to enable VLC audio player
-     */
     @android.webkit.JavascriptInterface
     public boolean enableVlcPlayer() {
-        return true;
-    }
-
-    @android.webkit.JavascriptInterface
-    public void playAudioVlc(String path, String itemJson, String mediaSourceJson, String posterUrl) {
-        // TODO REMOVE
-    }
-
-    @android.webkit.JavascriptInterface
-    public void playVideoVlc(String path,
-                             long startPositionMs,
-                             String itemName,
-                             String itemJson,
-                             String mediaSourceJson,
-                             String playbackStartInfoJson,
-                             String serverId,
-                             String serverUrl,
-                             String appName,
-                             String appVersion,
-                             String deviceId,
-                             String deviceName,
-                             String userId,
-                             String accessToken,
-                             String deviceProfileJson,
-                             String videoQualityOptionsJson,
-                             long timeLimitMs) {
-        // TODO REMOVE
-    }
-
-    @android.webkit.JavascriptInterface
-    public void destroyVlc() {
-        // TODO REMOVE
-    }
-
-    @android.webkit.JavascriptInterface
-    public void sendVlcCommand(String name, String arg1) {
-        // TODO REMOVE
-    }
-
-    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equalsIgnoreCase(Constants.ACTION_SHOW_PLAYER)) {
-                //showAudioPlayer();
-            }
-        }
-    };
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            RespondToWebView("LibraryMenu.onHardwareMenuButtonClick();");
-            return true;
-        } else {
-            return super.onKeyUp(keyCode, event);
-        }
-    }
-
-    public void getSyncStatus() {
-        // TODO implement or remove
-    }
-
-    public void startSync() {
-        // TODO implement or remove
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        try {
-            unregisterReceiver(messageReceiver);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        return false;
     }
 
     @android.webkit.JavascriptInterface

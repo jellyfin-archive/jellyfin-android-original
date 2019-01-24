@@ -23,7 +23,6 @@ public class MySystemWebViewClient extends SystemWebViewClient {
     @TargetApi(8)
     @Override
     public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
-
         MainActivity.Current.handleSslError(error, new SslResponse(handler));
     }
 

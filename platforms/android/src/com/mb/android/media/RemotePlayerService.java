@@ -33,8 +33,6 @@ import mediabrowser.model.logging.ILogger;
 
 public class RemotePlayerService extends Service {
 
-    private static final String TAG = "Emby/AudioService";
-
     private MediaSessionManager m_objMediaSessionManager;
     private MediaSession m_objMediaSession;
     private MediaController m_objMediaController;
