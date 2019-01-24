@@ -12,38 +12,15 @@
             isLocalPlayer: false,
             appName: PlayerName,
             deviceName: route.name,
-            supportedCommands: ["VolumeUp",
-                                "VolumeDown",
-                                "Mute",
-                                "Unmute",
-                                "ToggleMute",
-                                "SetVolume",
-                                "SetAudioStreamIndex",
-                                "SetSubtitleStreamIndex",
-                                "DisplayContent",
-                                "SetRepeatMode",
-                                "EndSession"]
+            supportedCommands: []
         };
     }
 
     function getTargets() {
-        return Promise.resolve(chrome.cast.getRouteList().map(convertRouteToTarget));
+        return Promise.reject();
     }
 
     function tryPair(target) {
-        return chrome.cast.connectToId(target.id);
+        return false;
     }
-
-    function onChromecastLoaded(e) {
-        var plugin = pluginManager.plugins().filter(function (p) {
-            return p.id === 'chromecast';
-        })[0];
-
-        if (plugin) {
-            plugin.tryPair = tryPair;
-            plugin.getTargets = getTargets;
-        }
-    }
-
-    onChromecastLoaded();
 });
