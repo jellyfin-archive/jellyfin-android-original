@@ -33,16 +33,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Base64;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
@@ -53,25 +50,15 @@ import com.mb.android.media.RemotePlayerService;
 import org.apache.cordova.BuildConfig;
 import org.apache.cordova.CordovaActivity;
 import com.mb.android.webviews.IWebView;
-import com.mb.android.webviews.MySystemWebView;
 import com.mb.android.webviews.NativeWebView;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import org.apache.cordova.CordovaWebViewEngine;
+import org.apache.cordova.engine.SystemWebView;
 import org.apache.cordova.engine.SystemWebViewEngine;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.GsonJsonSerializer;
@@ -92,7 +79,6 @@ public class MainActivity extends CordovaActivity {
     private final int LAUNCH_REQUEST = 990;
     private final int REQUEST_DIRECTORY = 998;
     private final int REQUEST_DIRECTORY_SAF = 996;
-    public static final int SHARE_RESULT = 980;
     private static IWebView webView;
     private IAsyncHttpClient httpClient;
     private IJsonSerializer jsonSerializer;
@@ -122,7 +108,7 @@ public class MainActivity extends CordovaActivity {
 
         final ILogger logger = getLogger();
 
-        engine =  new SystemWebViewEngine(new MySystemWebView(this, logger, this), preferences);
+        engine =  new SystemWebViewEngine(new SystemWebView(this), preferences);
         WebView webkitView = (WebView)engine.getView();
         webkitView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         webView = new NativeWebView(webkitView);
@@ -377,57 +363,6 @@ public class MainActivity extends CordovaActivity {
         // start download
         DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         dm.enqueue(r);
-    }
-
-    public void handleSslError(SslError error, final Response<Boolean> response){
-        final Context context = this;
-        SslCertificate cert = error.getCertificate();
-
-        String issuedTo = cert.getIssuedTo().getDName();
-        String issuedBy = cert.getIssuedBy().getDName();
-        String issuedOn = cert.getValidNotBeforeDate().toString();
-
-        final String srch = error.getUrl()+ "--" + issuedTo + "--" + issuedBy + "--" + issuedOn;
-        final String results = getSharedPreferences(this).getString("acurls1", "");
-
-        if (StringHelper.IndexOfIgnoreCase(results, srch) != -1){
-            response.onResponse(true);
-            return;
-        }
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        String message = getResources().getString(R.string.notification_error_ssl_cert_invalid)
-                .replace("{0}", issuedTo.replace("localhost", "Jellyfin Server"))
-                .replace("{1}", issuedBy.replace("localhost", "Jellyfin Server"))
-                .replace("{2}", issuedOn);
-
-        builder.setMessage(message);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                SharedPreferences settings = getSharedPreferences(context);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putString("acurls1", results + "|" + srch);
-                // Commit the edits!
-                boolean saved = editor.commit();
-
-                response.onResponse(true);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                response.onResponse(false);
-            }
-        });
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private static SharedPreferences getSharedPreferences(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @android.webkit.JavascriptInterface
