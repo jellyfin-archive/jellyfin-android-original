@@ -24,12 +24,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.common.images.WebImage;
-import com.mb.android.logging.AppLogger;
 
 import android.os.Bundle;
 import android.support.v7.media.MediaRouter.RouteInfo;
-
-import mediabrowser.model.logging.ILogger;
 
 /*
  * All of the Chromecast session specific functions should start here. 
@@ -80,10 +77,6 @@ public class ChromecastSession
 		this.chromecastMediaController = new ChromecastMediaController(mRemoteMediaPlayer);
 	}
 
-    private ILogger getLogger(){
-        return AppLogger.getLogger(cordova.getActivity());
-    }
-
 	/**
 	 * Sets the wheels in motion - connects to the Chromecast and launches the given app
 	 * @param appId
@@ -106,7 +99,6 @@ public class ChromecastSession
 				 Cast.CastApi.setMessageReceivedCallbacks(mApiClient, namespace, this);
 				 messageNamespaces.add(namespace);
 			} catch(Exception e) {
-                getLogger().ErrorException("Error in ChromecastSession.setMessageReceivedCallbacks", e);
 			}
 		}
 	}
@@ -130,7 +122,6 @@ public class ChromecastSession
 		        }
 		      });
 		} catch(Exception e) {
-            getLogger().ErrorException("Error sending chromecast message", e);
 			callback.onError(e.getMessage());
 		}
 	}
@@ -168,8 +159,6 @@ public class ChromecastSession
 //			}
 //		});
 
-        getLogger().Info("ChromecastSession.kill");
-
         try {
 			Cast.CastApi.stopApplication(mApiClient);
 			mApiClient.disconnect();
@@ -186,9 +175,6 @@ public class ChromecastSession
 	 * @param callback
 	 */
 	public void leave (final ChromecastSessionCallback callback) {
-
-        getLogger().Info("ChromecastSession.leave");
-
 		try {
 			Cast.CastApi.leaveApplication(mApiClient);
 		} catch(Exception e) {
@@ -330,9 +316,6 @@ public class ChromecastSession
 	 * Connects to the device with all callbacks and things
 	 */
 	private void connectToDevice() {
-
-        getLogger().Info("ChromecastSession.connectToDevice");
-
         try {
 			Cast.CastOptions.Builder apiOptionsBuilder = Cast.CastOptions.builder(this.device, this);
 			
@@ -344,9 +327,6 @@ public class ChromecastSession
 			
 			this.mApiClient.connect();
 		} catch(Exception e) {
-
-            getLogger().ErrorException("Error in ChromecastSession.connectToDevice", e);
-
             e.printStackTrace();
 		}
 	}
@@ -355,9 +335,6 @@ public class ChromecastSession
 	 * Launches the application and gets a new session
 	 */
 	private void launchApplication() {
-
-        getLogger().Info("ChromecastSession.launchApplication");
-
         Cast.CastApi.launchApplication(mApiClient, this.appId, false)
 			.setResultCallback(launchApplicationResultCallback);
 	}
@@ -366,8 +343,6 @@ public class ChromecastSession
 	 * Attemps to join an already running session
 	 */
 	private void joinApplication() {
-        getLogger().Info("ChromecastSession.joinApplication");
-
         Cast.CastApi.joinApplication(this.mApiClient, this.appId, this.lastSessionId)
 			.setResultCallback(joinApplicationResultCallback);
 	}
@@ -392,9 +367,6 @@ public class ChromecastSession
 		public void onResult(ApplicationConnectionResult result) {
 			
 			Status status = result.getStatus();
-
-            getLogger().Info("launchApplicationResultCallback success: %s", status.isSuccess());
-			
 			if (status.isSuccess()) {
 				try {
 					ApplicationMetadata metadata = result.getApplicationMetadata();
@@ -406,9 +378,6 @@ public class ChromecastSession
 					connectRemoteMediaPlayer();
 					ChromecastSession.this.isConnected = true;
 				} catch (Exception e) {
-
-                    getLogger().ErrorException("Error in ChromecastSession.launchApplicationResultCallback", e);
-
                     e.printStackTrace();
 				}
 			} else {
@@ -425,9 +394,6 @@ public class ChromecastSession
 		public void onResult(ApplicationConnectionResult result) {
 		
 			Status status = result.getStatus();
-
-            getLogger().Info("joinApplicationResultCallback success: %s", status.isSuccess());
-
             if (status.isSuccess()) {
 				try {
 					ApplicationMetadata metadata = result.getApplicationMetadata();
@@ -439,9 +405,6 @@ public class ChromecastSession
 					connectRemoteMediaPlayer();
 					ChromecastSession.this.isConnected = true;
 				} catch (Exception e) {
-
-                    getLogger().ErrorException("Error in ChromecastSession.joinApplicationResultCallback", e);
-
                     e.printStackTrace();
                 }
 			} else {
@@ -657,9 +620,6 @@ public class ChromecastSession
 	 */
 	@Override
 	public void onApplicationDisconnected(int errorCode) {
-
-        getLogger().Info("ChromecastSession.onApplicationDisconnected");
-
 		if (this.onSessionUpdatedListener != null) {
 			this.isConnected = false;
 			this.onSessionUpdatedListener.onSessionUpdated(false, this.createSessionObject());

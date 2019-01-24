@@ -20,7 +20,6 @@ import android.os.IBinder;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
-import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
 
 import org.jellyfin.mobile.MainActivity;
@@ -51,7 +50,6 @@ public class RemotePlayerService extends Service {
             mediaSession.release();
             onStopped();
         }
-
         return super.onUnbind(intent);
     }
 
@@ -107,8 +105,8 @@ public class RemotePlayerService extends Service {
 
         if (imageUrl != null && imageUrl.length() > 0) {
 
-            if (ApiClientBridge.Current != null) {
-                httpClient = ApiClientBridge.Current.httpClient;
+            if (MainActivity.apiClientBridge.httpClient != null) {
+                httpClient = MainActivity.apiClientBridge.httpClient;
             }
 
             ILogger logger = AppLogger.getLogger(getApplicationContext());
@@ -154,10 +152,10 @@ public class RemotePlayerService extends Service {
         int position = handledIntent.getIntExtra("position", 0);
         int duration = handledIntent.getIntExtra("duration", 0);
 
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Notification.Action action = isPaused ?
-                         generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY) :
-                         generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE);
+                    generateAction(android.R.drawable.ic_media_play, "Play", Constants.ACTION_PLAY) :
+                    generateAction(android.R.drawable.ic_media_pause, "Pause", Constants.ACTION_PAUSE);
 
             Notification.MediaStyle style = new Notification.MediaStyle();
             style.setMediaSession(mediaSession.getSessionToken());
@@ -201,9 +199,9 @@ public class RemotePlayerService extends Service {
             }
 
             builder.addAction(generateAction(android.R.drawable.ic_media_previous, "Previous", Constants.ACTION_PREVIOUS));
-            builder.addAction(generateAction( android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND));
+            builder.addAction(generateAction(android.R.drawable.ic_media_rew, "Rewind", Constants.ACTION_REWIND));
             builder.addAction(action);
-            builder.addAction(generateAction( android.R.drawable.ic_media_ff, "Fast Forward", Constants.ACTION_FAST_FORWARD));
+            builder.addAction(generateAction(android.R.drawable.ic_media_ff, "Fast Forward", Constants.ACTION_FAST_FORWARD));
             builder.addAction(generateAction(android.R.drawable.ic_media_next, "Next", Constants.ACTION_NEXT));
 
             try {
@@ -239,25 +237,11 @@ public class RemotePlayerService extends Service {
         }
     }
 
-    private void cleanupAfterMediaStop() {
-
-    }
-
     private void onStopped() {
-
-        cleanupAfterMediaStop();
-
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(1);
         Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
         stopService(intent);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        cleanupAfterMediaStop();
     }
 
     private Notification.Action generateAction(int icon, String title, String intentAction) {
@@ -267,47 +251,6 @@ public class RemotePlayerService extends Service {
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
 
         return new Notification.Action(icon, title, pendingIntent);
-    }
-
-    private PendingIntent retreivePlaybackAction(int which) {
-        Intent action;
-        PendingIntent pendingIntent;
-        final ComponentName serviceName = new ComponentName(this, RemotePlayerService.class);
-        switch (which) {
-            case 1:
-                // Play and pause
-                action = new Intent(Constants.ACTION_PLAY);
-                action.setComponent(serviceName);
-                pendingIntent = PendingIntent.getService(this, 1, action, 0);
-                return pendingIntent;
-            case 2:
-                // Skip tracks
-                action = new Intent(Constants.ACTION_NEXT);
-                action.setComponent(serviceName);
-                pendingIntent = PendingIntent.getService(this, 2, action, 0);
-                return pendingIntent;
-            case 3:
-                // Previous tracks
-                action = new Intent(Constants.ACTION_PREVIOUS);
-                action.setComponent(serviceName);
-                pendingIntent = PendingIntent.getService(this, 3, action, 0);
-                return pendingIntent;
-            case 4:
-                //fast forward tracks
-                action = new Intent(Constants.ACTION_FAST_FORWARD);
-                action.setComponent(serviceName);
-                pendingIntent = PendingIntent.getService(this, 4, action, 0);
-                return pendingIntent;
-            case 5:
-                //rewind tracks
-                action = new Intent(Constants.ACTION_REWIND);
-                action.setComponent(serviceName);
-                pendingIntent = PendingIntent.getService(this, 5, action, 0);
-                return pendingIntent;
-            default:
-                break;
-        }
-        return null;
     }
 
     @Override
