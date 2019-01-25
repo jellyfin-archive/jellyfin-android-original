@@ -1,4 +1,4 @@
-package com.mb.android;
+package com.mb.android.webviews;
 
 /**
  * Created by Luke on 5/28/2015.

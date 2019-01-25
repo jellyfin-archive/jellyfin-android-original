@@ -4,13 +4,7 @@
     var currentReject;
 
     function chooseDirectory() {
-        return new Promise(function (resolve, reject) {
-
-            currentResolve = resolve;
-            currentReject = reject;
-
-            AndroidDirectoryChooser.chooseDirectory();
-        });
+        return Promise().reject();
     }
 
     function onChosen(path) {

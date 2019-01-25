@@ -13,7 +13,7 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+                            "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",           
                             "count": 1
                         },
                         {
@@ -42,21 +42,11 @@
                             "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
                             "count": 4
                         }
-                    ],
-                    "/manifest/application": [
-                        {
-                            "xml": "<meta-data android:name=\"com.google.android.gms.version\" android:value=\"@integer/google_play_services_version\" />",
-                            "count": 1
-                        }
                     ]
                 }
             }
         }
     },
-    "installed_plugins": {
-        "acidhax.cordova.chromecast": {
-            "PACKAGE_NAME": "com.mb.android"
-        }
-    },
+    "installed_plugins": {},
     "dependent_plugins": {}
 }

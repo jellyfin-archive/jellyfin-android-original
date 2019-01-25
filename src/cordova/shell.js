@@ -2,7 +2,7 @@ define([], function () {
 
     return {
         openUrl: function (url) {
-            MainActivity.launchIntent(url, null);
+            // TODO reimplement
         },
         canExec: false,
         exec: function (options) {
