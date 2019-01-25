@@ -3,16 +3,7 @@
     function getLocalMediaSource(serverId, itemId) {
 
         // android
-        if (window.ApiClientBridge) {
-            var json = ApiClientBridge.getLocalMediaSource(serverId, itemId);
-
-            if (json) {
-                return Promise.resolve(JSON.parse(json));
-            }
-            else {
-                return Promise.resolve(null);
-            }
-        }
+        return Promise.resolve(null);
 
         return getLocalItem(itemId, serverId).then(function (localItem) {
 
