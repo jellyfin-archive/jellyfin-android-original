@@ -26,7 +26,7 @@ var uglifyOptions = {
 var cleanOptions = {
     // Do not rebase relative urls
     // Otherwise asset urls are rewritten to be relative to the current src
-    rebase: true
+    rebase: false
 };
 
 var paths = {
