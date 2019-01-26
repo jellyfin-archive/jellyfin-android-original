@@ -11,6 +11,7 @@
   },
   "license": "GPL-2.0-only",
   "dependencies": {
+    "acidhax.cordova.chromecast": "src/cordova-plugin-chromecast",
     "acorn": "^6.0.5",
     "cordova": "^7.1.0",
     "cordova-android": "^6.3.0",
@@ -27,8 +28,8 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "org.jellyfin.cordova": {},
-      "acidhax.cordova.chromecast": {}
+      "acidhax.cordova.chromecast": {},
+      "org.jellyfin.cordova": {}
     },
     "platforms": [
       "android"
