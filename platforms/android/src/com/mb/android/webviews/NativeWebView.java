@@ -3,8 +3,6 @@ package com.mb.android.webviews;
 import android.os.Build;
 import android.webkit.WebView;
 
-import com.mb.android.EmptyStringCallback;
-
 /**
  * Created by Luke on 5/28/2015.
  */

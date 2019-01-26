@@ -38,6 +38,9 @@ repositories {
     mavenCentral()
 	maven { url 'http://guardian.github.com/maven/repo-releases' }
 	jcenter()
+    maven {
+        url 'https://maven.google.com'
+    }
     flatDir {
         dirs 'libs/aars'
     }
@@ -193,26 +196,6 @@ android {
     buildToolsVersion "23.0.2"
 
     if (Boolean.valueOf(cdvBuildMultipleApks)) {
-        productFlavors {
-            armv7 {
-                versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
-                ndk {
-                    abiFilters 'armeabi-v7a'
-                }
-            }
-            armv8 {
-                versionCode cdvVersionCode ?: defaultConfig.versionCode + 2
-                ndk {
-                    abiFilters 'arm64-v8a'
-                }
-            }
-            x86 {
-                versionCode cdvVersionCode ?: defaultConfig.versionCode + 4
-                ndk {
-                    abiFilters 'x86'
-                }
-            }
-        }
     } else if (!cdvVersionCode) {
       def minSdkVersion = cdvMinSdkVersion ?: privateHelpers.extractIntFromManifest("minSdkVersion")
       // Vary versionCode by the two most common API levels:
@@ -283,10 +266,6 @@ dependencies {
     compile "com.squareup.okhttp:okhttp-urlconnection:2+"
     // SUB-PROJECT DEPENDENCIES END
     compile files('libs/apiclient.jar')
-    // FLAVOR-SPECIFIC DEPENDENCIES
-    armv7Compile files('libs/libvlc_arm.jar')
-    armv8Compile files('libs/libvlc_arm.jar')
-    x86Compile files('libs/libvlc_x86.jar')
 }
 
 def promptForReleaseKeyPassword() {

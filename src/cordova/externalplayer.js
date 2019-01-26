@@ -59,10 +59,8 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         }
 
         self.play = function (options) {
-
             return modifyStreamUrl(options).then(function (streamUrl) {
-
-                MainActivity.launchIntent(streamUrl, options.mimeType);
+                // TODO reimplement
                 return Promise.resolve();
             });
         };
