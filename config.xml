@@ -29,5 +29,6 @@
         <icon density="xxhdpi" src="res/android/xxhdpi/icon.png" />
         <icon density="xxxhdpi" src="res/android/xxxhdpi/icon.png" />
     </platform>
+    <engine name="android" spec="^6.3.0" />
     <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
 </widget>
