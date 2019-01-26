@@ -12,9 +12,12 @@
   </js-module>
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
-        <feature name="NativeShell">
-            <param name="android-package" value="org.jellyfin.cordova.NativeShell"/>
-        </feature>
+      <feature name="NativeShell">
+        <param name="android-package" value="org.jellyfin.cordova.NativeShell"/>
+      </feature>
+    </config-file>
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <service android:name="com.mb.android.media.RemotePlayerService" />
     </config-file>
     <source-file src="libs/apiclient.jar" target-dir="libs" />
     <source-file src="src/build-extras.gradle" target-dir="." />
