@@ -136,7 +136,7 @@
             }
         }
 
-        MainActivity.updateMediaSession(eventName, isLocalPlayer, itemId, title, artist, album, parseInt(duration), parseInt(position), url, canSeek, isPaused);
+        window.NativeShell.updateMediaSession(function() {}, function() {}, eventName, isLocalPlayer, itemId, title, artist, album, parseInt(duration), parseInt(position), url, canSeek, isPaused);
         lastUpdateTime = now;
     }
 
@@ -186,7 +186,7 @@
     }
 
     function hideMediaControls() {
-        MainActivity.hideMediaSession();
+        window.NativeShell.hideMediaSession(function() {}, function() {});
         lastUpdateTime = 0;
     }
 

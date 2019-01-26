@@ -234,19 +234,22 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
         init: function() {
             return new Promise(function(resolve) {
                 document.addEventListener("deviceready", function () {
-                    // remove special characters
-                    deviceName = MainActivity.getDeviceModel().replace(/[^\w\s]/gi, '');
-                    deviceId = MainActivity.getDeviceId();
-                    appName = "Jellyfin Mobile";
-                    appVersion = MainActivity.getAppVersion();
-
-                    appInfo = {
-                        deviceId: deviceId,
-                        deviceName: deviceName,
-                        appVersion: appVersion
-                    };
-
-                    resolve(appInfo);
+                    window.NativeShell.getDeviceInformation(function(result) {
+                        deviceId = result.deviceId;
+                        deviceName = result.deviceName;
+                        appName = result.appName;
+                        appVersion = result.appVersion;
+                        appInfo = {
+                            deviceId: deviceId,
+                            deviceName: deviceName,
+                            appName: appName,
+                            appVersion: appVersion
+                        };
+                        resolve(appInfo);
+                    }, function(err) {
+                        console.log(err);
+                        reject();
+                    });
                 }, false);
             });
         },

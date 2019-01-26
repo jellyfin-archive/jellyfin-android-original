@@ -13,11 +13,17 @@
   "dependencies": {
     "acorn": "^6.0.5",
     "cordova": "^7.1.0",
+    "cordova-plugin-whitelist": "^1.3.3",
     "del": "^3.0.0",
     "gulp": "^4.0.0",
     "gulp-clean-css": "^4.0.0",
     "gulp-dom": "^1.0.0",
     "gulp-if": "^2.0.2",
     "gulp-uglify": "^3.0.1"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    }
   }
 }
