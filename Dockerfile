@@ -9,7 +9,7 @@ ENV ANDROID_DIR=/usr/lib/android-sdk
 RUN dpkg --add-architecture i386 \
  && echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list.d/backports.list \
  && apt-get update \
- && apt-get install -y mmv wget unzip android-sdk libgcc1:i386 libstdc++6:i386 lib32z1 \
+ && apt-get install -y mmv wget unzip git android-sdk libgcc1:i386 libstdc++6:i386 lib32z1 \
  && apt-get install -t stretch-backports -y npm
 
 RUN rm -rf ${ANDROID_DIR}/tools \
