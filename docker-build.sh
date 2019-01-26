@@ -8,23 +8,27 @@ image_name="jellyfin-android-apkbuild"
 # Initialize the submodules
 git submodule update --init
 
-# Check out the proper jellyfin-web branch
-if [[ ${1} == '--dev' || ${1} == '-d' ]]; then
-    pushd src/jellyfin-web
-    git checkout dev
-    git pull --rebase
-    popd
-elif [[ ${1} == '--master' || ${1} == '-m' ]]; then
-    pushd src/jellyfin-web
-    git checkout master
-    git pull --rebase
-    popd
-else
-    echo "Please specify a 'jellyfin-web' branch, either:"
-    echo "'--dev'/'-d' for dev branch, or"
-    echo "'--master'/'-m' for master branch."
+usage() {
+    echo -e "Usage:"
+    echo -e " $0 [--web/-w <branch>]"
+    echo -e "The web branch defaults to 'origin/master'; specify any valid tag or branch for the 'jellyfin-web' repository."
     exit 1
+}
+
+# Check out the proper jellyfin-web branch
+if [[ ${1} == '--web' || ${1} == '-w' ]]; then
+    if [[ -n ${2} ]]; then
+        web_branch="${2}"
+    else
+        usage
+    fi
+else
+    web_branch="origin/master"
 fi
+
+pushd src/jellyfin-web
+git checkout ${web_branch} || usage
+popd
 
 set -o xtrace
 package_temporary_dir="$( mktemp -d )"
