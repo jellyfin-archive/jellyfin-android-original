@@ -27,6 +27,7 @@ else
 fi
 
 pushd src/jellyfin-web
+git fetch --all
 git checkout ${web_branch} || usage
 popd
 
