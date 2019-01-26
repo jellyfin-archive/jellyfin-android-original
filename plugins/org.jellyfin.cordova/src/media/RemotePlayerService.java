@@ -41,9 +41,8 @@ public class RemotePlayerService extends Service {
     private Bitmap largeItemIcon;
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public void onCreate() {
         apiClientBridge = new ApiClientBridge(getApplicationContext());
-        return null;
     }
 
     @Override
@@ -53,6 +52,16 @@ public class RemotePlayerService extends Service {
             onStopped();
         }
         return super.onUnbind(intent);
+    }
+
+    @Override
+    public int onStartCommand(final Intent intent, int flags, int startId) {
+        if (mediaSessionManager == null) {
+            initMediaSessions();
+        }
+
+        handleIntent(intent);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     private void sendCommand(String action) {
@@ -228,7 +237,6 @@ public class RemotePlayerService extends Service {
     }
 
     private void setMediaSessionMetadata(MediaSession mediaSession, String itemId, String artist, String album, String title, Bitmap largeIcon) {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
                     .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
@@ -239,7 +247,6 @@ public class RemotePlayerService extends Service {
             if (largeIcon != null) {
                 metadataBuilder.putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, largeIcon);
             }
-
             mediaSession.setMetadata(metadataBuilder.build());
         }
     }
@@ -252,22 +259,10 @@ public class RemotePlayerService extends Service {
     }
 
     private Notification.Action generateAction(int icon, String title, String intentAction) {
-
         Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
         intent.setAction(intentAction);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-
         return new Notification.Action(icon, title, pendingIntent);
-    }
-
-    @Override
-    public int onStartCommand(final Intent intent, int flags, int startId) {
-        if (mediaSessionManager == null) {
-            initMediaSessions();
-        }
-
-        handleIntent(intent);
-        return super.onStartCommand(intent, flags, startId);
     }
 
     private void initMediaSessions() {
