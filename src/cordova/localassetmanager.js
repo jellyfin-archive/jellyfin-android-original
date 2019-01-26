@@ -1,60 +1,34 @@
 ﻿define([], function () {
 
     function getLocalMediaSource(serverId, itemId) {
-
         // android
-        return Promise.resolve(null);
+        if (window.ApiClientBridge) {
+            var json = ApiClientBridge.getLocalMediaSource(serverId, itemId);
+            if (json) {
+                return Promise.resolve(JSON.parse(json));
+            } else {
+                return Promise.resolve(null);
+            }
+        }
 
         return getLocalItem(itemId, serverId).then(function (localItem) {
-
             if (localItem && localItem.Item.MediaSources.length) {
-
                 var mediaSource = localItem.Item.MediaSources[0];
-
                 return fileExists(mediaSource.Path).then(function (exists) {
-
                     if (exists) {
                         return mediaSource;
                     } else {
                         return null;
                     }
                 });
-
             } else {
                 return null;
             }
         });
     }
 
-    function getCameraPhotos() {
-        var deferred = jQuery.Deferred();
-
-        if (window.CameraRoll) {
-
-            var photos = [];
-
-            CameraRoll.getPhotos(function (result) {
-                photos.push(result);
-            });
-
-            setTimeout(function () {
-
-                // clone the array in case the callback is still getting called
-                console.log('Found ' + photos.length + ' in camera roll');
-
-                deferred.resolveWith(null, [photos]);
-
-            }, 2000);
-
-        } else {
-            deferred.resolveWith(null, [[]]);
-        }
-        return deferred.promise();
-    }
-
     var offlineUserDatabase;
     function getOfflineUserdb(callback) {
-
         if (offlineUserDatabase) {
             callback(offlineUserDatabase);
             return;
