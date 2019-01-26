@@ -15,15 +15,6 @@
         "is_top_level": false,
         "variables": {}
     },
-    "acidhax.cordova.chromecast": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/MediaBrowser/cordova-chromecast",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-android-support-v4": {
         "source": {
             "type": "registry",

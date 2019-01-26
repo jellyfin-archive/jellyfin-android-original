@@ -18,9 +18,9 @@ RUN rm -rf ${ANDROID_DIR}/tools \
  && rm -f tools.zip
 
 # Required to accept licenses:
-# https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences#comment80496274_38381577
-RUN echo -e "\nd56f5187479451eabf01fb78af6dfcb131a6481e" >> "${ANDROID_DIR}/licenses/android-sdk-license" \
- && ${ANDROID_DIR}/tools/bin/sdkmanager "platform-tools" "platforms;android-23" "build-tools;23.0.2" "extras;android;m2repository" "extras;google;m2repository"
+# https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences/42125740#42125740
+# There will be a bit of delay (approx 30 seconds)
+RUN yes | ${ANDROID_DIR}/tools/bin/sdkmanager "platform-tools" "platforms;android-23" "build-tools;23.0.2" "extras;android;m2repository" "extras;google;m2repository"
 
 COPY . ${SOURCE_DIR}/
 
