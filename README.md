@@ -1,60 +1,58 @@
-# Jellyfin.Mobile
+<h1 align="center">Jellyfin Mobile</h1>
+<h3 align="center">Part of the <a href="https://jellyfin.media">Jellyfin Project</a></h3>
 
-A Cordova-based mobile app for [Jellyfin](https://github.com/jellyfin/jellyfin/).
+<p align="center">
+Jellyfin Mobile is an Android app built with Cordova.
+</p>
 
-> This project currently uses a customized version of the Android platform for Cordova that includes native Android code that will need to be migrated to a plugin or otherwise removed. (See the `com.mb.android` package in `platforms/android/src`.) This currently blocks supporting iOS and updating Cordova and the Android platform for Cordova.
-
-## Building Jellyfin.Mobile from source
-
-> In order to build the cordova project, you may need to grant execute permissions to the file `/hooks/after_prepare/uglify.js`
+## Build Process
 
 ### Getting Started
 
-0. Clone or download this repository.
-0. From the Jellyfin.Mobile directory, install Cordova and other build dependencies via npm.
+1. Clone or download this repository.
+2. Install Cordova and other build dependencies via npm in the project directory.
    ```sh
    npm install
    ```
-0. Prepare the Cordova platforms.
+3. Prepare the Cordova platforms.
    ```sh
    npx cordova prepare
    ```
 
-### Android
-
-#### Prerequisites
-
-* [Android Studio](https://developer.android.com/studio/install)
-* Android SDK Build-Tools 23.0.2
-* Android SDK Tools 25.2.3
-  > Additional information on installing old versions of the SDK Tools can be found [here](https://stackoverflow.com/a/26365848)
-* 32-bit versions of the following libraries
-  * libgcc
-  * libstdc++
-  * zlib
-
-### Build `www/` Directory
+### Prepare Interface
 
 If any changes are made to `src/`, the `www/` directory will need to be rebuilt using the following command.
 
-```
+```sh
 npx gulp
 ```
 
 > If `NODE_ENV=development` is set in the environment, then the source files will be copied without being minified.
 
-#### Build APKs
+### Build APK
+
+You can use the `-d` flag if you want to build a debug version. A release version will need to be signed before it will run.
 
 ```sh
 npx cordova build android
 ```
 
-#### Build and Deploy to Emulator
+### Deploy to Emulator
 
 ```sh
 npx cordova run android
 ```
 
-### iOS
+## Troubleshooting
 
-Currently not supported.
+### Failed to find `ANDROID_HOME`
+
+Cordova needs that environment vairable set to the location of your Android SDK to build the app. If you are using linux it will be somewhere in your home directory.
+
+### Command failed with exit code EACCES
+
+Android Studio will write over `gradlew` occasionally but doesn't set it as executable. Go to `platforms/android` and set that file as executable to fix the build for Cordova.
+
+### File not Found `index.html`
+
+Make sure the web source has been properly copied to `www` using gulp. If you are using Android Studio you have to build with cordova at least once so the files are copied into the android source files.
