@@ -41,6 +41,7 @@ current_user="$( whoami )"
 
 # Trap cleanup for latter sections
 cleanup() {
+    # Remove tempdir
     rm -rf "${package_temporary_dir}"
 }
 trap cleanup EXIT INT

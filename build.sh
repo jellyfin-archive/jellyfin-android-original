@@ -3,15 +3,24 @@
 # Builds the APK inside the Docker container
 
 set -o errexit
+set -o xtrace
 
 cd ${SOURCE_DIR}
+
+# Trap cleanup for latter sections
+cleanup() {
+    rm -rf node_modules/ platforms/ plugins/ www/
+}
+trap cleanup EXIT INT
 
 export NODE_ENV=production
 #export NODE_ENV=development
 
-npm i npm@latest -g
+npm --version
 npm cache verify
+sed -i 's/src/file:src/g' package.json
 npm install
+sed -i 's/file:src/src/g' package.json
 npx gulp
 npx cordova prepare
 
