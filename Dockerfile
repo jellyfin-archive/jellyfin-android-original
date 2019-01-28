@@ -20,12 +20,11 @@ RUN rm -rf ${ANDROID_DIR}/tools \
 # Required to accept licenses:
 # https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences/42125740#42125740
 # There will be a bit of delay (approx 30 seconds)
-RUN yes | ${ANDROID_DIR}/tools/bin/sdkmanager "platform-tools" "platforms;android-23" "build-tools;23.0.2" "extras;android;m2repository" "extras;google;m2repository"
+RUN yes | ${ANDROID_DIR}/tools/bin/sdkmanager "platform-tools" "platforms;android-26" "build-tools;26.0.3" "extras;android;m2repository" "extras;google;m2repository"
 
-COPY . ${SOURCE_DIR}/
+RUN ln -sf ${SOURCE_DIR}/build.sh /build.sh
 
-RUN ln -s ${SOURCE_DIR}/build.sh /build.sh
-
+VOLUME ${SOURCE_DIR}/
 VOLUME ${ARTIFACT_DIR}/
 
 ENTRYPOINT ["/build.sh"]
