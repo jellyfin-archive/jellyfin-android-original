@@ -1,6 +1,7 @@
 package com.mb.android.media;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -16,8 +17,6 @@ import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.util.Log;
 
 import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
@@ -37,12 +36,27 @@ public class RemotePlayerService extends Service {
     private MediaController mediaController;
     private MediaSessionManager mediaSessionManager;
     private MediaSession mediaSession;
-    private String mediaSessionMediaId = "";
     private Bitmap largeItemIcon;
+
+    private String mediaSessionId;
+    private String channelId;
+    private int notifyId = 84;
 
     @Override
     public void onCreate() {
         apiClientBridge = new ApiClientBridge(getApplicationContext());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            channelId = "Channel";
+            String name = "Name";
+            String description = "Description";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, name, importance);
+            notificationChannel.setDescription(description);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 
     @Override
@@ -119,25 +133,22 @@ public class RemotePlayerService extends Service {
 
         String itemId = handledIntent.getStringExtra("itemId");
         String imageUrl = handledIntent.getStringExtra("imageUrl");
-        if (largeItemIcon != null && mediaSessionMediaId.equals(itemId)) {
+        if (largeItemIcon != null && mediaSessionId.equals(itemId)) {
             notifyWithBitmap(handledIntent, largeItemIcon);
             return;
         }
 
         if (imageUrl != null && imageUrl.length() > 0) {
-
             if (apiClientBridge.httpClient != null) {
                 httpClient = apiClientBridge.httpClient;
             }
 
             ILogger logger = AppLogger.getLogger(getApplicationContext());
-
             if (httpClient == null) {
                 httpClient = new VolleyHttpClient(logger, getApplicationContext());
             }
 
             httpClient.getBitmap(imageUrl, new Response<Bitmap>() {
-
                 @Override
                 public void onResponse(Bitmap bitmap) {
                     largeItemIcon = bitmap;
@@ -148,7 +159,6 @@ public class RemotePlayerService extends Service {
                 public void onError(Exception ex) {
                     notifyWithBitmap(handledIntent, null);
                 }
-
             });
         } else {
             notifyWithBitmap(handledIntent, null);
@@ -156,7 +166,6 @@ public class RemotePlayerService extends Service {
     }
 
     private void notifyWithBitmap(Intent handledIntent, Bitmap largeIcon) {
-
         String artist = handledIntent.getStringExtra("artist");
         String album = handledIntent.getStringExtra("artist");
         String title = handledIntent.getStringExtra("title");
@@ -165,9 +174,11 @@ public class RemotePlayerService extends Service {
         boolean canSeek = handledIntent.getBooleanExtra("canSeek", false);
         boolean isLocalPlayer = handledIntent.getBooleanExtra("isLocalPlayer", false);
 
-        if (!mediaSessionMediaId.equals(itemId)) {
+        // system will recognize notification as media playback
+        // show cover art and controls on lock screen
+        if (mediaSessionId == null || !mediaSessionId.equals(itemId)) {
             setMediaSessionMetadata(mediaSession, itemId, artist, album, title, largeIcon);
-            mediaSessionMediaId = itemId;
+            mediaSessionId = itemId;
         }
 
         int position = handledIntent.getIntExtra("position", 0);
@@ -183,6 +194,7 @@ public class RemotePlayerService extends Service {
 
             Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
             intent.setAction(Constants.ACTION_STOP);
+            PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
 
             PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
             stateBuilder.setActiveQueueItemId(MediaSession.QueueItem.UNKNOWN_ID);
@@ -196,20 +208,29 @@ public class RemotePlayerService extends Service {
             }
 
             mediaSession.setPlaybackState(stateBuilder.build());
-
-            PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
             Notification.Builder builder = new Notification.Builder(this)
                     .setContentTitle(title)
                     .setContentText(artist)
+                    .setPriority(Notification.PRIORITY_LOW)
                     .setDeleteIntent(pendingIntent)
                     .setContentIntent(createContentIntent())
                     .setProgress(duration, position, duration == 0)
                     .setStyle(style);
 
-            builder.setOngoing(true);
+            // newer versions of android require notification channel to display
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.setChannelId(channelId);
+                // color notification based on cover art
+                builder.setColorized(true);
+            }
+
+            // swipe to dismiss media
+            builder.setOngoing(false);
+            // dynamic media position
             builder.setShowWhen(true);
             builder.setUsesChronometer(true);
             builder.setWhen(System.currentTimeMillis() - position);
+            // privacy value for lock screen
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
 
             if (largeIcon != null) {
@@ -227,7 +248,7 @@ public class RemotePlayerService extends Service {
 
             try {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.notify(1, builder.build());
+                notificationManager.notify(notifyId, builder.build());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -258,7 +279,7 @@ public class RemotePlayerService extends Service {
 
     private void onStopped() {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(1);
+        notificationManager.cancel(notifyId);
         Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
         stopService(intent);
     }
@@ -266,69 +287,58 @@ public class RemotePlayerService extends Service {
     private Notification.Action generateAction(int icon, String title, String intentAction) {
         Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
         intent.setAction(intentAction);
-        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), notifyId, intent, 0);
         return new Notification.Action(icon, title, pendingIntent);
     }
 
     private void initMediaSessions() {
-        mediaSessionMediaId = "";
-        largeItemIcon = null;
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-            mediaSession = new MediaSession(getApplicationContext(), "sample session");
+            mediaSession = new MediaSession(getApplicationContext(), getClass().toString());
             mediaController = new MediaController(getApplicationContext(), mediaSession.getSessionToken());
-            mediaSession.setActive(true);
-            int flags = MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS;
-            mediaSession.setFlags(flags);
 
+            mediaSession.setActive(true);
+            mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
             mediaSession.setCallback(new Callback() {
                 @Override
                 public void onPlay() {
                     super.onPlay();
-                    Log.i(Constants.LOG_TAG, "onPlay");
                     sendCommand("playpause");
                 }
 
                 @Override
                 public void onPause() {
                     super.onPause();
-                    Log.i(Constants.LOG_TAG, "onPause");
                     sendCommand("playpause");
                 }
 
                 @Override
                 public void onSkipToNext() {
                     super.onSkipToNext();
-                    Log.i(Constants.LOG_TAG, "onSkipToNext");
                     sendCommand("next");
                 }
 
                 @Override
                 public void onSkipToPrevious() {
                     super.onSkipToPrevious();
-                    Log.i(Constants.LOG_TAG, "onSkipToPrevious");
                     sendCommand("previous");
                 }
 
                 @Override
                 public void onFastForward() {
                     super.onFastForward();
-                    Log.i(Constants.LOG_TAG, "onFastForward");
                     sendCommand("fastforward");
                 }
 
                 @Override
                 public void onRewind() {
                     super.onRewind();
-                    Log.i(Constants.LOG_TAG, "onRewind");
                     sendCommand("rewind");
                 }
 
                 @Override
                 public void onStop() {
                     super.onStop();
-                    Log.i(Constants.LOG_TAG, "onStop");
                     sendCommand("stop");
                     onStopped();
                 }
