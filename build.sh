@@ -9,8 +9,8 @@ cd ${SOURCE_DIR}
 
 # Trap cleanup for latter sections
 cleanup() {
-    rm -rf node_modules/ platforms/ plugins/ www/
-    sed -i 's/src/file:src/g' package.json
+    rm -rf platforms/ plugins/ www/
+    rm -rf node_modules/
 }
 trap cleanup EXIT INT
 
@@ -18,12 +18,12 @@ export ANDROID_HOME=${ANDROID_DIR}
 export NODE_ENV=production
 
 npm cache verify
+sed -i 's/"src/"file:src/g' package.json
 npm install
-sed -i 's/file:src/src/g' package.json
+sed -i 's/"file:src/"src/g' package.json
 npx gulp
+npx cordova platform rm android
 npx cordova platform add android
-npx cordova prepare
-
 npx cordova build android --release
 
 mkdir -p ${ARTIFACT_DIR}/apk
