@@ -10,6 +10,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
+import org.jellyfin.mobile.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,6 +28,14 @@ public class NativeShell extends CordovaPlugin {
     public JSONArray args;
 
     public static CordovaWebView cordovaWebView;
+
+    @Override
+    public void pluginInitialize() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
+            cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
+        }
+    }
 
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) {

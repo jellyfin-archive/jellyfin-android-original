@@ -42,5 +42,6 @@
     <resource-file src="res/drawable-xhdpi/ic_notification.png" target="res/drawable-xhdpi/ic_notification.png" />
     <resource-file src="res/drawable-xxhdpi/ic_notification.png" target="res/drawable-xxhdpi/ic_notification.png" />
     <resource-file src="res/drawable-xxxhdpi/ic_notification.png" target="res/drawable-xxxhdpi/ic_notification.png" />
+    <resource-file src="res/values/colors.xml" target="res/values/colors.xml" />
   </platform>
 </plugin>
