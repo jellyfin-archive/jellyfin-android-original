@@ -25,7 +25,8 @@ RUN npm install -g npm@latest
 
 RUN ln -sf ${SOURCE_DIR}/build.sh /build.sh
 
-VOLUME ${SOURCE_DIR}/
 VOLUME ${ARTIFACT_DIR}/
+
+COPY . ${SOURCE_DIR}
 
 ENTRYPOINT ["/build.sh"]
