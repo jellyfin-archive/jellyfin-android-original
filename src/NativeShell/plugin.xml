@@ -27,7 +27,15 @@
     <source-file src="src/logging/LogbackLogger.java" target-dir="src/com/mb/android/logging" />
     <source-file src="src/logging/LogFileFilter.java" target-dir="src/com/mb/android/logging" />
     <source-file src="src/media/RemotePlayerService.java" target-dir="src/com/mb/android/media" />
-    <framework src="src/build.gradle" custom="true" type="gradleReference" />
+    <framework src="com.android.support:support-v4:23.3.0" />
+    <framework src="com.android.support:appcompat-v7:23.3.0" />
+    <framework src="com.android.support:mediarouter-v7:23.3.0" />
+    <framework src="com.squareup.okhttp:okhttp:2.7.0" />
+    <framework src="org.slf4j:slf4j-api:1.7.13" />
+    <framework src="com.github.tony19:logback-android-core:1.1.1-4" />
+    <framework src="com.github.tony19:logback-android-classic:1.1.1-4" />
+    <framework src="com.mcxiaoke.volley:library:1.0.19" />
+    <framework src="com.squareup.okhttp:okhttp-urlconnection:2+" />
     <resource-file src="res/drawable-hdpi/ic_notification.png" target="res/drawable-hdpi/ic_notification.png" />
     <resource-file src="res/drawable-ldpi/ic_notification.png" target="res/drawable-ldpi/ic_notification.png" />
     <resource-file src="res/drawable-mdpi/ic_notification.png" target="res/drawable-mdpi/ic_notification.png" />
