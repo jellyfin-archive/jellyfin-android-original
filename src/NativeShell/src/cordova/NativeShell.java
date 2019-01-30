@@ -31,10 +31,15 @@ public class NativeShell extends CordovaPlugin {
 
     @Override
     public void pluginInitialize() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
-            cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
-        }
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
+                    cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
+                }
+            }
+        });
     }
 
     @Override
