@@ -27,7 +27,12 @@ else
 fi
 
 pushd src/jellyfin-web
+git fetch --all
 git checkout ${web_branch} || usage
+popd
+pushd src/cordova-plugin-chromecast
+git fetch --all
+git checkout master
 popd
 
 set -o xtrace
@@ -36,8 +41,7 @@ current_user="$( whoami )"
 
 # Trap cleanup for latter sections
 cleanup() {
-    set +o errexit
-    docker image rm ${image_name} --force
+    # Remove tempdir
     rm -rf "${package_temporary_dir}"
 }
 trap cleanup EXIT INT
