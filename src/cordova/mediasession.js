@@ -136,7 +136,19 @@
             }
         }
 
-        MainActivity.updateMediaSession(eventName, isLocalPlayer, itemId, title, artist, album, parseInt(duration), parseInt(position), url, canSeek, isPaused);
+        var options = {};
+        options.action = eventName;
+        options.isLocalPlayer = isLocalPlayer;
+        options.itemId = itemId
+        options.title = title
+        options.artist = artist
+        options.album = album
+        options.duration = parseInt(duration)
+        options.position = parseInt(position)
+        options.imageUrl = url
+        options.canSeek = canSeek
+        options.isPaused = isPaused
+        window.NativeShell.updateMediaSession(function() {}, function() {}, options);
         lastUpdateTime = now;
     }
 
@@ -186,7 +198,7 @@
     }
 
     function hideMediaControls() {
-        MainActivity.hideMediaSession();
+        window.NativeShell.hideMediaSession(function() {}, function() {});
         lastUpdateTime = 0;
     }
 
