@@ -11,10 +11,10 @@ define([], function () {
             return Promise.reject();
         },
         enableFullscreen: function () {
-            MainActivity.enableFullscreen();
+            window.NativeShell.enableFullscreen(function() {}, function() {});
         },
         disableFullscreen: function () {
-            MainActivity.disableFullscreen();
+            window.NativeShell.disableFullscreen(function() {}, function() {});
         }
     };
 });
