@@ -235,6 +235,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
             return new Promise(function(resolve) {
                 document.addEventListener("deviceready", function () {
                     window.NativeShell.getDeviceInformation(function(result) {
+                        // set globally so they can be used elsewhere
                         deviceId = result.deviceId;
                         deviceName = result.deviceName;
                         appName = result.appName;

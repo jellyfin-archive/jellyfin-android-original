@@ -12,19 +12,7 @@ NativeShell.prototype.disableFullscreen = function(successCallback, errorCallbac
   cordova.exec(successCallback, errorCallback, 'NativeShell', 'disableFulsceeen', []);
 }
 
-NativeShell.prototype.updateMediaSession = function(successCallback, errorCallback, action, isLocalPlayer, itemId, title, artist, album, duration, position, imageUrl, canSeek, isPaused) {
-  var options = {};
-  options.action = action;
-  options.isLocalPlayer = isLocalPlayer;
-  options.itemId = itemId
-  options.title = title
-  options.artist = artist
-  options.album = album
-  options.duration = duration
-  options.position = position
-  options.imageUrl = imageUrl
-  options.canSeek = canSeek
-  options.isPaused = isPaused
+NativeShell.prototype.updateMediaSession = function(successCallback, errorCallback, options) {
   cordova.exec(successCallback, errorCallback, 'NativeShell', 'updateMediaSession', [options]);
 }
 

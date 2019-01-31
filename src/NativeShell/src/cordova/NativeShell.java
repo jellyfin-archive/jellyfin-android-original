@@ -35,8 +35,8 @@ public class NativeShell extends CordovaPlugin {
             @Override
             public void run() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
-                    cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(R.color.gray));
+                    cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
+                    cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                 }
             }
         });
@@ -49,7 +49,7 @@ public class NativeShell extends CordovaPlugin {
 
         cordovaWebView = webView;
         switch (action) {
-            case "getDeviceInformation":    
+            case "getDeviceInformation":
                 return getDeviceInformation();
             case "enableFullscreen":
                 return enableFullscreen();
@@ -60,7 +60,7 @@ public class NativeShell extends CordovaPlugin {
             case "hideMediaSession":
                 return hideMediaSession();
             default:
-                callbackContext.error("unrecognized: " + action);
+                callbackContext.error("error: unrecognized action: " + action);
                 return false;
         }
     }
@@ -79,7 +79,7 @@ public class NativeShell extends CordovaPlugin {
             jsonObject.put("appName", appName);
             jsonObject.put("appVersion", appVersion);
         } catch(Exception e) {
-            callbackContext.error("error: " + e.getMessage());
+            callbackContext.error("error: getDeviceInformation: " + e.getMessage());
             return false;
         }
 
@@ -120,19 +120,9 @@ public class NativeShell extends CordovaPlugin {
     }
 
     public boolean updateMediaSession() {
-        String action;
-        String itemId;
-        String title;
-        String artist;
-        String album;
-        String imageUrl;
-
-        int duration;
-        int position;
-
-        boolean canSeek;
-        boolean isPaused;
-        boolean isLocalPlayer;
+        String action, itemId, title, artist, album, imageUrl;
+        int duration, position;
+        boolean canSeek, isPaused, isLocalPlayer;
         try {
             JSONObject options = args.getJSONObject(0);
             action = options.getString("action");
@@ -149,7 +139,7 @@ public class NativeShell extends CordovaPlugin {
             isPaused = options.getBoolean("isPaused");
             isLocalPlayer = options.getBoolean("isLocalPlayer");
         } catch (Exception e) {
-            callbackContext.error("error: " + e.getMessage());
+            callbackContext.error("error: updateMediaSession: " + e.getMessage());
             return false;
         }
 

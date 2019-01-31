@@ -48,9 +48,9 @@ public class RemotePlayerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            channelId = "Channel";
-            String name = "Name";
-            String description = "Description";
+            channelId = "JellyfinChannelId";
+            String name = "JellyfinChannelName";
+            String description = "JellyfinChannelDescription";
             int importance = NotificationManager.IMPORTANCE_LOW;
 
             NotificationChannel notificationChannel = new NotificationChannel(channelId, name, importance);
