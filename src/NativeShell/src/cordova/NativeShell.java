@@ -13,10 +13,13 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
+import org.apache.cordova.engine.SystemWebView;
+import org.apache.cordova.engine.SystemWebViewEngine;
 import org.jellyfin.mobile.BuildConfig;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.mb.android.web.CustomWebViewClient;
 import com.mb.android.media.RemotePlayerService;
 
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
@@ -28,28 +31,39 @@ import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 import static android.view.View.SYSTEM_UI_FLAG_VISIBLE;
 
 public class NativeShell extends CordovaPlugin {
-    public CallbackContext callbackContext;
-    public JSONArray args;
-
     public static CordovaWebView cordovaWebView;
+
+    private CallbackContext callbackContext;
+    private JSONArray args;
 
     @Override
     public void pluginInitialize() {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                // use custom WebView client to handle invalid SSL certificates
+                if (webView instanceof SystemWebView) {
+                    SystemWebView systemWebView = (SystemWebView) webView;
+                    SystemWebViewEngine engine =  new SystemWebViewEngine(new SystemWebView(cordova.getActivity()), preferences);
+                    systemWebView.setWebViewClient(new CustomWebViewClient(cordova.getActivity(), engine));
+                }
+                // theme the system bars so that all models use the same color
+                // several manufacturers style the navigation bar differently
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                     cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                 }
+                // ask for battery optimizations on new phones
+                // we can only send users to the settings page and not request it directly
+                // google play prohibits asking directly except under a select few conditions
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     PowerManager powerManager = (PowerManager) cordova.getActivity().getSystemService(Context.POWER_SERVICE);
                     if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
                         builder.setTitle("Disable Battery Optimizations");
                         builder.setMessage("Please disable battery optimizations for media playback while the screen is off.");
-                        builder.setNegativeButton(android.R.string.no, null);
-                        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton(android.R.string.ok, null);
+                        builder.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
@@ -90,7 +104,7 @@ public class NativeShell extends CordovaPlugin {
         }
     }
 
-    public boolean getDeviceInformation() {
+    private boolean getDeviceInformation() {
         // replace this later with a randomly generated persistent string stored in local settings
         String deviceId =  Settings.Secure.getString(cordova.getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceName = Build.MODEL;
@@ -113,7 +127,7 @@ public class NativeShell extends CordovaPlugin {
         return true;
     }
 
-    public boolean enableFullscreen() {
+    private boolean enableFullscreen() {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -130,7 +144,7 @@ public class NativeShell extends CordovaPlugin {
         return true;
     }
 
-    public boolean disableFullscreen() {
+    private boolean disableFullscreen() {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -144,7 +158,7 @@ public class NativeShell extends CordovaPlugin {
         return true;
     }
 
-    public boolean updateMediaSession() {
+    private boolean updateMediaSession() {
         String action, itemId, title, artist, album, imageUrl;
         int duration, position;
         boolean canSeek, isPaused, isLocalPlayer;
@@ -189,7 +203,7 @@ public class NativeShell extends CordovaPlugin {
         return true;
     }
 
-    public boolean hideMediaSession() {
+    private boolean hideMediaSession() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Intent intent = new Intent(cordova.getActivity(), RemotePlayerService.class);
             intent.setAction(Constants.ACTION_REPORT);
