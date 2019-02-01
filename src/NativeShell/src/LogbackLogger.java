@@ -1,4 +1,4 @@
-package com.mb.android.logging;
+package org.jellyfin.mobile;
 
 import mediabrowser.model.logging.ILogger;
 

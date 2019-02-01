@@ -1,4 +1,4 @@
-package org.jellyfin.cordova;
+package org.jellyfin.mobile;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,12 +15,8 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.engine.SystemWebView;
 import org.apache.cordova.engine.SystemWebViewEngine;
-import org.jellyfin.mobile.BuildConfig;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import com.mb.android.web.CustomWebViewClient;
-import com.mb.android.media.RemotePlayerService;
 
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 
@@ -44,7 +40,7 @@ public class NativeShell extends CordovaPlugin {
                 // use custom WebView client to handle invalid SSL certificates
                 if (webView instanceof SystemWebView) {
                     SystemWebView systemWebView = (SystemWebView) webView;
-                    SystemWebViewEngine engine =  new SystemWebViewEngine(new SystemWebView(cordova.getActivity()), preferences);
+                    SystemWebViewEngine engine = new SystemWebViewEngine(new SystemWebView(cordova.getActivity()), preferences);
                     systemWebView.setWebViewClient(new CustomWebViewClient(cordova.getActivity(), engine));
                 }
                 // theme the system bars so that all models use the same color
@@ -106,7 +102,7 @@ public class NativeShell extends CordovaPlugin {
 
     private boolean getDeviceInformation() {
         // replace this later with a randomly generated persistent string stored in local settings
-        String deviceId =  Settings.Secure.getString(cordova.getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
+        String deviceId = Settings.Secure.getString(cordova.getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceName = Build.MODEL;
         String appName = "Jellyfin Mobile";
         String appVersion = Integer.toString(BuildConfig.VERSION_CODE);
@@ -117,7 +113,7 @@ public class NativeShell extends CordovaPlugin {
             jsonObject.put("deviceName", deviceName);
             jsonObject.put("appName", appName);
             jsonObject.put("appVersion", appVersion);
-        } catch(Exception e) {
+        } catch (Exception e) {
             callbackContext.error("error: getDeviceInformation: " + e.getMessage());
             return false;
         }
