@@ -22,7 +22,6 @@
     <source-file src="libs/apiclient.jar" target-dir="libs" />
     <source-file src="src/build-extras.gradle" target-dir="." />
     <source-file src="src/cordova/NativeShell.java" target-dir="src/org/jellyfin/cordova" />
-    <source-file src="src/api/ApiClientBridge.java" target-dir="src/com/mb/android/api" />
     <source-file src="src/logging/AppLogger.java" target-dir="src/com/mb/android/logging" />
     <source-file src="src/logging/LogbackLogger.java" target-dir="src/com/mb/android/logging" />
     <source-file src="src/logging/LogFileFilter.java" target-dir="src/com/mb/android/logging" />
