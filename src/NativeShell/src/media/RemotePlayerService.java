@@ -136,7 +136,7 @@ public class RemotePlayerService extends Service {
         }
 
         if (imageUrl != null && imageUrl.length() > 0) {
-            ILogger logger = AppLogger.getLogger(getApplicationContext());
+            ILogger logger = AppLogger.getLogger();
             if (httpClient == null) {
                 httpClient = new VolleyHttpClient(logger, getApplicationContext());
             }
