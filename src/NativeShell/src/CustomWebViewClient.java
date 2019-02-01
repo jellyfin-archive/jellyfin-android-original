@@ -1,4 +1,4 @@
-package com.mb.android.web;
+package org.jellyfin.mobile;
 
 import android.app.AlertDialog;
 import android.content.Context;

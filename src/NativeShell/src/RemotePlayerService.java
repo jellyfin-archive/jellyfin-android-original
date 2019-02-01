@@ -1,4 +1,4 @@
-package com.mb.android.media;
+package org.jellyfin.mobile;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,12 +17,6 @@ import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
-
-import com.mb.android.logging.AppLogger;
-
-import org.jellyfin.mobile.MainActivity;
-import org.jellyfin.mobile.R;
-import org.jellyfin.cordova.NativeShell;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
