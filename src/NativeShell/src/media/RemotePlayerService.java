@@ -18,7 +18,6 @@ import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
 
-import com.mb.android.api.ApiClientBridge;
 import com.mb.android.logging.AppLogger;
 
 import org.jellyfin.mobile.MainActivity;
@@ -31,7 +30,6 @@ import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.model.logging.ILogger;
 
 public class RemotePlayerService extends Service {
-    private ApiClientBridge apiClientBridge;
     private VolleyHttpClient httpClient;
     private MediaController mediaController;
     private MediaSessionManager mediaSessionManager;
@@ -44,7 +42,6 @@ public class RemotePlayerService extends Service {
 
     @Override
     public void onCreate() {
-        apiClientBridge = new ApiClientBridge(getApplicationContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -139,10 +136,6 @@ public class RemotePlayerService extends Service {
         }
 
         if (imageUrl != null && imageUrl.length() > 0) {
-            if (apiClientBridge.httpClient != null) {
-                httpClient = apiClientBridge.httpClient;
-            }
-
             ILogger logger = AppLogger.getLogger(getApplicationContext());
             if (httpClient == null) {
                 httpClient = new VolleyHttpClient(logger, getApplicationContext());
