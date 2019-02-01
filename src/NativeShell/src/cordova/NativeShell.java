@@ -1,6 +1,10 @@
 package org.jellyfin.cordova;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.content.Intent;
 import android.support.v7.appcompat.BuildConfig;
@@ -18,6 +22,7 @@ import com.mb.android.media.RemotePlayerService;
 
 import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 
+import static android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS;
 import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
 import static android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
@@ -37,6 +42,27 @@ public class NativeShell extends CordovaPlugin {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                     cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PowerManager powerManager = (PowerManager) cordova.getActivity().getSystemService(Context.POWER_SERVICE);
+                    if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
+                        builder.setTitle("Disable Battery Optimizations");
+                        builder.setMessage("Please disable battery optimizations for media playback while the screen is off.");
+                        builder.setNegativeButton(android.R.string.no, null);
+                        builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    Intent intent = new Intent(ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                                    cordova.getActivity().startActivity(intent);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        builder.show();
+                    }
                 }
             }
         });
