@@ -17,7 +17,6 @@ import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.PowerManager;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
@@ -187,10 +186,6 @@ public class RemotePlayerService extends Service {
             Notification.MediaStyle style = new Notification.MediaStyle();
             style.setMediaSession(mediaSession.getSessionToken());
 
-            Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
-            intent.setAction(Constants.ACTION_STOP);
-            PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-
             PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
             stateBuilder.setActiveQueueItemId(MediaSession.QueueItem.UNKNOWN_ID);
             long actions = PlaybackState.ACTION_PLAY_PAUSE | PlaybackState.ACTION_STOP | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS | PlaybackState.ACTION_SEEK_TO | PlaybackState.ACTION_SET_RATING;
@@ -207,7 +202,7 @@ public class RemotePlayerService extends Service {
                     .setContentTitle(title)
                     .setContentText(artist)
                     .setPriority(Notification.PRIORITY_LOW)
-                    .setDeleteIntent(pendingIntent)
+                    .setDeleteIntent(createDeleteIntent())
                     .setContentIntent(createContentIntent())
                     .setProgress(duration, position, duration == 0)
                     .setStyle(style);
@@ -248,6 +243,12 @@ public class RemotePlayerService extends Service {
                 e.printStackTrace();
             }
         }
+    }
+
+    private PendingIntent createDeleteIntent() {
+        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
+        intent.setAction(Constants.ACTION_STOP);
+        return PendingIntent.getService(getApplicationContext(), 1, intent, 0);
     }
 
     private PendingIntent createContentIntent() {
