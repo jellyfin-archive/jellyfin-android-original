@@ -17,6 +17,7 @@ import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
@@ -92,9 +93,16 @@ public class RemotePlayerService extends Service {
             switch (action) {
                 case Constants.ACTION_PLAY:
                     mediaController.getTransportControls().play();
+                    // background playback for an hour
+                    if (NativeShell.wakeLock != null && !NativeShell.wakeLock.isHeld()) {
+                        NativeShell.wakeLock.acquire(36000000);
+                    }
                     break;
                 case Constants.ACTION_PAUSE:
                     mediaController.getTransportControls().pause();
+                    if (NativeShell.wakeLock != null && NativeShell.wakeLock.isHeld()) {
+                        NativeShell.wakeLock.release();
+                    }
                     break;
                 case Constants.ACTION_FAST_FORWARD:
                     mediaController.getTransportControls().fastForward();
@@ -249,6 +257,13 @@ public class RemotePlayerService extends Service {
         return PendingIntent.getActivity(this, 100, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
+    private Notification.Action generateAction(int icon, String title, String intentAction) {
+        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
+        intent.setAction(intentAction);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), notifyId, intent, 0);
+        return new Notification.Action(icon, title, pendingIntent);
+    }
+
     private void setMediaSessionMetadata(MediaSession mediaSession, String itemId, String artist, String album, String title, Bitmap largeIcon) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
@@ -265,17 +280,13 @@ public class RemotePlayerService extends Service {
     }
 
     private void onStopped() {
+        if (NativeShell.wakeLock != null && NativeShell.wakeLock.isHeld()) {
+            NativeShell.wakeLock.release();
+        }
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(notifyId);
         Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
         stopService(intent);
-    }
-
-    private Notification.Action generateAction(int icon, String title, String intentAction) {
-        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
-        intent.setAction(intentAction);
-        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), notifyId, intent, 0);
-        return new Notification.Action(icon, title, pendingIntent);
     }
 
     private void initMediaSessions() {
