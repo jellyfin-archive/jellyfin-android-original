@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <plugin xmlns="http://phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="org.jellyfin.cordova"
+    id="org.jellyfin.mobile"
     version="1.0.0">
   <engines>
     <engine name="cordova" version=">=7.0.0" />
@@ -13,27 +13,21 @@
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="NativeShell">
-        <param name="android-package" value="org.jellyfin.cordova.NativeShell"/>
+        <param name="android-package" value="org.jellyfin.mobile.NativeShell"/>
       </feature>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
-      <service android:name="com.mb.android.media.RemotePlayerService" />
+      <service android:name="org.jellyfin.mobile.RemotePlayerService" />
     </config-file>
     <source-file src="libs/apiclient.jar" target-dir="libs" />
     <source-file src="src/build-extras.gradle" target-dir="." />
-    <source-file src="src/cordova/NativeShell.java" target-dir="src/org/jellyfin/cordova" />
-    <source-file src="src/api/ApiClientBridge.java" target-dir="src/com/mb/android/api" />
-    <source-file src="src/logging/AppLogger.java" target-dir="src/com/mb/android/logging" />
-    <source-file src="src/logging/LogbackLogger.java" target-dir="src/com/mb/android/logging" />
-    <source-file src="src/logging/LogFileFilter.java" target-dir="src/com/mb/android/logging" />
-    <source-file src="src/media/RemotePlayerService.java" target-dir="src/com/mb/android/media" />
+    <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
+    <source-file src="src/AppLogger.java" target-dir="src/org/jellyfin/mobile" />
+    <source-file src="src/LogbackLogger.java" target-dir="src/org/jellyfin/mobile" />
+    <source-file src="src/RemotePlayerService.java" target-dir="src/org/jellyfin/mobile" />
+    <source-file src="src/CustomWebViewClient.java" target-dir="src/org/jellyfin/mobile" />
     <framework src="com.android.support:support-v4:23.3.0" />
-    <framework src="com.android.support:appcompat-v7:23.3.0" />
-    <framework src="com.android.support:mediarouter-v7:23.3.0" />
     <framework src="com.squareup.okhttp:okhttp:2.7.0" />
-    <framework src="org.slf4j:slf4j-api:1.7.13" />
-    <framework src="com.github.tony19:logback-android-core:1.1.1-4" />
-    <framework src="com.github.tony19:logback-android-classic:1.1.1-4" />
     <framework src="com.mcxiaoke.volley:library:1.0.19" />
     <framework src="com.squareup.okhttp:okhttp-urlconnection:2+" />
     <resource-file src="res/drawable-hdpi/ic_notification.png" target="res/drawable-hdpi/ic_notification.png" />
