@@ -22,13 +22,13 @@
     "gulp-dom": "^1.0.0",
     "gulp-if": "^2.0.2",
     "gulp-uglify": "^3.0.1",
-    "org.jellyfin.cordova": "file:src/NativeShell"
+    "org.jellyfin.mobile": "file:src/NativeShell"
   },
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
       "acidhax.cordova.chromecast": {},
-      "org.jellyfin.cordova": {}
+      "org.jellyfin.mobile": {}
     },
     "platforms": [
       "android"
