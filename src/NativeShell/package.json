@@ -1,5 +1,5 @@
 {
-  "name": "org.jellyfin.cordova",
+  "name": "org.jellyfin.mobile",
   "version": "1.0.0",
   "main": "nativeshell.js",
   "scripts": {
