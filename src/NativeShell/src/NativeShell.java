@@ -56,6 +56,7 @@ public class NativeShell extends CordovaPlugin {
                     PowerManager powerManager = (PowerManager) cordova.getActivity().getSystemService(Context.POWER_SERVICE);
                     if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
+                        // TODO translate these strings
                         builder.setTitle("Disable Battery Optimizations");
                         builder.setMessage("Please disable battery optimizations for media playback while the screen is off.");
                         builder.setNegativeButton(android.R.string.cancel, null);
