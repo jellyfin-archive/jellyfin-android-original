@@ -58,8 +58,8 @@ public class NativeShell extends CordovaPlugin {
                         AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
                         builder.setTitle("Disable Battery Optimizations");
                         builder.setMessage("Please disable battery optimizations for media playback while the screen is off.");
-                        builder.setNegativeButton(android.R.string.ok, null);
-                        builder.setPositiveButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        builder.setNegativeButton(android.R.string.cancel, null);
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
