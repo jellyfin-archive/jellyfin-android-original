@@ -1,6 +1,7 @@
-.git
+.git*
 .dockerignore
 Dockerfile
-docker-build.sh
+build
+new-file-header.txt
 CONTRIBUTORS.md
 README.md
