@@ -57,10 +57,7 @@ public class RemotePlayerService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mediaSession.release();
-            onStopped();
-        }
+        onStopped();
         return super.onUnbind(intent);
     }
 
@@ -79,6 +76,18 @@ public class RemotePlayerService extends Service {
         NativeShell.cordovaWebView.loadUrlIntoView(url, false);
     }
 
+    private void startWakelock() {
+        if (NativeShell.wakeLock != null && !NativeShell.wakeLock.isHeld()) {
+            NativeShell.wakeLock.acquire();
+        }
+    }
+
+    private void stopWakelock() {
+        if (NativeShell.wakeLock != null && NativeShell.wakeLock.isHeld()) {
+            NativeShell.wakeLock.release();
+        }
+    }
+
     private void handleIntent(Intent intent) {
         if (intent == null || intent.getAction() == null) return;
         String action = intent.getAction();
@@ -92,16 +101,11 @@ public class RemotePlayerService extends Service {
             switch (action) {
                 case Constants.ACTION_PLAY:
                     mediaController.getTransportControls().play();
-                    // background playback for an hour
-                    if (NativeShell.wakeLock != null && !NativeShell.wakeLock.isHeld()) {
-                        NativeShell.wakeLock.acquire(36000000);
-                    }
+                    startWakelock();
                     break;
                 case Constants.ACTION_PAUSE:
                     mediaController.getTransportControls().pause();
-                    if (NativeShell.wakeLock != null && NativeShell.wakeLock.isHeld()) {
-                        NativeShell.wakeLock.release();
-                    }
+                    stopWakelock();
                     break;
                 case Constants.ACTION_FAST_FORWARD:
                     mediaController.getTransportControls().fastForward();
@@ -185,6 +189,7 @@ public class RemotePlayerService extends Service {
 
             Notification.MediaStyle style = new Notification.MediaStyle();
             style.setMediaSession(mediaSession.getSessionToken());
+            style.setShowActionsInCompactView(0, 2, 4);
 
             PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
             stateBuilder.setActiveQueueItemId(MediaSession.QueueItem.UNKNOWN_ID);
@@ -281,12 +286,13 @@ public class RemotePlayerService extends Service {
     }
 
     private void onStopped() {
-        if (NativeShell.wakeLock != null && NativeShell.wakeLock.isHeld()) {
-            NativeShell.wakeLock.release();
-        }
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(notifyId);
         Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mediaSession.release();
+        }
+        stopWakelock();
         stopService(intent);
     }
 
