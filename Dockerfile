@@ -21,7 +21,7 @@ RUN rm -rf ${ANDROID_DIR}/tools \
  && rm -f tools.zip
 
 # Install SDK tools
-# `yes` is equired to accept licenses:
+# `yes` is required to accept licenses:
 # https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences/42125740#42125740
 # There will be a bit of delay (approx 30 seconds)
 RUN yes | ${ANDROID_DIR}/tools/bin/sdkmanager "platform-tools" "platforms;android-27" "build-tools;27.0.3" "extras;android;m2repository" "extras;google;m2repository"
