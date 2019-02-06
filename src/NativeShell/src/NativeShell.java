@@ -28,6 +28,7 @@ import static android.view.View.SYSTEM_UI_FLAG_VISIBLE;
 
 public class NativeShell extends CordovaPlugin {
     public static CordovaWebView cordovaWebView;
+    public static PowerManager.WakeLock wakeLock;
 
     private CallbackContext callbackContext;
     private JSONArray args;
@@ -52,8 +53,9 @@ public class NativeShell extends CordovaPlugin {
                 // ask for battery optimizations on new phones
                 // we can only send users to the settings page and not request it directly
                 // google play prohibits asking directly except under a select few conditions
+                PowerManager powerManager = (PowerManager) cordova.getActivity().getSystemService(Context.POWER_SERVICE);
+                wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Jellyfin:WakeLock");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PowerManager powerManager = (PowerManager) cordova.getActivity().getSystemService(Context.POWER_SERVICE);
                     if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
                         // TODO translate these strings

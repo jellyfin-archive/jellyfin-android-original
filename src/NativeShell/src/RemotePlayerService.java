@@ -57,10 +57,7 @@ public class RemotePlayerService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mediaSession.release();
-            onStopped();
-        }
+        onStopped();
         return super.onUnbind(intent);
     }
 
@@ -79,6 +76,18 @@ public class RemotePlayerService extends Service {
         NativeShell.cordovaWebView.loadUrlIntoView(url, false);
     }
 
+    private void startWakelock() {
+        if (NativeShell.wakeLock != null && !NativeShell.wakeLock.isHeld()) {
+            NativeShell.wakeLock.acquire();
+        }
+    }
+
+    private void stopWakelock() {
+        if (NativeShell.wakeLock != null && NativeShell.wakeLock.isHeld()) {
+            NativeShell.wakeLock.release();
+        }
+    }
+
     private void handleIntent(Intent intent) {
         if (intent == null || intent.getAction() == null) return;
         String action = intent.getAction();
@@ -92,9 +101,11 @@ public class RemotePlayerService extends Service {
             switch (action) {
                 case Constants.ACTION_PLAY:
                     mediaController.getTransportControls().play();
+                    startWakelock();
                     break;
                 case Constants.ACTION_PAUSE:
                     mediaController.getTransportControls().pause();
+                    stopWakelock();
                     break;
                 case Constants.ACTION_FAST_FORWARD:
                     mediaController.getTransportControls().fastForward();
@@ -178,10 +189,7 @@ public class RemotePlayerService extends Service {
 
             Notification.MediaStyle style = new Notification.MediaStyle();
             style.setMediaSession(mediaSession.getSessionToken());
-
-            Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
-            intent.setAction(Constants.ACTION_STOP);
-            PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+            style.setShowActionsInCompactView(0, 2, 4);
 
             PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
             stateBuilder.setActiveQueueItemId(MediaSession.QueueItem.UNKNOWN_ID);
@@ -199,7 +207,7 @@ public class RemotePlayerService extends Service {
                     .setContentTitle(title)
                     .setContentText(artist)
                     .setPriority(Notification.PRIORITY_LOW)
-                    .setDeleteIntent(pendingIntent)
+                    .setDeleteIntent(createDeleteIntent())
                     .setContentIntent(createContentIntent())
                     .setProgress(duration, position, duration == 0)
                     .setStyle(style);
@@ -242,11 +250,24 @@ public class RemotePlayerService extends Service {
         }
     }
 
+    private PendingIntent createDeleteIntent() {
+        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
+        intent.setAction(Constants.ACTION_STOP);
+        return PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+    }
+
     private PendingIntent createContentIntent() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.setAction(Constants.ACTION_SHOW_PLAYER);
         return PendingIntent.getActivity(this, 100, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private Notification.Action generateAction(int icon, String title, String intentAction) {
+        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
+        intent.setAction(intentAction);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), notifyId, intent, 0);
+        return new Notification.Action(icon, title, pendingIntent);
     }
 
     private void setMediaSessionMetadata(MediaSession mediaSession, String itemId, String artist, String album, String title, Bitmap largeIcon) {
@@ -268,14 +289,11 @@ public class RemotePlayerService extends Service {
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(notifyId);
         Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mediaSession.release();
+        }
+        stopWakelock();
         stopService(intent);
-    }
-
-    private Notification.Action generateAction(int icon, String title, String intentAction) {
-        Intent intent = new Intent(getApplicationContext(), RemotePlayerService.class);
-        intent.setAction(intentAction);
-        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), notifyId, intent, 0);
-        return new Notification.Action(icon, title, pendingIntent);
     }
 
     private void initMediaSessions() {
