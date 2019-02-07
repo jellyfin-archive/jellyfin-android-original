@@ -18,7 +18,7 @@ case ${RELEASE} in
         RFLAG="--release"
     ;;
     'debug')
-        RELEASE_SUFFIX="debug_"
+        RELEASE_SUFFIX=""
         NODE_ENV="development"
         RFLAG=""
     ;;
