@@ -3,7 +3,8 @@
  - [nvllsvm](https://github.com/nvllsvm)
  - [thornbill](https://github.com/thornbill)
  - [dkanada](https://github.com/dkanada)
-
+ - [grafixeyehero](https://github.com/grafixeyehero)
+ 
 # Emby Contributors
 
 - [LukePulverenti](https://github.com/LukePulverenti)
