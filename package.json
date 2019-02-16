@@ -11,7 +11,6 @@
   },
   "license": "GPL-2.0-only",
   "dependencies": {
-    "acidhax.cordova.chromecast": "file:src/cordova-plugin-chromecast",
     "acorn": "^6.0.5",
     "cordova": "^7.1.0",
     "cordova-android": "^6.3.0",
@@ -21,8 +20,7 @@
     "gulp-clean-css": "^4.0.0",
     "gulp-dom": "^1.0.0",
     "gulp-if": "^2.0.2",
-    "gulp-uglify": "^3.0.1",
-    "org.jellyfin.mobile": "file:src/NativeShell"
+    "gulp-uglify": "^3.0.1"
   },
   "cordova": {
     "plugins": {
