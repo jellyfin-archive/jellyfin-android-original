@@ -7,9 +7,6 @@ set -o errexit
 dockerfile="Dockerfile"
 image_name="jellyfin-android-apkbuild"
 
-# Initialize the submodules
-git submodule update --init
-
 usage() {
     echo -e "Usage:"
     echo -e " $0 [-r/--release <release>] [-b/--web-branch <web_branch>]"
@@ -30,26 +27,21 @@ else
     release="production"
 fi
 
-# Check out the proper jellyfin-web branch
+# Check out the proper jellyfin-web branch or update submodule
 if [[ ${1} == '--web-branch' || ${1} == '-b' ]]; then
     if [[ -n ${2} ]]; then
-        web_branch="${2}"
+        pushd src/jellyfin-web
+        git fetch --all
+        git checkout ${2} || usage
+        popd
         shift 2
     else
         usage
     fi
 else
-    web_branch="origin/master"
+    # Initialize the submodule jellyfin-web with the most branch master
+    git submodule update --init --remote
 fi
-
-pushd src/jellyfin-web
-git fetch --all
-git checkout ${web_branch} || usage
-popd
-pushd src/cordova-plugin-chromecast
-git fetch --all
-git checkout master
-popd
 
 set -o xtrace
 package_temporary_dir="$( mktemp -d )"
