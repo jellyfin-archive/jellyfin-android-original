@@ -2,3 +2,4 @@
 	path = src/jellyfin-web
 	url = https://github.com/jellyfin/jellyfin-web.git
 	branch = master
+	
