@@ -227,7 +227,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
         moreIcon: 'dots-vert',
         getSyncProfile: getDeviceProfile,
         getDefaultLayout: function() {
-            // FIXME: Needs Implementation!
+            return 'mobile';
         },
         getDeviceProfile: function() {
             return getDeviceProfile();
