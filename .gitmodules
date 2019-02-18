@@ -1,6 +1,5 @@
 [submodule "src/jellyfin-web"]
 	path = src/jellyfin-web
 	url = https://github.com/jellyfin/jellyfin-web.git
-[submodule "src/cordova-plugin-chromecast"]
-	path = src/cordova-plugin-chromecast
-	url = https://github.com/jellyfin/cordova-plugin-chromecast.git
+	branch = master
+	
