@@ -4,6 +4,7 @@
  - [thornbill](https://github.com/thornbill)
  - [dkanada](https://github.com/dkanada)
  - [grafixeyehero](https://github.com/grafixeyehero)
+ - [vitorsemeano](https://github.com/vitorsemeano)
  
 # Emby Contributors
 
