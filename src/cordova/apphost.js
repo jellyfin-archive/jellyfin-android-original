@@ -25,8 +25,7 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
 
             require(['browserdeviceprofile'], function (profileBuilder) {
 
-                var profile = profileBuilder({
-                });
+                var profile = profileBuilder();
 
                 profile.DirectPlayProfiles.push({
                     // TODO investigate ac3 support
@@ -39,75 +38,16 @@ define(['appStorage', 'browser'], function (appStorage, browser) {
                     return i.Type == 'Audio';
                 });
 
-                profile.SubtitleProfiles = [];
-                profile.SubtitleProfiles.push({
-                    Format: 'srt',
-                    Method: 'External'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'ssa',
-                    Method: 'External'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'ass',
-                    Method: 'External'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'srt',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'subrip',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'ass',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'ssa',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'dvb_teletext',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'dvb_subtitle',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'dvbsub',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'pgs',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'pgssub',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'dvdsub',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'vtt',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'sub',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'idx',
-                    Method: 'Embed'
-                });
-                profile.SubtitleProfiles.push({
-                    Format: 'smi',
-                    Method: 'Embed'
-                });
+                profile.SubtitleProfiles.push(
+                    {
+                        Format: 'ssa',
+                        Method: 'External'
+                    },
+                    {
+                        Format: 'ass',
+                        Method: 'External'
+                    }
+                );
 
                 profile.CodecProfiles.push({
                     Type: 'Video',
