@@ -20,7 +20,7 @@
     <icon src="res/icon.png" />
     <platform name="android">
         <preference name="android-minSdkVersion" value="19" />
-        <preference name="android-targetSdkVersion" value="27" />
+        <preference name="android-targetSdkVersion" value="28" />
         <preference name="BackgroundColor" value="0x00000000" />
         <icon density="ldpi" src="res/android/ldpi/icon.png" />
         <icon density="mdpi" src="res/android/mdpi/icon.png" />
