@@ -20,7 +20,6 @@ import android.os.IBinder;
 
 import mediabrowser.apiinteraction.Response;
 import mediabrowser.apiinteraction.android.VolleyHttpClient;
-import mediabrowser.apiinteraction.android.mediabrowser.Constants;
 import mediabrowser.model.logging.ILogger;
 
 public class RemotePlayerService extends Service {

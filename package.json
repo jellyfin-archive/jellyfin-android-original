@@ -12,8 +12,9 @@
   "license": "GPL-2.0-only",
   "dependencies": {
     "acorn": "^6.0.5",
-    "cordova": "^7.1.0",
-    "cordova-android": "^6.3.0",
+    "cordova": "^8.1.1",
+    "cordova-android": "^7.1.4",
+    "cordova-plugin-chromecast": "https://github.com/jellyfin/cordova-plugin-chromecast",
     "cordova-plugin-whitelist": "^1.3.3",
     "del": "^3.0.0",
     "gulp": "^4.0.0",
@@ -21,13 +22,13 @@
     "gulp-dom": "^1.0.0",
     "gulp-if": "^2.0.2",
     "gulp-uglify": "^3.0.1",
-    "acidhax.cordova.chromecast": "https://github.com/jellyfin/cordova-plugin-chromecast",
-    "org.jellyfin.mobile": "./src/NativeShell"
+    "org.jellyfin.mobile": "file:src/NativeShell",
+    "request": "^2.88.0"
   },
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "acidhax.cordova.chromecast": {},
+      "cordova-plugin-chromecast": {},
       "org.jellyfin.mobile": {}
     },
     "platforms": [
