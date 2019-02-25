@@ -36,9 +36,7 @@ pushd ${SOURCE_DIR}
 
 # Install dependencies
 npm cache verify
-sed -i 's/"src/"file:src/g' package.json
 npm install
-sed -i 's/"file:src/"src/g' package.json
 npx gulp
 npx cordova prepare
 
