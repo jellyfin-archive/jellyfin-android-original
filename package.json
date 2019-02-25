@@ -28,7 +28,7 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "acidhax.cordova.chromecast": {},
+      "cordova-plugin-chromecast": {},
       "org.jellyfin.mobile": {}
     },
     "platforms": [
