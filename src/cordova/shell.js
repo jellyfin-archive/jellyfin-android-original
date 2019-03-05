@@ -1,8 +1,8 @@
 define([], function () {
 
     return {
-        openUrl: function (url) {
-            // TODO reimplement
+        openUrl: function (url, target) {
+            window.NativeShell.openUrl(url, target || '_blank');
         },
         canExec: false,
         exec: function (options) {
