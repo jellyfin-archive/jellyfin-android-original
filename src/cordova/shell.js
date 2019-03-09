@@ -2,7 +2,7 @@ define([], function () {
 
     return {
         openUrl: function (url, target) {
-            window.NativeShell.openUrl(url, target || '_blank');
+            window.NativeShell.openUrl(url, target || '_system');
         },
         canExec: false,
         exec: function (options) {
