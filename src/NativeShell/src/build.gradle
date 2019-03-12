@@ -7,5 +7,5 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.jellyfin:jellyfin-apiclient-java:1b76c9fd86'
+    implementation 'com.github.jellyfin:jellyfin-apiclient-java:master'
 }
