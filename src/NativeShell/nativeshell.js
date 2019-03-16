@@ -1,35 +1,45 @@
 function invokeMethod(successCallback, errorCallback, method, options) {
-  successCallback = successCallback || function () {};
-  errorCallback = errorCallback || function () {};
-  options = options || [];
+    successCallback = successCallback || function () {};
+    errorCallback = errorCallback || function () {};
+    options = options || [];
 
-  cordova.exec(successCallback, errorCallback, 'NativeShell', method, options);
+    cordova.exec(successCallback, errorCallback, 'NativeShell', method, options);
 }
 
-function NativeShell() {}
+function NativeShell() {
+    
+    this.FileSystem = {
+        fileExists: function (path) {
+            return Promise.reject();
+        },
+        directoryExists: function (path) {
+            return Promise.reject();
+        }
+    };
+}
 
 NativeShell.prototype.getDeviceInformation = function(successCallback, errorCallback) {
-  invokeMethod(successCallback, errorCallback, 'getDeviceInformation', []);
+    invokeMethod(successCallback, errorCallback, 'getDeviceInformation', []);
 }
 
 NativeShell.prototype.enableFullscreen = function(successCallback, errorCallback) {
-  invokeMethod(successCallback, errorCallback, 'enableFullscreen', []);
+    invokeMethod(successCallback, errorCallback, 'enableFullscreen', []);
 }
 
 NativeShell.prototype.disableFullscreen = function(successCallback, errorCallback) {
-  invokeMethod(successCallback, errorCallback, 'disableFullscreen', []);
+    invokeMethod(successCallback, errorCallback, 'disableFullscreen', []);
 }
 
 NativeShell.prototype.updateMediaSession = function(successCallback, errorCallback, options) {
-  invokeMethod(successCallback, errorCallback, 'updateMediaSession', [options]);
+    invokeMethod(successCallback, errorCallback, 'updateMediaSession', [options]);
 }
 
 NativeShell.prototype.hideMediaSession = function(successCallback, errorCallback) {
-  invokeMethod(successCallback, errorCallback, 'hideMediaSession', []);
+    invokeMethod(successCallback, errorCallback, 'hideMediaSession', []);
 }
 
 NativeShell.prototype.openUrl = function (url, target) {
-  cordova.InAppBrowser.open(url, target || '_system');
+    cordova.InAppBrowser.open(url, target || '_system');
 };
 
 var nativeShell = new NativeShell();
