@@ -46,4 +46,8 @@ NativeShell.prototype.sync = function(successCallback, errorCallback) {
     // TODO implement or remove
 };
 
+NativeShell.prototype.downloadFile = function(url) {
+    // TODO implement or remove
+};
+
 module.exports = new NativeShell();
