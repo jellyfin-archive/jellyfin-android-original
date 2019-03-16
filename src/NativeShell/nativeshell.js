@@ -1,27 +1,35 @@
+function invokeMethod(successCallback, errorCallback, method, options) {
+  successCallback = successCallback || function () {};
+  errorCallback = errorCallback || function () {};
+  options = options || [];
+
+  cordova.exec(successCallback, errorCallback, 'NativeShell', method, options);
+}
+
 function NativeShell() {}
 
 NativeShell.prototype.getDeviceInformation = function(successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, 'NativeShell', 'getDeviceInformation', []);
+  invokeMethod(successCallback, errorCallback, 'getDeviceInformation', []);
 }
 
 NativeShell.prototype.enableFullscreen = function(successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, 'NativeShell', 'enableFullscreen', []);
+  invokeMethod(successCallback, errorCallback, 'enableFullscreen', []);
 }
 
 NativeShell.prototype.disableFullscreen = function(successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, 'NativeShell', 'disableFulsceeen', []);
+  invokeMethod(successCallback, errorCallback, 'disableFullscreen', []);
 }
 
 NativeShell.prototype.updateMediaSession = function(successCallback, errorCallback, options) {
-  cordova.exec(successCallback, errorCallback, 'NativeShell', 'updateMediaSession', [options]);
+  invokeMethod(successCallback, errorCallback, 'updateMediaSession', [options]);
 }
 
 NativeShell.prototype.hideMediaSession = function(successCallback, errorCallback) {
-  cordova.exec(successCallback, errorCallback, 'NativeShell', 'hideMediaSession', []);
+  invokeMethod(successCallback, errorCallback, 'hideMediaSession', []);
 }
 
 NativeShell.prototype.openUrl = function (url, target) {
-  cordova.InAppBrowser.open(url, target);
+  cordova.InAppBrowser.open(url, target || '_system');
 };
 
 var nativeShell = new NativeShell();
