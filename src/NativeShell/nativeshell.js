@@ -30,7 +30,7 @@ NativeShell.prototype.disableFullscreen = function(successCallback, errorCallbac
     invokeMethod(successCallback, errorCallback, 'disableFullscreen', []);
 };
 
-NativeShell.prototype.updateMediaSession = function(successCallback, errorCallback, options) {
+NativeShell.prototype.updateMediaSession = function(options, successCallback, errorCallback) {
     invokeMethod(successCallback, errorCallback, 'updateMediaSession', [options]);
 };
 
