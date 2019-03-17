@@ -9,16 +9,7 @@ function invokeMethod(successCallback, errorCallback, method, options) {
 }
 
 function NativeShell() {
-
-    this.FileSystem = {
-        fileExists: function (path) {
-            return Promise.reject();
-        },
-        directoryExists: function (path) {
-            return Promise.reject();
-        }
-    };
-
+    this.FileSystem = require('org.jellyfin.mobile.FileSystem');
     this.AppHost = require('org.jellyfin.mobile.AppHost');
 }
 
