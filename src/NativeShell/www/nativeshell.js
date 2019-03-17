@@ -1,3 +1,5 @@
+
+
 function invokeMethod(successCallback, errorCallback, method, options) {
     successCallback = successCallback || function () {};
     errorCallback = errorCallback || function () {};
@@ -16,6 +18,8 @@ function NativeShell() {
             return Promise.reject();
         }
     };
+
+    this.AppHost = require('org.jellyfin.mobile.AppHost');
 }
 
 NativeShell.prototype.getDeviceInformation = function(successCallback, errorCallback) {
