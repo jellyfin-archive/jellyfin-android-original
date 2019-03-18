@@ -1,6 +1,3 @@
-//disables all console logs
-console.log = function () {};
-
 var deviceId;
 var deviceName;
 var appName;
