@@ -37,10 +37,6 @@ NativeShell.prototype.openUrl = function (url, target) {
     cordova.InAppBrowser.open(url, target || '_system');
 };
 
-NativeShell.prototype.sync = function(successCallback, errorCallback) {
-    // TODO implement or remove
-};
-
 NativeShell.prototype.downloadFile = function(url) {
     // TODO implement or remove
 };
