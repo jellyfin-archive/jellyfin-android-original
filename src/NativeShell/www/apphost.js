@@ -77,41 +77,13 @@ function getDeviceProfile(profileBuilder) {
         }]
     });
 
-    //profile.TranscodingProfiles.filter(function (p) {
-
-    //    return p.Type == 'Video' && p.Container == 'mkv';
-
-    //}).forEach(function (p) {
-
-    //    p.Container = 'ts';
-    //});
-
-    profile.TranscodingProfiles.filter(function (p) {
-
-        return p.Type == 'Video' && p.CopyTimestamps == true;
-
-    }).forEach(function (p) {
-        // Vlc doesn't seem to handle this well
-        p.CopyTimestamps = false;
-    });
-
-    profile.TranscodingProfiles.filter(function (p) {
-
-        return p.Type == 'Video' && p.VideoCodec == 'h264';
-
-    }).forEach(function (p) {
-
-        p.AudioCodec += ',ac3';
-    });
-
-    if (self.VlcAudio) {
-        profile.DirectPlayProfiles.push({
-            Container: "aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac,m4a",
-            Type: 'Audio'
-        });
-    }
-
-    return profile;
+    return profile.TranscodingProfiles.reduce(function (profiles, p) {
+        if (p.Type == 'Video' && p.CopyTimestamps == true && p.VideoCodec == 'h264') {
+            p.AudioCodec += ',ac3';
+            profiles.push(p);
+        }
+        return profiles;
+    }, []);
 };
 
 module.exports = {
