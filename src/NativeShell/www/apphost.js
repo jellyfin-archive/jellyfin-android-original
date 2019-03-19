@@ -25,7 +25,6 @@ function getDeviceProfile(profileBuilder) {
     var profile = profileBuilder();
 
     profile.DirectPlayProfiles.push({
-        // TODO investigate ac3 support
         Container: "m4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv",
         Type: 'Video',
         AudioCodec: 'aac,aac_latm,mp2,mp3,wma,dca,dts,pcm,PCM_S16LE,PCM_S24LE,opus,flac'
