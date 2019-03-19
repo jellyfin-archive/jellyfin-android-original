@@ -3,6 +3,7 @@ package org.jellyfin.mobile;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -52,14 +53,20 @@ public class NativeShell extends CordovaPlugin {
                 // we can only send users to the settings page and not request it directly
                 // google play prohibits asking directly except under a select few conditions
                 PowerManager powerManager = (PowerManager) cordova.getActivity().getSystemService(Context.POWER_SERVICE);
-                wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Jellyfin:WakeLock");
+                wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "JellyfinWakeLock");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
+                    if (!AppPreferences.get(cordova.getActivity()).getIgnoreBatteryOptimizations()
+                            && !powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
                         // TODO translate these strings
                         builder.setTitle("Disable Battery Optimizations");
                         builder.setMessage("Please disable battery optimizations for media playback while the screen is off.");
-                        builder.setNegativeButton(android.R.string.cancel, null);
+                        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AppPreferences.get(cordova.getActivity()).setIgnoreBatteryOptimizations(true);
+                            }
+                        });
                         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -91,6 +98,8 @@ public class NativeShell extends CordovaPlugin {
                 return enableFullscreen();
             case "disableFullscreen":
                 return disableFullscreen();
+            case "openIntent":
+                return openIntent();
             case "updateMediaSession":
                 return updateMediaSession();
             case "hideMediaSession":
@@ -153,6 +162,34 @@ public class NativeShell extends CordovaPlugin {
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
         callbackContext.sendPluginResult(pluginResult);
         return true;
+    }
+
+    public boolean openIntent() {
+        String uri, type;
+        try {
+            JSONObject options = args.getJSONObject(0);
+            uri = options.getString("uri");
+            type = options.getString("type");
+        } catch (Exception e) {
+            callbackContext.error("error: openIntent: " + e.getMessage());
+            return false;
+        }
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        if (type != null) {
+            intent.setDataAndType(Uri.parse(uri), type);
+        } else {
+            intent.setData(Uri.parse(uri));
+        }
+
+        try {
+            cordova.getActivity().startActivity(intent);
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            callbackContext.sendPluginResult(pluginResult);
+            return true;
+        } catch (Exception e) {
+            callbackContext.error("error: openIntent: " + e.getMessage());
+            return false;
+        }
     }
 
     private boolean updateMediaSession() {
