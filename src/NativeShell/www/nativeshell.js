@@ -6,10 +6,7 @@ function invokeMethod(successCallback, errorCallback, method, options) {
     cordova.exec(successCallback, errorCallback, 'NativeShell', method, options);
 }
 
-function NativeShell() {
-    this.FileSystem = require('org.jellyfin.mobile.FileSystem');
-    this.AppHost = require('org.jellyfin.mobile.AppHost');
-}
+function NativeShell() {}
 
 NativeShell.prototype.getDeviceInformation = function(successCallback, errorCallback) {
     invokeMethod(successCallback, errorCallback, 'getDeviceInformation', []);

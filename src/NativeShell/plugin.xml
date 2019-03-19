@@ -7,14 +7,14 @@
     <engine name="cordova" version=">=7.0.0" />
   </engines>
   <name>Jellyfin</name>
-  <js-module src="www/apphost.js" name="AppHost">
-    <clobbers target="AppHost" />
-  </js-module>
-  <js-module src="www/filesystem.js" name="FileSystem">
-    <clobbers target="FileSystem" />
-  </js-module>
   <js-module src="www/nativeshell.js" name="NativeShell">
     <clobbers target="NativeShell" />
+  </js-module>
+  <js-module src="www/apphost.js" name="AppHost">
+    <clobbers target="NativeShell.AppHost" />
+  </js-module>
+  <js-module src="www/filesystem.js" name="FileSystem">
+    <clobbers target="NativeShell.FileSystem" />
   </js-module>
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
