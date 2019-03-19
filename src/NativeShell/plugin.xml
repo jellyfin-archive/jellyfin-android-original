@@ -30,6 +30,7 @@
     </config-file>
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppLogger.java" target-dir="src/org/jellyfin/mobile" />
+    <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/LogbackLogger.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/RemotePlayerService.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/CustomWebViewClient.java" target-dir="src/org/jellyfin/mobile" />
@@ -45,5 +46,6 @@
     <resource-file src="res/drawable-xxhdpi/ic_notification.png" target="res/drawable-xxhdpi/ic_notification.png" />
     <resource-file src="res/drawable-xxxhdpi/ic_notification.png" target="res/drawable-xxxhdpi/ic_notification.png" />
     <resource-file src="res/values/colors.xml" target="res/values/colors.xml" />
+    <resource-file src="res/values/strings_pref.xml" target="res/values/strings_pref.xml" />
   </platform>
 </plugin>

@@ -1,5 +1,3 @@
-
-
 function invokeMethod(successCallback, errorCallback, method, options) {
     successCallback = successCallback || function () {};
     errorCallback = errorCallback || function () {};
@@ -25,16 +23,16 @@ NativeShell.prototype.disableFullscreen = function(successCallback, errorCallbac
     invokeMethod(successCallback, errorCallback, 'disableFullscreen', []);
 };
 
+NativeShell.prototype.openUrl = function(successCallback, errorCallback, options) {
+    invokeMethod(successCallback, errorCallback, 'openIntent', [options]);
+};
+
 NativeShell.prototype.updateMediaSession = function(options, successCallback, errorCallback) {
     invokeMethod(successCallback, errorCallback, 'updateMediaSession', [options]);
 };
 
 NativeShell.prototype.hideMediaSession = function(successCallback, errorCallback) {
     invokeMethod(successCallback, errorCallback, 'hideMediaSession', []);
-};
-
-NativeShell.prototype.openUrl = function (url, target) {
-    cordova.InAppBrowser.open(url, target || '_system');
 };
 
 NativeShell.prototype.downloadFile = function(url) {
