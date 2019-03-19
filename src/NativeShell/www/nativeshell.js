@@ -20,8 +20,8 @@ NativeShell.prototype.disableFullscreen = function(successCallback, errorCallbac
     invokeMethod(successCallback, errorCallback, 'disableFullscreen', []);
 };
 
-NativeShell.prototype.openUrl = function(successCallback, errorCallback, options) {
-    invokeMethod(successCallback, errorCallback, 'openIntent', [options]);
+NativeShell.prototype.openUrl = function(url, target, successCallback, errorCallback) {
+    invokeMethod(successCallback, errorCallback, 'openIntent', [url]);
 };
 
 NativeShell.prototype.updateMediaSession = function(options, successCallback, errorCallback) {
