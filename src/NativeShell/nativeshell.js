@@ -20,8 +20,8 @@ NativeShell.prototype.hideMediaSession = function(successCallback, errorCallback
   cordova.exec(successCallback, errorCallback, 'NativeShell', 'hideMediaSession', []);
 }
 
-NativeShell.prototype.openUrl = function (url, target) {
-  cordova.InAppBrowser.open(url, target);
+NativeShell.prototype.openUrl = function(successCallback, errorCallback, options) {
+  cordova.exec(successCallback, errorCallback, 'NativeShell', 'openIntent', [options]);
 };
 
 var nativeShell = new NativeShell();
