@@ -165,21 +165,15 @@ public class NativeShell extends CordovaPlugin {
     }
 
     public boolean openIntent() {
-        String uri, type;
+        String uri;
         try {
-            JSONObject options = args.getJSONObject(0);
-            uri = options.getString("uri");
-            type = options.getString("type");
+            uri = args.getString(0);
         } catch (Exception e) {
             callbackContext.error("error: openIntent: " + e.getMessage());
             return false;
         }
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        if (type != null) {
-            intent.setDataAndType(Uri.parse(uri), type);
-        } else {
-            intent.setData(Uri.parse(uri));
-        }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 
         try {
             cordova.getActivity().startActivity(intent);

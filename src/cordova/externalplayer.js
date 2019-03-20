@@ -1,3 +1,6 @@
+/**
+ * CAUTION: do not remove this file. this should be used for future implementations, using external players.
+ */
 define(['events', 'appSettings', 'filesystem'], function (events, appSettings, fileSystem) {
     "use strict";
 
