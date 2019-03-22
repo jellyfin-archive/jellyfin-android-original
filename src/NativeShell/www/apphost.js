@@ -73,13 +73,15 @@ function getDeviceProfile(profileBuilder) {
         }]
     });
 
-    return profile.TranscodingProfiles.reduce(function (profiles, p) {
+    profile.TranscodingProfiles.reduce(function (profiles, p) {
         if (p.Type == 'Video' && p.CopyTimestamps == true && p.VideoCodec == 'h264') {
             p.AudioCodec += ',ac3';
             profiles.push(p);
         }
         return profiles;
     }, []);
+
+    return profile;
 };
 
 module.exports = {
