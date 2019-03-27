@@ -3,7 +3,9 @@ var gulpif = require('gulp-if');
 var cleanCSS = require('gulp-clean-css');
 var del = require('del');
 var dom = require('gulp-dom');
-var uglify = require('gulp-uglify');
+var uglifyes = require('uglify-es');
+var composer = require('gulp-uglify/composer');
+var uglify = composer(uglifyes, console);
 
 // Check the NODE_ENV environment variable
 var isDev = process.env.NODE_ENV === 'development';

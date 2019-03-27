@@ -23,7 +23,8 @@
     "gulp-if": "^2.0.2",
     "gulp-uglify": "^3.0.2",
     "org.jellyfin.mobile": "file:src/NativeShell",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "uglify-es": "^3.3.9"
   },
   "cordova": {
     "plugins": {
