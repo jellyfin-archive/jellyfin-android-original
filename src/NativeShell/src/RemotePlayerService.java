@@ -192,7 +192,7 @@ public class RemotePlayerService extends Service {
 
             PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
             stateBuilder.setActiveQueueItemId(MediaSession.QueueItem.UNKNOWN_ID);
-            long actions = PlaybackState.ACTION_PLAY_PAUSE | PlaybackState.ACTION_STOP | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS | PlaybackState.ACTION_SEEK_TO | PlaybackState.ACTION_SET_RATING;
+            long actions = PlaybackState.ACTION_PLAY_PAUSE | PlaybackState.ACTION_STOP | PlaybackState.ACTION_SKIP_TO_NEXT | PlaybackState.ACTION_SKIP_TO_PREVIOUS | PlaybackState.ACTION_SEEK_TO | PlaybackState.ACTION_SET_RATING | PlaybackState.ACTION_PLAY | PlaybackState.ACTION_PAUSE;
             stateBuilder.setActions(actions);
 
             if (isPaused) {
