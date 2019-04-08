@@ -1,6 +1,6 @@
 package org.jellyfin.mobile;
 
-import mediabrowser.model.logging.ILogger;
+import org.jellyfin.apiclient.model.logging.ILogger;
 
 public class LogbackLogger implements ILogger {
 
