@@ -7,5 +7,5 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.jellyfin:jellyfin-apiclient-java:master'
+    implementation 'com.github.jellyfin:jellyfin-apiclient-java:master-SNAPSHOT'
 }
