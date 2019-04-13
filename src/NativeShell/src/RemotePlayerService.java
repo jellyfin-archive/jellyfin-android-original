@@ -18,9 +18,9 @@ import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
 
-import mediabrowser.apiinteraction.Response;
-import mediabrowser.apiinteraction.android.VolleyHttpClient;
-import mediabrowser.model.logging.ILogger;
+import org.jellyfin.apiclient.interaction.Response;
+import org.jellyfin.apiclient.interaction.VolleyHttpClient;
+import org.jellyfin.apiclient.model.logging.ILogger;
 
 public class RemotePlayerService extends Service {
     private VolleyHttpClient httpClient;
