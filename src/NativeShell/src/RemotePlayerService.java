@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadata;
 import android.media.Rating;
+import android.media.VolumeProvider;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.MediaSession.Callback;
