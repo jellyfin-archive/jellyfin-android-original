@@ -29,9 +29,7 @@
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
     </config-file>
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
-    <source-file src="src/AppLogger.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
-    <source-file src="src/LogbackLogger.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/RemotePlayerService.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/CustomWebViewClient.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/Constants.java" target-dir="src/org/jellyfin/mobile" />
