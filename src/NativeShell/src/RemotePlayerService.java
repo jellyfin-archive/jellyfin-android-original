@@ -21,6 +21,7 @@ import android.os.IBinder;
 
 import org.jellyfin.apiclient.interaction.Response;
 import org.jellyfin.apiclient.interaction.VolleyHttpClient;
+import org.jellyfin.apiclient.logging.AndroidLogger;
 import org.jellyfin.apiclient.model.logging.ILogger;
 
 public class RemotePlayerService extends Service {
@@ -141,7 +142,7 @@ public class RemotePlayerService extends Service {
         }
 
         if (imageUrl != null && imageUrl.length() > 0) {
-            ILogger logger = AppLogger.getLogger();
+            ILogger logger = new AndroidLogger("Jellyfin-RemotePlayerService");
             if (httpClient == null) {
                 httpClient = new VolleyHttpClient(logger, getApplicationContext());
             }
