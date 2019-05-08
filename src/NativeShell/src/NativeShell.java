@@ -91,6 +91,11 @@ public class NativeShell extends CordovaPlugin {
         this.args = args;
 
         cordovaWebView = webView;
+
+        if (action.startsWith("nativePlayer")) {
+            //TODO: invoce nativeplayer handler
+        }
+
         switch (action) {
             case "getDeviceInformation":
                 return getDeviceInformation();
