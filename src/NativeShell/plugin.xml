@@ -21,6 +21,9 @@
       <feature name="NativeShell">
         <param name="android-package" value="org.jellyfin.mobile.NativeShell"/>
       </feature>
+      <feature name="NativePlayer">
+        <param name="android-package" value="org.jellyfin.mobile.NativePlayer"/>
+      </feature>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest">
         <uses-permission android:name="android.permission.WAKE_LOCK"/>
@@ -36,6 +39,7 @@
     <framework src="src/build.gradle" custom="true" type="gradleReference" />
     <framework src="com.squareup.okhttp3:okhttp:3.13.1" />
     <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.13.1" />
+    <framework src="com.google.android.exoplayer:exoplayer:2.9.6" />
     <resource-file src="res/drawable-hdpi/ic_notification.png" target="res/drawable-hdpi/ic_notification.png" />
     <resource-file src="res/drawable-ldpi/ic_notification.png" target="res/drawable-ldpi/ic_notification.png" />
     <resource-file src="res/drawable-mdpi/ic_notification.png" target="res/drawable-mdpi/ic_notification.png" />
