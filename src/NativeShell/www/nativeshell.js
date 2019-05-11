@@ -1,4 +1,4 @@
-function invokeMethod(successCallback, errorCallback, method, options) {
+function invokeMethod(method, options, successCallback, errorCallback) {
     successCallback = successCallback || function () {};
     errorCallback = errorCallback || function () {};
     options = options || [];
@@ -8,32 +8,40 @@ function invokeMethod(successCallback, errorCallback, method, options) {
 
 function NativeShell() {}
 
+NativeShell.prototype.invokeMethod = invokeMethod;
+
 NativeShell.prototype.getDeviceInformation = function(successCallback, errorCallback) {
-    invokeMethod(successCallback, errorCallback, 'getDeviceInformation', []);
+    invokeMethod('getDeviceInformation', [], successCallback, errorCallback);
 };
 
 NativeShell.prototype.enableFullscreen = function(successCallback, errorCallback) {
-    invokeMethod(successCallback, errorCallback, 'enableFullscreen', []);
+    invokeMethod('enableFullscreen', [], successCallback, errorCallback);
 };
 
 NativeShell.prototype.disableFullscreen = function(successCallback, errorCallback) {
-    invokeMethod(successCallback, errorCallback, 'disableFullscreen', []);
+    invokeMethod('disableFullscreen', [], successCallback, errorCallback);
 };
 
 NativeShell.prototype.openUrl = function(url, target, successCallback, errorCallback) {
-    invokeMethod(successCallback, errorCallback, 'openIntent', [url]);
+    invokeMethod('openIntent', [url], successCallback, errorCallback);
 };
 
 NativeShell.prototype.updateMediaSession = function(options, successCallback, errorCallback) {
-    invokeMethod(successCallback, errorCallback, 'updateMediaSession', [options]);
+    invokeMethod('updateMediaSession', [options], successCallback, errorCallback);
 };
 
 NativeShell.prototype.hideMediaSession = function(successCallback, errorCallback) {
-    invokeMethod(successCallback, errorCallback, 'hideMediaSession', []);
+    invokeMethod('hideMediaSession', [], successCallback, errorCallback);
 };
 
 NativeShell.prototype.downloadFile = function(url) {
     // TODO implement or remove
+};
+
+NativeShell.prototype.getPlugins = function () {
+    return [
+        'cordova/nativePlayer'
+    ];
 };
 
 module.exports = new NativeShell();
