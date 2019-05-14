@@ -12,8 +12,9 @@
   "license": "GPL-2.0-only",
   "dependencies": {
     "acorn": "^6.1.1",
-    "cordova": "^8.1.2",
+    "cordova": "^9.0.0",
     "cordova-android": "^8.0.0",
+    "cordova-plugin-androidx": "^1.0.1",
     "cordova-plugin-chromecast": "git+https://github.com/jellyfin/cordova-plugin-chromecast.git",
     "cordova-plugin-whitelist": "^1.3.3",
     "del": "^3.0.0",
@@ -30,7 +31,8 @@
     "plugins": {
       "cordova-plugin-whitelist": {},
       "cordova-plugin-chromecast": {},
-      "org.jellyfin.mobile": {}
+      "org.jellyfin.mobile": {},
+      "cordova-plugin-androidx": {}
     },
     "platforms": [
       "android"
