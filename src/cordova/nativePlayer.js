@@ -14,7 +14,7 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         self.player = window.NativePlayer;
 
         // Prioritize first
-        self.priority = 2;
+        self.priority = -1;
         self.supportsProgress = false; //TODO: what is this for?
         self.isLocalPlayer = true;
 
@@ -58,7 +58,7 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         }
 
         self.play = function (options) {
-            self.player.loadPlayer();
+            self.player.loadPlayer(options.url);
 
 
             //TODO: instantiate the native player using cordova

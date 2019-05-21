@@ -21,7 +21,12 @@ var features = [
     'castmenuhashchange'
 ];
 
-function getDeviceProfile(profileBuilder) {
+function getDeviceProfile(profileBuilder, item) {
+
+    /*if (item.MediaType === 'Video') {
+        return getDeviceProfileForVideo(item);
+    }*/
+
     var profile = profileBuilder();
 
     profile.DirectPlayProfiles.push({
@@ -83,6 +88,63 @@ function getDeviceProfile(profileBuilder) {
 
     return profile;
 };
+
+function getDeviceProfileForVideo(item) {
+    let container = item.Container;
+    let videoTracks = audioTracks = subtitleTracks = [];
+
+    for (let i = 0; i < item.MediaStreams.lengh; i++) {
+        let track = item.MediaStreams[i];
+
+        switch (track.Type) {
+            case 'Video':
+                videoTracks.push(parseVideoTrack(track));
+                break;
+            case 'Audio':
+                audioTracks.push(parseAudioTrack(track));
+                break;
+            case 'Subtitle':
+                subtitleTracks.push(parseSubtitleTrack(track));
+                break;
+            default:
+                continue;
+        }
+    }
+
+    let supportedTracks = window.NativePlayer.checkTracksSupport(container, videoTracks, audioTracks, subtitleTracks);
+
+
+    //TODO: check if the given tracks are supported. If not, they are not added up to directPlayProfiles
+
+
+}
+
+function parseVideoTrack(track) {
+    return {
+        codec: track.Codec,
+        bitRate: track.BitRate,
+        width: track.Width,
+        height: track.Height,
+        frameRate: track.RealFrameRate
+    };
+}
+
+function parseAudioTrack(track) {
+    return {
+        codec: track.Codec,
+        bitRate: track.BitRate,
+        channelCount: track.Channels,
+        sampleRate: track.SampleRate
+    };
+}
+
+function parseSubtitleTrack(track) {
+    return {
+        codec: track.Codec
+    };
+}
+
+
 
 module.exports = {
     exit: function () {
