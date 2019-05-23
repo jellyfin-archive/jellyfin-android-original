@@ -39,11 +39,11 @@ NativeShell.prototype.downloadFile = function(url) {
 };
 
 NativeShell.prototype.getPlugins = function () {
-    return []; //FIXME: revert this commit once native player is fully operational
+    //return []; //FIXME: revert this commit once native player is fully operational
 
-    /*return [
-        'cordova/nativePlayer'
-    ];*/
+    return [
+        'cordova/exoPlayer'
+    ];
 };
 
 module.exports = new NativeShell();

@@ -1,4 +1,4 @@
-package org.jellyfin.mobile.nativePlayer;
+package org.jellyfin.mobile.exoPlayer;
 
 import android.app.Activity;
 import android.app.Application;
@@ -20,7 +20,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import org.jellyfin.mobile.R;
 
-public class NativePlayerActivity extends Activity {
+public class ExoPlayerActivity extends Activity {
 
     private SimpleExoPlayer player = null;
 
@@ -28,20 +28,14 @@ public class NativePlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       /* Application app = getApplication();
-        String packageName = app.getPackageName();
-        Resources resources = app.getResources();*/
-
         //make fullscreen player
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        //int playerViewId = resources.getIdentifier("native_player", "layout", packageName);
-
         // set player view layout
-        setContentView(R.layout.native_player);
+        setContentView(R.layout.exo_player);
 
-        PlayerView playerView = (PlayerView) findViewById(R.id.player);
+        PlayerView playerView = (PlayerView) findViewById(R.id.exoPlayer);
 
         player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
 

@@ -10,8 +10,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
 
         self.name = 'Native player for Android';
         self.type = 'mediaplayer';
-        self.id = 'nativeplayer';
-        self.player = window.NativePlayer;
+        self.id = 'exoplayer';
+        self.player = window.ExoPlayer;
 
         // Prioritize first
         self.priority = -1;

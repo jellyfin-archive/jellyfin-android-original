@@ -111,7 +111,7 @@ function getDeviceProfileForVideo(item) {
         }
     }
 
-    let supportedTracks = window.NativePlayer.checkTracksSupport(container, videoTracks, audioTracks, subtitleTracks);
+    let supportedTracks = window.ExoPlayer.checkTracksSupport(container, videoTracks, audioTracks, subtitleTracks);
 
 
     //TODO: check if the given tracks are supported. If not, they are not added up to directPlayProfiles

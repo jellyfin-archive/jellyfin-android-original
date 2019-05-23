@@ -1,4 +1,4 @@
-package org.jellyfin.mobile.nativePlayer;
+package org.jellyfin.mobile.exoPlayer;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,7 +21,7 @@ import org.json.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class NativePlayer {
+public class ExoPlayer {
 
     public boolean handleRequest(String methodName, JSONArray args, CallbackContext callbackContext, Activity activity) {
         try {
@@ -44,7 +44,7 @@ public class NativePlayer {
 
     public boolean loadPlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
 
-        Intent playerIntent = new Intent(activity.getApplicationContext(), NativePlayerActivity.class);
+        Intent playerIntent = new Intent(activity.getApplicationContext(), ExoPlayerActivity.class);
 
         try {
             playerIntent.putExtra("uri", args.getString(0));

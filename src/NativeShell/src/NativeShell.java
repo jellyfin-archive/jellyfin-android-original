@@ -16,7 +16,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.engine.SystemWebView;
 import org.apache.cordova.engine.SystemWebViewEngine;
-import org.jellyfin.mobile.nativePlayer.NativePlayer;
+import org.jellyfin.mobile.exoPlayer.ExoPlayer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,7 +32,7 @@ public class NativeShell extends CordovaPlugin {
 
     private CallbackContext callbackContext;
     private JSONArray args;
-    private NativePlayer nativePlayer = new NativePlayer();
+    private ExoPlayer exoPlayer = new ExoPlayer();
 
     @Override
     public void pluginInitialize() {
@@ -91,9 +91,9 @@ public class NativeShell extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) {
         cordovaWebView = webView;
 
-        if (action.startsWith("nativePlayer")) {
-            action = action.replace("nativePlayer.", "");
-            return nativePlayer.handleRequest(action, args, callbackContext, cordova.getActivity());
+        if (action.startsWith("exoPlayer")) {
+            action = action.replace("exoPlayer.", "");
+            return exoPlayer.handleRequest(action, args, callbackContext, cordova.getActivity());
         }
 
         this.callbackContext = callbackContext;

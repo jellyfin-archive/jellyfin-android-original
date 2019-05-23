@@ -16,8 +16,8 @@
   <js-module src="www/filesystem.js" name="FileSystem">
     <clobbers target="NativeShell.FileSystem" />
   </js-module>
-  <js-module src="www/player.js" name="NativePlayer">
-    <clobbers target="NativePlayer" />
+  <js-module src="www/exoPlayerAPI.js" name="ExoPlayer">
+    <clobbers target="ExoPlayer" />
   </js-module>
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
@@ -30,15 +30,15 @@
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
-      <activity android:label="Native Player" android:name="org.jellyfin.mobile.nativePlayer.NativePlayerActivity" android:configChanges="orientation|screenSize|layoutDirection"></activity>
+      <activity android:label="Exo Player" android:name="org.jellyfin.mobile.exoPlayer.ExoPlayerActivity" android:configChanges="orientation|screenSize|layoutDirection"></activity>
     </config-file>
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/RemotePlayerService.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/CustomWebViewClient.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/Constants.java" target-dir="src/org/jellyfin/mobile" />
-    <source-file src="src/nativePlayer/NativePlayer.java" target-dir="src/org/jellyfin/mobile/nativePlayer" />
-    <source-file src="src/nativePlayer/NativePlayerActivity.java" target-dir="src/org/jellyfin/mobile/nativePlayer" />
+    <source-file src="src/exoPlayer/ExoPlayer.java" target-dir="src/org/jellyfin/mobile/exoPlayer" />
+    <source-file src="src/exoPlayer/ExoPlayerActivity.java" target-dir="src/org/jellyfin/mobile/exoPlayer" />
     <framework src="src/build.gradle" custom="true" type="gradleReference" />
     <framework src="com.squareup.okhttp3:okhttp:3.13.1" />
     <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.13.1" />
@@ -51,6 +51,6 @@
     <resource-file src="res/drawable-xxxhdpi/ic_notification.png" target="res/drawable-xxxhdpi/ic_notification.png" />
     <resource-file src="res/values/colors.xml" target="res/values/colors.xml" />
     <resource-file src="res/values/strings_pref.xml" target="res/values/strings_pref.xml" />
-    <resource-file src="res/layout/native_player.xml" target="res/layout/native_player.xml" />
+    <resource-file src="res/layout/exo_player.xml" target="res/layout/exo_player.xml" />
   </platform>
 </plugin>
