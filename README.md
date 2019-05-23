@@ -13,7 +13,7 @@ Jellyfin Mobile is an Android app built with Cordova.
    ```sh
    git clone https://github.com/jellyfin/jellyfin-android.git
    cd jellyfin-android
-   git submodule update --init --recursive
+   git submodule update --init --recursive --remote
    ```
 2. Install Cordova and other build dependencies via npm in the project directory.
    ```sh
