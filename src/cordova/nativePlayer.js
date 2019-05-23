@@ -1,7 +1,7 @@
 /**
  * CAUTION: do not remove this file. this should be used for future implementations, using external players.
  */
-define(['events', 'appSettings', 'filesystem'], function (events, appSettings, fileSystem) {
+define(['events', 'appSettings', 'filesystem', 'loading'], function (events, appSettings, fileSystem, loading) {
     "use strict";
 
     return function () {
@@ -59,6 +59,8 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
 
         self.play = function (options) {
             self.player.loadPlayer(options.url);
+
+            loading.hide();
 
 
             //TODO: instantiate the native player using cordova
