@@ -30,7 +30,7 @@
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
-      <activity android:label="Native Player" android:name="org.jellyfin.mobile.nativePlayer.NativePlayerActivity"></activity>
+      <activity android:label="Native Player" android:name="org.jellyfin.mobile.nativePlayer.NativePlayerActivity" android:configChanges="orientation|screenSize|layoutDirection"></activity>
     </config-file>
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
