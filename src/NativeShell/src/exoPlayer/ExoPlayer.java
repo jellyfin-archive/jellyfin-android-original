@@ -47,7 +47,7 @@ public class ExoPlayer {
         Intent playerIntent = new Intent(activity.getApplicationContext(), ExoPlayerActivity.class);
 
         try {
-            playerIntent.putExtra("uri", args.getString(0));
+            playerIntent.putExtra("item", args.getJSONObject(0).toString());
 
         } catch (JSONException e) {
             e.printStackTrace();

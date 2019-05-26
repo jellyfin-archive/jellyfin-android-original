@@ -4,8 +4,8 @@ function invokeMethod(method, args, successCallback, errorCallback) {
 }
 
 module.exports = {
-    loadPlayer: function (url) {
-        invokeMethod('loadPlayer', [url]);
+    loadPlayer: function (options) {
+        invokeMethod('loadPlayer', [options]);
     },
 
     checkTracksSupport: function (videoTracks, audioTracks, subtitleTracks) {

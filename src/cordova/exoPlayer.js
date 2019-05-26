@@ -58,7 +58,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         }
 
         self.play = function (options) {
-            self.player.loadPlayer(options.url);
+
+            self.player.loadPlayer(options);
 
             loading.hide();
 
