@@ -305,18 +305,6 @@ public class RemotePlayerService extends Service {
 
             mediaSession.setActive(true);
             mediaSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS | MediaSession.FLAG_HANDLES_MEDIA_BUTTONS);
-            // handle volume button presses from i.e. wear notifications, this will only generate up/down events, so the absolute values do not matter
-            mediaSession.setPlaybackToRemote(new VolumeProvider(VolumeProvider.VOLUME_CONTROL_RELATIVE, 100, 50) {
-                @Override
-                public void onAdjustVolume(int direction) {
-                    if (direction > 0) {
-                        sendCommand("volumeup");
-                    }
-                    else {
-                        sendCommand("volumedown");
-                    }
-                }
-            });
             mediaSession.setCallback(new Callback() {
                 @Override
                 public void onPlay() {
