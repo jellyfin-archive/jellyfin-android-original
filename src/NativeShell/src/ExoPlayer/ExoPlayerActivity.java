@@ -35,40 +35,35 @@ public class ExoPlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //make fullscreen player
+        // toggle fullscreen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        // initialize exoplayer
+        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
 
         // set player view layout
         setContentView(R.layout.exo_player);
 
         PlayerView playerView = findViewById(R.id.exoPlayer);
-
-        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
-
         playerView.setPlayer(player);
 
-        Intent intent = getIntent();
-        JSONObject item = null;
         MediaSource mediaSource = null;
         long mediaStartTicks = 0;
 
         try {
-            item = new JSONObject(intent.getStringExtra("item"));
+            JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
+
             mediaStartTicks = item.getLong("playerStartPositionTicks");
-
-
             mediaSource = fetchMediaSources(item);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         if (mediaSource == null) {
-
-            //TODO: send a error to the jf-web part, and close the activity
-
+            //TODO send error to the web client
+            this.onDestroy();
         } else {
-
             if (mediaStartTicks > 0) {
                 player.seekTo(mediaStartTicks / Constants.TICKS_PER_MILLISECOND);
             }
@@ -85,22 +80,19 @@ public class ExoPlayerActivity extends Activity {
      */
     private MediaSource fetchMediaSources(JSONObject item) throws JSONException {
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "Jellyfin android"));
-
         MediaSource mediasource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(item.getString("url")));
 
-        //adds subtitles if any
+        // add subtitles if they exist
         JSONArray subtitleTracks = item.getJSONArray("textTracks");
 
         for (int i = 0; i < subtitleTracks.length(); i++) {
             JSONObject track = subtitleTracks.getJSONObject(i);
 
             MediaSource subtitleMediaSource = fetchSubtitleMediaSource(track, dataSourceFactory);
-
             if (subtitleMediaSource != null) {
                 mediasource = new MergingMediaSource(mediasource, subtitleMediaSource);
             }
         }
-
 
         return mediasource;
     }
@@ -151,7 +143,7 @@ public class ExoPlayerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         player.release();
+        super.onDestroy();
     }
 }

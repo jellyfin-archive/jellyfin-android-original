@@ -22,20 +22,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ExoPlayer {
-
     public boolean handleRequest(String methodName, JSONArray args, CallbackContext callbackContext, Activity activity) {
         try {
             Method method = this.getClass().getMethod(methodName, JSONArray.class, CallbackContext.class, Activity.class);
-
-            try {
-                return (boolean) method.invoke(this, args, callbackContext, activity);
-            } catch (IllegalAccessException e) {
-                callbackContext.error("can't access method: " + methodName);
-            } catch (InvocationTargetException e) {
-                callbackContext.error("failed to call method: " + methodName);
-            }
+            return (boolean) method.invoke(this, args, callbackContext, activity);
         } catch (NoSuchMethodException e) {
             callbackContext.error("method doesn't exist: " + methodName);
+        } catch (IllegalAccessException e) {
+            callbackContext.error("can't access method: " + methodName);
+        } catch (InvocationTargetException e) {
+            callbackContext.error("failed to call method: " + methodName);
         }
 
         callbackContext.error("unknown error for method: " + methodName);
@@ -43,12 +39,10 @@ public class ExoPlayer {
     }
 
     public boolean loadPlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
-
         Intent playerIntent = new Intent(activity.getApplicationContext(), ExoPlayerActivity.class);
 
         try {
             playerIntent.putExtra("item", args.getJSONObject(0).toString());
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -62,7 +56,6 @@ public class ExoPlayer {
     }
 
     public boolean checkTracksSupport(JSONArray args, CallbackContext callbackContext, Activity activity) {
-
         MediaCodecRenderer videoRenderer = new MediaCodecVideoRenderer(activity, MediaCodecSelector.DEFAULT);
         MediaCodecRenderer audioRenderer = new MediaCodecAudioRenderer(activity, MediaCodecSelector.DEFAULT);
 
@@ -76,19 +69,18 @@ public class ExoPlayer {
 
                 String application = MimeTypes.APPLICATION_MP4;
                 String codecs = MimeTypes.getVideoMediaMimeType(track.getString("codec"));
-                int bitRate = track.getInt("bitRate");
+                int bitrate = track.getInt("bitrate");
                 int width = track.getInt("width");
                 int height = track.getInt("height");
-                float frameRate = (float) track.getInt("frameRate");
+                float framerate = (float) track.getInt("framerate");
 
-                Format format = Format.createVideoContainerFormat(null, null, null, application, codecs, bitRate, width, height, frameRate, null, C.SELECTION_FLAG_AUTOSELECT, C.ROLE_FLAG_MAIN);
-
-                track.put("supported", false);
-
+                Format format = Format.createVideoContainerFormat(null, null, null, application, codecs, bitrate, width, height, framerate, null, C.SELECTION_FLAG_AUTOSELECT, C.ROLE_FLAG_MAIN);
                 try {
                     int result = videoRenderer.supportsFormat(format) & RendererCapabilities.FORMAT_SUPPORT_MASK;
                     track.put("supported", result == RendererCapabilities.FORMAT_HANDLED || result == RendererCapabilities.FORMAT_EXCEEDS_CAPABILITIES);
-                } catch (ExoPlaybackException e) {}
+                } catch (ExoPlaybackException e) {
+                    track.put("supported", false);
+                }
 
                 videoTracks.put(i, track);
             }
@@ -98,20 +90,17 @@ public class ExoPlayer {
 
                 String application = MimeTypes.APPLICATION_MP4;
                 String codecs = MimeTypes.getAudioMediaMimeType(track.getString("codec"));
-                int bitRate = track.getInt("bitRate");
+                int bitrate = track.getInt("bitrate");
                 int channels = track.getInt("channels");
                 int sampleRate = track.getInt("sampleRate");
 
-
-
-                Format format = Format.createAudioContainerFormat(null, null, null, null, codecs, bitRate, channels, sampleRate, null, C.SELECTION_FLAG_AUTOSELECT, C.ROLE_FLAG_MAIN, null);
-
-                track.put("supported", false);
-
+                Format format = Format.createAudioContainerFormat(null, null, null, null, codecs, bitrate, channels, sampleRate, null, C.SELECTION_FLAG_AUTOSELECT, C.ROLE_FLAG_MAIN, null);
                 try {
                     int result = audioRenderer.supportsFormat(format) & RendererCapabilities.FORMAT_SUPPORT_MASK;
                     track.put("supported", result == RendererCapabilities.FORMAT_HANDLED || result == RendererCapabilities.FORMAT_EXCEEDS_CAPABILITIES);
-                } catch (ExoPlaybackException e) {}
+                } catch (ExoPlaybackException e) {
+                    track.put("supported", false);
+                }
 
                 audioTracks.put(i, track);
             }
@@ -123,14 +112,12 @@ public class ExoPlayer {
             }
 
             JSONArray tracks = new JSONArray();
-
             tracks.put(videoTracks);
             tracks.put(audioTracks);
             tracks.put(subtitleTracks);
 
             PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, tracks);
             callbackContext.sendPluginResult(pluginResult);
-
         } catch (JSONException e) {
             callbackContext.error("Wrong set of arguments for method isFormatSupported");
             return false;
