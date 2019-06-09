@@ -27,6 +27,9 @@ else
     release="production"
 fi
 
+# Initialize the submodule jellyfin-web
+git submodule update --init --remote
+
 # Check out the proper jellyfin-web branch or update submodule
 if [[ ${1} == '--web-branch' || ${1} == '-b' ]]; then
     if [[ -n ${2} ]]; then
@@ -38,9 +41,6 @@ if [[ ${1} == '--web-branch' || ${1} == '-b' ]]; then
     else
         usage
     fi
-else
-    # Initialize the submodule jellyfin-web with the most branch master
-    git submodule update --init --remote
 fi
 
 set -o xtrace
