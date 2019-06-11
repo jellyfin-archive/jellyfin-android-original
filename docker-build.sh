@@ -19,6 +19,12 @@ case ${RELEASE} in
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
     ;;
+    'foss')
+        RELEASE_SUFFIX="foss_"
+        NODE_ENV="production"
+        RFLAG="--release"
+        RELEASE_OUTPUT_DIR="release"
+    ;;
     'debug')
         RELEASE_SUFFIX=""
         NODE_ENV="development"
@@ -39,6 +45,11 @@ npm cache verify
 npm install
 npx gulp
 npx cordova prepare
+
+if [ ${RELEASE} == 'foss' ]
+then
+    npx cordova plugin rm cordova-plugin-chromecast
+fi
 
 # Build APK
 npx cordova build android ${RFLAG}
