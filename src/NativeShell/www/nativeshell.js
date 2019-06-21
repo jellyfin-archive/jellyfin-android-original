@@ -36,4 +36,8 @@ NativeShell.prototype.downloadFile = function(url) {
     // TODO implement or remove
 };
 
+NativeShell.prototype.getPlugins = function () {
+    return [];
+};
+
 module.exports = new NativeShell();
