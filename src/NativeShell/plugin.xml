@@ -16,9 +16,6 @@
   <js-module src="www/filesystem.js" name="FileSystem">
     <clobbers target="NativeShell.FileSystem" />
   </js-module>
-  <js-module src="www/exoPlayerAPI.js" name="ExoPlayer">
-    <clobbers target="ExoPlayer" />
-  </js-module>
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="NativeShell">
@@ -30,15 +27,15 @@
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
-      <activity android:label="Exo Player" android:name="org.jellyfin.mobile.exoPlayer.ExoPlayerActivity" android:configChanges="orientation|screenSize|layoutDirection"></activity>
+      <activity android:label="ExoPlayer" android:name="org.jellyfin.mobile.exoplayer.ExoPlayerActivity" android:configChanges="orientation|screenSize|layoutDirection"></activity>
     </config-file>
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/RemotePlayerService.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/CustomWebViewClient.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/Constants.java" target-dir="src/org/jellyfin/mobile" />
-    <source-file src="src/exoPlayer/ExoPlayer.java" target-dir="src/org/jellyfin/mobile/exoPlayer" />
-    <source-file src="src/exoPlayer/ExoPlayerActivity.java" target-dir="src/org/jellyfin/mobile/exoPlayer" />
+    <source-file src="src/exoplayer/ExoPlayer.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
+    <source-file src="src/exoplayer/ExoPlayerActivity.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <framework src="src/build.gradle" custom="true" type="gradleReference" />
     <framework src="com.squareup.okhttp3:okhttp:3.13.1" />
     <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.13.1" />

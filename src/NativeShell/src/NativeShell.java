@@ -16,7 +16,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.apache.cordova.engine.SystemWebView;
 import org.apache.cordova.engine.SystemWebViewEngine;
-import org.jellyfin.mobile.exoPlayer.ExoPlayer;
+import org.jellyfin.mobile.exoplayer.ExoPlayer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -91,8 +91,8 @@ public class NativeShell extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) {
         cordovaWebView = webView;
 
-        if (action.startsWith("exoPlayer")) {
-            action = action.replace("exoPlayer.", "");
+        if (action.startsWith("exoplayer")) {
+            action = action.replace("exoplayer.", "");
             return exoPlayer.handleRequest(action, args, callbackContext, cordova.getActivity());
         }
 

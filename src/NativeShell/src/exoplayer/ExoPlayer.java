@@ -1,4 +1,4 @@
-package org.jellyfin.mobile.exoPlayer;
+package org.jellyfin.mobile.exoplayer;
 
 import android.app.Activity;
 import android.content.Intent;

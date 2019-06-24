@@ -34,16 +34,18 @@ NativeShell.prototype.hideMediaSession = function(successCallback, errorCallback
     invokeMethod('hideMediaSession', [], successCallback, errorCallback);
 };
 
-NativeShell.prototype.downloadFile = function(url) {
+NativeShell.prototype.downloadFile = function(url, successCallback, errorCallback) {
     // TODO implement or remove
 };
 
-NativeShell.prototype.getPlugins = function () {
-    //return []; //FIXME: revert this commit once native player is fully operational
+NativeShell.prototype.getPlugins = function() {
+    return [];
 
-    return [
-        'cordova/exoPlayer'
-    ];
+    // uncomment one or the other for testing
+    //return [
+    //    'cordova/exoplayer'
+    //    'cordova/externalplayer'
+    //];
 };
 
 module.exports = new NativeShell();

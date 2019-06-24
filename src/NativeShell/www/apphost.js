@@ -5,11 +5,8 @@ var appVersion;
 
 var features = [
     //'filedownload',
-    'sync',
-    'customsyncpath',
     'displaylanguage',
     'subtitleappearancesettings',
-    'cameraupload',
     'sharing',
     'exit',
     'htmlaudioautoplay',
@@ -22,7 +19,6 @@ var features = [
 ];
 
 function getDeviceProfile(profileBuilder, item) {
-
     /*if (item.MediaType === 'Video') {
         return getDeviceProfileForVideo(item);
     }*/
@@ -112,11 +108,7 @@ function getDeviceProfileForVideo(item) {
     }
 
     let supportedTracks = window.ExoPlayer.checkTracksSupport(container, videoTracks, audioTracks, subtitleTracks);
-
-
-    //TODO: check if the given tracks are supported. If not, they are not added up to directPlayProfiles
-
-
+    // TODO: check if the given tracks are supported. If not, they are not added up to directPlayProfiles
 }
 
 function parseVideoTrack(track) {
@@ -143,8 +135,6 @@ function parseSubtitleTrack(track) {
         codec: track.Codec
     };
 }
-
-
 
 module.exports = {
     exit: function () {

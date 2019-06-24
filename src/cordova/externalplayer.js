@@ -1,11 +1,7 @@
-/**
- * CAUTION: do not remove this file. this should be used for future implementations, using external players.
- */
 define(['events', 'appSettings', 'filesystem'], function (events, appSettings, fileSystem) {
     "use strict";
 
     return function () {
-
         var self = this;
 
         self.name = 'External Player';
@@ -18,7 +14,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         self.isLocalPlayer = true;
 
         var currentProcess;
-
         var currentSrc;
 
         self.canPlayMediaType = function (mediaType) {

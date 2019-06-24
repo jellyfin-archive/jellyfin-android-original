@@ -1,31 +1,47 @@
-/**
- * CAUTION: do not remove this file. this should be used for future implementations, using external players.
- */
 define(['events', 'appSettings', 'filesystem', 'loading'], function (events, appSettings, fileSystem, loading) {
     "use strict";
 
     return function () {
-
         var self = this;
 
-        self.name = 'Native player for Android';
+        self.name = 'ExoPlayer';
         self.type = 'mediaplayer';
         self.id = 'exoplayer';
-        self.player = window.ExoPlayer;
 
         // Prioritize first
         self.priority = -1;
-        self.supportsProgress = false; //TODO: what is this for?
+        self.supportsProgress = false;
         self.isLocalPlayer = true;
 
         var currentSrc;
+
+        self.invokeNativeMethod = function (method, args, successCallback, errorCallback) {
+            return window.NativeShell.invokeMethod('exoplayer.' + method, args, successCallback, errorCallback);
+        }
 
         self.canPlayMediaType = function (mediaType) {
             return mediaType === 'Video';
         };
 
-        /*self.canPlayItem = function (item, playOptions) {
+        self.checkTracksSupport = function (videoTracks, audioTracks, subtitleTracks) {
+            return new Promise(function (resolve) {
+                let successCallback = function (result) {
+                    resolve({
+                        videoTracks: result.videoTracks,
+                        audioTracks: result.audioTracks,
+                        subtitleTracks: result.subtitleTracks
+                    });
+                };
 
+                let errorCallback = function () {
+                    resolve(false);
+                };
+
+                invokeMethod('checkTracksSupport', [videoTracks, audioTracks, subtitleTracks], successCallback, errorCallback);
+            });
+        };
+
+        /*self.canPlayItem = function (item, playOptions) {
             if (!playOptions.fullscreen) {
                 return false;
             }
@@ -38,7 +54,6 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         function modifyStreamUrl(options) {
-
             var url = options.url;
             var mediaSource = options.mediaSource;
 
@@ -58,16 +73,12 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         }
 
         self.play = function (options) {
-
-            self.player.loadPlayer(options);
-
+            self.invokeNativeMethod('loadPlayer', [options])
             loading.hide();
-
 
             //TODO: instantiate the native player using cordova
             //TODO: check if the item media capabilities using native player
             //TODO: play the media item in the player
-
 
             /*return modifyStreamUrl(options).then(function (streamUrl) {
                 // TODO reimplement
@@ -83,7 +94,6 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.setAudioStreamIndex = function (index) {
-
         };
 
         // Save this for when playback stops, because querying the time at that point might return 0
@@ -96,7 +106,6 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.stop = function (destroyPlayer, reportEnded) {
-
             return closePlayer().then(function () {
                 onEndedInternal(reportEnded);
                 return Promise.resolve();
@@ -108,7 +117,6 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         function closePlayer() {
-
             return Promise.resolve();
         }
 
@@ -131,11 +139,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.isMuted = function () {
         };
 
-
-
-
         function onEndedInternal(triggerEnded) {
-
             if (triggerEnded) {
                 var stopInfo = {
                     src: currentSrc
@@ -148,20 +152,13 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         }
 
         self.getDeviceProfile = function (item, options) {
-
             // using native player implementations, check if item can be played. Also check if direct play is supported, as audio is supported.
 
-
-
-
             return new Promise(function (resolve, reject) {
-
                 require(['browserdeviceprofile'], function (profileBuilder) {
-
                     var bitrateSetting = appSettings.maxStreamingBitrate();
 
                     var profile = {};
-
                     profile.MaxStreamingBitrate = bitrateSetting;
                     profile.MaxStaticBitrate = 100000000;
                     profile.MusicStreamingTranscodingBitrate = 192000;
@@ -249,7 +246,6 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     });
 
                     profile.ResponseProfiles = [];
-
                     resolve(profile);
                 });
             });
