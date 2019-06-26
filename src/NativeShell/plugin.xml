@@ -27,15 +27,19 @@
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
+      <activity android:label="ExoPlayer" android:name="org.jellyfin.mobile.exoplayer.ExoPlayerActivity" android:configChanges="orientation|screenSize|layoutDirection"></activity>
     </config-file>
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/RemotePlayerService.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/CustomWebViewClient.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/Constants.java" target-dir="src/org/jellyfin/mobile" />
+    <source-file src="src/exoplayer/ExoPlayer.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
+    <source-file src="src/exoplayer/ExoPlayerActivity.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <framework src="src/build.gradle" custom="true" type="gradleReference" />
     <framework src="com.squareup.okhttp3:okhttp:3.13.1" />
     <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.13.1" />
+    <framework src="com.google.android.exoplayer:exoplayer:2.10.0" />
     <resource-file src="res/drawable-hdpi/ic_notification.png" target="res/drawable-hdpi/ic_notification.png" />
     <resource-file src="res/drawable-ldpi/ic_notification.png" target="res/drawable-ldpi/ic_notification.png" />
     <resource-file src="res/drawable-mdpi/ic_notification.png" target="res/drawable-mdpi/ic_notification.png" />
@@ -44,5 +48,6 @@
     <resource-file src="res/drawable-xxxhdpi/ic_notification.png" target="res/drawable-xxxhdpi/ic_notification.png" />
     <resource-file src="res/values/colors.xml" target="res/values/colors.xml" />
     <resource-file src="res/values/strings_pref.xml" target="res/values/strings_pref.xml" />
+    <resource-file src="res/layout/exo_player.xml" target="res/layout/exo_player.xml" />
   </platform>
 </plugin>

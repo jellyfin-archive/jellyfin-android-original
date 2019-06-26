@@ -1,43 +1,59 @@
-define(['events', 'appSettings', 'filesystem'], function (events, appSettings, fileSystem) {
+define(['events', 'appSettings', 'filesystem', 'loading'], function (events, appSettings, fileSystem, loading) {
     "use strict";
 
     return function () {
         var self = this;
 
-        self.name = 'External Player';
+        self.name = 'ExoPlayer';
         self.type = 'mediaplayer';
-        self.id = 'externalplayer';
+        self.id = 'exoplayer';
 
         // Prioritize first
         self.priority = -1;
         self.supportsProgress = false;
         self.isLocalPlayer = true;
 
-        var currentProcess;
         var currentSrc;
 
+        self.invokeNativeMethod = function (method, args, successCallback, errorCallback) {
+            return window.NativeShell.invokeMethod('exoplayer.' + method, args, successCallback, errorCallback);
+        }
+
         self.canPlayMediaType = function (mediaType) {
-            if (mediaType === 'Video') {
-                return appSettings.enableSystemExternalPlayers();
-            }
-            return false;
+            return mediaType === 'Video';
         };
 
-        self.canPlayItem = function (item, playOptions) {
+        self.checkTracksSupport = function (videoTracks, audioTracks, subtitleTracks) {
+            return new Promise(function (resolve) {
+                let successCallback = function (result) {
+                    resolve({
+                        videoTracks: result.videoTracks,
+                        audioTracks: result.audioTracks,
+                        subtitleTracks: result.subtitleTracks
+                    });
+                };
 
+                let errorCallback = function () {
+                    resolve(false);
+                };
+
+                invokeMethod('checkTracksSupport', [videoTracks, audioTracks, subtitleTracks], successCallback, errorCallback);
+            });
+        };
+
+        /*self.canPlayItem = function (item, playOptions) {
             if (!playOptions.fullscreen) {
                 return false;
             }
 
             return true;
-        };
+        };*/
 
         self.currentSrc = function () {
             return currentSrc;
         };
 
         function modifyStreamUrl(options) {
-
             var url = options.url;
             var mediaSource = options.mediaSource;
 
@@ -57,10 +73,17 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         }
 
         self.play = function (options) {
-            return modifyStreamUrl(options).then(function (streamUrl) {
+            self.invokeNativeMethod('loadPlayer', [options])
+            loading.hide();
+
+            //TODO: instantiate the native player using cordova
+            //TODO: check if the item media capabilities using native player
+            //TODO: play the media item in the player
+
+            /*return modifyStreamUrl(options).then(function (streamUrl) {
                 // TODO reimplement
                 return Promise.resolve();
-            });
+            });*/
         };
 
         self.setSubtitleStreamIndex = function (index) {
@@ -71,7 +94,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         };
 
         self.setAudioStreamIndex = function (index) {
-
         };
 
         // Save this for when playback stops, because querying the time at that point might return 0
@@ -84,7 +106,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         };
 
         self.stop = function (destroyPlayer, reportEnded) {
-
             return closePlayer().then(function () {
                 onEndedInternal(reportEnded);
                 return Promise.resolve();
@@ -96,7 +117,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         };
 
         function closePlayer() {
-
             return Promise.resolve();
         }
 
@@ -119,20 +139,7 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         self.isMuted = function () {
         };
 
-        function onEnded() {
-
-            currentProcess = null;
-            onEndedInternal(true);
-        }
-
-        function onError() {
-
-            currentProcess = null;
-            events.trigger(self, 'error');
-        }
-
         function onEndedInternal(triggerEnded) {
-
             if (triggerEnded) {
                 var stopInfo = {
                     src: currentSrc
@@ -144,16 +151,14 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
             currentSrc = null;
         }
 
-        self.getDeviceProfile = function () {
+        self.getDeviceProfile = function (item, options) {
+            // using native player implementations, check if item can be played. Also check if direct play is supported, as audio is supported.
 
             return new Promise(function (resolve, reject) {
-
                 require(['browserdeviceprofile'], function (profileBuilder) {
-
                     var bitrateSetting = appSettings.maxStreamingBitrate();
 
                     var profile = {};
-
                     profile.MaxStreamingBitrate = bitrateSetting;
                     profile.MaxStaticBitrate = 100000000;
                     profile.MusicStreamingTranscodingBitrate = 192000;
@@ -241,7 +246,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
                     });
 
                     profile.ResponseProfiles = [];
-
                     resolve(profile);
                 });
             });
