@@ -27,23 +27,8 @@ else
     release="production"
 fi
 
-# Initialize the submodule jellyfin-web
-git submodule update --init --remote
-
-# Check out the proper jellyfin-web branch or update submodule
-if [[ ${1} == '--web-branch' || ${1} == '-b' ]]; then
-    if [[ -n ${2} ]]; then
-        pushd src/jellyfin-web
-        git fetch --all
-        git checkout ${2} || usage
-        popd
-        shift 2
-    else
-        usage
-    fi
-fi
-
 set -o xtrace
+
 package_temporary_dir="$( mktemp -d )"
 current_user="$( whoami )"
 
@@ -56,11 +41,13 @@ trap cleanup EXIT INT
 
 # Set up the build environment docker image
 docker build . -t "${image_name}" -f ./${dockerfile}
+
 # Build the APKs and copy out to ${package_temporary_dir}
 docker run --rm -e "RELEASE=${release}" -v "${package_temporary_dir}:/dist" "${image_name}"
+
 # Correct ownership on the APKs (as current user, then as root if that fails)
-chown -R "${current_user}" "${package_temporary_dir}" &>/dev/null \
-  || sudo chown -R "${current_user}" "${package_temporary_dir}" &>/dev/null
+chown -R "${current_user}" "${package_temporary_dir}" &>/dev/null
+
 # Move the APKs to the parent directory
 mkdir -p ../bin &>/dev/null
 mv "${package_temporary_dir}"/apk/*.apk ../bin
