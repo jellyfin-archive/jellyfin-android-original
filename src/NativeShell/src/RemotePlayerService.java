@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,6 +35,29 @@ public class RemotePlayerService extends Service {
     private String mediaSessionId;
     private String channelId;
     private int notifyId = 84;
+
+    // only trip this flag if the user switches from headphones to speaker
+    // prevent stopping music when inserting headphones for the first time
+    public static boolean headphoneFlag = false;
+    public static BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+                int state = intent.getIntExtra("state", 2);
+                if (state == 0) {
+                    sendCommand("playpause");
+                    headphoneFlag = true;
+                } else if (headphoneFlag) {
+                    sendCommand("playpause");
+                }
+            }
+        }
+    };
+
+    private static void sendCommand(String action) {
+        String url = "javascript:require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + action + "');});";
+        NativeShell.cordovaWebView.loadUrlIntoView(url, false);
+    }
 
     @Override
     public void onCreate() {
@@ -70,11 +94,6 @@ public class RemotePlayerService extends Service {
 
         handleIntent(intent);
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    private void sendCommand(String action) {
-        String url = "javascript:require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + action + "');});";
-        NativeShell.cordovaWebView.loadUrlIntoView(url, false);
     }
 
     private void startWakelock() {
@@ -293,6 +312,7 @@ public class RemotePlayerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mediaSession.release();
         }
+        headphoneFlag = false;
         stopWakelock();
         stopService(intent);
     }

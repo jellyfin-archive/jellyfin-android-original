@@ -3,6 +3,7 @@ package org.jellyfin.mobile;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
@@ -83,6 +84,10 @@ public class NativeShell extends CordovaPlugin {
                         builder.show();
                     }
                 }
+                // add intent filter to watch for headphone state
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_HEADSET_PLUG);
+                cordova.getActivity().registerReceiver(RemotePlayerService.receiver, filter);
             }
         });
     }
@@ -182,7 +187,6 @@ public class NativeShell extends CordovaPlugin {
         }
 
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
-
         try {
             cordova.getActivity().startActivity(intent);
             PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
