@@ -10,6 +10,8 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.content.Intent;
 import android.view.WindowManager;
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothHeadset;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -87,6 +89,9 @@ public class NativeShell extends CordovaPlugin {
                 // add intent filter to watch for headphone state
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(Intent.ACTION_HEADSET_PLUG);
+                // bluetooth related filters - needs BLUETOOTH permission
+                filter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
+                filter.addAction(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED);
                 cordova.getActivity().registerReceiver(RemotePlayerService.receiver, filter);
             }
         });
