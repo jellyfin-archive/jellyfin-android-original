@@ -7,7 +7,7 @@ set -o xtrace
 
 # Handle the release type
 RELEASE="${RELEASE:-debug}"
-case ${RELEASE} in
+case "${RELEASE}" in
     'production')
         RELEASE_SUFFIX=""
         NODE_ENV="production"
@@ -35,11 +35,11 @@ case ${RELEASE} in
 esac
 
 # Export environment variables
-export ANDROID_HOME=${ANDROID_DIR}
+export ANDROID_HOME="${ANDROID_DIR}"
 export NODE_ENV
 
 # Move to source directory
-pushd ${SOURCE_DIR}
+pushd "${SOURCE_DIR}"
 
 # Install dependencies
 npm cache verify
@@ -48,14 +48,14 @@ npx gulp
 npx cordova telemetry off
 npx cordova prepare
 
-if [ ${RELEASE} == 'foss' ]
+if [ "${RELEASE}" == 'foss' ]
 then
     npx cordova plugin rm cordova-plugin-chromecast
 fi
 
 # Build APK
-npx cordova build android ${RFLAG}
+npx cordova build android "${RFLAG}"
 
 # Move the artifacts out
-mkdir -p ${ARTIFACT_DIR}/apk
+mkdir -p "${ARTIFACT_DIR}/apk"
 mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/${RELEASE_OUTPUT_DIR}/app-*.apk" "${ARTIFACT_DIR}/apk/jellyfin-android_${RELEASE_SUFFIX}#1.apk"
