@@ -243,7 +243,7 @@ public class RemotePlayerService extends Service {
             builder.setOngoing(false);
             // dynamic media position
             builder.setShowWhen(true);
-            builder.setUsesChronometer(true);
+            builder.setUsesChronometer(!isPaused);
             builder.setWhen(System.currentTimeMillis() - position);
             // privacy value for lock screen
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
