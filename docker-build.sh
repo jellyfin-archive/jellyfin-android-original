@@ -45,6 +45,7 @@ pushd ${SOURCE_DIR}
 npm cache verify
 npm install
 npx gulp
+npx cordova telemetry off
 npx cordova prepare
 
 if [ ${RELEASE} == 'foss' ]
