@@ -29,7 +29,7 @@ case ${RELEASE} in
     'debug')
         RELEASE_SUFFIX=""
         NODE_ENV="development"
-        RFLAG=""
+        RFLAG="--debug"
         RELEASE_OUTPUT_DIR="debug"
     ;;
 esac
