@@ -32,6 +32,9 @@ case "${RELEASE}" in
         RFLAG="--debug"
         RELEASE_OUTPUT_DIR="debug"
     ;;
+    *)
+        echo error: release may only be production, unminified, foss, or debug >&2
+        exit 1
 esac
 
 # Export environment variables
