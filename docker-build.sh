@@ -6,6 +6,7 @@ set -o errexit
 set -o xtrace
 
 # Handle the release type
+RELEASE="${RELEASE:-debug}"
 case ${RELEASE} in
     'production')
         RELEASE_SUFFIX=""
