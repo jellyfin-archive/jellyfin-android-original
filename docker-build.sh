@@ -61,4 +61,5 @@ npx cordova build android "${RFLAG}"
 
 # Move the artifacts out
 mkdir -p "${ARTIFACT_DIR}/apk"
-mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/${RELEASE_OUTPUT_DIR}/app-*.apk" "${ARTIFACT_DIR}/apk/jellyfin-android_${RELEASE_SUFFIX}#1.apk"
+mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/${RELEASE_OUTPUT_DIR}/app-*.apk" \
+    "${ARTIFACT_DIR}/apk/jellyfin-android_${RELEASE_SUFFIX}#1.apk"
