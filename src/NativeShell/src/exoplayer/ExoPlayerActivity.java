@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.media.session.MediaSession;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -20,6 +21,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 
 import org.jellyfin.mobile.Constants;
 import org.jellyfin.mobile.R;
@@ -68,8 +70,15 @@ public class ExoPlayerActivity extends Activity {
                 player.seekTo(mediaStartTicks / Constants.TICKS_PER_MILLISECOND);
             }
 
+            MediaSession mediaSession = new MediaSession(getApplicationContext(), getClass().toString());
+            mediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
+            MediaSessionConnector mediaSessionConnector = new MediaSessionConnector(mediaSession);
+            mediaSessionConnector.setPlayer(player);
+            mediaSession.setActive(true);
+
             player.prepare(mediaSource, false, false);
             player.setPlayWhenReady(true);
+
         }
     }
 
