@@ -18,7 +18,10 @@ import android.media.session.MediaSession.Callback;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothHeadset;
 
 import org.jellyfin.apiclient.interaction.Response;
 import org.jellyfin.apiclient.interaction.VolleyHttpClient;
@@ -42,12 +45,35 @@ public class RemotePlayerService extends Service {
     public static BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent != null && intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+            if (intent == null) {
+                return;
+            }
+            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
                 int state = intent.getIntExtra("state", 2);
                 if (state == 0) {
                     sendCommand("playpause");
                     headphoneFlag = true;
                 } else if (headphoneFlag) {
+                    sendCommand("playpause");
+                }
+            } else if (intent.getAction().equals(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)) {
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    return;
+                }
+                int state = extras.getInt(BluetoothA2dp.EXTRA_STATE);
+                int previousState = extras.getInt(BluetoothA2dp.EXTRA_PREVIOUS_STATE);
+                if ((state == BluetoothA2dp.STATE_DISCONNECTED || state == BluetoothA2dp.STATE_DISCONNECTING) && previousState == BluetoothA2dp.STATE_CONNECTED) {
+                    sendCommand("playpause");
+                }
+            } else if (intent.getAction().equals(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED)) {
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    return;
+                }
+                int state = extras.getInt(BluetoothHeadset.EXTRA_STATE);
+                int previousState = extras.getInt(BluetoothHeadset.EXTRA_PREVIOUS_STATE);
+                if (state == BluetoothHeadset.STATE_AUDIO_DISCONNECTED && previousState == BluetoothHeadset.STATE_AUDIO_CONNECTED) {
                     sendCommand("playpause");
                 }
             }
