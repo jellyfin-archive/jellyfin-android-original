@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -30,10 +31,14 @@ import org.json.JSONObject;
 public class ExoPlayerActivity extends Activity {
 
     private SimpleExoPlayer player = null;
+    private ExoPlayerEventListener eventListener = null;
+    private Handler timeUpdatesHandler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        eventListener = new ExoPlayerEventListener(this);
 
         // toggle fullscreen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -68,9 +73,18 @@ public class ExoPlayerActivity extends Activity {
                 player.seekTo(mediaStartTicks / Constants.TICKS_PER_MILLISECOND);
             }
 
+            player.addListener(eventListener);
+            player.addAudioListener(eventListener);
             player.prepare(mediaSource, false, false);
             player.setPlayWhenReady(true);
+
+            startTimeUpdates();
         }
+    }
+
+    public void notifyEvent(String event, String... arguments)
+    {
+        ExoPlayer.callWebMethod("notify" + event, arguments);
     }
 
     /**
@@ -143,7 +157,30 @@ public class ExoPlayerActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        stopTimeUpdates();
         player.release();
         super.onDestroy();
     }
+
+    private void startTimeUpdates() {
+        timeUpdatesHandler = new Handler();
+        timeUpdatesHandler.postDelayed(timeUpdateCallabck, 0);
+    }
+
+    private void stopTimeUpdates() {
+        notifyEvent(Constants.EVENT_PAUSE);
+        timeUpdatesHandler.removeCallbacksAndMessages(null);
+    }
+
+    private void processTimeUpdate() {
+        notifyEvent(Constants.EVENT_TIME_UPDATE, new Long(player.getCurrentPosition()).toString());
+        timeUpdatesHandler.postDelayed(timeUpdateCallabck, 1000);
+    }
+
+    private final Runnable timeUpdateCallabck = new Runnable() {
+        @Override
+        public void run() {
+            processTimeUpdate();
+        }
+    };
 }

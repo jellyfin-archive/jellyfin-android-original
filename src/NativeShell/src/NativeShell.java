@@ -95,7 +95,7 @@ public class NativeShell extends CordovaPlugin {
 
         if (action.startsWith("exoplayer")) {
             action = action.replace("exoplayer.", "");
-            return exoPlayer.handleRequest(action, args, callbackContext, cordova.getActivity());
+            return exoPlayer.handleRequest(action, args, callbackContext, cordova.getActivity(), webView);
         }
 
         this.callbackContext = callbackContext;

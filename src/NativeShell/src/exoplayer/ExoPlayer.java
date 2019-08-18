@@ -2,6 +2,7 @@ package org.jellyfin.mobile.exoplayer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -13,6 +14,7 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.video.MediaCodecVideoRenderer;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +24,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ExoPlayer {
-    public boolean handleRequest(String methodName, JSONArray args, CallbackContext callbackContext, Activity activity) {
+    private static Activity cordovaActivity;
+    private static CordovaWebView cordovaWebView;
+
+    public boolean handleRequest(String methodName, JSONArray args, CallbackContext callbackContext, Activity activity, CordovaWebView webView) {
+        cordovaActivity = activity;
+        cordovaWebView = webView;
+
         try {
             Method method = this.getClass().getMethod(methodName, JSONArray.class, CallbackContext.class, Activity.class);
             return (boolean) method.invoke(this, args, callbackContext, activity);
@@ -53,6 +61,24 @@ public class ExoPlayer {
         callbackContext.sendPluginResult(pluginResult);
 
         return true;
+    }
+
+    /**
+     * call a method from ExoPlayer instance present in window object
+     * @param method    method to invoke in the ExoPlayer instance
+     * @param arguments optional arguments to call with this method
+     */
+    public static void callWebMethod(String method, String... arguments) {
+        for (int i = 0; i < arguments.length; i++) {
+            arguments[i] = "'" + arguments[i] + "'";
+        }
+
+        cordovaActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                cordovaWebView.loadUrl("javascript:window.ExoPlayer." + method + "(" + TextUtils.join(",", arguments) + ")");
+            }
+        });
     }
 
     public boolean checkTracksSupport(JSONArray args, CallbackContext callbackContext, Activity activity) {

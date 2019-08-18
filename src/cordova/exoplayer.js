@@ -4,6 +4,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
     return function () {
         var self = this;
 
+        window.ExoPlayer = this;
+
         self.name = 'ExoPlayer';
         self.type = 'mediaplayer';
         self.id = 'exoplayer';
@@ -12,6 +14,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.priority = -1;
         self.supportsProgress = false;
         self.isLocalPlayer = true;
+        self._currentTime = 0;
 
         var currentSrc;
 
@@ -73,17 +76,12 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         }
 
         self.play = function (options) {
-            self.invokeNativeMethod('loadPlayer', [options])
-            loading.hide();
-
-            //TODO: instantiate the native player using cordova
-            //TODO: check if the item media capabilities using native player
-            //TODO: play the media item in the player
-
-            /*return modifyStreamUrl(options).then(function (streamUrl) {
-                // TODO reimplement
-                return Promise.resolve();
-            });*/
+            return new Promise(function (resolve) {
+                self._currentTime = 0;
+                self.invokeNativeMethod('loadPlayer', [options])
+                loading.hide();
+                resolve();
+            });
         };
 
         self.setSubtitleStreamIndex = function (index) {
@@ -149,6 +147,37 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
             }
 
             currentSrc = null;
+        }
+
+        self.notifyVolumeChange = function (volume) {
+            events.trigger(self, 'volumechange');
+        };
+
+        self.notifyPlay = function () {
+            events.trigger(self, 'unpause');
+        };
+
+        self.notifyPlaying = function () {
+            events.trigger(self, 'playing');
+        };
+
+        self.notifyEnded = function () {
+            events.trigger(self, 'stopped');
+        };
+
+        self.notifyPause = function () {
+            events.trigger(self, 'pause');
+        };
+
+        self.notifyTimeUpdate = function (currentTime) {
+            currentTime = currentTime / 1000;
+            self._timeUpdated = self._currentTime != currentTime;
+            self._currentTime = currentTime;
+            events.trigger(self, 'timeupdate');
+        }
+
+        self.currentTime = function () {
+            return (self._currentTime || 0) * 1000;
         }
 
         self.getDeviceProfile = function (item, options) {

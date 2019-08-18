@@ -14,4 +14,14 @@ public class Constants {
     public static final String ACTION_SEEK = "action_seek";
     public static final String ACTION_SHOW_PLAYER = "ACTION_SHOW_PLAYER";
     public static final int TICKS_PER_MILLISECOND = 10000;
+
+    /**
+     * exoplayer events
+     */
+    public static final String EVENT_VOLUME_CHANGE = "VolumeChange";
+    public static final String EVENT_PLAY = "Play";
+    public static final String EVENT_PLAYING = "Playing";
+    public static final String EVENT_PAUSE = "Pause";
+    public static final String EVENT_ENDED = "Ended";
+    public static final String EVENT_TIME_UPDATE = "TimeUpdate";
 }
