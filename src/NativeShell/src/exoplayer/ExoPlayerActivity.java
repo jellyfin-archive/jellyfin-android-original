@@ -38,6 +38,8 @@ public class ExoPlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ExoPlayer.setPlayer(this);
+
         eventListener = new ExoPlayerEventListener(this);
 
         // toggle fullscreen
@@ -46,6 +48,8 @@ public class ExoPlayerActivity extends Activity {
 
         // initialize exoplayer
         player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
+
+
 
         // set player view layout
         setContentView(R.layout.exo_player);
@@ -78,13 +82,27 @@ public class ExoPlayerActivity extends Activity {
             player.prepare(mediaSource, false, false);
             player.setPlayWhenReady(true);
 
+            notifyEvent(Constants.EVENT_VOLUME_CHANGE, getVolume());
+
             startTimeUpdates();
         }
     }
 
-    public void notifyEvent(String event, String... arguments)
-    {
+    public void notifyEvent(String event, String... arguments) {
         ExoPlayer.callWebMethod("notify" + event, arguments);
+    }
+
+    public String getVolume() {
+        return player == null ? "0" : new Float(player.getAudioComponent().getVolume()).toString();
+    }
+
+    public boolean setVolume(float volume) {
+        if (player == null) {
+            return false;
+        }
+
+        player.getAudioComponent().setVolume(volume);
+        return true;
     }
 
     /**
@@ -158,6 +176,7 @@ public class ExoPlayerActivity extends Activity {
     @Override
     protected void onDestroy() {
         stopTimeUpdates();
+        ExoPlayer.unsetPlayer();
         player.release();
         super.onDestroy();
     }
@@ -168,8 +187,8 @@ public class ExoPlayerActivity extends Activity {
     }
 
     private void stopTimeUpdates() {
-        notifyEvent(Constants.EVENT_PAUSE);
-        timeUpdatesHandler.removeCallbacksAndMessages(null);
+        timeUpdatesHandler.removeCallbacks(timeUpdateCallabck);
+        notifyEvent(Constants.EVENT_PAUSE); // notifies that the video is paused, kind of stopped
     }
 
     private void processTimeUpdate() {

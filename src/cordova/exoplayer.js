@@ -15,6 +15,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.supportsProgress = false;
         self.isLocalPlayer = true;
         self._currentTime = 0;
+        self._paused = true;
+        self.volume = 0;
 
         var currentSrc;
 
@@ -78,7 +80,9 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.play = function (options) {
             return new Promise(function (resolve) {
                 self._currentTime = 0;
-                self.invokeNativeMethod('loadPlayer', [options])
+                self._paused      = false;
+                self.invokeNativeMethod('loadPlayer', [options]);
+                self._volume = self.invokeNativeMethod('getVolume');
                 loading.hide();
                 resolve();
             });
@@ -111,30 +115,32 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.destroy = function () {
-            closePlayer();
+            invokeNativeMethod('destroyPlayer');
         };
 
-        function closePlayer() {
-            return Promise.resolve();
-        }
-
         self.pause = function () {
+            // should not be necessary to implement
         };
 
         self.unpause = function () {
+            // should not be necessary to implement
         };
 
         self.paused = function () {
-            return false;
+            return self._paused;
         };
 
         self.volume = function (val) {
+            // should not be necessary to implement
         };
 
         self.setMute = function (mute) {
+            let unmuted = Number(self._volume) ? self._volume : '0.5'; // if volume is set to zero, then assume half as default when unmuting
+            self.invokeNativeMethod('setVolume', [mute ? '0' : unmuted]);
         };
 
         self.isMuted = function () {
+            return Number(self._volume) == 0;
         };
 
         function onEndedInternal(triggerEnded) {
@@ -150,6 +156,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         }
 
         self.notifyVolumeChange = function (volume) {
+            self._volume = volume;
             events.trigger(self, 'volumechange');
         };
 
@@ -158,6 +165,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.notifyPlaying = function () {
+            self._paused = false;
             events.trigger(self, 'playing');
         };
 
@@ -166,6 +174,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.notifyPause = function () {
+            self._paused = true;
             events.trigger(self, 'pause');
         };
 

@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RendererCapabilities;
 import com.google.android.exoplayer2.audio.MediaCodecAudioRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
@@ -26,6 +27,7 @@ import java.lang.reflect.Method;
 public class ExoPlayer {
     private static Activity cordovaActivity;
     private static CordovaWebView cordovaWebView;
+    private static ExoPlayerActivity playerActivity = null;
 
     public boolean handleRequest(String methodName, JSONArray args, CallbackContext callbackContext, Activity activity, CordovaWebView webView) {
         cordovaActivity = activity;
@@ -79,6 +81,14 @@ public class ExoPlayer {
                 cordovaWebView.loadUrl("javascript:window.ExoPlayer." + method + "(" + TextUtils.join(",", arguments) + ")");
             }
         });
+    }
+
+    public static void setPlayer(ExoPlayerActivity player) {
+        playerActivity = player;
+    }
+
+    public static void unsetPlayer() {
+        playerActivity = null;
     }
 
     public boolean checkTracksSupport(JSONArray args, CallbackContext callbackContext, Activity activity) {
@@ -149,6 +159,40 @@ public class ExoPlayer {
             return false;
         }
 
+        return true;
+    }
+
+    public boolean getVolume(JSONArray args, CallbackContext callbackContext, Activity activity) {
+        if (playerActivity != null) {
+            callbackContext.success(playerActivity.getVolume());
+            return true;
+        }
+
+        callbackContext.error("player activity not initialized");
+        return false;
+    }
+
+    public boolean setVolume(JSONArray args, CallbackContext callbackContext, Activity activity) {
+        if (playerActivity != null) {
+            try {
+                playerActivity.setVolume(new Float(args.getString(0)));
+                callbackContext.success();
+                return true;
+            } catch (JSONException e) {
+                callbackContext.error("wrong parameter for setVolume: " + args.toString());
+            }
+        }
+
+        callbackContext.error("player activity not initialized");
+        return false;
+    }
+
+    public boolean destroyPlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
+        if (playerActivity != null) {
+            playerActivity.finish();
+        }
+
+        callbackContext.success();
         return true;
     }
 }
