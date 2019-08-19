@@ -17,6 +17,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self._currentTime = 0;
         self._paused = true;
         self.volume = 0;
+        self._currentSrc = null;
 
         var currentSrc;
 
@@ -55,7 +56,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };*/
 
         self.currentSrc = function () {
-            return currentSrc;
+            return self._currentSrc;
         };
 
         function modifyStreamUrl(options) {
@@ -80,7 +81,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.play = function (options) {
             return new Promise(function (resolve) {
                 self._currentTime = 0;
-                self._paused      = false;
+                self._paused = false;
+                self._currentSrc = options.url;
                 self.invokeNativeMethod('loadPlayer', [options]);
                 self._volume = self.invokeNativeMethod('getVolume');
                 loading.hide();
@@ -107,27 +109,34 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
             return null;
         };
 
-        self.stop = function (destroyPlayer, reportEnded) {
-            return closePlayer().then(function () {
-                onEndedInternal(reportEnded);
-                return Promise.resolve();
-            });
-        };
-
         self.destroy = function () {
-            invokeNativeMethod('destroyPlayer');
+            self.invokeNativeMethod('destroyPlayer');
         };
 
         self.pause = function () {
-            // should not be necessary to implement
+            self._paused = true;
+            self.invokeNativeMethod('pausePlayer');
         };
 
         self.unpause = function () {
-            // should not be necessary to implement
+            self._paused = false;
+            self.invokeNativeMethod('resumePlayer');
         };
 
         self.paused = function () {
             return self._paused;
+        };
+
+        self.stop = function (destroyPlayer) {
+            return new Promise(function (resolve) {
+                self.invokeNativeMethod('stopPlayer');
+
+                if (destroyPlayer) {
+                    self.destroy();
+                }
+
+                resolve();
+            });
         };
 
         self.volume = function (val) {
@@ -142,18 +151,6 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.isMuted = function () {
             return Number(self._volume) == 0;
         };
-
-        function onEndedInternal(triggerEnded) {
-            if (triggerEnded) {
-                var stopInfo = {
-                    src: currentSrc
-                };
-
-                events.trigger(self, 'stopped', [stopInfo]);
-            }
-
-            currentSrc = null;
-        }
 
         self.notifyVolumeChange = function (volume) {
             self._volume = volume;
@@ -170,7 +167,13 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.notifyEnded = function () {
-            events.trigger(self, 'stopped');
+            let stopInfo = {
+                src: self._currentSrc
+            };
+
+            events.trigger(self, 'stopped', [stopInfo]);
+
+            self._currentSrc = self._currentTime = null;
         };
 
         self.notifyPause = function () {

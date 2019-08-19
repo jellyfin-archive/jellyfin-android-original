@@ -195,4 +195,31 @@ public class ExoPlayer {
         callbackContext.success();
         return true;
     }
+
+    public boolean pausePlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
+        if (playerActivity != null) {
+            playerActivity.pause();
+        }
+
+        callbackContext.success();
+        return true;
+    }
+
+    public boolean resumePlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
+        if (playerActivity != null) {
+            playerActivity.resume();
+        }
+
+        callbackContext.success();
+        return true;
+    }
+
+    public boolean stopPlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
+        if (playerActivity != null) {
+            playerActivity.stop();
+        }
+
+        callbackContext.success();
+        return true;
+    }
 }

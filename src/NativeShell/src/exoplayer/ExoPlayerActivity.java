@@ -105,6 +105,25 @@ public class ExoPlayerActivity extends Activity {
         return true;
     }
 
+    public void pause() {
+        if (player != null) {
+            player.setPlayWhenReady(false);
+        }
+    }
+
+    public void resume() {
+        if (player != null) {
+            player.setPlayWhenReady(true);
+        }
+    }
+
+    public void stop() {
+        if (player != null) {
+            player.stop();
+            notifyEvent(Constants.EVENT_ENDED);
+        }
+    }
+
     /**
      * builds a media source to feed the player being loaded
      * @param item json object containing all necessary info about the item to be played.
@@ -177,6 +196,7 @@ public class ExoPlayerActivity extends Activity {
     protected void onDestroy() {
         stopTimeUpdates();
         ExoPlayer.unsetPlayer();
+        notifyEvent(Constants.EVENT_ENDED);
         player.release();
         super.onDestroy();
     }
