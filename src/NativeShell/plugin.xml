@@ -37,6 +37,7 @@
     <source-file src="src/exoplayer/ExoPlayer.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/ExoPlayerActivity.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/ExoPlayerEventListener.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
+    <source-file src="src/exoplayer/ExoPlayerFormats.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <framework src="src/build.gradle" custom="true" type="gradleReference" />
     <framework src="com.squareup.okhttp3:okhttp:3.13.1" />
     <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.13.1" />

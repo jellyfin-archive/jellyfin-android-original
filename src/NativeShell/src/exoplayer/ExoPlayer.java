@@ -2,6 +2,10 @@ package org.jellyfin.mobile.exoplayer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
+import android.media.MediaFormat;
 import android.text.TextUtils;
 
 import com.google.android.exoplayer2.C;
@@ -21,8 +25,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public class ExoPlayer {
     private static Activity cordovaActivity;
@@ -221,5 +227,41 @@ public class ExoPlayer {
 
         callbackContext.success();
         return true;
+    }
+
+    public boolean getSupportedFormats(JSONArray args, CallbackContext callbackContext, Activity activity) {
+        JSONObject response = new JSONObject();
+        ArrayList<String> videos = new ArrayList();
+        ArrayList<String> audios = new ArrayList();
+
+        MediaCodecList codecs = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
+
+        for (MediaCodecInfo codec : codecs.getCodecInfos()) {
+
+            if (!codec.isEncoder()) {
+                for (String mimeType : codec.getSupportedTypes()) {
+                    ArrayList<String> codecsList = ExoPlayerFormats.getAudioCodecs(mimeType);
+
+                    audios.removeAll(codecsList);
+                    audios.addAll(codecsList);
+
+                    codecsList = ExoPlayerFormats.getVideoCodecs(mimeType);
+
+                    videos.removeAll(codecsList);
+                    videos.addAll(codecsList);
+                }
+            }
+        }
+
+        try {
+            response.put("audioCodecs", new JSONArray(audios));
+            response.put("videoCodecs", new JSONArray(videos));
+
+            callbackContext.success(response);
+
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
     }
 }

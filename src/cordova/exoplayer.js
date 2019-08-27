@@ -195,6 +195,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.getDeviceProfile = function (item, options) {
             // using native player implementations, check if item can be played. Also check if direct play is supported, as audio is supported.
 
+
+
             return new Promise(function (resolve, reject) {
                 require(['browserdeviceprofile'], function (profileBuilder) {
                     var bitrateSetting = appSettings.maxStreamingBitrate();
@@ -204,90 +206,87 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     profile.MaxStaticBitrate = 100000000;
                     profile.MusicStreamingTranscodingBitrate = 192000;
 
-                    profile.DirectPlayProfiles = [];
+                    profile.SubtitleProfiles = profile.DirectPlayProfiles = [];
 
-                    profile.DirectPlayProfiles.push({
-                        Container: 'm4v,3gp,ts,mpegts,mov,xvid,vob,mkv,wmv,asf,ogm,ogv,m2v,avi,mpg,mpeg,mp4,webm,wtv,dvr-ms,iso',
-                        Type: 'Video'
-                    });
+                    var videoProfiles = {
+                        '3gp': ['h263', 'h264', 'avc'],
+                        'mp4': ['h263', 'h264', 'avc', 'hevc', 'h265', 'mpeg2video'],
+                        'ts': ['h264', 'avc'],
+                        'webvm': ['vp8', 'vp9'],
+                        'mkv': ['h264', 'avc', 'hevc', 'h265', 'vp8', 'vp9', 'mpeg2video'],
+                        'avi': ['h263', 'h264', 'avc', 'hevc', 'h265', 'vp8', 'vp9', 'mpeg2video'],
+                        'flv': ['h264', 'avc']
+                    };
 
-                    profile.DirectPlayProfiles.push({
-                        Container: 'aac,mp3,mpa,wav,wma,mp2,ogg,oga,webma,ape,opus,flac',
-                        Type: 'Audio'
-                    });
+                    var audioProfiles = {
+                      '3gp': ['aac', '3gpp', 'flac'],
+                      'mp4': ['aac'],
+                      'aac': ['aac'],
+                      'ts': ['aac'],
+                      'flac': ['flac'],
+                      'mkv': ['opus'],
+                      'mp3': ['mp3'],
+                      'ogg': ['ogg']
+                    };
 
-                    profile.TranscodingProfiles = [];
+                    var subtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'pgs', 'pgssub', 'dvdsub', 'vtt', 'sub', 'idx', 'smi'];
 
-                    profile.TranscodingProfiles.push({
-                        Container: 'mkv',
-                        Type: 'Video',
-                        AudioCodec: 'aac,mp3,ac3',
-                        VideoCodec: 'h264',
-                        Context: 'Streaming'
-                    });
-
-                    profile.TranscodingProfiles.push({
-                        Container: 'mp3',
-                        Type: 'Audio',
-                        AudioCodec: 'mp3',
-                        Context: 'Streaming',
-                        Protocol: 'http'
-                    });
-
-                    profile.ContainerProfiles = [];
-
-                    profile.CodecProfiles = [];
-
-                    // Subtitle profiles
-                    // External vtt or burn in
-                    profile.SubtitleProfiles = [];
-                    profile.SubtitleProfiles.push({
-                        Format: 'srt',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'subrip',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ass',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'ssa',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'pgs',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'pgssub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'dvdsub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'vtt',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'sub',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'idx',
-                        Method: 'Embed'
-                    });
-                    profile.SubtitleProfiles.push({
-                        Format: 'smi',
-                        Method: 'Embed'
+                    subtitleProfiles.forEach(function (format) {
+                        profile.SubtitleProfiles.push({
+                            Format: format,
+                            Method: 'Embed'
+                        });
                     });
 
-                    profile.ResponseProfiles = [];
-                    resolve(profile);
+                    self.invokeNativeMethod('getSupportedFormats', null, function (codecs) {debugger;
+                        var videoCodecs = codecs.videoCodecs;
+                        var audioCodecs = codecs.audioCodecs;
+                        var audioCodecsString = audioCodecs.join(',');
+
+                        for (var container in videoProfiles) {
+                            if (videoProfiles.hasOwnProperty(container)) {
+                                profile.DirectPlayProfiles.push({
+                                    Container: container,
+                                    Type: 'Video',
+                                    AudioCodec: audioCodecsString,
+                                    VideoCodec: videoProfiles[container].filter(function (codec) {
+                                        return videoCodecs.indexOf(codec);
+                                    }).join(',')
+                                });
+                            }
+                        }
+
+                        for (var container in audioProfiles) {
+                            if (audioProfiles.hasOwnProperty(container)) {
+                                profile.DirectPlayProfiles.push({
+                                    Container: container,
+                                    Type: 'Audio',
+                                    VideoCodec: audioProfiles[container].filter(function (codec) {
+                                        return audioCodecs.indexOf(codec);
+                                    }).join(',')
+                                });
+                            }
+                        }
+
+                        profile.TranscodingProfiles = [
+                            {
+                                Container: 'mkv',
+                                Type: 'Video',
+                                AudioCodec: audioCodecsString,
+                                VideoCodec: 'h264',
+                                Context: 'Streaming'
+                            },
+                            {
+                                Container: 'mp3',
+                                Type: 'Audio',
+                                AudioCodec: 'mp3',
+                                Context: 'Streaming',
+                                Protocol: 'http'
+                            }
+                        ];
+
+                        resolve(profile);
+                    });
                 });
             });
         };
