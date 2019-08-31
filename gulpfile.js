@@ -1,6 +1,5 @@
 var gulp = require('gulp');
 var gulpif = require('gulp-if');
-var cleanCSS = require('gulp-clean-css');
 var del = require('del');
 var dom = require('gulp-dom');
 var uglifyes = require('uglify-es');
@@ -28,17 +27,10 @@ var uglifyOptions = {
     }
 };
 
-var cleanOptions = {
-    // Do not rebase relative urls
-    // Otherwise asset urls are rewritten to be relative to the current src
-    rebase: false
-};
-
 var paths = {
     assets: {
         src: [
             WEB_DIR + '/**/*',
-            '!' + WEB_DIR + '/**/*.{js,css}',
             '!' + WEB_DIR + '/index.html'
         ],
         dest: 'www/'
@@ -48,18 +40,8 @@ var paths = {
         dest: 'www/'
     },
     scripts: {
-        cordova: {
-            src: 'src/cordova/**/*.js',
-            dest: 'www/cordova/'
-        },
-        dashboard: {
-            src: WEB_DIR + '/**/*.js',
-            dest: 'www/'
-        }
-    },
-    styles: {
-        src: WEB_DIR + '/**/*.css',
-        dest: 'www/'
+        src: 'src/cordova/**/*.js',
+        dest: 'www/cordova/'
     }
 };
 
@@ -110,35 +92,16 @@ function modifyIndex() {
 }
 
 // Uglify cordova scripts
-function cordovaScripts() {
-    return gulp.src(paths.scripts.cordova.src)
+function scripts() {
+    return gulp.src(paths.scripts.src)
         .pipe(gulpif(compress, uglify(uglifyOptions)))
-        .pipe(gulp.dest(paths.scripts.cordova.dest));
-}
-cordovaScripts.displayName = 'scripts:cordova';
-
-// Uglify dashboard-ui scripts
-function dashboardScripts() {
-    return gulp.src(paths.scripts.dashboard.src)
-        .pipe(gulpif(compress, uglify(uglifyOptions)))
-        .pipe(gulp.dest(paths.scripts.dashboard.dest));
-}
-dashboardScripts.displayName = 'scripts:dashboard';
-
-// Uglify scripts
-var scripts = gulp.parallel(cordovaScripts, dashboardScripts);
-
-// Uglify stylesheets
-function styles() {
-    return gulp.src(paths.styles.src)
-        .pipe(gulpif(compress, cleanCSS(cleanOptions)))
-        .pipe(gulp.dest(paths.styles.dest));
+        .pipe(gulp.dest(paths.scripts.dest));
 }
 
 // Default build task
 var build = gulp.series(
     clean,
-    gulp.parallel(copy, modifyIndex, scripts, styles)
+    gulp.parallel(copy, modifyIndex, scripts)
 );
 
 // Export tasks so they can be run individually
@@ -146,6 +109,5 @@ exports.clean = clean;
 exports.copy = copy;
 exports.modifyIndex = modifyIndex;
 exports.scripts = scripts;
-exports.styles = styles;
 // Export default task
 exports.default = build;
