@@ -9,6 +9,9 @@ var uglify = composer(uglifyes, console);
 
 // Check the NODE_ENV environment variable
 var isDev = process.env.NODE_ENV === 'development';
+// Allow overriding of jellyfin-web directory
+var WEB_DIR = process.env.JELLYFIN_WEB_DIR || 'node_modules/jellyfin-web/dist';
+console.info('Using jellyfin-web from', WEB_DIR);
 
 // Skip minification for development builds or minified files
 var compress = !isDev && [
@@ -34,14 +37,14 @@ var cleanOptions = {
 var paths = {
     assets: {
         src: [
-            'src/jellyfin-web/src/**/*',
-            '!src/jellyfin-web/src/**/*.{js,css}',
-            '!src/jellyfin-web/src/index.html'
+            WEB_DIR + '/**/*',
+            '!' + WEB_DIR + '/**/*.{js,css}',
+            '!' + WEB_DIR + '/index.html'
         ],
         dest: 'www/'
     },
     index: {
-        src: 'src/jellyfin-web/src/index.html',
+        src: WEB_DIR + '/index.html',
         dest: 'www/'
     },
     scripts: {
@@ -50,12 +53,12 @@ var paths = {
             dest: 'www/cordova/'
         },
         dashboard: {
-            src: 'src/jellyfin-web/src/**/*.js',
+            src: WEB_DIR + '/**/*.js',
             dest: 'www/'
         }
     },
     styles: {
-        src: 'src/jellyfin-web/src/**/*.css',
+        src: WEB_DIR + '/**/*.css',
         dest: 'www/'
     }
 };
