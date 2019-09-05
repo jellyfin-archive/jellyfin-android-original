@@ -27,16 +27,10 @@ else
     release="production"
 fi
 
-# Initialize the submodule jellyfin-web
-git submodule update --init --remote
-
-# Check out the proper jellyfin-web branch or update submodule
+# Change the jellyfin-web branch in package.json
 if [[ ${1} == '--web-branch' || ${1} == '-b' ]]; then
     if [[ -n ${2} ]]; then
-        pushd src/jellyfin-web
-        git fetch --all
-        git checkout ${2} || usage
-        popd
+        sed -i "s/jellyfin\/jellyfin-web.git#[^\"]*/jellyfin\/jellyfin-web.git#${2}/g" package.json
         shift 2
     else
         usage
