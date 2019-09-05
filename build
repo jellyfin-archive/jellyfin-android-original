@@ -30,7 +30,7 @@ fi
 # Change the jellyfin-web branch in package.json
 if [[ ${1} == '--web-branch' || ${1} == '-b' ]]; then
     if [[ -n ${2} ]]; then
-        sed -i "s/jellyfin\/jellyfin-web.git#master/jellyfin\/jellyfin-web.git#${2}/g" package.json
+        sed -i "s/jellyfin\/jellyfin-web.git#[^\"]*/jellyfin\/jellyfin-web.git#${2}/g" package.json
         shift 2
     else
         usage
