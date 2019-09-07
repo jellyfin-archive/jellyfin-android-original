@@ -16,6 +16,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -131,7 +132,7 @@ public class ExoPlayerActivity extends Activity {
      */
     private MediaSource fetchMediaSources(JSONObject item) throws JSONException {
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "Jellyfin android"));
-        MediaSource mediasource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(item.getString("url")));
+        MediaSource mediaSource = getVideoMediaSource(item, dataSourceFactory);
 
         // add subtitles if they exist
         JSONArray subtitleTracks = item.getJSONArray("textTracks");
@@ -141,11 +142,31 @@ public class ExoPlayerActivity extends Activity {
 
             MediaSource subtitleMediaSource = fetchSubtitleMediaSource(track, dataSourceFactory);
             if (subtitleMediaSource != null) {
-                mediasource = new MergingMediaSource(mediasource, subtitleMediaSource);
+                mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
             }
         }
 
-        return mediasource;
+        return mediaSource;
+    }
+
+    private MediaSource getVideoMediaSource(JSONObject item, DataSource.Factory dataSourceFactory) throws JSONException {
+        boolean bHls = false;
+        Uri uri = Uri.parse(item.getString("url"));
+        MediaSource mediaSource;
+
+        try {
+            bHls = item.getJSONObject("mediaSource").getString("TranscodingSubProtocol").equals("hls");
+        } catch (JSONException e) {
+            // it's not hls, assume default media source
+        }
+
+        if (bHls) {
+            mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        } else {
+            mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+        }
+
+        return mediaSource;
     }
 
     /**

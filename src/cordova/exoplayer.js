@@ -238,7 +238,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                         });
                     });
 
-                    self.invokeNativeMethod('getSupportedFormats', null, function (codecs) {debugger;
+                    self.invokeNativeMethod('getSupportedFormats', null, function (codecs) {
                         var videoCodecs = codecs.videoCodecs;
                         var audioCodecs = codecs.audioCodecs;
                         var audioCodecsString = audioCodecs.join(',');
@@ -269,6 +269,15 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                         }
 
                         profile.TranscodingProfiles = [
+                            {
+                                Container: 'ts',
+                                Type: 'Video',
+                                AudioCodec: audioCodecsString,
+                                VideoCodec: 'h264',
+                                Context: 'Streaming',
+                                Protocol: 'hls',
+                                MinSegments: 1
+                            },
                             {
                                 Container: 'mkv',
                                 Type: 'Video',
