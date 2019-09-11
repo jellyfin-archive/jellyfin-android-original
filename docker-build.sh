@@ -46,6 +46,7 @@ pushd "${SOURCE_DIR}"
 
 # Install dependencies
 npm cache verify
+npm config set unsafe-perm true
 npm install
 npx gulp
 npx cordova telemetry off
