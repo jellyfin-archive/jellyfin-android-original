@@ -64,7 +64,7 @@ public class RemotePlayerService extends Service {
                 int state = extras.getInt(BluetoothA2dp.EXTRA_STATE);
                 int previousState = extras.getInt(BluetoothA2dp.EXTRA_PREVIOUS_STATE);
                 if ((state == BluetoothA2dp.STATE_DISCONNECTED || state == BluetoothA2dp.STATE_DISCONNECTING) && previousState == BluetoothA2dp.STATE_CONNECTED) {
-                    sendCommand("playpause");
+                    sendCommand("pause");
                 }
             } else if (intent.getAction().equals(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED)) {
                 Bundle extras = intent.getExtras();
@@ -74,7 +74,7 @@ public class RemotePlayerService extends Service {
                 int state = extras.getInt(BluetoothHeadset.EXTRA_STATE);
                 int previousState = extras.getInt(BluetoothHeadset.EXTRA_PREVIOUS_STATE);
                 if (state == BluetoothHeadset.STATE_AUDIO_DISCONNECTED && previousState == BluetoothHeadset.STATE_AUDIO_CONNECTED) {
-                    sendCommand("playpause");
+                    sendCommand("pause");
                 }
             }
         }
