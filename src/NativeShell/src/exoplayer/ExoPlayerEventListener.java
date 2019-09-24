@@ -2,6 +2,10 @@ package org.jellyfin.mobile.exoplayer;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.audio.AudioListener;
+import com.google.android.exoplayer2.source.TrackGroup;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+
 import org.jellyfin.mobile.Constants;
 
 public class ExoPlayerEventListener implements Player.EventListener, AudioListener {
@@ -47,5 +51,10 @@ public class ExoPlayerEventListener implements Player.EventListener, AudioListen
         if (event != null) {
             instance.notifyEvent(event);
         }
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+        instance.processGroupTracks(trackSelections);
     }
 }

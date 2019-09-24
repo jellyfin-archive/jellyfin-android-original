@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.ArrayMap;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -16,7 +17,13 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -29,11 +36,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 public class ExoPlayerActivity extends Activity {
 
     private SimpleExoPlayer player = null;
     private ExoPlayerEventListener eventListener = null;
     private Handler timeUpdatesHandler = null;
+    private DefaultTrackSelector trackSelector = null;
+    private Map<Integer, Integer> selections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +58,11 @@ public class ExoPlayerActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        // initialize the track selector
+        trackSelector = new DefaultTrackSelector();
+
         // initialize exoplayer
-        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
-
-
+        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), trackSelector);
 
         // set player view layout
         setContentView(R.layout.exo_player);
@@ -60,11 +72,22 @@ public class ExoPlayerActivity extends Activity {
 
         MediaSource mediaSource = null;
         long mediaStartTicks = 0;
+        selections = new ArrayMap();
+
+        selections.put(C.TRACK_TYPE_VIDEO, -1);
+        selections.put(C.TRACK_TYPE_AUDIO, -1);
+        selections.put(C.TRACK_TYPE_TEXT, -1);
 
         try {
             JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
+            JSONObject mediaSourceInfo = item.getJSONObject("mediaSource");
 
             mediaStartTicks = item.getLong("playerStartPositionTicks");
+
+            if (!mediaSourceInfo.isNull("DefaultSubtitleStreamIndex")) {
+                selections.put(C.TRACK_TYPE_TEXT, mediaSourceInfo.getInt("DefaultSubtitleStreamIndex"));
+            }
+
             mediaSource = fetchMediaSources(item);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -125,6 +148,26 @@ public class ExoPlayerActivity extends Activity {
         }
     }
 
+    public void processGroupTracks(TrackSelectionArray selections) {
+        DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
+        MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+
+        for (int index = 0; index < info.getRendererCount(); index++) {
+            int rendererType = player.getRendererType(index);
+            TrackSelection currentSelected = selections.get(index);
+            int currentSelectedIndex = currentSelected != null ? currentSelected.getSelectedIndexInTrackGroup() : -1;
+            int selectedTrackIndex = this.selections.containsKey(rendererType) ? this.selections.get(rendererType) : -1;
+
+            // change current Track
+            if (selectedTrackIndex > -1 && selectedTrackIndex != currentSelectedIndex) {
+                DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(selectedTrackIndex, selectedTrackIndex);
+                parameters = parameters.setSelectionOverride(index, info.getTrackGroups(index), newSelection);
+            }
+        }
+
+        trackSelector.setParameters(parameters);
+    }
+
     /**
      * builds a media source to feed the player being loaded
      * @param item json object containing all necessary info about the item to be played.
@@ -134,17 +177,7 @@ public class ExoPlayerActivity extends Activity {
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "Jellyfin android"));
         MediaSource mediaSource = getVideoMediaSource(item, dataSourceFactory);
 
-        // add subtitles if they exist
-        JSONArray subtitleTracks = item.getJSONArray("textTracks");
-
-        for (int i = 0; i < subtitleTracks.length(); i++) {
-            JSONObject track = subtitleTracks.getJSONObject(i);
-
-            MediaSource subtitleMediaSource = fetchSubtitleMediaSource(track, dataSourceFactory);
-            if (subtitleMediaSource != null) {
-                mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
-            }
-        }
+        mediaSource = fetchSubtitleStreams(item, mediaSource, dataSourceFactory);
 
         return mediaSource;
     }
@@ -161,7 +194,7 @@ public class ExoPlayerActivity extends Activity {
         }
 
         if (bHls) {
-            mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
+            mediaSource = new HlsMediaSource.Factory(dataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri);
         } else {
             mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
         }
@@ -170,25 +203,53 @@ public class ExoPlayerActivity extends Activity {
     }
 
     /**
-     * creates a subtitle media source based on the parametrized track
-     * @param track extracted subtitle track to use
-     * @return      a MediaSource object representing the subtitle track
+     * fetches all subtitle streams present in item, adding them to mediaSource
+     * @param item              item being played
+     * @param mediaSource       media source to add parsed subtitles
+     * @param dataSourceFactory data source factory instance
+     * @return                  media source with parsed subtitles
+     * @throws JSONException
      */
-    private MediaSource fetchSubtitleMediaSource(JSONObject track, DataSource.Factory dataSourceFactory) throws JSONException {
-        String format = fetchSubtitleFormat(track.getString("format"));
-        String trackIndex = track.getString("index");
-        String language = track.getString("language");
-        String uri = track.getString("url");
-        boolean isDefault = track.getBoolean("isDefault");
-        int selectionFlag = isDefault ? C.SELECTION_FLAG_FORCED : C.SELECTION_FLAG_AUTOSELECT;
+    private MediaSource fetchSubtitleStreams(JSONObject item, MediaSource mediaSource, DataSource.Factory dataSourceFactory) throws JSONException {
+        JSONArray textTracks = item.getJSONArray("textTracks");
+        ArrayMap<Integer, String> externalTracks = new ArrayMap<>();
 
-        if (format != null) {
-            Format subtitleFormat = Format.createTextSampleFormat(trackIndex, format, selectionFlag, language);
-
-            return new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri), subtitleFormat, C.TIME_UNSET);
+        for (int i = 0; i < textTracks.length(); i++) {
+            JSONObject track = textTracks.getJSONObject(i);
+            externalTracks.put(track.getInt("index"), track.getString("url"));
         }
 
-        return null;
+        JSONObject mediaSourceObject = item.getJSONObject("mediaSource");
+        JSONArray streams = mediaSourceObject.getJSONArray("MediaStreams");
+        int selectedSubtitleIndex = -1;
+
+        for (int i = 0; i < streams.length(); i++) {
+            JSONObject stream = streams.getJSONObject(i);
+
+            if (stream.getString("Type").equals("Subtitle")) {
+                selectedSubtitleIndex++;
+                String trackIndex = stream.getString("Index");
+                String language = stream.has("Language") ? stream.getString("Language") : null;
+                String deliveryMethod = stream.getString("DeliveryMethod");
+
+                if (selections.get(C.TRACK_TYPE_TEXT) == (new Integer(trackIndex)).intValue()) {
+                    selections.put(C.TRACK_TYPE_TEXT, selectedSubtitleIndex);
+                }
+
+                if (deliveryMethod.equals("External")) {
+                    String uri = externalTracks.get(trackIndex);
+                    String format = fetchSubtitleFormat(stream.getString("Codec"));
+
+                    if (format != null) {
+                        Format subtitleFormat = Format.createTextSampleFormat(trackIndex, format, C.SELECTION_FLAG_AUTOSELECT, language);
+                        MediaSource subtitleMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri), subtitleFormat, C.TIME_UNSET);
+                        mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
+                    }
+                }
+            }
+        }
+
+        return mediaSource;
     }
 
     /**
