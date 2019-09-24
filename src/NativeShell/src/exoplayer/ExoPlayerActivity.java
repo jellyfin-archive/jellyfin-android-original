@@ -45,6 +45,7 @@ public class ExoPlayerActivity extends Activity {
     private Handler timeUpdatesHandler = null;
     private DefaultTrackSelector trackSelector = null;
     private Map<Integer, Integer> selections;
+    private boolean playbackEnded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,8 @@ public class ExoPlayerActivity extends Activity {
         selections.put(C.TRACK_TYPE_VIDEO, -1);
         selections.put(C.TRACK_TYPE_AUDIO, -1);
         selections.put(C.TRACK_TYPE_TEXT, -1);
+
+        playbackEnded = false;
 
         try {
             JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
@@ -114,6 +117,11 @@ public class ExoPlayerActivity extends Activity {
 
     public void notifyEvent(String event, String... arguments) {
         ExoPlayer.callWebMethod("notify" + event, arguments);
+
+        if (event.equals(Constants.EVENT_ENDED)) {
+            playbackEnded = true;
+            this.finish();
+        }
     }
 
     public String getVolume() {
@@ -278,7 +286,11 @@ public class ExoPlayerActivity extends Activity {
     protected void onDestroy() {
         stopTimeUpdates();
         ExoPlayer.unsetPlayer();
-        notifyEvent(Constants.EVENT_ENDED);
+
+        if (!playbackEnded) {
+            notifyEvent(Constants.EVENT_ENDED);
+        }
+
         player.release();
         super.onDestroy();
     }
