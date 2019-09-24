@@ -229,13 +229,18 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                       'ogg': ['ogg']
                     };
 
-                    var subtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'pgs', 'pgssub', 'dvdsub', 'vtt', 'sub', 'idx', 'smi'];
+                    var subtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'pgs', 'pgssub', /*'dvdsub'*/, 'vtt', 'sub', 'idx', 'smi'];
 
                     subtitleProfiles.forEach(function (format) {
                         profile.SubtitleProfiles.push({
                             Format: format,
                             Method: 'Embed'
                         });
+                    });
+
+                    profile.SubtitleProfiles.push({
+                        Format: 'dvdsub',
+                        Method: 'Encode'
                     });
 
                     self.invokeNativeMethod('getSupportedFormats', null, function (codecs) {
