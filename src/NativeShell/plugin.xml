@@ -33,7 +33,6 @@
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/RemotePlayerService.java" target-dir="src/org/jellyfin/mobile" />
-    <source-file src="src/CustomWebViewClient.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/Constants.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/exoplayer/ExoPlayer.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/ExoPlayerActivity.java" target-dir="src/org/jellyfin/mobile/exoplayer" />

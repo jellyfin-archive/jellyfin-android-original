@@ -1,24 +1,22 @@
 package org.jellyfin.mobile;
 
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothHeadset;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.content.Intent;
 import android.view.WindowManager;
-import android.bluetooth.BluetoothA2dp;
-import android.bluetooth.BluetoothHeadset;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
-import org.apache.cordova.engine.SystemWebView;
-import org.apache.cordova.engine.SystemWebViewEngine;
 import org.jellyfin.mobile.exoplayer.ExoPlayer;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,12 +40,6 @@ public class NativeShell extends CordovaPlugin {
         cordova.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                // use custom WebView client to handle invalid SSL certificates
-                if (webView instanceof SystemWebView) {
-                    SystemWebView systemWebView = (SystemWebView) webView;
-                    SystemWebViewEngine engine = new SystemWebViewEngine(new SystemWebView(cordova.getActivity()), preferences);
-                    systemWebView.setWebViewClient(new CustomWebViewClient(cordova.getActivity(), engine));
-                }
                 // theme the system bars so that all models use the same color
                 // several manufacturers style the navigation bar differently
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
