@@ -16,7 +16,7 @@ Jellyfin Mobile is an Android app built with Cordova.
    ```
 2. Install Cordova and other build dependencies via npm in the project directory.
    ```sh
-   npm install
+   npm install -g cordova
    ```
 3. Prepare the Cordova platforms.
    ```sh
