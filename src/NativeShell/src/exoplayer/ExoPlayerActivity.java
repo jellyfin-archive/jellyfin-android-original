@@ -159,7 +159,7 @@ public class ExoPlayerActivity extends Activity {
     }
 
     public void processGroupTracks(TrackSelectionArray selections) {
-        DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
+        /*DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
         MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
 
         for (int index = 0; index < info.getRendererCount(); index++) {
@@ -175,7 +175,7 @@ public class ExoPlayerActivity extends Activity {
             }
         }
 
-        trackSelector.setParameters(parameters);
+        trackSelector.setParameters(parameters);*/
     }
 
     /**
