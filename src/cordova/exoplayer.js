@@ -206,7 +206,9 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     profile.MaxStaticBitrate = 100000000;
                     profile.MusicStreamingTranscodingBitrate = 192000;
 
-                    profile.SubtitleProfiles = profile.DirectPlayProfiles = [];
+                    profile.SubtitleProfiles = [];
+                    profile.DirectPlayProfiles = [];
+                    profile.CodecProfiles = [];
 
                     var videoProfiles = {
                         '3gp': ['h263', 'h264', 'avc'],
@@ -224,9 +226,12 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                       'aac': ['aac'],
                       'ts': ['aac'],
                       'flac': ['flac'],
-                      'mkv': ['opus'],
+                      'mkv': ['aac', 'dts', 'flac', 'vorbis'],
                       'mp3': ['mp3'],
-                      'ogg': ['ogg']
+                      'ogg': ['ogg', 'opus', 'vorbis'],
+                      'webvm': ['vorbis', 'opus'],
+                      'avi': ['flac', 'aac', 'dts'],
+                      'flv': ['aac']
                     };
 
                     var subtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'pgs', 'pgssub', /*'dvdsub'*/, 'vtt', 'sub', 'idx', 'smi'];
@@ -244,16 +249,59 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     });
 
                     self.invokeNativeMethod('getSupportedFormats', null, function (codecs) {
-                        var videoCodecs = codecs.videoCodecs;
-                        var audioCodecs = codecs.audioCodecs;
-                        var audioCodecsString = audioCodecs.join(',');
+                        var videoCodecs = [];
+                        var audioCodecs = [];
+
+                        for (var index in codecs.audioCodecs) {
+                            if (codecs.audioCodecs.hasOwnProperty(index)) {
+                                var audioCodec = codecs.audioCodecs[index];
+                                audioCodecs.push(audioCodec.codec);
+                            }
+                        }
+
+                        for (var index in codecs.videoCodecs) {
+                            if (codecs.videoCodecs.hasOwnProperty(index)) {
+                                var videoCodec = codecs.videoCodecs[index];
+                                videoCodecs.push(videoCodec.codec);
+
+                                var profiles = videoCodec.profiles.join('|');
+                                var maxLevel = videoCodec.levels.length && Math.max(videoCodec.levels);
+                                var conditions = [];
+
+                                if (profiles) {
+                                    conditions.push({
+                                        Condition: 'EqualsAny',
+                                        Property: 'VideoProfile',
+                                        Value: profiles
+                                    });
+                                }
+
+                                if (maxLevel) {
+                                    conditions.push({
+                                        Condition: 'LessThanEqual',
+                                        Property: 'VideoLevel',
+                                        Value: maxLevel
+                                    });
+                                }
+
+                                if (conditions.length) {
+                                    profile.CodecProfiles.push({
+                                        Type: 'Video',
+                                        Codec: videoCodec.codec,
+                                        Conditions: conditions
+                                    });
+                                }
+                            }
+                        }
 
                         for (var container in videoProfiles) {
                             if (videoProfiles.hasOwnProperty(container)) {
                                 profile.DirectPlayProfiles.push({
                                     Container: container,
                                     Type: 'Video',
-                                    AudioCodec: audioCodecsString,
+                                    AudioCodec: audioProfiles[container].filter(function (codec) {
+                                        return audioCodecs.indexOf(codec);
+                                    }).join(','),
                                     VideoCodec: videoProfiles[container].filter(function (codec) {
                                         return videoCodecs.indexOf(codec);
                                     }).join(',')
@@ -277,7 +325,9 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                             {
                                 Container: 'ts',
                                 Type: 'Video',
-                                AudioCodec: audioCodecsString,
+                                AudioCodec: audioProfiles['ts'].filter(function (codec) {
+                                    return audioCodecs.indexOf(codec);
+                                }).join(','),
                                 VideoCodec: 'h264',
                                 Context: 'Streaming',
                                 Protocol: 'hls',
@@ -286,7 +336,9 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                             {
                                 Container: 'mkv',
                                 Type: 'Video',
-                                AudioCodec: audioCodecsString,
+                                AudioCodec: audioProfiles['mkv'].filter(function (codec) {
+                                    return audioCodecs.indexOf(codec);
+                                }).join(','),
                                 VideoCodec: 'h264',
                                 Context: 'Streaming'
                             },
