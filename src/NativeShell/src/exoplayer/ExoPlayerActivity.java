@@ -68,6 +68,8 @@ public class ExoPlayerActivity extends Activity {
         // set player view layout
         setContentView(R.layout.exo_player);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         PlayerView playerView = findViewById(R.id.exoPlayer);
         playerView.setPlayer(player);
 
