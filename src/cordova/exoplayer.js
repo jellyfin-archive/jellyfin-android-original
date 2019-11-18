@@ -211,27 +211,37 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     profile.CodecProfiles = [];
 
                     var videoProfiles = {
-                        '3gp': ['h263', 'h264', 'avc'],
-                        'mp4': ['h263', 'h264', 'avc', 'hevc', 'h265', 'mpeg2video'],
-                        'ts': ['h264', 'avc'],
+                        '3gp': ['h263', 'h264', 'mpeg4', 'hevc'],
+                        'mp4': ['h263', 'h264', 'mpeg4', 'hevc', 'mpeg2video', 'av1', 'mpeg1video'],
+                        'ts': ['h264', 'mpeg4'],
                         'webvm': ['vp8', 'vp9'],
-                        'mkv': ['h264', 'avc', 'hevc', 'h265', 'vp8', 'vp9', 'mpeg2video'],
-                        'avi': ['h263', 'h264', 'avc', 'hevc', 'h265', 'vp8', 'vp9', 'mpeg2video'],
-                        'flv': ['h264', 'avc']
+                        'mkv': ['h264', 'mpeg4', 'hevc', 'vp8', 'vp9', 'mpeg2video', 'mpeg1video'],
+                        'avi': ['h263', 'h264', 'mpeg4', 'hevc', 'vp8', 'vp9', 'mpeg2video', 'mpeg1video'],
+                        'flv': ['h264', 'mpeg4'],
+                        'asf': ['mpeg2video', 'mpeg4', 'h263', 'h264', 'hevc', 'vp8', 'vp9', 'mpeg1video'],
+                        'wmv': ['mpeg2video', 'mpeg4', 'h263', 'h264', 'hevc', 'vp8', 'vp9'],
+                        'm2ts': ['mp2g2video', 'mpeg4', 'h264', 'mpeg1video'],
+                        'vob': ['mpeg1video', 'mpeg2video'],
+                        'mov': ['mpeg1video', 'mpeg2video', 'mpeg4', 'h263', 'h264', 'hevc']
                     };
 
                     var audioProfiles = {
                       '3gp': ['aac', '3gpp', 'flac'],
-                      'mp4': ['aac'],
-                      'aac': ['aac'],
-                      'ts': ['aac'],
+                      'mp4': ['aac', 'mp1', 'mp2', 'mp3'],
+                      'ts': ['aac', 'mp1', 'mp2', 'mp3', 'ac3', 'dts'],
                       'flac': ['flac'],
-                      'mkv': ['aac', 'dts', 'flac', 'vorbis'],
+                      'aac': ['aac'],
+                      'mkv': ['aac', 'dts', 'flac', 'vorbis', 'ac3', 'wma', 'mp1', 'mp2', 'mp3'],
                       'mp3': ['mp3'],
                       'ogg': ['ogg', 'opus', 'vorbis'],
                       'webvm': ['vorbis', 'opus'],
-                      'avi': ['flac', 'aac', 'dts'],
-                      'flv': ['aac']
+                      'avi': ['flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2', 'mp3'],
+                      'flv': ['aac', 'mp3'],
+                      'asf': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
+                      'wmv': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
+                      'm2ts': ['aac', 'ac3', 'dts', 'pcm'],
+                      'vob': ['mp1'],
+                      'mov': ['mp3', 'aac', 'ac3', 'dts-hd', 'pcm']
                     };
 
                     var subtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'pgs', 'pgssub', /*'dvdsub'*/, 'vtt', 'sub', 'idx', 'smi'];
@@ -265,7 +275,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                                 videoCodecs.push(videoCodec.codec);
 
                                 var profiles = videoCodec.profiles.join('|');
-                                var maxLevel = videoCodec.levels.length && Math.max(videoCodec.levels);
+                                var maxLevel = videoCodec.levels.length && Math.max.apply(null, videoCodec.levels);
                                 var conditions = [];
 
                                 if (profiles) {
@@ -300,10 +310,10 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                                     Container: container,
                                     Type: 'Video',
                                     AudioCodec: audioProfiles[container].filter(function (codec) {
-                                        return audioCodecs.indexOf(codec);
+                                        return audioCodecs.indexOf(codec) !== -1;
                                     }).join(','),
                                     VideoCodec: videoProfiles[container].filter(function (codec) {
-                                        return videoCodecs.indexOf(codec);
+                                        return videoCodecs.indexOf(codec) !== -1;
                                     }).join(',')
                                 });
                             }
@@ -315,7 +325,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                                     Container: container,
                                     Type: 'Audio',
                                     VideoCodec: audioProfiles[container].filter(function (codec) {
-                                        return audioCodecs.indexOf(codec);
+                                        return audioCodecs.indexOf(codec) !== -1;
                                     }).join(',')
                                 });
                             }
@@ -326,7 +336,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                                 Container: 'ts',
                                 Type: 'Video',
                                 AudioCodec: audioProfiles['ts'].filter(function (codec) {
-                                    return audioCodecs.indexOf(codec);
+                                    return audioCodecs.indexOf(codec) !== -1;
                                 }).join(','),
                                 VideoCodec: 'h264',
                                 Context: 'Streaming',
@@ -337,7 +347,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                                 Container: 'mkv',
                                 Type: 'Video',
                                 AudioCodec: audioProfiles['mkv'].filter(function (codec) {
-                                    return audioCodecs.indexOf(codec);
+                                    return audioCodecs.indexOf(codec) !== -1;
                                 }).join(','),
                                 VideoCodec: 'h264',
                                 Context: 'Streaming'

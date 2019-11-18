@@ -28,7 +28,7 @@ public class ExoPlayerFormats {
             case MediaFormat.MIMETYPE_AUDIO_MPEG:
                 return "mp3";
             case MediaFormat.MIMETYPE_AUDIO_OPUS:
-                return  "opus";
+                return "opus";
             case MediaFormat.MIMETYPE_AUDIO_RAW:
                 return "raw";
             case MediaFormat.MIMETYPE_AUDIO_VORBIS:
@@ -45,7 +45,7 @@ public class ExoPlayerFormats {
     public static String getVideoCodec(String mimeType) {
         switch (mimeType) {
             case MediaFormat.MIMETYPE_VIDEO_AVC:
-                return "avc";
+                return "h264";
             case MediaFormat.MIMETYPE_VIDEO_H263:
                 return "h263";
             case MediaFormat.MIMETYPE_VIDEO_HEVC:
@@ -54,7 +54,7 @@ public class ExoPlayerFormats {
             case MediaFormat.MIMETYPE_VIDEO_MPEG2:
                 return "mpeg2video";
             case MediaFormat.MIMETYPE_VIDEO_MPEG4:
-                return "h264";
+                return "mpeg4";
             case MediaFormat.MIMETYPE_VIDEO_VP8:
                 return "vp8";
             case MediaFormat.MIMETYPE_VIDEO_VP9:
@@ -71,7 +71,6 @@ public class ExoPlayerFormats {
 
     public static String getVideoProfile(String codec, int profile) {
         switch (codec) {
-            case "avc":
             case "h264":
                 return getAVCProfile(profile);
             case "h263":
@@ -84,6 +83,8 @@ public class ExoPlayerFormats {
                 return getVP8Profile(profile);
             case "vp9":
                 return getVP9Profile(profile);
+            case "mpeg4":
+                return getMpeg4Profile(profile);
             default:
                 return null;
         }
@@ -104,6 +105,35 @@ public class ExoPlayerFormats {
                 return getVP8Level(level);
             case "vp9":
                 return getVP9Level(level);
+            case "mpeg4":
+                return getMpeg4Level(level);
+            default:
+                return null;
+        }
+    }
+
+    private static String getMpeg4Level(int level) {
+        switch (level) {
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level0:
+                return "0";
+            /*case MediaCodecInfo.CodecProfileLevel.MPEG4Level0b:
+                return "0b";*/ //FIXME: server does not handle non numeric levels
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level1:
+                return "1";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level2:
+                return "2";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level3:
+                return "3";
+            /*case MediaCodecInfo.CodecProfileLevel.MPEG4Level3b:
+                return "3b";*/ //FIXME: server does not handle non numeric levels
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level4:
+                return "4";
+            /*case MediaCodecInfo.CodecProfileLevel.MPEG4Level4a:
+                return "4a";*/ //FIXME: server does not handle non numeric levels
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level5:
+                return "5";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level6:
+                return "6";
             default:
                 return null;
         }
@@ -182,43 +212,43 @@ public class ExoPlayerFormats {
         switch (level) {
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel1:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel1:
-                return "1";
+                return "30";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel2:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel2:
-                return "2";
+                return "60";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel21:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel21:
-                return "21";
+                return "63";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel3:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel3:
-                return "3";
+                return "90";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel31:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel31:
-                return "31";
+                return "93";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel4:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel4:
-                return "4";
+                return "120";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel41:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel41:
-                return "41";
+                return "123";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel5:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel5:
-                return "5";
+                return "150";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel51:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel51:
-                return "51";
+                return "153";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel52:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel52:
-                return "52";
+                return "156";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel6:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel6:
-                return "6";
+                return "180";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel61:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel61:
-                return "61";
+                return "183";
             case MediaCodecInfo.CodecProfileLevel.HEVCMainTierLevel62:
             case MediaCodecInfo.CodecProfileLevel.HEVCHighTierLevel62:
-                return "62";
+                return "186";
             default:
                 return null;
         }
@@ -288,6 +318,43 @@ public class ExoPlayerFormats {
         }
     }
 
+    private static String getMpeg4Profile(int profile) {
+        switch (profile) {
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileAdvancedCoding:
+                return "advanced coding profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileAdvancedCore:
+                return "advanced core profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileAdvancedRealTime:
+                return "advanced realtime profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileAdvancedSimple:
+                return "advanced simple profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileBasicAnimated:
+                return "basic animated profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileCore:
+                return "core profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileCoreScalable:
+                return "core scalable profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileHybrid:
+                return "hybrid profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileNbit:
+                return "nbit profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileScalableTexture:
+                return "scalable texture profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileSimple:
+                return "simple profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileSimpleFBA:
+                return "simple fba profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileSimpleFace:
+                return "simple face profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileSimpleScalable:
+                return "simple scalable profile";
+            case MediaCodecInfo.CodecProfileLevel.MPEG4ProfileMain:
+                return "main profile";
+            default:
+                return null;
+        }
+    }
+
     private static String getVP9Profile(int profile) {
         switch (profile) {
             case MediaCodecInfo.CodecProfileLevel.VP9Profile0:
@@ -317,17 +384,17 @@ public class ExoPlayerFormats {
     private static String getMpeg2videoProfile(int profile) {
         switch (profile) {
             case MediaCodecInfo.CodecProfileLevel.MPEG2ProfileSimple:
-                return "simple";
+                return "simple profile";
             case MediaCodecInfo.CodecProfileLevel.MPEG2ProfileMain:
-                return "main";
+                return "main profile";
             case MediaCodecInfo.CodecProfileLevel.MPEG2Profile422:
-                return "422";
+                return "422 profile";
             case MediaCodecInfo.CodecProfileLevel.MPEG2ProfileSNR:
-                return "snr";
+                return "snr profile";
             case MediaCodecInfo.CodecProfileLevel.MPEG2ProfileSpatial:
-                return "spatial";
+                return "spatial profile";
             case MediaCodecInfo.CodecProfileLevel.MPEG2ProfileHigh:
-                return "high";
+                return "high profile";
             default:
                 return null;
         }
