@@ -81,7 +81,7 @@ public class RemotePlayerService extends Service {
     };
 
     private static void sendCommand(String action) {
-        String url = "javascript:require(['inputmanager'], function(inputmanager){inputmanager.trigger('" + action + "');});";
+        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.trigger('" + action + "');});";
         NativeShell.cordovaWebView.loadUrlIntoView(url, false);
     }
 
