@@ -39,13 +39,10 @@ NativeShell.prototype.downloadFile = function(url, successCallback, errorCallbac
 };
 
 NativeShell.prototype.getPlugins = function() {
-    return [];
-
-    // uncomment one or the other for testing
-    //return [
-    //    'cordova/exoplayer'
-    //    'cordova/externalplayer'
-    //];
+    return [
+        //'cordova/exoplayer',
+        //'cordova/externalplayer'
+    ];
 };
 
 module.exports = new NativeShell();
