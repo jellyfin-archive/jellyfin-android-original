@@ -20,11 +20,11 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
             if (mediaType === 'Video') {
                 return appSettings.enableSystemExternalPlayers();
             }
+
             return false;
         };
 
         self.canPlayItem = function (item, playOptions) {
-
             if (!playOptions.fullscreen) {
                 return false;
             }
@@ -132,7 +132,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         }
 
         function onEndedInternal(triggerEnded) {
-
             if (triggerEnded) {
                 var stopInfo = {
                     src: currentSrc
@@ -145,15 +144,11 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
         }
 
         self.getDeviceProfile = function () {
-
             return new Promise(function (resolve, reject) {
-
                 require(['browserdeviceprofile'], function (profileBuilder) {
-
                     var bitrateSetting = appSettings.maxStreamingBitrate();
 
                     var profile = {};
-
                     profile.MaxStreamingBitrate = bitrateSetting;
                     profile.MaxStaticBitrate = 100000000;
                     profile.MusicStreamingTranscodingBitrate = 192000;
@@ -241,7 +236,6 @@ define(['events', 'appSettings', 'filesystem'], function (events, appSettings, f
                     });
 
                     profile.ResponseProfiles = [];
-
                     resolve(profile);
                 });
             });

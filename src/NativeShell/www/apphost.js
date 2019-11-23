@@ -20,10 +20,6 @@ var features = [
 ];
 
 function getDeviceProfile(profileBuilder, item) {
-    /*if (item.MediaType === 'Video') {
-        return getDeviceProfileForVideo(item);
-    }*/
-
     var profile = profileBuilder();
 
     profile.DirectPlayProfiles.push({
@@ -187,9 +183,5 @@ module.exports = {
     },
     appVersion: function() {
         return appVersion;
-    },
-    deviceIconUrl: function() {
-        // TODO: Need static hosted icons for devices?
-        return '';
     }
 };

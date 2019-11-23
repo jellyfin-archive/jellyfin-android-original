@@ -47,13 +47,9 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
             });
         };
 
-        /*self.canPlayItem = function (item, playOptions) {
-            if (!playOptions.fullscreen) {
-                return false;
-            }
-
+        self.canPlayItem = function (item, playOptions) {
             return true;
-        };*/
+        };
 
         self.currentSrc = function () {
             return self._currentSrc;
@@ -144,7 +140,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.setMute = function (mute) {
-            let unmuted = Number(self._volume) ? self._volume : '0.5'; // if volume is set to zero, then assume half as default when unmuting
+            // if volume is set to zero, then assume half as default when unmuting
+            let unmuted = Number(self._volume) ? self._volume : '0.5';
             self.invokeNativeMethod('setVolume', [mute ? '0' : unmuted]);
         };
 
@@ -172,7 +169,6 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
             };
 
             events.trigger(self, 'stopped', [stopInfo]);
-
             self._currentSrc = self._currentTime = null;
         };
 
@@ -193,10 +189,8 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         }
 
         self.getDeviceProfile = function (item, options) {
-            // using native player implementations, check if item can be played. Also check if direct play is supported, as audio is supported.
-
-
-
+            // using native player implementations, check if item can be played
+            // also check if direct play is supported, as audio is supported
             return new Promise(function (resolve, reject) {
                 require(['browserdeviceprofile'], function (profileBuilder) {
                     var bitrateSetting = appSettings.maxStreamingBitrate();
@@ -226,25 +220,26 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     };
 
                     var audioProfiles = {
-                      '3gp': ['aac', '3gpp', 'flac'],
-                      'mp4': ['aac', 'mp1', 'mp2', 'mp3'],
-                      'ts': ['aac', 'mp1', 'mp2', 'mp3', 'ac3', 'dts'],
-                      'flac': ['flac'],
-                      'aac': ['aac'],
-                      'mkv': ['aac', 'dts', 'flac', 'vorbis', 'ac3', 'wma', 'mp1', 'mp2', 'mp3'],
-                      'mp3': ['mp3'],
-                      'ogg': ['ogg', 'opus', 'vorbis'],
-                      'webvm': ['vorbis', 'opus'],
-                      'avi': ['flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2', 'mp3'],
-                      'flv': ['aac', 'mp3'],
-                      'asf': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
-                      'wmv': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
-                      'm2ts': ['aac', 'ac3', 'dts', 'pcm'],
-                      'vob': ['mp1'],
-                      'mov': ['mp3', 'aac', 'ac3', 'dts-hd', 'pcm']
+                        '3gp': ['aac', '3gpp', 'flac'],
+                        'mp4': ['aac', 'mp1', 'mp2', 'mp3'],
+                        'ts': ['aac', 'mp1', 'mp2', 'mp3', 'ac3', 'dts'],
+                        'flac': ['flac'],
+                        'aac': ['aac'],
+                        'mkv': ['aac', 'dts', 'flac', 'vorbis', 'ac3', 'wma', 'mp1', 'mp2', 'mp3'],
+                        'mp3': ['mp3'],
+                        'ogg': ['ogg', 'opus', 'vorbis'],
+                        'webvm': ['vorbis', 'opus'],
+                        'avi': ['flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2', 'mp3'],
+                        'flv': ['aac', 'mp3'],
+                        'asf': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
+                        'wmv': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
+                        'm2ts': ['aac', 'ac3', 'dts', 'pcm'],
+                        'vob': ['mp1'],
+                        'mov': ['mp3', 'aac', 'ac3', 'dts-hd', 'pcm']
                     };
 
-                    var subtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'pgs', 'pgssub', /*'dvdsub'*/, 'vtt', 'sub', 'idx', 'smi'];
+                    // dvdsub is not supported yet
+                    var subtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'pgs', 'pgssub', 'vtt', 'sub', 'idx', 'smi'];
 
                     subtitleProfiles.forEach(function (format) {
                         profile.SubtitleProfiles.push({

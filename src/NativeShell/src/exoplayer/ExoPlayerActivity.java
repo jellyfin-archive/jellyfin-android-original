@@ -112,7 +112,6 @@ public class ExoPlayerActivity extends Activity {
             player.setPlayWhenReady(true);
 
             notifyEvent(Constants.EVENT_VOLUME_CHANGE, getVolume());
-
             startTimeUpdates();
         }
     }
@@ -304,7 +303,8 @@ public class ExoPlayerActivity extends Activity {
 
     private void stopTimeUpdates() {
         timeUpdatesHandler.removeCallbacks(timeUpdateCallabck);
-        notifyEvent(Constants.EVENT_PAUSE); // notifies that the video is paused, kind of stopped
+        // notifies that the video is paused, kind of stopped
+        notifyEvent(Constants.EVENT_PAUSE);
     }
 
     private void processTimeUpdate() {

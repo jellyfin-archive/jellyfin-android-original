@@ -12,20 +12,14 @@ import java.util.List;
 public class ExoPlayerCodec {
 
     private boolean valid;
-
     private boolean isAudio = false;
-
     private String mimeType;
-
     private String codec;
-
     private List<String> profiles;
-
     private List<Integer> levels;
 
     public ExoPlayerCodec(MediaCodecInfo.CodecCapabilities codecCapabilities) {
         mimeType = codecCapabilities.getMimeType();
-
         codec = ExoPlayerFormats.getAudioCodec(mimeType);
 
         if (codec != null) {
@@ -50,9 +44,13 @@ public class ExoPlayerCodec {
         return isAudio;
     }
 
-    public List<String> getProfiles() { return profiles; }
+    public List<String> getProfiles() {
+        return profiles;
+    }
 
-    public List<Integer> getLevels() { return levels; }
+    public List<Integer> getLevels() {
+        return levels;
+    }
 
     public JSONObject getJSONObject() {
         JSONObject result = new JSONObject();

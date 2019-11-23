@@ -34,7 +34,6 @@ public class ExoPlayerEventListener implements Player.EventListener, AudioListen
             case Player.STATE_READY:
                 if (playWhenReady) {
                     event = Constants.EVENT_PLAYING;
-
                 } else {
                     event = Constants.EVENT_PAUSE;
                 }

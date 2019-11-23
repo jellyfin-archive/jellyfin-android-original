@@ -1,6 +1,5 @@
 package org.jellyfin.mobile.exoplayer;
 
-
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
@@ -11,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExoPlayerFormats {
-
     public static String getAudioCodec(String mimeType) {
         switch (mimeType) {
             case MediaFormat.MIMETYPE_AUDIO_AAC:
@@ -116,24 +114,22 @@ public class ExoPlayerFormats {
         switch (level) {
             case MediaCodecInfo.CodecProfileLevel.MPEG4Level0:
                 return "0";
-            /*case MediaCodecInfo.CodecProfileLevel.MPEG4Level0b:
-                return "0b";*/ //FIXME: server does not handle non numeric levels
             case MediaCodecInfo.CodecProfileLevel.MPEG4Level1:
                 return "1";
             case MediaCodecInfo.CodecProfileLevel.MPEG4Level2:
                 return "2";
             case MediaCodecInfo.CodecProfileLevel.MPEG4Level3:
                 return "3";
-            /*case MediaCodecInfo.CodecProfileLevel.MPEG4Level3b:
-                return "3b";*/ //FIXME: server does not handle non numeric levels
             case MediaCodecInfo.CodecProfileLevel.MPEG4Level4:
                 return "4";
-            /*case MediaCodecInfo.CodecProfileLevel.MPEG4Level4a:
-                return "4a";*/ //FIXME: server does not handle non numeric levels
             case MediaCodecInfo.CodecProfileLevel.MPEG4Level5:
                 return "5";
             case MediaCodecInfo.CodecProfileLevel.MPEG4Level6:
                 return "6";
+            // FIXME: server only handles numeric levels
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level0b:
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level3b:
+            case MediaCodecInfo.CodecProfileLevel.MPEG4Level4a:
             default:
                 return null;
         }
@@ -191,7 +187,7 @@ public class ExoPlayerFormats {
 
     private static String getMpeg2videoLevel(int level) {
         return null;
-        //FIXME: server does not handle non numeric levels.
+        // FIXME: server only handles numeric levels
         /*switch (level) {
             case MediaCodecInfo.CodecProfileLevel.MPEG2LevelLL:
                 return "ll";
@@ -281,8 +277,6 @@ public class ExoPlayerFormats {
         switch (level) {
             case MediaCodecInfo.CodecProfileLevel.AVCLevel1:
                 return "1";
-            /*case MediaCodecInfo.CodecProfileLevel.AVCLevel1b:
-                return "1b";*/ //FIXME: server does not handle non numeric levels
             case MediaCodecInfo.CodecProfileLevel.AVCLevel11:
                 return "11";
             case MediaCodecInfo.CodecProfileLevel.AVCLevel12:
@@ -313,6 +307,8 @@ public class ExoPlayerFormats {
                 return "51";
             case MediaCodecInfo.CodecProfileLevel.AVCLevel52:
                 return "52";
+            // FIXME: server only handles numeric levels
+            case MediaCodecInfo.CodecProfileLevel.AVCLevel1b:
             default:
                 return null;
         }
