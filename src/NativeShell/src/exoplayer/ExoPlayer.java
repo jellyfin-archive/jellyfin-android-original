@@ -165,17 +165,12 @@ public class ExoPlayer {
     public boolean getSupportedFormats(JSONArray args, CallbackContext callbackContext, Activity activity) {
         if (supportedVideoCodecs.size() == 0 && supportedAudioCodecs.size() == 0) {
             MediaCodecList codecs = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
-
             for (MediaCodecInfo codec : codecs.getCodecInfos()) {
-
                 if (!codec.isEncoder()) {
                     for (String mimeType : codec.getSupportedTypes()) {
-
                         ExoPlayerCodec codecObj = ExoPlayerFormats.getCodecCapabilities(codec.getCapabilitiesForType(mimeType));
-
                         if (codecObj != null) {
                             Map<String, ExoPlayerCodec> supportedCodecs = codecObj.isAudio() ? supportedAudioCodecs : supportedVideoCodecs;
-
                             if (supportedCodecs.containsKey(mimeType)) {
                                 ExoPlayerCodec currentCodecObj = supportedCodecs.get(mimeType);
                                 currentCodecObj.mergeCodec(codecObj);
@@ -191,23 +186,19 @@ public class ExoPlayer {
         try {
             JSONObject response = new JSONObject();
             JSONArray codecs = new JSONArray();
-
-            for (ExoPlayerCodec codec: supportedAudioCodecs.values()) {
+            for (ExoPlayerCodec codec : supportedAudioCodecs.values()) {
                 codecs.put(codec.getJSONObject());
             }
 
             response.put("audioCodecs", codecs);
 
             codecs = new JSONArray();
-
-            for (ExoPlayerCodec codec: supportedVideoCodecs.values()) {
+            for (ExoPlayerCodec codec : supportedVideoCodecs.values()) {
                 codecs.put(codec.getJSONObject());
             }
 
             response.put("videoCodecs", codecs);
-
             callbackContext.success(response);
-
             return true;
         } catch (JSONException e) {
             return false;

@@ -52,7 +52,6 @@ public class ExoPlayerActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         ExoPlayer.setPlayer(this);
-
         eventListener = new ExoPlayerEventListener(this);
 
         // toggle fullscreen
@@ -75,8 +74,8 @@ public class ExoPlayerActivity extends Activity {
 
         MediaSource mediaSource = null;
         long mediaStartTicks = 0;
-        selections = new ArrayMap();
 
+        selections = new ArrayMap();
         selections.put(C.TRACK_TYPE_VIDEO, -1);
         selections.put(C.TRACK_TYPE_AUDIO, -1);
         selections.put(C.TRACK_TYPE_TEXT, -1);
@@ -88,7 +87,6 @@ public class ExoPlayerActivity extends Activity {
             JSONObject mediaSourceInfo = item.getJSONObject("mediaSource");
 
             mediaStartTicks = item.getLong("playerStartPositionTicks");
-
             if (!mediaSourceInfo.isNull("DefaultSubtitleStreamIndex")) {
                 selections.put(C.TRACK_TYPE_TEXT, mediaSourceInfo.getInt("DefaultSubtitleStreamIndex"));
             }
