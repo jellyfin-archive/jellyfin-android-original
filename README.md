@@ -1,11 +1,53 @@
-<h1 align="center">Jellyfin Mobile</h1>
+<h1 align="center">Jellyfin Android</h1>
 <h3 align="center">Part of the <a href="https://jellyfin.media">Jellyfin Project</a></h3>
 
+---
+
 <p align="center">
-Jellyfin Mobile is an Android app built with Cordova.
+<img alt="Logo Banner" src="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/banner-logo-solid.svg?sanitize=true"/>
+<br/>
+<br/>
+<a href="https://github.com/jellyfin/jellyfin-android">
+<img alt="GPL 2.0 License" src="https://img.shields.io/github/license/jellyfin/jellyfin-android.svg"/>
+</a>
+<a href="https://github.com/jellyfin/jellyfin-android/releases">
+<img alt="Current Release" src="https://img.shields.io/github/release/jellyfin/jellyfin-android.svg"/>
+</a>
+<a href="https://translate.jellyfin.org/projects/jellyfin/jellyfin-web/?utm_source=widget">
+<img src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-web/svg-badge.svg" alt="Translation Status"/>
+</a>
+</br>
+<a href="https://opencollective.com/jellyfin">
+<img alt="Donate" src="https://img.shields.io/opencollective/all/jellyfin.svg?label=backers"/>
+</a>
+<a href="https://features.jellyfin.org">
+<img alt="Feature Requests" src="https://img.shields.io/badge/fider-vote%20on%20features-success.svg"/>
+</a>
+<a href="https://forum.jellyfin.org">
+<img alt="Discuss on our Forum" src="https://img.shields.io/discourse/https/forum.jellyfin.org/users.svg"/>
+</a>
+<a href="https://matrix.to/#/+jellyfin:matrix.org">
+<img alt="Chat on Matrix" src="https://img.shields.io/matrix/jellyfin:matrix.org.svg?logo=matrix"/>
+</a>
+<a href="https://www.reddit.com/r/jellyfin/">
+<img alt="Join our Subreddit" src="https://img.shields.io/badge/reddit-r%2Fjellyfin-%23FF5700.svg"/>
+</a>
 </p>
 
+Jellyfin Mobile is an Android app built with Cordova. We welcome all contributions and pull requests! If you have a larger feature in mind please open an issue so we can discuss the implementation before you start. Even though the client is a web wrapper there are still lots of improvements and bug fixes that can be accomplished with Java.
+
+Most of the translations can be found in the web client since it's the base for the Android client as well. Translations can be improved very easily from our Weblate instance linked above. Look through the following graphic to see if your native language could use some work!
+
+<a href="https://translate.jellyfin.org/engage/jellyfin/?utm_source=widget">
+<img src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-web/multi-auto.svg" alt="Detailed Translation Status"/>
+</a>
+
 ## Build Process
+
+### Dependencies
+
+- Android SDK
+- Yarn or NPM
 
 ### Getting Started
 
@@ -14,7 +56,7 @@ Jellyfin Mobile is an Android app built with Cordova.
    git clone https://github.com/jellyfin/jellyfin-android.git
    cd jellyfin-android
    ```
-2. Install Cordova and other build dependencies via npm in the project directory.
+2. Install Cordova and other build dependencies in the project directory via npm.
    ```sh
    npm install
    ```
@@ -23,7 +65,7 @@ Jellyfin Mobile is an Android app built with Cordova.
    npx cordova prepare
    ```
 
-### Prepare Interface
+### Prepare Environment
 
 If any changes are made to `src/`, the `www/` directory will need to be rebuilt using the following command.
 
@@ -31,9 +73,7 @@ If any changes are made to `src/`, the `www/` directory will need to be rebuilt 
 npx gulp
 ```
 
-> If `NODE_ENV=development` is set in the environment, then the source files will be copied without being minified.
-
-> The `JELLYFIN_WEB_DIR` environment variable can be used to override the location of `jellyfin-web`.
+Set the `NODE_ENV` environment variable to `development` if you want to copy the source files without minification. The `JELLYFIN_WEB_DIR` environment variable can be used to override the location of `jellyfin-web`.
 
 ### Build APK
 
