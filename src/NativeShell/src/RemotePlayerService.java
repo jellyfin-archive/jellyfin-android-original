@@ -211,7 +211,7 @@ public class RemotePlayerService extends Service {
 
     private void notifyWithBitmap(Intent handledIntent, Bitmap largeIcon) {
         String artist = handledIntent.getStringExtra("artist");
-        String album = handledIntent.getStringExtra("artist");
+        String album = handledIntent.getStringExtra("album");
         String title = handledIntent.getStringExtra("title");
         String itemId = handledIntent.getStringExtra("itemId");
         boolean isPaused = handledIntent.getBooleanExtra("isPaused", false);
