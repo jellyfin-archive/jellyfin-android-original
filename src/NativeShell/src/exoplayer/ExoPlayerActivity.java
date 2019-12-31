@@ -1,7 +1,6 @@
 package org.jellyfin.mobile.exoplayer;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -17,12 +17,8 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
-import com.google.android.exoplayer2.source.TrackGroup;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -62,10 +58,10 @@ public class ExoPlayerActivity extends Activity {
         trackSelector = new DefaultTrackSelector();
 
         // initialize exoplayer
-        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), trackSelector);
+        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), new DefaultRenderersFactory(this), trackSelector);
 
         // set player view layout
-        setContentView(R.layout.exoplayer);
+        setContentView(R.layout.exo_player);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -75,7 +71,7 @@ public class ExoPlayerActivity extends Activity {
         MediaSource mediaSource = null;
         long mediaStartTicks = 0;
 
-        selections = new ArrayMap();
+        selections = new ArrayMap<>();
         selections.put(C.TRACK_TYPE_VIDEO, -1);
         selections.put(C.TRACK_TYPE_AUDIO, -1);
         selections.put(C.TRACK_TYPE_TEXT, -1);
@@ -177,8 +173,9 @@ public class ExoPlayerActivity extends Activity {
 
     /**
      * builds a media source to feed the player being loaded
+     *
      * @param item json object containing all necessary info about the item to be played.
-     * @return     a MediaSource object. This could be a result of a MergingMediaSource or a ProgressiveMediaSource, between others
+     * @return a MediaSource object. This could be a result of a MergingMediaSource or a ProgressiveMediaSource, between others
      */
     private MediaSource fetchMediaSources(JSONObject item) throws JSONException {
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "Jellyfin android"));
@@ -211,10 +208,11 @@ public class ExoPlayerActivity extends Activity {
 
     /**
      * fetches all subtitle streams present in item, adding them to mediaSource
+     *
      * @param item              item being played
      * @param mediaSource       media source to add parsed subtitles
      * @param dataSourceFactory data source factory instance
-     * @return                  media source with parsed subtitles
+     * @return media source with parsed subtitles
      * @throws JSONException
      */
     private MediaSource fetchSubtitleStreams(JSONObject item, MediaSource mediaSource, DataSource.Factory dataSourceFactory) throws JSONException {
@@ -261,8 +259,9 @@ public class ExoPlayerActivity extends Activity {
 
     /**
      * fetch the exoplayer subtitle format, if supported, otherwise null
+     *
      * @param format subtitle format given by jellyfin
-     * @return       exoplayer subtitle format, otherwise null if not supported
+     * @return exoplayer subtitle format, otherwise null if not supported
      */
     private String fetchSubtitleFormat(String format) {
         switch (format) {
@@ -317,3 +316,4 @@ public class ExoPlayerActivity extends Activity {
         }
     };
 }
+
