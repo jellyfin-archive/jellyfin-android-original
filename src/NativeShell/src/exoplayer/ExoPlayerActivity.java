@@ -1,12 +1,20 @@
 package org.jellyfin.mobile.exoplayer;
 
-import android.app.Activity;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.ArrayMap;
-import android.view.Window;
+import android.view.Menu;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.PopupMenu;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -17,14 +25,20 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.jellyfin.mobile.Constants;
 import org.jellyfin.mobile.R;
@@ -32,16 +46,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public class ExoPlayerActivity extends Activity {
+import static com.google.android.exoplayer2.ExoPlayer.EventListener;
+
+public class ExoPlayerActivity extends AppCompatActivity implements EventListener {
 
     private SimpleExoPlayer player = null;
     private ExoPlayerEventListener eventListener = null;
     private Handler timeUpdatesHandler = null;
     private DefaultTrackSelector trackSelector = null;
-    private Map<Integer, Integer> selections;
+    private Map<Integer, Integer> selections = new ArrayMap<>();
     private boolean playbackEnded = false;
+    private View progressIndicator;
+    private List<JsonObject> subtitles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +69,6 @@ public class ExoPlayerActivity extends Activity {
 
         ExoPlayer.setPlayer(this);
         eventListener = new ExoPlayerEventListener(this);
-
-        // toggle fullscreen
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // initialize the track selector
         trackSelector = new DefaultTrackSelector();
@@ -63,15 +79,61 @@ public class ExoPlayerActivity extends Activity {
         // set player view layout
         setContentView(R.layout.exo_player);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        progressIndicator = findViewById(R.id.progress_indicator);
+
+        View captionsIcon = findViewById(R.id.subtitles_button);
+        captionsIcon.setOnClickListener(this::showCaptionsMenu);
+
+        View playbackSettings = findViewById(R.id.playback_settings);
+        playbackSettings.setOnClickListener(v -> {
+//            new TrackSelectionDialogBuilder(this, "Things", trackSelector, 0)
+//                    .build()
+//                    .show();
+
+//            PopupMenu menu = new PopupMenu(this, v, Gravity.TOP);
+//            menu.getMenu()
+//                    .add("Quality");
+//            menu.show();
+        });
+
+        View fullscreenIcon = findViewById(R.id.fullscreen);
+        View exitFullscreenIcon = findViewById(R.id.exit_fullscreen);
 
         PlayerView playerView = findViewById(R.id.exoPlayer);
+        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
+            if (systemUiVisible(visibility)) {
+                fullscreenIcon.setVisibility(View.VISIBLE);
+                exitFullscreenIcon.setVisibility(View.GONE);
+            } else {
+                fullscreenIcon.setVisibility(View.GONE);
+                exitFullscreenIcon.setVisibility(View.VISIBLE);
+            }
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(playerView, (view, insets) -> {
+            WindowInsetsCompat windowInsets = insets;
+
+            int systemUiVisibility = getWindow().getDecorView().getSystemUiVisibility();
+            if (systemUiVisible(systemUiVisibility)) {
+                ViewCompat.onApplyWindowInsets(view, windowInsets);
+            } else {
+                windowInsets = insets.consumeSystemWindowInsets();
+                ViewCompat.onApplyWindowInsets(view, windowInsets);
+            }
+
+            return windowInsets;
+        });
+
+        fullscreenIcon.setOnClickListener(v -> hideSystemUi());
+        exitFullscreenIcon.setOnClickListener(v -> showSystemUi());
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         playerView.setPlayer(player);
 
         MediaSource mediaSource = null;
         long mediaStartTicks = 0;
 
-        selections = new ArrayMap<>();
         selections.put(C.TRACK_TYPE_VIDEO, -1);
         selections.put(C.TRACK_TYPE_AUDIO, -1);
         selections.put(C.TRACK_TYPE_TEXT, -1);
@@ -81,6 +143,9 @@ public class ExoPlayerActivity extends Activity {
         try {
             JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
             JSONObject mediaSourceInfo = item.getJSONObject("mediaSource");
+
+            TextView movieTitleTextView = findViewById(R.id.movie_title);
+            movieTitleTextView.setText(item.getString("title"));
 
             mediaStartTicks = item.getLong("playerStartPositionTicks");
             if (!mediaSourceInfo.isNull("DefaultSubtitleStreamIndex")) {
@@ -108,6 +173,59 @@ public class ExoPlayerActivity extends Activity {
             notifyEvent(Constants.EVENT_VOLUME_CHANGE, getVolume());
             startTimeUpdates();
         }
+    }
+
+    private void showCaptionsMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            for (JsonObject sub : subtitles) {
+                if (sub.get("Index").getAsInt() == item.getItemId()) {
+                    TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(C.TRACK_TYPE_TEXT);
+                    TrackGroup trackGroup = trackGroups.get(0);
+
+                    final int textRendererIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
+//                        trackSelector.setPreferredTextLanguage(captionLanguage);
+                    trackSelector.setParameters(trackSelector.buildUponParameters()
+                            .setPreferredTextLanguage(sub.get("Language").getAsString())
+                            .setRendererDisabled(textRendererIndex, false));
+                    break;
+                }
+            }
+            return true;
+        });
+
+        Menu menu = popupMenu.getMenu();
+        for (JsonObject subtitle : subtitles) {
+            int subtitleId = subtitle.get("Index").getAsInt();
+            String title = subtitle.get("DisplayTitle").getAsString();
+            menu.add(0, subtitleId, 0, title);
+        }
+        popupMenu.show();
+    }
+
+    private boolean systemUiVisible(int visibility) {
+        return (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0;
+    }
+
+    private void showSystemUi() {
+        final int visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+
+        getWindow().getDecorView().setSystemUiVisibility(visibility);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    private void hideSystemUi() {
+        int visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        getWindow().getDecorView().setSystemUiVisibility(visibility);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     public void notifyEvent(String event, String... arguments) {
@@ -152,8 +270,10 @@ public class ExoPlayerActivity extends Activity {
     }
 
     public void processGroupTracks(TrackSelectionArray selections) {
-        /*DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
+        DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
         MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+
+        int textRendererIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
 
         for (int index = 0; index < info.getRendererCount(); index++) {
             int rendererType = player.getRendererType(index);
@@ -168,7 +288,16 @@ public class ExoPlayerActivity extends Activity {
             }
         }
 
-        trackSelector.setParameters(parameters);*/
+        trackSelector.setParameters(parameters);
+    }
+
+    private int getRendererIndex(int trackIndex) {
+        for (int i = 0; i < player.getRendererCount(); i++) {
+            int rendererType = player.getRendererType(i);
+            if (rendererType == trackIndex) return i;
+        }
+
+        return -1;
     }
 
     /**
@@ -227,26 +356,31 @@ public class ExoPlayerActivity extends Activity {
         JSONObject mediaSourceObject = item.getJSONObject("mediaSource");
         JSONArray streams = mediaSourceObject.getJSONArray("MediaStreams");
         int selectedSubtitleIndex = -1;
+        subtitles.clear();
 
+        Gson gson = new Gson();
         for (int i = 0; i < streams.length(); i++) {
             JSONObject stream = streams.getJSONObject(i);
 
             if (stream.getString("Type").equals("Subtitle")) {
                 selectedSubtitleIndex++;
-                String trackIndex = stream.getString("Index");
+                int trackIndex = stream.getInt("Index");
                 String language = stream.has("Language") ? stream.getString("Language") : null;
                 String deliveryMethod = stream.getString("DeliveryMethod");
 
-                if (selections.get(C.TRACK_TYPE_TEXT) == (new Integer(trackIndex)).intValue()) {
+                JsonObject jsonObject = gson.fromJson(stream.toString(), JsonObject.class);
+                subtitles.add(jsonObject);
+
+                if (selections.get(C.TRACK_TYPE_TEXT).equals(selectedSubtitleIndex)) {
                     selections.put(C.TRACK_TYPE_TEXT, selectedSubtitleIndex);
                 }
 
                 if (deliveryMethod.equals("External")) {
-                    String uri = externalTracks.get(trackIndex);
+                    String uri = externalTracks.get(selectedSubtitleIndex);
                     String format = fetchSubtitleFormat(stream.getString("Codec"));
 
                     if (format != null) {
-                        Format subtitleFormat = Format.createTextSampleFormat(trackIndex, format, C.SELECTION_FLAG_AUTOSELECT, language);
+                        Format subtitleFormat = Format.createTextSampleFormat(String.valueOf(selectedSubtitleIndex), format, C.SELECTION_FLAG_AUTOSELECT, language);
                         MediaSource subtitleMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri), subtitleFormat, C.TIME_UNSET);
                         mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
                     }
@@ -315,5 +449,30 @@ public class ExoPlayerActivity extends Activity {
             processTimeUpdate();
         }
     };
+
+    public void handleLoadingChanged(boolean isLoading) {
+        if (isLoading && !player.isPlaying()) {
+            progressIndicator.setVisibility(View.VISIBLE);
+        } else {
+            progressIndicator
+                    .animate()
+                    .alpha(0f)
+                    .setDuration(150)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            progressIndicator.setVisibility(View.GONE);
+                            progressIndicator.setAlpha(1f);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            progressIndicator.setVisibility(View.GONE);
+                            progressIndicator.setAlpha(1f);
+                        }
+                    })
+                    .start();
+        }
+    }
 }
 

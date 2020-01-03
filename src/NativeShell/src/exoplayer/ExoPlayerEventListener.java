@@ -2,7 +2,6 @@ package org.jellyfin.mobile.exoplayer;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.audio.AudioListener;
-import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
@@ -16,10 +15,12 @@ public class ExoPlayerEventListener implements Player.EventListener, AudioListen
         this.instance = instance;
     }
 
+    @Override
     public void onVolumeChanged(float volume) {
         instance.notifyEvent(Constants.EVENT_VOLUME_CHANGE, Float.toString(volume));
     }
 
+    @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         String event = null;
 
@@ -50,6 +51,12 @@ public class ExoPlayerEventListener implements Player.EventListener, AudioListen
         if (event != null) {
             instance.notifyEvent(event);
         }
+
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+        instance.handleLoadingChanged(isLoading);
     }
 
     @Override

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="gray">#101010</color>
+    <color name="jellyfin_teal">#00a4dc</color>
+    <color name="transparent_black">#AB000000</color>
 </resources>
