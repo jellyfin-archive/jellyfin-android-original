@@ -124,7 +124,7 @@ public class NativeShell extends CordovaPlugin {
         // replace this later with a randomly generated persistent string stored in local settings
         String deviceId = Settings.Secure.getString(cordova.getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
         String deviceName = Build.MODEL;
-        String appName = "Jellyfin Mobile";
+        String appName = "Jellyfin Android";
         String appVersion = Integer.toString(BuildConfig.VERSION_CODE);
 
         JSONObject jsonObject = new JSONObject();
