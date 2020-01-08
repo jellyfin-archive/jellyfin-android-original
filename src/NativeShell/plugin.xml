@@ -51,6 +51,8 @@
     <resource-file src="res/drawable-xhdpi/ic_notification.png" target="res/drawable-xhdpi/ic_notification.png" />
     <resource-file src="res/drawable-xxhdpi/ic_notification.png" target="res/drawable-xxhdpi/ic_notification.png" />
     <resource-file src="res/drawable-xxxhdpi/ic_notification.png" target="res/drawable-xxxhdpi/ic_notification.png" />
+    <resource-file src="res/drawable/ic_closed_caption.xml" target="res/drawable/ic_closed_caption.xml" />
+    <resource-file src="res/drawable/ic_settings.xml" target="res/drawable/ic_settings.xml" />
     <resource-file src="res/values/colors.xml" target="res/values/colors.xml" />
     <resource-file src="res/values/preferences.xml" target="res/values/preferences.xml" />
     <resource-file src="res/values/translate.xml" target="res/values/translate.xml" />
