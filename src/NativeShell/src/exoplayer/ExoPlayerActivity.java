@@ -47,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     private Map<Integer, Integer> selections = new ArrayMap<>();
     private boolean playbackEnded = false;
     private View progressIndicator;
-    private List<JsonObject> subtitles = new ArrayList<>();
+    private Map<Integer, String> subtitles = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,29 +178,30 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
     private void showCaptionsMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
-        popupMenu.setOnMenuItemClickListener(item -> {
-            for (JsonObject sub : subtitles) {
-                if (sub.get("Index").getAsInt() == item.getItemId()) {
-                    TrackGroupArray trackGroups = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(C.TRACK_TYPE_TEXT);
-                    TrackGroup trackGroup = trackGroups.get(0);
 
-                    final int textRendererIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
-//                        trackSelector.setPreferredTextLanguage(captionLanguage);
-                    trackSelector.setParameters(trackSelector.buildUponParameters()
-                            .setPreferredTextLanguage(sub.get("Language").getAsString())
-                            .setRendererDisabled(textRendererIndex, false));
-                    break;
-                }
-            }
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == -1) return true;
+
+            int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
+            MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+            TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
+
+            DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
+
+            DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(item.getItemId(), 0);
+            parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection);
+
+            trackSelector.setParameters(parameters);
+
             return true;
         });
 
         Menu menu = popupMenu.getMenu();
-        for (JsonObject subtitle : subtitles) {
-            int subtitleId = subtitle.get("Index").getAsInt();
-            String title = subtitle.get("DisplayTitle").getAsString();
-            menu.add(0, subtitleId, 0, title);
+
+        for (Map.Entry<Integer, String> subtitle : subtitles.entrySet()) {
+            menu.add(0, subtitle.getKey(), 0, subtitle.getValue());
         }
+
         popupMenu.show();
     }
 
@@ -270,25 +272,25 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     }
 
     public void processGroupTracks(TrackSelectionArray selections) {
-        DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
         MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+        int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
 
-        int textRendererIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
-
-        for (int index = 0; index < info.getRendererCount(); index++) {
-            int rendererType = player.getRendererType(index);
-            TrackSelection currentSelected = selections.get(index);
-            int currentSelectedIndex = currentSelected != null ? currentSelected.getSelectedIndexInTrackGroup() : -1;
-            int selectedTrackIndex = this.selections.containsKey(rendererType) ? this.selections.get(rendererType) : -1;
-
-            // change current Track
-            if (selectedTrackIndex > -1 && selectedTrackIndex != currentSelectedIndex) {
-                DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(selectedTrackIndex, selectedTrackIndex);
-                parameters = parameters.setSelectionOverride(index, info.getTrackGroups(index), newSelection);
-            }
+        if (info == null) {
+            subtitles.clear();
+            return;
         }
 
-        trackSelector.setParameters(parameters);
+        TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
+
+        if (trackGroupArray.length > 0) {
+            for (int i = 0; i < trackGroupArray.length; i++) {
+                Format subtitle = trackGroupArray.get(i).getFormat(0);
+                String label = subtitle.language == null ? "Undefined" : subtitle.language;
+                subtitles.put(i, label);
+            }
+        } else {
+            subtitles.put(-1, "No subtitles loaded/found");
+        }
     }
 
     private int getRendererIndex(int trackIndex) {
@@ -355,32 +357,21 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
         JSONObject mediaSourceObject = item.getJSONObject("mediaSource");
         JSONArray streams = mediaSourceObject.getJSONArray("MediaStreams");
-        int selectedSubtitleIndex = -1;
-        subtitles.clear();
 
-        Gson gson = new Gson();
         for (int i = 0; i < streams.length(); i++) {
             JSONObject stream = streams.getJSONObject(i);
 
             if (stream.getString("Type").equals("Subtitle")) {
-                selectedSubtitleIndex++;
                 int trackIndex = stream.getInt("Index");
                 String language = stream.has("Language") ? stream.getString("Language") : null;
                 String deliveryMethod = stream.getString("DeliveryMethod");
 
-                JsonObject jsonObject = gson.fromJson(stream.toString(), JsonObject.class);
-                subtitles.add(jsonObject);
-
-                if (selections.get(C.TRACK_TYPE_TEXT).equals(selectedSubtitleIndex)) {
-                    selections.put(C.TRACK_TYPE_TEXT, selectedSubtitleIndex);
-                }
-
                 if (deliveryMethod.equals("External")) {
-                    String uri = externalTracks.get(selectedSubtitleIndex);
+                    String uri = externalTracks.get(trackIndex);
                     String format = fetchSubtitleFormat(stream.getString("Codec"));
 
                     if (format != null) {
-                        Format subtitleFormat = Format.createTextSampleFormat(String.valueOf(selectedSubtitleIndex), format, C.SELECTION_FLAG_AUTOSELECT, language);
+                        Format subtitleFormat = Format.createTextSampleFormat(String.valueOf(trackIndex), format, C.SELECTION_FLAG_AUTOSELECT, language);
                         MediaSource subtitleMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri), subtitleFormat, C.TIME_UNSET);
                         mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
                     }
