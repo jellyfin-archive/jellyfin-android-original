@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/jellyfin_teal</item>
+        <item name="colorAccent">@color/jellyfin_teal</item>
+    </style>
+</resources>
