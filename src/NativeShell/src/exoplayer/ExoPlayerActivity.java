@@ -275,8 +275,9 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
         int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
 
+        subtitles.clear();
+
         if (info == null) {
-            subtitles.clear();
             return;
         }
 
@@ -285,8 +286,11 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         if (trackGroupArray.length > 0) {
             for (int i = 0; i < trackGroupArray.length; i++) {
                 Format subtitle = trackGroupArray.get(i).getFormat(0);
-                String label = subtitle.language == null ? "Undefined" : subtitle.language;
-                subtitles.put(i, label);
+                String label = subtitle.language == null ?  (subtitle.label == null ? null : subtitle.label) : subtitle.language;
+
+                if (label != null) {
+                    subtitles.put(i, label);
+                }
             }
         } else {
             subtitles.put(-1, "No subtitles loaded/found");

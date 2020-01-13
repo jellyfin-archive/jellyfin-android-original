@@ -239,7 +239,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     };
 
                     // dvdsub is not supported yet
-                    var subtitleProfiles = ['pgs', 'pgssub', 'idx', 'smi'];
+                    var subtitleProfiles = ['pgs', 'pgssub', 'idx', 'smi', 'subrip', 'ass', 'ssa', 'vtt'];
 
                     subtitleProfiles.forEach(function (format) {
                         profile.SubtitleProfiles.push({
@@ -248,7 +248,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                         });
                     });
 
-                    var externalSubtitleProfiles = ['srt', 'subrip', 'ass', 'ssa', 'vtt', 'sub'];
+                    var externalSubtitleProfiles = ['srt', 'sub'];
 
                     externalSubtitleProfiles.forEach(function (format) {
                         profile.SubtitleProfiles.push({
