@@ -445,8 +445,8 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         }
     };
 
-    public void handleLoadingChanged(boolean isLoading) {
-        if (isLoading && !player.isPlaying()) {
+    public void onIsPlayingChanged(boolean isPlaying) {
+        if (!isPlaying && player.isLoading()) {
             progressIndicator.setVisibility(View.VISIBLE);
         } else {
             progressIndicator

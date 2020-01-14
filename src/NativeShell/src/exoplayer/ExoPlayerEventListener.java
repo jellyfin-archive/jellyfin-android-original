@@ -55,8 +55,8 @@ public class ExoPlayerEventListener implements Player.EventListener, AudioListen
     }
 
     @Override
-    public void onLoadingChanged(boolean isLoading) {
-        instance.handleLoadingChanged(isLoading);
+    public void onIsPlayingChanged(boolean isPlaying) {
+        instance.onIsPlayingChanged(isPlaying);
     }
 
     @Override
