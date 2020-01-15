@@ -30,7 +30,7 @@
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
-      <activity android:label="ExoPlayer" android:name="org.jellyfin.mobile.exoplayer.ExoPlayerActivity" android:configChanges="orientation|screenSize|layoutDirection" android:theme="@style/Theme.AppCompat.Light.DarkActionBar"></activity>
+      <activity android:label="ExoPlayer" android:name="org.jellyfin.mobile.exoplayer.ExoPlayerActivity" android:configChanges="orientation|screenSize|layoutDirection" android:theme="@style/AppTheme"></activity>
     </config-file>
     <source-file src="src/NativeShell.java" target-dir="src/org/jellyfin/mobile" />
     <source-file src="src/AppPreferences.java" target-dir="src/org/jellyfin/mobile" />
