@@ -66,7 +66,7 @@ function modifyIndex() {
             // inject CSP meta tag
             var meta = this.createElement('meta');
             meta.setAttribute('http-equiv', 'Content-Security-Policy');
-            meta.setAttribute('content', 'default-src * \'self\' \'unsafe-inline\' \'unsafe-eval\' data: gap: file: filesystem: ws: wss:;');
+            meta.setAttribute('content', 'default-src * \'self\' \'unsafe-inline\' \'unsafe-eval\' blob: data: gap: file: filesystem: ws: wss:; img-src * android-webview-video-poster:;');
             this.head.appendChild(meta);
 
             // inject appMode script
