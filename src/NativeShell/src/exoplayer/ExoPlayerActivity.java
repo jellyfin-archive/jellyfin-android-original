@@ -6,7 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.ArrayMap;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupMenu;
@@ -25,20 +27,16 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
-import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.jellyfin.mobile.Constants;
 import org.jellyfin.mobile.R;
@@ -46,9 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.google.android.exoplayer2.ExoPlayer.EventListener;
@@ -87,14 +83,11 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
         View playbackSettings = findViewById(R.id.playback_settings);
         playbackSettings.setOnClickListener(v -> {
-//            new TrackSelectionDialogBuilder(this, "Things", trackSelector, 0)
-//                    .build()
-//                    .show();
-
-//            PopupMenu menu = new PopupMenu(this, v, Gravity.TOP);
-//            menu.getMenu()
-//                    .add("Quality");
-//            menu.show();
+            PopupMenu menu = new PopupMenu(this, v, Gravity.TOP);
+            MenuItem audioTrackItem = menu.getMenu()
+                    .add(R.string.audio_track);
+            audioTrackItem.setOnMenuItemClickListener(item -> showAudioTrackMenu(playbackSettings));
+            menu.show();
         });
 
         View fullscreenIcon = findViewById(R.id.fullscreen);
@@ -174,6 +167,13 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
             notifyEvent(Constants.EVENT_VOLUME_CHANGE, getVolume());
             startTimeUpdates();
         }
+    }
+
+    private boolean showAudioTrackMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.TOP);
+        popupMenu.getMenu().add("Test Track");
+        popupMenu.show();
+        return true;
     }
 
     private void showCaptionsMenu(View view) {
@@ -286,7 +286,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         if (trackGroupArray.length > 0) {
             for (int i = 0; i < trackGroupArray.length; i++) {
                 Format subtitle = trackGroupArray.get(i).getFormat(0);
-                String label = subtitle.language == null ?  (subtitle.label == null ? null : subtitle.label) : subtitle.language;
+                String label = subtitle.language == null ? (subtitle.label == null ? null : subtitle.label) : subtitle.language;
 
                 if (label != null) {
                     subtitles.put(i, label);
