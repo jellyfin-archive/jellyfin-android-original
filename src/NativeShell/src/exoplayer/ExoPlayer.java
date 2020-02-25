@@ -59,18 +59,27 @@ public class ExoPlayer {
     }
 
     public boolean loadPlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
-        Intent playerIntent = new Intent(activity.getApplicationContext(), ExoPlayerActivity.class);
+        JSONObject item = null;
 
         try {
-            playerIntent.putExtra("item", args.getJSONObject(0).toString());
+            item = args.getJSONObject(0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        activity.startActivity(playerIntent);
+        if (playerActivity == null) {
+            Intent playerIntent = new Intent(activity.getApplicationContext(), ExoPlayerActivity.class);
 
-        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
-        callbackContext.sendPluginResult(pluginResult);
+            playerIntent.putExtra("item", item.toString());
+            activity.startActivity(playerIntent);
+
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+            callbackContext.sendPluginResult(pluginResult);
+
+            return true;
+        }
+
+        playerActivity.changeStream(item);
 
         return true;
     }

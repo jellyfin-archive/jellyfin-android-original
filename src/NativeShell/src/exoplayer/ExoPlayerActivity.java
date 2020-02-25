@@ -6,9 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.ArrayMap;
-import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupMenu;
@@ -19,8 +17,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -37,6 +33,8 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.neovisionaries.i18n.LanguageAlpha3Code;
+import com.neovisionaries.i18n.LocaleCode;
 
 import org.jellyfin.mobile.Constants;
 import org.jellyfin.mobile.R;
@@ -44,7 +42,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.google.android.exoplayer2.ExoPlayer.EventListener;
@@ -58,7 +57,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     private Map<Integer, Integer> selections = new ArrayMap<>();
     private boolean playbackEnded = false;
     private View progressIndicator;
-    private Map<Integer, String> subtitles = new HashMap<>();
+    private List<ExoPlayerSubtitle> subtitles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,10 +67,10 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         eventListener = new ExoPlayerEventListener(this);
 
         // initialize the track selector
-        trackSelector = new DefaultTrackSelector();
+        trackSelector = new DefaultTrackSelector(getApplicationContext());
 
         // initialize exoplayer
-        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), new DefaultRenderersFactory(this), trackSelector);
+        player = new SimpleExoPlayer.Builder(getApplicationContext()).setTrackSelector(trackSelector).build();
 
         // set player view layout
         setContentView(R.layout.exo_player);
@@ -83,11 +82,14 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
         View playbackSettings = findViewById(R.id.playback_settings);
         playbackSettings.setOnClickListener(v -> {
-            PopupMenu menu = new PopupMenu(this, v, Gravity.TOP);
-            MenuItem audioTrackItem = menu.getMenu()
-                    .add(R.string.audio_track);
-            audioTrackItem.setOnMenuItemClickListener(item -> showAudioTrackMenu(playbackSettings));
-            menu.show();
+//            new TrackSelectionDialogBuilder(this, "Things", trackSelector, 0)
+//                    .build()
+//                    .show();
+
+//            PopupMenu menu = new PopupMenu(this, v, Gravity.TOP);
+//            menu.getMenu()
+//                    .add("Quality");
+//            menu.show();
         });
 
         View fullscreenIcon = findViewById(R.id.fullscreen);
@@ -125,6 +127,20 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
         playerView.setPlayer(player);
 
+        player.addListener(eventListener);
+        player.addAudioListener(eventListener);
+
+        try {
+            JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
+            prepareMediaSource(item, false);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        startTimeUpdates();
+    }
+
+    private void prepareMediaSource(JSONObject item, boolean changeStream) {
         MediaSource mediaSource = null;
         long mediaStartTicks = 0;
 
@@ -135,13 +151,13 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         playbackEnded = false;
 
         try {
-            JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
             JSONObject mediaSourceInfo = item.getJSONObject("mediaSource");
 
             TextView movieTitleTextView = findViewById(R.id.movie_title);
             movieTitleTextView.setText(item.getString("title"));
 
             mediaStartTicks = item.getLong("playerStartPositionTicks");
+
             if (!mediaSourceInfo.isNull("DefaultSubtitleStreamIndex")) {
                 selections.put(C.TRACK_TYPE_TEXT, mediaSourceInfo.getInt("DefaultSubtitleStreamIndex"));
             }
@@ -155,25 +171,16 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
             //TODO send error to the web client
             this.onDestroy();
         } else {
-            if (mediaStartTicks > 0) {
+
+            if (!changeStream && mediaStartTicks > 0) {
                 player.seekTo(mediaStartTicks / Constants.TICKS_PER_MILLISECOND);
             }
 
-            player.addListener(eventListener);
-            player.addAudioListener(eventListener);
             player.prepare(mediaSource, false, false);
             player.setPlayWhenReady(true);
 
             notifyEvent(Constants.EVENT_VOLUME_CHANGE, getVolume());
-            startTimeUpdates();
         }
-    }
-
-    private boolean showAudioTrackMenu(View view) {
-        PopupMenu popupMenu = new PopupMenu(this, view, Gravity.TOP);
-        popupMenu.getMenu().add("Test Track");
-        popupMenu.show();
-        return true;
     }
 
     private void showCaptionsMenu(View view) {
@@ -182,24 +189,30 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == -1) return true;
 
-            int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
-            MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
-            TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
+            ExoPlayerSubtitle subtitle = subtitles.get(item.getItemId());
 
-            DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
+            if (subtitle.getPlayerIndex() != null) {
+                int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
+                MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+                TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
 
-            DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(item.getItemId(), 0);
-            parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection);
+                DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
 
-            trackSelector.setParameters(parameters);
+                DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(subtitle.getPlayerIndex(), 0);
+                parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection);
 
+                trackSelector.setParameters(parameters);
+            } else {
+                ExoPlayer.callWebMethod("changeSubtitleStream", String.valueOf(subtitle.getIndex()));
+            }
             return true;
         });
 
         Menu menu = popupMenu.getMenu();
 
-        for (Map.Entry<Integer, String> subtitle : subtitles.entrySet()) {
-            menu.add(0, subtitle.getKey(), 0, subtitle.getValue());
+        for (int index = 0; index < subtitles.size(); index++) {
+            ExoPlayerSubtitle subtitle = subtitles.get(index);
+            menu.add(0, index, 0, subtitle.getTitle());
         }
 
         popupMenu.show();
@@ -275,8 +288,6 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
         int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
 
-        subtitles.clear();
-
         if (info == null) {
             return;
         }
@@ -286,14 +297,23 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         if (trackGroupArray.length > 0) {
             for (int i = 0; i < trackGroupArray.length; i++) {
                 Format subtitle = trackGroupArray.get(i).getFormat(0);
-                String label = subtitle.language == null ? (subtitle.label == null ? null : subtitle.label) : subtitle.language;
+                String label = subtitle.language == null ?  (subtitle.label == null ? null : subtitle.label) : subtitle.language;
 
                 if (label != null) {
-                    subtitles.put(i, label);
+                    LanguageAlpha3Code alpha3Language = LocaleCode.getByCode(subtitle.language).getLanguage().getAlpha3();
+                    String alpha2 = alpha3Language.getAlpha2().toString();
+                    String alpha3T = alpha3Language.getAlpha3T().toString();
+                    String alpha3B = alpha3Language.getAlpha3B().toString();
+
+                    for (ExoPlayerSubtitle sub: subtitles) {
+                        String language = sub.getLanguage();
+                        if (sub.getPlayerIndex() == null && (alpha2.equals(language) || alpha3T.equals(language) || alpha3B.equals(language))) {
+                            sub.setPlayerIndex(i);
+                            break;
+                        }
+                    }
                 }
             }
-        } else {
-            subtitles.put(-1, "No subtitles loaded/found");
         }
     }
 
@@ -369,16 +389,17 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
                 int trackIndex = stream.getInt("Index");
                 String language = stream.has("Language") ? stream.getString("Language") : null;
                 String deliveryMethod = stream.getString("DeliveryMethod");
+                String title = stream.getString("DisplayTitle");
 
-                if (deliveryMethod.equals("External")) {
-                    String uri = externalTracks.get(trackIndex);
-                    String format = fetchSubtitleFormat(stream.getString("Codec"));
+                subtitles.add(new ExoPlayerSubtitle(title, language, trackIndex));
 
-                    if (format != null) {
-                        Format subtitleFormat = Format.createTextSampleFormat(String.valueOf(trackIndex), format, C.SELECTION_FLAG_AUTOSELECT, language);
-                        MediaSource subtitleMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri), subtitleFormat, C.TIME_UNSET);
-                        mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
-                    }
+                String uri = externalTracks.get(trackIndex);
+                String format = fetchSubtitleFormat(stream.getString("Codec"));
+
+                if (uri != null && format != null) {
+                    Format subtitleFormat = Format.createTextSampleFormat(String.valueOf(trackIndex), format, C.SELECTION_FLAG_AUTOSELECT, language);
+                    MediaSource subtitleMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri), subtitleFormat, C.TIME_UNSET);
+                    mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
                 }
             }
         }
@@ -403,6 +424,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
                 return MimeTypes.APPLICATION_TTML;
             case "srt":
             case "sub":
+            case "subrip":
                 return MimeTypes.APPLICATION_SUBRIP;
             default:
                 return null;
@@ -468,6 +490,10 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
                     })
                     .start();
         }
+    }
+
+    public void changeStream(JSONObject item) {
+        prepareMediaSource(item, true);
     }
 }
 

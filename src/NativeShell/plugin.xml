@@ -41,10 +41,12 @@
     <source-file src="src/exoplayer/ExoPlayerEventListener.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/ExoPlayerFormats.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/ExoPlayerCodec.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
+    <source-file src="src/exoplayer/ExoPlayerSubtitle.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <framework src="src/build.gradle" custom="true" type="gradleReference" />
     <framework src="com.squareup.okhttp3:okhttp:3.13.1" />
     <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.13.1" />
     <framework src="com.google.android.exoplayer:exoplayer:2.11.1" />
+    <framework src="com.neovisionaries:nv-i18n:1.27" />
     <resource-file src="res/drawable-hdpi/ic_notification.png" target="res/drawable-hdpi/ic_notification.png" />
     <resource-file src="res/drawable-ldpi/ic_notification.png" target="res/drawable-ldpi/ic_notification.png" />
     <resource-file src="res/drawable-mdpi/ic_notification.png" target="res/drawable-mdpi/ic_notification.png" />

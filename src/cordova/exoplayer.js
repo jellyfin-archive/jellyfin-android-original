@@ -1,4 +1,4 @@
-define(['events', 'appSettings', 'filesystem', 'loading'], function (events, appSettings, fileSystem, loading) {
+define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], function (events, appSettings, fileSystem, loading, playbackManager) {
     "use strict";
 
     return function () {
@@ -9,6 +9,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         self.name = 'ExoPlayer';
         self.type = 'mediaplayer';
         self.id = 'exoplayer';
+        self.subtitleStreamIndex = -1;
 
         // Prioritize first
         self.priority = -1;
@@ -87,6 +88,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.setSubtitleStreamIndex = function (index) {
+            self.subtitleStreamIndex = index;
         };
 
         self.canSetAudioStreamIndex = function () {
@@ -186,7 +188,12 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
 
         self.currentTime = function () {
             return (self._currentTime || 0) * 1000;
-        }
+        };
+
+        self.changeSubtitleStream = function (index) {
+            self.subtitleStreamIndex = index = Number(index);
+            playbackManager.setSubtitleStreamIndex(index);
+        };
 
         self.getDeviceProfile = function (item, options) {
             // using native player implementations, check if item can be played
