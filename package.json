@@ -27,7 +27,7 @@
     "jellyfin-web": "git+https://github.com/jellyfin/jellyfin-web.git#a612fdf87c0d692447abb3a0016c62bd81468c8f",
     "org.jellyfin.mobile": "file:src/NativeShell",
     "request": "^2.88.0",
-    "uglify-es": "^3.3.9"
+    "terser": "^4.6.4"
   },
   "cordova": {
     "plugins": {

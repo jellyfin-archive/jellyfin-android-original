@@ -2,9 +2,9 @@ var gulp = require('gulp');
 var gulpif = require('gulp-if');
 var del = require('del');
 var dom = require('gulp-dom');
-var uglifyes = require('uglify-es');
+var terser = require('terser');
 var composer = require('gulp-uglify/composer');
-var uglify = composer(uglifyes, console);
+var minify = composer(terser, console);
 
 // Check the NODE_ENV environment variable
 var isDev = process.env.NODE_ENV === 'development';
@@ -94,7 +94,7 @@ function modifyIndex() {
 // Uglify cordova scripts
 function scripts() {
     return gulp.src(paths.scripts.src)
-        .pipe(gulpif(compress, uglify(uglifyOptions)))
+        .pipe(gulpif(compress, minify(uglifyOptions)))
         .pipe(gulp.dest(paths.scripts.dest));
 }
 
