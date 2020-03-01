@@ -80,7 +80,7 @@ public class ExoPlayerMediaSource {
         loadAudioTracks(mediaSource, audioTracks);
         loadVideoTracks(videoTracks);
 
-        this.isTranscoding = item.has("playerStartPositionTicks") ? item.getLong("playerStartPositionTicks") : null;
+        this.isTranscoding = item.has("TranscodingSubProtocol") && item.getString("TranscodingSubProtocol").equals("hls");
     }
 
     private void loadVideoTracks(List<JSONObject> tracks) throws JSONException {

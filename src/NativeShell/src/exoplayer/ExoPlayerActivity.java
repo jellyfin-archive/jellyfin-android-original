@@ -432,11 +432,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     }
 
     public void changeStream(JSONObject item) {
-        try {
-            prepareMediaSource(item, true);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        prepareMediaSource(item, true);
     }
 }
 
