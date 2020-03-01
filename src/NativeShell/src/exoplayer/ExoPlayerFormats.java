@@ -3,6 +3,8 @@ package org.jellyfin.mobile.exoplayer;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
+import com.google.android.exoplayer2.util.MimeTypes;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -456,6 +458,30 @@ public class ExoPlayerFormats {
                 return "constrained baseline";
             case MediaCodecInfo.CodecProfileLevel.AVCProfileConstrainedHigh:
                 return "constrained high";
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * fetch the exoplayer subtitle format, if supported, otherwise null
+     *
+     * @param format subtitle format given by jellyfin
+     * @return exoplayer subtitle format, otherwise null if not supported
+     */
+    public static String getSubtitleFormat(String format) {
+        switch (format) {
+            case "ssa":
+            case "ass":
+                return MimeTypes.TEXT_SSA;
+            case "vtt":
+                return MimeTypes.TEXT_VTT;
+            case "ttml":
+                return MimeTypes.APPLICATION_TTML;
+            case "srt":
+            case "sub":
+            case "subrip":
+                return MimeTypes.APPLICATION_SUBRIP;
             default:
                 return null;
         }

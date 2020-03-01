@@ -5,12 +5,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.ArrayMap;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -31,19 +29,18 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.neovisionaries.i18n.LanguageAlpha3Code;
 import com.neovisionaries.i18n.LocaleCode;
 
 import org.jellyfin.mobile.Constants;
 import org.jellyfin.mobile.R;
-import org.json.JSONArray;
+import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerMediaSource;
+import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerTextTrack;
+import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerTracksGroup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static com.google.android.exoplayer2.ExoPlayer.EventListener;
@@ -54,10 +51,9 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     private ExoPlayerEventListener eventListener = null;
     private Handler timeUpdatesHandler = null;
     private DefaultTrackSelector trackSelector = null;
-    private Map<Integer, Integer> selections = new ArrayMap<>();
     private boolean playbackEnded = false;
     private View progressIndicator;
-    private List<ExoPlayerSubtitle> subtitles = new ArrayList<>();
+    private ExoPlayerMediaSource item = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,8 +127,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         player.addAudioListener(eventListener);
 
         try {
-            JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
-            prepareMediaSource(item, false);
+            prepareMediaSource(new JSONObject(getIntent().getStringExtra("item")), false);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -140,40 +135,24 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         startTimeUpdates();
     }
 
-    private void prepareMediaSource(JSONObject item, boolean changeStream) {
-        MediaSource mediaSource = null;
-        long mediaStartTicks = 0;
-
-        selections.put(C.TRACK_TYPE_VIDEO, -1);
-        selections.put(C.TRACK_TYPE_AUDIO, -1);
-        selections.put(C.TRACK_TYPE_TEXT, -1);
-
-        playbackEnded = false;
-
+    private void prepareMediaSource(JSONObject webItem, boolean changeStream) {
         try {
-            JSONObject mediaSourceInfo = item.getJSONObject("mediaSource");
-
-            TextView movieTitleTextView = findViewById(R.id.movie_title);
-            movieTitleTextView.setText(item.getString("title"));
-
-            mediaStartTicks = item.getLong("playerStartPositionTicks");
-
-            if (!mediaSourceInfo.isNull("DefaultSubtitleStreamIndex")) {
-                selections.put(C.TRACK_TYPE_TEXT, mediaSourceInfo.getInt("DefaultSubtitleStreamIndex"));
-            }
-
-            mediaSource = fetchMediaSources(item);
+            item = new ExoPlayerMediaSource(webItem);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        MediaSource mediaSource = prepareStreams(item);
+        playbackEnded = false;
 
         if (mediaSource == null) {
             //TODO send error to the web client
             this.onDestroy();
         } else {
+            long startTicks = item.getMediaStartTicks();
 
-            if (!changeStream && mediaStartTicks > 0) {
-                player.seekTo(mediaStartTicks / Constants.TICKS_PER_MILLISECOND);
+            if (!changeStream && startTicks > 0) {
+                player.seekTo(startTicks);
             }
 
             player.prepare(mediaSource, false, false);
@@ -186,10 +165,11 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     private void showCaptionsMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
 
-        popupMenu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == -1) return true;
+        popupMenu.setOnMenuItemClickListener(menuItem -> {
+            if (menuItem.getItemId() == -1) return true;
 
-            ExoPlayerSubtitle subtitle = subtitles.get(item.getItemId());
+            Map<Integer, ExoPlayerTextTrack> tracks = item.getTracksGroup().get(C.TRACK_TYPE_TEXT).getTracks();
+            ExoPlayerTextTrack subtitle = tracks.get(menuItem.getItemId());
 
             if (subtitle.getPlayerIndex() != null) {
                 int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
@@ -209,11 +189,18 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         });
 
         Menu menu = popupMenu.getMenu();
+        Map<Integer, ExoPlayerTextTrack> tracks = item.getTracksGroup().get(C.TRACK_TYPE_TEXT).getTracks();
 
-        for (int index = 0; index < subtitles.size(); index++) {
+        for (Map.Entry<Integer, ExoPlayerTextTrack> trackItem : tracks.entrySet()) {
+            ExoPlayerTextTrack track = trackItem.getValue();
+            menu.add(0, track.getIndex(), 0, track.getTitle());
+        }
+
+
+        /*for (int index = 0; index < ); index++) {
             ExoPlayerSubtitle subtitle = subtitles.get(index);
             menu.add(0, index, 0, subtitle.getTitle());
-        }
+        }*/
 
         popupMenu.show();
     }
@@ -293,6 +280,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         }
 
         TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
+        Map<Integer, ExoPlayerTextTrack> tracks = item.getTracksGroup().get(C.TRACK_TYPE_TEXT).getTracks();
 
         if (trackGroupArray.length > 0) {
             for (int i = 0; i < trackGroupArray.length; i++) {
@@ -305,10 +293,12 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
                     String alpha3T = alpha3Language.getAlpha3T().toString();
                     String alpha3B = alpha3Language.getAlpha3B().toString();
 
-                    for (ExoPlayerSubtitle sub: subtitles) {
-                        String language = sub.getLanguage();
-                        if (sub.getPlayerIndex() == null && (alpha2.equals(language) || alpha3T.equals(language) || alpha3B.equals(language))) {
-                            sub.setPlayerIndex(i);
+                    for (Map.Entry<Integer, ExoPlayerTextTrack> entry: tracks.entrySet()) {
+                        ExoPlayerTextTrack track = entry.getValue();
+
+                        String language = track.getLanguage();
+                        if (track.getPlayerIndex() == null && (alpha2.equals(language) || alpha3T.equals(language) || alpha3B.equals(language))) {
+                            track.setPlayerIndex(i);
                             break;
                         }
                     }
@@ -329,30 +319,23 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     /**
      * builds a media source to feed the player being loaded
      *
-     * @param item json object containing all necessary info about the item to be played.
+     * @param item ExoPlayerMediaSource object containing all necessary info about the item to be played.
      * @return a MediaSource object. This could be a result of a MergingMediaSource or a ProgressiveMediaSource, between others
      */
-    private MediaSource fetchMediaSources(JSONObject item) throws JSONException {
+    private MediaSource prepareStreams(ExoPlayerMediaSource item) {
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(this, Util.getUserAgent(this, "Jellyfin android"));
         MediaSource mediaSource = getVideoMediaSource(item, dataSourceFactory);
 
-        mediaSource = fetchSubtitleStreams(item, mediaSource, dataSourceFactory);
+        mediaSource = addSubtitleMediaSources(item.getTracksGroup().get(C.TRACK_TYPE_TEXT), mediaSource, dataSourceFactory);
 
         return mediaSource;
     }
 
-    private MediaSource getVideoMediaSource(JSONObject item, DataSource.Factory dataSourceFactory) throws JSONException {
-        boolean bHls = false;
-        Uri uri = Uri.parse(item.getString("url"));
+    private MediaSource getVideoMediaSource(ExoPlayerMediaSource item, DataSource.Factory dataSourceFactory) {
         MediaSource mediaSource;
+        Uri uri = Uri.parse(item.getUrl());
 
-        try {
-            bHls = item.getJSONObject("mediaSource").getString("TranscodingSubProtocol").equals("hls");
-        } catch (JSONException e) {
-            // it's not hls, assume default media source
-        }
-
-        if (bHls) {
+        if (item.isTranscoding()) {
             mediaSource = new HlsMediaSource.Factory(dataSourceFactory).setAllowChunklessPreparation(true).createMediaSource(uri);
         } else {
             mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
@@ -364,72 +347,28 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     /**
      * fetches all subtitle streams present in item, adding them to mediaSource
      *
-     * @param item              item being played
+     * @param tracksGroup       ExoPlayerTracksGroup object containing selected index and all subtitle tracks
      * @param mediaSource       media source to add parsed subtitles
      * @param dataSourceFactory data source factory instance
      * @return media source with parsed subtitles
      * @throws JSONException
      */
-    private MediaSource fetchSubtitleStreams(JSONObject item, MediaSource mediaSource, DataSource.Factory dataSourceFactory) throws JSONException {
-        JSONArray textTracks = item.getJSONArray("textTracks");
-        ArrayMap<Integer, String> externalTracks = new ArrayMap<>();
+    private MediaSource addSubtitleMediaSources(ExoPlayerTracksGroup<ExoPlayerTextTrack> tracksGroup, MediaSource mediaSource, DataSource.Factory dataSourceFactory) {
 
-        for (int i = 0; i < textTracks.length(); i++) {
-            JSONObject track = textTracks.getJSONObject(i);
-            externalTracks.put(track.getInt("index"), track.getString("url"));
-        }
+        for (Map.Entry<Integer, ExoPlayerTextTrack> trackItem : tracksGroup.getTracks().entrySet()) {
+            ExoPlayerTextTrack track = trackItem.getValue();
 
-        JSONObject mediaSourceObject = item.getJSONObject("mediaSource");
-        JSONArray streams = mediaSourceObject.getJSONArray("MediaStreams");
-
-        for (int i = 0; i < streams.length(); i++) {
-            JSONObject stream = streams.getJSONObject(i);
-
-            if (stream.getString("Type").equals("Subtitle")) {
-                int trackIndex = stream.getInt("Index");
-                String language = stream.has("Language") ? stream.getString("Language") : null;
-                String deliveryMethod = stream.getString("DeliveryMethod");
-                String title = stream.getString("DisplayTitle");
-
-                subtitles.add(new ExoPlayerSubtitle(title, language, trackIndex));
-
-                String uri = externalTracks.get(trackIndex);
-                String format = fetchSubtitleFormat(stream.getString("Codec"));
-
-                if (uri != null && format != null) {
-                    Format subtitleFormat = Format.createTextSampleFormat(String.valueOf(trackIndex), format, C.SELECTION_FLAG_AUTOSELECT, language);
-                    MediaSource subtitleMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(uri), subtitleFormat, C.TIME_UNSET);
-                    mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
-                }
+            if (track.getUri() != null && track.getFormat() != null) {
+                Format subtitleFormat = Format.createTextSampleFormat(String.valueOf(trackItem.getKey()), track.getFormat(), C.SELECTION_FLAG_AUTOSELECT, track.getLanguage());
+                MediaSource subtitleMediaSource = new SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(track.getUri()), subtitleFormat, C.TIME_UNSET);
+                mediaSource = new MergingMediaSource(mediaSource, subtitleMediaSource);
             }
         }
 
         return mediaSource;
     }
 
-    /**
-     * fetch the exoplayer subtitle format, if supported, otherwise null
-     *
-     * @param format subtitle format given by jellyfin
-     * @return exoplayer subtitle format, otherwise null if not supported
-     */
-    private String fetchSubtitleFormat(String format) {
-        switch (format) {
-            case "ssa":
-            case "ass":
-                return MimeTypes.TEXT_SSA;
-            case "vtt":
-                return MimeTypes.TEXT_VTT;
-            case "ttml":
-                return MimeTypes.APPLICATION_TTML;
-            case "srt":
-            case "sub":
-            case "subrip":
-                return MimeTypes.APPLICATION_SUBRIP;
-            default:
-                return null;
-        }
-    }
+
 
     @Override
     protected void onDestroy() {
@@ -493,7 +432,11 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     }
 
     public void changeStream(JSONObject item) {
-        prepareMediaSource(item, true);
+        try {
+            prepareMediaSource(item, true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
 
