@@ -10,6 +10,10 @@ public class ExoPlayerTextTrack extends ExoPlayerBaseTrack {
     private String uri;
     private String format;
 
+    public ExoPlayerTextTrack() {
+        super();
+    }
+
     public ExoPlayerTextTrack(JSONObject track, Map<Integer, String> textTracksUrl) throws JSONException {
         super(track);
         language = track.getString("Language");

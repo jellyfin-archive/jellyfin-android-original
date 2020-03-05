@@ -121,6 +121,8 @@ public class ExoPlayerMediaSource {
 
         Map<Integer, ExoPlayerTextTrack> finalTracks = new HashMap();
 
+        finalTracks.put(-1, new ExoPlayerTextTrack());
+
         for (JSONObject track: tracks) {
             finalTracks.put(track.getInt("Index"), new ExoPlayerTextTrack(track,textTracksUrl));
         }

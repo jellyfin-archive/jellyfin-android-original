@@ -166,20 +166,24 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         PopupMenu popupMenu = new PopupMenu(this, view);
 
         popupMenu.setOnMenuItemClickListener(menuItem -> {
-            if (menuItem.getItemId() == -1) return true;
-
             Map<Integer, ExoPlayerTextTrack> tracks = item.getTracksGroup().get(C.TRACK_TYPE_TEXT).getTracks();
             ExoPlayerTextTrack subtitle = tracks.get(menuItem.getItemId());
 
-            if (subtitle.getPlayerIndex() != null) {
+            Integer subtitleIndex = subtitle.getPlayerIndex();
+
+            if (subtitleIndex != null || (subtitleIndex == -1 && !item.isTranscoding())) {
                 int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
                 MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
                 TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
 
                 DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
 
-                DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(subtitle.getPlayerIndex(), 0);
-                parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection);
+                if (subtitleIndex == -1) {
+                    parameters = parameters.clearSelectionOverride(renderedIndex, trackGroupArray);
+                } else {
+                    DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(subtitleIndex, 0);
+                    parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection);
+                }
 
                 trackSelector.setParameters(parameters);
             } else {
@@ -195,12 +199,6 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
             ExoPlayerTextTrack track = trackItem.getValue();
             menu.add(0, track.getIndex(), 0, track.getTitle());
         }
-
-
-        /*for (int index = 0; index < ); index++) {
-            ExoPlayerSubtitle subtitle = subtitles.get(index);
-            menu.add(0, index, 0, subtitle.getTitle());
-        }*/
 
         popupMenu.show();
     }

@@ -8,6 +8,12 @@ public abstract class ExoPlayerBaseTrack {
     private Integer playerIndex = null;
     private String title;
 
+    public ExoPlayerBaseTrack() {
+        index = -1;
+        playerIndex = -1;
+        title = "None";
+    }
+
     public ExoPlayerBaseTrack(JSONObject track) throws JSONException {
         this.index = track.getInt("Index");
         this.title = track.getString("DisplayTitle");
