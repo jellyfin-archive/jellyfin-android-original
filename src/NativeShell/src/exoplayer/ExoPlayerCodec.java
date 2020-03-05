@@ -17,6 +17,7 @@ public class ExoPlayerCodec {
     private String codec;
     private List<String> profiles;
     private List<Integer> levels;
+    private Integer maxBitrate;
 
     public ExoPlayerCodec(MediaCodecInfo.CodecCapabilities codecCapabilities) {
         mimeType = codecCapabilities.getMimeType();
@@ -24,9 +25,14 @@ public class ExoPlayerCodec {
 
         if (codec != null) {
             isAudio = valid = true;
+            maxBitrate = codecCapabilities.getAudioCapabilities().getBitrateRange().getUpper();
         } else {
             codec = ExoPlayerFormats.getVideoCodec(mimeType);
             valid = codec != null;
+
+            if (valid) {
+                maxBitrate = codecCapabilities.getVideoCapabilities().getBitrateRange().getUpper();
+            }
         }
 
         if (valid) {
@@ -52,6 +58,10 @@ public class ExoPlayerCodec {
         return levels;
     }
 
+    public Integer getMaxBitrate() {
+        return maxBitrate;
+    }
+
     public JSONObject getJSONObject() {
         JSONObject result = new JSONObject();
         JSONArray profiles = new JSONArray(this.profiles);
@@ -63,6 +73,7 @@ public class ExoPlayerCodec {
             result.put("isAudio", this.isAudio);
             result.put("profiles", profiles);
             result.put("levels", levels);
+            result.put("maxBitrate", maxBitrate);
         } catch (JSONException e) {
             return null;
         }

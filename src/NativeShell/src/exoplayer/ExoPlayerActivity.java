@@ -171,7 +171,9 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
             Integer subtitleIndex = subtitle.getPlayerIndex();
 
-            if (subtitleIndex != null || (subtitleIndex == -1 && !item.isTranscoding())) {
+            if (subtitleIndex == null || (subtitleIndex == -1 && item.isTranscoding())) {
+                ExoPlayer.callWebMethod("changeSubtitleStream", String.valueOf(subtitle.getIndex()));
+            } else {
                 int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
                 MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
                 TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
@@ -186,9 +188,8 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
                 }
 
                 trackSelector.setParameters(parameters);
-            } else {
-                ExoPlayer.callWebMethod("changeSubtitleStream", String.valueOf(subtitle.getIndex()));
             }
+
             return true;
         });
 

@@ -191,8 +191,9 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
         };
 
         self.changeSubtitleStream = function (index) {
-            self.subtitleStreamIndex = index = Number(index);
+            var index = Number(index);
             playbackManager.setSubtitleStreamIndex(index);
+            self.subtitleStreamIndex = index;
         };
 
         self.getDeviceProfile = function (item, options) {
@@ -228,16 +229,16 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
 
                     var audioProfiles = {
                         '3gp': ['aac', '3gpp', 'flac'],
-                        'mp4': ['aac', 'mp1', 'mp2', 'mp3'],
-                        'ts': ['aac', 'mp1', 'mp2', 'mp3', 'ac3', 'dts'],
+                        'mp4': ['mp3', 'aac', 'mp1', 'mp2'],
+                        'ts': ['mp3', 'aac', 'mp1', 'mp2', 'ac3', 'dts'],
                         'flac': ['flac'],
                         'aac': ['aac'],
-                        'mkv': ['aac', 'dts', 'flac', 'vorbis', 'ac3', 'wma', 'mp1', 'mp2', 'mp3'],
+                        'mkv': ['mp3', 'aac', 'dts', 'flac', 'vorbis', 'ac3', 'wma', 'mp1', 'mp2'],
                         'mp3': ['mp3'],
                         'ogg': ['ogg', 'opus', 'vorbis'],
                         'webvm': ['vorbis', 'opus'],
-                        'avi': ['flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2', 'mp3'],
-                        'flv': ['aac', 'mp3'],
+                        'avi': ['mp3', 'flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2'],
+                        'flv': ['mp3', 'aac'],
                         'asf': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
                         'wmv': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
                         'm2ts': ['aac', 'ac3', 'dts', 'pcm'],
@@ -277,6 +278,16 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
                             if (codecs.audioCodecs.hasOwnProperty(index)) {
                                 var audioCodec = codecs.audioCodecs[index];
                                 audioCodecs.push(audioCodec.codec);
+
+                                profile.CodecProfiles.push({
+                                    Type: 'Audio',
+                                    Codec: audioCodec.codec,
+                                    Conditions: [{
+                                        Condition: 'LessThanEqual',
+                                        Property: 'AudioBitrate',
+                                        Value: audioCodec.maxBitrate
+                                    }]
+                                });
                             }
                         }
 
@@ -287,7 +298,11 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
 
                                 var profiles = videoCodec.profiles.join('|');
                                 var maxLevel = videoCodec.levels.length && Math.max.apply(null, videoCodec.levels);
-                                var conditions = [];
+                                var conditions = [{
+                                    Condition: 'LessThanEqual',
+                                    Property: 'VideoBitrate',
+                                    Value: videoCodec.maxBitrate
+                                }];
 
                                 if (profiles) {
                                     conditions.push({
@@ -369,7 +384,8 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
                                 AudioCodec: 'mp3',
                                 Context: 'Streaming',
                                 Protocol: 'http'
-                            }
+                            },
+
                         ];
 
                         resolve(profile);
