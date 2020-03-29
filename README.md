@@ -1,5 +1,5 @@
 <h1 align="center">Jellyfin Android</h1>
-<h3 align="center">Part of the <a href="https://jellyfin.media">Jellyfin Project</a></h3>
+<h3 align="center">Part of the <a href="https://jellyfin.org">Jellyfin Project</a></h3>
 
 ---
 
@@ -16,7 +16,7 @@
 <a href="https://translate.jellyfin.org/projects/jellyfin/jellyfin-web/?utm_source=widget">
 <img src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-web/svg-badge.svg" alt="Translation Status"/>
 </a>
-</br>
+<br/>
 <a href="https://opencollective.com/jellyfin">
 <img alt="Donate" src="https://img.shields.io/opencollective/all/jellyfin.svg?label=backers"/>
 </a>
@@ -51,16 +51,16 @@ Most of the translations can be found in the web client since it's the base for 
 
 ### Getting Started
 
-1. Clone or download this repository.
+1. Clone or download this repository
    ```sh
    git clone https://github.com/jellyfin/jellyfin-android.git
    cd jellyfin-android
    ```
-2. Install Cordova and other build dependencies in the project directory via npm.
+2. Install Cordova and other build dependencies in the project directory via npm
    ```sh
    npm install
    ```
-3. Prepare the Cordova platforms.
+3. Prepare the Cordova platforms
    ```sh
    npx cordova prepare
    ```
