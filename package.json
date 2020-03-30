@@ -1,6 +1,6 @@
 {
   "name": "jellyfin-android",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "A Cordova-based mobile app for Jellyfin",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "gulp-dom": "^1.0.0",
     "gulp-if": "^2.0.2",
     "gulp-uglify": "^3.0.2",
-    "jellyfin-web": "git+https://github.com/jellyfin/jellyfin-web.git#a612fdf87c0d692447abb3a0016c62bd81468c8f",
+    "jellyfin-web": "git+https://github.com/jellyfin/jellyfin-web.git#v10.5.2",
     "org.jellyfin.mobile": "file:src/NativeShell",
     "request": "^2.88.0",
     "terser": "^4.6.4"
