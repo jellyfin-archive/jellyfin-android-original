@@ -1,6 +1,6 @@
 {
   "name": "jellyfin-android",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "A Cordova mobile app for Jellyfin",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
   },
   "license": "GPL-2.0-only",
   "dependencies": {
-    "acorn": "^6.1.1",
+    "acorn": "^6.4.1",
     "cordova": "^9.0.0",
     "cordova-android": "^8.0.0",
     "cordova-plugin-androidx": "^1.0.1",

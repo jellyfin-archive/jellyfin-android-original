@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="org.jellyfin.mobile" version="0.9.9" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="org.jellyfin.mobile" version="0.9.10" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Jellyfin</name>
     <description>
     Jellyfin Mobile
     </description>
-    <author email="apps@jellyfin.org" href="http://jellyfin.media">
+    <author email="apps@jellyfin.org" href="http://jellyfin.org">
     Jellyfin
     </author>
     <content src="index.html" />
