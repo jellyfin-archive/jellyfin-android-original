@@ -8,9 +8,10 @@ var tersify = composer(terser, console);
 
 // Check the NODE_ENV environment variable
 var isDev = process.env.NODE_ENV === 'development';
+
 // Allow overriding of jellyfin-web directory
 var WEB_DIR = process.env.JELLYFIN_WEB_DIR || 'node_modules/jellyfin-web/dist';
-console.info('Using jellyfin-web from', WEB_DIR);
+console.info('using jellyfin-web from', WEB_DIR);
 
 // Skip minification for development builds or minified files
 var compress = !isDev && [

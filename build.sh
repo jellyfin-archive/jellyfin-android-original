@@ -9,9 +9,8 @@ image_name="jellyfin-android-apkbuild"
 
 usage() {
     echo -e "Usage:"
-    echo -e " $0 [-r/--release <release>] [-b/--web-branch <web_branch>]"
+    echo -e " $0 [-r/--release <release>]"
     echo -e "The release defaults to a minified 'production' build; specify 'unminified' or 'debug' for alternate releases."
-    echo -e "The web branch defaults to 'origin/master'; specify any valid tag or branch for the 'jellyfin-web' repository."
     exit 1
 }
 
@@ -27,34 +26,28 @@ else
     release="production"
 fi
 
-# Change the jellyfin-web branch in package.json
-if [[ ${1} == '--web-branch' || ${1} == '-b' ]]; then
-    if [[ -n ${2} ]]; then
-        sed -i "s/jellyfin\/jellyfin-web.git#[^\"]*/jellyfin\/jellyfin-web.git#${2}/g" package.json
-        shift 2
-    else
-        usage
-    fi
-fi
-
 set -o xtrace
+
 package_temporary_dir="$( mktemp -d )"
 current_user="$( whoami )"
 
 # Trap cleanup for latter sections
 cleanup() {
-    # Remove tempdir
     rm -rf "${package_temporary_dir}"
 }
+
 trap cleanup EXIT INT
 
 # Set up the build environment docker image
 docker build . -t "${image_name}" -f ./${dockerfile}
+
 # Build the APKs and copy out to ${package_temporary_dir}
 docker run --rm -e "RELEASE=${release}" -v "${package_temporary_dir}:/dist" "${image_name}"
+
 # Correct ownership on the APKs (as current user, then as root if that fails)
 chown -R "${current_user}" "${package_temporary_dir}" &>/dev/null \
   || sudo chown -R "${current_user}" "${package_temporary_dir}" &>/dev/null
+
 # Move the APKs to the parent directory
 mkdir -p ../bin &>/dev/null
 mv "${package_temporary_dir}"/apk/*.apk ../bin

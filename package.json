@@ -1,13 +1,13 @@
 {
   "name": "jellyfin-android",
   "version": "0.9.10",
-  "description": "A Cordova-based mobile app for Jellyfin",
+  "description": "A Cordova mobile app for Jellyfin",
   "repository": {
     "type": "git",
     "url": "https://github.com/jellyfin/jellyfin-android.git"
   },
   "scripts": {
-    "postinstall": "gulp"
+    "prepare": "gulp"
   },
   "license": "GPL-2.0-only",
   "dependencies": {

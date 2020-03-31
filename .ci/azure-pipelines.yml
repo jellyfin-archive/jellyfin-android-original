@@ -1,0 +1,49 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - '*'
+
+pr:
+  branches:
+    include:
+    - '*'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  displayName: 'Install Node'
+  inputs:
+    versionSpec: '10.x'
+
+- script: 'npm ci'
+  displayName: 'Install Dependencies'
+
+- script: 'npx cordova prepare'
+  displayName: 'Prepare Cordova'
+
+- script: 'npx cordova build android --debug'
+  displayName: 'Build Debug'
+
+- script: 'npx cordova build android --release'
+  displayName: 'Build Release'
+
+- task: CopyFiles@2
+  displayName: 'Copy APKs'
+  inputs:
+    SourceFolder: 'platforms/android/app/build/outputs/apk/'
+    Contents: '**/*.apk'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    flattenFolders: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish APKs'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'jellyfin-android'
+    publishLocation: 'Container'
