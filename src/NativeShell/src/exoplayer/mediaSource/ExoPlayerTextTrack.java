@@ -16,7 +16,13 @@ public class ExoPlayerTextTrack extends ExoPlayerBaseTrack {
 
     public ExoPlayerTextTrack(JSONObject track, Map<Integer, String> textTracksUrl) throws JSONException {
         super(track);
-        language = track.getString("Language");
+
+        if (track.has("Language")) {
+            language = track.getString("Language");
+        } else {
+            language = "und";
+        }
+
         uri = textTracksUrl.containsKey(this.getIndex()) ? textTracksUrl.get(this.getIndex()) : null;
         format = ExoPlayerFormats.getSubtitleFormat(track.getString("Codec"));
     }

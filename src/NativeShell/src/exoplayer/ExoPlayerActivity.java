@@ -181,10 +181,12 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
                 DefaultTrackSelector.ParametersBuilder parameters = trackSelector.buildUponParameters();
 
                 if (subtitleIndex == -1) {
-                    parameters = parameters.clearSelectionOverride(renderedIndex, trackGroupArray);
+                    parameters = parameters.clearSelectionOverride(renderedIndex, trackGroupArray)
+                                           .setRendererDisabled(renderedIndex, true);
                 } else {
                     DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(subtitleIndex, 0);
-                    parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection);
+                    parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection)
+                                           .setRendererDisabled(renderedIndex, false);
                 }
 
                 trackSelector.setParameters(parameters);
@@ -284,10 +286,10 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         if (trackGroupArray.length > 0) {
             for (int i = 0; i < trackGroupArray.length; i++) {
                 Format subtitle = trackGroupArray.get(i).getFormat(0);
-                String label = subtitle.language == null ?  (subtitle.label == null ? null : subtitle.label) : subtitle.language;
+                LocaleCode localeCode = LocaleCode.getByCode(subtitle.language);
 
-                if (label != null) {
-                    LanguageAlpha3Code alpha3Language = LocaleCode.getByCode(subtitle.language).getLanguage().getAlpha3();
+                if (localeCode != null) {
+                    LanguageAlpha3Code alpha3Language = localeCode.getLanguage().getAlpha3();
                     String alpha2 = alpha3Language.getAlpha2().toString();
                     String alpha3T = alpha3Language.getAlpha3T().toString();
                     String alpha3B = alpha3Language.getAlpha3B().toString();
@@ -297,6 +299,15 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
                         String language = track.getLanguage();
                         if (track.getPlayerIndex() == null && (alpha2.equals(language) || alpha3T.equals(language) || alpha3B.equals(language))) {
+                            track.setPlayerIndex(i);
+                            break;
+                        }
+                    }
+                } else if (subtitle.language != null && subtitle.language.equals("und")) { // undefined track
+                    for (Map.Entry<Integer, ExoPlayerTextTrack> entry: tracks.entrySet()) {
+                        ExoPlayerTextTrack track = entry.getValue();
+
+                        if (track.getPlayerIndex() == null && track.getLanguage().equals("und")) {
                             track.setPlayerIndex(i);
                             break;
                         }
