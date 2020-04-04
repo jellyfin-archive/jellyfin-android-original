@@ -73,9 +73,12 @@ jobs:
         targetFolder: '$(Build.ArtifactStagingDirectory)'
         flattenFolders: true
 
-    - script: 'mv *.apk jellyfin-android-$(ArtifactSuffix)-$(git describe --tags).apk'
+    - task: Bash@3
       displayName: 'Rename APK'
-      workingDirectory: '$(Build.ArtifactStagingDirectory)'
+      inputs:
+        targetType: 'inline'
+        script: 'mv *.apk jellyfin-android-${ARTIFACTSUFFIX}-$(git describe --tags).apk'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish APK'
