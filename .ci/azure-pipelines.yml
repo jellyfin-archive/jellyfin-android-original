@@ -32,11 +32,11 @@ jobs:
       vmImage: 'ubuntu-latest'
 
     steps:
-    - script: 'export NODE_ENV=development'
+    - script: 'echo "##vso[task.setvariable variable=NODE_ENV]development"'
       displayName: 'Set Node Variable'
       condition: eq(variables['BuildConfiguration'], 'debug')
 
-    - script: 'export TAG=$(git describe --tags)'
+    - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
       displayName: 'Set Tag Variable'
 
     - task: NodeTool@0
