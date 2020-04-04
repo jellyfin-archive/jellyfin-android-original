@@ -12,68 +12,72 @@ pr:
     include:
     - '*'
 
-strategy:
-  matrix:
-    Debug:
-      BuildConfiguration: development
-      ArtifactSuffix: debug
-    Release:
-      BuildConfiguration: production
-      ArtifactSuffix: release
-    Libre:
-      BuildConfiguration: production
-      ArtifactSuffix: libre
+jobs:
+  - job: build
+    displayName: 'Build'
 
-pool:
-  vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+        Debug:
+          BuildConfiguration: development
+          ArtifactSuffix: debug
+        Release:
+          BuildConfiguration: production
+          ArtifactSuffix: release
+        Libre:
+          BuildConfiguration: production
+          ArtifactSuffix: libre
 
-steps:
-- task: NodeTool@0
-  displayName: 'Install Node'
-  inputs:
-    versionSpec: '12.x'
+    pool:
+      vmImage: 'ubuntu-latest'
 
-- task: Cache@2
-  displayName: 'Check Cache'
-  inputs:
-    key: 'npm | package-lock.json'
-    path: 'node_modules'
-    cacheHitVar: CACHE_RESTORED
+    steps:
+    - task: NodeTool@0
+      displayName: 'Install Node'
+      inputs:
+        versionSpec: '12.x'
 
-- script: 'export NODE_ENV=$(BuildConfiguration)'
-  displayName: 'Set Node Environment'
-  condition: eq(variables['BuildConfiguration'], 'development')
+    - task: Cache@2
+      displayName: 'Check Cache'
+      inputs:
+        key: 'npm | package-lock.json'
+        path: 'node_modules'
+        cacheHitVar: CACHE_RESTORED
 
-- script: 'npm ci'
-  displayName: 'Install Dependencies'
-  condition: eq(variables.CACHE_RESTORED, 'false')
+    - script: 'export NODE_ENV=$(BuildConfiguration)'
+      displayName: 'Set Node Environment'
+      condition: eq(variables['BuildConfiguration'], 'development')
 
-- script: 'npx cordova prepare'
-  displayName: 'Prepare Cordova'
+    - script: 'npm ci'
+      displayName: 'Install Dependencies'
+      condition: eq(variables.CACHE_RESTORED, 'false')
 
-- script: 'npx cordova build android --debug'
-  displayName: 'Build Debug'
-  condition: eq(variables['BuildConfiguration'], 'development')
+    - script: 'npx cordova prepare'
+      displayName: 'Prepare Cordova'
 
-- script: 'npx cordova plugin rm cordova-plugin-chromecast'
-  displayName: 'Remove Play Services'
-  condition: eq(variables['ArtifactSuffix'], 'libre')
+    - script: 'npx cordova build android --debug'
+      displayName: 'Build Debug'
+      condition: eq(variables['BuildConfiguration'], 'development')
 
-- script: 'npx cordova build android --release'
-  displayName: 'Build Release'
-  condition: eq(variables['BuildConfiguration'], 'production')
+    - script: 'npx cordova plugin rm cordova-plugin-chromecast'
+      displayName: 'Remove Play Services'
+      condition: eq(variables['ArtifactSuffix'], 'libre')
 
-- task: CopyFiles@2
-  displayName: 'Copy APK'
-  inputs:
-    SourceFolder: 'platforms/android/app/build/outputs/apk/'
-    Contents: '**/*.apk'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    flattenFolders: true
+    - script: 'npx cordova build android --release'
+      displayName: 'Build Release'
+      condition: eq(variables['BuildConfiguration'], 'production')
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish APK'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'jellyfin-android-$(ArtifactSuffix)'
-    publishLocation: 'Container'
+    - task: CopyFiles@2
+      displayName: 'Copy APK'
+      inputs:
+        SourceFolder: 'platforms/android/app/build/outputs/apk/'
+        Contents: '**/*.apk'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        flattenFolders: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish APK'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'jellyfin-android-$(ArtifactSuffix)'
+        publishLocation: 'Container'
