@@ -35,7 +35,7 @@ steps:
 
 - script: 'export NODE_ENV=$(BuildConfiguration)'
   displayName: 'Export Node Variable'
-  condition: eq(variables['BuildConfiguration'], 'debug')
+  condition: eq(variables['BuildConfiguration'], 'development')
 
 - script: 'npm ci'
   displayName: 'Install Dependencies'
@@ -45,7 +45,7 @@ steps:
 
 - script: 'npx cordova build android --debug'
   displayName: 'Build Debug'
-  condition: eq(variables['BuildConfiguration'], 'debug')
+  condition: eq(variables['BuildConfiguration'], 'development')
 
 - script: 'npx cordova plugin rm cordova-plugin-chromecast'
   displayName: 'Remove Play Services'
@@ -53,7 +53,7 @@ steps:
 
 - script: 'npx cordova build android --release'
   displayName: 'Build Release'
-  condition: eq(variables['BuildConfiguration'], 'release')
+  condition: eq(variables['BuildConfiguration'], 'production')
 
 - task: CopyFiles@2
   displayName: 'Copy APK'
