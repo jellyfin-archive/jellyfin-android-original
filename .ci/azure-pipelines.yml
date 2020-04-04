@@ -65,17 +65,21 @@ jobs:
       displayName: 'Build Release'
       condition: eq(variables['BuildConfiguration'], 'production')
 
+    - script: 'mv *.apk jellyfin-android-$(ArtifactSuffix)-$(git describe --tags).apk'
+      displayName: 'Rename APK'
+      workingDirectory: '$(Build.ArtifactStagingDirectory)'
+
     - task: CopyFiles@2
       displayName: 'Copy APK'
       inputs:
-        SourceFolder: 'platforms/android/app/build/outputs/apk/'
-        Contents: '**/*.apk'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        sourceFolder: 'platforms/android/app/build/outputs/apk'
+        contents: '**/*.apk'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
         flattenFolders: true
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish APK'
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'jellyfin-android-$(ArtifactSuffix)'
+        pathToPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: 'jellyfin-android-$(ArtifactSuffix)'
         publishLocation: 'Container'
