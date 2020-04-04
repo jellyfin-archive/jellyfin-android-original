@@ -42,7 +42,6 @@ jobs:
       inputs:
         key: 'npm | package-lock.json'
         path: 'node_modules'
-        cacheHitVar: CACHE_RESTORED
 
     - script: 'export NODE_ENV=$(BuildConfiguration)'
       displayName: 'Set Node Environment'
@@ -50,7 +49,6 @@ jobs:
 
     - script: 'npm ci'
       displayName: 'Install Dependencies'
-      condition: eq(variables.CACHE_RESTORED, 'false')
 
     - script: 'npx cordova prepare'
       displayName: 'Prepare Cordova'
