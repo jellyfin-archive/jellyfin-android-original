@@ -2,7 +2,7 @@ trigger:
   batch: true
   branches:
     include:
-    - master
+    - '*'
   tags:
     include:
     - '*'
@@ -12,6 +12,18 @@ pr:
     include:
     - '*'
 
+strategy:
+  matrix:
+    Debug:
+      BuildConfiguration: development
+      ArtifactSuffix: debug
+    Release:
+      BuildConfiguration: production
+      ArtifactSuffix: release
+    Libre:
+      BuildConfiguration: production
+      ArtifactSuffix: libre
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -19,7 +31,11 @@ steps:
 - task: NodeTool@0
   displayName: 'Install Node'
   inputs:
-    versionSpec: '10.x'
+    versionSpec: '12.x'
+
+- script: 'export NODE_ENV=$(BuildConfiguration)'
+  displayName: 'Export Node Variable'
+  condition: eq(variables['BuildConfiguration'], 'debug')
 
 - script: 'npm ci'
   displayName: 'Install Dependencies'
@@ -29,12 +45,18 @@ steps:
 
 - script: 'npx cordova build android --debug'
   displayName: 'Build Debug'
+  condition: eq(variables['BuildConfiguration'], 'debug')
+
+- script: 'npx cordova plugin rm cordova-plugin-chromecast'
+  displayName: 'Remove Play Services'
+  condition: eq(variables['ReleaseSuffix'], 'libre')
 
 - script: 'npx cordova build android --release'
   displayName: 'Build Release'
+  condition: eq(variables['BuildConfiguration'], 'release')
 
 - task: CopyFiles@2
-  displayName: 'Copy APKs'
+  displayName: 'Copy APK'
   inputs:
     SourceFolder: 'platforms/android/app/build/outputs/apk/'
     Contents: '**/*.apk'
@@ -42,8 +64,8 @@ steps:
     flattenFolders: true
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish APKs'
+  displayName: 'Publish APK'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'jellyfin-android'
+    ArtifactName: 'jellyfin-android-$(ArtifactSuffix)'
     publishLocation: 'Container'
