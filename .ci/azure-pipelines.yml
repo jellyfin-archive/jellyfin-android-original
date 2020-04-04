@@ -13,7 +13,7 @@ pr:
     - '*'
 
 jobs:
-  - job: build
+  - job: Build
     displayName: 'Build'
 
     strategy:
@@ -83,3 +83,41 @@ jobs:
         pathToPublish: '$(Build.ArtifactStagingDirectory)'
         artifactName: 'jellyfin-android-$(ArtifactSuffix)'
         publishLocation: 'Container'
+
+  - job: Publish
+    displayName: 'Publish'
+
+    dependsOn: Build
+    condition: startsWith(variables['Build.SourceBranch'], 'refs/tags')
+
+    strategy:
+      matrix:
+        Debug:
+          BuildConfiguration: debug
+          ArtifactSuffix: debug
+        Release:
+          BuildConfiguration: release
+          ArtifactSuffix: release
+        Libre:
+          BuildConfiguration: release
+          ArtifactSuffix: libre
+
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download APK'
+      inputs:
+        source: 'current'
+        artifact: 'jellyfin-android-$(ArtifactSuffix)'
+        path: '$(System.ArtifactsDirectory)'
+        runVersion: 'latest'
+
+    - task: AndroidSigning@3
+      displayName: 'Sign APK'
+      condition: eq(variables['BuildConfiguration'], 'release')
+      inputs:
+        apkFiles: '$(System.ArtifactsDirectory)/*.apk'
+        keystoreFile: keystore
+        keystorePassword: $(KeyStorePassword)
