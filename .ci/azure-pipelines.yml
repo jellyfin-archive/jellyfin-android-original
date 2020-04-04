@@ -33,12 +33,20 @@ steps:
   inputs:
     versionSpec: '12.x'
 
+- task: Cache@2
+  displayName: 'Check Cache'
+  inputs:
+    key: 'npm | package-lock.json'
+    path: 'node_modules'
+    cacheHitVar: CACHE_RESTORED
+
 - script: 'export NODE_ENV=$(BuildConfiguration)'
-  displayName: 'Export Node Variable'
+  displayName: 'Set Node Environment'
   condition: eq(variables['BuildConfiguration'], 'development')
 
 - script: 'npm ci'
   displayName: 'Install Dependencies'
+  condition: eq(variables.CACHE_RESTORED, 'false')
 
 - script: 'npx cordova prepare'
   displayName: 'Prepare Cordova'
@@ -49,7 +57,7 @@ steps:
 
 - script: 'npx cordova plugin rm cordova-plugin-chromecast'
   displayName: 'Remove Play Services'
-  condition: eq(variables['ReleaseSuffix'], 'libre')
+  condition: eq(variables['ArtifactSuffix'], 'libre')
 
 - script: 'npx cordova build android --release'
   displayName: 'Build Release'
