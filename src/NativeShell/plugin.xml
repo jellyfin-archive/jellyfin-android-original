@@ -26,6 +26,24 @@
       <uses-permission android:name="android.permission.WAKE_LOCK"/>
       <uses-permission android:name="android.permission.BLUETOOTH"/>
     </config-file>
+    <config-file target="res/values/strings.xml" parent="/*">
+      <string name="battery_optimizations_title">Disable Battery Optimizations</string>
+      <string name="battery_optimizations_message">Please disable battery optimizations for media playback while the screen is off.</string>
+      <string name="network_title">Allowed network types</string>
+      <string name="network_message">Do you want to allow the download to run over mobile data or roaming?\\nCharges may apply!</string>
+      <string name="wifi_only">WiFi only</string>
+      <string name="mobile_data">Mobile Data</string>
+      <string name="mobile_data_and_roaming">Mobile Data &amp; Roaming</string>
+    </config-file>
+    <config-file target="res/values-de/strings.xml" parent="/*">
+      <string name="battery_optimizations_title">Batterieoptimierungen deaktivieren</string>
+      <string name="battery_optimizations_message">Bitte die Batterieoptimierungen deaktivieren um Medien mit ausgeschaltetem Bildschirm abgespielt werden können.</string>
+      <string name="network_title">Erlaubte Verbindungsmöglichkeiten</string>
+      <string name="network_message">Wollen Sie den Download über Mobile Daten oder Roaming elauben?\\nEs können Kosten anfallen!</string>
+      <string name="wifi_only">Nur WLAN</string>
+      <string name="mobile_data">Mobile Daten</string>
+      <string name="mobile_data_and_roaming">Mobile Daten &amp; Roaming</string>
+    </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
       <activity android:label="ExoPlayer" android:name="org.jellyfin.mobile.exoplayer.ExoPlayerActivity" android:configChanges="orientation|screenSize|layoutDirection"></activity>
