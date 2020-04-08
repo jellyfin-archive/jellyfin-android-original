@@ -47,7 +47,7 @@ pushd "${SOURCE_DIR}"
 # Install dependencies
 npm cache verify
 npm config set unsafe-perm true
-npm install
+npm ci
 npx gulp
 npx cordova telemetry off
 npx cordova prepare
@@ -62,5 +62,4 @@ npx cordova build android "${RFLAG}"
 
 # Move the artifacts out
 mkdir -p "${ARTIFACT_DIR}/apk"
-mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/${RELEASE_OUTPUT_DIR}/app-*.apk" \
-    "${ARTIFACT_DIR}/apk/jellyfin-android_${RELEASE_SUFFIX}#1.apk"
+mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/*/jellyfin-android_*.apk" "${ARTIFACT_DIR}/apk/"

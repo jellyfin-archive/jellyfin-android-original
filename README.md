@@ -1,5 +1,5 @@
 <h1 align="center">Jellyfin Android</h1>
-<h3 align="center">Part of the <a href="https://jellyfin.media">Jellyfin Project</a></h3>
+<h3 align="center">Part of the <a href="https://jellyfin.org">Jellyfin Project</a></h3>
 
 ---
 
@@ -14,9 +14,9 @@
 <img alt="Current Release" src="https://img.shields.io/github/release/jellyfin/jellyfin-android.svg"/>
 </a>
 <a href="https://translate.jellyfin.org/projects/jellyfin/jellyfin-web/?utm_source=widget">
-<img src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-web/svg-badge.svg" alt="Translation Status"/>
+<img alt="Translation Status" src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-web/svg-badge.svg"/>
 </a>
-</br>
+<br/>
 <a href="https://opencollective.com/jellyfin">
 <img alt="Donate" src="https://img.shields.io/opencollective/all/jellyfin.svg?label=backers"/>
 </a>
@@ -39,7 +39,7 @@ Jellyfin Mobile is an Android app built with Cordova. We welcome all contributio
 Most of the translations can be found in the web client since it's the base for the Android client as well. Translations can be improved very easily from our Weblate instance linked above. Look through the following graphic to see if your native language could use some work!
 
 <a href="https://translate.jellyfin.org/engage/jellyfin/?utm_source=widget">
-<img src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-web/multi-auto.svg" alt="Detailed Translation Status"/>
+<img alt="Detailed Translation Status" src="https://translate.jellyfin.org/widgets/jellyfin/-/jellyfin-web/multi-auto.svg"/>
 </a>
 
 ## Build Process
@@ -51,16 +51,21 @@ Most of the translations can be found in the web client since it's the base for 
 
 ### Getting Started
 
-1. Clone or download this repository.
+1. Clone or download this repository
+
    ```sh
    git clone https://github.com/jellyfin/jellyfin-android.git
    cd jellyfin-android
    ```
-2. Install Cordova and other build dependencies in the project directory via npm.
+
+2. Install Cordova and other build dependencies in the project directory via npm
+
    ```sh
    npm install
    ```
-3. Prepare the Cordova platforms.
+
+3. Prepare the Cordova platforms
+
    ```sh
    npx cordova prepare
    ```
