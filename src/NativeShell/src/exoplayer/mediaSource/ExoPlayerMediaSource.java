@@ -6,6 +6,7 @@ import org.jellyfin.mobile.Constants;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +16,15 @@ public class ExoPlayerMediaSource {
     private JSONObject item;
     private String title;
     private String url;
-    private Long mediaStartTicks;
+    private long mediaStartTicks;
     private boolean isTranscoding;
-    private Map<Integer, ExoPlayerTracksGroup> tracksGroup = new HashMap();
+    private Map<Integer, ExoPlayerTracksGroup> tracksGroup = new HashMap<>();
 
     public ExoPlayerMediaSource(JSONObject item) throws JSONException {
         this.item = item;
         this.title = item.getString("title");
         this.url = item.getString("url");
-        this.mediaStartTicks = item.has("playerStartPositionTicks") ? item.getLong("playerStartPositionTicks") : null;
+        this.mediaStartTicks = item.has("playerStartPositionTicks") ? item.getLong("playerStartPositionTicks") : 0;
 
         if (this.mediaStartTicks > 0) {
             this.mediaStartTicks /= Constants.TICKS_PER_MILLISECOND;
@@ -54,9 +55,9 @@ public class ExoPlayerMediaSource {
 
     private void loadMediaSource(JSONObject mediaSource) throws JSONException {
         JSONArray tracks = mediaSource.getJSONArray("MediaStreams");
-        List<JSONObject> subtitleTracks = new ArrayList();
-        List<JSONObject> audioTracks = new ArrayList();
-        List<JSONObject> videoTracks = new ArrayList();
+        List<JSONObject> subtitleTracks = new ArrayList<>();
+        List<JSONObject> audioTracks = new ArrayList<>();
+        List<JSONObject> videoTracks = new ArrayList<>();
 
         for (int index = 0; index < tracks.length(); index++) {
             JSONObject track = tracks.getJSONObject(index);
@@ -85,29 +86,29 @@ public class ExoPlayerMediaSource {
 
     private void loadVideoTracks(List<JSONObject> tracks) throws JSONException {
         Integer defaultSelection = 1;
-        Map<Integer, ExoPlayerVideoTrack> videoTracks = new HashMap();
+        Map<Integer, ExoPlayerVideoTrack> videoTracks = new HashMap<>();
 
-        for (JSONObject track: tracks) {
+        for (JSONObject track : tracks) {
             videoTracks.put(track.getInt("Index"), new ExoPlayerVideoTrack(track));
         }
 
-        tracksGroup.put(C.TRACK_TYPE_VIDEO, new ExoPlayerTracksGroup(defaultSelection, videoTracks));
+        tracksGroup.put(C.TRACK_TYPE_VIDEO, new ExoPlayerTracksGroup<>(defaultSelection, videoTracks));
     }
 
     private void loadAudioTracks(JSONObject mediaSource, List<JSONObject> tracks) throws JSONException {
         Integer defaultSelection = mediaSource.getInt("DefaultAudioStreamIndex");
-        Map<Integer, ExoPlayerAudioTrack> audioTracks = new HashMap();
+        Map<Integer, ExoPlayerAudioTrack> audioTracks = new HashMap<>();
 
-        for (JSONObject track: tracks) {
+        for (JSONObject track : tracks) {
             audioTracks.put(track.getInt("Index"), new ExoPlayerAudioTrack(track));
         }
 
-        tracksGroup.put(C.TRACK_TYPE_AUDIO, new ExoPlayerTracksGroup(defaultSelection, audioTracks));
+        tracksGroup.put(C.TRACK_TYPE_AUDIO, new ExoPlayerTracksGroup<>(defaultSelection, audioTracks));
     }
 
     private void loadSubtitleTracks(JSONObject mediaSource, List<JSONObject> tracks) throws JSONException {
         Integer defaultSelection = null;
-        Map<Integer, String> textTracksUrl = new HashMap();
+        Map<Integer, String> textTracksUrl = new HashMap<>();
         JSONArray textTracks = item.getJSONArray("textTracks");
 
         for (int index = 0; index < textTracks.length(); index++) {
@@ -119,14 +120,14 @@ public class ExoPlayerMediaSource {
             defaultSelection = mediaSource.getInt("DefaultSubtitleStreamIndex");
         }
 
-        Map<Integer, ExoPlayerTextTrack> finalTracks = new HashMap();
+        Map<Integer, ExoPlayerTextTrack> finalTracks = new HashMap<>();
 
         finalTracks.put(-1, new ExoPlayerTextTrack());
 
-        for (JSONObject track: tracks) {
-            finalTracks.put(track.getInt("Index"), new ExoPlayerTextTrack(track,textTracksUrl));
+        for (JSONObject track : tracks) {
+            finalTracks.put(track.getInt("Index"), new ExoPlayerTextTrack(track, textTracksUrl));
         }
 
-        tracksGroup.put(C.TRACK_TYPE_TEXT, new ExoPlayerTracksGroup(defaultSelection, finalTracks));
+        tracksGroup.put(C.TRACK_TYPE_TEXT, new ExoPlayerTracksGroup<>(defaultSelection, finalTracks));
     }
 }
