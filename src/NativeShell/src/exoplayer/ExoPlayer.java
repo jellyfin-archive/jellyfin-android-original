@@ -2,22 +2,12 @@ package org.jellyfin.mobile.exoplayer;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
-import android.media.MediaFormat;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.Format;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.RendererCapabilities;
-import com.google.android.exoplayer2.audio.MediaCodecAudioRenderer;
-import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
-import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
-import com.google.android.exoplayer2.util.MimeTypes;
-import com.google.android.exoplayer2.video.MediaCodecVideoRenderer;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
@@ -25,10 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,24 +26,38 @@ public class ExoPlayer {
     private static ExoPlayerActivity playerActivity = null;
     private static Map<String, ExoPlayerCodec> supportedVideoCodecs = new HashMap<>();
     private static Map<String, ExoPlayerCodec> supportedAudioCodecs = new HashMap<>();
+    private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+    private static final Object lock = new Object();
 
     public boolean handleRequest(String methodName, JSONArray args, CallbackContext callbackContext, Activity activity, CordovaWebView webView) {
         cordovaActivity = activity;
         cordovaWebView = webView;
 
+        final boolean[] invoked = {false};
+        mainThreadHandler.post(() -> {
+            synchronized (lock) {
+                try {
+                    Method method = this.getClass().getMethod(methodName, JSONArray.class, CallbackContext.class, Activity.class);
+                    invoked[0] = (boolean) method.invoke(this, args, callbackContext, activity);
+                } catch (NoSuchMethodException e) {
+                    callbackContext.error("method doesn't exist: " + methodName);
+                } catch (IllegalAccessException e) {
+                    callbackContext.error("can't access method: " + methodName);
+                } catch (InvocationTargetException e) {
+                    callbackContext.error("failed to call method: " + methodName);
+                }
+                lock.notify();
+            }
+        });
         try {
-            Method method = this.getClass().getMethod(methodName, JSONArray.class, CallbackContext.class, Activity.class);
-            return (boolean) method.invoke(this, args, callbackContext, activity);
-        } catch (NoSuchMethodException e) {
-            callbackContext.error("method doesn't exist: " + methodName);
-        } catch (IllegalAccessException e) {
-            callbackContext.error("can't access method: " + methodName);
-        } catch (InvocationTargetException e) {
-            callbackContext.error("failed to call method: " + methodName);
+            synchronized (lock) {
+                lock.wait();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        callbackContext.error("unknown error for method: " + methodName);
-        return false;
+        return invoked[0];
     }
 
     public boolean loadPlayer(JSONArray args, CallbackContext callbackContext, Activity activity) {
@@ -86,6 +88,7 @@ public class ExoPlayer {
 
     /**
      * call a method from ExoPlayer instance present in window object
+     *
      * @param method    method to invoke in the ExoPlayer instance
      * @param arguments optional arguments to call with this method
      */
@@ -171,6 +174,7 @@ public class ExoPlayer {
         return true;
     }
 
+    @SuppressWarnings("unused")
     public boolean getSupportedFormats(JSONArray args, CallbackContext callbackContext, Activity activity) {
         if (supportedVideoCodecs.size() == 0 && supportedAudioCodecs.size() == 0) {
             MediaCodecList codecs = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
