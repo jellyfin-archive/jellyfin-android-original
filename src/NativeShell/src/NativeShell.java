@@ -283,7 +283,7 @@ public class NativeShell extends CordovaPlugin {
             // TODO translate these strings
             new AlertDialog.Builder(context)
                     .setTitle("Allowed network types")
-                    .setMessage("Do you want to allow the download to run over mobil data or roaming?\nCharges may apply!")
+                    .setMessage("Do you want to allow the download to run over mobile data or roaming?\nCharges may apply!")
                     .setNegativeButton("WiFi only", (dialog, which) -> {
                         request.setAllowedOverMetered(false)
                                 .setAllowedOverRoaming(false);
