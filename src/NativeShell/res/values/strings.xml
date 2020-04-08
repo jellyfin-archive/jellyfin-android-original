@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name" translatable="false">Jellyfin</string>
+    <string name="launcher_name" translatable="false">@string/app_name</string>
+    <string name="activity_name" translatable="false">@string/launcher_name</string>
+    <string name="battery_optimizations_title">Disable Battery Optimizations</string>
+    <string name="battery_optimizations_message">Please disable battery optimizations for media playback while the screen is off.</string>
+    <string name="network_title">Allowed network types</string>
+    <string name="network_message">Do you want to allow the download to run over mobile data or roaming?\\nCharges may apply!</string>
+    <string name="wifi_only">WiFi only</string>
+    <string name="mobile_data">Mobile Data</string>
+    <string name="mobile_data_and_roaming">Mobile Data &amp; Roaming</string>
+</resources>

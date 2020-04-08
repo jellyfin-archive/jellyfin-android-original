@@ -58,9 +58,8 @@ public class NativeShell extends CordovaPlugin {
                     if (!AppPreferences.get(cordova.getActivity()).getIgnoreBatteryOptimizations()
                             && !powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
-                        // TODO translate these strings
-                        builder.setTitle("Disable Battery Optimizations");
-                        builder.setMessage("Please disable battery optimizations for media playback while the screen is off.");
+                        builder.setTitle(cordova.getContext().getString(R.string.battery_optimizations_title));
+                        builder.setMessage(cordova.getContext().getString(R.string.battery_optimizations_message));
                         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -280,21 +279,20 @@ public class NativeShell extends CordovaPlugin {
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
         cordova.getActivity().runOnUiThread(() -> {
-            // TODO translate these strings
             new AlertDialog.Builder(context)
-                    .setTitle("Allowed network types")
-                    .setMessage("Do you want to allow the download to run over mobile data or roaming?\nCharges may apply!")
-                    .setNegativeButton("WiFi only", (dialog, which) -> {
+                    .setTitle(cordova.getContext().getString(R.string.network_title))
+                    .setMessage(cordova.getContext().getString(R.string.network_message))
+                    .setNegativeButton(cordova.getContext().getString(R.string.wifi_only), (dialog, which) -> {
                         request.setAllowedOverMetered(false)
                                 .setAllowedOverRoaming(false);
                         startDownload(request);
                     })
-                    .setPositiveButton("Mobile Data", ((dialog, which) -> {
+                    .setPositiveButton(cordova.getContext().getString(R.string.mobile_data), ((dialog, which) -> {
                         request.setAllowedOverMetered(true)
                                 .setAllowedOverRoaming(false);
                         startDownload(request);
                     }))
-                    .setPositiveButton("Mobile Data & Roaming", ((dialog, which) -> {
+                    .setPositiveButton(cordova.getContext().getString(R.string.mobile_data_and_roaming), ((dialog, which) -> {
                         request.setAllowedOverMetered(true)
                                 .setAllowedOverRoaming(true);
                         startDownload(request);
