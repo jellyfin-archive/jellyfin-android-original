@@ -36,5 +36,6 @@
     </platform>
     <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
     <plugin name="cordova-plugin-chromecast" spec="https://github.com/jellyfin/cordova-plugin-chromecast" />
+    <plugin name="org.jellyfin.mobile" spec="src/NativeShell" />
     <engine name="android" spec="^8.0.0" />
 </widget>
