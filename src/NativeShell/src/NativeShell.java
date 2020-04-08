@@ -117,6 +117,8 @@ public class NativeShell extends CordovaPlugin {
                 return updateMediaSession();
             case "hideMediaSession":
                 return hideMediaSession();
+            case "download":
+                return download();
             default:
                 callbackContext.error("error: unrecognized action: " + action);
                 return false;
@@ -255,13 +257,15 @@ public class NativeShell extends CordovaPlugin {
         return true;
     }
 
-    private boolean download(String url) {
+    private boolean download() {
         String title;
         String filename;
+        String url;
         try {
             JSONObject options = args.getJSONObject(0);
             title = options.getString("title");
             filename = options.getString("filename");
+            url = options.getString("url");
         } catch (Exception e) {
             callbackContext.error("error: download: " + e.getMessage());
             return false;
@@ -298,6 +302,8 @@ public class NativeShell extends CordovaPlugin {
                     .show();
         });
 
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+        callbackContext.sendPluginResult(pluginResult);
         return true;
     }
 
