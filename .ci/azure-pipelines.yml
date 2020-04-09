@@ -106,6 +106,9 @@ jobs:
       vmImage: 'ubuntu-latest'
 
     steps:
+    - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
+      displayName: 'Set Tag Variable'
+
     - task: DownloadPipelineArtifact@2
       displayName: 'Download APK'
       inputs:
@@ -121,3 +124,17 @@ jobs:
         apkFiles: '$(System.ArtifactsDirectory)/*.apk'
         keystoreFile: keystore
         keystorePassword: $(KeyStorePassword)
+
+    - task: GithubRelease@0
+      displayName: 'GitHub Upload'
+      inputs:
+        gitHubConnection: jellyfin
+        repositoryName: jellyfin/jellyfin-android
+        assets: '$(System.ArtifactsDirectory)/*.apk'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: repository
+        sourceFolder: '$(System.ArtifactsDirectory)'
+        contents: '**'
+        targetFolder: '/srv/jellyfin/repos/clients/android/$(TAG)'
