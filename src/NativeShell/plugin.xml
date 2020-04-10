@@ -34,6 +34,7 @@
       <string name="wifi_only">WiFi only</string>
       <string name="mobile_data">Mobile Data</string>
       <string name="mobile_data_and_roaming">Mobile Data &amp; Roaming</string>
+      <string name="downloading">Downloading…</string>
     </config-file>
     <config-file target="res/values-de/strings.xml" parent="/*">
       <string name="battery_optimizations_title">Batterieoptimierungen deaktivieren</string>
@@ -43,6 +44,7 @@
       <string name="wifi_only">Nur WLAN</string>
       <string name="mobile_data">Mobile Daten</string>
       <string name="mobile_data_and_roaming">Mobile Daten &amp; Roaming</string>
+      <string name="downloading">Herunterladen…</string>
     </config-file>
     <config-file target="AndroidManifest.xml" parent="/manifest/application">
       <service android:name="org.jellyfin.mobile.RemotePlayerService" />
