@@ -1,6 +1,6 @@
 package org.jellyfin.mobile;
 
-import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothHeadset;
 import android.content.Context;
@@ -9,9 +9,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.WindowManager;
+
+import androidx.appcompat.app.AlertDialog;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -55,9 +58,8 @@ public class NativeShell extends CordovaPlugin {
                     if (!AppPreferences.get(cordova.getActivity()).getIgnoreBatteryOptimizations()
                             && !powerManager.isIgnoringBatteryOptimizations(BuildConfig.APPLICATION_ID)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(cordova.getActivity());
-                        // TODO translate these strings
-                        builder.setTitle("Disable Battery Optimizations");
-                        builder.setMessage("Please disable battery optimizations for media playback while the screen is off.");
+                        builder.setTitle(cordova.getContext().getString(R.string.battery_optimizations_title));
+                        builder.setMessage(cordova.getContext().getString(R.string.battery_optimizations_message));
                         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -114,6 +116,8 @@ public class NativeShell extends CordovaPlugin {
                 return updateMediaSession();
             case "hideMediaSession":
                 return hideMediaSession();
+            case "download":
+                return download();
             default:
                 callbackContext.error("error: unrecognized action: " + action);
                 return false;
@@ -250,5 +254,60 @@ public class NativeShell extends CordovaPlugin {
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
         callbackContext.sendPluginResult(pluginResult);
         return true;
+    }
+
+    private boolean download() {
+        String title;
+        String filename;
+        String url;
+        try {
+            JSONObject options = args.getJSONObject(0);
+            title = options.getString("title");
+            filename = options.getString("filename");
+            url = options.getString("url");
+        } catch (Exception e) {
+            callbackContext.error("error: download: " + e.getMessage());
+            return false;
+        }
+        Context context = cordova.getContext();
+        Uri uri = Uri.parse(url);
+
+        DownloadManager.Request request = new DownloadManager.Request(uri)
+                .setTitle(title)
+                .setDescription(cordova.getContext().getString(R.string.downloading))
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+        cordova.getActivity().runOnUiThread(() -> {
+            new AlertDialog.Builder(context)
+                    .setTitle(cordova.getContext().getString(R.string.network_title))
+                    .setMessage(cordova.getContext().getString(R.string.network_message))
+                    .setNegativeButton(cordova.getContext().getString(R.string.wifi_only), (dialog, which) -> {
+                        request.setAllowedOverMetered(false)
+                                .setAllowedOverRoaming(false);
+                        startDownload(request);
+                    })
+                    .setPositiveButton(cordova.getContext().getString(R.string.mobile_data), ((dialog, which) -> {
+                        request.setAllowedOverMetered(true)
+                                .setAllowedOverRoaming(false);
+                        startDownload(request);
+                    }))
+                    .setPositiveButton(cordova.getContext().getString(R.string.mobile_data_and_roaming), ((dialog, which) -> {
+                        request.setAllowedOverMetered(true)
+                                .setAllowedOverRoaming(true);
+                        startDownload(request);
+                    }))
+                    .show();
+        });
+
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
+        callbackContext.sendPluginResult(pluginResult);
+        return true;
+    }
+
+    private void startDownload(DownloadManager.Request request) {
+        Context context = cordova.getContext();
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
     }
 }
