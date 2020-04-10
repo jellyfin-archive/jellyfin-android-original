@@ -137,4 +137,10 @@ jobs:
         sshEndpoint: repository
         sourceFolder: '$(System.ArtifactsDirectory)'
         contents: '**'
-        targetFolder: '/srv/jellyfin/repos/clients/android/$(TAG)'
+        targetFolder: '/srv/jellyfin/repos/clients/android/versions/$(TAG)'
+
+    - task: SSH@0
+      inputs:
+        sshEndpoint: repository
+        runOptions: 'inline'
+        inline: 'ln -s /srv/jellyfin/repos/client/android/versions/$(TAG)/* /srv/jellyfin/repos/client/android'
