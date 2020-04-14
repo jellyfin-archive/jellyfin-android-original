@@ -1,3 +1,6 @@
+variables:
+- group: 'jellyfin'
+
 trigger:
   batch: true
   branches:
@@ -117,13 +120,17 @@ jobs:
         path: '$(System.ArtifactsDirectory)'
         runVersion: 'latest'
 
-    - task: AndroidSigning@3
+    - task: DownloadSecureFile@1
+      displayName: 'Download KeyStore'
+      name: 'KeyStore'
+      inputs:
+        secureFile: 'keystore'
+
+    - script: '$(find / -name apksigner -print -quit) sign --ks ${KEYSTORE_SECUREFILEPATH} --ks-pass pass:${PASSWORD} ${SYSTEM_ARTIFACTSDIRECTORY}/jellyfin-android-${ARTIFACTSUFFIX}-${TAG}.apk'
       displayName: 'Sign APK'
       condition: eq(variables['BuildConfiguration'], 'release')
-      inputs:
-        apkFiles: '$(System.ArtifactsDirectory)/*.apk'
-        keystoreFile: keystore
-        keystorePassword: $(KeyStorePassword)
+      env:
+        PASSWORD: $(KeyStorePassword)
 
     - task: GithubRelease@0
       displayName: 'GitHub Upload'
@@ -131,16 +138,19 @@ jobs:
         gitHubConnection: Jellyfin Release Download
         repositoryName: jellyfin/jellyfin-android
         assets: '$(System.ArtifactsDirectory)/*.apk'
+        action: 'edit'
+        assetUploadMode: 'replace'
+        tag: '$(TAG)'
 
     - task: CopyFilesOverSSH@0
       inputs:
         sshEndpoint: repository
         sourceFolder: '$(System.ArtifactsDirectory)'
         contents: '**'
-        targetFolder: '/srv/jellyfin/repos/clients/android/versions/$(TAG)'
+        targetFolder: '/srv/repository/releases/client/android/versions/$(TAG)'
 
     - task: SSH@0
       inputs:
         sshEndpoint: repository
         runOptions: 'inline'
-        inline: 'ln -s /srv/jellyfin/repos/client/android/versions/$(TAG)/* /srv/jellyfin/repos/client/android'
+        inline: 'cd /srv/repository/releases/client/android && ln -s versions/$(TAG)/jellyfin-android-$(ArtifactSuffix)-$(TAG).apk .'
