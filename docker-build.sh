@@ -51,9 +51,9 @@ npm cache verify
 npm config set unsafe-perm true
 npm ci
 npx gulp
-npx cordova telemetry off
-cp -r jellyfin-noto/packaged/* node_modules/jellyfin-web/dist/assets/
+cp -r jellyfin-noto/packaged/* www/assets/
 rm -rf jellyfin-noto
+npx cordova telemetry off
 npx cordova prepare
 
 if [ "${RELEASE}" == 'foss' ]
