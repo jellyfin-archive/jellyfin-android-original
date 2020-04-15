@@ -4,6 +4,7 @@ platforms/
 plugins/
 /www
 node_modules
+package-lock.json
 .sass-cache/
 logs/
 console.log
