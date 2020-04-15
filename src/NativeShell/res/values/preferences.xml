@@ -1,6 +1,3 @@
 <resources>
-
-    <!-- preferences -->
     <string name="pref_ignore_battery_optimizations" translatable="false">pref_ignore_battery_optimizations</string>
-
 </resources>

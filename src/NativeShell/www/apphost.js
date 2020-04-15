@@ -4,7 +4,7 @@ var appName;
 var appVersion;
 
 var features = [
-    //'filedownload',
+    'filedownload',
     'displaylanguage',
     'externalplayerintent',
     'subtitleappearancesettings',
@@ -154,12 +154,14 @@ module.exports = {
                     deviceName = result.deviceName;
                     appName = result.appName;
                     appVersion = result.appVersion;
+
                     appInfo = {
                         deviceId: deviceId,
                         deviceName: deviceName,
                         appName: appName,
                         appVersion: appVersion
                     };
+
                     resolve(appInfo);
                 }, function(err) {
                     console.log(err);
