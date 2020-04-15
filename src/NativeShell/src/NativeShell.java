@@ -1,5 +1,7 @@
 package org.jellyfin.mobile;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothHeadset;
@@ -7,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -14,7 +17,8 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.WindowManager;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -49,6 +53,7 @@ public class NativeShell extends CordovaPlugin {
                     cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                     cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                 }
+
                 // ask for battery optimizations on new phones
                 // we can only send users to the settings page and not request it directly
                 // google play prohibits asking directly except under a select few conditions
@@ -66,6 +71,7 @@ public class NativeShell extends CordovaPlugin {
                                 AppPreferences.get(cordova.getActivity()).setIgnoreBatteryOptimizations(true);
                             }
                         });
+
                         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -77,12 +83,20 @@ public class NativeShell extends CordovaPlugin {
                                 }
                             }
                         });
+
                         builder.show();
                     }
                 }
+
+                // request storage permission at runtime
+                if (ContextCompat.checkSelfPermission(cordova.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(cordova.getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+                }
+
                 // add intent filter to watch for headphone state
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(Intent.ACTION_HEADSET_PLUG);
+
                 // bluetooth related filters - needs BLUETOOTH permission
                 filter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
                 filter.addAction(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED);
@@ -116,8 +130,8 @@ public class NativeShell extends CordovaPlugin {
                 return updateMediaSession();
             case "hideMediaSession":
                 return hideMediaSession();
-            case "download":
-                return download();
+            case "downloadFile":
+                return downloadFile();
             default:
                 callbackContext.error("error: unrecognized action: " + action);
                 return false;
@@ -159,6 +173,7 @@ public class NativeShell extends CordovaPlugin {
                 cordova.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             }
         });
+
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
         callbackContext.sendPluginResult(pluginResult);
         return true;
@@ -173,6 +188,7 @@ public class NativeShell extends CordovaPlugin {
                 cordova.getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             }
         });
+
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
         callbackContext.sendPluginResult(pluginResult);
         return true;
@@ -203,6 +219,7 @@ public class NativeShell extends CordovaPlugin {
         String action, itemId, title, artist, album, imageUrl;
         int duration, position;
         boolean canSeek, isPaused, isLocalPlayer;
+
         try {
             JSONObject options = args.getJSONObject(0);
             action = options.getString("action");
@@ -239,6 +256,7 @@ public class NativeShell extends CordovaPlugin {
             intent.putExtra("isLocalPlayer", isLocalPlayer);
             cordova.getActivity().startService(intent);
         }
+
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
         callbackContext.sendPluginResult(pluginResult);
         return true;
@@ -251,15 +269,17 @@ public class NativeShell extends CordovaPlugin {
             intent.putExtra("playerAction", "playbackstop");
             cordova.getActivity().startService(intent);
         }
+
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
         callbackContext.sendPluginResult(pluginResult);
         return true;
     }
 
-    private boolean download() {
+    private boolean downloadFile() {
         String title;
         String filename;
         String url;
+
         try {
             JSONObject options = args.getJSONObject(0);
             title = options.getString("title");
@@ -269,32 +289,30 @@ public class NativeShell extends CordovaPlugin {
             callbackContext.error("error: download: " + e.getMessage());
             return false;
         }
+
         Context context = cordova.getContext();
         Uri uri = Uri.parse(url);
 
         DownloadManager.Request request = new DownloadManager.Request(uri)
-                .setTitle(title)
-                .setDescription(cordova.getContext().getString(R.string.downloading))
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            .setTitle(title)
+            .setDescription(cordova.getContext().getString(R.string.downloading))
+            .setDestinationInExternalPublicDir("Jellyfin", filename)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
         cordova.getActivity().runOnUiThread(() -> {
             new AlertDialog.Builder(context)
                     .setTitle(cordova.getContext().getString(R.string.network_title))
                     .setMessage(cordova.getContext().getString(R.string.network_message))
                     .setNegativeButton(cordova.getContext().getString(R.string.wifi_only), (dialog, which) -> {
-                        request.setAllowedOverMetered(false)
-                                .setAllowedOverRoaming(false);
+                        request.setAllowedOverMetered(false).setAllowedOverRoaming(false);
                         startDownload(request);
                     })
                     .setPositiveButton(cordova.getContext().getString(R.string.mobile_data), ((dialog, which) -> {
-                        request.setAllowedOverMetered(true)
-                                .setAllowedOverRoaming(false);
+                        request.setAllowedOverMetered(true).setAllowedOverRoaming(false);
                         startDownload(request);
                     }))
                     .setPositiveButton(cordova.getContext().getString(R.string.mobile_data_and_roaming), ((dialog, which) -> {
-                        request.setAllowedOverMetered(true)
-                                .setAllowedOverRoaming(true);
+                        request.setAllowedOverMetered(true).setAllowedOverRoaming(true);
                         startDownload(request);
                     }))
                     .show();

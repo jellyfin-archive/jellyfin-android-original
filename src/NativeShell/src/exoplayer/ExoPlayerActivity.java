@@ -65,7 +65,7 @@ public class ExoPlayerActivity extends Activity {
         player = ExoPlayerFactory.newSimpleInstance(getApplicationContext(), trackSelector);
 
         // set player view layout
-        setContentView(R.layout.exo_player);
+        setContentView(R.layout.exoplayer);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

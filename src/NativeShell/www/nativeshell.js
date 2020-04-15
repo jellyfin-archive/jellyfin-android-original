@@ -34,8 +34,8 @@ NativeShell.prototype.hideMediaSession = function(successCallback, errorCallback
     invokeMethod('hideMediaSession', [], successCallback, errorCallback);
 };
 
-NativeShell.prototype.downloadFile = function(url, successCallback, errorCallback) {
-    // TODO implement or remove
+NativeShell.prototype.downloadFile = function(options, successCallback, errorCallback) {
+    invokeMethod('downloadFile', [options], successCallback, errorCallback);
 };
 
 NativeShell.prototype.getPlugins = function() {

@@ -1,7 +1,7 @@
 {
   "name": "jellyfin-android",
-  "version": "0.9.10",
-  "description": "A Cordova mobile app for Jellyfin",
+  "version": "1.0.0",
+  "description": "A Cordova app for Jellyfin",
   "repository": {
     "type": "git",
     "url": "https://github.com/jellyfin/jellyfin-android.git"
