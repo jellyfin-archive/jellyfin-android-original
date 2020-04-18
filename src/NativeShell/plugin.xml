@@ -55,6 +55,8 @@
     <resource-file src="res/values/preferences.xml" target="res/values/preferences.xml" />
     <resource-file src="res/values/translate.xml" target="res/values/translate.xml" />
     <resource-file src="res/values-de/translate.xml" target="res/values-de/translate.xml" />
+    <resource-file src="res/values-fr/translate.xml" target="res/values-fr/translate.xml" />
+    <resource-file src="res/values-pt-rBR/translate.xml" target="res/values-pt-rBR/translate.xml" />
     <resource-file src="res/layout/exoplayer.xml" target="res/layout/exoplayer.xml" />
   </platform>
 </plugin>

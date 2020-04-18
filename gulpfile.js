@@ -2,31 +2,13 @@ var gulp = require('gulp');
 var gulpif = require('gulp-if');
 var del = require('del');
 var dom = require('gulp-dom');
-var terser = require('terser');
-var composer = require('gulp-uglify/composer');
-var tersify = composer(terser, console);
 
 // Check the NODE_ENV environment variable
 var isDev = process.env.NODE_ENV === 'development';
 
-// Allow overriding of jellyfin-web directory
+// Allow jellyfin-web directory override
 var WEB_DIR = process.env.JELLYFIN_WEB_DIR || 'node_modules/jellyfin-web/dist';
 console.info('using jellyfin-web from', WEB_DIR);
-
-// Skip minification for development builds or minified files
-var compress = !isDev && [
-    '**/*',
-    '!**/*min.*',
-    '!**/*hls.js',
-    // Temporarily exclude apiclient until updated
-    '!bower_components/emby-apiclient/**/*.js'
-];
-
-var uglifyOptions = {
-    compress: {
-        drop_console: true
-    }
-};
 
 var paths = {
     assets: {
@@ -61,7 +43,7 @@ function copy() {
 }
 
 // Add required tags to index.html
-function modifyIndex() {
+function index() {
     return gulp.src(paths.index.src)
         .pipe(dom(function() {
             // inject CSP meta tag
@@ -92,23 +74,14 @@ function modifyIndex() {
         .pipe(gulp.dest(paths.index.dest))
 }
 
-// Uglify cordova scripts
 function scripts() {
     return gulp.src(paths.scripts.src)
-        .pipe(gulpif(compress, tersify(uglifyOptions)))
         .pipe(gulp.dest(paths.scripts.dest));
 }
 
-// Default build task
-var build = gulp.series(
-    clean,
-    gulp.parallel(copy, modifyIndex, scripts)
-);
-
-// Export tasks so they can be run individually
 exports.clean = clean;
 exports.copy = copy;
-exports.modifyIndex = modifyIndex;
+exports.index = index;
 exports.scripts = scripts;
-// Export default task
-exports.default = build;
+
+exports.default = gulp.series(clean, gulp.parallel(copy, index, scripts));

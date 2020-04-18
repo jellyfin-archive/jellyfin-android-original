@@ -13,27 +13,27 @@ case "${RELEASE}" in
         NODE_ENV="production"
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
-    ;;
+        ;;
     'unminified')
         RELEASE_SUFFIX="unminified_"
         NODE_ENV="development"
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
-    ;;
+        ;;
     'foss')
         RELEASE_SUFFIX="foss_"
         NODE_ENV="production"
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
-    ;;
+        ;;
     'debug')
         RELEASE_SUFFIX=""
         NODE_ENV="development"
         RFLAG="--debug"
         RELEASE_OUTPUT_DIR="debug"
-    ;;
+        ;;
     *)
-        echo error: release may only be production, unminified, foss, or debug >&2
+        echo "error: unknown release type"
         exit 1
 esac
 
@@ -60,6 +60,5 @@ fi
 # Build APK
 npx cordova build android "${RFLAG}"
 
-# Move the artifacts out
-mkdir -p "${ARTIFACT_DIR}/apk"
-mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/*/jellyfin-android_*.apk" "${ARTIFACT_DIR}/apk/"
+# Move the artifacts
+mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/*/jellyfin-android_*.apk" "${ARTIFACT_DIR}"

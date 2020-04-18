@@ -79,11 +79,11 @@ function getDeviceProfile(profileBuilder, item) {
 };
 
 function getDeviceProfileForVideo(item) {
-    let container = item.Container;
-    let videoTracks = audioTracks = subtitleTracks = [];
+    var container = item.Container;
+    var videoTracks = audioTracks = subtitleTracks = [];
 
-    for (let i = 0; i < item.MediaStreams.lengh; i++) {
-        let track = item.MediaStreams[i];
+    for (var i = 0; i < item.MediaStreams.lengh; i++) {
+        var track = item.MediaStreams[i];
 
         switch (track.Type) {
             case 'Video':
@@ -100,7 +100,7 @@ function getDeviceProfileForVideo(item) {
         }
     }
 
-    let supportedTracks = window.ExoPlayer.checkTracksSupport(container, videoTracks, audioTracks, subtitleTracks);
+    var supportedTracks = window.ExoPlayer.checkTracksSupport(container, videoTracks, audioTracks, subtitleTracks);
     // TODO: check if the given tracks are supported. If not, they are not added up to directPlayProfiles
 }
 

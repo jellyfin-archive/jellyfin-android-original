@@ -31,7 +31,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
 
         self.checkTracksSupport = function (videoTracks, audioTracks, subtitleTracks) {
             return new Promise(function (resolve) {
-                let successCallback = function (result) {
+                var successCallback = function (result) {
                     resolve({
                         videoTracks: result.videoTracks,
                         audioTracks: result.audioTracks,
@@ -39,7 +39,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                     });
                 };
 
-                let errorCallback = function () {
+                var errorCallback = function () {
                     resolve(false);
                 };
 
@@ -141,7 +141,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
 
         self.setMute = function (mute) {
             // if volume is set to zero, then assume half as default when unmuting
-            let unmuted = Number(self._volume) ? self._volume : '0.5';
+            var unmuted = Number(self._volume) ? self._volume : '0.5';
             self.invokeNativeMethod('setVolume', [mute ? '0' : unmuted]);
         };
 
@@ -164,7 +164,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
         };
 
         self.notifyEnded = function () {
-            let stopInfo = {
+            var stopInfo = {
                 src: self._currentSrc
             };
 

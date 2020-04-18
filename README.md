@@ -94,6 +94,17 @@ npx cordova build android
 npx cordova run android
 ```
 
+## Docker
+
+You can optionally use Docker to build the APK to avoid the above requirements.
+
+Replace release with the desired build flavor and output with the directory you want the APKs sent on completion.
+
+```sh
+docker build . -t "jellyfin-android" -f Dockerfile
+docker run --rm -e "RELEASE=${release}" -v "${output}:/dist" "jellyfin-android"
+```
+
 ## Troubleshooting
 
 ### Failed to find `ANDROID_HOME`
