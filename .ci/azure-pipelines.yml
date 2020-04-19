@@ -159,4 +159,4 @@ jobs:
     inputs:
       sshEndpoint: repository
       runOptions: 'inline'
-      inline: 'cd /srv/repository/releases/client/android && ln -s versions/$(TAG)/jellyfin-android-$(ArtifactSuffix)-$(TAG).apk .'
+      inline: 'cd /srv/repository/releases/client/android && rm -rf *.apk && ln -s versions/$(TAG)/jellyfin-android-$(ArtifactSuffix)-$(TAG).apk .'
