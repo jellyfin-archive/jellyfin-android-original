@@ -18,4 +18,8 @@ public class ExoPlayerTracksGroup<T extends ExoPlayerBaseTrack> {
     public Integer getSelectedTrack() {
         return selectedTrack;
     }
+
+    public void setSelectedTrack(Integer index) {
+        this.selectedTrack = index;
+    }
 }

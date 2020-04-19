@@ -41,6 +41,7 @@
     <source-file src="src/exoplayer/ExoPlayerEventListener.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/ExoPlayerFormats.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/ExoPlayerCodec.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
+    <source-file src="src/exoplayer/ExoPlayerButtons.java" target-dir="src/org/jellyfin/mobile/exoplayer" />
     <source-file src="src/exoplayer/mediaSource/ExoPlayerAudioTrack.java" target-dir="src/org/jellyfin/mobile/exoplayer/mediaSource" />
     <source-file src="src/exoplayer/mediaSource/ExoPlayerBaseTrack.java" target-dir="src/org/jellyfin/mobile/exoplayer/mediaSource" />
     <source-file src="src/exoplayer/mediaSource/ExoPlayerTextTrack.java" target-dir="src/org/jellyfin/mobile/exoplayer/mediaSource" />

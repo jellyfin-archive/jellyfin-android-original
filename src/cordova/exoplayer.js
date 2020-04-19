@@ -10,6 +10,8 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
         self.type = 'mediaplayer';
         self.id = 'exoplayer';
         self.subtitleStreamIndex = -1;
+        self.audioStreamIndex = -1;
+        self.cachedDeviceProfile = null;
 
         // Prioritize first
         self.priority = -1;
@@ -76,12 +78,13 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
         }
 
         self.play = function (options) {
+            self.prepareAudioTracksCapabilities(options);
+
             return new Promise(function (resolve) {
                 self._currentTime = 0;
                 self._paused = false;
                 self._currentSrc = options.url;
                 self.invokeNativeMethod('loadPlayer', [options]);
-                self._volume = self.invokeNativeMethod('getVolume');
                 loading.hide();
                 resolve();
             });
@@ -89,6 +92,10 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
 
         self.setSubtitleStreamIndex = function (index) {
             self.subtitleStreamIndex = index;
+        };
+
+        self.setAudioStreamIndex = function (index) {
+            self.audioStreamIndex = index;
         };
 
         self.canSetAudioStreamIndex = function () {
@@ -138,6 +145,7 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
         };
 
         self.volume = function (val) {
+            return self._volume;
             // should not be necessary to implement
         };
 
@@ -152,38 +160,52 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
         };
 
         self.notifyVolumeChange = function (volume) {
-            self._volume = volume;
-            events.trigger(self, 'volumechange');
+            new Promise(function () {
+                if (self._volume != volume) {
+                    self._volume = volume;
+                    events.trigger(self, 'volumechange');
+                }
+            });
         };
 
         self.notifyPlay = function () {
-            events.trigger(self, 'unpause');
+            new Promise(function () {
+                events.trigger(self, 'unpause');
+            });
         };
 
         self.notifyPlaying = function () {
-            self._paused = false;
-            events.trigger(self, 'playing');
+            new Promise(function () {
+                self._paused = false;
+                events.trigger(self, 'playing');
+            });
         };
 
         self.notifyEnded = function () {
-            let stopInfo = {
-                src: self._currentSrc
-            };
+            new Promise(function () {
+                let stopInfo = {
+                    src: self._currentSrc
+                };
 
-            events.trigger(self, 'stopped', [stopInfo]);
-            self._currentSrc = self._currentTime = null;
+                events.trigger(self, 'stopped', [stopInfo]);
+                self._currentSrc = self._currentTime = null;
+            });
         };
 
         self.notifyPause = function () {
-            self._paused = true;
-            events.trigger(self, 'pause');
+            new Promise(function () {
+                self._paused = true;
+                events.trigger(self, 'pause');
+            });
         };
 
         self.notifyTimeUpdate = function (currentTime) {
-            currentTime = currentTime / 1000;
-            self._timeUpdated = self._currentTime != currentTime;
-            self._currentTime = currentTime;
-            events.trigger(self, 'timeupdate');
+            new Promise(function () {
+                currentTime = currentTime / 1000;
+                self._timeUpdated = self._currentTime != currentTime;
+                self._currentTime = currentTime;
+                events.trigger(self, 'timeupdate');
+            });
         }
 
         self.currentTime = function () {
@@ -191,15 +213,47 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
         };
 
         self.changeSubtitleStream = function (index) {
-            var index = Number(index);
-            playbackManager.setSubtitleStreamIndex(index);
-            self.subtitleStreamIndex = index;
+            // detach from the main ui thread
+            new Promise(function () {
+                var innerIndex = Number(index);
+                playbackManager.setSubtitleStreamIndex(innerIndex);
+                self.subtitleStreamIndex = innerIndex;
+            });
         };
 
-        self.getDeviceProfile = function (item, options) {
+        self.changeAudioStream = function (index) {
+            // detach from the main ui thread
+            new Promise(function () {
+                var innerIndex = Number(index);
+                playbackManager.setAudioStreamIndex(innerIndex);
+                self.audioStreamIndex = innerIndex;
+            });
+        }
+
+        self.prepareAudioTracksCapabilities = function (options) {
+            var directPlayProfiles = self.cachedDeviceProfile.DirectPlayProfiles;
+            var container = options.mediaSource.Container;
+
+            options.mediaSource.MediaStreams.forEach(function (track) {
+                if (track.Type === "Audio") {
+                    var codec = (track.Codec || '').toLowerCase();
+
+                    track.supportsDirectPlay = directPlayProfiles.filter(function (profile) {
+                        return profile.Container === container && profile.Type === 'Video' && profile.AudioCodec.indexOf(codec) !== -1;
+                    }).length > 0;
+                }
+            });
+        };
+
+        self.getDeviceProfile = function () {
             // using native player implementations, check if item can be played
             // also check if direct play is supported, as audio is supported
-            return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve) {
+
+                if (self.cachedDeviceProfile) {
+                    resolve(self.cachedDeviceProfile);
+                }
+
                 require(['browserdeviceprofile'], function (profileBuilder) {
                     var bitrateSetting = appSettings.maxStreamingBitrate();
 
@@ -216,7 +270,7 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
                         '3gp': ['h263', 'h264', 'mpeg4', 'hevc'],
                         'mp4': ['h263', 'h264', 'mpeg4', 'hevc', 'mpeg2video', 'av1', 'mpeg1video'],
                         'ts': ['h264', 'mpeg4'],
-                        'webvm': ['vp8', 'vp9'],
+                        'webm': ['vp8', 'vp9'],
                         'mkv': ['h264', 'mpeg4', 'hevc', 'vp8', 'vp9', 'mpeg2video', 'mpeg1video'],
                         'avi': ['h263', 'h264', 'mpeg4', 'hevc', 'vp8', 'vp9', 'mpeg2video', 'mpeg1video'],
                         'flv': ['h264', 'mpeg4'],
@@ -236,7 +290,7 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
                         'mkv': ['mp3', 'aac', 'dts', 'flac', 'vorbis', 'ac3', 'wma', 'mp1', 'mp2'],
                         'mp3': ['mp3'],
                         'ogg': ['ogg', 'opus', 'vorbis'],
-                        'webvm': ['vorbis', 'opus'],
+                        'webm': ['vorbis', 'opus'],
                         'avi': ['mp3', 'flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2'],
                         'flv': ['mp3', 'aac'],
                         'asf': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
@@ -387,6 +441,8 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
                             },
 
                         ];
+
+                        self.cachedDeviceProfile = profile;
 
                         resolve(profile);
                     });
