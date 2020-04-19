@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.arch.core.util.Function;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -35,12 +36,15 @@ import com.neovisionaries.i18n.LocaleCode;
 
 import org.jellyfin.mobile.Constants;
 import org.jellyfin.mobile.R;
+import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerBaseTrack;
 import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerMediaSource;
 import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerTextTrack;
 import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerTracksGroup;
+import org.jellyfin.mobile.exoplayer.mediaSource.ExoPlayerAudioTrack;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.android.exoplayer2.ExoPlayer.EventListener;
@@ -54,6 +58,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
     private boolean playbackEnded = false;
     private View progressIndicator;
     private ExoPlayerMediaSource item = null;
+    private ExoPlayerButtons buttons = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,36 +76,20 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         // set player view layout
         setContentView(R.layout.exo_player);
 
+        try {
+            prepareMediaSource(new JSONObject(getIntent().getStringExtra("item")), false);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         progressIndicator = findViewById(R.id.progress_indicator);
 
-        View captionsIcon = findViewById(R.id.subtitles_button);
-        captionsIcon.setOnClickListener(this::showCaptionsMenu);
+        buttons = new ExoPlayerButtons(this, item);
 
-        View playbackSettings = findViewById(R.id.playback_settings);
-        playbackSettings.setOnClickListener(v -> {
-//            new TrackSelectionDialogBuilder(this, "Things", trackSelector, 0)
-//                    .build()
-//                    .show();
-
-//            PopupMenu menu = new PopupMenu(this, v, Gravity.TOP);
-//            menu.getMenu()
-//                    .add("Quality");
-//            menu.show();
-        });
-
-        View fullscreenIcon = findViewById(R.id.fullscreen);
-        View exitFullscreenIcon = findViewById(R.id.exit_fullscreen);
+        buttons.setOnSubtitleTrackSelected(this::selectSubtitleTrack);
+        //buttons.setOnAudioTrackSelected(this::onAudioTrackSelected);
 
         PlayerView playerView = findViewById(R.id.exoPlayer);
-        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> {
-            if (systemUiVisible(visibility)) {
-                fullscreenIcon.setVisibility(View.VISIBLE);
-                exitFullscreenIcon.setVisibility(View.GONE);
-            } else {
-                fullscreenIcon.setVisibility(View.GONE);
-                exitFullscreenIcon.setVisibility(View.VISIBLE);
-            }
-        });
 
         ViewCompat.setOnApplyWindowInsetsListener(playerView, (view, insets) -> {
             WindowInsetsCompat windowInsets = insets;
@@ -116,21 +105,12 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
             return windowInsets;
         });
 
-        fullscreenIcon.setOnClickListener(v -> hideSystemUi());
-        exitFullscreenIcon.setOnClickListener(v -> showSystemUi());
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         playerView.setPlayer(player);
 
         player.addListener(eventListener);
         player.addAudioListener(eventListener);
-
-        try {
-            prepareMediaSource(new JSONObject(getIntent().getStringExtra("item")), false);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         startTimeUpdates();
     }
@@ -162,7 +142,44 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         }
     }
 
-    private void showCaptionsMenu(View view) {
+    public Void selectSubtitleTrack(Integer trackIndex) {
+        ExoPlayerTracksGroup<ExoPlayerTextTrack> subtitleTracks = item.getTracksGroup().get(C.TRACK_TYPE_TEXT);
+        Integer currentSelectedTrack = subtitleTracks.getSelectedTrack();
+
+        if (currentSelectedTrack == trackIndex) {
+            return null;
+        }
+
+        Map<Integer, ExoPlayerTextTrack> tracks = subtitleTracks.getTracks();
+        ExoPlayerTextTrack subtitle = tracks.get(trackIndex);
+        boolean currentSubtitleTranscoding = currentSelectedTrack != null && tracks.get(currentSelectedTrack).getPlayerIndex() == null;
+
+        int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
+        MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
+        TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
+
+        DefaultTrackSelector.ParametersBuilder parameters = trackSelector
+                .buildUponParameters()
+                .clearSelectionOverride(renderedIndex, trackGroupArray)
+                .setRendererDisabled(renderedIndex, true);
+
+        Integer subtitleIndex = subtitle.getPlayerIndex();
+
+        if (currentSubtitleTranscoding || subtitle.getPlayerIndex() == null) {
+            ExoPlayer.callWebMethod("changeSubtitleStream", String.valueOf(subtitle.getIndex()));
+        } else {
+            DefaultTrackSelector.SelectionOverride newSelection = new DefaultTrackSelector.SelectionOverride(subtitleIndex, 0);
+            parameters = parameters.setSelectionOverride(renderedIndex, trackGroupArray, newSelection)
+                    .setRendererDisabled(renderedIndex, false);
+        }
+
+        trackSelector.setParameters(parameters);
+
+        return null;
+    }
+
+
+    /*private void showCaptionsMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
 
         popupMenu.setOnMenuItemClickListener(menuItem -> {
@@ -204,32 +221,12 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         }
 
         popupMenu.show();
-    }
+    }*/
 
-    private boolean systemUiVisible(int visibility) {
+    public static boolean systemUiVisible(int visibility) {
         return (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0;
     }
 
-    private void showSystemUi() {
-        final int visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-
-        getWindow().getDecorView().setSystemUiVisibility(visibility);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
-
-    private void hideSystemUi() {
-        int visibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        getWindow().getDecorView().setSystemUiVisibility(visibility);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
 
     public void notifyEvent(String event, String... arguments) {
         ExoPlayer.callWebMethod("notify" + event, arguments);
@@ -274,11 +271,47 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
 
     public void processGroupTracks(TrackSelectionArray selections) {
         MappingTrackSelector.MappedTrackInfo info = trackSelector.getCurrentMappedTrackInfo();
-        int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
 
         if (info == null) {
             return;
         }
+
+        processSubtitleGroupTracks(info);
+        processAudioGroupTracks(info);
+    }
+
+    private <T extends ExoPlayerBaseTrack> T matchLanguage(Format format, Map<Integer, T> tracks, Function<T, String> callback) {
+        LocaleCode localeCode = LocaleCode.getByCode(format.language);
+
+        if (localeCode != null) {
+            LanguageAlpha3Code alpha3Language = localeCode.getLanguage().getAlpha3();
+            String alpha2 = alpha3Language.getAlpha2().toString();
+            String alpha3T = alpha3Language.getAlpha3T().toString();
+            String alpha3B = alpha3Language.getAlpha3B().toString();
+
+            for (Map.Entry<Integer, T> entry: tracks.entrySet()) {
+                T track = entry.getValue();
+                String language = callback.apply(track);
+
+                if (language != null && (alpha2.equals(language) || alpha3T.equals(language) || alpha3B.equals(language))) {
+                    return track;
+                }
+            }
+        } else if (format.language != null && format.language.equals("und")) { // undefined track
+            for (Map.Entry<Integer, T> entry: tracks.entrySet()) {
+                T track = entry.getValue();
+                String language = callback.apply(track);
+
+                if (language != null && language.equals("und")) {
+                    return track;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void processSubtitleGroupTracks(MappingTrackSelector.MappedTrackInfo info) {
+        int renderedIndex = getRendererIndex(C.TRACK_TYPE_TEXT);
 
         TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
         Map<Integer, ExoPlayerTextTrack> tracks = item.getTracksGroup().get(C.TRACK_TYPE_TEXT).getTracks();
@@ -286,32 +319,41 @@ public class ExoPlayerActivity extends AppCompatActivity implements EventListene
         if (trackGroupArray.length > 0) {
             for (int i = 0; i < trackGroupArray.length; i++) {
                 Format subtitle = trackGroupArray.get(i).getFormat(0);
-                LocaleCode localeCode = LocaleCode.getByCode(subtitle.language);
 
-                if (localeCode != null) {
-                    LanguageAlpha3Code alpha3Language = localeCode.getLanguage().getAlpha3();
-                    String alpha2 = alpha3Language.getAlpha2().toString();
-                    String alpha3T = alpha3Language.getAlpha3T().toString();
-                    String alpha3B = alpha3Language.getAlpha3B().toString();
+                ExoPlayerTextTrack chosenTrack = matchLanguage(subtitle, tracks, track -> {
+                    String language = track.getLanguage();
+                    return track.canApplyLocalSubtitle() && track.getPlayerIndex() == null ? language : null;
+                });
 
-                    for (Map.Entry<Integer, ExoPlayerTextTrack> entry: tracks.entrySet()) {
-                        ExoPlayerTextTrack track = entry.getValue();
+                if (chosenTrack != null) {
+                    chosenTrack.setPlayerIndex(i);
+                    break;
+                }
+            }
+        }
+    }
 
-                        String language = track.getLanguage();
-                        if (track.getPlayerIndex() == null && (alpha2.equals(language) || alpha3T.equals(language) || alpha3B.equals(language))) {
-                            track.setPlayerIndex(i);
-                            break;
-                        }
-                    }
-                } else if (subtitle.language != null && subtitle.language.equals("und")) { // undefined track
-                    for (Map.Entry<Integer, ExoPlayerTextTrack> entry: tracks.entrySet()) {
-                        ExoPlayerTextTrack track = entry.getValue();
+    private void processAudioGroupTracks(MappingTrackSelector.MappedTrackInfo info) {
+        int renderedIndex = getRendererIndex(C.TRACK_TYPE_AUDIO);
 
-                        if (track.getPlayerIndex() == null && track.getLanguage().equals("und")) {
-                            track.setPlayerIndex(i);
-                            break;
-                        }
-                    }
+        TrackGroupArray trackGroupArray = info.getTrackGroups(renderedIndex);
+        Map<Integer, ExoPlayerAudioTrack> tracks = item.getTracksGroup().get(C.TRACK_TYPE_AUDIO).getTracks();
+
+        if (trackGroupArray.length > 0) {
+            for (int i = 0; i < trackGroupArray.length; i++) {
+                Format audioFormat = trackGroupArray.get(i).getFormat(0);
+
+                ExoPlayerAudioTrack chosenTrack = matchLanguage(audioFormat, tracks, track -> {
+                    String language = track.getLanguage();
+
+                    return language;
+
+                    //return track.canApplyLocalSubtitle() && track.getPlayerIndex() == null ? language : null;
+                });
+
+                if (chosenTrack != null) {
+                    chosenTrack.setPlayerIndex(i);
+                    break;
                 }
             }
         }

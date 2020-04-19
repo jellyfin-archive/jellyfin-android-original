@@ -9,6 +9,7 @@ public class ExoPlayerTextTrack extends ExoPlayerBaseTrack {
     private String language;
     private String uri;
     private String format;
+    private boolean localDelivery;
 
     public ExoPlayerTextTrack() {
         super();
@@ -25,6 +26,10 @@ public class ExoPlayerTextTrack extends ExoPlayerBaseTrack {
 
         uri = textTracksUrl.containsKey(this.getIndex()) ? textTracksUrl.get(this.getIndex()) : null;
         format = ExoPlayerFormats.getSubtitleFormat(track.getString("Codec"));
+
+        String deliveryMethod = track.getString("DeliveryMethod");
+
+        localDelivery = deliveryMethod.equals("Embed") || deliveryMethod.equals("External");
     }
 
     public String getLanguage() {
@@ -37,5 +42,9 @@ public class ExoPlayerTextTrack extends ExoPlayerBaseTrack {
 
     public String getFormat() {
         return format;
+    }
+
+    public boolean canApplyLocalSubtitle() {
+        return localDelivery;
     }
 }

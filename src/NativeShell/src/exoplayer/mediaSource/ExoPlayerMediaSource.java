@@ -107,7 +107,7 @@ public class ExoPlayerMediaSource {
     }
 
     private void loadSubtitleTracks(JSONObject mediaSource, List<JSONObject> tracks) throws JSONException {
-        Integer defaultSelection = null;
+        Integer defaultSelection = -1;
         Map<Integer, String> textTracksUrl = new HashMap<>();
         JSONArray textTracks = item.getJSONArray("textTracks");
 
