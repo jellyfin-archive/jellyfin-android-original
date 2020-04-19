@@ -51,7 +51,7 @@
     <framework src="src/build.gradle" custom="true" type="gradleReference" />
     <framework src="com.squareup.okhttp3:okhttp:3.13.1" />
     <framework src="com.squareup.okhttp3:okhttp-urlconnection:3.13.1" />
-    <framework src="com.google.android.exoplayer:exoplayer:2.11.3" />
+    <framework src="com.google.android.exoplayer:exoplayer:2.11.4" />
     <framework src="com.neovisionaries:nv-i18n:1.27" />
     <resource-file src="res/drawable-hdpi/ic_notification.png" target="res/drawable-hdpi/ic_notification.png" />
     <resource-file src="res/drawable-ldpi/ic_notification.png" target="res/drawable-ldpi/ic_notification.png" />
