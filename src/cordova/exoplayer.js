@@ -272,10 +272,8 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
                         'ts': ['h264', 'mpeg4'],
                         'webm': ['vp8', 'vp9'],
                         'mkv': ['h264', 'mpeg4', 'hevc', 'vp8', 'vp9', 'mpeg2video', 'mpeg1video'],
-                        'avi': ['h263', 'h264', 'mpeg4', 'hevc', 'vp8', 'vp9', 'mpeg2video', 'mpeg1video'],
                         'flv': ['h264', 'mpeg4'],
                         'asf': ['mpeg2video', 'mpeg4', 'h263', 'h264', 'hevc', 'vp8', 'vp9', 'mpeg1video'],
-                        'wmv': ['mpeg2video', 'mpeg4', 'h263', 'h264', 'hevc', 'vp8', 'vp9'],
                         'm2ts': ['mp2g2video', 'mpeg4', 'h264', 'mpeg1video'],
                         'vob': ['mpeg1video', 'mpeg2video'],
                         'mov': ['mpeg1video', 'mpeg2video', 'mpeg4', 'h263', 'h264', 'hevc']
@@ -291,10 +289,8 @@ define(['events', 'appSettings', 'filesystem', 'loading', 'playbackManager'], fu
                         'mp3': ['mp3'],
                         'ogg': ['ogg', 'opus', 'vorbis'],
                         'webm': ['vorbis', 'opus'],
-                        'avi': ['mp3', 'flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2'],
                         'flv': ['mp3', 'aac'],
                         'asf': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
-                        'wmv': ['aac', 'ac3', 'dts', 'wma', 'flac', 'pcm'],
                         'm2ts': ['aac', 'ac3', 'dts', 'pcm'],
                         'vob': ['mp1'],
                         'mov': ['mp3', 'aac', 'ac3', 'dts-hd', 'pcm']
