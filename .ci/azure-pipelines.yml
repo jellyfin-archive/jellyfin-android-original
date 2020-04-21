@@ -35,10 +35,6 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
-  - script: 'echo "##vso[task.setvariable variable=NODE_ENV]development"'
-    displayName: 'Set Node Variable'
-    condition: eq(variables['BuildConfiguration'], 'debug')
-
   - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
     displayName: 'Set Tag Variable'
 
