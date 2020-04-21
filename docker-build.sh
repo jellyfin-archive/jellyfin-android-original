@@ -14,14 +14,8 @@ case "${RELEASE}" in
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
         ;;
-    'unminified')
-        RELEASE_SUFFIX="unminified_"
-        NODE_ENV="development"
-        RFLAG="--release"
-        RELEASE_OUTPUT_DIR="release"
-        ;;
-    'foss')
-        RELEASE_SUFFIX="foss_"
+    'libre')
+        RELEASE_SUFFIX="libre_"
         NODE_ENV="production"
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
@@ -33,7 +27,7 @@ case "${RELEASE}" in
         RELEASE_OUTPUT_DIR="debug"
         ;;
     *)
-        echo "error: unknown release type"
+        echo "error: release type must be production, libre, or debug"
         exit 1
 esac
 
@@ -52,7 +46,7 @@ npx gulp
 npx cordova telemetry off
 npx cordova prepare
 
-if [ "${RELEASE}" == 'foss' ]
+if [ "${RELEASE}" == 'libre' ]
 then
     npx cordova plugin rm cordova-plugin-chromecast
 fi

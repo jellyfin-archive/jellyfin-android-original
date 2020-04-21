@@ -3,9 +3,6 @@ var gulpif = require('gulp-if');
 var del = require('del');
 var dom = require('gulp-dom');
 
-// Check the NODE_ENV environment variable
-var isDev = process.env.NODE_ENV === 'development';
-
 // Allow jellyfin-web directory override
 var WEB_DIR = process.env.JELLYFIN_WEB_DIR || 'node_modules/jellyfin-web/dist';
 console.info('using jellyfin-web from', WEB_DIR);
