@@ -1,8 +1,10 @@
 FROM debian:9
+
 # Docker build arguments
 ARG SOURCE_DIR=/repo
 ARG ARTIFACT_DIR=/dist
 ARG ANDROID_DIR=/usr/lib/android-sdk
+
 # Docker run environment
 ENV SOURCE_DIR=/repo
 ENV ARTIFACT_DIR=/dist
@@ -21,9 +23,8 @@ RUN rm -rf ${ANDROID_DIR}/tools \
  && rm -f tools.zip
 
 # Install SDK tools
-# `yes` is required to accept licenses:
 # https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences/42125740#42125740
-# There will be a bit of delay (approx 30 seconds)
+# There will be a delay during the license prompt for about thirty seconds
 RUN yes | ${ANDROID_DIR}/tools/bin/sdkmanager "platform-tools" "platforms;android-27" "build-tools;27.0.3" "extras;android;m2repository" "extras;google;m2repository"
 
 # Update NPM

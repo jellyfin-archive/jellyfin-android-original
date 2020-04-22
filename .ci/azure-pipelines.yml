@@ -35,10 +35,6 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
-  - script: 'echo "##vso[task.setvariable variable=NODE_ENV]development"'
-    displayName: 'Set Node Variable'
-    condition: eq(variables['BuildConfiguration'], 'debug')
-
   - script: 'echo "##vso[task.setvariable variable=TAG]$(git describe --tags)"'
     displayName: 'Set Tag Variable'
 
@@ -159,4 +155,4 @@ jobs:
     inputs:
       sshEndpoint: repository
       runOptions: 'inline'
-      inline: 'cd /srv/repository/releases/client/android && ln -s versions/$(TAG)/jellyfin-android-$(ArtifactSuffix)-$(TAG).apk .'
+      inline: 'cd /srv/repository/releases/client/android && rm -rf *.apk && ln -s versions/$(TAG)/jellyfin-android-$(ArtifactSuffix)-$(TAG).apk .'

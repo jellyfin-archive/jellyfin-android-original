@@ -13,27 +13,21 @@ case "${RELEASE}" in
         NODE_ENV="production"
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
-    ;;
-    'unminified')
-        RELEASE_SUFFIX="unminified_"
-        NODE_ENV="development"
-        RFLAG="--release"
-        RELEASE_OUTPUT_DIR="release"
-    ;;
-    'foss')
-        RELEASE_SUFFIX="foss_"
+        ;;
+    'libre')
+        RELEASE_SUFFIX="libre_"
         NODE_ENV="production"
         RFLAG="--release"
         RELEASE_OUTPUT_DIR="release"
-    ;;
+        ;;
     'debug')
         RELEASE_SUFFIX=""
         NODE_ENV="development"
         RFLAG="--debug"
         RELEASE_OUTPUT_DIR="debug"
-    ;;
+        ;;
     *)
-        echo error: release may only be production, unminified, foss, or debug >&2
+        echo "error: release type must be production, libre, or debug"
         exit 1
 esac
 
@@ -52,7 +46,7 @@ npx gulp
 npx cordova telemetry off
 npx cordova prepare
 
-if [ "${RELEASE}" == 'foss' ]
+if [ "${RELEASE}" == 'libre' ]
 then
     npx cordova plugin rm cordova-plugin-chromecast
 fi
@@ -60,6 +54,5 @@ fi
 # Build APK
 npx cordova build android "${RFLAG}"
 
-# Move the artifacts out
-mkdir -p "${ARTIFACT_DIR}/apk"
-mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/*/jellyfin-android_*.apk" "${ARTIFACT_DIR}/apk/"
+# Move the artifacts
+mmv "${SOURCE_DIR}/platforms/android/app/build/outputs/apk/*/jellyfin-android_*.apk" "${ARTIFACT_DIR}"
