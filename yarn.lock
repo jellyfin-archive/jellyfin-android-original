@@ -2491,9 +2491,9 @@ isstream@~0.1.2:
   version "1.0.3"
   resolved "https://github.com/jellyfin/jellyfin-noto#b784602db063734c721a46563ae5d6577ec2b35d"
 
-"jellyfin-web@git+https://github.com/jellyfin/jellyfin-web.git#v10.5.4":
+"jellyfin-web@git+https://github.com/frankyifei/jellyfin-web.git#cjk-fonts":
   version "0.0.0"
-  resolved "git+https://github.com/jellyfin/jellyfin-web.git#51722fd2257eeb493b30b16d36556e2157e4211e"
+  resolved "git+https://github.com/frankyifei/jellyfin-web.git#2fc57f53fbda3f7213da0830b1719144e45f0c7b"
   dependencies:
     alameda "^1.4.0"
     document-register-element "^1.14.3"

@@ -23,7 +23,7 @@
     "gulp": "^4.0.0",
     "gulp-dom": "^1.0.0",
     "gulp-if": "^2.0.2",
-    "jellyfin-web": "git+https://github.com/jellyfin/jellyfin-web.git#v10.5.4",
+    "jellyfin-web": "git+https://github.com/frankyifei/jellyfin-web.git#cjk-fonts",
     "org.jellyfin.mobile": "file:src/NativeShell",
     "request": "^2.88.0"
   },
