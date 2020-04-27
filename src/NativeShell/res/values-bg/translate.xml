@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="network_title">Позволен мрежови тип</string>
+    <string name="battery_optimizations_message">Моля изключете оптимизациите на батерията при възпроизвеждане на медия, когато екрана е изключен.</string>
+    <string name="battery_optimizations_title">Изключване оптимизациите на батерията</string>
+</resources>
