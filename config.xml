@@ -19,14 +19,10 @@
         <preference name="android-minSdkVersion" value="21" />
         <preference name="android-targetSdkVersion" value="28" />
         <preference name="BackgroundColor" value="0x00000000" />
-        <icon density="ldpi" src="res/android/ldpi/icon.png" />
-        <icon density="mdpi" src="res/android/mdpi/icon.png" />
-        <icon density="hdpi" src="res/android/hdpi/icon.png" />
-        <icon density="xhdpi" src="res/android/xhdpi/icon.png" />
-        <icon density="xxhdpi" src="res/android/xxhdpi/icon.png" />
-        <icon density="xxxhdpi" src="res/android/xxxhdpi/icon.png" />
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application" xmlns:android="http://schemas.android.com/apk/res/android">
-            <application android:networkSecurityConfig="@xml/network_security_config" />
+            <application android:networkSecurityConfig="@xml/network_security_config"
+                         android:icon="@mipmap/ic_launcher"
+                         android:roundIcon="@mipmap/ic_launcher_round" />
         </edit-config>
         <resource-file src="res/android/xml/network_security_config.xml" target="app/src/main/res/xml/network_security_config.xml" />
     </platform>
