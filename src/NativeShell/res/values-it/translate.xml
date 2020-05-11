@@ -7,4 +7,5 @@
     <string name="network_message">Consentire il download dei media quando utilizzi i dati mobili o sei in roaming\?</string>
     <string name="battery_optimizations_message">Disabilita le ottimizzazioni della battera per consentire la riproduzione in background quando lo schermo è spento.</string>
     <string name="battery_optimizations_title">Disabilita ottimizzazione della batteria</string>
+    <string name="network_title">Tipi di Rete Permessi</string>
 </resources>
