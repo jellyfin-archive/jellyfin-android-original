@@ -34,7 +34,7 @@
 </a>
 </p>
 
-Jellyfin Mobile is an Android app built with Cordova. We welcome all contributions and pull requests! If you have a larger feature in mind please open an issue so we can discuss the implementation before you start. Even though the client is a web wrapper there are still lots of improvements and bug fixes that can be accomplished with Java.
+Jellyfin Mobile is an Android app built with Cordova. We welcome all contributions and pull requests! If you have a larger feature in mind please open an issue so we can discuss the implementation before you start. Even though the client is a web wrapper there are still lots of improvements and bug fixes that can be accomplished with Java. For APKs, see <a href="https://github.com/jellyfin/jellyfin-android/releases">releases page</a> where you can choose between the regular APK and a debugging version (we're also working on a libre version that doesn't depend on Google Play Service, but it's <a href="https://github.com/jellyfin/jellyfin-android/issues/327">not ready yet</a>).
 
 Most of the translations can be found in the web client since it's the base for the Android client as well. Translations can be improved very easily from our Weblate instance linked above. Look through the following graphic to see if your native language could use some work!
 
