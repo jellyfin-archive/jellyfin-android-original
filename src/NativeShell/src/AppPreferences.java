@@ -40,12 +40,12 @@ public class AppPreferences {
     }
 
     public int getDownloadMethod() {
-        return sharedPreferences.getInteger(context.getString(R.string.pref_download_method), 0);
+        return sharedPreferences.getInt(context.getString(R.string.pref_download_method), 0);
     }
 
     public void setDownloadMethod(int value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(context.getString(R.string.pref_download_method), value);
+        editor.putInt(context.getString(R.string.pref_download_method), value);
         editor.apply();
     }
 }
