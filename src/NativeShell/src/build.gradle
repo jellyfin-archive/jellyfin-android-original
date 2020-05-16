@@ -9,5 +9,5 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.jellyfin:jellyfin-apiclient-java:v0.6.0'
+    implementation 'com.github.jellyfin:jellyfin-apiclient-java:0.6.0'
 }
