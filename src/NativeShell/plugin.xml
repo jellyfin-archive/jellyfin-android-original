@@ -57,6 +57,17 @@
     <resource-file src="res/values-de/translate.xml" target="res/values-de/translate.xml" />
     <resource-file src="res/values-fr/translate.xml" target="res/values-fr/translate.xml" />
     <resource-file src="res/values-pt-rBR/translate.xml" target="res/values-pt-rBR/translate.xml" />
+    <resource-file src="res/values-bg/translate.xml" target="res/values-bg/translate.xml" />
+    <resource-file src="res/values-es/translate.xml" target="res/values-es/translate.xml" />
+    <resource-file src="res/values-fi/translate.xml" target="res/values-fi/translate.xml" />
+    <resource-file src="res/values-hu/translate.xml" target="res/values-hu/translate.xml" />
+    <resource-file src="res/values-it/translate.xml" target="res/values-it/translate.xml" />
+    <resource-file src="res/values-nb-rNO/translate.xml" target="res/values-nb-rNO/translate.xml" />
+    <resource-file src="res/values-nl/translate.xml" target="res/values-nl/translate.xml" />
+    <resource-file src="res/values-ro/translate.xml" target="res/values-ro/translate.xml" />
+    <resource-file src="res/values-sk/translate.xml" target="res/values-sk/translate.xml" />
+    <resource-file src="res/values-sl/translate.xml" target="res/values-sl/translate.xml" />
+    <resource-file src="res/values-uk/translate.xml" target="res/values-uk/translate.xml" />
     <resource-file src="res/layout/exoplayer.xml" target="res/layout/exoplayer.xml" />
   </platform>
 </plugin>
