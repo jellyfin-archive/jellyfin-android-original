@@ -28,4 +28,24 @@ public class AppPreferences {
         editor.putBoolean(context.getString(R.string.pref_ignore_battery_optimizations), value);
         editor.apply();
     }
+
+    public Boolean getDownloadMethodDialogShown() {
+        return sharedPreferences.getBoolean(context.getString(R.string.pref_download_method_dialog_shown), false);
+    }
+
+    public void setDownloadMethodDialogShown(boolean value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(context.getString(R.string.pref_download_method_dialog_shown), value);
+        editor.apply();
+    }
+
+    public int getDownloadMethod() {
+        return sharedPreferences.getInteger(context.getString(R.string.pref_download_method), 0);
+    }
+
+    public void setDownloadMethod(int value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(context.getString(R.string.pref_download_method), value);
+        editor.apply();
+    }
 }

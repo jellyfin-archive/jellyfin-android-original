@@ -299,24 +299,28 @@ public class NativeShell extends CordovaPlugin {
             .setDestinationInExternalPublicDir("Jellyfin", filename)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
-        cordova.getActivity().runOnUiThread(() -> {
-            new AlertDialog.Builder(context)
-                    .setTitle(cordova.getContext().getString(R.string.network_title))
-                    .setMessage(cordova.getContext().getString(R.string.network_message))
-                    .setNegativeButton(cordova.getContext().getString(R.string.wifi_only), (dialog, which) -> {
-                        request.setAllowedOverMetered(false).setAllowedOverRoaming(false);
-                        startDownload(request);
-                    })
-                    .setPositiveButton(cordova.getContext().getString(R.string.mobile_data), ((dialog, which) -> {
-                        request.setAllowedOverMetered(true).setAllowedOverRoaming(false);
-                        startDownload(request);
-                    }))
-                    .setPositiveButton(cordova.getContext().getString(R.string.mobile_data_and_roaming), ((dialog, which) -> {
-                        request.setAllowedOverMetered(true).setAllowedOverRoaming(true);
-                        startDownload(request);
-                    }))
-                    .show();
-        });
+        if (AppPreferences.get(cordova.getActivity()).getDownloadMethodDialogShown()) {
+            startDownload(request);
+        } else {
+            cordova.getActivity().runOnUiThread(() -> {
+                new AlertDialog.Builder(context)
+                        .setTitle(cordova.getContext().getString(R.string.network_title))
+                        .setMessage(cordova.getContext().getString(R.string.network_message))
+                        .setNegativeButton(cordova.getContext().getString(R.string.wifi_only), (dialog, which) -> {
+                            AppPreferences.get(cordova.getActivity()).setDownloadMethod(0);
+                            startDownload(request);
+                        })
+                        .setPositiveButton(cordova.getContext().getString(R.string.mobile_data), ((dialog, which) -> {
+                            AppPreferences.get(cordova.getActivity()).setDownloadMethod(1);
+                            startDownload(request);
+                        }))
+                        .setPositiveButton(cordova.getContext().getString(R.string.mobile_data_and_roaming), ((dialog, which) -> {
+                            AppPreferences.get(cordova.getActivity()).setDownloadMethod(2);
+                            startDownload(request);
+                        }))
+                        .show();
+            });
+        }
 
         PluginResult pluginResult = new PluginResult(PluginResult.Status.OK);
         callbackContext.sendPluginResult(pluginResult);
@@ -324,6 +328,19 @@ public class NativeShell extends CordovaPlugin {
     }
 
     private void startDownload(DownloadManager.Request request) {
+        int method = AppPreferences.get(cordova.getActivity()).getDownloadMethod();
+        switch (method) {
+            case 0:
+                request.setAllowedOverMetered(false).setAllowedOverRoaming(false);
+                break;
+            case 1:
+                request.setAllowedOverMetered(true).setAllowedOverRoaming(false);
+                break;
+            case 2:
+                request.setAllowedOverMetered(true).setAllowedOverRoaming(true);
+                break;
+        }
+
         Context context = cordova.getContext();
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
