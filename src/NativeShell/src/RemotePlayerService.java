@@ -5,13 +5,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothHeadset;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadata;
 import android.media.Rating;
-import android.media.VolumeProvider;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.media.session.MediaSession.Callback;
@@ -20,8 +21,6 @@ import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.bluetooth.BluetoothA2dp;
-import android.bluetooth.BluetoothHeadset;
 
 import org.jellyfin.apiclient.interaction.Response;
 import org.jellyfin.apiclient.interaction.VolleyHttpClient;
@@ -81,7 +80,16 @@ public class RemotePlayerService extends Service {
     };
 
     private static void sendCommand(String action) {
-        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.trigger('" + action + "');});";
+        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.trigger('" + action + "'" + ");});";
+        loadUrl(url);
+    }
+
+    private static void sendSeekCommand(long pos) {
+        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.trigger('seek', " + pos + ");});";
+        loadUrl(url);
+    }
+
+    private static void loadUrl(String url) {
         NativeShell.cordovaWebView.loadUrlIntoView(url, false);
     }
 
@@ -217,16 +225,15 @@ public class RemotePlayerService extends Service {
         boolean isPaused = handledIntent.getBooleanExtra("isPaused", false);
         boolean canSeek = handledIntent.getBooleanExtra("canSeek", false);
         boolean isLocalPlayer = handledIntent.getBooleanExtra("isLocalPlayer", false);
+        int position = handledIntent.getIntExtra("position", 0);
+        int duration = handledIntent.getIntExtra("duration", 0);
 
         // system will recognize notification as media playback
         // show cover art and controls on lock screen
         if (mediaSessionId == null || !mediaSessionId.equals(itemId)) {
-            setMediaSessionMetadata(mediaSession, itemId, artist, album, title, largeIcon);
+            setMediaSessionMetadata(mediaSession, itemId, artist, album, title, duration, largeIcon);
             mediaSessionId = itemId;
         }
-
-        int position = handledIntent.getIntExtra("position", 0);
-        int duration = handledIntent.getIntExtra("duration", 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Notification.Action action = isPaused ?
@@ -252,6 +259,7 @@ public class RemotePlayerService extends Service {
             Notification.Builder builder = new Notification.Builder(this)
                     .setContentTitle(title)
                     .setContentText(artist)
+                    .setSubText(album)
                     .setPriority(Notification.PRIORITY_LOW)
                     .setDeleteIntent(createDeleteIntent())
                     .setContentIntent(createContentIntent())
@@ -265,12 +273,15 @@ public class RemotePlayerService extends Service {
                 builder.setColorized(true);
             }
 
-            // swipe to dismiss media
-            builder.setOngoing(false);
-            // dynamic media position
-            builder.setShowWhen(true);
-            builder.setUsesChronometer(!isPaused);
-            builder.setWhen(System.currentTimeMillis() - position);
+            // swipe to dismiss if paused
+            builder.setOngoing(!isPaused);
+
+            // show current position in "when" field pre-O
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                builder.setShowWhen(!isPaused);
+                builder.setUsesChronometer(!isPaused);
+                builder.setWhen(System.currentTimeMillis() - position);
+            }
             // privacy value for lock screen
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
 
@@ -316,12 +327,13 @@ public class RemotePlayerService extends Service {
         return new Notification.Action(icon, title, pendingIntent);
     }
 
-    private void setMediaSessionMetadata(MediaSession mediaSession, String itemId, String artist, String album, String title, Bitmap largeIcon) {
+    private void setMediaSessionMetadata(MediaSession mediaSession, String itemId, String artist, String album, String title, int duration, Bitmap largeIcon) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             MediaMetadata.Builder metadataBuilder = new MediaMetadata.Builder()
                     .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
                     .putString(MediaMetadata.METADATA_KEY_ALBUM, album)
                     .putString(MediaMetadata.METADATA_KEY_TITLE, title)
+                    .putLong(MediaMetadata.METADATA_KEY_DURATION, duration)
                     .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, itemId);
 
             if (largeIcon != null) {
@@ -354,55 +366,47 @@ public class RemotePlayerService extends Service {
             mediaSession.setCallback(new Callback() {
                 @Override
                 public void onPlay() {
-                    super.onPlay();
                     sendCommand("playpause");
                 }
 
                 @Override
                 public void onPause() {
-                    super.onPause();
                     sendCommand("playpause");
                 }
 
                 @Override
                 public void onSkipToNext() {
-                    super.onSkipToNext();
                     sendCommand("next");
                 }
 
                 @Override
                 public void onSkipToPrevious() {
-                    super.onSkipToPrevious();
                     sendCommand("previous");
                 }
 
                 @Override
                 public void onFastForward() {
-                    super.onFastForward();
                     sendCommand("fastforward");
                 }
 
                 @Override
                 public void onRewind() {
-                    super.onRewind();
                     sendCommand("rewind");
                 }
 
                 @Override
                 public void onStop() {
-                    super.onStop();
                     sendCommand("stop");
                     onStopped();
                 }
 
                 @Override
                 public void onSeekTo(long pos) {
-                    super.onSeekTo(pos);
+                    sendSeekCommand(pos);
                 }
 
                 @Override
                 public void onSetRating(Rating rating) {
-                    super.onSetRating(rating);
                 }
             });
         }
