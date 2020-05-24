@@ -14,7 +14,7 @@ var features = [
     'htmlvideoautoplay',
     'externallinks',
     'multiserver',
-    //'physicalvolumecontrol',
+    'physicalvolumecontrol',
     'remotecontrol',
     'castmenuhashchange'
 ];
