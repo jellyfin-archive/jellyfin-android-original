@@ -6,9 +6,9 @@ var appVersion;
 var features = [
     'filedownload',
     'displaylanguage',
-    'externalplayerintent',
+    //'externalplayerintent',
     'subtitleappearancesettings',
-    'sharing',
+    //'sharing',
     'exit',
     'htmlaudioautoplay',
     'htmlvideoautoplay',
