@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="downloading">Descărcare</string>
+    <string name="downloading">Se descarcă</string>
     <string name="mobile_data_and_roaming">Date Mobile &amp; Roaming</string>
     <string name="mobile_data">Date mobile</string>
     <string name="wifi_only">Doar WiFi</string>
