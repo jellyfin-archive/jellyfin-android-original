@@ -50,7 +50,7 @@ public class NativeShell extends CordovaPlugin {
                 // theme the system bars so that all models use the same color
                 // several manufacturers style the navigation bar differently
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(android.R.color.holo_orange_dark));
+                    cordova.getActivity().getWindow().setStatusBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                     cordova.getActivity().getWindow().setNavigationBarColor(cordova.getActivity().getResources().getColor(android.R.color.black));
                 }
 
