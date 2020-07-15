@@ -27,8 +27,11 @@ jobs:
     - run: npm install
     - run: npx cordova prepare
     - run: npx gulp
-    - run: npx cordova build android
+    - run: npx cordova build android --release
     - run: ls -R | grep apk
-      
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./platforms/android/app/build/outputs/apk/
       
 
