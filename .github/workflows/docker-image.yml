@@ -14,7 +14,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-    - name: Run docker
-      run: docker run --rm -e "RELEASE=production" -v "output:/dist" "jellyfin-android"
+#     - name: Build the Docker image
+#       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+#     - name: Run docker
+#       run: docker run --rm -e "RELEASE=production" -v "output:/dist" "jellyfin-android"
+#     - name: Upload a Build Artifact
+#       uses: actions/upload-artifact@2.1.0
+#       with:
+#         path: output:/dist/jellyfin-android.apk
