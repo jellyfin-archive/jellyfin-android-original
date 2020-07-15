@@ -28,5 +28,7 @@ jobs:
     - run: npx cordova prepare
     - run: npx gulp
     - run: npx cordova build android
+    - run: ls -R | grep apk
+      
       
 
