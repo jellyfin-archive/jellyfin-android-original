@@ -30,8 +30,8 @@ jobs:
     - run: npx cordova build android --release
     - name: Sign apks
       run:
-        base64 "${{KEYSTORE}}" > mykey.keystore
-        jarsigner.exe -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore mykey.keystore ./platforms/android/app/build/outputs/apk/release/*.apk ${{KEYALIAS}} -storepass ${{KEYPASS}}
+        base64 -d "${{secret.KEYSTORE}}" > mykey.keystore
+        jarsigner.exe -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore mykey.keystore ./platforms/android/app/build/outputs/apk/release/*.apk ${{secret.KEYALIAS}} -storepass ${{secret.KEYPASS}}
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
