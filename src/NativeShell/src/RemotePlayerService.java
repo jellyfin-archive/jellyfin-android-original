@@ -80,12 +80,12 @@ public class RemotePlayerService extends Service {
     };
 
     private static void sendCommand(String action) {
-        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.trigger('" + action + "'" + ");});";
+        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.handleCommand('" + action + "'" + ");});";
         loadUrl(url);
     }
 
     private static void sendSeekCommand(long pos) {
-        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.trigger('seek', " + pos + ");});";
+        String url = "javascript:require(['inputManager'], function(inputManager){inputManager.handleCommand('seek', " + pos + ");});";
         loadUrl(url);
     }
 
