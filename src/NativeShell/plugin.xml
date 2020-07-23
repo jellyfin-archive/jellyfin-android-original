@@ -54,20 +54,32 @@
     <resource-file src="res/values/colors.xml" target="res/values/colors.xml" />
     <resource-file src="res/values/preferences.xml" target="res/values/preferences.xml" />
     <resource-file src="res/values/translate.xml" target="res/values/translate.xml" />
-    <resource-file src="res/values-de/translate.xml" target="res/values-de/translate.xml" />
-    <resource-file src="res/values-fr/translate.xml" target="res/values-fr/translate.xml" />
-    <resource-file src="res/values-pt-rBR/translate.xml" target="res/values-pt-rBR/translate.xml" />
+    <resource-file src="res/values-b+es+419/translate.xml" target="res/values-b+es+419/translate.xml" />
     <resource-file src="res/values-bg/translate.xml" target="res/values-bg/translate.xml" />
+    <resource-file src="res/values-bn-rBD/translate.xml" target="res/values-bn-rBD/translate.xml" />
+    <resource-file src="res/values-cs/translate.xml" target="res/values-cs/translate.xml" />
+    <resource-file src="res/values-de/translate.xml" target="res/values-de/translate.xml" />
     <resource-file src="res/values-es/translate.xml" target="res/values-es/translate.xml" />
+    <resource-file src="res/values-es-rAR/translate.xml" target="res/values-es-rAR/translate.xml" />
+    <resource-file src="res/values-es-rMX/translate.xml" target="res/values-es-rMX/translate.xml" />
     <resource-file src="res/values-fi/translate.xml" target="res/values-fi/translate.xml" />
+    <resource-file src="res/values-fr/translate.xml" target="res/values-fr/translate.xml" />
+    <resource-file src="res/values-hr/translate.xml" target="res/values-hr/translate.xml" />
     <resource-file src="res/values-hu/translate.xml" target="res/values-hu/translate.xml" />
     <resource-file src="res/values-it/translate.xml" target="res/values-it/translate.xml" />
+    <resource-file src="res/values-ko/translate.xml" target="res/values-ko/translate.xml" />
+    <resource-file src="res/values-lt/translate.xml" target="res/values-lt/translate.xml" />
+    <resource-file src="res/values-lv/translate.xml" target="res/values-lv/translate.xml" />
     <resource-file src="res/values-nb-rNO/translate.xml" target="res/values-nb-rNO/translate.xml" />
     <resource-file src="res/values-nl/translate.xml" target="res/values-nl/translate.xml" />
+    <resource-file src="res/values-pt-rBR/translate.xml" target="res/values-pt-rBR/translate.xml" />
+    <resource-file src="res/values-pt-rPT/translate.xml" target="res/values-pt-rPT/translate.xml" />
     <resource-file src="res/values-ro/translate.xml" target="res/values-ro/translate.xml" />
+    <resource-file src="res/values-ru/translate.xml" target="res/values-ru/translate.xml" />
     <resource-file src="res/values-sk/translate.xml" target="res/values-sk/translate.xml" />
     <resource-file src="res/values-sl/translate.xml" target="res/values-sl/translate.xml" />
     <resource-file src="res/values-uk/translate.xml" target="res/values-uk/translate.xml" />
+    <resource-file src="res/values-zh-rCN/translate.xml" target="res/values-zh-rCN/translate.xml" />
     <resource-file src="res/layout/exoplayer.xml" target="res/layout/exoplayer.xml" />
   </platform>
 </plugin>
