@@ -227,7 +227,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                         'aac': ['aac'],
                         'mkv': ['aac', 'dts', 'flac', 'vorbis', 'ac3', 'wma', 'mp1', 'mp2', 'mp3'],
                         'mp3': ['mp3'],
-                        'ogg': ['ogg', 'opus', 'vorbis'],
+                        'ogg': ['ogg', 'flac', 'opus', 'vorbis'],
                         'webvm': ['vorbis', 'opus'],
                         'avi': ['flac', 'aac', 'dts', 'ac3', 'wma', 'pcm', 'mp1', 'mp2', 'mp3'],
                         'flv': ['aac', 'mp3'],
@@ -319,7 +319,7 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                                 profile.DirectPlayProfiles.push({
                                     Container: container,
                                     Type: 'Audio',
-                                    VideoCodec: audioProfiles[container].filter(function (codec) {
+                                    AudioCodec: audioProfiles[container].filter(function (codec) {
                                         return audioCodecs.indexOf(codec) !== -1;
                                     }).join(',')
                                 });
@@ -348,9 +348,9 @@ define(['events', 'appSettings', 'filesystem', 'loading'], function (events, app
                                 Context: 'Streaming'
                             },
                             {
-                                Container: 'mp3',
+                                Container: 'ogg',
                                 Type: 'Audio',
-                                AudioCodec: 'mp3',
+                                AudioCodec: 'opus',
                                 Context: 'Streaming',
                                 Protocol: 'http'
                             }
