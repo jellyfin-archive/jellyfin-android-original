@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="downloading">Pobieranie</string>
+    <string name="mobile_data_and_roaming">Dane Mobilne i Roaming</string>
+    <string name="mobile_data">Dane Mobilne</string>
+    <string name="wifi_only">Tylko WiFi</string>
+    <string name="network_message">Czy chcesz zezwolić na pobieranie przy użyciu danych mobilnych lub w roamingu\?</string>
+    <string name="network_title">Dozwolone Typy Sieci</string>
+    <string name="battery_optimizations_message">Wyłącz optymalizacje baterii by umożliwić odtwarzanie gdy ekran jest wyłączony.</string>
+    <string name="battery_optimizations_title">Wyłącz Optymalizacje Baterii</string>
+</resources>
