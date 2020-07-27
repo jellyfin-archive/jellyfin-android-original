@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="battery_optimizations_title">Batterieoptimierungen deaktivieren</string>
-    <string name="battery_optimizations_message">Bitte die Batterieoptimierungen deaktivieren, damit Medien mit ausgeschaltetem Bildschirm abgespielt werden können.</string>
+    <string name="battery_optimizations_message">Bitte die Batterieoptimierungen deaktivieren, um Medien mit ausgeschaltetem Bildschirm abzuspielen.</string>
     <string name="network_title">Erlaubte Netzwektypen</string>
     <string name="network_message">Wollen Sie den Download über Mobile Daten oder Roaming elauben?</string>
     <string name="wifi_only">Nur WLAN</string>
