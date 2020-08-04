@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="downloading">Prijenos podataka</string>
+    <string name="mobile_data_and_roaming">Mobilni podaci i roming</string>
+    <string name="mobile_data">Mobilni podaci</string>
+    <string name="wifi_only">Samo bežična mreža</string>
+    <string name="network_message">Želite li dozvoliti prijenos podataka preko mobilne mreže ili rominga\?</string>
+    <string name="network_title">Dozvoljeni tipovi mreže</string>
+    <string name="battery_optimizations_message">Onemogućite optimizaciju baterije prilikom reprodukcije dok je zaslon ugašen.</string>
+    <string name="battery_optimizations_title">Onemogući optimizaciju baterije</string>
+</resources>
