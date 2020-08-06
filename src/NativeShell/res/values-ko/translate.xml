@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="wifi_only">WiFi 전용</string>
-    <string name="downloading">다운로드</string>
+    <string name="downloading">다운로드중</string>
     <string name="mobile_data_and_roaming">모바일 데이터 &amp; 로밍</string>
     <string name="mobile_data">모바일 데이터</string>
+    <string name="battery_optimizations_title">배터리 최적화 비활성화</string>
 </resources>
