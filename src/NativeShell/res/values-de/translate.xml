@@ -2,7 +2,7 @@
 <resources>
     <string name="battery_optimizations_title">Batterieoptimierungen deaktivieren</string>
     <string name="battery_optimizations_message">Bitte deaktiviere die Batterieoptimierungen damit Medien bei ausgeschaltetem Bildschirm abgespielt werden können.</string>
-    <string name="network_title">Erlaubte Netzwektypen</string>
+    <string name="network_title">Erlaubte Verbindungsmöglichkeiten</string>
     <string name="network_message">Wollen Sie den Download über Mobile Daten oder Roaming elauben?</string>
     <string name="wifi_only">Nur WLAN</string>
     <string name="mobile_data">Mobile Daten</string>
