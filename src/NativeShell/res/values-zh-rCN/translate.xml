@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="battery_optimizations_message">请禁用电池优化以在屏幕关闭时播放媒体。</string>
+    <string name="battery_optimizations_message">为了在屏幕关闭时播放媒体，请禁用电池优化。</string>
     <string name="battery_optimizations_title">禁用电池优化</string>
     <string name="mobile_data_and_roaming">移动数据和漫游</string>
     <string name="mobile_data">移动数据</string>
