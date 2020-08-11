@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="battery_optimizations_title">Вимкнути енергооптимізацію</string>
+    <string name="battery_optimizations_title">Вимкнути оптимізацію акумулятора</string>
+    <string name="downloading">Завантаження</string>
+    <string name="mobile_data_and_roaming">Мобільні дані та роумінг</string>
+    <string name="mobile_data">Мобільні дані</string>
+    <string name="wifi_only">Лише WiFi</string>
+    <string name="network_message">Ви хочете дозволити завантаження через мобільні мережі передачі даних або в роумінгу\?</string>
+    <string name="network_title">Дозволені типи мереж</string>
+    <string name="battery_optimizations_message">Відключіть оптимізацію акумулятора для відтворення медіа, коли екран вимкнено.</string>
 </resources>
